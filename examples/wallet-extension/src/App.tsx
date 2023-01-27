@@ -9,13 +9,23 @@ function App() {
     React.useState<SingeNodeDashboardQuery>();
 
   React.useEffect(() => {
-    const client = getLightsparkClient();
-    client
-      .getWalletDashboard("LightsparkNode:0185c269-8aa3-f96b-0000-0ae100b58599")
-      .then((dashboard) => {
-        setWalletDashboard(dashboard);
+    chrome.storage.local
+      .get(["walletDashboard"])
+      .then(async (cachedBalance) => {
+        if (cachedBalance) {
+          setWalletDashboard(cachedBalance.walletDashboard);
+        }
+        const client = getLightsparkClient();
+        await client
+          .getWalletDashboard(
+            "LightsparkNode:0185c269-8aa3-f96b-0000-0ae100b58599"
+          )
+          .then((dashboard) => {
+            setWalletDashboard(dashboard);
+            chrome.storage.local.set({ walletDashboard: dashboard });
+          });
       });
-  });
+  }, []);
 
   const balance =
     walletDashboard?.current_account?.blockchain_balance?.available_balance;

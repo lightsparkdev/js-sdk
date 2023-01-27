@@ -7,8 +7,8 @@ const progressCache = new VideoProgressCache();
 const messageReceived = async (message: DOMMessageResponse) => {
   progressCache.addProgress(
     message.videoID,
-    message.progress,
-    message.prevProgress || 0
+    message.prevProgress || 0,
+    message.progress
   );
 };
 

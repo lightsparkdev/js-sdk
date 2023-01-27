@@ -2,7 +2,7 @@ import { ChannelSource } from '../types';
 import { DOMMessage, DOMMessageResponse } from '../types';
 
 let currentTrackingDetails: DOMMessageResponse|null = null;
-let videoListener: (() => void)|null = null;
+let timeUpdateListener: (() => void)|null = null;
  
 const messageReceived = (
     msg: DOMMessage,
@@ -74,19 +74,22 @@ const getDomDetailsForTwitch = (): DOMMessageResponse|null => {
 
 const startListeningToVideoEvents = (newTrackingDetails: DOMMessageResponse, videoElement: HTMLVideoElement) => {
     console.log(`Beginning listener on: ${JSON.stringify(newTrackingDetails)}`);
-    if (videoListener) {
-        videoElement.removeEventListener('timeupdate', videoListener);
+    if (timeUpdateListener) {
+        videoElement.removeEventListener('timeupdate', timeUpdateListener);
     }
-    videoListener = () => {
+    timeUpdateListener = () => {
+        const prevProgress = currentTrackingDetails?.progress || 0
         currentTrackingDetails = {
             ...newTrackingDetails,
             progress: videoElement.currentTime,
             duration: videoElement.duration,
-            prevProgress: currentTrackingDetails?.progress || 0
+            prevProgress: prevProgress
         };
+        // No time updates while seeking.
+        if (videoElement.seeking || (Math.abs(videoElement.currentTime - prevProgress) > 1)) return;
         chrome.runtime.sendMessage({id: 'video_progress', ...currentTrackingDetails});
     };
-    videoElement.addEventListener('timeupdate', videoListener);
+    videoElement.addEventListener('timeupdate', timeUpdateListener);
 }
  
 /**

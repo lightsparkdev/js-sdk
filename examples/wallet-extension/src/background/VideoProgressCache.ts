@@ -14,6 +14,8 @@ class VideoProgressCache {
             this.videoProgressCache[videoID] = new PlaybackRangesTracker();
         }
         this.videoProgressCache[videoID].addPlayedRange(start, end);
+        console.log(`Added progress for ${videoID}: ${start} - ${end}`);
+        console.log(`Current ranges: ${JSON.stringify(this.videoProgressCache[videoID].getPlayedRanges())}`);
         this.needsWrite = true;
     }
 
@@ -23,7 +25,10 @@ class VideoProgressCache {
                 if (key.startsWith("video_")) {
                     const videoID = key.replace("video_", "");
                     const videoRanges = result[key];
-                    this.videoProgressCache[videoID] = videoRanges;
+                    this.videoProgressCache[videoID] = new PlaybackRangesTracker();
+                    videoRanges.forEach((range: any) => {
+                        this.videoProgressCache[videoID].addPlayedRange(range.start, range.end);
+                    });
                 }
             });
         });
