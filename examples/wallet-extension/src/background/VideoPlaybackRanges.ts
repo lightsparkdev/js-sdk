@@ -3,8 +3,6 @@ import PlaybackRange from "./PlaybackRange";
 class VideoPlaybackRanges {
   private playedRanges: Array<PlaybackRange> = [];
 
-  constructor() {}
-
   addPlayedRange(start: number, end: number) {
     if (start > end) return;
     const newRange = new PlaybackRange(start, end);

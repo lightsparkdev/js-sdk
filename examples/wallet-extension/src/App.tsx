@@ -43,7 +43,11 @@ function App() {
   );
   return (
     <div className="app-wrapper">
-      <img src="lightspark_full.png" className="app-logo" />
+      <img
+        src="lightspark_full.png"
+        className="app-logo"
+        alt="Lightspark logo"
+      />
       <div className="content-wrapper">{body}</div>
     </div>
   );

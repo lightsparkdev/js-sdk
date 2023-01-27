@@ -1,1 +1,1 @@
-export * from './DOMMessages'
+export * from './Messages'

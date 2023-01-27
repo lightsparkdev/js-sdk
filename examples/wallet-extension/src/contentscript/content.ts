@@ -1,13 +1,13 @@
 import { ChannelSource } from '../types';
-import { DOMMessage, DOMMessageResponse } from '../types';
+import { StartTrackingVideoMessage, VideoPlaybackUpdateMessage } from '../types';
 
-let currentTrackingDetails: DOMMessageResponse|null = null;
+let currentTrackingDetails: VideoPlaybackUpdateMessage|null = null;
 let timeUpdateListener: (() => void)|null = null;
  
 const messageReceived = (
-    msg: DOMMessage,
+    msg: StartTrackingVideoMessage,
     sender: chrome.runtime.MessageSender,
-    sendResponse: (response: DOMMessageResponse|null) => void
+    sendResponse: (response: VideoPlaybackUpdateMessage|null) => void
 ) => {
     console.log('[content.js]. Message received', msg);
     const response =
@@ -16,7 +16,7 @@ const messageReceived = (
     sendResponse(response);
 };
 
-const getDomDetailsForYoutube = (): DOMMessageResponse|null => {
+const getDomDetailsForYoutube = (): VideoPlaybackUpdateMessage|null => {
     const searchParams = new URLSearchParams(window.location.search);
     if (!searchParams.has("v")) {
         currentTrackingDetails = null;
@@ -44,7 +44,7 @@ const getDomDetailsForYoutube = (): DOMMessageResponse|null => {
     return newTrackingDetails;
 };
 
-const getDomDetailsForTwitch = (): DOMMessageResponse|null => {
+const getDomDetailsForTwitch = (): VideoPlaybackUpdateMessage|null => {
     let videoID = "livestream";
     if (window.location.pathname.includes('/videos/')) {
         const index = window.location.pathname.lastIndexOf("/videos/");
@@ -54,7 +54,7 @@ const getDomDetailsForTwitch = (): DOMMessageResponse|null => {
 
     // There may be a better way to do this, but the class names in twitch are obfuscated :-/.
     const userLink = Array.from(document.querySelectorAll('.channel-info-content a')).filter((it) => {
-        return it.classList.length == 0
+        return it.classList.length === 0
     })[0] as HTMLAnchorElement;
     const videoElement = document.querySelector('.video-player video') as HTMLVideoElement;
 
@@ -72,7 +72,7 @@ const getDomDetailsForTwitch = (): DOMMessageResponse|null => {
     return newTrackingDetails;
 };
 
-const startListeningToVideoEvents = (newTrackingDetails: DOMMessageResponse, videoElement: HTMLVideoElement) => {
+const startListeningToVideoEvents = (newTrackingDetails: VideoPlaybackUpdateMessage, videoElement: HTMLVideoElement) => {
     console.log(`Beginning listener on: ${JSON.stringify(newTrackingDetails)}`);
     if (timeUpdateListener) {
         videoElement.removeEventListener('timeupdate', timeUpdateListener);

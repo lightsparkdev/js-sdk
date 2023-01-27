@@ -1,12 +1,12 @@
-export type DOMMessage = {
-  type: 'GET_DOM'
+export type StartTrackingVideoMessage = {
+  type: 'START_LISTENING'
 }
 
 export enum ChannelSource {
     youtube, twitch
 }
 
-export type DOMMessageResponse = {
+export type VideoPlaybackUpdateMessage = {
   videoID: string;
   videoName: string;
   channelID: string;

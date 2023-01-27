@@ -1,10 +1,10 @@
 import { startListeningForNavigations } from "../NavigationTracker";
-import { DOMMessageResponse } from "../types";
+import { VideoPlaybackUpdateMessage } from "../types";
 import VideoProgressCache from "./VideoProgressCache";
 
 const progressCache = new VideoProgressCache();
 
-const messageReceived = async (message: DOMMessageResponse) => {
+const messageReceived = async (message: VideoPlaybackUpdateMessage) => {
   progressCache.addProgress(
     message.videoID,
     message.prevProgress || 0,
