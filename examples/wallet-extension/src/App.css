@@ -1,0 +1,39 @@
+.app-wrapper {
+  background: #272727;
+  color: white;
+  padding: 0.5rem;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balance {
+  text-align: center;
+  overflow-wrap: break-word;
+  width: 100%;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.app-logo {
+  width: 220px;
+  display: inline-block;
+  margin-inline-end: 8px;
+  object-fit: contain;
+}
+
+.loading-text {
+  font-size: 1.5rem;
+  text-align: center;
+  overflow-wrap: break-word;
+  width: 100%;
+}
+
+.content-wrapper {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  width: 100%;
+}
