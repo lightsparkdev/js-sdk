@@ -1,7 +1,6 @@
 .app-wrapper {
   background: #272727;
   color: white;
-  padding: 0.5rem;
   height: 100%;
   width: 100%;
   display: flex;
@@ -18,7 +17,7 @@
 }
 
 .app-logo {
-  width: 220px;
+  width: 180px;
   display: inline-block;
   margin-inline-end: 8px;
   object-fit: contain;
@@ -32,8 +31,28 @@
 }
 
 .content-wrapper {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
+  flex: 1;
   width: 100%;
+  overflow: auto;
+}
+
+.header {
+  border-bottom: 1px solid #ffffff44;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 56px;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  align-items: center;
+}
+
+.header button {
+  width: 40px;
+  height: 100%;
+  border: none;
+  background: #ffffff44;
+  color: white;
+  font-size: 26px;
 }

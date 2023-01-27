@@ -22,7 +22,7 @@ const CurrencyAmountRaw = (props: Props) => {
       case CurrencyUnit.Satoshi:
         return <Satoshi />;
     }
-    return "?";
+    return "";
   };
 
   const text = getAsText(props);

@@ -61,6 +61,34 @@ export const TransactionDetails = gql`
         }
       }
     }
+    ... on ChannelOpeningTransaction {
+        fees {
+            value
+            unit
+          }
+        channel {
+            remote_node {
+                display_name
+            }
+            local_node {
+                display_name
+            }
+        }
+    }
+    ... on ChannelClosingTransaction {
+        fees {
+            value
+            unit
+          }
+        channel {
+            remote_node {
+                display_name
+            }
+            local_node {
+                display_name
+            }
+        }
+    }
     ... on Deposit {
       deposit_destination: destination {
         display_name

@@ -7,7 +7,7 @@
     "@emotion/css": "^11.10.5",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@lightspark/js-sdk": "file:../..",
+    "@lightspark/js-sdk": "file:../../dist/",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
