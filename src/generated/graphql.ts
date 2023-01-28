@@ -1181,6 +1181,29 @@ export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
+export type CreateInvoiceMutationVariables = Exact<{
+  node_id: Scalars['ID'];
+  amount: CurrencyAmountInput;
+  memo?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type CreateInvoiceMutation = { __typename: 'Mutation', create_invoice: { __typename: 'CreateInvoiceOutput', invoice: { __typename: 'Invoice', data: { __typename: 'InvoiceData', encoded_payment_request: string } } } };
+
+export type DecodeInvoiceQueryVariables = Exact<{
+  encoded_payment_request: Scalars['String'];
+}>;
+
+
+export type DecodeInvoiceQuery = { __typename: 'Query', decoded_payment_request: { __typename: 'InvoiceData', encoded_payment_request: string, bitcoin_network: BitcoinNetwork, payment_hash: string, created_at: any, expires_at: any, invoice_data_memo?: string | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit }, destination: { __typename: 'GraphNode', id: string, created_at: any, updated_at: any, bitcoin_network: BitcoinNetwork, color?: string | null, conductivity?: number | null, display_name: string, public_key?: string | null, addresses: { __typename: 'NodeToAddressesConnection', count: number, edges: Array<{ __typename: 'NodeToAddressEdge', entity: { __typename: 'NodeAddress', address: string, type: NodeAddressType } }> } } | { __typename: 'LightsparkNode', id: string, created_at: any, updated_at: any, bitcoin_network: BitcoinNetwork, color?: string | null, conductivity?: number | null, display_name: string, public_key?: string | null, addresses: { __typename: 'NodeToAddressesConnection', count: number, edges: Array<{ __typename: 'NodeToAddressEdge', entity: { __typename: 'NodeAddress', address: string, type: NodeAddressType } }> } } } };
+
+export type FeeEstimateQueryVariables = Exact<{
+  bitcoin_network: BitcoinNetwork;
+}>;
+
+
+export type FeeEstimateQuery = { __typename: 'Query', fee_estimate: { __typename: 'FeeEstimate', fee_fast: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit }, fee_min: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } };
+
 export type SingeNodeDashboardQueryVariables = Exact<{
   network: BitcoinNetwork;
   nodeId: Scalars['ID'];
