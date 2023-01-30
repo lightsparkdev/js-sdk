@@ -1204,6 +1204,17 @@ export type FeeEstimateQueryVariables = Exact<{
 
 export type FeeEstimateQuery = { __typename: 'Query', fee_estimate: { __typename: 'FeeEstimate', fee_fast: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit }, fee_min: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } };
 
+export type PayInvoiceMutationVariables = Exact<{
+  node_id: Scalars['ID'];
+  encoded_invoice: Scalars['String'];
+  timeout_secs: Scalars['Int'];
+  amount?: InputMaybe<CurrencyAmountInput>;
+  maximum_fees?: InputMaybe<CurrencyAmountInput>;
+}>;
+
+
+export type PayInvoiceMutation = { __typename: 'Mutation', pay_invoice: { __typename: 'PayInvoiceOutput', payment: { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_value: any, currency_amount_unit: CurrencyUnit }, outgoing_payment_origin: { __typename: 'LightsparkNode', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNode', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_value: any, currency_amount_unit: CurrencyUnit } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } } };
+
 export type RecoverNodeSigningKeyQueryVariables = Exact<{
   node_id: Scalars['ID'];
 }>;

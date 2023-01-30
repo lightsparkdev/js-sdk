@@ -1,15 +1,14 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-} from "@apollo/client/core";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
 import autoBind from "auto-bind";
 import {
   BitcoinNetwork,
   CreateInvoiceMutation,
   CurrencyAmount,
+  CurrencyAmountInput,
   DecodeInvoiceQuery,
   FeeEstimateQuery,
   InvoiceData,
+  PayInvoiceMutation,
   RecoverNodeSigningKeyQuery,
   SingeNodeDashboardQuery,
 } from "./generated/graphql";
@@ -23,28 +22,34 @@ import { Maybe } from "graphql/jsutils/Maybe";
 import { decryptSecretWithNodePassword } from "crypto/crypto";
 import NodeKeyCache from "crypto/NodeKeyCache";
 import { getNewApolloClient } from "apollo/apolloClient";
+import { PayInvoice } from "graphql/PayInvoice";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
   private nodeKeyCache: NodeKeyCache = new NodeKeyCache();
+  private activeWalletId: string | undefined;
 
   constructor(
     tokenId: string,
     token: string,
     serverUrl: string = "https://api.dev.dev.sparkinfra.net"
   ) {
-    this.client = getNewApolloClient(serverUrl, tokenId, token, this.nodeKeyCache);
+    this.client = getNewApolloClient(
+      serverUrl,
+      tokenId,
+      token,
+      this.nodeKeyCache
+    );
 
     autoBind(this);
   }
 
-  public async getWalletDashboard(
-    nodeId: string
-  ): Promise<SingeNodeDashboardQuery> {
+  public async getWalletDashboard(): Promise<SingeNodeDashboardQuery> {
+    const walletId = this.requireWalletId();
     const response = await this.client.query({
       query: SingleNodeDashboard,
       variables: {
-        nodeId,
+        walletId,
         network: BitcoinNetwork.Regtest,
         numTransactions: 20,
       },
@@ -53,14 +58,14 @@ class LightsparkWalletClient {
   }
 
   public async createInvoice(
-    nodeId: string,
     amount: number,
     memo: string
   ): Promise<string | undefined> {
+    const walletId = this.requireWalletId();
     const response = await this.client.mutate<CreateInvoiceMutation>({
       mutation: CreateInvoice,
       variables: {
-        nodeId,
+        walletId,
         amount,
         memo,
       },
@@ -90,7 +95,7 @@ class LightsparkWalletClient {
     return response.data.fee_estimate;
   }
 
-  public async recoverNodeSigningKey(
+  async recoverNodeSigningKey(
     nodeId: string
   ): Promise<Maybe<{ encrypted_value: string; cipher: string }>> {
     const response = await this.client.query<RecoverNodeSigningKeyQuery>({
@@ -134,7 +139,39 @@ class LightsparkWalletClient {
     }
 
     this.nodeKeyCache.loadKey(walletId, signingPrivateKeyPEM);
+    this.activeWalletId = walletId;
     return true;
+  }
+
+  public async payInvoice(
+    encodedInvoice: string,
+    timeoutSecs: number = 60,
+    amount: CurrencyAmountInput | null = null,
+    maxFees: CurrencyAmountInput | null = null
+  ): Promise<void> {
+    const walletId = this.requireWalletId();
+    const response = await this.client.mutate<PayInvoiceMutation>({
+      mutation: PayInvoice,
+      variables: {
+        walletId,
+        encodedInvoice,
+        timeoutSecs,
+        amount,
+        maxFees,
+      },
+    });
+    if (response.data?.pay_invoice?.payment.outgoing_payment_failure_message) {
+      throw new Error(
+        response.data?.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text
+      );
+    }
+  }
+
+  requireWalletId(): string {
+    if (!this.activeWalletId) {
+      throw new Error("No active wallet");
+    }
+    return this.activeWalletId!;
   }
 }
 
