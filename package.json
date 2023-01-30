@@ -17,6 +17,7 @@
   "dependencies": {
     "@apollo/client": "^3.6.6",
     "auto-bind": "^5.0.1",
+    "dayjs": "^1.11.7",
     "graphql": "^16.5.0"
   },
   "devDependencies": {

@@ -1,7 +1,5 @@
 import {
   ApolloClient,
-  createHttpLink,
-  InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client/core";
 import autoBind from "auto-bind";
@@ -12,74 +10,30 @@ import {
   DecodeInvoiceQuery,
   FeeEstimateQuery,
   InvoiceData,
+  RecoverNodeSigningKeyQuery,
   SingeNodeDashboardQuery,
 } from "./generated/graphql";
 import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard";
-import { setContext } from "@apollo/client/link/context";
 import { b64encode } from "./utils/base64";
 import { CreateInvoice } from "graphql/CreateInvoice";
 import { DecodeInvoice } from "graphql/DecodeInvoice";
 import { FeeEstimate } from "graphql/FeeEstimate";
-
-const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
+import { RecoverNodeSigningKey } from "graphql/RecoverNodeSigningKey";
+import { Maybe } from "graphql/jsutils/Maybe";
+import { decryptSecretWithNodePassword } from "crypto/crypto";
+import NodeKeyCache from "crypto/NodeKeyCache";
+import { getNewApolloClient } from "apollo/apolloClient";
 
 class LightsparkWalletClient {
-  private tokenId: string;
-  private token: string;
   private client: ApolloClient<NormalizedCacheObject>;
+  private nodeKeyCache: NodeKeyCache = new NodeKeyCache();
 
   constructor(
     tokenId: string,
     token: string,
     serverUrl: string = "https://api.dev.dev.sparkinfra.net"
   ) {
-    this.tokenId = tokenId;
-    this.token = token;
-
-    const httpLink = createHttpLink({
-      uri: `${serverUrl}/graphql/2023-01-01`,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
-      },
-    });
-
-    const utf8AuthBytes = new TextEncoder().encode(
-      `${this.tokenId}:${this.token}`
-    );
-
-    const authLink = setContext((_, { headers }) => {
-      return {
-        headers: {
-          ...headers,
-          authorization: `Basic ${b64encode(utf8AuthBytes)}`,
-        },
-      };
-    });
-
-    this.client = new ApolloClient({
-      uri: serverUrl,
-      link: authLink.concat(httpLink),
-      cache: new InMemoryCache({
-        possibleTypes: {
-          // TODO autogenerate this, see:
-          // https://www.apollographql.com/docs/react/data/fragments/#generating-possibletypes-automatically
-          Node: ["GraphNode", "LightsparkNode"],
-          Transaction: [
-            "RoutingTransaction",
-            "IncomingPayment",
-            "OutgoingPayment",
-            "OnChainTransaction",
-          ],
-          OnChainTransaction: [
-            "Deposit",
-            "Withdrawal",
-            "ChannelOpeningTransaction",
-            "ChannelClosingTransaction",
-          ],
-        },
-      }),
-    });
+    this.client = getNewApolloClient(serverUrl, tokenId, token, this.nodeKeyCache);
 
     autoBind(this);
   }
@@ -134,6 +88,53 @@ class LightsparkWalletClient {
       },
     });
     return response.data.fee_estimate;
+  }
+
+  public async recoverNodeSigningKey(
+    nodeId: string
+  ): Promise<Maybe<{ encrypted_value: string; cipher: string }>> {
+    const response = await this.client.query<RecoverNodeSigningKeyQuery>({
+      query: RecoverNodeSigningKey,
+      variables: {
+        nodeId,
+      },
+    });
+    const nodeEntity = response.data.entity;
+    if (nodeEntity?.__typename === "LightsparkNode") {
+      return nodeEntity.encrypted_signing_private_key;
+    }
+    return null;
+  }
+
+  public async unlockWallet(walletId: string, password: string) {
+    const encryptedKey = await this.recoverNodeSigningKey(walletId);
+    if (!encryptedKey) {
+      return false;
+    }
+
+    const signingPrivateKey = await decryptSecretWithNodePassword(
+      encryptedKey.cipher,
+      encryptedKey.encrypted_value,
+      password
+    );
+
+    if (!signingPrivateKey) {
+      throw new Error(
+        "Unable to decrypt signing key with provided password. Please try again."
+      );
+    }
+
+    let signingPrivateKeyPEM = "";
+    if (new Uint8Array(signingPrivateKey)[0] === 48) {
+      // Support DER format - https://github.com/lightsparkdev/webdev/pull/1982
+      signingPrivateKeyPEM = b64encode(signingPrivateKey);
+    } else {
+      const dec = new TextDecoder();
+      signingPrivateKeyPEM = dec.decode(signingPrivateKey);
+    }
+
+    this.nodeKeyCache.loadKey(walletId, signingPrivateKeyPEM);
+    return true;
   }
 }
 

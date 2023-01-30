@@ -1204,6 +1204,13 @@ export type FeeEstimateQueryVariables = Exact<{
 
 export type FeeEstimateQuery = { __typename: 'Query', fee_estimate: { __typename: 'FeeEstimate', fee_fast: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit }, fee_min: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } };
 
+export type RecoverNodeSigningKeyQueryVariables = Exact<{
+  node_id: Scalars['ID'];
+}>;
+
+
+export type RecoverNodeSigningKeyQuery = { __typename: 'Query', entity?: { __typename: 'Account' } | { __typename: 'ApiToken' } | { __typename: 'Channel' } | { __typename: 'ChannelClosingTransaction' } | { __typename: 'ChannelOpeningTransaction' } | { __typename: 'Deposit' } | { __typename: 'GraphNode' } | { __typename: 'Hop' } | { __typename: 'IncomingPayment' } | { __typename: 'IncomingPaymentAttempt' } | { __typename: 'Invoice' } | { __typename: 'LightsparkNode', encrypted_signing_private_key?: { __typename: 'Secret', encrypted_value: string, cipher: string } | null } | { __typename: 'OutgoingPayment' } | { __typename: 'OutgoingPaymentAttempt' } | { __typename: 'RoutingTransaction' } | { __typename: 'Withdrawal' } | null };
+
 export type SingeNodeDashboardQueryVariables = Exact<{
   network: BitcoinNetwork;
   nodeId: Scalars['ID'];
