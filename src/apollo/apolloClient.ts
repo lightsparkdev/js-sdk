@@ -7,11 +7,11 @@ import {
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Headers } from "./constants";
-import { b64encode } from "utils/base64";
-import { getNonce } from "crypto/crypto";
+import { b64encode } from "../utils/base64";
+import { getNonce } from "../crypto/crypto";
 import type { NormalizedCacheObject } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
-import NodeKeyCache from "crypto/NodeKeyCache";
+import NodeKeyCache from "../crypto/NodeKeyCache";
 
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 

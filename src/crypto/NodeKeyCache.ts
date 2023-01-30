@@ -1,5 +1,5 @@
 import autoBind from "auto-bind";
-import { b64decode } from "utils/base64";
+import { b64decode } from "../utils/base64";
 
 class NodeKeyCache {
   private idToKey: Map<string, CryptoKey>;
@@ -27,6 +27,10 @@ class NodeKeyCache {
 
   public getKey(id: string): CryptoKey | undefined {
     return this.idToKey.get(id);
+  }
+
+  public hasKey(id: string): boolean {
+    return this.idToKey.has(id);
   }
 }
 

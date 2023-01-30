@@ -1,7 +1,6 @@
-import styled from "@emotion/styled";
 import {
   CurrencyAmount,
-  SingeNodeDashboardQuery,
+  SingleNodeDashboardQuery,
   TransactionDetailsFragment,
 } from "@lightspark/js-sdk/generated/graphql";
 import React from "react";
@@ -18,7 +17,7 @@ enum Screen {
 
 function App() {
   const [walletDashboard, setWalletDashboard] =
-    React.useState<SingeNodeDashboardQuery>();
+    React.useState<SingleNodeDashboardQuery>();
   const [screen, setScreen] = React.useState<Screen>(Screen.Balance);
 
   React.useEffect(() => {
@@ -30,9 +29,7 @@ function App() {
         }
         const client = getLightsparkClient();
         await client
-          .getWalletDashboard(
-            "LightsparkNode:0185c269-8aa3-f96b-0000-0ae100b58599"
-          )
+          .getWalletDashboard()
           .then((dashboard) => {
             setWalletDashboard(dashboard);
             chrome.storage.local.set({ walletDashboard: dashboard });

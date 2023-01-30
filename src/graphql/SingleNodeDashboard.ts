@@ -2,7 +2,7 @@ import { gql } from "@apollo/client/core";
 import { TransactionDetails } from "./TransactionDetails";
 
 export const SingleNodeDashboard = gql`
-query SingeNodeDashboard(
+query SingleNodeDashboard(
     $network: BitcoinNetwork!,
     $nodeId: ID!,
     $numTransactions: Int,

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { CurrencyAmount, RoutingTransactionFailureReason, Transaction, TransactionDetailsFragment, TransactionType } from "@lightspark/js-sdk/generated/graphql";
+import { TransactionDetailsFragment } from "@lightspark/js-sdk/generated/graphql";
 import { Maybe } from "../common/types";
 import CurrencyAmountRaw from "./CurrencyAmountRaw";
 
@@ -77,58 +77,6 @@ const getTransactionDestination = (
       return undefined;
   }
 };
-
-const getTransactionFailedReason = (
-  transaction: TransactionDetailsFragment
-): Maybe<RoutingTransactionFailureReason> => {
-  switch (transaction.__typename) {
-    case "RoutingTransaction":
-      return transaction.failure_reason;
-    default:
-      return undefined;
-  }
-};
-
-const getTransactionRoutingNode = (
-  transaction: TransactionDetailsFragment
-): Maybe<string> => {
-  switch (transaction.__typename) {
-    case "RoutingTransaction":
-      return transaction.incoming_channel?.local_node.display_name;
-    default:
-      return undefined;
-  }
-};
-
-const getTransactionMemo = (
-  transaction: TransactionDetailsFragment
-): Maybe<string> => {
-  switch (transaction.__typename) {
-    case "IncomingPayment":
-      return transaction.payment_request?.data.memo;
-    default:
-      return undefined;
-  }
-};
-
-const getTransactionFees = (
-  transaction: TransactionDetailsFragment
-): Maybe<CurrencyAmount> => {
-  switch (transaction.__typename) {
-    case "OutgoingPayment":
-    case "RoutingTransaction":
-    case "Deposit":
-    case "Withdrawal":
-    case "ChannelOpeningTransaction":
-    case "ChannelClosingTransaction":
-      return transaction.fees;
-    default:
-      return undefined;
-  }
-};
-
-const shortenTransactionHash = (id: string): string =>
-  [id.substring(0, 4), id.substring(id.length - 4)].join("...");
 
 const TransactionRow = (props: {transaction: TransactionDetailsFragment}) => {
     return (
