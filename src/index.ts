@@ -23,6 +23,7 @@ import { decryptSecretWithNodePassword } from "crypto/crypto";
 import NodeKeyCache from "crypto/NodeKeyCache";
 import { getNewApolloClient } from "apollo/apolloClient";
 import { PayInvoice } from "graphql/PayInvoice";
+import { Headers } from "apollo/constants";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -159,6 +160,11 @@ class LightsparkWalletClient {
         amount,
         maxFees,
       },
+      context: {
+        headers: {
+          [Headers.SigningNodeId]: walletId,
+        },
+      }
     });
     if (response.data?.pay_invoice?.payment.outgoing_payment_failure_message) {
       throw new Error(

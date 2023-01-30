@@ -68,49 +68,51 @@ export const getNewApolloClient = (
 const customFetchFn = (nodeKeyCache: NodeKeyCache) => {
   return async (input: RequestInfo, init?: RequestInit) => {
     const headers = init?.headers ? (init?.headers as any) : null;
-    const SigningNodeId = headers ? headers[Headers.SigningNodeId] : null;
-    if (init && SigningNodeId) {
-      delete headers[Headers.SigningNodeId];
-
-      const operation = JSON.parse(init.body as string);
-      const query = operation.query;
-      const variables = operation.variables;
-      const operationName = operation.operationName;
-
-      const nonce = getNonce();
-      const expiration = dayjs.utc().add(1, "hour").format();
-
-      const payload = JSON.stringify({
-        query,
-        variables,
-        operationName,
-        nonce,
-        expires_at: expiration,
-      });
-
-      const key = await nodeKeyCache.getKey(SigningNodeId);
-      if (!key) {
-        throw new Error("Missing node of encrypted_signing_private_key");
-      }
-
-      const encodedPayload = new TextEncoder().encode(payload);
-
-      const signedPayload = await crypto.subtle.sign(
-        {
-          name: "RSA-PSS",
-          saltLength: 32,
-        },
-        key,
-        encodedPayload
-      );
-      const encodedSignedPayload = b64encode(signedPayload);
-
-      init.body = payload;
-      headers[Headers.OperationSigningDetails] = JSON.stringify({
-        v: "1",
-        signature: encodedSignedPayload,
-      });
+    const signingNodeId = headers ? headers[Headers.SigningNodeId] : null;
+    if (!init || !signingNodeId) {
+      return fetch(input, init);
     }
+
+    delete headers[Headers.SigningNodeId];
+
+    const operation = JSON.parse(init.body as string);
+    const query = operation.query;
+    const variables = operation.variables;
+    const operationName = operation.operationName;
+
+    const nonce = getNonce();
+    const expiration = dayjs.utc().add(1, "hour").format();
+
+    const payload = JSON.stringify({
+      query,
+      variables,
+      operationName,
+      nonce,
+      expires_at: expiration,
+    });
+
+    const key = await nodeKeyCache.getKey(signingNodeId);
+    if (!key) {
+      throw new Error("Missing node of encrypted_signing_private_key");
+    }
+
+    const encodedPayload = new TextEncoder().encode(payload);
+
+    const signedPayload = await crypto.subtle.sign(
+      {
+        name: "RSA-PSS",
+        saltLength: 32,
+      },
+      key,
+      encodedPayload
+    );
+    const encodedSignedPayload = b64encode(signedPayload);
+
+    init.body = payload;
+    headers[Headers.OperationSigningDetails] = JSON.stringify({
+      v: "1",
+      signature: encodedSignedPayload,
+    });
     return fetch(input, init);
   };
 };
