@@ -3,7 +3,7 @@ export type StartTrackingVideoMessage = {
 }
 
 export enum ChannelSource {
-    youtube, twitch
+    youtube, twitch, lightspark
 }
 
 export type VideoPlaybackUpdateMessage = {

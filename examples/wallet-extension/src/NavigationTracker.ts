@@ -3,7 +3,8 @@ export const startListeningForNavigations = () => {
     const urlFilter = {
         url: [
             {hostSuffix: 'youtube.com'},
-            {hostSuffix: 'twitch.tv'}
+            {hostSuffix: 'twitch.tv'},
+            {pathContains: 'demos/streaming'},
         ]
     };
     chrome.webNavigation.onCompleted.addListener(onNavigation, urlFilter);

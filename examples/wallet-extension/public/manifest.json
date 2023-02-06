@@ -29,7 +29,10 @@
                 "https://youtube.com/*",
                 "https://www.youtube.com/*",
                 "https://www.twitch.tv/*",
-                "https://twitch.tv/*"
+                "https://twitch.tv/*",
+                "https://*/demos/streaming",
+                "https://dev.dev.sparkinfra.net/demos/streaming",
+                "https://app.lightspark.com/demos/streaming"
             ],
             "js": ["./static/js/content.js"]
         }

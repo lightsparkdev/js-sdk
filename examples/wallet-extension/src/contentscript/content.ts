@@ -11,7 +11,9 @@ const messageReceived = (
 ) => {
     console.log('[content.js]. Message received', msg);
     const response =
-        window.location.host.includes("youtube") ? getDomDetailsForYoutube() : getDomDetailsForTwitch();
+        window.location.host.includes("youtube") ? getDomDetailsForYoutube() : 
+        window.location.host.includes("twitch") ? getDomDetailsForTwitch() :
+        getDomDetailsForLighstparkDemo();
 
     sendResponse(response);
 };
@@ -67,6 +69,28 @@ const getDomDetailsForTwitch = (): VideoPlaybackUpdateMessage|null => {
         progress: 0,
         duration: videoElement?.duration || 0
     };
+    currentTrackingDetails = newTrackingDetails;
+    startListeningToVideoEvents(newTrackingDetails, videoElement);
+    return newTrackingDetails;
+};
+
+const getDomDetailsForLighstparkDemo = (): VideoPlaybackUpdateMessage|null => {
+    const videoElement = document.querySelector('video') as HTMLVideoElement;
+    if (!videoElement) {
+        currentTrackingDetails = null;
+        // Try again after a second.
+        setTimeout(getDomDetailsForLighstparkDemo, 1000);
+        return null;
+    }
+    const newTrackingDetails = {
+        videoID: "ls_demo",
+        videoName: "Lightspark Streaming Demo",
+        channelID: "ls",
+        channelName: "Lightspark",
+        channelSource: ChannelSource.lightspark,
+        progress: 0,
+        duration: videoElement?.duration || 0
+    }
     currentTrackingDetails = newTrackingDetails;
     startListeningToVideoEvents(newTrackingDetails, videoElement);
     return newTrackingDetails;
