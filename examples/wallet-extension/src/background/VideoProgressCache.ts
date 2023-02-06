@@ -24,7 +24,7 @@ class VideoProgressCache {
             Object.keys(result).forEach((key) => {
                 if (key.startsWith("video_")) {
                     const videoID = key.replace("video_", "");
-                    const videoRanges = result[key];
+                    const videoRanges = result[key]["playedRanges"];
                     this.videoProgressCache[videoID] = new PlaybackRangesTracker();
                     videoRanges.forEach((range: any) => {
                         this.videoProgressCache[videoID].addPlayedRange(range.start, range.end);

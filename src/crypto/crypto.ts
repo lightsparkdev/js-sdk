@@ -3,8 +3,6 @@ import { b64decode, b64encode } from "../utils/base64";
 
 const ITERATIONS = 500000;
 
-const crypto = window.crypto;
-
 const deriveKey = async (
   password: string,
   salt: ArrayBuffer,
