@@ -4,7 +4,7 @@
    "version": "1.0",
    "manifest_version": 3,
    "action": {
-       "default_popup": "popup.html",
+       "default_popup": "index.html",
        "default_title": "Lightspark Wallet",
        "default_icon": "lightspark_icon_circle.png"
    },
@@ -31,6 +31,7 @@
                 "https://www.twitch.tv/*",
                 "https://twitch.tv/*",
                 "https://*/demos/streaming",
+                "http://*/demos/streaming",
                 "https://dev.dev.sparkinfra.net/demos/streaming",
                 "https://app.lightspark.com/demos/streaming"
             ],

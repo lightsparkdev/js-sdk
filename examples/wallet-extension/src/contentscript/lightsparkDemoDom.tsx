@@ -1,28 +1,39 @@
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import CurrencyAmount from '../components/CurrencyAmount';
+import { CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
+import React from "react";
+import ReactDOM from "react-dom";
+import CurrencyAmount from "../components/CurrencyAmount";
 
 export const updateWalletBalances = async () => {
-    const { balances } = await getWalletBalances();
-    if (!balances) {
-        return
-    }
-    // TODO: Use the right react component to display the balances.
-    ReactDOM.render(<CurrencyAmount amount={balances.viewerBalance} />, document.getElementById("viewer-balance")!);
-    ReactDOM.render(<CurrencyAmount amount={balances.viewerBalance} />, document.getElementById("creator-balance")!);
-    // document.getElementById("viewer-balance")!.lastChild!.textContent = balances.viewerBalance.toString();
-    // document.getElementById("creator-balance")!.lastChild!.textContent = balances.creatorBalance.toString();
-}
-
-const promisifyMessage = (message: any) => {
-    return new Promise((resolve) => {
-        chrome.runtime.sendMessage(message, (response) => {
-            resolve(response)
-        })
-    })
+  const { balances } = await getWalletBalances();
+  if (!balances) {
+    return;
+  }
+  ReactDOM.render(
+    <CurrencyAmount
+      amount={balances.viewerBalance}
+      shortNumber
+      shortUnit
+      displayUnit={CurrencyUnit.Satoshi}
+      minimumFractionDigits={0}
+      symbol
+    />,
+    document.getElementById("viewer-balance")!.lastElementChild!
+  );
+  ReactDOM.render(
+    <CurrencyAmount
+      amount={balances.creatorBalance}
+      shortNumber
+      shortUnit
+      displayUnit={CurrencyUnit.Satoshi}
+      minimumFractionDigits={0}
+      symbol
+    />,
+    document.getElementById("creator-balance")!.lastElementChild!
+  );
 };
 
 const getWalletBalances = () => {
-    return promisifyMessage({ id: "get_streaming_wallet_balances" }) as Promise<{ balances: any}>;
+  return chrome.runtime.sendMessage({
+    id: "get_streaming_wallet_balances",
+  }) as Promise<{ balances: any }>;
 };

@@ -9,7 +9,7 @@ const messageReceived = (
     msg: StartTrackingVideoMessage,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: VideoPlaybackUpdateMessage|null) => void
-) => {)
+) => {
     console.log('[content.js]. Message received', msg);
     const response =
         window.location.host.includes("youtube") ? getDomDetailsForYoutube() : 
@@ -104,6 +104,7 @@ const startListeningToVideoEvents = (newTrackingDetails: VideoPlaybackUpdateMess
         videoElement.removeEventListener('timeupdate', timeUpdateListener);
     }
     timeUpdateListener = () => {
+        console.log("Time update", videoElement.currentTime);
         const prevProgress = currentTrackingDetails?.progress || 0
         currentTrackingDetails = {
             ...newTrackingDetails,
@@ -112,8 +113,12 @@ const startListeningToVideoEvents = (newTrackingDetails: VideoPlaybackUpdateMess
             prevProgress: prevProgress
         };
         // No time updates while seeking.
-        if (videoElement.seeking || (Math.abs(videoElement.currentTime - prevProgress) > 1)) return;
-        chrome.runtime.sendMessage({id: 'video_progress', ...currentTrackingDetails});
+        if (videoElement.seeking || (Math.abs(videoElement.currentTime - prevProgress) > 2)) return;
+        chrome.runtime.sendMessage({id: 'video_progress', ...currentTrackingDetails}).then((response) => {
+            if (response.amountToPay.value > 0) {
+                console.log(`Paying ${JSON.stringify(response.amountToPay)}!`);
+            }
+        });
     };
     videoElement.addEventListener('timeupdate', timeUpdateListener);
 }

@@ -15,7 +15,7 @@ class VideoPlaybackRanges {
     for (let i = 0; i < this.playedRanges.length; i++) {
       let range = this.playedRanges[i];
       if (range.isOverlapping(playbackRange)) {
-        range.mergeWith(playbackRange);
+        this.playedRanges[i] = range.mergeWith(playbackRange);
         return true;
       }
     }

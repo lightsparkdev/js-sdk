@@ -19,6 +19,20 @@ class VideoProgressCache {
         this.needsWrite = true;
     }
 
+    getPlayedDuration(videoID: string) {
+        if (!this.videoProgressCache[videoID]) {
+            return 0;
+        }
+        return this.videoProgressCache[videoID].getPlayedDuration();
+    }
+
+    getPlayedRanges(videoID: string) {
+        if (!this.videoProgressCache[videoID]) {
+            return [];
+        }
+        return this.videoProgressCache[videoID].getPlayedRanges();
+    }
+
     readProgressFromStorage() {
         chrome.storage.local.get(null, (result) => {
             Object.keys(result).forEach((key) => {

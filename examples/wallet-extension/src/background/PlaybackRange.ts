@@ -8,12 +8,15 @@ class PlaybackRange {
     }
 
     mergeWith(other: PlaybackRange) {
+        let start = this.start;
+        let end = this.end;
         if (other.start < this.start) {
-            this.start = other.start;
+            start = other.start;
         }
         if (other.end > this.end) {
-            this.end = other.end;
+            end = other.end;
         }
+        return new PlaybackRange(start, end);
     }
 
     isOverlapping(other: PlaybackRange) {
