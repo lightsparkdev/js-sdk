@@ -3,6 +3,7 @@ import {
   ApolloClient,
   InMemoryCache,
   createHttpLink,
+  ApolloLink,
 } from "@apollo/client/core";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -12,35 +13,16 @@ import { getNonce } from "../crypto/crypto";
 import type { NormalizedCacheObject } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
 import NodeKeyCache from "../crypto/NodeKeyCache";
+import AuthProvider from "../auth/AuthProvider";
+import StubAuthProvider from "../auth/StubAuthProvider";
 
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 
 export const getNewApolloClient = (
   serverUrl: string,
-  tokenId: string,
-  token: string,
-  nodeKeyCache: NodeKeyCache
+  nodeKeyCache: NodeKeyCache,
+  authProvider: AuthProvider = new StubAuthProvider()
 ): ApolloClient<NormalizedCacheObject> => {
-  const httpLink = createHttpLink({
-    uri: `${serverUrl}/graphql/2023-01-01`,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
-    },
-    fetch: customFetchFn(nodeKeyCache),
-  });
-
-  const utf8AuthBytes = new TextEncoder().encode(`${tokenId}:${token}`);
-
-  const authLink = setContext((_, { headers }) => {
-    return {
-      headers: {
-        ...headers,
-        authorization: `Basic ${b64encode(utf8AuthBytes)}`,
-      },
-    };
-  });
-
   return new ApolloClient({
     cache: new InMemoryCache({
       possibleTypes: {
@@ -61,8 +43,40 @@ export const getNewApolloClient = (
         ],
       },
     }),
-    link: authLink.concat(httpLink),
+    link: getLinks(serverUrl, nodeKeyCache, authProvider),
   });
+};
+
+export const setApolloClientOptions = (
+  apolloClient: ApolloClient<NormalizedCacheObject>,
+  serverUrl: string,
+  nodeKeyCache: NodeKeyCache,
+  authProvider: AuthProvider
+) => {
+  apolloClient.setLink(getLinks(serverUrl, nodeKeyCache, authProvider));
+};
+
+const getLinks = (
+  serverUrl: string,
+  nodeKeyCache: NodeKeyCache,
+  authProvider: AuthProvider
+): ApolloLink => {
+  const httpLink = createHttpLink({
+    uri: `${serverUrl}/graphql/2023-01-01`,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
+    },
+    fetch: customFetchFn(nodeKeyCache),
+  });
+
+  const authLink = setContext(async (_, { headers }) => {
+    return {
+      headers: await authProvider.addAuthHeaders(headers),
+    };
+  });
+
+  return authLink.concat(httpLink);
 };
 
 const customFetchFn = (nodeKeyCache: NodeKeyCache) => {

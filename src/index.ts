@@ -22,10 +22,12 @@ import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey";
 import { Maybe } from "graphql/jsutils/Maybe";
 import { decryptSecretWithNodePassword } from "./crypto/crypto";
 import NodeKeyCache from "./crypto/NodeKeyCache";
-import { getNewApolloClient } from "./apollo/apolloClient";
+import { getNewApolloClient, setApolloClientOptions } from "./apollo/apolloClient";
 import { PayInvoice } from "./graphql/PayInvoice";
 import { Headers } from "./apollo/constants";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
+import AuthProvider from "./auth/AuthProvider";
+import StubAuthProvider from "./auth/StubAuthProvider";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -33,20 +35,22 @@ class LightsparkWalletClient {
   private activeWalletId: string | undefined;
 
   constructor(
-    tokenId: string,
-    token: string,
+    authProvider: AuthProvider = new StubAuthProvider(),
     walletId: string | undefined = undefined,
-    serverUrl: string = "https://api.dev.dev.sparkinfra.net"
+    private readonly serverUrl: string = "https://api.dev.dev.sparkinfra.net"
   ) {
     this.client = getNewApolloClient(
       serverUrl,
-      tokenId,
-      token,
-      this.nodeKeyCache
+      this.nodeKeyCache,
+      authProvider,
     );
     this.activeWalletId = walletId;
 
     autoBind(this);
+  }
+
+  public async setAuthProvider(authProvider: AuthProvider) {
+    setApolloClientOptions(this.client, this.serverUrl, this.nodeKeyCache, authProvider);
   }
 
   public async getWalletDashboard(): Promise<SingleNodeDashboardQuery> {

@@ -6,6 +6,7 @@ import {
 } from "@lightspark/js-sdk/generated/graphql";
 import React from "react";
 import "./App.css";
+import AccountStorage from "./background/AccountStorage";
 import { Maybe } from "./common/types";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
 import LeftArrow from "./components/LeftArrow";
@@ -29,7 +30,7 @@ function App() {
         if (cachedBalance) {
           setWalletDashboard(cachedBalance.walletDashboard);
         }
-        const client = getLightsparkClient();
+        const client = await getLightsparkClient(new AccountStorage());
         await client
           .getWalletDashboard()
           .then((dashboard) => {
