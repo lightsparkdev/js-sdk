@@ -32,16 +32,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
     case "get_wallet_address":
       return lightsparkClient.getWalletDashboard().then((wallet) => {
-        const walletName = wallet.current_account?.dashboard_overview_nodes.edges[0].entity.display_name || "";
+        const walletName =
+          wallet.current_account?.dashboard_overview_nodes.edges[0].entity
+            .display_name || "";
         sendResponse({ address: walletName });
         return { address: walletName };
       });
     case "get_wallet_balance":
       return lightsparkClient.getWalletDashboard().then((wallet) => {
-        const walletNode = wallet.current_account?.dashboard_overview_nodes.edges[0].entity;
+        const walletNode =
+          wallet.current_account?.dashboard_overview_nodes.edges[0].entity;
         const balance = walletNode?.blockchain_balance?.available_balance || 0;
         sendResponse({ balance: balance });
         return { balance: balance };
+      });
+    case "get_streaming_wallet_balances":
+      return lightsparkClient.getAllNodesDashboard().then((dashboard) => {
+        const viewerNode =
+          dashboard.current_account?.dashboard_overview_nodes.edges[0].entity;
+        const creatorNode =
+          dashboard.current_account?.dashboard_overview_nodes.edges[1].entity;
+        const balances = {
+          viewerBalance: viewerNode?.blockchain_balance?.available_balance || 0,
+          creatorBalance:
+            creatorNode?.blockchain_balance?.available_balance || 0,
+        };
+        sendResponse({ balances });
+        return { balances };
       });
     default:
       console.log(`Unknown message received: ${JSON.stringify(message)}`);

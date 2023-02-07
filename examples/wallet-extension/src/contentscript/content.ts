@@ -1,5 +1,6 @@
 import { ChannelSource } from '../types';
 import { StartTrackingVideoMessage, VideoPlaybackUpdateMessage } from '../types';
+import { updateWalletBalances } from './lightsparkDemoDom';
 
 let currentTrackingDetails: VideoPlaybackUpdateMessage|null = null;
 let timeUpdateListener: (() => void)|null = null;
@@ -8,7 +9,7 @@ const messageReceived = (
     msg: StartTrackingVideoMessage,
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: VideoPlaybackUpdateMessage|null) => void
-) => {
+) => {)
     console.log('[content.js]. Message received', msg);
     const response =
         window.location.host.includes("youtube") ? getDomDetailsForYoutube() : 
@@ -93,6 +94,7 @@ const getDomDetailsForLighstparkDemo = (): VideoPlaybackUpdateMessage|null => {
     }
     currentTrackingDetails = newTrackingDetails;
     startListeningToVideoEvents(newTrackingDetails, videoElement);
+    updateWalletBalances();
     return newTrackingDetails;
 };
 

@@ -24,6 +24,8 @@ export type Account = Entity & {
   /** The details of the balance of the nodes owned by this account on the Bitcoin Network. */
   blockchain_balance?: Maybe<BlockchainBalance>;
   channels: AccountToChannelsConnection;
+  /** The official/legal information we gathered about the company that operates this account. */
+  company_information: CompanyInformation;
   /** A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included). */
   conductivity?: Maybe<Scalars['Int']>;
   /** The date and time when the entity was first created. */
@@ -43,6 +45,8 @@ export type Account = Entity & {
   updated_at: Scalars['DateTime'];
   /** An integer between 0 and 100 (included) that represents the percentage of uptime for the nodes owned by this account. */
   uptime_percentage?: Maybe<Scalars['Int']>;
+  /** The users that are associated with this account. */
+  users: AccountToUsersConnection;
   /** The settings for the API webhooks on this account. */
   webhooks_settings?: Maybe<WebhooksSettings>;
 };
@@ -113,6 +117,11 @@ export type AccountUptime_PercentageArgs = {
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
+
+export type AccountUsersArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+};
+
 export type AccountToApiTokenEdge = {
   __typename: 'AccountToApiTokenEdge';
   entity: ApiToken;
@@ -170,6 +179,18 @@ export type AccountToTransactionsConnection = {
   page_info: PageInfo;
   profit_loss?: Maybe<CurrencyAmount>;
   total_amount_transacted?: Maybe<CurrencyAmount>;
+};
+
+export type AccountToUserEdge = {
+  __typename: 'AccountToUserEdge';
+  entity: User;
+};
+
+export type AccountToUsersConnection = {
+  __typename: 'AccountToUsersConnection';
+  count: Scalars['Int'];
+  edges: Array<AccountToUserEdge>;
+  page_info: PageInfo;
 };
 
 export type ApiToken = Entity & {
@@ -363,6 +384,20 @@ export type ChannelToTransactionsConnection = {
   count: Scalars['Int'];
   total_amount_transacted?: Maybe<CurrencyAmount>;
   total_fees?: Maybe<CurrencyAmount>;
+};
+
+export type CompanyInformation = {
+  __typename: 'CompanyInformation';
+  /** The email where this company can be reached for administrative communication. Examples include: billing and invoicing, compliance, etc. */
+  administrative_email?: Maybe<Scalars['String']>;
+  /** The full legal name for the company. */
+  name?: Maybe<Scalars['String']>;
+  /** A normalized string that represents the phone number of the company, including its country code. Example: +16501234567 */
+  phone_number?: Maybe<Scalars['String']>;
+  /** The postal address for this company. */
+  postal_address?: Maybe<PostalAddress>;
+  /** The email where this company can be reached for technical communication. Examples include: usage of deprecated API endpoints, technical issue with a node, etc. */
+  technical_email?: Maybe<Scalars['String']>;
 };
 
 export type CreateInvoiceInput = {
@@ -737,6 +772,16 @@ export type LightsparkNodeToChannelsConnection = {
   page_info: PageInfo;
 };
 
+export type LoginFactor = {
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+  verification_date?: Maybe<Scalars['DateTime']>;
+};
+
 export type Mutation = {
   __typename: 'Mutation';
   /** Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment from another Lightning Node. */
@@ -1018,6 +1063,12 @@ export type PaymentRequestData = {
   encoded_payment_request: Scalars['String'];
 };
 
+export type PostalAddress = {
+  __typename: 'PostalAddress';
+  /** The lines that should be displayed for this postal address. */
+  lines?: Maybe<Array<Scalars['String']>>;
+};
+
 export type Query = {
   __typename: 'Query';
   /** Returns the current connected account. */
@@ -1126,6 +1177,82 @@ export enum TransactionType {
   Route = 'ROUTE'
 }
 
+export type User = Entity & {
+  __typename: 'User';
+  /** The account this user belongs to. Usually the account will be owned by the company this user is employed at. */
+  account: Account;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The name that is used to identify this user. Note that it can be selected by the user and/or the account owner and might not be a legal name. */
+  display_name?: Maybe<Scalars['String']>;
+  /** The email on file for this user. It may be used in the login flow, as well as for communication with the user. */
+  email?: Maybe<Scalars['String']>;
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The login factors that are attached to this user account and can be used in the MFA (Multi-Factor Authentication) flows. */
+  login_factors: UserToLoginFactorsConnection;
+  /** The time and date when the password was last updated for this user. */
+  password_last_updated_at?: Maybe<Scalars['DateTime']>;
+  /**
+   * Returns the login factor that should be used by default for this user.
+   * The user may elect to use another one later in the MFA (Multi-Factor Authentication) flow but we should trigger this login factor instantly (e.g. send SMS).
+   */
+  primary_login_factor?: Maybe<LoginFactor>;
+  /** The roles that have been granted to this user on the account. It will determine the data that will be accessible for the user and the actions that the user can and cannot take on the account, its balances, and its nodes. */
+  roles: Array<UserRole>;
+  status: UserStatus;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+
+export type UserLogin_FactorsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+};
+
+export enum UserRole {
+  Admin = 'ADMIN',
+  Controller = 'CONTROLLER',
+  FinancialOperator = 'FINANCIAL_OPERATOR',
+  TechnicalOperator = 'TECHNICAL_OPERATOR'
+}
+
+export enum UserStatus {
+  /** The user is fully active and can freely use the Lightspark services. */
+  Activated = 'ACTIVATED',
+  /**
+   * The user is created but still needs to verify their email address.
+   * @deprecated User `EMAIL_VERIFICATION_REQUIRED` instead.
+   */
+  Created = 'CREATED',
+  /** The user has been deactivated by the administrator of their account. */
+  Deactivated = 'DEACTIVATED',
+  /** The user needs to verify their email address before they can further use the Lightspark services. */
+  EmailVerificationRequired = 'EMAIL_VERIFICATION_REQUIRED',
+  /** The user has been invited to join Lightspark. They now need to onboard the platform, provide the required information and set their password. */
+  Invited = 'INVITED',
+  /** The user need to provide KYC information before they can further use the Lightspark services. */
+  KycRequired = 'KYC_REQUIRED',
+  /** The user information needs to be manually reviewed by the Lightspark team. Hold tight! */
+  ManualReviewRequired = 'MANUAL_REVIEW_REQUIRED',
+  /** The user's current MFA setup does not match the requirements from their account. They need to add one or several factors before they can further use the Lightspark services. */
+  MfaRequired = 'MFA_REQUIRED',
+  /** The user has been deactivated by the Lightspark. */
+  SystemDeactivated = 'SYSTEM_DEACTIVATED'
+}
+
+export type UserToLoginFactorEdge = {
+  __typename: 'UserToLoginFactorEdge';
+  entity: LoginFactor;
+};
+
+export type UserToLoginFactorsConnection = {
+  __typename: 'UserToLoginFactorsConnection';
+  count: Scalars['Int'];
+  edges: Array<UserToLoginFactorEdge>;
+  page_info: PageInfo;
+};
+
 export enum WebhookEventType {
   NodeStatus = 'NODE_STATUS',
   PaymentFinished = 'PAYMENT_FINISHED'
@@ -1136,6 +1263,7 @@ export type WebhooksSettings = {
   events: Array<WebhookEventType>;
   secret: Scalars['String'];
   url: Scalars['String'];
+  url_testing?: Maybe<Scalars['String']>;
 };
 
 export type WithdrawFundsInput = {
@@ -1204,6 +1332,14 @@ export type FeeEstimateQueryVariables = Exact<{
 
 export type FeeEstimateQuery = { __typename: 'Query', fee_estimate: { __typename: 'FeeEstimate', fee_fast: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit }, fee_min: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } };
 
+export type MultiNodeDashboardQueryVariables = Exact<{
+  network: BitcoinNetwork;
+  nodeIds?: InputMaybe<Array<Scalars['ID']> | Scalars['ID']>;
+}>;
+
+
+export type MultiNodeDashboardQuery = { __typename: 'Query', current_account?: { __typename: 'Account', id: string, name?: string | null, dashboard_overview_nodes: { __typename: 'AccountToNodesConnection', count: number, edges: Array<{ __typename: 'AccountToNodeEdge', entity: { __typename: 'LightsparkNode', color?: string | null, display_name: string, purpose?: LightsparkNodePurpose | null, id: string, public_key?: string | null, status?: LightsparkNodeStatus | null, addresses: { __typename: 'NodeToAddressesConnection', count: number, edges: Array<{ __typename: 'NodeToAddressEdge', entity: { __typename: 'NodeAddress', address: string, type: NodeAddressType } }> }, local_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, remote_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, blockchain_balance?: { __typename: 'BlockchainBalance', available_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, total_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null } | null } }> }, blockchain_balance?: { __typename: 'BlockchainBalance', l1_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, required_reserve?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, available_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, unconfirmed_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null } | null, local_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, remote_balance?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null } | null };
+
 export type PayInvoiceMutationVariables = Exact<{
   node_id: Scalars['ID'];
   encoded_invoice: Scalars['String'];
@@ -1220,7 +1356,7 @@ export type RecoverNodeSigningKeyQueryVariables = Exact<{
 }>;
 
 
-export type RecoverNodeSigningKeyQuery = { __typename: 'Query', entity?: { __typename: 'Account' } | { __typename: 'ApiToken' } | { __typename: 'Channel' } | { __typename: 'ChannelClosingTransaction' } | { __typename: 'ChannelOpeningTransaction' } | { __typename: 'Deposit' } | { __typename: 'GraphNode' } | { __typename: 'Hop' } | { __typename: 'IncomingPayment' } | { __typename: 'IncomingPaymentAttempt' } | { __typename: 'Invoice' } | { __typename: 'LightsparkNode', encrypted_signing_private_key?: { __typename: 'Secret', encrypted_value: string, cipher: string } | null } | { __typename: 'OutgoingPayment' } | { __typename: 'OutgoingPaymentAttempt' } | { __typename: 'RoutingTransaction' } | { __typename: 'Withdrawal' } | null };
+export type RecoverNodeSigningKeyQuery = { __typename: 'Query', entity?: { __typename: 'Account' } | { __typename: 'ApiToken' } | { __typename: 'Channel' } | { __typename: 'ChannelClosingTransaction' } | { __typename: 'ChannelOpeningTransaction' } | { __typename: 'Deposit' } | { __typename: 'GraphNode' } | { __typename: 'Hop' } | { __typename: 'IncomingPayment' } | { __typename: 'IncomingPaymentAttempt' } | { __typename: 'Invoice' } | { __typename: 'LightsparkNode', encrypted_signing_private_key?: { __typename: 'Secret', encrypted_value: string, cipher: string } | null } | { __typename: 'OutgoingPayment' } | { __typename: 'OutgoingPaymentAttempt' } | { __typename: 'RoutingTransaction' } | { __typename: 'User' } | { __typename: 'Withdrawal' } | null };
 
 export type SingleNodeDashboardQueryVariables = Exact<{
   network: BitcoinNetwork;
@@ -1248,11 +1384,12 @@ type TransactionDetails_Withdrawal_Fragment = { __typename: 'Withdrawal', id: st
 
 export type TransactionDetailsFragment = TransactionDetails_ChannelClosingTransaction_Fragment | TransactionDetails_ChannelOpeningTransaction_Fragment | TransactionDetails_Deposit_Fragment | TransactionDetails_IncomingPayment_Fragment | TransactionDetails_OutgoingPayment_Fragment | TransactionDetails_RoutingTransaction_Fragment | TransactionDetails_Withdrawal_Fragment;
 
-export type AccountKeySpecifier = ('api_tokens' | 'blockchain_balance' | 'channels' | 'conductivity' | 'created_at' | 'id' | 'local_balance' | 'name' | 'nodes' | 'remote_balance' | 'transactions' | 'updated_at' | 'uptime_percentage' | 'webhooks_settings' | AccountKeySpecifier)[];
+export type AccountKeySpecifier = ('api_tokens' | 'blockchain_balance' | 'channels' | 'company_information' | 'conductivity' | 'created_at' | 'id' | 'local_balance' | 'name' | 'nodes' | 'remote_balance' | 'transactions' | 'updated_at' | 'uptime_percentage' | 'users' | 'webhooks_settings' | AccountKeySpecifier)[];
 export type AccountFieldPolicy = {
 	api_tokens?: FieldPolicy<any> | FieldReadFunction<any>,
 	blockchain_balance?: FieldPolicy<any> | FieldReadFunction<any>,
 	channels?: FieldPolicy<any> | FieldReadFunction<any>,
+	company_information?: FieldPolicy<any> | FieldReadFunction<any>,
 	conductivity?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1263,6 +1400,7 @@ export type AccountFieldPolicy = {
 	transactions?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	uptime_percentage?: FieldPolicy<any> | FieldReadFunction<any>,
+	users?: FieldPolicy<any> | FieldReadFunction<any>,
 	webhooks_settings?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type AccountToApiTokenEdgeKeySpecifier = ('entity' | AccountToApiTokenEdgeKeySpecifier)[];
@@ -1307,6 +1445,16 @@ export type AccountToTransactionsConnectionFieldPolicy = {
 	page_info?: FieldPolicy<any> | FieldReadFunction<any>,
 	profit_loss?: FieldPolicy<any> | FieldReadFunction<any>,
 	total_amount_transacted?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type AccountToUserEdgeKeySpecifier = ('entity' | AccountToUserEdgeKeySpecifier)[];
+export type AccountToUserEdgeFieldPolicy = {
+	entity?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type AccountToUsersConnectionKeySpecifier = ('count' | 'edges' | 'page_info' | AccountToUsersConnectionKeySpecifier)[];
+export type AccountToUsersConnectionFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	edges?: FieldPolicy<any> | FieldReadFunction<any>,
+	page_info?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ApiTokenKeySpecifier = ('client_id' | 'created_at' | 'id' | 'name' | 'updated_at' | ApiTokenKeySpecifier)[];
 export type ApiTokenFieldPolicy = {
@@ -1391,6 +1539,14 @@ export type ChannelToTransactionsConnectionFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	total_amount_transacted?: FieldPolicy<any> | FieldReadFunction<any>,
 	total_fees?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type CompanyInformationKeySpecifier = ('administrative_email' | 'name' | 'phone_number' | 'postal_address' | 'technical_email' | CompanyInformationKeySpecifier)[];
+export type CompanyInformationFieldPolicy = {
+	administrative_email?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	phone_number?: FieldPolicy<any> | FieldReadFunction<any>,
+	postal_address?: FieldPolicy<any> | FieldReadFunction<any>,
+	technical_email?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type CreateInvoiceOutputKeySpecifier = ('invoice' | CreateInvoiceOutputKeySpecifier)[];
 export type CreateInvoiceOutputFieldPolicy = {
@@ -1560,6 +1716,13 @@ export type LightsparkNodeToChannelsConnectionFieldPolicy = {
 	edges?: FieldPolicy<any> | FieldReadFunction<any>,
 	page_info?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type LoginFactorKeySpecifier = ('created_at' | 'id' | 'updated_at' | 'verification_date' | LoginFactorKeySpecifier)[];
+export type LoginFactorFieldPolicy = {
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	verification_date?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type MutationKeySpecifier = ('create_invoice' | 'create_node_wallet_address' | 'fund_node' | 'pay_invoice' | 'withdraw_funds' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	create_invoice?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1680,6 +1843,10 @@ export type PaymentRequestDataFieldPolicy = {
 	bitcoin_network?: FieldPolicy<any> | FieldReadFunction<any>,
 	encoded_payment_request?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type PostalAddressKeySpecifier = ('lines' | PostalAddressKeySpecifier)[];
+export type PostalAddressFieldPolicy = {
+	lines?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type QueryKeySpecifier = ('current_account' | 'decoded_payment_request' | 'entity' | 'fee_estimate' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	current_account?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1721,11 +1888,36 @@ export type TransactionFieldPolicy = {
 	transaction_hash?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type WebhooksSettingsKeySpecifier = ('events' | 'secret' | 'url' | WebhooksSettingsKeySpecifier)[];
+export type UserKeySpecifier = ('account' | 'created_at' | 'display_name' | 'email' | 'id' | 'login_factors' | 'password_last_updated_at' | 'primary_login_factor' | 'roles' | 'status' | 'updated_at' | UserKeySpecifier)[];
+export type UserFieldPolicy = {
+	account?: FieldPolicy<any> | FieldReadFunction<any>,
+	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	display_name?: FieldPolicy<any> | FieldReadFunction<any>,
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	login_factors?: FieldPolicy<any> | FieldReadFunction<any>,
+	password_last_updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
+	primary_login_factor?: FieldPolicy<any> | FieldReadFunction<any>,
+	roles?: FieldPolicy<any> | FieldReadFunction<any>,
+	status?: FieldPolicy<any> | FieldReadFunction<any>,
+	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UserToLoginFactorEdgeKeySpecifier = ('entity' | UserToLoginFactorEdgeKeySpecifier)[];
+export type UserToLoginFactorEdgeFieldPolicy = {
+	entity?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UserToLoginFactorsConnectionKeySpecifier = ('count' | 'edges' | 'page_info' | UserToLoginFactorsConnectionKeySpecifier)[];
+export type UserToLoginFactorsConnectionFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	edges?: FieldPolicy<any> | FieldReadFunction<any>,
+	page_info?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type WebhooksSettingsKeySpecifier = ('events' | 'secret' | 'url' | 'url_testing' | WebhooksSettingsKeySpecifier)[];
 export type WebhooksSettingsFieldPolicy = {
 	events?: FieldPolicy<any> | FieldReadFunction<any>,
 	secret?: FieldPolicy<any> | FieldReadFunction<any>,
-	url?: FieldPolicy<any> | FieldReadFunction<any>
+	url?: FieldPolicy<any> | FieldReadFunction<any>,
+	url_testing?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type WithdrawFundsOutputKeySpecifier = ('transaction' | WithdrawFundsOutputKeySpecifier)[];
 export type WithdrawFundsOutputFieldPolicy = {
@@ -1784,6 +1976,14 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | AccountToTransactionsConnectionKeySpecifier | (() => undefined | AccountToTransactionsConnectionKeySpecifier),
 		fields?: AccountToTransactionsConnectionFieldPolicy,
 	},
+	AccountToUserEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AccountToUserEdgeKeySpecifier | (() => undefined | AccountToUserEdgeKeySpecifier),
+		fields?: AccountToUserEdgeFieldPolicy,
+	},
+	AccountToUsersConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AccountToUsersConnectionKeySpecifier | (() => undefined | AccountToUsersConnectionKeySpecifier),
+		fields?: AccountToUsersConnectionFieldPolicy,
+	},
 	ApiToken?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ApiTokenKeySpecifier | (() => undefined | ApiTokenKeySpecifier),
 		fields?: ApiTokenFieldPolicy,
@@ -1811,6 +2011,10 @@ export type StrictTypedTypePolicies = {
 	ChannelToTransactionsConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | ChannelToTransactionsConnectionKeySpecifier | (() => undefined | ChannelToTransactionsConnectionKeySpecifier),
 		fields?: ChannelToTransactionsConnectionFieldPolicy,
+	},
+	CompanyInformation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CompanyInformationKeySpecifier | (() => undefined | CompanyInformationKeySpecifier),
+		fields?: CompanyInformationFieldPolicy,
 	},
 	CreateInvoiceOutput?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | CreateInvoiceOutputKeySpecifier | (() => undefined | CreateInvoiceOutputKeySpecifier),
@@ -1892,6 +2096,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | LightsparkNodeToChannelsConnectionKeySpecifier | (() => undefined | LightsparkNodeToChannelsConnectionKeySpecifier),
 		fields?: LightsparkNodeToChannelsConnectionFieldPolicy,
 	},
+	LoginFactor?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | LoginFactorKeySpecifier | (() => undefined | LoginFactorKeySpecifier),
+		fields?: LoginFactorFieldPolicy,
+	},
 	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
 		fields?: MutationFieldPolicy,
@@ -1956,6 +2164,10 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | PaymentRequestDataKeySpecifier | (() => undefined | PaymentRequestDataKeySpecifier),
 		fields?: PaymentRequestDataFieldPolicy,
 	},
+	PostalAddress?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PostalAddressKeySpecifier | (() => undefined | PostalAddressKeySpecifier),
+		fields?: PostalAddressFieldPolicy,
+	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
@@ -1975,6 +2187,18 @@ export type StrictTypedTypePolicies = {
 	Transaction?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | TransactionKeySpecifier | (() => undefined | TransactionKeySpecifier),
 		fields?: TransactionFieldPolicy,
+	},
+	User?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UserKeySpecifier | (() => undefined | UserKeySpecifier),
+		fields?: UserFieldPolicy,
+	},
+	UserToLoginFactorEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UserToLoginFactorEdgeKeySpecifier | (() => undefined | UserToLoginFactorEdgeKeySpecifier),
+		fields?: UserToLoginFactorEdgeFieldPolicy,
+	},
+	UserToLoginFactorsConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UserToLoginFactorsConnectionKeySpecifier | (() => undefined | UserToLoginFactorsConnectionKeySpecifier),
+		fields?: UserToLoginFactorsConnectionFieldPolicy,
 	},
 	WebhooksSettings?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | WebhooksSettingsKeySpecifier | (() => undefined | WebhooksSettingsKeySpecifier),

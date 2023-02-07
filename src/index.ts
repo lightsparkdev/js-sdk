@@ -8,6 +8,7 @@ import {
   DecodeInvoiceQuery,
   FeeEstimateQuery,
   InvoiceData,
+  MultiNodeDashboardQuery,
   PayInvoiceMutation,
   RecoverNodeSigningKeyQuery,
   SingleNodeDashboardQuery,
@@ -24,6 +25,7 @@ import NodeKeyCache from "./crypto/NodeKeyCache";
 import { getNewApolloClient } from "./apollo/apolloClient";
 import { PayInvoice } from "./graphql/PayInvoice";
 import { Headers } from "./apollo/constants";
+import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -55,6 +57,17 @@ class LightsparkWalletClient {
         nodeId: walletId,
         network: BitcoinNetwork.Regtest,
         numTransactions: 20,
+      },
+    });
+    return response.data;
+  }
+
+  public async getAllNodesDashboard(nodeIds: string[] | undefined = undefined): Promise<MultiNodeDashboardQuery> {
+    const response = await this.client.query<MultiNodeDashboardQuery>({
+      query: MultiNodeDashboard,
+      variables: {
+        nodeIds: nodeIds,
+        network: BitcoinNetwork.Regtest
       },
     });
     return response.data;

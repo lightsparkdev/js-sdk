@@ -4,7 +4,7 @@
    "version": "1.0",
    "manifest_version": 3,
    "action": {
-       "default_popup": "index.html",
+       "default_popup": "popup.html",
        "default_title": "Lightspark Wallet",
        "default_icon": "lightspark_icon_circle.png"
    },
