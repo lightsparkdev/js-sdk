@@ -27,6 +27,14 @@ const playbackMessageReceived = async (
   sendResponse({ amountToPay });
 };
 
+const getWalletStatus = async (lightsparkClient: LightsparkWalletClient) => {
+  const isAuthorized = await lightsparkClient.isAuthorized();
+  if (!isAuthorized) {
+    return "no_wallet";
+  }
+  return "funded";
+};
+
 export const onMessageReceived = (
   message: any,
   lightsparkClient: LightsparkWalletClient,
@@ -45,7 +53,9 @@ export const onMessageReceived = (
       break;
     case "get_wallet_status":
       // TODO: Add real status here and send messages when it changes.
-      sendResponse({ status: "funded" });
+      getWalletStatus(lightsparkClient).then((status) => {
+        sendResponse({ status });
+      });
       break;
     case "get_wallet_address":
       lightsparkClient.getWalletDashboard().then((wallet) => {

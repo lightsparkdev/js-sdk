@@ -22,7 +22,10 @@ import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey";
 import { Maybe } from "graphql/jsutils/Maybe";
 import { decryptSecretWithNodePassword } from "./crypto/crypto";
 import NodeKeyCache from "./crypto/NodeKeyCache";
-import { getNewApolloClient, setApolloClientOptions } from "./apollo/apolloClient";
+import {
+  getNewApolloClient,
+  setApolloClientOptions,
+} from "./apollo/apolloClient";
 import { PayInvoice } from "./graphql/PayInvoice";
 import { Headers } from "./apollo/constants";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
@@ -35,14 +38,14 @@ class LightsparkWalletClient {
   private activeWalletId: string | undefined;
 
   constructor(
-    authProvider: AuthProvider = new StubAuthProvider(),
+    private authProvider: AuthProvider = new StubAuthProvider(),
     walletId: string | undefined = undefined,
     private readonly serverUrl: string = "https://api.dev.dev.sparkinfra.net"
   ) {
     this.client = getNewApolloClient(
       serverUrl,
       this.nodeKeyCache,
-      authProvider,
+      authProvider
     );
     this.activeWalletId = walletId;
 
@@ -50,7 +53,17 @@ class LightsparkWalletClient {
   }
 
   public async setAuthProvider(authProvider: AuthProvider) {
-    setApolloClientOptions(this.client, this.serverUrl, this.nodeKeyCache, authProvider);
+    setApolloClientOptions(
+      this.client,
+      this.serverUrl,
+      this.nodeKeyCache,
+      authProvider
+    );
+    this.authProvider = authProvider;
+  }
+
+  public async isAuthorized(): Promise<boolean> {
+    return this.authProvider.isAuthorized();
   }
 
   public async getWalletDashboard(): Promise<SingleNodeDashboardQuery> {
@@ -66,12 +79,14 @@ class LightsparkWalletClient {
     return response.data;
   }
 
-  public async getAllNodesDashboard(nodeIds: string[] | undefined = undefined): Promise<MultiNodeDashboardQuery> {
+  public async getAllNodesDashboard(
+    nodeIds: string[] | undefined = undefined
+  ): Promise<MultiNodeDashboardQuery> {
     const response = await this.client.query<MultiNodeDashboardQuery>({
       query: MultiNodeDashboard,
       variables: {
         nodeIds: nodeIds,
-        network: BitcoinNetwork.Regtest
+        network: BitcoinNetwork.Regtest,
       },
     });
     return response.data;
@@ -193,6 +208,24 @@ class LightsparkWalletClient {
         response.data?.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text
       );
     }
+  }
+
+  public async getStreamingDemoAccountCredentials(): Promise<StreamingDemoAccountCredentials> {
+    // TODO: Fill in with the real implementation when the backend is ready.
+    const TEST_ACCOUNT = {
+      tokenId: "0185c15936bf4f89000019ac0f816213",
+      token: "pvKTJfP-DFz66U8ofen9Z2my6nt7ImcpS3rCgW6Ohbs",
+    };
+    const TEST_VIEWER_WALLET_ID =
+      "LightsparkNode:0185c269-8aa3-f96b-0000-0ae100b58599";
+    const TEST_CREATOR_WALLET_ID =
+      "LightsparkNode:0185c3fb-da63-f96b-0000-dde38238b1b3";
+    return {
+      token: TEST_ACCOUNT.token,
+      tokenId: TEST_ACCOUNT.tokenId,
+      creatorWalletId: TEST_CREATOR_WALLET_ID,
+      viewerWalletId: TEST_VIEWER_WALLET_ID,
+    };
   }
 
   requireWalletId(): string {

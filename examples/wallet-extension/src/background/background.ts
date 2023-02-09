@@ -46,7 +46,7 @@ chrome.runtime.onInstalled.addListener((details) => {
         ],
       },
       (tabs) => {
-        console.log(`Found ${tabs} tabs to reload.`)
+        console.log(`Found ${tabs} tabs to reload.`);
         if (tabs.length > 0) {
           chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
           chrome.tabs.reload(tabs[0].id!);

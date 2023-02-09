@@ -15,4 +15,8 @@ export class AccountTokenAuthProvider implements AuthProvider {
       authorization: `Basic ${b64encode(this.utf8AuthBytes)}`,
     });
   }
+
+  async isAuthorized(): Promise<boolean> {
+    return true;
+  }
 }
