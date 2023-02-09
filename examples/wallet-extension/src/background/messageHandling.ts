@@ -34,11 +34,18 @@ export const onMessageReceived = (
   sendResponse: (response: any) => void
 ) => {
   switch (message.id) {
+    case "ping":
+      sendResponse("pong");
+      break;
+    case "get_version":
+      sendResponse({ version: chrome.runtime.getManifest().version });
+      break;
     case "video_progress":
       playbackMessageReceived(message, progressCache, sendResponse);
       break;
-    case "is_wallet_connected":
-      sendResponse({ isConnected: true });
+    case "get_wallet_status":
+      // TODO: Add real status here and send messages when it changes.
+      sendResponse({ status: "funded" });
       break;
     case "get_wallet_address":
       lightsparkClient.getWalletDashboard().then((wallet) => {

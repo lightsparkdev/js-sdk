@@ -10,6 +10,7 @@
    },
    "permissions": [
         "activeTab",
+        "tabs",
         "storage",
         "webNavigation",
         "alarms"
@@ -38,6 +39,12 @@
             "js": ["./static/js/content.js"]
         }
     ],
+    "externally_connectable": {
+        "matches": [
+            "https://*/demos/streaming",
+            "http://*/demos/streaming"
+        ]
+    },
     "background": {
         "service_worker": "./static/js/background.js"
     }
