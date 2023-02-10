@@ -76,7 +76,7 @@ const getDomDetailsForTwitch = (): VideoPlaybackUpdateMessage|null => {
 };
 
 const getDomDetailsForLighstparkDemo = (): VideoPlaybackUpdateMessage|null => {
-    const videoElement = document.querySelector('video') as HTMLVideoElement;
+    const videoElement = document.querySelector('video#stream-sats-video') as HTMLVideoElement;
     if (!videoElement) {
         currentTrackingDetails = null;
         // Try again after a second.

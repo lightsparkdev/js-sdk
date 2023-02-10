@@ -1,4 +1,6 @@
 import { getLightsparkClient } from "../lightsparkClientProvider";
+import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
+import StubAuthProvider from "@lightspark/js-sdk/auth/StubAuthProvider";
 import { startListeningForNavigations } from "../NavigationTracker";
 import AccountStorage from "./AccountStorage";
 import { onMessageReceived } from "./messageHandling";
@@ -34,37 +36,53 @@ chrome.runtime.onMessageExternal.addListener(
 
 startListeningForNavigations();
 
+const reloadOrOpenStreamingDemo = () => {
+  chrome.tabs.query(
+    {
+      url: [
+        "https://localhost:3000/demos/streaming",
+        "http://192.168.86.248:3000/demos/streaming",
+        "https://dev.dev.sparkinfra.net/demos/streaming",
+        "https://app.lightspark.com/demos/streaming",
+      ],
+    },
+    (tabs) => {
+      console.log(`Found ${tabs} tabs to reload.`);
+      if (tabs.length > 0) {
+        chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
+        chrome.tabs.reload(tabs[0].id!);
+      } else {
+        // TODO: Replace with the final URL.
+        chrome.tabs.create({
+          url: "https://app.lightspark.com/demos/streaming",
+          active: true,
+        });
+      }
+    }
+  );
+};
+
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    chrome.tabs.query(
-      {
-        url: [
-          "https://localhost:3000/demos/streaming",
-          "http://192.168.86.248:3000/demos/streaming",
-          "https://dev.dev.sparkinfra.net/demos/streaming",
-          "https://app.lightspark.com/demos/streaming",
-        ],
-      },
-      (tabs) => {
-        console.log(`Found ${tabs} tabs to reload.`);
-        if (tabs.length > 0) {
-          chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
-          chrome.tabs.reload(tabs[0].id!);
-        } else {
-          // TODO: Replace with the final URL.
-          chrome.tabs.create({
-            url: "https://app.lightspark.com/demos/streaming",
-            active: true,
-          });
-        }
-      }
-    );
+    reloadOrOpenStreamingDemo();
   }
 });
 
 chrome.storage.local.onChanged.addListener((changes) => {
   if (changes["credentials"]) {
     console.log("Credentials changed, reloading tabs.");
+    lightsparkClient.then((lightsparkClient) => {
+      const credentials = changes["credentials"].newValue;
+      if (credentials) {
+        lightsparkClient.setAuthProvider(new AccountTokenAuthProvider(credentials.tokenId, credentials.token));
+        lightsparkClient.setActiveWalletWithoutUnlocking(credentials.viewerWalletId);
+      } else {
+        lightsparkClient.setAuthProvider(new StubAuthProvider());
+      }
+      reloadOrOpenStreamingDemo();
+    });
+    return true;
   }
+  return false;
 });
 
