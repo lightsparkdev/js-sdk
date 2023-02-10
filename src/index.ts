@@ -31,6 +31,7 @@ import { Headers } from "./apollo/constants";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
 import AuthProvider from "./auth/AuthProvider";
 import StubAuthProvider from "./auth/StubAuthProvider";
+import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -144,6 +145,10 @@ class LightsparkWalletClient {
       return nodeEntity.encrypted_signing_private_key;
     }
     return null;
+  }
+
+  public setActiveWalletWithoutUnlocking(walletId: string) {
+    this.activeWalletId = walletId;
   }
 
   public async unlockWallet(walletId: string, password: string) {

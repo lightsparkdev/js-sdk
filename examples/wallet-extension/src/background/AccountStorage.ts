@@ -3,7 +3,7 @@ import autoBind from "auto-bind";
 export interface AccountCredentials {
   tokenId: string;
   token: string;
-  viewerWalletNodeId: string;
+  viewerWalletId: string;
 }
 
 export default class AccountStorage {
@@ -12,19 +12,16 @@ export default class AccountStorage {
   }
 
   saveAccountCredentials(credentials: AccountCredentials): Promise<void> {
-    return chrome.storage.local.set(credentials);
+    return chrome.storage.local.set({credentials});
   }
 
   async getAccountCredentials(): Promise<AccountCredentials | null> {
-    const savedCreds = await chrome.storage.local.get([
-      "tokenId",
-      "token",
-      "viewerWalletNodeId",
-    ]);
+    const savedCreds = (await chrome.storage.local.get("credentials"))?.credentials;
     if (
+      !savedCreds ||
       !savedCreds.tokenId ||
-      !savedCreds.tokenSecret ||
-      !savedCreds.viewerWalletNodeId
+      !savedCreds.token ||
+      !savedCreds.viewerWalletId
     ) {
       return null;
     }

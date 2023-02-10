@@ -61,3 +61,10 @@ chrome.runtime.onInstalled.addListener((details) => {
     );
   }
 });
+
+chrome.storage.local.onChanged.addListener((changes) => {
+  if (changes["credentials"]) {
+    console.log("Credentials changed, reloading tabs.");
+  }
+});
+

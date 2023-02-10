@@ -52,7 +52,7 @@ export const onMessageReceived = (
       playbackMessageReceived(message, progressCache, sendResponse);
       break;
     case "get_wallet_status":
-      // TODO: Add real status here and send messages when it changes.
+      // TODO: Send messages when the status changes.
       getWalletStatus(lightsparkClient).then((status) => {
         sendResponse({ status });
       });

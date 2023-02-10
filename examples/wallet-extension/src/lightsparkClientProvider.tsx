@@ -14,7 +14,7 @@ export const getLightsparkClient = async (accountStorage: AccountStorage) => {
         : new AccountTokenAuthProvider(account.tokenId, account.token);
     instance = new LightsparkWalletClient(
       authProvider,
-      account?.viewerWalletNodeId
+      account?.viewerWalletId
     );
   }
   return instance;
