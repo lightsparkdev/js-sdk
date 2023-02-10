@@ -16,6 +16,7 @@ import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
 import LeftArrow from "./components/LeftArrow";
+import StreamingTransactionChip from "./components/StreamingTransactionChip";
 import TransactionRow from "./components/TransactionRow";
 import { getLightsparkClient } from "./lightsparkClientProvider";
 
@@ -66,6 +67,11 @@ function App() {
       balance={
         walletDashboard?.current_account?.blockchain_balance?.available_balance
       }
+      transactions={
+        walletDashboard?.current_account?.recent_transactions.edges.map(
+          (it) => it.entity
+        ) || []
+      }
     />
   ) : screen === Screen.Transactions ? (
     <TransactionsScreen
@@ -107,7 +113,8 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
           className="app-logo"
           alt="Lightspark logo"
         />
-        <button onClick={() => setScreen(Screen.Transactions)}>☰</button>
+        {/* Disabled for now, but goes to the transaction list screen: */}
+        {/* <button onClick={() => setScreen(Screen.Transactions)}>☰</button> */}
       </div>
     );
   } else if (screen === Screen.Transactions) {
@@ -117,8 +124,6 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
           <LeftArrow />
         </button>
         <HeaderBackText>Transactions</HeaderBackText>
-        <div style={{ flex: "1" }}></div>
-        <button>☰</button>
       </div>
     );
   }
@@ -133,7 +138,10 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
   );
 }
 
-function BalanceScreen(props: { balance: Maybe<CurrencyAmount> }) {
+function BalanceScreen(props: {
+  balance: Maybe<CurrencyAmount>;
+  transactions: TransactionDetailsFragment[];
+}) {
   const screenContent = !props.balance ? (
     <div
       className="loading-text"
@@ -158,9 +166,16 @@ function BalanceScreen(props: { balance: Maybe<CurrencyAmount> }) {
           symbol
         ></CurrencyAmountRaw>
       </div>
-      <InstructionsText>
-        Click the play button on the video to stream bitcoin in real-time.
-      </InstructionsText>
+      {props.transactions.length > 0 ? (
+        <StreamingTransactionChip
+          transactions={props.transactions}
+          isStreaming={false}
+        />
+      ) : (
+        <InstructionsText>
+          Click the play button on the video to stream bitcoin in real-time.
+        </InstructionsText>
+      )}
     </>
   );
   return (

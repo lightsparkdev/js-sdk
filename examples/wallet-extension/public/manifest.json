@@ -1,11 +1,11 @@
 {
    "name": "Lightspark Wallet",
-   "description": "A simple demo Lightning wallet from Lightspark.",
+   "description": "A simple demo Lightning wallet from Lightspark that demonstrates the power of streaming bitcoin while watching a video.",
    "version": "1.0",
    "manifest_version": 3,
    "action": {
        "default_popup": "index.html",
-       "default_title": "Lightspark Wallet",
+       "default_title": "Lightspark Streaming Demo Wallet",
        "default_icon": "lightspark_icon_circle.png"
    },
    "permissions": [
