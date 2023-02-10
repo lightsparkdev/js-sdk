@@ -2,9 +2,11 @@
 import React from "react";
 import { gql } from "@apollo/client";
 import CurrencyAmountRaw from "./CurrencyAmountRaw";
-import { CurrencyAmount as CurrencyAmountType, CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
+import {
+  CurrencyAmount as CurrencyAmountType,
+  CurrencyUnit,
+} from "@lightspark/js-sdk/generated/graphql";
 import { Maybe, OmitTypename } from "../common/types";
-
 
 type Props = {
   amount?: OmitTypename<CurrencyAmountType> | null;

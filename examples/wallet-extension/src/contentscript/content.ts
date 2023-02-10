@@ -125,10 +125,10 @@ const getDomDetailsForLighstparkDemo =
     return newTrackingDetails;
   };
 
-const startListeningToVideoEvents = (
-  videoElement: HTMLVideoElement
-) => {
-  console.log(`Beginning listener on: ${JSON.stringify(currentTrackingDetails)}`);
+const startListeningToVideoEvents = (videoElement: HTMLVideoElement) => {
+  console.log(
+    `Beginning listener on: ${JSON.stringify(currentTrackingDetails)}`
+  );
   if (timeUpdateListener) {
     videoElement.removeEventListener("timeupdate", timeUpdateListener);
   }

@@ -39,19 +39,18 @@ startListeningForNavigations();
 
 const reloadOrOpenStreamingDemo = () => {
   findActiveStreamingDemoTabs().then((tabs) => {
-      console.log(`Found ${tabs} tabs to reload.`);
-      if (tabs.length > 0) {
-        chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
-        chrome.tabs.reload(tabs[0].id!);
-      } else {
-        // TODO: Replace with the final URL.
-        chrome.tabs.create({
-          url: "https://app.lightspark.com/demos/streaming",
-          active: true,
-        });
-      }
+    console.log(`Found ${tabs} tabs to reload.`);
+    if (tabs.length > 0) {
+      chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
+      chrome.tabs.reload(tabs[0].id!);
+    } else {
+      // TODO: Replace with the final URL.
+      chrome.tabs.create({
+        url: "https://app.lightspark.com/demos/streaming",
+        active: true,
+      });
     }
-  );
+  });
 };
 
 chrome.runtime.onInstalled.addListener((details) => {

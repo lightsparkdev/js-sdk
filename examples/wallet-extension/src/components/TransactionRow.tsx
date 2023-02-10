@@ -1,6 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { CurrencyUnit, TransactionDetailsFragment } from "@lightspark/js-sdk/generated/graphql";
+import {
+  CurrencyUnit,
+  TransactionDetailsFragment,
+} from "@lightspark/js-sdk/generated/graphql";
 import { Maybe } from "../common/types";
 import CurrencyAmount from "./CurrencyAmount";
 

@@ -14,9 +14,13 @@ const StreamingTransactionChip = (props: {
     <Wrapper>
       <InnerColumn>
         <TopTextRow>Demo wallet</TopTextRow>
-        <BottomTextRow>{props.isStreaming ? `Streaming` : `${props.transactions.length} transactions`}</BottomTextRow>
+        <BottomTextRow>
+          {props.isStreaming
+            ? `Streaming`
+            : `${props.transactions.length} transactions`}
+        </BottomTextRow>
       </InnerColumn>
-      <InnerColumn style={{alignItems: 'flex-end'}}>
+      <InnerColumn style={{ alignItems: "flex-end" }}>
         <TopTextRow>
           <CurrencyAmountRaw
             value={-10}
@@ -45,8 +49,8 @@ const Wrapper = styled.div`
 `;
 
 const InnerColumn = styled.div`
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 `;
 
 const TopTextRow = styled.span`

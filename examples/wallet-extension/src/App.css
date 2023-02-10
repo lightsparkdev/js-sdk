@@ -1,5 +1,9 @@
 .app-wrapper {
-  background: radial-gradient(80% 80% at 80% 145%,#06f 0,rgba(0,102,255,0) 100%);
+  background: radial-gradient(
+    80% 80% at 80% 145%,
+    #06f 0,
+    rgba(0, 102, 255, 0) 100%
+  );
   background-color: black;
   color: white;
   height: 100%;

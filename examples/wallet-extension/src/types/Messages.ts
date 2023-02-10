@@ -1,9 +1,11 @@
 export type StartTrackingVideoMessage = {
-  id: 'get_video_details'
-}
+  id: "get_video_details";
+};
 
 export enum ChannelSource {
-    youtube, twitch, lightspark
+  youtube,
+  twitch,
+  lightspark,
 }
 
 export type VideoPlaybackUpdateMessage = {
@@ -15,5 +17,5 @@ export type VideoPlaybackUpdateMessage = {
   progress: number;
   duration: number;
   isPlaying: boolean;
-  prevProgress?: number
-}
+  prevProgress?: number;
+};
