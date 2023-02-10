@@ -1,5 +1,5 @@
 {
-   "name": "Lightspark Wallet",
+   "name": "Lightspark Streaming Demo Wallet",
    "description": "A simple demo Lightning wallet from Lightspark that demonstrates the power of streaming bitcoin while watching a video.",
    "version": "1.0",
    "manifest_version": 3,

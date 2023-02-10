@@ -1,10 +1,11 @@
 import { getLightsparkClient } from "../lightsparkClientProvider";
 import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
 import StubAuthProvider from "@lightspark/js-sdk/auth/StubAuthProvider";
-import { startListeningForNavigations } from "../NavigationTracker";
+import { startListeningForNavigations } from "./NavigationTracker";
 import AccountStorage from "./AccountStorage";
 import { onMessageReceived } from "./messageHandling";
 import VideoProgressCache from "./VideoProgressCache";
+import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
@@ -37,16 +38,7 @@ chrome.runtime.onMessageExternal.addListener(
 startListeningForNavigations();
 
 const reloadOrOpenStreamingDemo = () => {
-  chrome.tabs.query(
-    {
-      url: [
-        "https://localhost:3000/demos/streaming",
-        "http://192.168.86.248:3000/demos/streaming",
-        "https://dev.dev.sparkinfra.net/demos/streaming",
-        "https://app.lightspark.com/demos/streaming",
-      ],
-    },
-    (tabs) => {
+  findActiveStreamingDemoTabs().then((tabs) => {
       console.log(`Found ${tabs} tabs to reload.`);
       if (tabs.length > 0) {
         chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
@@ -74,8 +66,12 @@ chrome.storage.local.onChanged.addListener((changes) => {
     lightsparkClient.then((lightsparkClient) => {
       const credentials = changes["credentials"].newValue;
       if (credentials) {
-        lightsparkClient.setAuthProvider(new AccountTokenAuthProvider(credentials.tokenId, credentials.token));
-        lightsparkClient.setActiveWalletWithoutUnlocking(credentials.viewerWalletId);
+        lightsparkClient.setAuthProvider(
+          new AccountTokenAuthProvider(credentials.tokenId, credentials.token)
+        );
+        lightsparkClient.setActiveWalletWithoutUnlocking(
+          credentials.viewerWalletId
+        );
       } else {
         lightsparkClient.setAuthProvider(new StubAuthProvider());
       }
@@ -85,4 +81,3 @@ chrome.storage.local.onChanged.addListener((changes) => {
   }
   return false;
 });
-

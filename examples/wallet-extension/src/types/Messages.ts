@@ -1,5 +1,5 @@
 export type StartTrackingVideoMessage = {
-  type: 'START_LISTENING'
+  id: 'get_video_details'
 }
 
 export enum ChannelSource {
@@ -14,5 +14,6 @@ export type VideoPlaybackUpdateMessage = {
   channelSource: ChannelSource;
   progress: number;
   duration: number;
+  isPlaying: boolean;
   prevProgress?: number
 }

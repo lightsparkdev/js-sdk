@@ -12,6 +12,7 @@ import "./App.css";
 import AccountStorage, {
   AccountCredentials,
 } from "./background/AccountStorage";
+import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
 import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
@@ -34,6 +35,7 @@ function App() {
     React.useState<LightsparkWalletClient>();
   const [credentials, setCredentials] =
     React.useState<AccountCredentials | null>();
+  const [isStreaming, setIsStreaming] = React.useState(false);
 
   React.useEffect(() => {
     chrome.storage.local
@@ -47,6 +49,23 @@ function App() {
         const client = await getLightsparkClient(accountStorage);
         setLightsparkClient(client);
       });
+
+    chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+      if (request.id === "video_play" || request.id === "video_pause") {
+        setIsStreaming(request.isPlaying);
+      }
+    });
+
+    findActiveStreamingDemoTabs().then((tabs) => {
+      if (tabs.length == 0) return;
+      chrome.tabs.sendMessage(
+        tabs[0].id!,
+        { id: "is_video_playing" },
+        (isPlaying) => {
+          setIsStreaming(isPlaying);
+        }
+      );
+    });
   }, []);
 
   React.useEffect(() => {
@@ -72,6 +91,7 @@ function App() {
           (it) => it.entity
         ) || []
       }
+      isStreaming={isStreaming}
     />
   ) : screen === Screen.Transactions ? (
     <TransactionsScreen
@@ -141,6 +161,7 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
 function BalanceScreen(props: {
   balance: Maybe<CurrencyAmount>;
   transactions: TransactionDetailsFragment[];
+  isStreaming: boolean;
 }) {
   const screenContent = !props.balance ? (
     <div
@@ -169,7 +190,7 @@ function BalanceScreen(props: {
       {props.transactions.length > 0 ? (
         <StreamingTransactionChip
           transactions={props.transactions}
-          isStreaming={false}
+          isStreaming={props.isStreaming}
         />
       ) : (
         <InstructionsText>
