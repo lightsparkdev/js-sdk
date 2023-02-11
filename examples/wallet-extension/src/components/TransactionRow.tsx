@@ -59,27 +59,6 @@ const getTransactionOtherNode = (
   }
 };
 
-const getTransactionDestination = (
-  transaction: TransactionDetailsFragment
-): Maybe<string> => {
-  switch (transaction.__typename) {
-    case "Deposit":
-      return transaction.deposit_destination.display_name;
-    case "ChannelOpeningTransaction":
-      return transaction.channel?.remote_node?.display_name;
-    case "ChannelClosingTransaction":
-      return transaction.channel?.local_node?.display_name;
-    case "OutgoingPayment":
-      return transaction.outgoing_payment_destination?.display_name;
-    case "IncomingPayment":
-      return transaction.incoming_payment_destination.display_name;
-    case "RoutingTransaction":
-      return transaction.outgoing_channel?.remote_node?.display_name;
-    default:
-      return undefined;
-  }
-};
-
 const TransactionRow = (props: { transaction: TransactionDetailsFragment }) => {
   return (
     <TransactionWrapper>

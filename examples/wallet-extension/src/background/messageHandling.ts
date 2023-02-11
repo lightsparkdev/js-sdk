@@ -65,12 +65,13 @@ export const onMessageReceived = (
         sendResponse({ address: walletName });
       });
       break;
-    case "get_wallet_dashboard":
+    case "get_wallet_transactions":
       lightsparkClient.getWalletDashboard().then((wallet) => {
-        const walletNode =
-          wallet.current_account?.dashboard_overview_nodes.edges[0].entity;
-        const balance = walletNode?.blockchain_balance?.available_balance || 0;
-        sendResponse({ balance: balance });
+        // TODO: Move this to its own message.
+        const transactions = wallet?.current_account?.recent_transactions.edges.map(
+          (it) => it.entity
+        ) || []
+        sendResponse({ transactions });
       });
       break;
     case "get_streaming_wallet_balances":
@@ -89,5 +90,6 @@ export const onMessageReceived = (
       break;
     default:
       console.log(`Unknown message received: ${JSON.stringify(message)}`);
+      sendResponse({ status: "unknown" });
   }
 };

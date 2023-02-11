@@ -57,7 +57,7 @@ function App() {
     });
 
     findActiveStreamingDemoTabs().then((tabs) => {
-      if (tabs.length == 0) return;
+      if (tabs.length === 0) return;
       chrome.tabs.sendMessage(
         tabs[0].id!,
         { id: "is_video_playing" },
@@ -76,6 +76,16 @@ function App() {
     lightsparkClient.getWalletDashboard().then(async (dashboard) => {
       setWalletDashboard(dashboard);
       await chrome.storage.local.set({ walletDashboard: dashboard });
+      findActiveStreamingDemoTabs().then((tabs) => {
+        if (tabs.length === 0) return;
+        chrome.tabs.sendMessage(tabs[0].id!, {
+          id: "transactions_updated",
+          transactions:
+            dashboard?.current_account?.recent_transactions.edges.map(
+              (it) => it.entity
+            ) || [],
+        });
+      });
     });
   }, [lightsparkClient, credentials]);
 

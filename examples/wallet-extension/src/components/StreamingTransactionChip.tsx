@@ -5,6 +5,7 @@ import {
   TransactionDetailsFragment,
 } from "@lightspark/js-sdk/generated/graphql";
 import CurrencyAmountRaw from "./CurrencyAmountRaw";
+import { LoadingSpinner } from "./Loading";
 
 const StreamingTransactionChip = (props: {
   transactions: TransactionDetailsFragment[];
@@ -15,9 +16,14 @@ const StreamingTransactionChip = (props: {
       <InnerColumn>
         <TopTextRow>Demo wallet</TopTextRow>
         <BottomTextRow>
-          {props.isStreaming
-            ? `Streaming`
-            : `${props.transactions.length} transactions`}
+          {props.isStreaming ? (
+            <>
+              <LoadingSpinner />
+              <span style={{marginInlineStart: "4px"}}>Streaming</span>
+            </>
+          ) : (
+            `${props.transactions.length} transactions`
+          )}
         </BottomTextRow>
       </InnerColumn>
       <InnerColumn style={{ alignItems: "flex-end" }}>
@@ -42,7 +48,7 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   margin-bottom: 24px;
   margin-top: 16px;
@@ -59,10 +65,15 @@ const TopTextRow = styled.span`
   font-weight: 700;
 `;
 
-const BottomTextRow = styled.span`
+const BottomTextRow = styled.div`
   color: #999999;
   font-size: 10px;
   font-weight: 500;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 16px;
+  justify-content: center;
 `;
 
 export default StreamingTransactionChip;

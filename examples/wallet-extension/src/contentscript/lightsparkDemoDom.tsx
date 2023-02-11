@@ -1,7 +1,11 @@
-import { CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
+import {
+  CurrencyUnit,
+  TransactionDetailsFragment,
+} from "@lightspark/js-sdk/generated/graphql";
 import React from "react";
 import ReactDOM from "react-dom";
 import CurrencyAmount from "../components/CurrencyAmount";
+import TransactionLogRow from "../components/TransactionLogRow";
 
 export const updateWalletBalances = async () => {
   const { balances } = await getWalletBalances();
@@ -30,6 +34,22 @@ export const updateWalletBalances = async () => {
     />,
     document.getElementById("creator-balance")!.lastElementChild!
   );
+};
+
+export const updateTransactionRow = async (
+  transaction: TransactionDetailsFragment
+) => {
+  const rowWrapper = document.createElement("div");
+  ReactDOM.render(<TransactionLogRow transaction={transaction} />, rowWrapper);
+  const list = document.getElementById("transaction-log")!;
+  const existingRow = list.querySelector(
+    `[data-transaction-id="${transaction.id}"]`
+  );
+  if (existingRow) {
+    list.replaceChild(rowWrapper.firstChild!, existingRow);
+  } else {
+    list.appendChild(rowWrapper.firstChild!);
+  }
 };
 
 const getWalletBalances = () => {
