@@ -12,6 +12,7 @@ import "./App.css";
 import AccountStorage, {
   AccountCredentials,
 } from "./background/AccountStorage";
+import VideoProgressCache from "./background/VideoProgressCache";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
 import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
@@ -27,6 +28,8 @@ enum Screen {
   Login,
 }
 
+const DEMO_VIDEO_ID = "ls_demo";
+
 function App() {
   const [walletDashboard, setWalletDashboard] =
     React.useState<SingleNodeDashboardQuery>();
@@ -36,6 +39,7 @@ function App() {
   const [credentials, setCredentials] =
     React.useState<AccountCredentials | null>();
   const [isStreaming, setIsStreaming] = React.useState(false);
+  const [demoStreamingDuration, setDemoStreamingDuration] = React.useState(0);
 
   React.useEffect(() => {
     chrome.storage.local
@@ -50,9 +54,27 @@ function App() {
         setLightsparkClient(client);
       });
 
-    chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
-      if (request.id === "video_play" || request.id === "video_pause") {
-        setIsStreaming(request.isPlaying);
+    const progressCache = new VideoProgressCache();
+    progressCache.listenForProgressChanges((videoId) => {
+      if (videoId === DEMO_VIDEO_ID) {
+        setDemoStreamingDuration(
+          progressCache.getPlayedDuration(DEMO_VIDEO_ID)
+        );
+      }
+    });
+    progressCache.whenLoaded().then(() => {
+      setDemoStreamingDuration(progressCache.getPlayedDuration(DEMO_VIDEO_ID));
+    });
+
+    chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+      if (message.id === "video_play" || message.id === "video_pause") {
+        setIsStreaming(message.isPlaying);
+      } else if (message.id === "video_progress") {
+        progressCache.addProgress(
+          message.videoID,
+          message.prevProgress || 0,
+          message.progress
+        );
       }
     });
 
@@ -101,6 +123,7 @@ function App() {
           (it) => it.entity
         ) || []
       }
+      streamingDuration={demoStreamingDuration}
       isStreaming={isStreaming}
     />
   ) : screen === Screen.Transactions ? (
@@ -171,6 +194,7 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
 function BalanceScreen(props: {
   balance: Maybe<CurrencyAmount>;
   transactions: TransactionDetailsFragment[];
+  streamingDuration: number;
   isStreaming: boolean;
 }) {
   const screenContent = !props.balance ? (
@@ -200,6 +224,7 @@ function BalanceScreen(props: {
       {props.transactions.length > 0 ? (
         <StreamingTransactionChip
           transactions={props.transactions}
+          streamingDuration={props.streamingDuration}
           isStreaming={props.isStreaming}
         />
       ) : (

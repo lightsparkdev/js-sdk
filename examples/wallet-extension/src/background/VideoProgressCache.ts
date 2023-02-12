@@ -2,11 +2,20 @@ import PlaybackRangesTracker from "./VideoPlaybackRanges";
 
 class VideoProgressCache {
   private videoProgressCache: { [videoID: string]: PlaybackRangesTracker };
+  private listeners: Array<(videoID: string) => void> = [];
   private needsWrite: boolean = false;
+  private resolveWhenLoaded: () => void = () => {};
+  private whenLoadedPromise = new Promise<void>((resolve) => {
+    this.resolveWhenLoaded = resolve;
+  });
 
   constructor() {
     this.videoProgressCache = {};
     this.readProgressFromStorage();
+  }
+
+  public async whenLoaded() {
+    return this.whenLoadedPromise;
   }
 
   addProgress(videoID: string, start: number, end: number) {
@@ -21,6 +30,11 @@ class VideoProgressCache {
       )}`
     );
     this.needsWrite = true;
+    this.listeners.forEach((listener) => listener(videoID));
+  }
+
+  listenForProgressChanges(listener: (videoID: string) => void) {
+    this.listeners.push(listener);
   }
 
   getPlayedDuration(videoID: string) {
@@ -52,6 +66,7 @@ class VideoProgressCache {
           });
         }
       });
+      this.resolveWhenLoaded();
     });
   }
 
