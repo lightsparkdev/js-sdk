@@ -24,7 +24,7 @@ chrome.alarms.create("write_progress", { periodInMinutes: 5 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   lightsparkClient.then((lightsparkClient) => {
-    onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, sendResponse);
+    onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, accountStorage, sendResponse);
   });
   return true;
 });
@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 chrome.runtime.onMessageExternal.addListener(
   (message, _sender, sendResponse) => {
     lightsparkClient.then((lightsparkClient) => {
-      onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, sendResponse);
+      onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, accountStorage, sendResponse);
     });
     return true;
   }
@@ -42,7 +42,7 @@ startListeningForNavigations();
 
 const reloadOrOpenStreamingDemo = () => {
   findActiveStreamingDemoTabs().then((tabs) => {
-    console.log(`Found ${tabs} tabs to reload.`);
+    console.log(`Found ${tabs.length} tabs to reload.`);
     if (tabs.length > 0) {
       chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
       chrome.tabs.reload(tabs[0].id!);

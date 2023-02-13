@@ -1,5 +1,6 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
+import AccountStorage from "../auth/AccountStorage";
 import { VideoPlaybackUpdateMessage } from "../types";
 import { LinearPaymentStrategy } from "./PaymentStrategy";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
@@ -52,6 +53,7 @@ export const onMessageReceived = (
   lightsparkClient: LightsparkWalletClient,
   progressCache: VideoProgressCache,
   invoiceHolder: StreamingInvoiceHolder,
+  accountStorage: AccountStorage,
   sendResponse: (response: any) => void
 ) => {
   switch (message.id) {
@@ -95,11 +97,19 @@ export const onMessageReceived = (
       });
       break;
     case "get_streaming_wallet_balances":
-      lightsparkClient.getAllNodesDashboard().then((dashboard) => {
-        const viewerNode =
-          dashboard.current_account?.dashboard_overview_nodes.edges[0].entity;
-        const creatorNode =
-          dashboard.current_account?.dashboard_overview_nodes.edges[1].entity;
+      lightsparkClient.getAllNodesDashboard().then(async (dashboard) => {
+        const account = await accountStorage.getAccountCredentials();
+        if (!account) {
+          sendResponse({ balances: { viewerBalance: 0, creatorBalance: 0 } });
+          return;
+        }
+        const edges = dashboard.current_account?.dashboard_overview_nodes.edges;
+        const viewerNode = edges?.find(
+          (edge) => edge.entity.id.includes(account.viewerWalletId)
+        )?.entity;
+        const creatorNode = edges?.find(
+          (edge) => edge.entity.id.includes(account.creatorWalletId)
+        )?.entity;
         const balances = {
           viewerBalance: viewerNode?.blockchain_balance?.available_balance || 0,
           creatorBalance:
