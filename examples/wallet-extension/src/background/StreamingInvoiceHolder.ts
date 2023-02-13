@@ -3,8 +3,6 @@ import { CurrencyUnit, InvoiceType } from "@lightspark/js-sdk/generated/graphql"
 import autoBind from "auto-bind";
 
 class StreamingInvoiceHolder {
-  private encodedInvoice: string | undefined;
-
   constructor() {
     autoBind(this);
   }
@@ -15,19 +13,20 @@ class StreamingInvoiceHolder {
   ): Promise<String | undefined> {
     const initialWalletId = lightsparkClient.getActiveWalletId();
     lightsparkClient.setActiveWalletWithoutUnlocking(creatorWalletId);
-    this.encodedInvoice = await lightsparkClient.createInvoice(
+    const encodedInvoice = await lightsparkClient.createInvoice(
       {value: 0, unit: CurrencyUnit.Satoshi},
       "Streaming demo",
       InvoiceType.Amp
     );
+    await chrome.storage.local.set({ streamingInvoice: encodedInvoice });
     if (initialWalletId) {
       lightsparkClient.setActiveWalletWithoutUnlocking(initialWalletId);
     }
-    return this.encodedInvoice;
+    return encodedInvoice;
   }
 
-  public getInvoiceData(): string | undefined {
-    return this.encodedInvoice;
+  public async getInvoiceData(): Promise<string | undefined> {
+    return (await chrome.storage.local.get(["streamingInvoice"])).streamingInvoice;
   }
 }
 

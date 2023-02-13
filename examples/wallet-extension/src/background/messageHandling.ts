@@ -28,7 +28,7 @@ const playbackMessageReceived = async (
     previousRanges,
     progressCache.getPlayedRanges(message.videoID)
   );
-  const invoiceToPay = invoiceHolder.getInvoiceData();
+  const invoiceToPay = await invoiceHolder.getInvoiceData();
   if (amountToPay.value > 0) {
     if (!invoiceToPay) {
       console.error("No invoice to pay while streaming");
@@ -98,9 +98,10 @@ export const onMessageReceived = (
       break;
     case "get_streaming_wallet_balances":
       lightsparkClient.getAllNodesDashboard().then(async (dashboard) => {
+        const zeroSats = { unit: CurrencyUnit.Satoshi, value: 0 };
         const account = await accountStorage.getAccountCredentials();
         if (!account) {
-          sendResponse({ balances: { viewerBalance: 0, creatorBalance: 0 } });
+          sendResponse({ balances: { viewerBalance: zeroSats, creatorBalance: zeroSats } });
           return;
         }
         const edges = dashboard.current_account?.dashboard_overview_nodes.edges;
@@ -111,9 +112,9 @@ export const onMessageReceived = (
           (edge) => edge.entity.id.includes(account.creatorWalletId)
         )?.entity;
         const balances = {
-          viewerBalance: viewerNode?.blockchain_balance?.available_balance || 0,
+          viewerBalance: viewerNode?.blockchain_balance?.available_balance || zeroSats,
           creatorBalance:
-            creatorNode?.blockchain_balance?.available_balance || 0,
+            creatorNode?.blockchain_balance?.available_balance || zeroSats,
         };
         sendResponse({ balances });
       });
