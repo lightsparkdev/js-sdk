@@ -1,6 +1,6 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
-import AccountStorage from "./background/AccountStorage";
+import AccountStorage from "./auth/AccountStorage";
 
 let instance: LightsparkWalletClient;
 
@@ -11,7 +11,7 @@ export const getLightsparkClient = async (accountStorage: AccountStorage) => {
     const authProvider =
       account === null
         ? undefined
-        : new AccountTokenAuthProvider(account.tokenId, account.token);
+        : new AccountTokenAuthProvider(account.clientId, account.clientSecret);
     instance = new LightsparkWalletClient(
       authProvider,
       account?.viewerWalletId

@@ -1,31 +1,26 @@
 import autoBind from "auto-bind";
-
-export interface AccountCredentials {
-  tokenId: string;
-  token: string;
-  viewerWalletId: string;
-}
+import StreamingDemoAccountCredentials from "./StreamingDemoCredentials";
 
 export default class AccountStorage {
   constructor() {
     autoBind(this);
   }
 
-  saveAccountCredentials(credentials: AccountCredentials): Promise<void> {
+  saveAccountCredentials(credentials: StreamingDemoAccountCredentials): Promise<void> {
     return chrome.storage.local.set({ credentials });
   }
 
-  async getAccountCredentials(): Promise<AccountCredentials | null> {
+  async getAccountCredentials(): Promise<StreamingDemoAccountCredentials | null> {
     const savedCreds = (await chrome.storage.local.get("credentials"))
       ?.credentials;
     if (
       !savedCreds ||
-      !savedCreds.tokenId ||
-      !savedCreds.token ||
+      !savedCreds.clientId ||
+      !savedCreds.clientSecret ||
       !savedCreds.viewerWalletId
     ) {
       return null;
     }
-    return savedCreds as AccountCredentials;
+    return savedCreds as StreamingDemoAccountCredentials;
   }
 }

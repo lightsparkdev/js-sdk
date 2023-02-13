@@ -31,7 +31,6 @@ import { Headers } from "./apollo/constants";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
 import AuthProvider from "./auth/AuthProvider";
 import StubAuthProvider from "./auth/StubAuthProvider";
-import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -67,6 +66,10 @@ class LightsparkWalletClient {
     return this.authProvider.isAuthorized();
   }
 
+  public getActiveWalletId(): string | undefined {
+    return this.activeWalletId;
+  }
+
   public async getWalletDashboard(): Promise<SingleNodeDashboardQuery> {
     const walletId = this.requireWalletId();
     const response = await this.client.query({
@@ -94,8 +97,9 @@ class LightsparkWalletClient {
   }
 
   public async createInvoice(
-    amount: number,
-    memo: string
+    amount: CurrencyAmountInput,
+    memo: string,
+    type: string | undefined = undefined
   ): Promise<string | undefined> {
     const walletId = this.requireWalletId();
     const response = await this.client.mutate<CreateInvoiceMutation>({
@@ -104,6 +108,7 @@ class LightsparkWalletClient {
         nodeId: walletId,
         amount,
         memo,
+        type,
       },
     });
     return response.data?.create_invoice?.invoice.data?.encoded_payment_request;
@@ -178,9 +183,13 @@ class LightsparkWalletClient {
       signingPrivateKeyPEM = dec.decode(signingPrivateKey);
     }
 
-    this.nodeKeyCache.loadKey(walletId, signingPrivateKeyPEM);
+    await this.nodeKeyCache.loadKey(walletId, signingPrivateKeyPEM);
     this.activeWalletId = walletId;
     return true;
+  }
+
+  public async loadWalletKey(signingPrivateKeyPEM: string) {
+    await this.nodeKeyCache.loadKey(this.requireWalletId(), signingPrivateKeyPEM);
   }
 
   public async payInvoice(
@@ -213,24 +222,6 @@ class LightsparkWalletClient {
         response.data?.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text
       );
     }
-  }
-
-  public async getStreamingDemoAccountCredentials(): Promise<StreamingDemoAccountCredentials> {
-    // TODO: Fill in with the real implementation when the backend is ready.
-    const TEST_ACCOUNT = {
-      tokenId: "0185c15936bf4f89000019ac0f816213",
-      token: "pvKTJfP-DFz66U8ofen9Z2my6nt7ImcpS3rCgW6Ohbs",
-    };
-    const TEST_VIEWER_WALLET_ID =
-      "LightsparkNode:0185c269-8aa3-f96b-0000-0ae100b58599";
-    const TEST_CREATOR_WALLET_ID =
-      "LightsparkNode:0185c3fb-da63-f96b-0000-dde38238b1b3";
-    return {
-      token: TEST_ACCOUNT.token,
-      tokenId: TEST_ACCOUNT.tokenId,
-      creatorWalletId: TEST_CREATOR_WALLET_ID,
-      viewerWalletId: TEST_VIEWER_WALLET_ID,
-    };
   }
 
   requireWalletId(): string {

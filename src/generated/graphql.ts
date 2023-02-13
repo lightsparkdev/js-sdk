@@ -120,6 +120,7 @@ export type AccountUptime_PercentageArgs = {
 
 export type AccountUsersArgs = {
   first?: InputMaybe<Scalars['Int']>;
+  statuses?: InputMaybe<Array<UserStatus>>;
 };
 
 export type AccountToApiTokenEdge = {
@@ -402,6 +403,7 @@ export type CompanyInformation = {
 
 export type CreateInvoiceInput = {
   amount: CurrencyAmountInput;
+  invoice_type?: InputMaybe<InvoiceType>;
   memo?: InputMaybe<Scalars['String']>;
   node_id: Scalars['ID'];
 };
@@ -643,6 +645,13 @@ export type InvoiceData = PaymentRequestData & {
   memo?: Maybe<Scalars['String']>;
   payment_hash: Scalars['String'];
 };
+
+export enum InvoiceType {
+  /** An AMP (Atomic Multi-path Payment) invoice. */
+  Amp = 'AMP',
+  /** A standard Bolt 11 invoice. */
+  Standard = 'STANDARD'
+}
 
 export type Key = {
   __typename: 'Key';
@@ -1198,8 +1207,8 @@ export type User = Entity & {
    * The user may elect to use another one later in the MFA (Multi-Factor Authentication) flow but we should trigger this login factor instantly (e.g. send SMS).
    */
   primary_login_factor?: Maybe<LoginFactor>;
-  /** The roles that have been granted to this user on the account. It will determine the data that will be accessible for the user and the actions that the user can and cannot take on the account, its balances, and its nodes. */
-  roles: Array<UserRole>;
+  /** The role that has been granted to this user on the account. It will determine the data that will be accessible for the user and the actions that the user can and cannot take on the account, its balances, and its nodes. */
+  role: UserRole;
   status: UserStatus;
   /** The date and time when the entity was last updated. */
   updated_at: Scalars['DateTime'];
@@ -1211,10 +1220,12 @@ export type UserLogin_FactorsArgs = {
 };
 
 export enum UserRole {
-  Admin = 'ADMIN',
-  Controller = 'CONTROLLER',
-  FinancialOperator = 'FINANCIAL_OPERATOR',
-  TechnicalOperator = 'TECHNICAL_OPERATOR'
+  /** Users with this role can do everything in the account. */
+  Administrator = 'ADMINISTRATOR',
+  /** Users with this role can do everything in the account, except user and account settings management. */
+  Operator = 'OPERATOR',
+  /** Users with this role can see everything in the account. */
+  Viewer = 'VIEWER'
 }
 
 export enum UserStatus {
@@ -1313,6 +1324,7 @@ export type CreateInvoiceMutationVariables = Exact<{
   node_id: Scalars['ID'];
   amount: CurrencyAmountInput;
   memo?: InputMaybe<Scalars['String']>;
+  type?: InputMaybe<InvoiceType>;
 }>;
 
 
@@ -1888,7 +1900,7 @@ export type TransactionFieldPolicy = {
 	transaction_hash?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type UserKeySpecifier = ('account' | 'created_at' | 'display_name' | 'email' | 'id' | 'login_factors' | 'password_last_updated_at' | 'primary_login_factor' | 'roles' | 'status' | 'updated_at' | UserKeySpecifier)[];
+export type UserKeySpecifier = ('account' | 'created_at' | 'display_name' | 'email' | 'id' | 'login_factors' | 'password_last_updated_at' | 'primary_login_factor' | 'role' | 'status' | 'updated_at' | UserKeySpecifier)[];
 export type UserFieldPolicy = {
 	account?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1898,7 +1910,7 @@ export type UserFieldPolicy = {
 	login_factors?: FieldPolicy<any> | FieldReadFunction<any>,
 	password_last_updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	primary_login_factor?: FieldPolicy<any> | FieldReadFunction<any>,
-	roles?: FieldPolicy<any> | FieldReadFunction<any>,
+	role?: FieldPolicy<any> | FieldReadFunction<any>,
 	status?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };

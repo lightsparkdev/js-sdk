@@ -1,6 +1,8 @@
 export default interface StreamingDemoAccountCredentials {
-  tokenId: string;
-  token: string;
+  clientId: string;
+  clientSecret: string;
   viewerWalletId: string;
   creatorWalletId: string;
+  viewerSigningKey: string;
+  apiTokenId: string;
 }

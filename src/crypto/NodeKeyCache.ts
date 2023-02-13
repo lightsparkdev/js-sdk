@@ -11,6 +11,7 @@ class NodeKeyCache {
   public async loadKey(id: string, rawKey: string): Promise<CryptoKey> {
     const decoded = b64decode(rawKey);
 
+    console.log("Decoded key: ", decoded);
     const key = await crypto.subtle.importKey(
       "pkcs8",
       decoded,

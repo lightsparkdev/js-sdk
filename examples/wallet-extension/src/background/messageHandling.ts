@@ -2,6 +2,7 @@ import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
 import { VideoPlaybackUpdateMessage } from "../types";
 import { LinearPaymentStrategy } from "./PaymentStrategy";
+import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import VideoProgressCache from "./VideoProgressCache";
 
 const paymentStrategy = new LinearPaymentStrategy(
@@ -11,7 +12,9 @@ const paymentStrategy = new LinearPaymentStrategy(
 
 const playbackMessageReceived = async (
   message: VideoPlaybackUpdateMessage,
+  lightsparkClient: LightsparkWalletClient,
   progressCache: VideoProgressCache,
+  invoiceHolder: StreamingInvoiceHolder,
   sendResponse: (response?: any) => void
 ) => {
   const previousRanges = progressCache.getPlayedRanges(message.videoID).slice();
@@ -24,6 +27,15 @@ const playbackMessageReceived = async (
     previousRanges,
     progressCache.getPlayedRanges(message.videoID)
   );
+  const invoiceToPay = invoiceHolder.getInvoiceData();
+  if (amountToPay.value > 0) {
+    if (!invoiceToPay) {
+      console.error("No invoice to pay while streaming");
+    } else {
+      // TODO: Ensure that the viewer node is unlocked at this point.
+      await lightsparkClient.payInvoice(invoiceToPay, undefined, amountToPay);
+    }
+  }
   sendResponse({ amountToPay });
 };
 
@@ -39,6 +51,7 @@ export const onMessageReceived = (
   message: any,
   lightsparkClient: LightsparkWalletClient,
   progressCache: VideoProgressCache,
+  invoiceHolder: StreamingInvoiceHolder,
   sendResponse: (response: any) => void
 ) => {
   switch (message.id) {
@@ -49,7 +62,13 @@ export const onMessageReceived = (
       sendResponse({ version: chrome.runtime.getManifest().version });
       break;
     case "video_progress":
-      playbackMessageReceived(message, progressCache, sendResponse);
+      playbackMessageReceived(
+        message,
+        lightsparkClient,
+        progressCache,
+        invoiceHolder,
+        sendResponse
+      );
       break;
     case "get_wallet_status":
       // TODO: Send messages when the status changes.
@@ -68,9 +87,10 @@ export const onMessageReceived = (
     case "get_wallet_transactions":
       lightsparkClient.getWalletDashboard().then((wallet) => {
         // TODO: Move this to its own message.
-        const transactions = wallet?.current_account?.recent_transactions.edges.map(
-          (it) => it.entity
-        ) || []
+        const transactions =
+          wallet?.current_account?.recent_transactions.edges.map(
+            (it) => it.entity
+          ) || [];
         sendResponse({ transactions });
       });
       break;

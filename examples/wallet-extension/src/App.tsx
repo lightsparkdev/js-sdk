@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
-import StreamingDemoAccountCredentials from "@lightspark/js-sdk/auth/StreamingDemoCredentials";
 import {
   CurrencyAmount,
   SingleNodeDashboardQuery,
@@ -9,9 +8,9 @@ import {
 } from "@lightspark/js-sdk/generated/graphql";
 import React from "react";
 import "./App.css";
-import AccountStorage, {
-  AccountCredentials,
-} from "./background/AccountStorage";
+import AccountStorage from "./auth/AccountStorage";
+import { reserveStreamingDemoAccountCredentials } from "./auth/DemoAccountProvider";
+import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 import VideoProgressCache from "./background/VideoProgressCache";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
 import { Maybe } from "./common/types";
@@ -37,7 +36,7 @@ function App() {
   const [lightsparkClient, setLightsparkClient] =
     React.useState<LightsparkWalletClient>();
   const [credentials, setCredentials] =
-    React.useState<AccountCredentials | null>();
+    React.useState<StreamingDemoAccountCredentials | null>();
   const [isStreaming, setIsStreaming] = React.useState(false);
   const [demoStreamingDuration, setDemoStreamingDuration] = React.useState(0);
 
@@ -139,7 +138,7 @@ function App() {
       lightsparkClient={lightsparkClient}
       onCreatedAccount={async (credentials) => {
         lightsparkClient?.setAuthProvider(
-          new AccountTokenAuthProvider(credentials.tokenId, credentials.token)
+          new AccountTokenAuthProvider(credentials.clientId, credentials.clientSecret)
         );
         lightsparkClient?.setActiveWalletWithoutUnlocking(
           credentials.viewerWalletId
@@ -257,8 +256,7 @@ function LoginScreen(props: {
 
   const createWallet = async () => {
     setIsLoading(true);
-    const creds =
-      await props.lightsparkClient?.getStreamingDemoAccountCredentials();
+    const creds = await reserveStreamingDemoAccountCredentials();
     if (creds) props.onCreatedAccount(creds);
     setIsLoading(false);
   };
