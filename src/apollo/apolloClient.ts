@@ -17,6 +17,7 @@ import AuthProvider from "../auth/AuthProvider";
 import StubAuthProvider from "../auth/StubAuthProvider";
 
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
+dayjs.extend(utc);
 
 export const getNewApolloClient = (
   serverUrl: string,

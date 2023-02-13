@@ -8,22 +8,26 @@ class NodeKeyCache {
     autoBind(this);
   }
 
-  public async loadKey(id: string, rawKey: string): Promise<CryptoKey> {
+  public async loadKey(id: string, rawKey: string): Promise<CryptoKey | null> {
     const decoded = b64decode(rawKey);
-
-    console.log("Decoded key: ", decoded);
-    const key = await crypto.subtle.importKey(
-      "pkcs8",
-      decoded,
-      {
-        name: "RSA-PSS",
-        hash: "SHA-256",
-      },
-      true,
-      ["sign"]
-    );
-    this.idToKey.set(id, key);
-    return key;
+    try {
+      const key = await crypto.subtle.importKey(
+        "pkcs8",
+        decoded,
+        {
+          name: "RSA-PSS",
+          hash: "SHA-256",
+        },
+        true,
+        ["sign"]
+      );
+      this.idToKey.set(id, key);
+      return key;
+    } catch (e) {
+      debugger;
+      console.log("Error importing key: ", e);
+    }
+    return null;
   }
 
   public getKey(id: string): CryptoKey | undefined {

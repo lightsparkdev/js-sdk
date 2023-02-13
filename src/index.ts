@@ -196,7 +196,7 @@ class LightsparkWalletClient {
     encodedInvoice: string,
     timeoutSecs: number = 60,
     amount: CurrencyAmountInput | null = null,
-    maxFees: CurrencyAmountInput | null = null
+    maximumFees: CurrencyAmountInput | null = null
   ): Promise<void> {
     const walletId = this.requireWalletId();
     if (!this.nodeKeyCache.hasKey(walletId)) {
@@ -205,11 +205,11 @@ class LightsparkWalletClient {
     const response = await this.client.mutate<PayInvoiceMutation>({
       mutation: PayInvoice,
       variables: {
-        nodeId: walletId,
-        encodedInvoice,
-        timeoutSecs,
+        node_id: walletId,
+        encoded_invoice: encodedInvoice,
+        timeout_secs: timeoutSecs,
         amount,
-        maxFees,
+        maximum_fees: maximumFees,
       },
       context: {
         headers: {

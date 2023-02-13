@@ -75,7 +75,7 @@ chrome.storage.local.onChanged.addListener((changes) => {
         lightsparkClient.setActiveWalletWithoutUnlocking(
           credentials.viewerWalletId
         );
-        // await lightsparkClient.loadWalletKey(credentials.viewerSigningKey);
+        await lightsparkClient.loadWalletKey(credentials.viewerSigningKey);
         await invoiceHolder
           .createInvoice(lightsparkClient, credentials.creatorWalletId)
           .then((invoice) => {

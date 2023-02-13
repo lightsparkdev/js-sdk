@@ -7,6 +7,7 @@ query SingleNodeDashboard(
     $nodeId: ID!,
     $numTransactions: Int,
     $transactionTypes: [TransactionType!] = [PAYMENT, PAYMENT_REQUEST, ROUTE, L1_WITHDRAW, L1_DEPOSIT]
+    $transaction_statuses: [TransactionStatus!] = null
 ) {
     current_account {
         id
@@ -108,7 +109,7 @@ query SingleNodeDashboard(
             types: $transactionTypes
             bitcoin_network: $network
             lightning_node_id: $nodeId
-            statuses: [SUCCESS]
+            statuses: $transaction_statuses
         ) {
             count
             total_amount_transacted {

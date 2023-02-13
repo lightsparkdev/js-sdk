@@ -21,6 +21,11 @@ const TEST_CREDS = {
   viewerWalletId: TEST_VIEWER_WALLET_ID,
 };
 
+const getInstanceID = async (): Promise<string> => {
+  // TODO: Integrate with IID for realz.
+  return chrome.runtime.id + "1";
+};
+
 export const reserveStreamingDemoAccountCredentials =
   async (): Promise<StreamingDemoAccountCredentials> => {
     const response = await fetch(RESERVE_ENDPOINT, {
@@ -30,7 +35,7 @@ export const reserveStreamingDemoAccountCredentials =
         "X-Lightspark-Beta": "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo",
       },
       body: JSON.stringify({
-        extension_id: chrome.runtime.id,
+        extension_id: await getInstanceID(),
       }),
     });
     const data = await response.json();
@@ -53,7 +58,7 @@ export const unreserveStreamingDemoAccountCredentials =
           "X-Lightspark-Beta": "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo",
         },
         body: JSON.stringify({
-          extension_id: chrome.runtime.id,
+          extension_id: await getInstanceID(),
           api_token_id: credentials.apiTokenId
         }),
       });

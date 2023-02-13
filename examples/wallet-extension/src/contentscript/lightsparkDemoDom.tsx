@@ -41,7 +41,11 @@ export const updateTransactionRow = async (
 ) => {
   const rowWrapper = document.createElement("div");
   ReactDOM.render(<TransactionLogRow transaction={transaction} />, rowWrapper);
-  const list = document.getElementById("transaction-log")!;
+  const list = document.getElementById("transaction-log");
+  if (!list) {
+    console.warn("Trying to update transaction row without transaction log element");
+    return;
+  }
   const existingRow = list.querySelector(
     `[data-transaction-id="${transaction.id}"]`
   );

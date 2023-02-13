@@ -33,7 +33,7 @@ const playbackMessageReceived = async (
       console.error("No invoice to pay while streaming");
     } else {
       // TODO: Ensure that the viewer node is unlocked at this point.
-      await lightsparkClient.payInvoice(invoiceToPay, undefined, amountToPay);
+      await lightsparkClient.payInvoice(invoiceToPay, 60, amountToPay);
     }
   }
   sendResponse({ amountToPay });
