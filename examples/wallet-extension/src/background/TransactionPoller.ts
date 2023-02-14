@@ -1,20 +1,17 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
-import {
-  BitcoinNetwork,
-  TransactionDetailsFragment,
-} from "@lightspark/js-sdk/generated/graphql";
+import { TransactionDetailsFragment } from "@lightspark/js-sdk/generated/graphql";
 import autoBind from "auto-bind";
 import AccountStorage from "../auth/AccountStorage";
+import { Subscription } from "zen-observable-ts";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 
 class TransactionPoller {
   private isPolling = false;
-  private pollingHandle?: ReturnType<typeof setInterval>;
+  private subscription?: Subscription;
 
   constructor(
     private readonly lightsparkClient: LightsparkWalletClient,
-    private readonly accountStorage: AccountStorage,
-    private readonly pollingInterval: number
+    private readonly accountStorage: AccountStorage
   ) {
     autoBind(this);
   }
@@ -26,28 +23,24 @@ class TransactionPoller {
     }
 
     this.isPolling = true;
-    this.pollingHandle = setInterval(this.poll, this.pollingInterval);
+    this.subscription = this.lightsparkClient.listenToTransactions().subscribe({
+      next: (transaction) => {
+        if (transaction) {
+          this.broadcastTransactions([transaction]);
+        }
+      },
+    });
   }
 
   public stopPolling() {
     console.log("Stopping polling for transactions...");
-    if (!this.isPolling) {
+    if (!this.isPolling || !this.subscription) {
       return;
     }
 
     this.isPolling = false;
-    clearInterval(this.pollingHandle);
-  }
-
-  private async poll() {
-    console.log("Polling for transactions...")
-    const transactions = await this.lightsparkClient.getRecentTransactions(
-      20,
-      BitcoinNetwork.Regtest,
-      true,
-      (await this.accountStorage.getAccountCredentials())?.allocationTime
-    );
-    this.broadcastTransactions(transactions);
+    this.subscription.unsubscribe();
+    this.subscription = undefined;
   }
 
   private async broadcastTransactions(

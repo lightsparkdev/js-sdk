@@ -28,7 +28,8 @@
     "@apollo/client": "^3.6.6",
     "auto-bind": "^5.0.1",
     "dayjs": "^1.11.7",
-    "graphql": "^16.5.0"
+    "graphql": "^16.5.0",
+    "graphql-ws": "^5.11.3"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.16.4",
