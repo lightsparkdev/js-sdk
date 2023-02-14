@@ -1,52 +1,47 @@
 {
-   "name": "Lightspark Streaming Demo Wallet",
-   "description": "A simple demo Lightning wallet from Lightspark that demonstrates the power of streaming bitcoin while watching a video.",
-   "version": "1.0",
-   "manifest_version": 3,
-   "action": {
-       "default_popup": "index.html",
-       "default_title": "Lightspark Streaming Demo Wallet",
-       "default_icon": "lightspark_icon_circle.png"
-   },
-   "permissions": [
-        "activeTab",
-        "tabs",
-        "storage",
-        "webNavigation",
-        "alarms",
-        "gcm"
-    ],
-    "icons": {
-        "16": "lightspark_icon_circle.png",
-        "32": "lightspark_icon_circle.png",
-        "48": "lightspark_icon_circle.png",
-        "128": "lightspark_icon_circle.png"
-    },
-    "host_permissions": [
-       "https://api.dev.dev.sparkinfra.net/"
-    ],
-   "content_scripts": [
-        {
-            "matches": [
-                "https://youtube.com/*",
-                "https://www.youtube.com/*",
-                "https://www.twitch.tv/*",
-                "https://twitch.tv/*",
-                "https://*/demos/streaming",
-                "http://*/demos/streaming",
-                "https://dev.dev.sparkinfra.net/demos/streaming",
-                "https://app.lightspark.com/demos/streaming"
-            ],
-            "js": ["./static/js/content.js"]
-        }
-    ],
-    "externally_connectable": {
-        "matches": [
-            "https://*/demos/streaming",
-            "http://*/demos/streaming"
-        ]
-    },
-    "background": {
-        "service_worker": "./static/js/background.js"
+  "name": "Lightspark Streaming Demo Wallet",
+  "description": "A simple demo Lightning wallet from Lightspark that demonstrates the power of streaming bitcoin while watching a video.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Lightspark Streaming Demo Wallet",
+    "default_icon": "lightspark_icon_circle.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "webNavigation",
+    "alarms",
+    "gcm"
+  ],
+  "icons": {
+    "16": "lightspark_icon_circle.png",
+    "32": "lightspark_icon_circle.png",
+    "48": "lightspark_icon_circle.png",
+    "128": "lightspark_icon_circle.png"
+  },
+  "host_permissions": ["https://api.dev.dev.sparkinfra.net/"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://youtube.com/*",
+        "https://www.youtube.com/*",
+        "https://www.twitch.tv/*",
+        "https://twitch.tv/*",
+        "https://*/demos/streaming",
+        "http://*/demos/streaming",
+        "https://dev.dev.sparkinfra.net/demos/streaming",
+        "https://app.lightspark.com/demos/streaming"
+      ],
+      "js": ["./static/js/content.js"]
     }
+  ],
+  "externally_connectable": {
+    "matches": ["https://*/demos/streaming", "http://*/demos/streaming"]
+  },
+  "background": {
+    "service_worker": "./static/js/background.js"
+  }
 }
