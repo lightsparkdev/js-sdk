@@ -152,7 +152,7 @@ class LightsparkWalletClient {
     return null;
   }
 
-  public setActiveWalletWithoutUnlocking(walletId: string) {
+  public setActiveWalletWithoutUnlocking(walletId: string | undefined) {
     this.activeWalletId = walletId;
   }
 
@@ -189,7 +189,10 @@ class LightsparkWalletClient {
   }
 
   public async loadWalletKey(signingPrivateKeyPEM: string) {
-    await this.nodeKeyCache.loadKey(this.requireWalletId(), signingPrivateKeyPEM);
+    await this.nodeKeyCache.loadKey(
+      this.requireWalletId(),
+      signingPrivateKeyPEM
+    );
   }
 
   public async payInvoice(

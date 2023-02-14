@@ -26,7 +26,11 @@ class StreamingInvoiceHolder {
   }
 
   public async getInvoiceData(): Promise<string | undefined> {
-    return (await chrome.storage.local.get(["streamingInvoice"])).streamingInvoice;
+    return (await chrome.storage.local.get("streamingInvoice")).streamingInvoice;
+  }
+
+  public async clearInvoice(): Promise<void> {
+    return await chrome.storage.local.remove("streamingInvoice");
   }
 }
 

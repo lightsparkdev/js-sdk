@@ -83,6 +83,8 @@ chrome.storage.local.onChanged.addListener((changes) => {
           });
       } else {
         await lightsparkClient.setAuthProvider(new StubAuthProvider());
+        await invoiceHolder.clearInvoice();
+        lightsparkClient.setActiveWalletWithoutUnlocking(undefined);
       }
       reloadOrOpenStreamingDemo();
     });
