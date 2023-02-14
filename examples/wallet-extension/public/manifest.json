@@ -8,6 +8,7 @@
     "default_title": "Lightspark Streaming Demo Wallet",
     "default_icon": "lightspark_icon_circle.png"
   },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAo9xUKYnLCf/cu14RVO3Ok+t5/5s8zve/L1NzTcxhZHGgJuabcVZ8JBOfU5WNmMgESJdflZLCszJglvo8OW6d/Tkd5foHx0KbrW/l1pAxGdySUXh+FQSJ3LHobMxEAgp2TSf35D6n10e23KxqongoTL447/VT3AC74TCNBCy8lHveVLG6BoMRp2z/Bvwhmty5ZZqxpBC5/Om1O4Fyaetg8jZstogrlfiqpo5tMAV/7t9USL7spsLyPqrPwW1cyQct3SdUBwVadNzTNQqf80+WTaiqJm3Tl1+KAuxxAwbkc6P1vxEAjjPhSzkTAjRScNHBSMFLHx3FKh+tJR8cvVYLHQIDAQAB",
   "permissions": [
     "activeTab",
     "tabs",

@@ -12,6 +12,8 @@ import {
   PayInvoiceMutation,
   RecoverNodeSigningKeyQuery,
   SingleNodeDashboardQuery,
+  TransactionDetailsFragment,
+  TransactionsForNodeQuery,
 } from "./generated/graphql";
 import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard";
 import { b64encode } from "./utils/base64";
@@ -31,6 +33,7 @@ import { Headers } from "./apollo/constants";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
 import AuthProvider from "./auth/AuthProvider";
 import StubAuthProvider from "./auth/StubAuthProvider";
+import { TransactionsForNode } from "./graphql/TransactionsForNode";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;
@@ -70,27 +73,46 @@ class LightsparkWalletClient {
     return this.activeWalletId;
   }
 
-  public async getWalletDashboard(): Promise<SingleNodeDashboardQuery> {
+  public async getWalletDashboard(
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet
+  ): Promise<SingleNodeDashboardQuery> {
     const walletId = this.requireWalletId();
     const response = await this.client.query({
       query: SingleNodeDashboard,
       variables: {
         nodeId: walletId,
-        network: BitcoinNetwork.Regtest,
+        network: bitcoinNetwork,
         numTransactions: 20,
       },
     });
     return response.data;
   }
 
+  public async getRecentTransactions(
+    numTransactions: number = 20,
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet
+  ): Promise<TransactionDetailsFragment[]> {
+    const walletId = this.requireWalletId();
+    const response = await this.client.query<TransactionsForNodeQuery>({
+      query: TransactionsForNode,
+      variables: {
+        nodeId: walletId,
+        network: bitcoinNetwork,
+        numTransactions,
+      },
+    });
+    return response.data?.current_account?.recent_transactions.edges.map((transaction) => transaction.entity) ?? [];
+  }
+
   public async getAllNodesDashboard(
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet
   ): Promise<MultiNodeDashboardQuery> {
     const response = await this.client.query<MultiNodeDashboardQuery>({
       query: MultiNodeDashboard,
       variables: {
         nodeIds: nodeIds,
-        network: BitcoinNetwork.Regtest,
+        network: bitcoinNetwork,
       },
     });
     return response.data;

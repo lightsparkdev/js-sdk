@@ -8,11 +8,15 @@ import VideoProgressCache from "./VideoProgressCache";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
+import TransactionPoller from "./TransactionPoller";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
 const invoiceHolder = new StreamingInvoiceHolder();
 const lightsparkClient = getLightsparkClient(accountStorage);
+const transactionPoller = lightsparkClient.then(
+  (client) => new TransactionPoller(client, 3000)
+);
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "write_progress" && progressCache.needsWriteToStorage()) {
@@ -23,17 +27,37 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 chrome.alarms.create("write_progress", { periodInMinutes: 5 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  lightsparkClient.then((lightsparkClient) => {
-    onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, accountStorage, sendResponse);
-  });
+  Promise.all([lightsparkClient, transactionPoller]).then(
+    ([lightsparkClient, transactionPoller]) => {
+      onMessageReceived(
+        message,
+        lightsparkClient,
+        progressCache,
+        invoiceHolder,
+        accountStorage,
+        transactionPoller,
+        sendResponse
+      );
+    }
+  );
   return true;
 });
 
 chrome.runtime.onMessageExternal.addListener(
   (message, _sender, sendResponse) => {
-    lightsparkClient.then((lightsparkClient) => {
-      onMessageReceived(message, lightsparkClient, progressCache, invoiceHolder, accountStorage, sendResponse);
-    });
+    Promise.all([lightsparkClient, transactionPoller]).then(
+      ([lightsparkClient, transactionPoller]) => {
+        onMessageReceived(
+          message,
+          lightsparkClient,
+          progressCache,
+          invoiceHolder,
+          accountStorage,
+          transactionPoller,
+          sendResponse
+        );
+      }
+    );
     return true;
   }
 );
@@ -70,7 +94,10 @@ chrome.storage.local.onChanged.addListener((changes) => {
         .newValue as StreamingDemoAccountCredentials;
       if (credentials) {
         lightsparkClient.setAuthProvider(
-          new AccountTokenAuthProvider(credentials.clientId, credentials.clientSecret)
+          new AccountTokenAuthProvider(
+            credentials.clientId,
+            credentials.clientSecret
+          )
         );
         lightsparkClient.setActiveWalletWithoutUnlocking(
           credentials.viewerWalletId

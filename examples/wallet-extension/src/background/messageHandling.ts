@@ -1,9 +1,13 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
-import { CurrencyUnit } from "@lightspark/js-sdk/generated/graphql";
+import {
+  BitcoinNetwork,
+  CurrencyUnit,
+} from "@lightspark/js-sdk/generated/graphql";
 import AccountStorage from "../auth/AccountStorage";
 import { VideoPlaybackUpdateMessage } from "../types";
 import { LinearPaymentStrategy } from "./PaymentStrategy";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
+import TransactionPoller from "./TransactionPoller";
 import VideoProgressCache from "./VideoProgressCache";
 
 const paymentStrategy = new LinearPaymentStrategy(
@@ -54,9 +58,20 @@ export const onMessageReceived = (
   progressCache: VideoProgressCache,
   invoiceHolder: StreamingInvoiceHolder,
   accountStorage: AccountStorage,
+  transactionPoller: TransactionPoller,
   sendResponse: (response: any) => void
 ) => {
   switch (message.id) {
+    case "video_play":
+      transactionPoller.startPolling();
+      sendResponse({ status: "ok" });
+      break;
+    case "video_pause":
+      setTimeout(() => {
+        transactionPoller.stopPolling();
+      }, 3000);
+      sendResponse({ status: "ok" });
+      break;
     case "ping":
       sendResponse("pong");
       break;
@@ -79,45 +94,55 @@ export const onMessageReceived = (
       });
       break;
     case "get_wallet_address":
-      lightsparkClient.getWalletDashboard().then((wallet) => {
-        const walletName =
-          wallet.current_account?.dashboard_overview_nodes.edges[0].entity
-            .display_name || "";
-        sendResponse({ address: walletName });
-      });
+      lightsparkClient
+        .getWalletDashboard(BitcoinNetwork.Regtest)
+        .then((wallet) => {
+          const walletName =
+            wallet.current_account?.dashboard_overview_nodes.edges[0].entity
+              .display_name || "";
+          sendResponse({ address: walletName });
+        });
       break;
     case "get_wallet_transactions":
-      lightsparkClient.getWalletDashboard().then((wallet) => {
-        // TODO: Move this to its own message.
-        const transactions =
-          wallet?.current_account?.recent_transactions.edges.map(
-            (it) => it.entity
-          ) || [];
-        sendResponse({ transactions });
-      });
+      lightsparkClient
+        .getWalletDashboard(BitcoinNetwork.Regtest)
+        .then((wallet) => {
+          // TODO: Move this to its own message.
+          const transactions =
+            wallet?.current_account?.recent_transactions.edges.map(
+              (it) => it.entity
+            ) || [];
+          sendResponse({ transactions });
+        });
       break;
     case "get_streaming_wallet_balances":
-      lightsparkClient.getAllNodesDashboard().then(async (dashboard) => {
-        const zeroSats = { unit: CurrencyUnit.Satoshi, value: 0 };
-        const account = await accountStorage.getAccountCredentials();
-        if (!account) {
-          sendResponse({ balances: { viewerBalance: zeroSats, creatorBalance: zeroSats } });
-          return;
-        }
-        const edges = dashboard.current_account?.dashboard_overview_nodes.edges;
-        const viewerNode = edges?.find(
-          (edge) => edge.entity.id.includes(account.viewerWalletId)
-        )?.entity;
-        const creatorNode = edges?.find(
-          (edge) => edge.entity.id.includes(account.creatorWalletId)
-        )?.entity;
-        const balances = {
-          viewerBalance: viewerNode?.blockchain_balance?.available_balance || zeroSats,
-          creatorBalance:
-            creatorNode?.blockchain_balance?.available_balance || zeroSats,
-        };
-        sendResponse({ balances });
-      });
+      lightsparkClient
+        .getAllNodesDashboard(undefined, BitcoinNetwork.Regtest)
+        .then(async (dashboard) => {
+          const zeroSats = { unit: CurrencyUnit.Satoshi, value: 0 };
+          const account = await accountStorage.getAccountCredentials();
+          if (!account) {
+            sendResponse({
+              balances: { viewerBalance: zeroSats, creatorBalance: zeroSats },
+            });
+            return;
+          }
+          const edges =
+            dashboard.current_account?.dashboard_overview_nodes.edges;
+          const viewerNode = edges?.find((edge) =>
+            edge.entity.id.includes(account.viewerWalletId)
+          )?.entity;
+          const creatorNode = edges?.find((edge) =>
+            edge.entity.id.includes(account.creatorWalletId)
+          )?.entity;
+          const balances = {
+            viewerBalance:
+              viewerNode?.blockchain_balance?.available_balance || zeroSats,
+            creatorBalance:
+              creatorNode?.blockchain_balance?.available_balance || zeroSats,
+          };
+          sendResponse({ balances });
+        });
       break;
     default:
       console.log(`Unknown message received: ${JSON.stringify(message)}`);

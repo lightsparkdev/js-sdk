@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
 import {
+  BitcoinNetwork,
   CurrencyAmount,
   SingleNodeDashboardQuery,
   TransactionDetailsFragment,
@@ -94,7 +95,7 @@ function App() {
       return;
     }
     setScreen(Screen.Balance);
-    lightsparkClient.getWalletDashboard().then(async (dashboard) => {
+    lightsparkClient.getWalletDashboard(BitcoinNetwork.Regtest).then(async (dashboard) => {
       setWalletDashboard(dashboard);
       await chrome.storage.local.set({ walletDashboard: dashboard });
       findActiveStreamingDemoTabs().then((tabs) => {
