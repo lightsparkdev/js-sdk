@@ -21,9 +21,14 @@ const TEST_CREDS = {
   viewerWalletId: TEST_VIEWER_WALLET_ID,
 };
 
-const getInstanceID = async (): Promise<string> => {
-  // TODO: Integrate with IID for realz.
-  return chrome.runtime.id + "1";
+declare namespace chrome {
+  namespace instanceID {
+    function getID(callback: (id: string) => void): void;
+  }
+}
+
+const getInstanceID = (): Promise<string> => {
+  return new Promise<string>((resolve) => chrome.instanceID.getID(resolve));;
 };
 
 export const reserveStreamingDemoAccountCredentials =

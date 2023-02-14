@@ -13,7 +13,8 @@
         "tabs",
         "storage",
         "webNavigation",
-        "alarms"
+        "alarms",
+        "gcm"
     ],
     "icons": {
         "16": "lightspark_icon_circle.png",
