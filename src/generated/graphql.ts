@@ -38,6 +38,7 @@ export type Account = Entity & {
   name?: Maybe<Scalars['String']>;
   /** The nodes that are managed by this account. */
   nodes: AccountToNodesConnection;
+  payment_requests: AccountToPaymentRequestsConnection;
   /** The sum of the channel balances that are available to receive on the nodes of this account. */
   remote_balance?: Maybe<CurrencyAmount>;
   transactions: AccountToTransactionsConnection;
@@ -88,6 +89,16 @@ export type AccountNodesArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   first?: InputMaybe<Scalars['Int']>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
+};
+
+
+export type AccountPayment_RequestsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  after_date?: InputMaybe<Scalars['DateTime']>;
+  before_date?: InputMaybe<Scalars['DateTime']>;
+  bitcoin_network?: InputMaybe<BitcoinNetwork>;
+  first?: InputMaybe<Scalars['Int']>;
+  lightning_node_id?: InputMaybe<Scalars['ID']>;
 };
 
 
@@ -165,6 +176,18 @@ export type AccountToNodesConnection = {
   page_info: PageInfo;
   /** The main purpose for the selected set of nodes. It is automatically determined from the nodes that are selected in this connection and is used for optimization purposes, as well as to determine the variation of the UI that should be presented to the user. */
   purpose?: Maybe<LightsparkNodePurpose>;
+};
+
+export type AccountToPaymentRequestEdge = {
+  __typename: 'AccountToPaymentRequestEdge';
+  entity: PaymentRequest;
+};
+
+export type AccountToPaymentRequestsConnection = {
+  __typename: 'AccountToPaymentRequestsConnection';
+  count?: Maybe<Scalars['Int']>;
+  edges: Array<AccountToPaymentRequestEdge>;
+  page_info: PageInfo;
 };
 
 export type AccountToTransactionEdge = {
@@ -423,9 +446,12 @@ export type CreateNodeWalletAddressOutput = {
   wallet_address: Scalars['String'];
 };
 
+/** Represents the value and unit for an amount of currency. */
 export type CurrencyAmount = {
   __typename: 'CurrencyAmount';
+  /** The unit of currency for this CurrencyAmount. */
   unit: CurrencyUnit;
+  /** The numeric value for this CurrencyAmount. */
   value: Scalars['Long'];
 };
 
@@ -1148,6 +1174,22 @@ export type Secret = {
   encrypted_value: Scalars['String'];
 };
 
+export type Subscription = {
+  __typename: 'Subscription';
+  entity: Entity;
+  transactions: Transaction;
+};
+
+
+export type SubscriptionEntityArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type SubscriptionTransactionsArgs = {
+  node_ids: Array<Scalars['ID']>;
+};
+
 export type Transaction = {
   amount: CurrencyAmount;
   /** The date and time when this transaction was initiated. */
@@ -1408,7 +1450,7 @@ export type TransactionsForNodeQueryVariables = Exact<{
 
 export type TransactionsForNodeQuery = { __typename: 'Query', current_account?: { __typename: 'Account', id: string, name?: string | null, recent_transactions: { __typename: 'AccountToTransactionsConnection', count?: number | null, total_amount_transacted?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, edges: Array<{ __typename: 'AccountToTransactionEdge', entity: { __typename: 'ChannelClosingTransaction', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'ChannelOpeningTransaction', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'Deposit', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, deposit_destination: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null }, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'IncomingPayment', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, incoming_payment_origin?: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null } | null, incoming_payment_destination: { __typename: 'LightsparkNode', display_name: string }, payment_request?: { __typename: 'Invoice', data: { __typename: 'InvoiceData', memo?: string | null } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'OutgoingPayment', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, outgoing_payment_origin: { __typename: 'LightsparkNode', display_name: string }, outgoing_payment_destination?: { __typename: 'GraphNode', display_name: string, public_key?: string | null } | { __typename: 'LightsparkNode', display_name: string, public_key?: string | null } | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'RoutingTransaction', failure_reason?: RoutingTransactionFailureReason | null, id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, incoming_channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, outgoing_channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'Withdrawal', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, withdraw_origin: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null }, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } }> } } | null };
 
-export type AccountKeySpecifier = ('api_tokens' | 'blockchain_balance' | 'channels' | 'company_information' | 'conductivity' | 'created_at' | 'id' | 'local_balance' | 'name' | 'nodes' | 'remote_balance' | 'transactions' | 'updated_at' | 'uptime_percentage' | 'users' | 'webhooks_settings' | AccountKeySpecifier)[];
+export type AccountKeySpecifier = ('api_tokens' | 'blockchain_balance' | 'channels' | 'company_information' | 'conductivity' | 'created_at' | 'id' | 'local_balance' | 'name' | 'nodes' | 'payment_requests' | 'remote_balance' | 'transactions' | 'updated_at' | 'uptime_percentage' | 'users' | 'webhooks_settings' | AccountKeySpecifier)[];
 export type AccountFieldPolicy = {
 	api_tokens?: FieldPolicy<any> | FieldReadFunction<any>,
 	blockchain_balance?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1420,6 +1462,7 @@ export type AccountFieldPolicy = {
 	local_balance?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	nodes?: FieldPolicy<any> | FieldReadFunction<any>,
+	payment_requests?: FieldPolicy<any> | FieldReadFunction<any>,
 	remote_balance?: FieldPolicy<any> | FieldReadFunction<any>,
 	transactions?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1456,6 +1499,16 @@ export type AccountToNodesConnectionFieldPolicy = {
 	edges?: FieldPolicy<any> | FieldReadFunction<any>,
 	page_info?: FieldPolicy<any> | FieldReadFunction<any>,
 	purpose?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type AccountToPaymentRequestEdgeKeySpecifier = ('entity' | AccountToPaymentRequestEdgeKeySpecifier)[];
+export type AccountToPaymentRequestEdgeFieldPolicy = {
+	entity?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type AccountToPaymentRequestsConnectionKeySpecifier = ('count' | 'edges' | 'page_info' | AccountToPaymentRequestsConnectionKeySpecifier)[];
+export type AccountToPaymentRequestsConnectionFieldPolicy = {
+	count?: FieldPolicy<any> | FieldReadFunction<any>,
+	edges?: FieldPolicy<any> | FieldReadFunction<any>,
+	page_info?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type AccountToTransactionEdgeKeySpecifier = ('entity' | AccountToTransactionEdgeKeySpecifier)[];
 export type AccountToTransactionEdgeFieldPolicy = {
@@ -1902,6 +1955,11 @@ export type SecretFieldPolicy = {
 	cipher?: FieldPolicy<any> | FieldReadFunction<any>,
 	encrypted_value?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type SubscriptionKeySpecifier = ('entity' | 'transactions' | SubscriptionKeySpecifier)[];
+export type SubscriptionFieldPolicy = {
+	entity?: FieldPolicy<any> | FieldReadFunction<any>,
+	transactions?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type TransactionKeySpecifier = ('amount' | 'created_at' | 'id' | 'resolved_at' | 'status' | 'transaction_hash' | 'updated_at' | TransactionKeySpecifier)[];
 export type TransactionFieldPolicy = {
 	amount?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1991,6 +2049,14 @@ export type StrictTypedTypePolicies = {
 	AccountToNodesConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AccountToNodesConnectionKeySpecifier | (() => undefined | AccountToNodesConnectionKeySpecifier),
 		fields?: AccountToNodesConnectionFieldPolicy,
+	},
+	AccountToPaymentRequestEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AccountToPaymentRequestEdgeKeySpecifier | (() => undefined | AccountToPaymentRequestEdgeKeySpecifier),
+		fields?: AccountToPaymentRequestEdgeFieldPolicy,
+	},
+	AccountToPaymentRequestsConnection?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AccountToPaymentRequestsConnectionKeySpecifier | (() => undefined | AccountToPaymentRequestsConnectionKeySpecifier),
+		fields?: AccountToPaymentRequestsConnectionFieldPolicy,
 	},
 	AccountToTransactionEdge?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AccountToTransactionEdgeKeySpecifier | (() => undefined | AccountToTransactionEdgeKeySpecifier),
@@ -2207,6 +2273,10 @@ export type StrictTypedTypePolicies = {
 	Secret?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SecretKeySpecifier | (() => undefined | SecretKeySpecifier),
 		fields?: SecretFieldPolicy,
+	},
+	Subscription?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SubscriptionKeySpecifier | (() => undefined | SubscriptionKeySpecifier),
+		fields?: SubscriptionFieldPolicy,
 	},
 	Transaction?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | TransactionKeySpecifier | (() => undefined | TransactionKeySpecifier),
