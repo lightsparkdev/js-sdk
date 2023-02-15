@@ -32,7 +32,7 @@ const getInstanceID = (): Promise<string> => {
 };
 
 export const reserveStreamingDemoAccountCredentials =
-  async (): Promise<StreamingDemoAccountCredentials> => {
+  async (): Promise<StreamingDemoAccountCredentials|null> => {
     const response = await fetch(RESERVE_ENDPOINT, {
       method: "POST",
       headers: {
@@ -43,6 +43,10 @@ export const reserveStreamingDemoAccountCredentials =
         extension_id: await getInstanceID(),
       }),
     });
+    if (!response.ok) {
+      console.error("Failed to reserve demo account", response.statusText);
+      return null;
+    }
     const data = await response.json();
     return {
       clientId: data.api_token.client_id,

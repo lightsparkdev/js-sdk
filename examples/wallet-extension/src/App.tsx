@@ -254,11 +254,20 @@ function LoginScreen(props: {
   onCreatedAccount: (credentials: StreamingDemoAccountCredentials) => void;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [errorText, setErrorText] = React.useState<string | undefined>(undefined);
 
   const createWallet = async () => {
     setIsLoading(true);
     const creds = await reserveStreamingDemoAccountCredentials();
-    if (creds) props.onCreatedAccount(creds);
+    if (creds) {
+      props.onCreatedAccount(creds);
+      setErrorText(undefined);
+    } else {
+      setErrorText("Failed to create wallet.");
+      setTimeout(() => {
+        setErrorText(undefined);
+      }, 3000);
+    }
     setIsLoading(false);
   };
 
@@ -286,6 +295,7 @@ function LoginScreen(props: {
         )}
         {isLoading ? "Loading..." : "Create Wallet"}
       </CreateWalletButton>
+      {errorText ? <ErrorText>{errorText}</ErrorText> : <></>}
     </div>
   );
 }
@@ -314,6 +324,13 @@ const InstructionsText = styled.p`
   font-weight: 500;
   color: #999999;
   margin-bottom: 16px;
+`;
+
+const ErrorText = styled.p`
+  font-size: 10px;
+  font-weight: 700;
+  color: red;
+  margin-bottom: 8px;
 `;
 
 const LoginHeader = styled.p`
