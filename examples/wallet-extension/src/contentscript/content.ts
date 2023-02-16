@@ -1,6 +1,10 @@
 import { ChannelSource } from "../types";
 import { VideoPlaybackUpdateMessage } from "../types";
-import { updateTransactionRow, updateWalletBalances } from "./lightsparkDemoDom";
+import {
+  updateTransactionRows,
+  updateWalletBalances,
+} from "./lightsparkDemoDom";
+import { TransactionDetailsFragment } from "@lightspark/js-sdk/generated/graphql";
 
 let currentTrackingDetails: VideoPlaybackUpdateMessage | null = null;
 let timeUpdateListener: (() => void) | null = null;
@@ -21,9 +25,13 @@ const messageReceived = (
     sendResponse(response);
   } else if (msg.id === "is_video_playing") {
     sendResponse(currentTrackingDetails?.isPlaying || false);
-  } else if (msg.id === "new_transactions" || msg.id === "transactions_updated") {
-    msg.transactions.forEach((transaction: any) => {
-      updateTransactionRow(transaction);
+  } else if (
+    msg.id === "new_transactions" ||
+    msg.id === "transactions_updated"
+  ) {
+    updateWalletBalances().then(() => {
+      const transactions: TransactionDetailsFragment[] = msg.transactions;
+      updateTransactionRows(transactions);
     });
   }
 };

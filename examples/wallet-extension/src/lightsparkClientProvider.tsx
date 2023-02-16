@@ -9,13 +9,16 @@ export const getLightsparkClient = async (accountStorage: AccountStorage) => {
     // TODO: Remove the test account usage once the account onboarding is ready.
     const account = await accountStorage.getAccountCredentials();
     const authProvider =
-      account === null
+      (account === null || Date.now() > account.expiresAt)
         ? undefined
         : new AccountTokenAuthProvider(account.clientId, account.clientSecret);
     instance = new LightsparkWalletClient(
       authProvider,
       account?.viewerWalletId
     );
+    if (account && authProvider) {
+      await instance.loadWalletKey(account.viewerSigningKey);
+    }
   }
   return instance;
 };

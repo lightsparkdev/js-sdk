@@ -1,7 +1,11 @@
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import StreamingDemoAccountCredentials from "./StreamingDemoCredentials";
 
 const GRAPH_QL_ENDPOINT =
   "https://api.dev.dev.sparkinfra.net/graphql";
+
+dayjs.extend(utc);
 
 // TODO: Remove when the backend is fully ready.
 // const TEST_ACCOUNT = {
@@ -72,6 +76,7 @@ export const reserveStreamingDemoAccountCredentials =
       creatorWalletId: data.receiver_node_id,
       viewerSigningKey: data.signing_private_key,
       apiTokenId: data.api_token.id,
+      expiresAt: dayjs.utc(data.expires_at).utc().valueOf(),
     };
   };
 

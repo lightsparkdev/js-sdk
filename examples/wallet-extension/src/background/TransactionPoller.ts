@@ -41,7 +41,8 @@ class TransactionPoller {
     console.log("Polling for transactions...")
     const transactions = await this.lightsparkClient.getRecentTransactions(
       20,
-      BitcoinNetwork.Regtest
+      BitcoinNetwork.Regtest,
+      true
     );
     console.log(`Transactions: ${transactions}`);
     this.broadcastTransactions(transactions);

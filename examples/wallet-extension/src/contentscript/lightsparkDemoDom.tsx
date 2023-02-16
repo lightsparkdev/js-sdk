@@ -9,51 +9,59 @@ import TransactionLogRow from "../components/TransactionLogRow";
 
 export const updateWalletBalances = async () => {
   const { balances } = await getWalletBalances();
-  if (!balances) {
+  const viewerbalanceElement = document.getElementById("viewer-balance");
+  const creatorBalanceElement = document.getElementById("creator-balance");
+  if (!balances || !viewerbalanceElement || !creatorBalanceElement) {
     return;
   }
   ReactDOM.render(
     <CurrencyAmount
       amount={balances.viewerBalance}
-      shortNumber
       shortUnit
       displayUnit={CurrencyUnit.Satoshi}
-      minimumFractionDigits={0}
       symbol
     />,
-    document.getElementById("viewer-balance")!.lastElementChild!
+    viewerbalanceElement.lastElementChild!
   );
   ReactDOM.render(
     <CurrencyAmount
       amount={balances.creatorBalance}
-      shortNumber
       shortUnit
       displayUnit={CurrencyUnit.Satoshi}
       minimumFractionDigits={0}
       symbol
     />,
-    document.getElementById("creator-balance")!.lastElementChild!
+    creatorBalanceElement.lastElementChild!
   );
 };
 
-export const updateTransactionRow = async (
-  transaction: TransactionDetailsFragment
+const transactions = new Map<string, TransactionDetailsFragment>();
+
+export const updateTransactionRows = async (
+  changedTransactions: TransactionDetailsFragment[]
 ) => {
+  changedTransactions.forEach((transaction) => {
+    transactions.set(transaction.id, transaction);
+  });
   const rowWrapper = document.createElement("div");
-  ReactDOM.render(<TransactionLogRow transaction={transaction} />, rowWrapper);
+  ReactDOM.render((
+    <>
+      {Array.from(transactions.values()).sort((a, b) => b.created_at.localeCompare(a.created_at)).map((transaction) => {
+        return (
+          <TransactionLogRow transaction={transaction} />
+        );
+      })}
+    </>
+    ),
+    rowWrapper
+  );
   const list = document.getElementById("transaction-log");
   if (!list) {
     console.warn("Trying to update transaction row without transaction log element");
     return;
   }
-  const existingRow = list.querySelector(
-    `[data-transaction-id="${transaction.id}"]`
-  );
-  if (existingRow) {
-    list.replaceChild(rowWrapper.firstChild!, existingRow);
-  } else {
-    list.appendChild(rowWrapper.firstChild!);
-  }
+  const header = list.firstChild!;
+  list.replaceChildren(header, ...Array.from(rowWrapper.childNodes.values()));
 };
 
 const getWalletBalances = () => {

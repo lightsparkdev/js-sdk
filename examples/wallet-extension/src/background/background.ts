@@ -1,7 +1,6 @@
 import { getLightsparkClient } from "../lightsparkClientProvider";
 import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
 import StubAuthProvider from "@lightspark/js-sdk/auth/StubAuthProvider";
-import { startListeningForNavigations } from "./NavigationTracker";
 import AccountStorage from "../auth/AccountStorage";
 import { onMessageReceived } from "./messageHandling";
 import VideoProgressCache from "./VideoProgressCache";
@@ -9,6 +8,7 @@ import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
 import TransactionPoller from "./TransactionPoller";
+import { unreserveStreamingDemoAccountCredentials } from "../auth/DemoAccountProvider";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
@@ -17,6 +17,7 @@ const lightsparkClient = getLightsparkClient(accountStorage);
 const transactionPoller = lightsparkClient.then(
   (client) => new TransactionPoller(client, 3000)
 );
+let lastKnownStreamingTabId: number | undefined;
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "write_progress" && progressCache.needsWriteToStorage()) {
@@ -62,20 +63,46 @@ chrome.runtime.onMessageExternal.addListener(
   }
 );
 
-startListeningForNavigations();
+const onNavigation = (
+  details: chrome.webNavigation.WebNavigationFramedCallbackDetails
+) => {
+  console.log(`Navigated to ${details.url}`);
+  if (details.url.includes("demos/streaming")) {
+    lastKnownStreamingTabId = details.tabId;
+  }
+  chrome.tabs.sendMessage(
+    details.tabId,
+    { id: "get_video_details" },
+    (response) => {
+      console.log(`Got details from tab: ${JSON.stringify(response)}`);
+    }
+  );
+};
 
-const reloadOrOpenStreamingDemo = () => {
-  findActiveStreamingDemoTabs().then((tabs) => {
+const urlFilter = {
+  url: [
+    { hostSuffix: "youtube.com" },
+    { hostSuffix: "twitch.tv" },
+    { pathContains: "demos/streaming" },
+  ],
+};
+chrome.webNavigation.onCompleted.addListener(onNavigation, urlFilter);
+chrome.webNavigation.onHistoryStateUpdated.addListener(onNavigation, urlFilter);
+
+const reloadOrOpenStreamingDemo = (openIfMissing: boolean = true) => {
+  findActiveStreamingDemoTabs().then(async (tabs) => {
     console.log(`Found ${tabs.length} tabs to reload.`);
     if (tabs.length > 0) {
       chrome.tabs.update(tabs[0].id!, { active: true, highlighted: true });
       chrome.tabs.reload(tabs[0].id!);
-    } else {
+      lastKnownStreamingTabId = tabs[0].id;
+    } else if (openIfMissing) {
       // TODO: Replace with the final URL.
-      chrome.tabs.create({
+      const newTab = await chrome.tabs.create({
         url: "https://app.lightspark.com/demos/streaming",
         active: true,
       });
+      lastKnownStreamingTabId = newTab.id;
     }
   });
 };
@@ -113,9 +140,20 @@ chrome.storage.local.onChanged.addListener((changes) => {
         await invoiceHolder.clearInvoice();
         lightsparkClient.setActiveWalletWithoutUnlocking(undefined);
       }
-      reloadOrOpenStreamingDemo();
+      reloadOrOpenStreamingDemo(!!credentials);
     });
     return true;
   }
   return false;
+});
+
+chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
+  if (tabId === lastKnownStreamingTabId) {
+    lastKnownStreamingTabId = undefined;
+    const account = await accountStorage.getAccountCredentials();
+    if (account) {
+      await unreserveStreamingDemoAccountCredentials(account);
+    }
+    chrome.storage.local.clear();
+  }
 });

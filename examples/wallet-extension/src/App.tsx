@@ -49,7 +49,12 @@ function App() {
           setWalletDashboard(cachedBalance.walletDashboard);
         }
         const accountStorage = new AccountStorage();
-        setCredentials(await accountStorage.getAccountCredentials());
+        let credentials = await accountStorage.getAccountCredentials();
+        if (credentials && Date.now() > credentials.expiresAt) {
+          await chrome.storage.local.clear();
+          credentials = null;
+        }
+        setCredentials(credentials);
         const client = await getLightsparkClient(accountStorage);
         setLightsparkClient(client);
       });
@@ -116,7 +121,7 @@ function App() {
   ) : screen === Screen.Balance ? (
     <BalanceScreen
       balance={
-        walletDashboard?.current_account?.blockchain_balance?.available_balance
+        walletDashboard?.current_account?.local_balance
       }
       transactions={
         walletDashboard?.current_account?.recent_transactions.edges.map(

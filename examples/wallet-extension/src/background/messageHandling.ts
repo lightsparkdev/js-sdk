@@ -28,6 +28,11 @@ const playbackMessageReceived = async (
     message.prevProgress || 0,
     message.progress
   );
+  // Only send payments for the demo streaming video for now:
+  if (message.videoID !== "ls_demo") {
+    sendResponse({ amountToPay: { unit: CurrencyUnit.Satoshi, value: 0 } });
+    return;
+  }
   const amountToPay = paymentStrategy.onPlayedRange(
     previousRanges,
     progressCache.getPlayedRanges(message.videoID)
@@ -117,7 +122,7 @@ export const onMessageReceived = (
       break;
     case "get_streaming_wallet_balances":
       lightsparkClient
-        .getAllNodesDashboard(undefined, BitcoinNetwork.Regtest)
+        .getAllNodesDashboard(undefined, BitcoinNetwork.Regtest, true)
         .then(async (dashboard) => {
           const zeroSats = { unit: CurrencyUnit.Satoshi, value: 0 };
           const account = await accountStorage.getAccountCredentials();
@@ -136,10 +141,8 @@ export const onMessageReceived = (
             edge.entity.id.includes(account.creatorWalletId)
           )?.entity;
           const balances = {
-            viewerBalance:
-              viewerNode?.blockchain_balance?.available_balance || zeroSats,
-            creatorBalance:
-              creatorNode?.blockchain_balance?.available_balance || zeroSats,
+            viewerBalance: viewerNode?.local_balance || zeroSats,
+            creatorBalance: creatorNode?.local_balance || zeroSats,
           };
           sendResponse({ balances });
         });

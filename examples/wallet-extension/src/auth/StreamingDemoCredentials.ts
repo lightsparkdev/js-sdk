@@ -5,4 +5,5 @@ export default interface StreamingDemoAccountCredentials {
   creatorWalletId: string;
   viewerSigningKey: string;
   apiTokenId: string;
+  expiresAt: number;
 }
