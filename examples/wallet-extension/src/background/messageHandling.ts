@@ -109,16 +109,23 @@ export const onMessageReceived = (
         });
       break;
     case "get_wallet_transactions":
-      lightsparkClient
-        .getWalletDashboard(BitcoinNetwork.Regtest)
-        .then((wallet) => {
-          // TODO: Move this to its own message.
-          const transactions =
-            wallet?.current_account?.recent_transactions.edges.map(
-              (it) => it.entity
-            ) || [];
-          sendResponse({ transactions });
-        });
+      accountStorage.getAccountCredentials().then((account) => {
+        if (!account) {
+          sendResponse({ transactions: [] });
+          return;
+        }
+
+        lightsparkClient
+          .getRecentTransactions(
+            20,
+            BitcoinNetwork.Regtest,
+            true,
+            account.allocationTime
+          )
+          .then((transactions) => {
+            sendResponse({ transactions });
+          });
+      });
       break;
     case "get_streaming_wallet_balances":
       lightsparkClient

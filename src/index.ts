@@ -74,7 +74,9 @@ class LightsparkWalletClient {
   }
 
   public async getWalletDashboard(
-    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet,
+    transactionsAfterDate: Maybe<string> = undefined,
+    skipCache: boolean = false,
   ): Promise<SingleNodeDashboardQuery> {
     const walletId = this.requireWalletId();
     const response = await this.client.query({
@@ -83,7 +85,9 @@ class LightsparkWalletClient {
         nodeId: walletId,
         network: bitcoinNetwork,
         numTransactions: 20,
+        transactionsAfterDate,
       },
+      fetchPolicy: skipCache ? "no-cache" : "cache-first",
     });
     return response.data;
   }
@@ -91,7 +95,8 @@ class LightsparkWalletClient {
   public async getRecentTransactions(
     numTransactions: number = 20,
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.Mainnet,
-    skipCache: boolean = false
+    skipCache: boolean = false,
+    afterDate: Maybe<string> = undefined
   ): Promise<TransactionDetailsFragment[]> {
     const walletId = this.requireWalletId();
     const response = await this.client.query<TransactionsForNodeQuery>({
@@ -100,6 +105,7 @@ class LightsparkWalletClient {
         nodeId: walletId,
         network: bitcoinNetwork,
         numTransactions,
+        afterDate
       },
       fetchPolicy: skipCache ? "no-cache" : "cache-first",
     });

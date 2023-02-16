@@ -100,7 +100,7 @@ function App() {
       return;
     }
     setScreen(Screen.Balance);
-    lightsparkClient.getWalletDashboard(BitcoinNetwork.Regtest).then(async (dashboard) => {
+    lightsparkClient.getWalletDashboard(BitcoinNetwork.Regtest, credentials.allocationTime).then(async (dashboard) => {
       setWalletDashboard(dashboard);
       await chrome.storage.local.set({ walletDashboard: dashboard });
       findActiveStreamingDemoTabs().then((tabs) => {

@@ -1416,6 +1416,7 @@ export type SingleNodeDashboardQueryVariables = Exact<{
   network: BitcoinNetwork;
   nodeId: Scalars['ID'];
   numTransactions?: InputMaybe<Scalars['Int']>;
+  transactionsAfterDate?: InputMaybe<Scalars['DateTime']>;
   transactionTypes?: InputMaybe<Array<TransactionType> | TransactionType>;
   transaction_statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;
@@ -1443,6 +1444,7 @@ export type TransactionsForNodeQueryVariables = Exact<{
   network: BitcoinNetwork;
   nodeId: Scalars['ID'];
   numTransactions?: InputMaybe<Scalars['Int']>;
+  afterDate?: InputMaybe<Scalars['DateTime']>;
   transactionTypes?: InputMaybe<Array<TransactionType> | TransactionType>;
   transaction_statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
 }>;

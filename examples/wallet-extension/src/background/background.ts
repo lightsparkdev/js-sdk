@@ -15,7 +15,7 @@ const accountStorage = new AccountStorage();
 const invoiceHolder = new StreamingInvoiceHolder();
 const lightsparkClient = getLightsparkClient(accountStorage);
 const transactionPoller = lightsparkClient.then(
-  (client) => new TransactionPoller(client, 3000)
+  (client) => new TransactionPoller(client, accountStorage, 3000)
 );
 let lastKnownStreamingTabId: number | undefined;
 

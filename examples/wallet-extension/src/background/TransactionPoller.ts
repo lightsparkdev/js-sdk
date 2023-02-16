@@ -4,6 +4,7 @@ import {
   TransactionDetailsFragment,
 } from "@lightspark/js-sdk/generated/graphql";
 import autoBind from "auto-bind";
+import AccountStorage from "../auth/AccountStorage";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 
 class TransactionPoller {
@@ -12,6 +13,7 @@ class TransactionPoller {
 
   constructor(
     private readonly lightsparkClient: LightsparkWalletClient,
+    private readonly accountStorage: AccountStorage,
     private readonly pollingInterval: number
   ) {
     autoBind(this);
@@ -42,7 +44,8 @@ class TransactionPoller {
     const transactions = await this.lightsparkClient.getRecentTransactions(
       20,
       BitcoinNetwork.Regtest,
-      true
+      true,
+      (await this.accountStorage.getAccountCredentials())?.allocationTime
     );
     console.log(`Transactions: ${transactions}`);
     this.broadcastTransactions(transactions);
