@@ -2,7 +2,7 @@ import autoBind from "auto-bind";
 import { b64encode } from "../utils/base64";
 import AuthProvider from "./AuthProvider";
 
-export class AccountTokenAuthProvider implements AuthProvider {
+class AccountTokenAuthProvider implements AuthProvider {
   private readonly utf8AuthBytes: Uint8Array;
 
   constructor(tokenId: string, token: string) {
@@ -20,3 +20,5 @@ export class AccountTokenAuthProvider implements AuthProvider {
     return true;
   }
 }
+
+export default AccountTokenAuthProvider;

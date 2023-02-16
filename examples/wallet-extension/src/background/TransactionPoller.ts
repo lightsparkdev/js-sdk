@@ -47,7 +47,6 @@ class TransactionPoller {
       true,
       (await this.accountStorage.getAccountCredentials())?.allocationTime
     );
-    console.log(`Transactions: ${transactions}`);
     this.broadcastTransactions(transactions);
   }
 

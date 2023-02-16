@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
-import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
+import AccountTokenAuthProvider from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
 import {
   BitcoinNetwork,
   CurrencyAmount,
