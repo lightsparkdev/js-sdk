@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "@apollo/client/core/index.js";
 
 export const DecodeInvoice = gql`
   query DecodeInvoice($encoded_payment_request: String!) {

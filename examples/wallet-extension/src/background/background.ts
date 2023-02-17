@@ -1,6 +1,5 @@
 import { getLightsparkClient } from "../lightsparkClientProvider";
-import AccountTokenAuthProvider from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
-import StubAuthProvider from "@lightspark/js-sdk/auth/StubAuthProvider";
+import {AccountTokenAuthProvider, StubAuthProvider } from "@lightspark/js-sdk/auth";
 import AccountStorage from "../auth/AccountStorage";
 import { onMessageReceived } from "./messageHandling";
 import VideoProgressCache from "./VideoProgressCache";

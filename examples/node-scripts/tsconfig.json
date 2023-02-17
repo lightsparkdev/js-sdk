@@ -6,6 +6,8 @@
     "transpileOnly": true,
 
     "files": true,
+    "experimentalResolver": true,
+    "esm": true,
 
     "compilerOptions": {
       "lib": ["ESNext"],

@@ -1,4 +1,4 @@
-import { ApolloClient, NormalizedCacheObject } from "@apollo/client/core";
+import { ApolloClient } from "@apollo/client/core/index.js";
 import autoBind from "auto-bind";
 import {
   BitcoinNetwork,
@@ -14,26 +14,27 @@ import {
   SingleNodeDashboardQuery,
   TransactionDetailsFragment,
   TransactionsForNodeQuery,
-} from "./generated/graphql";
-import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard";
-import { b64encode } from "./utils/base64";
-import { CreateInvoice } from "./graphql/CreateInvoice";
-import { DecodeInvoice } from "./graphql/DecodeInvoice";
-import { FeeEstimate } from "./graphql/FeeEstimate";
-import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey";
-import { Maybe } from "graphql/jsutils/Maybe";
-import { decryptSecretWithNodePassword } from "./crypto/crypto";
-import NodeKeyCache from "./crypto/NodeKeyCache";
+} from "./generated/graphql.js";
+import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard.js";
+import { b64encode } from "./utils/base64.js";
+import { CreateInvoice } from "./graphql/CreateInvoice.js";
+import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
+import { FeeEstimate } from "./graphql/FeeEstimate.js";
+import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
+import { Maybe } from "graphql/jsutils/Maybe.js";
+import { decryptSecretWithNodePassword } from "./crypto/crypto.js";
+import NodeKeyCache from "./crypto/NodeKeyCache.js";
 import {
   getNewApolloClient,
   setApolloClientOptions,
-} from "./apollo/apolloClient";
-import { PayInvoice } from "./graphql/PayInvoice";
-import { Headers } from "./apollo/constants";
-import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard";
-import AuthProvider from "./auth/AuthProvider";
-import StubAuthProvider from "./auth/StubAuthProvider";
-import { TransactionsForNode } from "./graphql/TransactionsForNode";
+} from "./apollo/apolloClient.js";
+import { PayInvoice } from "./graphql/PayInvoice.js";
+import { Headers } from "./apollo/constants.js";
+import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
+import AuthProvider from "./auth/AuthProvider.js";
+import StubAuthProvider from "./auth/StubAuthProvider.js";
+import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
+import { NormalizedCacheObject } from "@apollo/client/cache/inmemory/types.js";
 
 class LightsparkWalletClient {
   private client: ApolloClient<NormalizedCacheObject>;

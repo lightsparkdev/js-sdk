@@ -1,7 +1,8 @@
 #!/usr/bin/env ts-node
 
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
-import AccountTokenAuthProvider from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
+import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth";
+import { BitcoinNetwork } from "@lightspark/js-sdk/generated/graphql";
 
 
 const TEST_ACCOUNT = {
@@ -20,6 +21,6 @@ const TEST_CREDS = {
 };
 
 const client = new LightsparkWalletClient(new AccountTokenAuthProvider(TEST_ACCOUNT.clientId, TEST_ACCOUNT.clientSecret), TEST_VIEWER_WALLET_ID);
-client.getWalletDashboard().then((dashboard) => {
-    console.log("Got dashboard:", JSON.stringify(dashboard));
+client.getWalletDashboard(BitcoinNetwork.Regtest).then((dashboard) => {
+    console.log("Got dashboard:", JSON.stringify(dashboard, null, 2));
 });

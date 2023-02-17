@@ -16,7 +16,7 @@
       "noImplicitReturns": true,                /* Report error when not all code paths in function return a value. */
       /* Module Resolution Options */
       "baseUrl": "./src",                       /* Base directory to resolve non-absolute module names. */
-      "moduleResolution": "node",
+      "moduleResolution": "node16",
       "types": [
         "node",
         ],                                        /* Type declaration files to be included in compilation. */

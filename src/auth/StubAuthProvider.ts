@@ -1,4 +1,4 @@
-import AuthProvider from "./AuthProvider";
+import AuthProvider from "./AuthProvider.js";
 
 export default class StubAuthProvider implements AuthProvider {
   async addAuthHeaders(headers: any): Promise<any> {

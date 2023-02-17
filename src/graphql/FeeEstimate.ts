@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "@apollo/client/core/index.js";
 
 export const FeeEstimate = gql`
   query FeeEstimate($bitcoin_network: BitcoinNetwork!) {

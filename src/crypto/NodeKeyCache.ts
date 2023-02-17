@@ -1,5 +1,5 @@
 import autoBind from "auto-bind";
-import { b64decode } from "../utils/base64";
+import { b64decode } from "../utils/base64.js";
 
 class NodeKeyCache {
   private idToKey: Map<string, CryptoKey>;

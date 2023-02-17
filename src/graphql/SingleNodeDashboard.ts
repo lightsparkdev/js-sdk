@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client/core";
-import { TransactionDetails } from "./TransactionDetails";
+import { gql } from "@apollo/client/core/index.js";
+import { TransactionDetails } from "./TransactionDetails.js";
 
 export const SingleNodeDashboard = gql`
 query SingleNodeDashboard(

@@ -4,9 +4,12 @@
   "description": "Lightspark JS SDK",
   "exports": {
     ".": "./index.js",
-    "./auth/AccountTokenAuthProvider": "./auth/AccountTokenAuthProvider.js"
+    "./auth": "./auth/index.js",
+    "./generated/graphql": "./generated/graphql.js"
   },
   "type": "module",
+  "types": "./index.d.ts",
+  "module": "./index.js",
   "engines": {
     "node": ">=14.16"
   },

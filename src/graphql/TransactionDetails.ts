@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client/core";
+import { gql } from "@apollo/client/core/index.js";
 
 export const TransactionDetails = gql`
   fragment TransactionDetails on Transaction {

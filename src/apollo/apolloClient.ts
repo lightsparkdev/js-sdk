@@ -2,19 +2,19 @@
 import {
   ApolloClient,
   InMemoryCache,
-  createHttpLink,
-  ApolloLink,
-} from "@apollo/client/core";
+} from "@apollo/client/core/index.js";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import { Headers } from "./constants";
-import { b64encode } from "../utils/base64";
-import { getNonce } from "../crypto/crypto";
-import type { NormalizedCacheObject } from "@apollo/client/core";
-import { setContext } from "@apollo/client/link/context";
-import NodeKeyCache from "../crypto/NodeKeyCache";
-import AuthProvider from "../auth/AuthProvider";
-import StubAuthProvider from "../auth/StubAuthProvider";
+import utc from "dayjs/plugin/utc.js";
+import { Headers } from "./constants.js";
+import { b64encode } from "../utils/base64.js";
+import { getNonce } from "../crypto/crypto.js";
+import { setContext } from "@apollo/client/link/context/index.js";
+import NodeKeyCache from "../crypto/NodeKeyCache.js";
+import AuthProvider from "../auth/AuthProvider.js";
+import StubAuthProvider from "../auth/StubAuthProvider.js";
+import { ApolloLink } from "@apollo/client/link/core/index.js";
+import { createHttpLink } from "@apollo/client/link/http/index.js";
+import { NormalizedCacheObject } from "@apollo/client/cache/inmemory/types.js";
 
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 dayjs.extend(utc);

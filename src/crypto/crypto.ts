@@ -1,5 +1,5 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { b64decode, b64encode } from "../utils/base64";
+import { b64decode, b64encode } from "../utils/base64.js";
 
 const ITERATIONS = 500000;
 

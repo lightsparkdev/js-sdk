@@ -1,5 +1,5 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
-import AccountTokenAuthProvider from "@lightspark/js-sdk/auth/AccountTokenAuthProvider";
+import {AccountTokenAuthProvider} from "@lightspark/js-sdk/auth";
 import AccountStorage from "./auth/AccountStorage";
 
 let instance: LightsparkWalletClient;
