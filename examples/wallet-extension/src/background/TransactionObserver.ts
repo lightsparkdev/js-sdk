@@ -8,9 +8,7 @@ class TransactionObserver {
   private isListening = false;
   private subscription?: Subscription;
 
-  constructor(
-    private readonly lightsparkClient: LightsparkWalletClient
-  ) {
+  constructor(private readonly lightsparkClient: LightsparkWalletClient) {
     autoBind(this);
   }
 
