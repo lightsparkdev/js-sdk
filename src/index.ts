@@ -1,4 +1,4 @@
-import { ApolloClient } from "@apollo/client/core/index.js";
+import { ApolloClient, Observable } from "@apollo/client/core/index.js";
 import autoBind from "auto-bind";
 import {
   BitcoinNetwork,
@@ -14,6 +14,7 @@ import {
   SingleNodeDashboardQuery,
   TransactionDetailsFragment,
   TransactionsForNodeQuery,
+  TransactionSubscriptionSubscription,
 } from "./generated/graphql.js";
 import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard.js";
 import { b64encode } from "./utils/base64.js";
@@ -21,6 +22,7 @@ import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { FeeEstimate } from "./graphql/FeeEstimate.js";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
+import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { Maybe } from "graphql/jsutils/Maybe.js";
 import { decryptSecretWithNodePassword } from "./crypto/crypto.js";
 import NodeKeyCache from "./crypto/NodeKeyCache.js";
@@ -44,7 +46,7 @@ class LightsparkWalletClient {
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     walletId: string | undefined = undefined,
-    private readonly serverUrl: string = "https://api.dev.dev.sparkinfra.net"
+    private readonly serverUrl: string = "api.dev.dev.sparkinfra.net"
   ) {
     this.client = getNewApolloClient(
       serverUrl,
@@ -111,6 +113,15 @@ class LightsparkWalletClient {
       fetchPolicy: skipCache ? "no-cache" : "cache-first",
     });
     return response.data?.current_account?.recent_transactions.edges.map((transaction) => transaction.entity) ?? [];
+  }
+
+  public listenToTransactions(): Observable<TransactionDetailsFragment|undefined> {
+    const walletId = this.requireWalletId();
+    const response = this.client.subscribe<TransactionSubscriptionSubscription>({
+      query: TransactionSubscription,
+      variables: { nodeIds: [walletId] },
+    });
+    return response.map((response) => response.data?.transactions);
   }
 
   public async getAllNodesDashboard(

@@ -12,9 +12,12 @@ import { setContext } from "@apollo/client/link/context/index.js";
 import NodeKeyCache from "../crypto/NodeKeyCache.js";
 import AuthProvider from "../auth/AuthProvider.js";
 import StubAuthProvider from "../auth/StubAuthProvider.js";
-import { ApolloLink } from "@apollo/client/link/core/index.js";
+import { ApolloLink, split } from "@apollo/client/link/core/index.js";
 import { createHttpLink } from "@apollo/client/link/http/index.js";
 import { NormalizedCacheObject } from "@apollo/client/cache/inmemory/types.js";
+import { getMainDefinition } from "@apollo/client/utilities/graphql/getFromAST.js";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions/index.js";
+import { createClient } from "graphql-ws";
 
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 dayjs.extend(utc);
@@ -63,7 +66,7 @@ const getLinks = (
   authProvider: AuthProvider
 ): ApolloLink => {
   const httpLink = createHttpLink({
-    uri: `${serverUrl}/graphql/2023-01-01`,
+    uri: `https://${serverUrl}/graphql/2023-01-01`,
     headers: {
       "Content-Type": "application/json",
       "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
@@ -71,13 +74,32 @@ const getLinks = (
     fetch: customFetchFn(nodeKeyCache),
   });
 
+  const wsLink = new GraphQLWsLink(
+    createClient({
+      url: `wss://${serverUrl}/graphql/2023-01-01`,
+      connectionParams: authProvider.addWsConnectionParams({})
+    })
+  );
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === "OperationDefinition" &&
+        definition.operation === "subscription"
+      );
+    },
+    wsLink,
+    httpLink
+  );
+
   const authLink = setContext(async (_, { headers }) => {
     return {
       headers: await authProvider.addAuthHeaders(headers),
     };
   });
 
-  return authLink.concat(httpLink);
+  return authLink.concat(splitLink);
 };
 
 const customFetchFn = (nodeKeyCache: NodeKeyCache) => {

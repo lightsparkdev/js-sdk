@@ -649,12 +649,16 @@ export type IncomingPaymentToAttemptsConnection = {
 /** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) initiated by a Lightspark Node. */
 export type Invoice = Entity & PaymentRequest & {
   __typename: 'Invoice';
+  /** The total amount that has been paid to this invoice. */
+  amount_paid?: Maybe<CurrencyAmount>;
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
   /** The details of the invoice. */
   data: InvoiceData;
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
   id: Scalars['ID'];
+  /** The status of this invoice. */
+  status: InvoiceStatus;
   /** The date and time when the entity was last updated. */
   updated_at: Scalars['DateTime'];
 };
@@ -671,6 +675,12 @@ export type InvoiceData = PaymentRequestData & {
   memo?: Maybe<Scalars['String']>;
   payment_hash: Scalars['String'];
 };
+
+export enum InvoiceStatus {
+  Expired = 'EXPIRED',
+  Open = 'OPEN',
+  Settled = 'SETTLED'
+}
 
 export enum InvoiceType {
   /** An AMP (Atomic Multi-path Payment) invoice. */
@@ -1440,6 +1450,13 @@ type TransactionDetails_Withdrawal_Fragment = { __typename: 'Withdrawal', id: st
 
 export type TransactionDetailsFragment = TransactionDetails_ChannelClosingTransaction_Fragment | TransactionDetails_ChannelOpeningTransaction_Fragment | TransactionDetails_Deposit_Fragment | TransactionDetails_IncomingPayment_Fragment | TransactionDetails_OutgoingPayment_Fragment | TransactionDetails_RoutingTransaction_Fragment | TransactionDetails_Withdrawal_Fragment;
 
+export type TransactionSubscriptionSubscriptionVariables = Exact<{
+  nodeIds: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type TransactionSubscriptionSubscription = { __typename: 'Subscription', transactions: { __typename: 'ChannelClosingTransaction', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'ChannelOpeningTransaction', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'Deposit', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, deposit_destination: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null }, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'IncomingPayment', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, incoming_payment_origin?: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null } | null, incoming_payment_destination: { __typename: 'LightsparkNode', display_name: string }, payment_request?: { __typename: 'Invoice', data: { __typename: 'InvoiceData', memo?: string | null } } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'OutgoingPayment', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, outgoing_payment_origin: { __typename: 'LightsparkNode', display_name: string }, outgoing_payment_destination?: { __typename: 'GraphNode', display_name: string, public_key?: string | null } | { __typename: 'LightsparkNode', display_name: string, public_key?: string | null } | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'RoutingTransaction', failure_reason?: RoutingTransactionFailureReason | null, id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, incoming_channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null, local_node: { __typename: 'LightsparkNode', display_name: string } } | null, outgoing_channel?: { __typename: 'Channel', remote_node?: { __typename: 'GraphNode', display_name: string } | { __typename: 'LightsparkNode', display_name: string } | null } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } | { __typename: 'Withdrawal', id: string, created_at: any, resolved_at?: any | null, status: TransactionStatus, transaction_hash?: string | null, withdraw_origin: { __typename: 'LightsparkNode', display_name: string, public_key?: string | null }, fees?: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } | null, amount: { __typename: 'CurrencyAmount', value: any, unit: CurrencyUnit } } };
+
 export type TransactionsForNodeQueryVariables = Exact<{
   network: BitcoinNetwork;
   nodeId: Scalars['ID'];
@@ -1725,11 +1742,13 @@ export type IncomingPaymentToAttemptsConnectionFieldPolicy = {
 	count?: FieldPolicy<any> | FieldReadFunction<any>,
 	edges?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type InvoiceKeySpecifier = ('created_at' | 'data' | 'id' | 'updated_at' | InvoiceKeySpecifier)[];
+export type InvoiceKeySpecifier = ('amount_paid' | 'created_at' | 'data' | 'id' | 'status' | 'updated_at' | InvoiceKeySpecifier)[];
 export type InvoiceFieldPolicy = {
+	amount_paid?: FieldPolicy<any> | FieldReadFunction<any>,
 	created_at?: FieldPolicy<any> | FieldReadFunction<any>,
 	data?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	status?: FieldPolicy<any> | FieldReadFunction<any>,
 	updated_at?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type InvoiceDataKeySpecifier = ('amount' | 'bitcoin_network' | 'created_at' | 'destination' | 'encoded_payment_request' | 'expires_at' | 'memo' | 'payment_hash' | InvoiceDataKeySpecifier)[];
