@@ -6,15 +6,15 @@ import VideoProgressCache from "./VideoProgressCache";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
-import TransactionPoller from "./TransactionPoller";
 import { unreserveStreamingDemoAccountCredentials } from "../auth/DemoAccountProvider";
+import TransactionObserver from "./TransactionObserver";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
 const invoiceHolder = new StreamingInvoiceHolder();
 const lightsparkClient = getLightsparkClient(accountStorage);
-const transactionPoller = lightsparkClient.then(
-  (client) => new TransactionPoller(client, accountStorage)
+const transactionObserver = lightsparkClient.then(
+  (client) => new TransactionObserver(client)
 );
 let lastKnownStreamingTabId: number | undefined;
 
@@ -27,15 +27,15 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 chrome.alarms.create("write_progress", { periodInMinutes: 5 });
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  Promise.all([lightsparkClient, transactionPoller]).then(
-    ([lightsparkClient, transactionPoller]) => {
+  Promise.all([lightsparkClient, transactionObserver]).then(
+    ([lightsparkClient, transactionObserver]) => {
       onMessageReceived(
         message,
         lightsparkClient,
         progressCache,
         invoiceHolder,
         accountStorage,
-        transactionPoller,
+        transactionObserver,
         sendResponse
       );
     }
@@ -45,15 +45,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
 chrome.runtime.onMessageExternal.addListener(
   (message, _sender, sendResponse) => {
-    Promise.all([lightsparkClient, transactionPoller]).then(
-      ([lightsparkClient, transactionPoller]) => {
+    Promise.all([lightsparkClient, transactionObserver]).then(
+      ([lightsparkClient, transactionObserver]) => {
         onMessageReceived(
           message,
           lightsparkClient,
           progressCache,
           invoiceHolder,
           accountStorage,
-          transactionPoller,
+          transactionObserver,
           sendResponse
         );
       }

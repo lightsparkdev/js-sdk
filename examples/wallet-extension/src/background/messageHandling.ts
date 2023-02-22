@@ -7,7 +7,7 @@ import AccountStorage from "../auth/AccountStorage";
 import { VideoPlaybackUpdateMessage } from "../types";
 import { LinearPaymentStrategy } from "./PaymentStrategy";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
-import TransactionPoller from "./TransactionPoller";
+import TransactionObserver from "./TransactionObserver";
 import VideoProgressCache from "./VideoProgressCache";
 
 const paymentStrategy = new LinearPaymentStrategy(
@@ -63,17 +63,17 @@ export const onMessageReceived = (
   progressCache: VideoProgressCache,
   invoiceHolder: StreamingInvoiceHolder,
   accountStorage: AccountStorage,
-  transactionPoller: TransactionPoller,
+  transactionObserver: TransactionObserver,
   sendResponse: (response: any) => void
 ) => {
   switch (message.id) {
     case "video_play":
-      transactionPoller.startPolling();
+      transactionObserver.startListening();
       sendResponse({ status: "ok" });
       break;
     case "video_pause":
       setTimeout(() => {
-        transactionPoller.stopPolling();
+        transactionObserver.stopListening();
       }, 3000);
       sendResponse({ status: "ok" });
       break;

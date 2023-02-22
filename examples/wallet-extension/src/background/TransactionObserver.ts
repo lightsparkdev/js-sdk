@@ -1,28 +1,26 @@
 import { LightsparkWalletClient } from "@lightspark/js-sdk";
 import { TransactionDetailsFragment } from "@lightspark/js-sdk/generated/graphql";
 import autoBind from "auto-bind";
-import AccountStorage from "../auth/AccountStorage";
 import { Subscription } from "zen-observable-ts";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 
-class TransactionPoller {
-  private isPolling = false;
+class TransactionObserver {
+  private isListening = false;
   private subscription?: Subscription;
 
   constructor(
-    private readonly lightsparkClient: LightsparkWalletClient,
-    private readonly accountStorage: AccountStorage
+    private readonly lightsparkClient: LightsparkWalletClient
   ) {
     autoBind(this);
   }
 
-  public startPolling() {
-    console.log("Starting polling for transactions...");
-    if (this.isPolling) {
+  public startListening() {
+    console.log("Starting listening for transactions...");
+    if (this.isListening) {
       return;
     }
 
-    this.isPolling = true;
+    this.isListening = true;
     this.subscription = this.lightsparkClient.listenToTransactions().subscribe({
       next: (transaction) => {
         if (transaction) {
@@ -32,13 +30,13 @@ class TransactionPoller {
     });
   }
 
-  public stopPolling() {
-    console.log("Stopping polling for transactions...");
-    if (!this.isPolling || !this.subscription) {
+  public stopListening() {
+    console.log("Stopping listening for transactions...");
+    if (!this.isListening || !this.subscription) {
       return;
     }
 
-    this.isPolling = false;
+    this.isListening = false;
     this.subscription.unsubscribe();
     this.subscription = undefined;
   }
@@ -56,4 +54,4 @@ class TransactionPoller {
   }
 }
 
-export default TransactionPoller;
+export default TransactionObserver;
