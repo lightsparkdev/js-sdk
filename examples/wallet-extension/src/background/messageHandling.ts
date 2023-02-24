@@ -12,7 +12,7 @@ import VideoProgressCache from "./VideoProgressCache";
 
 const paymentStrategy = new LinearPaymentStrategy(
   { unit: CurrencyUnit.Satoshi, value: 10 },
-  3
+  1
 );
 
 const playbackMessageReceived = async (

@@ -14,7 +14,7 @@ const TransactionLogRow = (props: {
   const colorForStatus = (status: TransactionStatus) => {
     switch (status) {
       case TransactionStatus.Success:
-        return "#T8BFFF";
+        return "#28BFFF";
       case TransactionStatus.Failed:
         return "red";
       default:
