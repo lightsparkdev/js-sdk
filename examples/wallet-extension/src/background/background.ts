@@ -157,5 +157,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
       await unreserveStreamingDemoAccountCredentials(account);
     }
     chrome.storage.local.clear();
+    progressCache.clear();
   }
 });
