@@ -128,6 +128,8 @@ export const onMessageReceived = (
       });
       break;
     case "get_streaming_wallet_balances":
+      // Hack for testing. Remove this line when releasing:
+      progressCache.clear();
       lightsparkClient
         .getAllNodesDashboard(undefined, BitcoinNetwork.Regtest, true)
         .then(async (dashboard) => {
