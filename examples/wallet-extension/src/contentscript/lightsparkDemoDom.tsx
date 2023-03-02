@@ -1,37 +1,35 @@
 import {
-  CurrencyUnit,
+  CurrencyAmount,
   TransactionDetailsFragment,
+  TransactionStatus,
 } from "@lightspark/js-sdk/generated/graphql";
-import React from "react";
 import ReactDOM from "react-dom";
-import CurrencyAmount from "../components/CurrencyAmount";
-import TransactionLogRow from "../components/TransactionLogRow";
+import { OmitTypename } from "../common/types";
+
+type Balances = {
+  viewerBalance: OmitTypename<CurrencyAmount>;
+  creatorBalance: OmitTypename<CurrencyAmount>;
+};
+let initialBalances: Balances | null = null;
 
 export const updateWalletBalances = async () => {
   const { balances } = await getWalletBalances();
-  const viewerbalanceElement = document.getElementById("viewer-balance");
-  const creatorBalanceElement = document.getElementById("creator-balance");
-  if (!balances || !viewerbalanceElement || !creatorBalanceElement) {
+  initialBalances = balances;
+  renderBalances(balances);
+};
+
+const renderBalances = async (balances: Balances | null) => {
+  if (!balances) {
     return;
   }
-  ReactDOM.render(
-    <CurrencyAmount
-      amount={balances.viewerBalance}
-      shortUnit
-      displayUnit={CurrencyUnit.Satoshi}
-      symbol
-    />,
-    viewerbalanceElement.lastElementChild!
-  );
-  ReactDOM.render(
-    <CurrencyAmount
-      amount={balances.creatorBalance}
-      shortUnit
-      displayUnit={CurrencyUnit.Satoshi}
-      minimumFractionDigits={0}
-      symbol
-    />,
-    creatorBalanceElement.lastElementChild!
+  window.postMessage(
+    {
+      type: "FROM_CONTENT_SCRIPT",
+      id: "balances_changed",
+      viewerBalance: balances.viewerBalance,
+      creatorBalance: balances.creatorBalance,
+    },
+    "*"
   );
 };
 
@@ -43,25 +41,48 @@ export const updateTransactionRows = async (
   changedTransactions.forEach((transaction) => {
     transactions.set(transaction.id, transaction);
   });
-  const rowWrapper = document.createElement("div");
-  ReactDOM.render((
-    <>
-      {Array.from(transactions.values()).sort((a, b) => b.created_at.localeCompare(a.created_at)).map((transaction) => {
-        return (
-          <TransactionLogRow transaction={transaction} />
-        );
-      })}
-    </>
-    ),
-    rowWrapper
+  const sortedTransactions = Array.from(transactions.values()).sort((a, b) =>
+    b.created_at.localeCompare(a.created_at)
   );
-  const list = document.getElementById("transaction-log");
-  if (!list) {
-    console.warn("Trying to update transaction row without transaction log element");
+  window.postMessage(
+    {
+      type: "FROM_CONTENT_SCRIPT",
+      id: "transactions_changed",
+      transactions: sortedTransactions,
+    },
+    "*"
+  );
+  fakeBalanceChanges();
+};
+
+const fakeBalanceChanges = () => {
+  if (!initialBalances) {
     return;
   }
-  const header = list.firstChild!;
-  list.replaceChildren(header, ...Array.from(rowWrapper.childNodes.values()));
+
+  console.log("initialBalances", JSON.stringify(initialBalances));
+  let viewerBalanceValue = initialBalances.viewerBalance.value;
+  let creatorBalanceValue = initialBalances.creatorBalance.value;
+  for (const t of Array.from(transactions.values())) {
+    if (t.status === TransactionStatus.Success) {
+      viewerBalanceValue -= t.amount.value;
+      creatorBalanceValue += t.amount.value;
+    }
+  }
+  console.log(
+    "new values",
+    JSON.stringify({ viewerBalanceValue, creatorBalanceValue })
+  );
+  renderBalances({
+    viewerBalance: {
+      ...initialBalances.viewerBalance,
+      value: viewerBalanceValue,
+    },
+    creatorBalance: {
+      ...initialBalances.creatorBalance,
+      value: creatorBalanceValue,
+    },
+  });
 };
 
 const getWalletBalances = () => {

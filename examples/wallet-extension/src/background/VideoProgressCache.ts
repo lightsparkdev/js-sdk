@@ -18,6 +18,11 @@ class VideoProgressCache {
     return this.whenLoadedPromise;
   }
 
+  public clear() {
+    this.videoProgressCache = {};
+    this.needsWrite = true;
+  }
+
   addProgress(videoID: string, start: number, end: number) {
     if (!this.videoProgressCache[videoID]) {
       this.videoProgressCache[videoID] = new PlaybackRangesTracker();

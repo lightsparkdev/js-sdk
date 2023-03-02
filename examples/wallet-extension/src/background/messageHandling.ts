@@ -12,7 +12,7 @@ import VideoProgressCache from "./VideoProgressCache";
 
 const paymentStrategy = new LinearPaymentStrategy(
   { unit: CurrencyUnit.Satoshi, value: 10 },
-  1
+  2
 );
 
 const playbackMessageReceived = async (
@@ -128,6 +128,8 @@ export const onMessageReceived = (
       });
       break;
     case "get_streaming_wallet_balances":
+      // Hack for testing. Remove this line when releasing:
+      progressCache.clear();
       lightsparkClient
         .getAllNodesDashboard(undefined, BitcoinNetwork.Regtest, true)
         .then(async (dashboard) => {
@@ -153,6 +155,10 @@ export const onMessageReceived = (
           };
           sendResponse({ balances });
         });
+      break;
+    case "open_and_create_wallet":
+      // TODO: Implement this.
+      sendResponse({ status: "ok" });
       break;
     default:
       console.log(`Unknown message received: ${JSON.stringify(message)}`);

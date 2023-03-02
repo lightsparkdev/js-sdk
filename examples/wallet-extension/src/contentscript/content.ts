@@ -29,10 +29,10 @@ const messageReceived = (
     msg.id === "new_transactions" ||
     msg.id === "transactions_updated"
   ) {
-    updateWalletBalances().then(() => {
+    // updateWalletBalances().then(() => {
       const transactions: TransactionDetailsFragment[] = msg.transactions;
       updateTransactionRows(transactions);
-    });
+    // });
   }
 };
 
