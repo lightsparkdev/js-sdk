@@ -1,7 +1,31 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+import NodeCrypto from "crypto";
+
 import { b64decode, b64encode } from "../utils/base64.js";
 
 const ITERATIONS = 500000;
+let cryptoImpl: typeof NodeCrypto | typeof crypto;
+if (typeof crypto !== "undefined") {
+  cryptoImpl = crypto;
+} else {
+  cryptoImpl = NodeCrypto;
+}
+
+const getRandomValues = (arr: Uint8Array): Uint8Array => {
+  if (typeof crypto !== "undefined") {
+     return crypto.getRandomValues(arr);
+  } else {
+    return NodeCrypto.getRandomValues(arr);
+  }
+};
+
+const getRandomValues32 = (arr: Uint32Array): Uint32Array => {
+  if (typeof crypto !== "undefined") {
+     return crypto.getRandomValues(arr);
+  } else {
+    return NodeCrypto.getRandomValues(arr);
+  }
+};
 
 const deriveKey = async (
   password: string,
@@ -11,7 +35,7 @@ const deriveKey = async (
   bit_len: number
 ): Promise<[CryptoKey, ArrayBuffer]> => {
   const enc = new TextEncoder();
-  const password_key = await crypto.subtle.importKey(
+  const password_key = await cryptoImpl.subtle.importKey(
     "raw",
     enc.encode(password),
     "PBKDF2",
@@ -19,7 +43,7 @@ const deriveKey = async (
     ["deriveBits", "deriveKey"]
   );
 
-  const derived = await crypto.subtle.deriveBits(
+  const derived = await cryptoImpl.subtle.deriveBits(
     {
       name: "PBKDF2",
       salt,
@@ -31,7 +55,7 @@ const deriveKey = async (
   );
 
   // Split the derived bytes into a 32 byte AES key and a 16 byte IV
-  const key = await crypto.subtle.importKey(
+  const key = await cryptoImpl.subtle.importKey(
     "raw",
     derived.slice(0, 32),
     { name: algorithm, length: 256 },
@@ -51,13 +75,13 @@ export const encrypt = async (
 ): Promise<[string, string]> => {
   if (!salt) {
     salt = new Uint8Array(16);
-    crypto.getRandomValues(salt);
+    getRandomValues(salt);
   }
 
   const [key, iv] = await deriveKey(password, salt, ITERATIONS, "AES-GCM", 352);
 
   const encrypted = new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext)
+    await cryptoImpl.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext)
   );
 
   const output = new Uint8Array(salt.byteLength + encrypted.byteLength);
@@ -111,7 +135,7 @@ export const decrypt = async (
       algorithm,
       256
     );
-    return await crypto.subtle.decrypt(
+    return await cryptoImpl.subtle.decrypt(
       { name: algorithm, iv: nonce.buffer },
       key,
       cipherText
@@ -126,7 +150,7 @@ export const decrypt = async (
       algorithm,
       bit_len
     );
-    return await crypto.subtle.decrypt({ name: algorithm, iv }, key, encrypted);
+    return await cryptoImpl.subtle.decrypt({ name: algorithm, iv }, key, encrypted);
   }
 };
 
@@ -135,16 +159,13 @@ export async function decryptSecretWithNodePassword(
   encryptedSecret: string,
   nodePassword: string
 ): Promise<ArrayBuffer | null> {
-  let decryptedValue: ArrayBuffer|null = null;
+  let decryptedValue: ArrayBuffer | null = null;
   try {
-    decryptedValue = await decrypt(
-      cipher,
-      encryptedSecret,
-      nodePassword
-    );
+    decryptedValue = await decrypt(cipher, encryptedSecret, nodePassword);
   } catch (ex) {
     // If the password is incorrect, we're likely to get UTF-8 decoding errors.
     // Catch everything and we'll leave the value as the empty string.
+    console.error(ex);
   }
   return decryptedValue;
 }
@@ -155,7 +176,7 @@ export function decode(arrBuff: ArrayBuffer): string {
 }
 
 export const generateNodeKey = async (): Promise<CryptoKeyPair> => {
-  return await crypto.subtle.generateKey(
+  return await cryptoImpl.subtle.generateKey(
     /*algorithm:*/ {
       name: "RSA-PSS",
       modulusLength: 4096,
@@ -171,7 +192,7 @@ export const serializeNodeKey = async (
   key: CryptoKey,
   format: "pkcs8" | "spki"
 ): Promise<ArrayBuffer> => {
-  return await crypto.subtle.exportKey(/*format*/ format, /*key*/ key);
+  return await cryptoImpl.subtle.exportKey(/*format*/ format, /*key*/ key);
 };
 
 export const encryptWithNodeKey = async (
@@ -181,7 +202,7 @@ export const encryptWithNodeKey = async (
   const enc = new TextEncoder();
   const encoded = enc.encode(data);
   // @ts-ignore
-  const encrypted = await crypto.subtle.encrypt(
+  const encrypted = await cryptoImpl.subtle.encrypt(
     /*algorithm:*/ {
       name: "RSA-OAEP",
     },
@@ -196,7 +217,7 @@ export const loadNodeEncryptionKey = async (
   rawPublicKey: string
 ): Promise<CryptoKey> => {
   const encoded = b64decode(rawPublicKey);
-  return await crypto.subtle.importKey(
+  return await cryptoImpl.subtle.importKey(
     /*format*/ "spki",
     /*keyData*/ encoded,
     /*algorithm:*/ {
@@ -209,5 +230,5 @@ export const loadNodeEncryptionKey = async (
 };
 
 export function getNonce() {
-  return Number(crypto.getRandomValues(new Uint32Array(1)));
+  return Number(getRandomValues32(new Uint32Array(1)));
 }

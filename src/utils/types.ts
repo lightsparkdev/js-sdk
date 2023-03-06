@@ -21,25 +21,3 @@ export const isType =
   ): node is Extract<N, { __typename: T }> => {
     return node?.__typename === typename;
   };
-
-type StripPrefix<
-  TPrefix extends string,
-  T extends string
-> = T extends `${TPrefix}${infer R}` ? R : T;
-
-export type MapKeysStripPrefix<T, TPrefix extends string> = {
-  [K in keyof T & string as StripPrefix<TPrefix, K>]: T[K];
-};
-
-export const stripPrefix = <T, TPrefix extends string>(object: T, prefix: TPrefix): MapKeysStripPrefix<T, TPrefix> => {
-  const result: any = {};
-  for (const key in object) {
-    if (key.startsWith(prefix)) {
-      result[key.substring(prefix.length)] = object[key];
-    } else {
-      result[key] = object[key];
-    }
-  }
-  return result;
-}
-

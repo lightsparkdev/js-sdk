@@ -1,16 +1,11 @@
-import { gql } from "@apollo/client/core/index.js";
+import { FRAGMENT as FeeEstimateFragment } from "../objects/FeeEstimate.js";
 
-export const FeeEstimate = gql`
+export const FeeEstimate = `
   query FeeEstimate($bitcoin_network: BitcoinNetwork!) {
     fee_estimate(network: $bitcoin_network) {
-      fee_fast {
-        value
-        unit
-      }
-      fee_min {
-        value
-        unit
-      }
+      ...FeeEstimateFragment
     }
   }
+
+  ${FeeEstimateFragment}
 `;

@@ -1,11 +1,23 @@
 {
-  "name": "@lightspark/js-sdk",
+  "name": "@lightsparkdev/js-sdk",
   "version": "1.0.0",
   "description": "Lightspark JS SDK",
+  "author": "Lightspark Inc.",
+  "keywords": [
+    "lightspark",
+    "bitcoin",
+    "lightning",
+    "payments",
+    "typescript"
+  ],
+  "homepage": "https://github.com/lightsparkdev/js-sdk",
+  "bugs": {
+    "url": "https://github.com/lightsparkdev/js-sdk/issues"
+  },
   "exports": {
     ".": "./index.js",
     "./auth": "./auth/index.js",
-    "./generated/graphql": "./generated/graphql.js"
+    "./objects": "./objects/index.js"
   },
   "type": "module",
   "types": "./index.d.ts",
@@ -15,31 +27,28 @@
   },
   "scripts": {
     "build": "npx tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md",
-    "gen-gql": "graphql-codegen --config graphql-codegen.yml",
     "clean": "rm -rf ./dist",
     "lint": "eslint ./src",
     "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
     "type-check": "tsc --noEmit",
     "postversion": "npm run build"
   },
-  "author": "Lightspark",
-  "license": "UNLICENSED",
+  "license": "APACHE 2.0",
   "dependencies": {
-    "@apollo/client": "^3.6.6",
     "auto-bind": "^5.0.1",
+    "crypto": "^1.0.1",
     "dayjs": "^1.11.7",
-    "graphql": "^16.5.0",
-    "graphql-ws": "^5.11.3"
+    "graphql": "^16.6.0",
+    "graphql-ws": "^5.11.3",
+    "ws": "^8.12.1",
+    "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^2.16.4",
-    "@graphql-codegen/typescript": "^2.8.7",
-    "@graphql-codegen/typescript-apollo-client-helpers": "^2.2.6",
-    "@graphql-codegen/typescript-operations": "^2.5.12",
-    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@types/crypto-js": "^4.1.1",
+    "@types/ws": "^8.5.4",
     "jest": "^29.4.1",
-    "prettier": "^2.8.3",
+    "prettier": "^2.8.4",
+    "prettier-plugin-organize-imports": "^3.2.2",
     "ts-jest": "^29.0.5",
     "typescript": "^4.9.5"
   }
