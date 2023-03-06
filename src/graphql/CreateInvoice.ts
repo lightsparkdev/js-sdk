@@ -1,6 +1,4 @@
-import { gql } from "@apollo/client/core/index.js";
-
-export const CreateInvoice = gql`
+export const CreateInvoice = `
   mutation CreateInvoice(
     $nodeId: ID!
     $amount: CurrencyAmountInput!

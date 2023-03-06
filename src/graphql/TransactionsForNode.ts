@@ -1,7 +1,6 @@
-import { gql } from "@apollo/client/core/index.js";
-import { TransactionDetails } from "./TransactionDetails.js";
+import { FRAGMENT as TransactionFragment } from "../objects/Transaction.js";
 
-export const TransactionsForNode = gql`
+export const TransactionsForNode = `
 query TransactionsForNode(
     $network: BitcoinNetwork!,
     $nodeId: ID!,
@@ -27,11 +26,8 @@ query TransactionsForNode(
                 unit
                 __typename
             }
-            edges {
-                entity {
-                    ...TransactionDetails
-                    __typename
-                }
+            entities {
+                ...TransactionFragment
                 __typename
             }
             __typename
@@ -40,5 +36,5 @@ query TransactionsForNode(
     }
 }
 
-${TransactionDetails}
+${TransactionFragment}
 `;

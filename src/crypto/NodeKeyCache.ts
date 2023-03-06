@@ -1,5 +1,14 @@
 import autoBind from "auto-bind";
+import NodeCrypto from "crypto";
+
 import { b64decode } from "../utils/base64.js";
+
+let cryptoImpl: typeof NodeCrypto | typeof crypto;
+if (typeof crypto !== "undefined") {
+  cryptoImpl = crypto;
+} else {
+  cryptoImpl = NodeCrypto;
+}
 
 class NodeKeyCache {
   private idToKey: Map<string, CryptoKey>;
@@ -11,7 +20,7 @@ class NodeKeyCache {
   public async loadKey(id: string, rawKey: string): Promise<CryptoKey | null> {
     const decoded = b64decode(rawKey);
     try {
-      const key = await crypto.subtle.importKey(
+      const key = await cryptoImpl.subtle.importKey(
         "pkcs8",
         decoded,
         {
