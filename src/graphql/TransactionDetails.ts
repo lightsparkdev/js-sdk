@@ -1,6 +1,4 @@
-import { gql } from "@apollo/client/core/index.js";
-
-export const TransactionDetails = gql`
+export const TransactionDetails = `
   fragment TransactionDetails on Transaction {
     id
     amount {

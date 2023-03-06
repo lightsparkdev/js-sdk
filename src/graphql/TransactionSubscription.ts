@@ -1,15 +1,14 @@
-import { gql } from "@apollo/client/core/index.js";
-import { TransactionDetails } from "./TransactionDetails.js";
+import { FRAGMENT as TransactionFragment } from "../objects/Transaction.js";
 
-export const TransactionSubscription = gql`
+export const TransactionSubscription = `
 subscription TransactionSubscription(
     $nodeIds: [ID!]!
 ) {
     transactions(node_ids: $nodeIds) {
-        ...TransactionDetails
+        ...TransactionFragment
         __typename
     }
 }
 
-${TransactionDetails}
+${TransactionFragment}
 `;

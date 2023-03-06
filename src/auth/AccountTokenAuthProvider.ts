@@ -1,6 +1,8 @@
 import autoBind from "auto-bind";
-import { b64encode } from "../utils/base64.js";
+
 import AuthProvider from "./AuthProvider.js";
+
+import { b64encode } from "../utils/base64.js";
 
 class AccountTokenAuthProvider implements AuthProvider {
   private readonly utf8AuthBytes: Uint8Array;

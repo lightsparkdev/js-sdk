@@ -1,0 +1,23 @@
+// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+
+export enum PaymentFailureReason {
+  NONE = "NONE",
+
+  TIMEOUT = "TIMEOUT",
+
+  NO_ROUTE = "NO_ROUTE",
+
+  ERROR = "ERROR",
+
+  INCORRECT_PAYMENT_DETAILS = "INCORRECT_PAYMENT_DETAILS",
+
+  INSUFFICIENT_BALANCE = "INSUFFICIENT_BALANCE",
+
+  INVOICE_ALREADY_PAID = "INVOICE_ALREADY_PAID",
+
+  SELF_PAYMENT = "SELF_PAYMENT",
+
+  INVOICE_EXPIRED = "INVOICE_EXPIRED",
+}
+
+export default PaymentFailureReason;
