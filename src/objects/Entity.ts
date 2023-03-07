@@ -18,6 +18,17 @@ type Entity = {
 export const FRAGMENT = `
 fragment EntityFragment on Entity {
     __typename
+    ... on BillingCard {
+        __typename
+        billing_card_id: id
+        billing_card_created_at: created_at
+        billing_card_updated_at: updated_at
+        billing_card_is_primary: is_primary
+        billing_card_expiration_month: expiration_month
+        billing_card_expiration_year: expiration_year
+        billing_card_brand: brand
+        billing_card_last4: last4
+    }
     ... on OutgoingPayment {
         __typename
         outgoing_payment_id: id
@@ -136,7 +147,6 @@ fragment EntityFragment on Entity {
                         lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
                         lightspark_node_upgrade_available: upgrade_available
-                        lightspark_node_has_channel_funding_op: has_channel_funding_op
                     }
                     ... on GraphNode {
                         __typename
@@ -238,7 +248,6 @@ fragment EntityFragment on Entity {
         lightspark_node_rest_url: rest_url
         lightspark_node_status: status
         lightspark_node_upgrade_available: upgrade_available
-        lightspark_node_has_channel_funding_op: has_channel_funding_op
     }
     ... on Account {
         __typename
@@ -351,6 +360,7 @@ fragment EntityFragment on Entity {
         hop_index: index
         hop_short_channel_id: short_channel_id
         hop_pub_key: pub_key
+        hop_public_key: public_key
         hop_amount_to_forward: amount_to_forward {
             __typename
             currency_amount_value: value
@@ -362,6 +372,7 @@ fragment EntityFragment on Entity {
             currency_amount_unit: unit
         }
         hop_expiry: expiry
+        hop_expiry_block_height: expiry_block_height
     }
     ... on ChannelOpeningTransaction {
         __typename
@@ -645,7 +656,6 @@ fragment EntityFragment on Entity {
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
                     lightspark_node_upgrade_available: upgrade_available
-                    lightspark_node_has_channel_funding_op: has_channel_funding_op
                 }
                 ... on GraphNode {
                     __typename

@@ -4,6 +4,7 @@ export { default as AccountToNodesConnection } from "./AccountToNodesConnection.
 export { default as AccountToPaymentRequestsConnection } from "./AccountToPaymentRequestsConnection.js";
 export { default as AccountToTransactionsConnection } from "./AccountToTransactionsConnection.js";
 export { default as ApiToken, getApiTokenQuery } from "./ApiToken.js";
+export { default as BillingCard, getBillingCardQuery } from "./BillingCard.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
 export { default as BlockchainBalance } from "./BlockchainBalance.js";
 export { default as Channel } from "./Channel.js";
@@ -32,6 +33,10 @@ export { default as DeleteApiTokenOutput } from "./DeleteApiTokenOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
 export { default as Entity } from "./Entity.js";
 export { default as FeeEstimate } from "./FeeEstimate.js";
+export {
+  default as FinancialInstrument,
+  getFinancialInstrumentQuery,
+} from "./FinancialInstrument.js";
 export { default as FundNodeInput } from "./FundNodeInput.js";
 export { default as FundNodeOutput } from "./FundNodeOutput.js";
 export { default as GraphNode } from "./GraphNode.js";

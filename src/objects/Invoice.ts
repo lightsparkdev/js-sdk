@@ -144,7 +144,6 @@ fragment InvoiceFragment on Invoice {
                 lightspark_node_rest_url: rest_url
                 lightspark_node_status: status
                 lightspark_node_upgrade_available: upgrade_available
-                lightspark_node_has_channel_funding_op: has_channel_funding_op
             }
             ... on GraphNode {
                 __typename

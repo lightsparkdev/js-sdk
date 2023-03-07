@@ -52,6 +52,7 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                     hop_index: index
                     hop_short_channel_id: short_channel_id
                     hop_pub_key: pub_key
+                    hop_public_key: public_key
                     hop_amount_to_forward: amount_to_forward {
                         __typename
                         currency_amount_value: value
@@ -63,6 +64,7 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                         currency_amount_unit: unit
                     }
                     hop_expiry: expiry
+                    hop_expiry_block_height: expiry_block_height
                 }
             }
         }

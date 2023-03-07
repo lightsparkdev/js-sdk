@@ -34,7 +34,6 @@ class LightsparkNode implements Node {
     public readonly accountId: string,
     public readonly name: string,
     public readonly upgradeAvailable: boolean,
-    public readonly hasChannelFundingOp: boolean,
     public readonly typename: string,
     public readonly alias?: string,
     public readonly color?: string,
@@ -252,7 +251,6 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                         lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
                         lightspark_node_upgrade_available: upgrade_available
-                        lightspark_node_has_channel_funding_op: has_channel_funding_op
                     }
                     ... on GraphNode {
                         __typename
@@ -345,7 +343,6 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
                     lightspark_node_upgrade_available: upgrade_available
-                    lightspark_node_has_channel_funding_op: has_channel_funding_op
                 }
                 channel_short_channel_id: short_channel_id
             }
@@ -486,7 +483,6 @@ export const LightsparkNodeFromJson = (obj: any): LightsparkNode => {
     obj["lightspark_node_account"].id,
     obj["lightspark_node_name"],
     obj["lightspark_node_upgrade_available"],
-    obj["lightspark_node_has_channel_funding_op"],
     "LightsparkNode",
     obj["lightspark_node_alias"],
     obj["lightspark_node_color"],
@@ -596,7 +592,6 @@ fragment LightsparkNodeFragment on LightsparkNode {
     lightspark_node_rest_url: rest_url
     lightspark_node_status: status
     lightspark_node_upgrade_available: upgrade_available
-    lightspark_node_has_channel_funding_op: has_channel_funding_op
 }`;
 
 export default LightsparkNode;

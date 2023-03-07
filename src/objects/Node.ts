@@ -96,7 +96,6 @@ export const NodeFromJson = (obj: any): Node => {
       obj["lightspark_node_account"].id,
       obj["lightspark_node_name"],
       obj["lightspark_node_upgrade_available"],
-      obj["lightspark_node_has_channel_funding_op"],
       "LightsparkNode",
       obj["lightspark_node_alias"],
       obj["lightspark_node_color"],
@@ -226,7 +225,6 @@ fragment NodeFragment on Node {
         lightspark_node_rest_url: rest_url
         lightspark_node_status: status
         lightspark_node_upgrade_available: upgrade_available
-        lightspark_node_has_channel_funding_op: has_channel_funding_op
     }
     ... on GraphNode {
         __typename
