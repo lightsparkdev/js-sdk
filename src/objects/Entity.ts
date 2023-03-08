@@ -263,6 +263,14 @@ fragment EntityFragment on Entity {
             webhooks_settings_url_testing: url_testing
         }
     }
+    ... on ApiToken {
+        __typename
+        api_token_id: id
+        api_token_created_at: created_at
+        api_token_updated_at: updated_at
+        api_token_client_id: client_id
+        api_token_name: name
+    }
     ... on Channel {
         __typename
         channel_id: id
@@ -702,14 +710,6 @@ fragment EntityFragment on Entity {
         web_authn_login_factor_updated_at: updated_at
         web_authn_login_factor_verification_date: verification_date
         web_authn_login_factor_name: name
-    }
-    ... on ApiToken {
-        __typename
-        api_token_id: id
-        api_token_created_at: created_at
-        api_token_updated_at: updated_at
-        api_token_client_id: client_id
-        api_token_name: name
     }
 }`;
 

@@ -1,4 +1,5 @@
 export { default as Account } from "./Account.js";
+export { default as AccountToApiTokensConnection } from "./AccountToApiTokensConnection.js";
 export { default as AccountToChannelsConnection } from "./AccountToChannelsConnection.js";
 export { default as AccountToNodesConnection } from "./AccountToNodesConnection.js";
 export { default as AccountToPaymentRequestsConnection } from "./AccountToPaymentRequestsConnection.js";

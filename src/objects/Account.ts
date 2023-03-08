@@ -3,6 +3,9 @@
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
 import Query from "../requester/Query.js";
+import AccountToApiTokensConnection, {
+  AccountToApiTokensConnectionFromJson,
+} from "./AccountToApiTokensConnection.js";
 import AccountToChannelsConnection, {
   AccountToChannelsConnectionFromJson,
 } from "./AccountToChannelsConnection.js";
@@ -38,6 +41,46 @@ class Account implements Entity {
     public readonly webhooksSettings?: WebhooksSettings
   ) {
     autoBind(this);
+  }
+
+  public async getApiTokens(
+    client: LightsparkClient,
+    first: number | undefined = undefined
+  ): Promise<AccountToApiTokensConnection> {
+    return (await client.executeRawQuery({
+      queryPayload: ` 
+query FetchAccountToApiTokensConnection($first: Int) {
+    current_account {
+        ... on Account {
+            api_tokens(, first: $first) {
+                __typename
+                account_to_api_tokens_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
+                account_to_api_tokens_connection_count: count
+                account_to_api_tokens_connection_entities: entities {
+                    __typename
+                    api_token_id: id
+                    api_token_created_at: created_at
+                    api_token_updated_at: updated_at
+                    api_token_client_id: client_id
+                    api_token_name: name
+                }
+            }
+        }
+    }
+}
+`,
+      variables: { first: first },
+      constructObject: (json) => {
+        const connection = json["current_account"]["api_tokens"];
+        return AccountToApiTokensConnectionFromJson(connection);
+      },
+    }))!;
   }
 
   public async getBlockchainBalance(
