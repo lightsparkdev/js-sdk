@@ -2,13 +2,19 @@ import autoBind from "auto-bind";
 import Observable from "zen-observable";
 import Query from "./requester/Query.js";
 
+import { FundNode } from "./graphql/FundNode.js";
+import CurrencyAmount, {
+  CurrencyAmountFromJson,
+} from "./objects/CurrencyAmount.js";
 import AuthProvider from "./auth/AuthProvider.js";
 import StubAuthProvider from "./auth/StubAuthProvider.js";
 import { decryptSecretWithNodePassword } from "./crypto/crypto.js";
 import NodeKeyCache from "./crypto/NodeKeyCache.js";
+import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
+import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FeeEstimate as FeeEstimateQuery } from "./graphql/FeeEstimate.js";
 import {
   AccountDashboard,
@@ -24,7 +30,9 @@ import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { WithdrawFunds } from "./graphql/WithdrawFunds.js";
 import Account from "./objects/Account.js";
+import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
+import CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
 import CurrencyAmountInput from "./objects/CurrencyAmountInput.js";
 import FeeEstimate, { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import InvoiceData, { InvoiceDataFromJson } from "./objects/InvoiceData.js";
@@ -473,6 +481,53 @@ class LightsparkClient {
       nodeId
     );
     return WithdrawalFromJson(response.withdraw_funds.transaction);
+  }
+
+  /**
+   * Adds funds to a Lightspark node on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be
+   * added. This API only functions for nodes created on the REGTEST network and will return an error when called for
+   * any non-REGTEST node.
+   *
+   * @param nodeId The ID of the node to fund. Must be a REGTEST node.
+   * @param amount The amount of funds to add to the node. Defaults to 10,000,000 SATOSHI.
+   * @returns
+   */
+  public async fundNode(
+    nodeId: string,
+    amount?: CurrencyAmountInput
+  ): Promise<CurrencyAmount> {
+    const response = await this.requester.makeRawRequest(FundNode, {
+      node_id: nodeId,
+      amount,
+    });
+    return CurrencyAmountFromJson(response.fund_node.amount);
+  }
+
+  /**
+   * Creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs
+   * and SDKs.
+   *
+   * @param name Creates a new API token that can be used to authenticate requests for this account when using the
+   *     Lightspark APIs and SDKs.
+   * @returns An object containing the API token and client secret.
+   */
+  public async createApiToken(name: string): Promise<CreateApiTokenOutput> {
+    const response = await this.requester.makeRawRequest(CreateApiToken, {
+      name,
+    });
+    return {
+      apiToken: ApiTokenFromJson(response.create_api_token.api_token),
+      clientSecret: response.create_api_token.client_secret,
+    };
+  }
+
+  /**
+   * Deletes an existing API token from this account.
+   *
+   * @param id The ID of the API token to delete.
+   */
+  public async deleteApiToken(id: string): Promise<void> {
+    await this.requester.makeRawRequest(DeleteApiToken, { api_token_id: id });
   }
 
   /**
