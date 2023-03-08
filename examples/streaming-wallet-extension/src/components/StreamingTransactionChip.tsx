@@ -68,10 +68,10 @@ const Wrapper = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  margin-bottom: 24px;
+  padding: 18px;
+  border: 1.6px solid #f2f2f2;
+  border-radius: 12px;
+  margin-bottom: 32px;
   margin-top: 16px;
 `;
 
@@ -81,14 +81,15 @@ const InnerColumn = styled.div`
 `;
 
 const TopTextRow = styled.span`
-  color: #white;
-  font-size: 10px;
+  color: black;
+  font-size: 16px;
   font-weight: 700;
+  margin-bottom: 6px;
 `;
 
 const BottomTextRow = styled.div`
-  color: #999999;
-  font-size: 10px;
+  color: #666666;
+  font-size: 16px;
   font-weight: 500;
   display: flex;
   flex-direction: row;

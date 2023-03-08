@@ -12,7 +12,7 @@ const CirclePlusIcon = () => (
   >
     <path
       d="M6 3.75V9.25M3.25 6.5H8.75M11.5 6.5C11.5 9.53757 9.03757 12 6 12C2.96243 12 0.5 9.53757 0.5 6.5C0.5 3.46243 2.96243 1 6 1C9.03757 1 11.5 3.46243 11.5 6.5Z"
-      stroke="black"
+      stroke="white"
       stroke-linecap="round"
     />
   </svg>

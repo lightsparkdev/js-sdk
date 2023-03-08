@@ -272,7 +272,7 @@ class LightsparkClient {
       remoteBalance: node.remote_balance,
       blockchainBalance: node.blockchain_balance,
       recentTransactions:
-        node.recent_transactions?.entities.map((tx) => {
+        account.recent_transactions?.entities.map((tx) => {
           return TransactionFromJson(tx);
         }) || [],
     };

@@ -1,10 +1,7 @@
 import { LightsparkClient } from "@lightsparkdev/js-sdk";
-import {
-  BitcoinNetwork,
-  CurrencyUnit,
-} from "@lightsparkdev/js-sdk/objects";
+import { BitcoinNetwork, CurrencyUnit } from "@lightsparkdev/js-sdk/objects";
 import AccountStorage from "../auth/AccountStorage";
-import { VideoPlaybackUpdateMessage } from "../types";
+import { VideoPlaybackUpdateMessage } from "../types/Messages";
 import { LinearPaymentStrategy } from "./PaymentStrategy";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
@@ -18,7 +15,7 @@ const paymentStrategy = new LinearPaymentStrategy(
 const playbackMessageReceived = async (
   message: VideoPlaybackUpdateMessage,
   lightsparkClient: LightsparkClient,
-  viewerNodeId: string|undefined,
+  viewerNodeId: string | undefined,
   progressCache: VideoProgressCache,
   invoiceHolder: StreamingInvoiceHolder,
   sendResponse: (response?: any) => void
@@ -43,7 +40,12 @@ const playbackMessageReceived = async (
     if (!invoiceToPay || !viewerNodeId) {
       console.error("No invoice to pay while streaming");
     } else {
-      await lightsparkClient.payInvoice(viewerNodeId, invoiceToPay, 60, amountToPay);
+      await lightsparkClient.payInvoice(
+        viewerNodeId,
+        invoiceToPay,
+        60,
+        amountToPay
+      );
     }
   }
   sendResponse({ amountToPay });
@@ -140,8 +142,8 @@ export const onMessageReceived = (
             node.id.includes(account.viewerWalletId)
           );
           const creatorNode = dashboard.nodes?.find((node) =>
-          node.id.includes(account.creatorWalletId)
-        );
+            node.id.includes(account.creatorWalletId)
+          );
           const balances = {
             viewerBalance: viewerNode?.localBalance || zeroSats,
             creatorBalance: creatorNode?.localBalance || zeroSats,
@@ -150,7 +152,19 @@ export const onMessageReceived = (
         });
       break;
     case "open_and_create_wallet":
-      // TODO: Implement this.
+      chrome.windows.getCurrent().then((activeWindow) => {
+        chrome.windows.create(
+          {
+            url: "index.html",
+            type: "popup",
+            width: 375,
+            height: 520,
+            left: Math.round((activeWindow.left ?? 0) + (activeWindow.width ?? 0) - 480),
+            top: Math.round((activeWindow.top ?? 0) + 90),
+          },
+          () => console.log("opened popup")
+        );
+      });
       sendResponse({ status: "ok" });
       break;
     default:

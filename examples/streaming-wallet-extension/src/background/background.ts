@@ -11,6 +11,7 @@ import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
 import { unreserveStreamingDemoAccountCredentials } from "../auth/DemoAccountProvider";
 import TransactionObserver from "./TransactionObserver";
+import { ENABLE_YOUTUBE_AND_TWITCH } from "../common/settings";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
@@ -81,12 +82,22 @@ const onNavigation = (
   );
 };
 
+type UrlFilter = {
+  pathContains: string;
+  hostSuffix?: undefined;
+} | {
+  hostSuffix: string;
+  pathContains?: undefined;
+};
+const youtubeAndTwitchFilter: UrlFilter[] = ENABLE_YOUTUBE_AND_TWITCH ? [
+  { hostSuffix: "youtube.com" },
+  { hostSuffix: "twitch.tv" }
+] : [];
+
 const urlFilter = {
-  url: [
-    { hostSuffix: "youtube.com" },
-    { hostSuffix: "twitch.tv" },
-    { pathContains: "demos/streaming" },
-  ],
+  url: youtubeAndTwitchFilter.concat([
+    { pathContains: "demos/streaming" }
+  ]),
 };
 chrome.webNavigation.onCompleted.addListener(onNavigation, urlFilter);
 chrome.webNavigation.onHistoryStateUpdated.addListener(onNavigation, urlFilter);

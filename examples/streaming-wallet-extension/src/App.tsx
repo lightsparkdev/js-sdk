@@ -109,13 +109,6 @@ function App() {
       .then(async (dashboard) => {
         setWalletDashboard(dashboard);
         await chrome.storage.local.set({ walletDashboard: dashboard });
-        findActiveStreamingDemoTabs().then((tabs) => {
-          if (tabs.length === 0) return;
-          chrome.tabs.sendMessage(tabs[0].id!, {
-            id: "transactions_updated",
-            transactions: dashboard?.recentTransactions || [],
-          });
-        });
       });
   }, [lightsparkClient, credentials]);
 
@@ -226,7 +219,7 @@ function BalanceScreen(props: {
           isStreaming={props.isStreaming}
         />
       ) : (
-        <InstructionsText>
+        <InstructionsText style={{ fontSize: "16px" }}>
           Click the play button on the video to stream bitcoin in real-time.
         </InstructionsText>
       )}
@@ -281,13 +274,13 @@ function LoginScreen(props: {
         height: "100%",
       }}
     >
-      <LoginHeader>Start Streaming</LoginHeader>
+      <LoginHeader>One more step</LoginHeader>
       <InstructionsText>
-        Create a wallet and we'll deposit 250 SATs for you to stream.
+        Create a wallet and we'll add funds for the demo.
       </InstructionsText>
       <CreateWalletButton onClick={createWallet} disabled={isLoading}>
         {!isLoading ? (
-          <span style={{ marginInlineEnd: "4px" }}>
+          <span style={{ marginInlineEnd: "8px" }}>
             <CirclePlusIcon />
           </span>
         ) : (
@@ -311,17 +304,17 @@ function TransactionsScreen(props: { transactions: Transaction[] }) {
 }
 
 const BalanceLabel = styled.p`
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 600;
-  color: #999999;
+  color: #666666;
   margin-bottom: 4px;
 `;
 
 const InstructionsText = styled.p`
-  font-size: 10px;
+  font-size: 20px;
   font-weight: 500;
-  color: #999999;
-  margin-bottom: 16px;
+  color: #666666;
+  margin-bottom: 32px;
 `;
 
 const ErrorText = styled.p`
@@ -332,30 +325,30 @@ const ErrorText = styled.p`
 `;
 
 const LoginHeader = styled.p`
-  font-size: 21px;
-  font-weight: 800;
-  color: white;
+  font-size: 28px;
+  color: black;
   margin-bottom: 0;
 `;
 
 const HeaderBackText = styled.span`
-  font-size: 12px;
-  color: white;
+  font-size: 18px;
+  color: black;
   font-weight: 700;
 `;
 
 const CreateWalletButton = styled.button`
-  background: white;
-  color: black;
+  background: black;
+  color: white;
   display: flex;
   border: none;
   border-radius: 32px;
-  padding: 8px 12px;
-  font-size: 12px;
+  padding: 14px 24px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   margin-bottom: 24px;
-  width: 124px;
+  width: 162px;
+  justify-content: center;
 `;
 
 export default App;

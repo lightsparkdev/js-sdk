@@ -1,5 +1,6 @@
 import { Transaction } from "@lightsparkdev/js-sdk/objects";
-import { ChannelSource, VideoPlaybackUpdateMessage } from "../types";
+import { ENABLE_YOUTUBE_AND_TWITCH } from "../common/settings";
+import { ChannelSource, VideoPlaybackUpdateMessage } from "../types/Messages";
 import {
   updateTransactionRows,
   updateWalletBalances,
@@ -15,9 +16,9 @@ const messageReceived = (
 ) => {
   console.log("[content.js]. Message received", msg);
   if (msg.id === "get_video_details") {
-    const response = window.location.host.includes("youtube")
+    const response = window.location.host.includes("youtube") && ENABLE_YOUTUBE_AND_TWITCH
       ? getDomDetailsForYoutube()
-      : window.location.host.includes("twitch")
+      : window.location.host.includes("twitch") && ENABLE_YOUTUBE_AND_TWITCH
       ? getDomDetailsForTwitch()
       : getDomDetailsForLighstparkDemo();
 

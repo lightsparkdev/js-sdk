@@ -1,7 +1,3 @@
-export type StartTrackingVideoMessage = {
-  id: "get_video_details";
-};
-
 export enum ChannelSource {
   youtube,
   twitch,
