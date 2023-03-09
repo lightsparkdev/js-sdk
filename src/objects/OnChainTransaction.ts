@@ -1,13 +1,14 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Deposit from "./Deposit.js";
-import Entity from "./Entity.js";
 import Transaction from "./Transaction.js";
+import Entity from "./Entity.js";
+import Deposit from "./Deposit.js";
+import Query from "../requester/Query.js";
+import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
+import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Withdrawal from "./Withdrawal.js";
 
 /** Transaction happened on Bitcoin blockchain. **/

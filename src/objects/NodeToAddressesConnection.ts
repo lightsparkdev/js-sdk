@@ -1,6 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import NodeAddress, { NodeAddressFromJson } from "./NodeAddress.js";
+import { NodeAddressFromJson } from "./NodeAddress.js";
+import NodeAddress from "./NodeAddress.js";
 
 /** A connection between a node and the addresses it has announced for itself on Lightning Network. **/
 type NodeToAddressesConnection = {

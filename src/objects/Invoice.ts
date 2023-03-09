@@ -1,11 +1,13 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
-import InvoiceData, { InvoiceDataFromJson } from "./InvoiceData.js";
 import PaymentRequest from "./PaymentRequest.js";
+import Entity from "./Entity.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 import PaymentRequestStatus from "./PaymentRequestStatus.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import InvoiceData from "./InvoiceData.js";
+import { InvoiceDataFromJson } from "./InvoiceData.js";
 
 /** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) initiated by a Lightspark Node. **/
 type Invoice = PaymentRequest &

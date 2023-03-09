@@ -1,7 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
 import Entity from "./Entity.js";
+import Query from "../requester/Query.js";
 
 type ApiToken = Entity & {
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/

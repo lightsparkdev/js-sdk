@@ -1,19 +1,21 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import LightningTransaction from "./LightningTransaction.js";
-import OutgoingPaymentToAttemptsConnection, {
-  OutgoingPaymentToAttemptsConnectionFromJson,
-} from "./OutgoingPaymentToAttemptsConnection.js";
-import PaymentFailureReason from "./PaymentFailureReason.js";
-import PaymentRequestData, {
-  PaymentRequestDataFromJson,
-} from "./PaymentRequestData.js";
-import RichText, { RichTextFromJson } from "./RichText.js";
+import Transaction from "./Transaction.js";
+import Entity from "./Entity.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { OutgoingPaymentToAttemptsConnectionFromJson } from "./OutgoingPaymentToAttemptsConnection.js";
+import LightsparkClient from "../client.js";
+import { RichTextFromJson } from "./RichText.js";
+import OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
+import Query from "../requester/Query.js";
+import RichText from "./RichText.js";
+import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
+import CurrencyAmount from "./CurrencyAmount.js";
+import PaymentRequestData from "./PaymentRequestData.js";
+import autoBind from "auto-bind";
 import TransactionStatus from "./TransactionStatus.js";
+import PaymentFailureReason from "./PaymentFailureReason.js";
 
 /** A transaction that was sent from a Lightspark node on the Lightning Network. **/
 class OutgoingPayment implements LightningTransaction {

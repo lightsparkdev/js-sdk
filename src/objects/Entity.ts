@@ -1,5 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
+import Query from "../requester/Query.js";
+
 /** This interface is used by all the entities in the Lightspark systems. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. **/
 type Entity = {
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
@@ -18,17 +20,6 @@ type Entity = {
 export const FRAGMENT = `
 fragment EntityFragment on Entity {
     __typename
-    ... on BillingCard {
-        __typename
-        billing_card_id: id
-        billing_card_created_at: created_at
-        billing_card_updated_at: updated_at
-        billing_card_is_primary: is_primary
-        billing_card_expiration_month: expiration_month
-        billing_card_expiration_year: expiration_year
-        billing_card_brand: brand
-        billing_card_last4: last4
-    }
     ... on OutgoingPayment {
         __typename
         outgoing_payment_id: id
@@ -686,30 +677,6 @@ fragment EntityFragment on Entity {
             currency_amount_value: value
             currency_amount_unit: unit
         }
-    }
-    ... on PhoneLoginFactor {
-        __typename
-        phone_login_factor_id: id
-        phone_login_factor_created_at: created_at
-        phone_login_factor_updated_at: updated_at
-        phone_login_factor_verification_date: verification_date
-        phone_login_factor_phone_number: phone_number
-    }
-    ... on TotpLoginFactor {
-        __typename
-        totp_login_factor_id: id
-        totp_login_factor_created_at: created_at
-        totp_login_factor_updated_at: updated_at
-        totp_login_factor_verification_date: verification_date
-        totp_login_factor_version: version
-    }
-    ... on WebAuthnLoginFactor {
-        __typename
-        web_authn_login_factor_id: id
-        web_authn_login_factor_created_at: created_at
-        web_authn_login_factor_updated_at: updated_at
-        web_authn_login_factor_verification_date: verification_date
-        web_authn_login_factor_name: name
     }
 }`;
 

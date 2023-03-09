@@ -1,11 +1,12 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
 import OnChainTransaction from "./OnChainTransaction.js";
 import Transaction from "./Transaction.js";
+import Entity from "./Entity.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 
 /** The transaction on Bitcoin blockchain to fund the Lightspark node's wallet. **/
 type Deposit = OnChainTransaction &

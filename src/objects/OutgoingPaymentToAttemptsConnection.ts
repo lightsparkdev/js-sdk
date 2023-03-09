@@ -1,8 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import OutgoingPaymentAttempt, {
-  OutgoingPaymentAttemptFromJson,
-} from "./OutgoingPaymentAttempt.js";
+import OutgoingPaymentAttempt from "./OutgoingPaymentAttempt.js";
+import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
 
 /** The connection from outgoing payment to all attempts. **/
 type OutgoingPaymentToAttemptsConnection = {

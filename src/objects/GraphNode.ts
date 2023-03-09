@@ -1,14 +1,14 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
+import Node from "./Node.js";
+import Entity from "./Entity.js";
+import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
+import NodeAddressType from "./NodeAddressType.js";
 import LightsparkClient from "../client.js";
 import Query from "../requester/Query.js";
+import autoBind from "auto-bind";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import Node from "./Node.js";
-import NodeAddressType from "./NodeAddressType.js";
-import NodeToAddressesConnection, {
-  NodeToAddressesConnectionFromJson,
-} from "./NodeToAddressesConnection.js";
+import NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 
 /** This is a node on the Lightning Network, managed by a third party. The information about this node is public data that has been obtained by observing the Lightning Network. **/
 class GraphNode implements Node {

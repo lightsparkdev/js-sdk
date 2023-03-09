@@ -1,8 +1,11 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import Transaction, { TransactionFromJson } from "./Transaction.js";
+import PageInfo from "./PageInfo.js";
+import Transaction from "./Transaction.js";
+import CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { TransactionFromJson } from "./Transaction.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 type AccountToTransactionsConnection = {
   /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). **/

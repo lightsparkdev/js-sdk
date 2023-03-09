@@ -1,13 +1,15 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
 import LightningTransaction from "./LightningTransaction.js";
-import RichText, { RichTextFromJson } from "./RichText.js";
-import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
 import Transaction from "./Transaction.js";
+import Entity from "./Entity.js";
+import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
+import { RichTextFromJson } from "./RichText.js";
+import Query from "../requester/Query.js";
+import RichText from "./RichText.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** A transaction that was forwarded through a Lightspark node on the Lightning Network. **/
 type RoutingTransaction = LightningTransaction &

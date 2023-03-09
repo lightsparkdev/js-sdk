@@ -1,15 +1,17 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import IncomingPaymentToAttemptsConnection, {
-  IncomingPaymentToAttemptsConnectionFromJson,
-} from "./IncomingPaymentToAttemptsConnection.js";
 import LightningTransaction from "./LightningTransaction.js";
+import Transaction from "./Transaction.js";
+import Entity from "./Entity.js";
+import LightsparkClient from "../client.js";
+import IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
+import Query from "../requester/Query.js";
+import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
+import autoBind from "auto-bind";
+import CurrencyAmount from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
+import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** A transaction that was sent to a Lightspark node on the Lightning Network. **/
 class IncomingPayment implements LightningTransaction {

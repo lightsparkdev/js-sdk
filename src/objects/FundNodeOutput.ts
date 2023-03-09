@@ -1,6 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 
 type FundNodeOutput = {
   amount: CurrencyAmount;

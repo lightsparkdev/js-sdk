@@ -1,12 +1,12 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Entity from "./Entity.js";
-import Invoice from "./Invoice.js";
-import { InvoiceDataFromJson } from "./InvoiceData.js";
+import Query from "../requester/Query.js";
 import PaymentRequestData from "./PaymentRequestData.js";
+import Invoice from "./Invoice.js";
 import PaymentRequestStatus from "./PaymentRequestStatus.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { InvoiceDataFromJson } from "./InvoiceData.js";
 
 type PaymentRequest = Entity & {
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/

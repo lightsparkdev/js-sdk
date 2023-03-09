@@ -1,35 +1,29 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Query from "../requester/Query.js";
-import AccountToApiTokensConnection, {
-  AccountToApiTokensConnectionFromJson,
-} from "./AccountToApiTokensConnection.js";
-import AccountToChannelsConnection, {
-  AccountToChannelsConnectionFromJson,
-} from "./AccountToChannelsConnection.js";
-import AccountToNodesConnection, {
-  AccountToNodesConnectionFromJson,
-} from "./AccountToNodesConnection.js";
-import AccountToPaymentRequestsConnection, {
-  AccountToPaymentRequestsConnectionFromJson,
-} from "./AccountToPaymentRequestsConnection.js";
-import AccountToTransactionsConnection, {
-  AccountToTransactionsConnectionFromJson,
-} from "./AccountToTransactionsConnection.js";
-import BitcoinNetwork from "./BitcoinNetwork.js";
-import BlockchainBalance, {
-  BlockchainBalanceFromJson,
-} from "./BlockchainBalance.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Entity from "./Entity.js";
+import AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
 import TransactionFailures from "./TransactionFailures.js";
-import TransactionStatus from "./TransactionStatus.js";
+import AccountToChannelsConnection from "./AccountToChannelsConnection.js";
+import { WebhooksSettingsFromJson } from "./WebhooksSettings.js";
+import { AccountToPaymentRequestsConnectionFromJson } from "./AccountToPaymentRequestsConnection.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { AccountToNodesConnectionFromJson } from "./AccountToNodesConnection.js";
+import LightsparkClient from "../client.js";
+import BitcoinNetwork from "./BitcoinNetwork.js";
+import AccountToNodesConnection from "./AccountToNodesConnection.js";
 import TransactionType from "./TransactionType.js";
-import WebhooksSettings, {
-  WebhooksSettingsFromJson,
-} from "./WebhooksSettings.js";
+import { AccountToApiTokensConnectionFromJson } from "./AccountToApiTokensConnection.js";
+import autoBind from "auto-bind";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import { AccountToTransactionsConnectionFromJson } from "./AccountToTransactionsConnection.js";
+import WebhooksSettings from "./WebhooksSettings.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount from "./CurrencyAmount.js";
+import AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
+import BlockchainBalance from "./BlockchainBalance.js";
+import AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
+import TransactionStatus from "./TransactionStatus.js";
+import { AccountToChannelsConnectionFromJson } from "./AccountToChannelsConnection.js";
 
 class Account implements Entity {
   constructor(

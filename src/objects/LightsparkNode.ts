@@ -1,27 +1,29 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Query from "../requester/Query.js";
-import BitcoinNetwork from "./BitcoinNetwork.js";
-import BlockchainBalance, {
-  BlockchainBalanceFromJson,
-} from "./BlockchainBalance.js";
-import Channel, { ChannelFromJson } from "./Channel.js";
-import ChannelStatus from "./ChannelStatus.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Key, { KeyFromJson } from "./Key.js";
-import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import LightsparkNodeToChannelsConnection, {
-  LightsparkNodeToChannelsConnectionFromJson,
-} from "./LightsparkNodeToChannelsConnection.js";
 import Node from "./Node.js";
+import Entity from "./Entity.js";
+import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
+import { ChannelFromJson } from "./Channel.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import NodeAddressType from "./NodeAddressType.js";
-import NodeToAddressesConnection, {
-  NodeToAddressesConnectionFromJson,
-} from "./NodeToAddressesConnection.js";
-import Secret, { SecretFromJson } from "./Secret.js";
+import LightsparkClient from "../client.js";
+import LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
+import ChannelStatus from "./ChannelStatus.js";
+import BitcoinNetwork from "./BitcoinNetwork.js";
+import NodeToAddressesConnection from "./NodeToAddressesConnection.js";
+import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
+import autoBind from "auto-bind";
+import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
+import Key from "./Key.js";
+import { KeyFromJson } from "./Key.js";
+import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import Query from "../requester/Query.js";
+import Channel from "./Channel.js";
+import CurrencyAmount from "./CurrencyAmount.js";
+import BlockchainBalance from "./BlockchainBalance.js";
+import { SecretFromJson } from "./Secret.js";
+import Secret from "./Secret.js";
 
 /** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. **/
 class LightsparkNode implements Node {

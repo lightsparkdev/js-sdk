@@ -1,8 +1,9 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Entity from "./Entity.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 
 /** One hop signifies a payment moving one node ahead on a payment route; a list of sequential hops defines the path from sender node to recipient node for a payment attempt. **/
 type Hop = Entity & {

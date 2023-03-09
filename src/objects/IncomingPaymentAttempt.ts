@@ -1,9 +1,10 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Query from "../requester/Query.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Entity from "./Entity.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Query from "../requester/Query.js";
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
+import CurrencyAmount from "./CurrencyAmount.js";
 
 /** An attempt for a payment over a route from sender node to recipient node. **/
 type IncomingPaymentAttempt = Entity & {

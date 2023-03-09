@@ -1,9 +1,8 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmountInput, {
-  CurrencyAmountInputFromJson,
-} from "./CurrencyAmountInput.js";
 import InvoiceType from "./InvoiceType.js";
+import CurrencyAmountInput from "./CurrencyAmountInput.js";
+import { CurrencyAmountInputFromJson } from "./CurrencyAmountInput.js";
 
 type CreateInvoiceInput = {
   nodeId: string;

@@ -1,7 +1,9 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import PaymentRequest, { PaymentRequestFromJson } from "./PaymentRequest.js";
+import PaymentRequest from "./PaymentRequest.js";
+import PageInfo from "./PageInfo.js";
+import { PaymentRequestFromJson } from "./PaymentRequest.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 type AccountToPaymentRequestsConnection = {
   /** The payment requests for the current page of this connection. **/

@@ -1,7 +1,9 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import { ApiTokenFromJson } from "./ApiToken.js";
+import PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import ApiToken from "./ApiToken.js";
 
 type AccountToApiTokensConnection = {
   /** An object that holds pagination information about the objects in this connection. **/

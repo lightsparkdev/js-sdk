@@ -1,8 +1,10 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import LightsparkNode, { LightsparkNodeFromJson } from "./LightsparkNode.js";
+import PageInfo from "./PageInfo.js";
+import { LightsparkNodeFromJson } from "./LightsparkNode.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import LightsparkNode from "./LightsparkNode.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 /** A connection between an account and the nodes it manages. **/
 type AccountToNodesConnection = {

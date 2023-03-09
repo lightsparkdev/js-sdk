@@ -1,6 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
+import { ApiTokenFromJson } from "./ApiToken.js";
+import ApiToken from "./ApiToken.js";
 
 type CreateApiTokenOutput = {
   /** The API Token that has been created. **/

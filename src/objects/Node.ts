@@ -1,22 +1,21 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import autoBind from "auto-bind";
+import Entity from "./Entity.js";
+import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
+import NodeAddressType from "./NodeAddressType.js";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
 import LightsparkClient from "../client.js";
 import Query from "../requester/Query.js";
+import autoBind from "auto-bind";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
-import GraphNode from "./GraphNode.js";
-import { KeyFromJson } from "./Key.js";
+import NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 import LightsparkNode from "./LightsparkNode.js";
+import { SecretFromJson } from "./Secret.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import NodeAddressType from "./NodeAddressType.js";
-import NodeToAddressesConnection, {
-  NodeToAddressesConnectionFromJson,
-} from "./NodeToAddressesConnection.js";
-import { SecretFromJson } from "./Secret.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import { KeyFromJson } from "./Key.js";
+import GraphNode from "./GraphNode.js";
 
 /** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. **/
 class Node implements Entity {
