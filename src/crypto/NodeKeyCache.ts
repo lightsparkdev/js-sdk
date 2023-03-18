@@ -33,7 +33,6 @@ class NodeKeyCache {
       this.idToKey.set(id, key);
       return key;
     } catch (e) {
-      debugger;
       console.log("Error importing key: ", e);
     }
     return null;

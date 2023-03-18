@@ -1,7 +1,8 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmountInput from "./CurrencyAmountInput.js";
-import { CurrencyAmountInputFromJson } from "./CurrencyAmountInput.js";
+import CurrencyAmountInput, {
+  CurrencyAmountInputFromJson,
+} from "./CurrencyAmountInput.js";
 
 type FundNodeInput = {
   nodeId: string;

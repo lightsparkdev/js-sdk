@@ -1,18 +1,20 @@
 import styled from "@emotion/styled";
 
-export const LoadingSpinner = () => {
+type LoadingProps = { size: number };
+
+export const LoadingSpinner = (props: LoadingProps) => {
   return (
-    <Rotate>
+    <Rotate size={props.size}>
       <LoadingSvg />
     </Rotate>
   );
 };
 
-const Rotate = styled.div`
+const Rotate = styled.div<LoadingProps>`
   display: inline-flex;
   animation: rotate 1s linear infinite;
-  width: 12px;
-  height: 12px;
+  width: ${(props) => `${props.size}px`};
+  height: ${(props) => `${props.size}px`};
 
   @keyframes rotate {
     0% {
@@ -26,8 +28,7 @@ const Rotate = styled.div`
 
 const LoadingSvg = () => (
   <svg
-    width="12"
-    height="12"
+    width="100%"
     viewBox="0 0 12 12"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

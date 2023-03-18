@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/js-sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -11,6 +11,10 @@
     "typescript"
   ],
   "homepage": "https://github.com/lightsparkdev/js-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lightsparkdev/js-sdk.git"
+  },
   "bugs": {
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
@@ -28,7 +32,8 @@
   "scripts": {
     "build": "npx tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md",
     "clean": "rm -rf ./dist",
-    "lint": "eslint ./src",
+    "lint": "npx prettier --check ./src",
+    "format": "npx prettier --write ./src",
     "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
     "type-check": "tsc --noEmit",
     "postversion": "npm run build"

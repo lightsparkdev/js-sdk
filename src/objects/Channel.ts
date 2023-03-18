@@ -1,17 +1,16 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import ChannelToTransactionsConnection from "./ChannelToTransactionsConnection.js";
-import LightsparkClient from "../client.js";
-import TransactionType from "./TransactionType.js";
-import { ChannelToTransactionsConnectionFromJson } from "./ChannelToTransactionsConnection.js";
-import Query from "../requester/Query.js";
 import autoBind from "auto-bind";
+import LightsparkClient from "../client.js";
+import Query from "../requester/Query.js";
+import ChannelFees, { ChannelFeesFromJson } from "./ChannelFees.js";
 import ChannelStatus from "./ChannelStatus.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import ChannelFees from "./ChannelFees.js";
-import { ChannelFeesFromJson } from "./ChannelFees.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import ChannelToTransactionsConnection, {
+  ChannelToTransactionsConnectionFromJson,
+} from "./ChannelToTransactionsConnection.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import TransactionType from "./TransactionType.js";
 
 /** An object that represents a payment channel between two nodes in the Lightning Network. **/
 class Channel implements Entity {
@@ -84,16 +83,31 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_to_transactions_connection_total_amount_transacted: total_amount_transacted {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_to_transactions_connection_total_fees: total_fees {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
             }
         }
@@ -186,36 +200,71 @@ fragment ChannelFragment on Channel {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_local_balance: local_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_local_unsettled_balance: local_unsettled_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_remote_balance: remote_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_remote_unsettled_balance: remote_unsettled_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_unsettled_balance: unsettled_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_total_balance: total_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_status: status
     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -225,6 +274,11 @@ fragment ChannelFragment on Channel {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_fees_fee_rate_per_mil: fee_rate_per_mil
     }

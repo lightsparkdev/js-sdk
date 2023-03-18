@@ -26,8 +26,8 @@ const CurrencyAmount = (props: Props) => {
   const amount = convert(props.amount, props.displayUnit);
   return (
     <CurrencyAmountRaw
-      value={amount.value}
-      unit={amount.unit}
+      value={amount.preferredCurrencyValueApprox}
+      unit={amount.preferredCurrencyUnit}
       shortNumber={props.shortNumber}
       shortUnit={props.shortUnit}
       symbol={props.symbol}
@@ -39,6 +39,8 @@ const CurrencyAmount = (props: Props) => {
   );
 };
 
+// TODO: consider moving this to fetch the actual exchange rate.
+const SATS_TO_USD = .0268;
 const btc_conversions: Map<CurrencyUnit, Map<CurrencyUnit, number>> = new Map([
   [
     CurrencyUnit.BITCOIN,
@@ -64,22 +66,36 @@ const btc_conversions: Map<CurrencyUnit, Map<CurrencyUnit, number>> = new Map([
       [CurrencyUnit.MILLISATOSHI, 1],
     ]),
   ],
+  [
+    CurrencyUnit.USD,
+    new Map([
+      [CurrencyUnit.USD, 1],
+      [CurrencyUnit.SATOSHI, SATS_TO_USD],
+      [CurrencyUnit.BITCOIN, SATS_TO_USD * 1e8],
+      [CurrencyUnit.MILLISATOSHI, SATS_TO_USD / 1000],
+    ]),
+  ],
 ]);
 
 const convert = (
   amount: CurrencyAmountType,
   unit: Maybe<CurrencyUnit>
 ): CurrencyAmountType => {
-  if (unit === null || unit === undefined || unit === amount.unit)
+  if (unit === null || unit === undefined || unit === amount.originalUnit)
     return amount;
-  const multiplier = btc_conversions.get(amount.unit)?.get(unit);
+  const multiplier = btc_conversions.get(amount.originalUnit)?.get(unit);
   if (!multiplier) {
     throw new ConversionError(`Unable to convert from {amount.unit} to {unit}`);
   }
 
   return {
-    unit: unit,
-    value: amount.value * multiplier,
+    unit: amount.originalUnit,
+    value: amount.originalValue,
+    originalUnit: amount.originalUnit,
+    originalValue: amount.originalValue,
+    preferredCurrencyUnit: unit,
+    preferredCurrencyValueApprox: amount.originalValue * multiplier,
+    preferredCurrencyValueRounded: amount.originalValue * multiplier
   };
 };
 
@@ -90,29 +106,5 @@ export class ConversionError {
     this.message = message;
   }
 }
-
-export const asSatoshis = (
-  amount?: Maybe<CurrencyAmountType>
-): Maybe<CurrencyAmountType> => {
-  if (amount === undefined || amount === null) {
-    return null;
-  }
-  return {
-    value: valueAsSatoshis(amount),
-    unit: CurrencyUnit.SATOSHI,
-  };
-};
-
-export const valueAsSatoshis = (amount: CurrencyAmountType): number => {
-  switch (amount.unit) {
-    case CurrencyUnit.BITCOIN:
-      return amount.value * 1e8;
-    case CurrencyUnit.SATOSHI:
-      return amount.value;
-    case CurrencyUnit.MILLISATOSHI:
-      return amount.value * 0.001;
-  }
-  throw new ConversionError(`Cannot convert from {amount.unit} to Satoshis`);
-};
 
 export default CurrencyAmount;

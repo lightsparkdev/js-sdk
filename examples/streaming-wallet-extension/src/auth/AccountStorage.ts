@@ -6,7 +6,9 @@ export default class AccountStorage {
     autoBind(this);
   }
 
-  saveAccountCredentials(credentials: StreamingDemoAccountCredentials): Promise<void> {
+  saveAccountCredentials(
+    credentials: StreamingDemoAccountCredentials
+  ): Promise<void> {
     return chrome.storage.local.set({ credentials });
   }
 

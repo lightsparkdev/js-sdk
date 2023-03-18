@@ -1,9 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import PaymentRequest from "./PaymentRequest.js";
-import PageInfo from "./PageInfo.js";
-import { PaymentRequestFromJson } from "./PaymentRequest.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import PaymentRequest, { PaymentRequestFromJson } from "./PaymentRequest.js";
 
 type AccountToPaymentRequestsConnection = {
   /** The payment requests for the current page of this connection. **/
@@ -12,7 +10,10 @@ type AccountToPaymentRequestsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/
   pageInfo: PageInfo;
 
-  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). **/
+  /**
+   * The total count of objects in this connection, using the current filters. It is different from the
+   * number of objects returned in the current page (in the `entities` field).
+   **/
   count?: number;
 };
 

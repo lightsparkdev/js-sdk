@@ -1,29 +1,35 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
-import TransactionFailures from "./TransactionFailures.js";
-import AccountToChannelsConnection from "./AccountToChannelsConnection.js";
-import { WebhooksSettingsFromJson } from "./WebhooksSettings.js";
-import { AccountToPaymentRequestsConnectionFromJson } from "./AccountToPaymentRequestsConnection.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import { AccountToNodesConnectionFromJson } from "./AccountToNodesConnection.js";
-import LightsparkClient from "../client.js";
-import BitcoinNetwork from "./BitcoinNetwork.js";
-import AccountToNodesConnection from "./AccountToNodesConnection.js";
-import TransactionType from "./TransactionType.js";
-import { AccountToApiTokensConnectionFromJson } from "./AccountToApiTokensConnection.js";
 import autoBind from "auto-bind";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import { AccountToTransactionsConnectionFromJson } from "./AccountToTransactionsConnection.js";
-import WebhooksSettings from "./WebhooksSettings.js";
+import LightsparkClient from "../client.js";
 import Query from "../requester/Query.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
-import BlockchainBalance from "./BlockchainBalance.js";
-import AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
+import AccountToApiTokensConnection, {
+  AccountToApiTokensConnectionFromJson,
+} from "./AccountToApiTokensConnection.js";
+import AccountToChannelsConnection, {
+  AccountToChannelsConnectionFromJson,
+} from "./AccountToChannelsConnection.js";
+import AccountToNodesConnection, {
+  AccountToNodesConnectionFromJson,
+} from "./AccountToNodesConnection.js";
+import AccountToPaymentRequestsConnection, {
+  AccountToPaymentRequestsConnectionFromJson,
+} from "./AccountToPaymentRequestsConnection.js";
+import AccountToTransactionsConnection, {
+  AccountToTransactionsConnectionFromJson,
+} from "./AccountToTransactionsConnection.js";
+import BitcoinNetwork from "./BitcoinNetwork.js";
+import BlockchainBalance, {
+  BlockchainBalanceFromJson,
+} from "./BlockchainBalance.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import TransactionFailures from "./TransactionFailures.js";
 import TransactionStatus from "./TransactionStatus.js";
-import { AccountToChannelsConnectionFromJson } from "./AccountToChannelsConnection.js";
+import TransactionType from "./TransactionType.js";
+import WebhooksSettings, {
+  WebhooksSettingsFromJson,
+} from "./WebhooksSettings.js";
 
 class Account implements Entity {
   constructor(
@@ -93,31 +99,61 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_confirmed_balance: confirmed_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_locked_balance: locked_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_required_reserve: required_reserve {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_available_balance: available_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
             }
         }
@@ -169,6 +205,11 @@ query FetchAccountLocalBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids: 
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
     }
@@ -224,31 +265,61 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_confirmed_balance: confirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_locked_balance: locked_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_required_reserve: required_reserve {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_available_balance: available_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -271,6 +342,11 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_name: name
                     lightspark_node_purpose: purpose
@@ -278,6 +354,11 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
@@ -314,6 +395,11 @@ query FetchAccountRemoteBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids:
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
     }
@@ -386,36 +472,71 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_balance: local_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_unsettled_balance: local_unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_balance: remote_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_unsettled_balance: remote_unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_unsettled_balance: unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_total_balance: total_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_status: status
                     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -425,6 +546,11 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_fees_fee_rate_per_mil: fee_rate_per_mil
                     }
@@ -478,20 +604,171 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_average_fee_earned: average_fee_earned {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_count: count
                 account_to_transactions_connection_total_amount_transacted: total_amount_transacted {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_entities: entities {
                     __typename
+                    ... on ChannelClosingTransaction {
+                        __typename
+                        channel_closing_transaction_id: id
+                        channel_closing_transaction_created_at: created_at
+                        channel_closing_transaction_updated_at: updated_at
+                        channel_closing_transaction_status: status
+                        channel_closing_transaction_resolved_at: resolved_at
+                        channel_closing_transaction_amount: amount {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        channel_closing_transaction_transaction_hash: transaction_hash
+                        channel_closing_transaction_fees: fees {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        channel_closing_transaction_block_hash: block_hash
+                        channel_closing_transaction_block_height: block_height
+                        channel_closing_transaction_destination_addresses: destination_addresses
+                        channel_closing_transaction_num_confirmations: num_confirmations
+                        channel_closing_transaction_channel: channel {
+                            id
+                        }
+                    }
+                    ... on ChannelOpeningTransaction {
+                        __typename
+                        channel_opening_transaction_id: id
+                        channel_opening_transaction_created_at: created_at
+                        channel_opening_transaction_updated_at: updated_at
+                        channel_opening_transaction_status: status
+                        channel_opening_transaction_resolved_at: resolved_at
+                        channel_opening_transaction_amount: amount {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        channel_opening_transaction_transaction_hash: transaction_hash
+                        channel_opening_transaction_fees: fees {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        channel_opening_transaction_block_hash: block_hash
+                        channel_opening_transaction_block_height: block_height
+                        channel_opening_transaction_destination_addresses: destination_addresses
+                        channel_opening_transaction_num_confirmations: num_confirmations
+                        channel_opening_transaction_channel: channel {
+                            id
+                        }
+                    }
+                    ... on Deposit {
+                        __typename
+                        deposit_id: id
+                        deposit_created_at: created_at
+                        deposit_updated_at: updated_at
+                        deposit_status: status
+                        deposit_resolved_at: resolved_at
+                        deposit_amount: amount {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        deposit_transaction_hash: transaction_hash
+                        deposit_fees: fees {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        deposit_block_hash: block_hash
+                        deposit_block_height: block_height
+                        deposit_destination_addresses: destination_addresses
+                        deposit_num_confirmations: num_confirmations
+                        deposit_destination: destination {
+                            id
+                        }
+                    }
+                    ... on IncomingPayment {
+                        __typename
+                        incoming_payment_id: id
+                        incoming_payment_created_at: created_at
+                        incoming_payment_updated_at: updated_at
+                        incoming_payment_status: status
+                        incoming_payment_resolved_at: resolved_at
+                        incoming_payment_amount: amount {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                        }
+                        incoming_payment_transaction_hash: transaction_hash
+                        incoming_payment_origin: origin {
+                            id
+                        }
+                        incoming_payment_destination: destination {
+                            id
+                        }
+                        incoming_payment_payment_request: payment_request {
+                            id
+                        }
+                    }
                     ... on OutgoingPayment {
                         __typename
                         outgoing_payment_id: id
@@ -503,6 +780,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         outgoing_payment_transaction_hash: transaction_hash
                         outgoing_payment_origin: origin {
@@ -515,6 +797,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         outgoing_payment_payment_request_data: payment_request_data {
                             __typename
@@ -527,6 +814,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                     __typename
                                     currency_amount_value: value
                                     currency_amount_unit: unit
+                                    currency_amount_original_value: original_value
+                                    currency_amount_original_unit: original_unit
+                                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                    currency_amount_preferred_currency_unit: preferred_currency_unit
                                 }
                                 invoice_data_created_at: created_at
                                 invoice_data_expires_at: expires_at
@@ -552,31 +844,61 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_confirmed_balance: confirmed_balance {
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_locked_balance: locked_balance {
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_required_reserve: required_reserve {
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_available_balance: available_balance {
                                                 __typename
                                                 currency_amount_value: value
                                                 currency_amount_unit: unit
+                                                currency_amount_original_value: original_value
+                                                currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                         }
                                         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -599,6 +921,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         lightspark_node_name: name
                                         lightspark_node_purpose: purpose
@@ -606,6 +933,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         lightspark_node_rest_url: rest_url
                                         lightspark_node_status: status
@@ -633,110 +965,6 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             rich_text_text: text
                         }
                     }
-                    ... on ChannelOpeningTransaction {
-                        __typename
-                        channel_opening_transaction_id: id
-                        channel_opening_transaction_created_at: created_at
-                        channel_opening_transaction_updated_at: updated_at
-                        channel_opening_transaction_status: status
-                        channel_opening_transaction_resolved_at: resolved_at
-                        channel_opening_transaction_amount: amount {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        channel_opening_transaction_transaction_hash: transaction_hash
-                        channel_opening_transaction_fees: fees {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        channel_opening_transaction_block_hash: block_hash
-                        channel_opening_transaction_block_height: block_height
-                        channel_opening_transaction_destination_addresses: destination_addresses
-                        channel_opening_transaction_num_confirmations: num_confirmations
-                        channel_opening_transaction_channel: channel {
-                            id
-                        }
-                    }
-                    ... on ChannelClosingTransaction {
-                        __typename
-                        channel_closing_transaction_id: id
-                        channel_closing_transaction_created_at: created_at
-                        channel_closing_transaction_updated_at: updated_at
-                        channel_closing_transaction_status: status
-                        channel_closing_transaction_resolved_at: resolved_at
-                        channel_closing_transaction_amount: amount {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        channel_closing_transaction_transaction_hash: transaction_hash
-                        channel_closing_transaction_fees: fees {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        channel_closing_transaction_block_hash: block_hash
-                        channel_closing_transaction_block_height: block_height
-                        channel_closing_transaction_destination_addresses: destination_addresses
-                        channel_closing_transaction_num_confirmations: num_confirmations
-                        channel_closing_transaction_channel: channel {
-                            id
-                        }
-                    }
-                    ... on Deposit {
-                        __typename
-                        deposit_id: id
-                        deposit_created_at: created_at
-                        deposit_updated_at: updated_at
-                        deposit_status: status
-                        deposit_resolved_at: resolved_at
-                        deposit_amount: amount {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        deposit_transaction_hash: transaction_hash
-                        deposit_fees: fees {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        deposit_block_hash: block_hash
-                        deposit_block_height: block_height
-                        deposit_destination_addresses: destination_addresses
-                        deposit_num_confirmations: num_confirmations
-                        deposit_destination: destination {
-                            id
-                        }
-                    }
-                    ... on Withdrawal {
-                        __typename
-                        withdrawal_id: id
-                        withdrawal_created_at: created_at
-                        withdrawal_updated_at: updated_at
-                        withdrawal_status: status
-                        withdrawal_resolved_at: resolved_at
-                        withdrawal_amount: amount {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        withdrawal_transaction_hash: transaction_hash
-                        withdrawal_fees: fees {
-                            __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
-                        }
-                        withdrawal_block_hash: block_hash
-                        withdrawal_block_height: block_height
-                        withdrawal_destination_addresses: destination_addresses
-                        withdrawal_num_confirmations: num_confirmations
-                        withdrawal_origin: origin {
-                            id
-                        }
-                    }
                     ... on RoutingTransaction {
                         __typename
                         routing_transaction_id: id
@@ -748,6 +976,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         routing_transaction_transaction_hash: transaction_hash
                         routing_transaction_incoming_channel: incoming_channel {
@@ -760,6 +993,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         routing_transaction_failure_message: failure_message {
                             __typename
@@ -767,26 +1005,39 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                         }
                         routing_transaction_failure_reason: failure_reason
                     }
-                    ... on IncomingPayment {
+                    ... on Withdrawal {
                         __typename
-                        incoming_payment_id: id
-                        incoming_payment_created_at: created_at
-                        incoming_payment_updated_at: updated_at
-                        incoming_payment_status: status
-                        incoming_payment_resolved_at: resolved_at
-                        incoming_payment_amount: amount {
+                        withdrawal_id: id
+                        withdrawal_created_at: created_at
+                        withdrawal_updated_at: updated_at
+                        withdrawal_status: status
+                        withdrawal_resolved_at: resolved_at
+                        withdrawal_amount: amount {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
-                        incoming_payment_transaction_hash: transaction_hash
-                        incoming_payment_origin: origin {
-                            id
+                        withdrawal_transaction_hash: transaction_hash
+                        withdrawal_fees: fees {
+                            __typename
+                            currency_amount_value: value
+                            currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
-                        incoming_payment_destination: destination {
-                            id
-                        }
-                        incoming_payment_payment_request: payment_request {
+                        withdrawal_block_hash: block_hash
+                        withdrawal_block_height: block_height
+                        withdrawal_destination_addresses: destination_addresses
+                        withdrawal_num_confirmations: num_confirmations
+                        withdrawal_origin: origin {
                             id
                         }
                     }
@@ -854,6 +1105,11 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             invoice_data_created_at: created_at
                             invoice_data_expires_at: expires_at
@@ -879,31 +1135,61 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_confirmed_balance: confirmed_balance {
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_locked_balance: locked_balance {
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_required_reserve: required_reserve {
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_available_balance: available_balance {
                                             __typename
                                             currency_amount_value: value
                                             currency_amount_unit: unit
+                                            currency_amount_original_value: original_value
+                                            currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                     }
                                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -926,6 +1212,11 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         __typename
                                         currency_amount_value: value
                                         currency_amount_unit: unit
+                                        currency_amount_original_value: original_value
+                                        currency_amount_original_unit: original_unit
+                                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                     }
                                     lightspark_node_name: name
                                     lightspark_node_purpose: purpose
@@ -933,6 +1224,11 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         __typename
                                         currency_amount_value: value
                                         currency_amount_unit: unit
+                                        currency_amount_original_value: original_value
+                                        currency_amount_original_unit: original_unit
+                                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                     }
                                     lightspark_node_rest_url: rest_url
                                     lightspark_node_status: status
@@ -958,6 +1254,11 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                 }

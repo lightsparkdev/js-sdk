@@ -1,20 +1,26 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { v4 as uuid } from "uuid";
+import { INSTANCE_ID_KEY } from "../common/storage";
 import StreamingDemoAccountCredentials from "./StreamingDemoCredentials";
 
-const GRAPH_QL_ENDPOINT =
-  "https://api.dev.dev.sparkinfra.net/graphql";
+const GRAPH_QL_ENDPOINT = "https://api.dev.dev.sparkinfra.net/graphql";
 
 dayjs.extend(utc);
 
-declare namespace chrome {
-  namespace instanceID {
-    function getID(callback: (id: string) => void): void;
-  }
-}
-
 const getInstanceID = (): Promise<string> => {
-  return new Promise<string>((resolve) => chrome.instanceID.getID(resolve));
+  return new Promise<string>((resolve) => {
+    chrome.storage.local.get(INSTANCE_ID_KEY, (result) => {
+      if (result.instanceID) {
+        resolve(result.instanceID);
+      } else {
+        const instanceID = uuid();
+        chrome.storage.local.set({ [INSTANCE_ID_KEY]: instanceID }, () => {
+          resolve(instanceID);
+        });
+      }
+    });
+  });
 };
 
 export const reserveStreamingDemoAccountCredentials =
@@ -51,7 +57,10 @@ export const reserveStreamingDemoAccountCredentials =
     const responseJson = await response.json();
     const data = responseJson.data.DEMO_reserve_streaming_sats_account;
     if (!data) {
-      console.error("Failed to reserve demo account", JSON.stringify(responseJson.errors));
+      console.error(
+        "Failed to reserve demo account",
+        JSON.stringify(responseJson.errors)
+      );
       return null;
     }
     return {

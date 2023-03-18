@@ -157,9 +157,11 @@ export const onMessageReceived = (
           {
             url: "index.html",
             type: "popup",
-            width: 375,
-            height: 520,
-            left: Math.round((activeWindow.left ?? 0) + (activeWindow.width ?? 0) - 480),
+            width: 300,
+            height: 400,
+            left: Math.round(
+              (activeWindow.left ?? 0) + (activeWindow.width ?? 0) - 480
+            ),
             top: Math.round((activeWindow.top ?? 0) + 90),
           },
           () => console.log("opened popup")

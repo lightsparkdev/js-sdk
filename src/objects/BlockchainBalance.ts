@@ -1,7 +1,6 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import CurrencyAmount from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** This object provides a detailed breakdown of a `LightsparkNode`'s current balance on the Bitcoin Network. **/
 type BlockchainBalance = {
@@ -54,31 +53,61 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_confirmed_balance: confirmed_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_unconfirmed_balance: unconfirmed_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_locked_balance: locked_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_required_reserve: required_reserve {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_available_balance: available_balance {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
 }`;
 

@@ -1,21 +1,22 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import LightningTransaction from "./LightningTransaction.js";
-import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
-import { RichTextFromJson } from "./RichText.js";
 import Query from "../requester/Query.js";
-import RichText from "./RichText.js";
-import CurrencyAmount from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import LightningTransaction from "./LightningTransaction.js";
+import RichText, { RichTextFromJson } from "./RichText.js";
+import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
+import Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** A transaction that was forwarded through a Lightspark node on the Lightning Network. **/
 type RoutingTransaction = LightningTransaction &
   Transaction &
   Entity & {
-    /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
     id: string;
 
     /** The date and time when this transaction was initiated. **/
@@ -45,7 +46,10 @@ type RoutingTransaction = LightningTransaction &
     /** If known, the channel this transaction was forwarded to. **/
     outgoingChannelId?: string;
 
-    /** The fees collected by the node when routing this transaction. We subtract the outgoing amount to the incoming amount to determine how much fees were collected. **/
+    /**
+     * The fees collected by the node when routing this transaction. We subtract the outgoing amount to
+     * the incoming amount to determine how much fees were collected.
+     **/
     fees?: CurrencyAmount;
 
     /** If applicable, user-facing error message describing why the routing failed. **/
@@ -94,6 +98,11 @@ fragment RoutingTransactionFragment on RoutingTransaction {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     routing_transaction_transaction_hash: transaction_hash
     routing_transaction_incoming_channel: incoming_channel {
@@ -106,6 +115,11 @@ fragment RoutingTransactionFragment on RoutingTransaction {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     routing_transaction_failure_message: failure_message {
         __typename

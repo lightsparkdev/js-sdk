@@ -1,17 +1,15 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import LightningTransaction from "./LightningTransaction.js";
-import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import LightsparkClient from "../client.js";
-import IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
-import Query from "../requester/Query.js";
-import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
 import autoBind from "auto-bind";
-import CurrencyAmount from "./CurrencyAmount.js";
-import TransactionStatus from "./TransactionStatus.js";
+import LightsparkClient from "../client.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import IncomingPaymentToAttemptsConnection, {
+  IncomingPaymentToAttemptsConnectionFromJson,
+} from "./IncomingPaymentToAttemptsConnection.js";
+import LightningTransaction from "./LightningTransaction.js";
+import TransactionStatus from "./TransactionStatus.js";
 
 /** A transaction that was sent to a Lightspark node on the Lightning Network. **/
 class IncomingPayment implements LightningTransaction {
@@ -55,6 +53,11 @@ query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $st
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     incoming_payment_attempt_channel: channel {
                         id
@@ -120,6 +123,11 @@ fragment IncomingPaymentFragment on IncomingPayment {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     incoming_payment_transaction_hash: transaction_hash
     incoming_payment_origin: origin {

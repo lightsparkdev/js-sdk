@@ -1,20 +1,23 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import Deposit from "./Deposit.js";
+import LightsparkException from "../LightsparkException.js";
 import Query from "../requester/Query.js";
-import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import TransactionStatus from "./TransactionStatus.js";
 import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Deposit from "./Deposit.js";
+import Entity from "./Entity.js";
+import Transaction from "./Transaction.js";
+import TransactionStatus from "./TransactionStatus.js";
 import Withdrawal from "./Withdrawal.js";
 
 /** Transaction happened on Bitcoin blockchain. **/
 type OnChainTransaction = Transaction &
   Entity & {
-    /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
     id: string;
 
     /** The date and time when this transaction was initiated. **/
@@ -29,7 +32,10 @@ type OnChainTransaction = Transaction &
     /** The amount of money involved in this transaction. **/
     amount: CurrencyAmount;
 
-    /** The height of the block that included this transaction. This will be zero for unconfirmed transactions. **/
+    /**
+     * The height of the block that included this transaction. This will be zero for unconfirmed
+     * transactions.
+     **/
     blockHeight: number;
 
     /** The Bitcoin blockchain addresses this transaction was sent to. **/
@@ -44,10 +50,16 @@ type OnChainTransaction = Transaction &
     /** The hash of this transaction, so it can be uniquely identified on the Lightning network. **/
     transactionHash?: string;
 
-    /** The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin blockchain. **/
+    /**
+     * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+     * blockchain.
+     **/
     fees?: CurrencyAmount;
 
-    /** The hash of the block that included this transaction. This will be null for unconfirmed transactions. **/
+    /**
+     * The hash of the block that included this transaction. This will be null for unconfirmed
+     * transactions.
+     **/
     blockHash?: string;
 
     /** The number of blockchain confirmations for this transaction in real time. **/
@@ -55,27 +67,6 @@ type OnChainTransaction = Transaction &
   };
 
 export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
-  if (obj["__typename"] == "ChannelOpeningTransaction") {
-    return {
-      id: obj["channel_opening_transaction_id"],
-      createdAt: obj["channel_opening_transaction_created_at"],
-      updatedAt: obj["channel_opening_transaction_updated_at"],
-      status: TransactionStatus[obj["channel_opening_transaction_status"]],
-      amount: CurrencyAmountFromJson(obj["channel_opening_transaction_amount"]),
-      blockHeight: obj["channel_opening_transaction_block_height"],
-      destinationAddresses:
-        obj["channel_opening_transaction_destination_addresses"],
-      typename: "ChannelOpeningTransaction",
-      resolvedAt: obj["channel_opening_transaction_resolved_at"],
-      transactionHash: obj["channel_opening_transaction_transaction_hash"],
-      fees: !!obj["channel_opening_transaction_fees"]
-        ? CurrencyAmountFromJson(obj["channel_opening_transaction_fees"])
-        : undefined,
-      blockHash: obj["channel_opening_transaction_block_hash"],
-      numConfirmations: obj["channel_opening_transaction_num_confirmations"],
-      channelId: obj["channel_opening_transaction_channel"]?.id ?? undefined,
-    } as ChannelOpeningTransaction;
-  }
   if (obj["__typename"] == "ChannelClosingTransaction") {
     return {
       id: obj["channel_closing_transaction_id"],
@@ -96,6 +87,27 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       numConfirmations: obj["channel_closing_transaction_num_confirmations"],
       channelId: obj["channel_closing_transaction_channel"]?.id ?? undefined,
     } as ChannelClosingTransaction;
+  }
+  if (obj["__typename"] == "ChannelOpeningTransaction") {
+    return {
+      id: obj["channel_opening_transaction_id"],
+      createdAt: obj["channel_opening_transaction_created_at"],
+      updatedAt: obj["channel_opening_transaction_updated_at"],
+      status: TransactionStatus[obj["channel_opening_transaction_status"]],
+      amount: CurrencyAmountFromJson(obj["channel_opening_transaction_amount"]),
+      blockHeight: obj["channel_opening_transaction_block_height"],
+      destinationAddresses:
+        obj["channel_opening_transaction_destination_addresses"],
+      typename: "ChannelOpeningTransaction",
+      resolvedAt: obj["channel_opening_transaction_resolved_at"],
+      transactionHash: obj["channel_opening_transaction_transaction_hash"],
+      fees: !!obj["channel_opening_transaction_fees"]
+        ? CurrencyAmountFromJson(obj["channel_opening_transaction_fees"])
+        : undefined,
+      blockHash: obj["channel_opening_transaction_block_hash"],
+      numConfirmations: obj["channel_opening_transaction_num_confirmations"],
+      channelId: obj["channel_opening_transaction_channel"]?.id ?? undefined,
+    } as ChannelOpeningTransaction;
   }
   if (obj["__typename"] == "Deposit") {
     return {
@@ -137,7 +149,8 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       numConfirmations: obj["withdrawal_num_confirmations"],
     } as Withdrawal;
   }
-  throw new Error(
+  throw new LightsparkException(
+    "DeserializationError",
     `Couldn't find a concrete type for interface OnChainTransaction corresponding to the typename=${obj["__typename"]}`
   );
 };
@@ -145,32 +158,6 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
 export const FRAGMENT = `
 fragment OnChainTransactionFragment on OnChainTransaction {
     __typename
-    ... on ChannelOpeningTransaction {
-        __typename
-        channel_opening_transaction_id: id
-        channel_opening_transaction_created_at: created_at
-        channel_opening_transaction_updated_at: updated_at
-        channel_opening_transaction_status: status
-        channel_opening_transaction_resolved_at: resolved_at
-        channel_opening_transaction_amount: amount {
-            __typename
-            currency_amount_value: value
-            currency_amount_unit: unit
-        }
-        channel_opening_transaction_transaction_hash: transaction_hash
-        channel_opening_transaction_fees: fees {
-            __typename
-            currency_amount_value: value
-            currency_amount_unit: unit
-        }
-        channel_opening_transaction_block_hash: block_hash
-        channel_opening_transaction_block_height: block_height
-        channel_opening_transaction_destination_addresses: destination_addresses
-        channel_opening_transaction_num_confirmations: num_confirmations
-        channel_opening_transaction_channel: channel {
-            id
-        }
-    }
     ... on ChannelClosingTransaction {
         __typename
         channel_closing_transaction_id: id
@@ -182,18 +169,64 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_transaction_hash: transaction_hash
         channel_closing_transaction_fees: fees {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_block_hash: block_hash
         channel_closing_transaction_block_height: block_height
         channel_closing_transaction_destination_addresses: destination_addresses
         channel_closing_transaction_num_confirmations: num_confirmations
         channel_closing_transaction_channel: channel {
+            id
+        }
+    }
+    ... on ChannelOpeningTransaction {
+        __typename
+        channel_opening_transaction_id: id
+        channel_opening_transaction_created_at: created_at
+        channel_opening_transaction_updated_at: updated_at
+        channel_opening_transaction_status: status
+        channel_opening_transaction_resolved_at: resolved_at
+        channel_opening_transaction_amount: amount {
+            __typename
+            currency_amount_value: value
+            currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+        }
+        channel_opening_transaction_transaction_hash: transaction_hash
+        channel_opening_transaction_fees: fees {
+            __typename
+            currency_amount_value: value
+            currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+        }
+        channel_opening_transaction_block_hash: block_hash
+        channel_opening_transaction_block_height: block_height
+        channel_opening_transaction_destination_addresses: destination_addresses
+        channel_opening_transaction_num_confirmations: num_confirmations
+        channel_opening_transaction_channel: channel {
             id
         }
     }
@@ -208,12 +241,22 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_transaction_hash: transaction_hash
         deposit_fees: fees {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_block_hash: block_hash
         deposit_block_height: block_height
@@ -234,12 +277,22 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_transaction_hash: transaction_hash
         withdrawal_fees: fees {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_block_hash: block_hash
         withdrawal_block_height: block_height

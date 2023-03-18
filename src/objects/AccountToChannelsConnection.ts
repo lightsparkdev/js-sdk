@@ -1,8 +1,7 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Channel from "./Channel.js";
 import autoBind from "auto-bind";
-import { ChannelFromJson } from "./Channel.js";
+import Channel, { ChannelFromJson } from "./Channel.js";
 
 class AccountToChannelsConnection {
   constructor(

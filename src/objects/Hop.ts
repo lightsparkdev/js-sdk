@@ -1,13 +1,15 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Query from "../requester/Query.js";
-import CurrencyAmount from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 
 /** One hop signifies a payment moving one node ahead on a payment route; a list of sequential hops defines the path from sender node to recipient node for a payment attempt. **/
 type Hop = Entity & {
-  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+  /**
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+   * string.
+   **/
   id: string;
 
   /** The date and time when the entity was first created. **/
@@ -19,7 +21,10 @@ type Hop = Entity & {
   /** The zero-based index position of this hop in the path **/
   index: number;
 
-  /** The channel's short ID, which is the location in the chain that the channel was confirmed. The format is <block-height>:<tx-index>:<tx-output>. **/
+  /**
+   * The channel's short ID, which is the location in the chain that the channel was confirmed. The
+   * format is <block-height>:<tx-index>:<tx-output>.
+   **/
   shortChannelId: string;
 
   /** The typename of the object **/
@@ -28,7 +33,11 @@ type Hop = Entity & {
   /** The destination node of the hop. **/
   destinationId?: string;
 
-  /** The public key of the node to which the hop is bound. **/
+  /**
+   * The public key of the node to which the hop is bound.
+   *
+   * @deprecated Use `public_key` instead.
+   **/
   pubKey?: string;
 
   /** The public key of the node to which the hop is bound. **/
@@ -40,7 +49,11 @@ type Hop = Entity & {
   /** The fees to be collected by the source node for forwarding the payment over the hop. **/
   fee?: CurrencyAmount;
 
-  /** The block height at which an unsettled HTLC is considered expired. **/
+  /**
+   * The block height at which an unsettled HTLC is considered expired.
+   *
+   * @deprecated Use `expiry_block_height` instead.
+   **/
   expiry?: number;
 
   /** The block height at which an unsettled HTLC is considered expired. **/
@@ -84,11 +97,21 @@ fragment HopFragment on Hop {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     hop_fee: fee {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     hop_expiry: expiry
     hop_expiry_block_height: expiry_block_height

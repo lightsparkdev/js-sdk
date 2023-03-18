@@ -1,14 +1,16 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Query from "../requester/Query.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import CurrencyAmount from "./CurrencyAmount.js";
 
 /** An attempt for a payment over a route from sender node to recipient node. **/
 type IncomingPaymentAttempt = Entity & {
-  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+  /**
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+   * string.
+   **/
   id: string;
 
   /** The date and time when the entity was first created. **/
@@ -61,6 +63,11 @@ fragment IncomingPaymentAttemptFragment on IncomingPaymentAttempt {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     incoming_payment_attempt_channel: channel {
         id

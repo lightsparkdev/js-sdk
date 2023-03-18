@@ -1,9 +1,5 @@
-import React from "react";
 import styled from "@emotion/styled";
-import {
-  CurrencyUnit,
-  Transaction,
-} from "@lightsparkdev/js-sdk/objects";
+import { CurrencyUnit, Transaction } from "@lightsparkdev/js-sdk/objects";
 import CurrencyAmountRaw from "./CurrencyAmountRaw";
 import { LoadingSpinner } from "./Loading";
 
@@ -27,7 +23,7 @@ const StreamingTransactionChip = (props: {
         <BottomTextRow>
           {props.isStreaming ? (
             <>
-              <LoadingSpinner />
+              <LoadingSpinner size={12} />
               <span style={{ marginInlineStart: "4px" }}>Streaming</span>
             </>
           ) : (
@@ -82,14 +78,14 @@ const InnerColumn = styled.div`
 
 const TopTextRow = styled.span`
   color: black;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   margin-bottom: 6px;
 `;
 
 const BottomTextRow = styled.div`
   color: #666666;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   flex-direction: row;

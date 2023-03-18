@@ -73,7 +73,7 @@ const TransactionRow = (props: { transaction: Transaction }) => {
       <div style={{ fontSize: "16px", fontWeight: "bold", color: "#17C27C" }}>
         <CurrencyAmount
           amount={props.transaction.amount}
-          displayUnit={CurrencyUnit.SATOSHI}
+          displayUnit={props.transaction.amount.preferredCurrencyUnit}
           shortNumber
           shortUnit
           symbol

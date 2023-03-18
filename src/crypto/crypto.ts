@@ -1,5 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import NodeCrypto from "crypto";
+import LightsparkException from "../LightsparkException.js";
 
 import { b64decode, b64encode } from "../utils/base64.js";
 
@@ -13,7 +14,7 @@ if (typeof crypto !== "undefined") {
 
 const getRandomValues = (arr: Uint8Array): Uint8Array => {
   if (typeof crypto !== "undefined") {
-     return crypto.getRandomValues(arr);
+    return crypto.getRandomValues(arr);
   } else {
     return NodeCrypto.getRandomValues(arr);
   }
@@ -21,7 +22,7 @@ const getRandomValues = (arr: Uint8Array): Uint8Array => {
 
 const getRandomValues32 = (arr: Uint32Array): Uint32Array => {
   if (typeof crypto !== "undefined") {
-     return crypto.getRandomValues(arr);
+    return crypto.getRandomValues(arr);
   } else {
     return NodeCrypto.getRandomValues(arr);
   }
@@ -116,7 +117,10 @@ export const decrypt = async (
   }
 
   if (header.v < 0 || header.v > 4) {
-    throw new Error("Unknown version ".concat(header.v));
+    throw new LightsparkException(
+      "DecryptionError",
+      "Unknown version ".concat(header.v)
+    );
   }
 
   const algorithm = header.v < 2 ? "AES-CBC" : "AES-GCM";
@@ -150,7 +154,11 @@ export const decrypt = async (
       algorithm,
       bit_len
     );
-    return await cryptoImpl.subtle.decrypt({ name: algorithm, iv }, key, encrypted);
+    return await cryptoImpl.subtle.decrypt(
+      { name: algorithm, iv },
+      key,
+      encrypted
+    );
   }
 };
 
@@ -232,3 +240,5 @@ export const loadNodeEncryptionKey = async (
 export function getNonce() {
   return Number(getRandomValues32(new Uint32Array(1)));
 }
+
+export { default as LightsparkSigningException } from "./LightsparkSigningException.js";

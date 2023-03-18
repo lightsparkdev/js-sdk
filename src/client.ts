@@ -2,13 +2,11 @@ import autoBind from "auto-bind";
 import Observable from "zen-observable";
 import Query from "./requester/Query.js";
 
-import { FundNode } from "./graphql/FundNode.js";
-import CurrencyAmount, {
-  CurrencyAmountFromJson,
-} from "./objects/CurrencyAmount.js";
 import AuthProvider from "./auth/AuthProvider.js";
+import LightsparkAuthException from "./auth/LightsparkAuthException.js";
 import StubAuthProvider from "./auth/StubAuthProvider.js";
 import { decryptSecretWithNodePassword } from "./crypto/crypto.js";
+import LightsparkSigningException from "./crypto/LightsparkSigningException.js";
 import NodeKeyCache from "./crypto/NodeKeyCache.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
@@ -16,12 +14,15 @@ import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FeeEstimate as FeeEstimateQuery } from "./graphql/FeeEstimate.js";
+import { FundNode } from "./graphql/FundNode.js";
 import {
   AccountDashboard,
   MultiNodeDashboard,
 } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
+import { RequestWithdrawal } from "./graphql/RequestWithdrawl.js";
+import { SendPayment } from "./graphql/SendPayment.js";
 import {
   SingleNodeDashboard,
   WalletDashboard,
@@ -29,10 +30,14 @@ import {
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { WithdrawFunds } from "./graphql/WithdrawFunds.js";
+import LightsparkException from "./LightsparkException.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
 import CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
+import CurrencyAmount, {
+  CurrencyAmountFromJson,
+} from "./objects/CurrencyAmount.js";
 import CurrencyAmountInput from "./objects/CurrencyAmountInput.js";
 import FeeEstimate, { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import InvoiceData, { InvoiceDataFromJson } from "./objects/InvoiceData.js";
@@ -42,6 +47,10 @@ import OutgoingPayment, {
 } from "./objects/OutgoingPayment.js";
 import Transaction, { TransactionFromJson } from "./objects/Transaction.js";
 import Withdrawal, { WithdrawalFromJson } from "./objects/Withdrawal.js";
+import WithdrawalMode from "./objects/WithdrawalMode.js";
+import WithdrawalRequest, {
+  WithdrawalRequestFromJson,
+} from "./objects/WithdrawalRequest.js";
 import Requester from "./requester/Requester.js";
 import { b64encode } from "./utils/base64.js";
 import { Maybe } from "./utils/types.js";
@@ -50,11 +59,11 @@ import { Maybe } from "./utils/types.js";
  * The LightsparkClient is the main entrypoint for interacting with the Lightspark API.
  *
  * ```ts
- * const client = new LightsparkClient(
+ * const lightsparkClient = new LightsparkClient(
  *  new AccountTokenAuthProvider(TOKEN_ID, TOKEN_SECRET)
  * );
  * const encodedInvoice = await lightsparkClient.createInvoice(
- *   receivingNodeId,
+ *   RECEIVING_NODE_ID,
  *   { value: 100, unit: CurrencyUnit.SATOSHI },
  *   "Whasssupppp",
  *   InvoiceType.AMP,
@@ -63,7 +72,7 @@ import { Maybe } from "./utils/types.js";
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(payingNodeId, encodedInvoice);
+ * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice);
  * console.log(payment);
  * ```
  *
@@ -83,7 +92,7 @@ class LightsparkClient {
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
-    private readonly serverUrl: string = "api.dev.dev.sparkinfra.net",
+    private readonly serverUrl: string = "api.lightspark.com",
     // TODO: Figure out a way to avoid needing this from the wallet client.
     private readonly nodeKeyCache: NodeKeyCache = new NodeKeyCache()
   ) {
@@ -188,7 +197,7 @@ class LightsparkClient {
       network: bitcoinNetwork,
     });
     if (!response.current_account) {
-      throw new Error("No current account");
+      throw new LightsparkAuthException("No current account");
     }
     const account = response.current_account;
     return {
@@ -211,21 +220,42 @@ class LightsparkClient {
               };
             }),
           },
-          localBalance: node.local_balance,
-          remoteBalance: node.remote_balance,
-          blockchainBalance: node.blockchain_balance,
+          localBalance:
+            node.local_balance && CurrencyAmountFromJson(node.local_balance),
+          remoteBalance:
+            node.remote_balance && CurrencyAmountFromJson(node.remote_balance),
+          blockchainBalance:
+            node.blockchain_balance &&
+            CurrencyAmountFromJson(node.blockchain_balance),
         };
       }),
       blockchainBalance: !!account.blockchain_balance
         ? {
-            l1Balance: account.blockchain_balance.l1_balance,
-            requiredReserve: account.blockchain_balance.required_reserve,
-            availableBalance: account.blockchain_balance.available_balance,
-            unconfirmedBalance: account.blockchain_balance.unconfirmed_balance,
+            l1Balance:
+              account.blockchain_balance.l1_balance &&
+              CurrencyAmountFromJson(account.blockchain_balance.l1_balance),
+            requiredReserve:
+              account.blockchain_balance.required_reserve &&
+              CurrencyAmountFromJson(
+                account.blockchain_balance.required_reserve
+              ),
+            availableBalance:
+              account.blockchain_balance.available_balance &&
+              CurrencyAmountFromJson(
+                account.blockchain_balance.available_balance
+              ),
+            unconfirmedBalance:
+              account.blockchain_balance.unconfirmed_balance &&
+              CurrencyAmountFromJson(
+                account.blockchain_balance.unconfirmed_balance
+              ),
           }
         : null,
-      localBalance: account.local_balance,
-      remoteBalance: account.remote_balance,
+      localBalance:
+        account.local_balance && CurrencyAmountFromJson(account.local_balance),
+      remoteBalance:
+        account.remote_balance &&
+        CurrencyAmountFromJson(account.remote_balance),
     };
   }
 
@@ -251,7 +281,7 @@ class LightsparkClient {
       transactionsAfterDate,
     });
     if (!response.current_account) {
-      throw new Error("No current account");
+      throw new LightsparkAuthException("No current account");
     }
     const account = response.current_account;
     if (
@@ -259,7 +289,10 @@ class LightsparkClient {
       !account.dashboard_overview_nodes.entities ||
       account.dashboard_overview_nodes.entities.length === 0
     ) {
-      throw new Error("No nodes found for wallet dashboard");
+      throw new LightsparkException(
+        "InvalidOrMissingNode",
+        "No nodes found for node dashboard"
+      );
     }
     const node = account.dashboard_overview_nodes.entities[0];
     const nodeAddresses = node.addresses.entities.map((address) => {
@@ -276,9 +309,13 @@ class LightsparkClient {
       publicKey: node.public_key,
       status: node.status,
       addresses: nodeAddresses,
-      localBalance: node.local_balance,
-      remoteBalance: node.remote_balance,
-      blockchainBalance: node.blockchain_balance,
+      localBalance:
+        node.local_balance && CurrencyAmountFromJson(node.local_balance),
+      remoteBalance:
+        node.remote_balance && CurrencyAmountFromJson(node.remote_balance),
+      blockchainBalance:
+        node.blockchain_balance &&
+        CurrencyAmountFromJson(node.blockchain_balance),
       recentTransactions:
         account.recent_transactions?.entities.map((tx) => {
           return TransactionFromJson(tx);
@@ -361,7 +398,7 @@ class LightsparkClient {
     );
 
     if (!signingPrivateKey) {
-      throw new Error(
+      throw new LightsparkSigningException(
         "Unable to decrypt signing key with provided password. Please try again."
       );
     }
@@ -421,7 +458,7 @@ class LightsparkClient {
     maximumFees: CurrencyAmountInput | null = null
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
-      throw new Error("Paying node is not unlocked");
+      throw new LightsparkSigningException("Paying node is not unlocked");
     }
     const response = await this.requester.makeRawRequest(
       PayInvoice,
@@ -435,13 +472,58 @@ class LightsparkClient {
       payerNodeId
     );
     if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
-      throw new Error(
+      throw new LightsparkException(
+        "PaymentError",
         response.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text
       );
     }
     return (
       response.pay_invoice &&
       OutgoingPaymentFromJson(response.pay_invoice.payment)
+    );
+  }
+
+  /**
+   * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
+   *
+   * @param payerNodeId The ID of the node that will send the payment.
+   * @param destinationPublicKey The public key of the destination node.
+   * @param timeoutSecs The timeout in seconds that we will try to make the payment.
+   * @param amount The amount to pay.
+   * @param maximumFees The maximum amount of fees that you want to pay for this payment to be sent.
+   *     Defaults to no maximum.
+   * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
+   */
+  public async sendPayment(
+    payerNodeId: string,
+    destinationPublicKey: string,
+    timeoutSecs: number = 60,
+    amount: CurrencyAmountInput,
+    maximumFees: CurrencyAmountInput | null = null
+  ): Promise<OutgoingPayment | undefined> {
+    if (!this.nodeKeyCache.hasKey(payerNodeId)) {
+      throw new LightsparkSigningException("Paying node is not unlocked");
+    }
+    const response = await this.requester.makeRawRequest(
+      SendPayment,
+      {
+        node_id: payerNodeId,
+        destination_public_key: destinationPublicKey,
+        timeout_secs: timeoutSecs,
+        amount,
+        maximum_fees: maximumFees,
+      },
+      payerNodeId
+    );
+    if (response.send_payment?.payment.outgoing_payment_failure_message) {
+      throw new LightsparkException(
+        "PaymentError",
+        response.send_payment?.payment.outgoing_payment_failure_message.rich_text_text
+      );
+    }
+    return (
+      response.send_payment &&
+      OutgoingPaymentFromJson(response.send_payment.payment)
     );
   }
 
@@ -462,6 +544,7 @@ class LightsparkClient {
   /**
    * Withdraws funds from a given node to a given Bitcoin address.
    *
+   * @deprecated Use `requestWithdrawal` instead.
    * @param nodeId The ID of the node to withdraw funds from.
    * @param bitcoinAddress The Bitcoin address to withdraw funds to.
    * @param amount The amount of funds to withdraw.
@@ -481,6 +564,31 @@ class LightsparkClient {
       nodeId
     );
     return WithdrawalFromJson(response.withdraw_funds.transaction);
+  }
+
+  /**
+   * Withdraws funds from the account and sends it to the requested bitcoin address.
+   *
+   * Depending on the chosen mode, it will first take the funds from the wallet, and if applicable, close channels
+   * appropriately to recover enough funds and reopen channels with the remaining funds.
+   * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the
+   * `WithdrawalRequest` that is created, or by subscribing to a webhook.
+   *
+   * @param amountSats The amount of funds to withdraw in SATOSHI.
+   * @param bitcoinAddress The Bitcoin address to withdraw funds to.
+   * @param mode The mode to use for the withdrawal. See `WithdrawalMode` for more information.
+   */
+  public async requestWithdrawal(
+    amountSats: number,
+    bitcoinAddress: string,
+    mode: WithdrawalMode
+  ): Promise<WithdrawalRequest> {
+    const response = await this.requester.makeRawRequest(RequestWithdrawal, {
+      amount_sats: amountSats,
+      bitcoin_address: bitcoinAddress,
+      withdrawl_mode: mode,
+    });
+    return WithdrawalRequestFromJson(response.request_withdrawal.request);
   }
 
   /**

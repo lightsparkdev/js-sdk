@@ -1,10 +1,14 @@
-import { Transaction } from "@lightsparkdev/js-sdk/objects";
 import { ENABLE_YOUTUBE_AND_TWITCH } from "../common/settings";
-import { ChannelSource, VideoPlaybackUpdateMessage } from "../types/Messages";
+import { VideoPlaybackUpdateMessage } from "../types/Messages";
 import {
   updateTransactionRows,
   updateWalletBalances,
 } from "./lightsparkDemoDom";
+import {
+  getDomDetailsForLighstparkDemo,
+  getDomDetailsForTwitch,
+  getDomDetailsForYoutube,
+} from "./videoElementParsers";
 
 let currentTrackingDetails: VideoPlaybackUpdateMessage | null = null;
 let timeUpdateListener: (() => void) | null = null;
@@ -15,127 +19,15 @@ const messageReceived = (
   sendResponse: (response: any) => void
 ) => {
   console.log("[content.js]. Message received", msg);
-  if (msg.id === "get_video_details") {
-    const response = window.location.host.includes("youtube") && ENABLE_YOUTUBE_AND_TWITCH
-      ? getDomDetailsForYoutube()
-      : window.location.host.includes("twitch") && ENABLE_YOUTUBE_AND_TWITCH
-      ? getDomDetailsForTwitch()
-      : getDomDetailsForLighstparkDemo();
-
-    sendResponse(response);
-  } else if (msg.id === "is_video_playing") {
+  if (msg.id === "is_video_playing") {
     sendResponse(currentTrackingDetails?.isPlaying || false);
   } else if (
     msg.id === "new_transactions" ||
     msg.id === "transactions_updated"
   ) {
-    // updateWalletBalances().then(() => {
-    const transactions: Transaction[] = msg.transactions;
-    updateTransactionRows(transactions);
-    // });
+    updateTransactionRows(msg.transactions);
   }
 };
-
-const getDomDetailsForYoutube = (): VideoPlaybackUpdateMessage | null => {
-  const searchParams = new URLSearchParams(window.location.search);
-  if (!searchParams.has("v")) {
-    currentTrackingDetails = null;
-    return null;
-  }
-  const userLink = document.querySelector(
-    ".ytd-watch-metadata .ytd-channel-name a"
-  ) as HTMLAnchorElement;
-  const videoElement = document.querySelector(
-    "#movie_player video"
-  ) as HTMLVideoElement;
-  if (!userLink || !videoElement) {
-    currentTrackingDetails = null;
-    // Try again after a second.
-    setTimeout(getDomDetailsForYoutube, 1000);
-    return null;
-  }
-  const newTrackingDetails = {
-    videoID: searchParams.get("v") || "",
-    videoName:
-      (document.querySelector('meta[name="title"]') as HTMLMetaElement)
-        ?.content ||
-      document.querySelector("title")?.textContent ||
-      "",
-    channelID: userLink.href.slice(
-      userLink.href.indexOf("/channel/") + "/channel/".length
-    ),
-    channelName: userLink.textContent || "",
-    channelSource: ChannelSource.youtube,
-    progress: 0,
-    duration: videoElement?.duration || 0,
-    isPlaying: !videoElement.paused,
-  };
-  currentTrackingDetails = newTrackingDetails;
-  startListeningToVideoEvents(videoElement);
-  return newTrackingDetails;
-};
-
-const getDomDetailsForTwitch = (): VideoPlaybackUpdateMessage | null => {
-  let videoID = "livestream";
-  if (window.location.pathname.includes("/videos/")) {
-    const index = window.location.pathname.lastIndexOf("/videos/");
-    videoID = window.location.pathname.slice(index + "/videos/".length);
-    // TODO: If we only care about live, probably just return null here.
-  }
-
-  // There may be a better way to do this, but the class names in twitch are obfuscated :-/.
-  const userLink = Array.from(
-    document.querySelectorAll(".channel-info-content a")
-  ).filter((it) => {
-    return it.classList.length === 0;
-  })[0] as HTMLAnchorElement;
-  const videoElement = document.querySelector(
-    ".video-player video"
-  ) as HTMLVideoElement;
-
-  const newTrackingDetails = {
-    videoID: videoID,
-    videoName:
-      document.querySelector('*[data-a-target="stream-title"]')?.textContent ||
-      "",
-    channelID: userLink?.href?.slice(userLink?.href.lastIndexOf("/") + 1) || "",
-    channelName: userLink?.textContent || "",
-    channelSource: ChannelSource.twitch,
-    progress: 0,
-    duration: videoElement?.duration || 0,
-    isPlaying: !videoElement.paused,
-  };
-  currentTrackingDetails = newTrackingDetails;
-  startListeningToVideoEvents(videoElement);
-  return newTrackingDetails;
-};
-
-const getDomDetailsForLighstparkDemo =
-  (): VideoPlaybackUpdateMessage | null => {
-    const videoElement = document.querySelector(
-      "video#stream-sats-video"
-    ) as HTMLVideoElement;
-    if (!videoElement) {
-      currentTrackingDetails = null;
-      // Try again after a second.
-      setTimeout(getDomDetailsForLighstparkDemo, 1000);
-      return null;
-    }
-    const newTrackingDetails = {
-      videoID: "ls_demo",
-      videoName: "Lightspark Streaming Demo",
-      channelID: "ls",
-      channelName: "Lightspark",
-      channelSource: ChannelSource.lightspark,
-      progress: 0,
-      duration: videoElement?.duration || 0,
-      isPlaying: !videoElement.paused,
-    };
-    currentTrackingDetails = newTrackingDetails;
-    startListeningToVideoEvents(videoElement);
-    updateWalletBalances();
-    return newTrackingDetails;
-  };
 
 const startListeningToVideoEvents = (videoElement: HTMLVideoElement) => {
   console.log(
@@ -192,3 +84,40 @@ const startListeningToVideoEvents = (videoElement: HTMLVideoElement) => {
 };
 
 chrome.runtime.onMessage.addListener(messageReceived);
+
+const afterDOMLoaded = (numRetries: number) => {
+  console.log("[content.js]. DOM loaded");
+  const isLightsparkDemo =
+    window.location.host.includes("lightspark") ||
+    window.location.host.includes("localhost") ||
+    window.location.host.includes("sparkinfra.net");
+  const parseResponse =
+    window.location.host.includes("youtube") && ENABLE_YOUTUBE_AND_TWITCH
+      ? getDomDetailsForYoutube()
+      : window.location.host.includes("twitch") && ENABLE_YOUTUBE_AND_TWITCH
+      ? getDomDetailsForTwitch()
+      : getDomDetailsForLighstparkDemo();
+
+  if (parseResponse) {
+    currentTrackingDetails = parseResponse.trackingDetails;
+    startListeningToVideoEvents(parseResponse.videoElement);
+    chrome.runtime.sendMessage({
+      ...parseResponse.trackingDetails,
+      id: "video_details",
+    });
+    if (isLightsparkDemo) {
+      updateWalletBalances();
+    }
+  } else if (numRetries < 10) {
+    // Retry in a second to see if the page loads.
+    // TODO: Consider whether we need to use a navigation listener to detect video page changes for SPAs where the
+    // load event won't re-fire.
+    setTimeout(() => afterDOMLoaded(numRetries + 1), 1000);
+  }
+};
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => afterDOMLoaded(0));
+} else {
+  afterDOMLoaded(0);
+}

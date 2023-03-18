@@ -1,15 +1,15 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import LightsparkClient from "../client.js";
-import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
-import HtlcAttemptFailureCode from "./HtlcAttemptFailureCode.js";
-import Query from "../requester/Query.js";
-import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
 import autoBind from "auto-bind";
-import OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import LightsparkClient from "../client.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import HtlcAttemptFailureCode from "./HtlcAttemptFailureCode.js";
+import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
+import OutgoingPaymentAttemptToHopsConnection, {
+  OutgoingPaymentAttemptToHopsConnectionFromJson,
+} from "./OutgoingPaymentAttemptToHopsConnection.js";
 
 /** An attempt for a payment over a route from sender node to recipient node. **/
 class OutgoingPaymentAttempt implements Entity {
@@ -57,11 +57,21 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     hop_fee: fee {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     hop_expiry: expiry
                     hop_expiry_block_height: expiry_block_height
@@ -138,11 +148,21 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_attempt_fees: fees {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_attempt_outgoing_payment: outgoing_payment {
         id

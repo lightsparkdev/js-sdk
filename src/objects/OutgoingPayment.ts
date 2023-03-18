@@ -1,21 +1,19 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import LightningTransaction from "./LightningTransaction.js";
-import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import { OutgoingPaymentToAttemptsConnectionFromJson } from "./OutgoingPaymentToAttemptsConnection.js";
-import LightsparkClient from "../client.js";
-import { RichTextFromJson } from "./RichText.js";
-import OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
-import Query from "../requester/Query.js";
-import RichText from "./RichText.js";
-import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import PaymentRequestData from "./PaymentRequestData.js";
 import autoBind from "auto-bind";
-import TransactionStatus from "./TransactionStatus.js";
+import LightsparkClient from "../client.js";
+import Query from "../requester/Query.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import LightningTransaction from "./LightningTransaction.js";
+import OutgoingPaymentToAttemptsConnection, {
+  OutgoingPaymentToAttemptsConnectionFromJson,
+} from "./OutgoingPaymentToAttemptsConnection.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
+import PaymentRequestData, {
+  PaymentRequestDataFromJson,
+} from "./PaymentRequestData.js";
+import RichText, { RichTextFromJson } from "./RichText.js";
+import TransactionStatus from "./TransactionStatus.js";
 
 /** A transaction that was sent from a Lightspark node on the Lightning Network. **/
 class OutgoingPayment implements LightningTransaction {
@@ -63,11 +61,21 @@ query FetchOutgoingPaymentToAttemptsConnection($entity_id: ID!, $first: Int) {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     outgoing_payment_attempt_fees: fees {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     outgoing_payment_attempt_outgoing_payment: outgoing_payment {
                         id
@@ -142,6 +150,11 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_transaction_hash: transaction_hash
     outgoing_payment_origin: origin {
@@ -154,6 +167,11 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_payment_request_data: payment_request_data {
         __typename
@@ -166,6 +184,11 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             invoice_data_created_at: created_at
             invoice_data_expires_at: expires_at
@@ -191,31 +214,61 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_confirmed_balance: confirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_locked_balance: locked_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_required_reserve: required_reserve {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_available_balance: available_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -238,6 +291,11 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_name: name
                     lightspark_node_purpose: purpose
@@ -245,6 +303,11 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status

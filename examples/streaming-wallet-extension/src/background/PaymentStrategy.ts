@@ -1,18 +1,18 @@
-import { CurrencyAmount } from "@lightsparkdev/js-sdk/objects";
+import { CurrencyAmountInput } from "@lightsparkdev/js-sdk/objects";
 import PlaybackRange from "./PlaybackRange";
 
 export interface PaymentStrategy {
   onPlayedRange(
     previousRanges: PlaybackRange[],
     newRanges: PlaybackRange[]
-  ): CurrencyAmount;
+  ): CurrencyAmountInput;
 }
 
 export class LinearPaymentStrategy implements PaymentStrategy {
-  private readonly paymentPerChunk: CurrencyAmount;
+  private readonly paymentPerChunk: CurrencyAmountInput;
   private readonly chunkSizeSec: number;
 
-  constructor(paymentPerChunk: CurrencyAmount, chunkSizeSec: number) {
+  constructor(paymentPerChunk: CurrencyAmountInput, chunkSizeSec: number) {
     this.paymentPerChunk = paymentPerChunk;
     this.chunkSizeSec = chunkSizeSec;
   }
@@ -28,7 +28,7 @@ export class LinearPaymentStrategy implements PaymentStrategy {
   onPlayedRange(
     previousRanges: PlaybackRange[],
     newRanges: PlaybackRange[]
-  ): CurrencyAmount {
+  ): CurrencyAmountInput {
     const newChunks = this.numberOfChunksInRanges(newRanges);
     const previousChunks = this.numberOfChunksInRanges(previousRanges);
     const chunkDiff = newChunks - previousChunks;

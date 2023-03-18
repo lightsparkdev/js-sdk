@@ -1,3 +1,4 @@
+import LightsparkException from "../LightsparkException.js";
 import CurrencyAmount from "../objects/CurrencyAmount.js";
 import CurrencyUnit from "../objects/CurrencyUnit.js";
 
@@ -58,7 +59,10 @@ export const convertCurrencyAmount = (
 ): CurrencyAmount => {
   const conversionFn = CONVERSION_MAP[from.unit][toUnit];
   if (!conversionFn) {
-    throw new Error(`Cannot convert from ${from.unit} to ${toUnit}`);
+    throw new LightsparkException(
+      "CurrencyError",
+      `Cannot convert from ${from.unit} to ${toUnit}`
+    );
   }
   return {
     ...from,

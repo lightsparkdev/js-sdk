@@ -1,10 +1,13 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
 import Query from "../requester/Query.js";
+import Entity from "./Entity.js";
 
 type ApiToken = Entity & {
-  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+  /**
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+   * string.
+   **/
   id: string;
 
   /** The date and time when the entity was first created. **/
@@ -13,10 +16,16 @@ type ApiToken = Entity & {
   /** The date and time when the entity was last updated. **/
   updatedAt: string;
 
-  /** An opaque identifier that should be used as a client_id (or username) in the HTTP Basic Authentication scheme when issuing requests against the Lightspark API. **/
+  /**
+   * An opaque identifier that should be used as a client_id (or username) in the HTTP Basic
+   * Authentication scheme when issuing requests against the Lightspark API.
+   **/
   clientId: string;
 
-  /** An arbitrary name chosen by the creator of the token to help identify the token in the list of tokens that have been created for the account. **/
+  /**
+   * An arbitrary name chosen by the creator of the token to help identify the token in the list of
+   * tokens that have been created for the account.
+   **/
   name: string;
 
   /** The typename of the object **/

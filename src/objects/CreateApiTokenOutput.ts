@@ -1,14 +1,16 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { ApiTokenFromJson } from "./ApiToken.js";
-import ApiToken from "./ApiToken.js";
+import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
 
 type CreateApiTokenOutput = {
   /** The API Token that has been created. **/
   apiToken: ApiToken;
 
-  /** The secret that should be used to authenticate against our API.
-This secret is not stored and will never be available again after this. You must keep this secret secure as it grants access to your account. **/
+  /**
+   * The secret that should be used to authenticate against our API. This secret is not stored and will
+   * never be available again after this. You must keep this secret secure as it grants access to your
+   * account.
+   **/
   clientSecret: string;
 };
 

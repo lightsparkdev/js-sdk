@@ -1,18 +1,20 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
+import Query from "../requester/Query.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import OnChainTransaction from "./OnChainTransaction.js";
 import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
-import Query from "../requester/Query.js";
-import CurrencyAmount from "./CurrencyAmount.js";
 
 /** The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet. **/
 type Withdrawal = OnChainTransaction &
   Transaction &
   Entity & {
-    /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
     id: string;
 
     /** The date and time when this transaction was initiated. **/
@@ -27,7 +29,10 @@ type Withdrawal = OnChainTransaction &
     /** The amount of money involved in this transaction. **/
     amount: CurrencyAmount;
 
-    /** The height of the block that included this transaction. This will be zero for unconfirmed transactions. **/
+    /**
+     * The height of the block that included this transaction. This will be zero for unconfirmed
+     * transactions.
+     **/
     blockHeight: number;
 
     /** The Bitcoin blockchain addresses this transaction was sent to. **/
@@ -45,10 +50,16 @@ type Withdrawal = OnChainTransaction &
     /** The hash of this transaction, so it can be uniquely identified on the Lightning network. **/
     transactionHash?: string;
 
-    /** The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin blockchain. **/
+    /**
+     * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+     * blockchain.
+     **/
     fees?: CurrencyAmount;
 
-    /** The hash of the block that included this transaction. This will be null for unconfirmed transactions. **/
+    /**
+     * The hash of the block that included this transaction. This will be null for unconfirmed
+     * transactions.
+     **/
     blockHash?: string;
 
     /** The number of blockchain confirmations for this transaction in real time. **/
@@ -88,12 +99,22 @@ fragment WithdrawalFragment on Withdrawal {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     withdrawal_transaction_hash: transaction_hash
     withdrawal_fees: fees {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     withdrawal_block_hash: block_hash
     withdrawal_block_height: block_height

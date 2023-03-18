@@ -1,16 +1,18 @@
 import autoBind from "auto-bind";
 import { Maybe } from "graphql/jsutils/Maybe.js";
-import InvoiceType from "./objects/InvoiceType.js";
 import { Observable } from "zen-observable-ts";
 import AuthProvider from "./auth/AuthProvider.js";
+import LightsparkAuthException from "./auth/LightsparkAuthException.js";
 import StubAuthProvider from "./auth/StubAuthProvider.js";
 import LightsparkClient from "./client.js";
 import NodeKeyCache from "./crypto/NodeKeyCache.js";
 import { WalletDashboard } from "./graphql/SingleNodeDashboard.js";
+import LightsparkException from "./LightsparkException.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
 import CurrencyAmountInput from "./objects/CurrencyAmountInput.js";
 import FeeEstimate from "./objects/FeeEstimate.js";
 import InvoiceData from "./objects/InvoiceData.js";
+import InvoiceType from "./objects/InvoiceType.js";
 import OutgoingPayment from "./objects/OutgoingPayment.js";
 import Transaction from "./objects/Transaction.js";
 import Requester from "./requester/Requester.js";
@@ -24,7 +26,7 @@ class LightsparkWalletClient {
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     walletId: string | undefined = undefined,
-    private readonly serverUrl: string = "api.dev.dev.sparkinfra.net"
+    private readonly serverUrl: string = "api.lightspark.com"
   ) {
     this.fullClient = new LightsparkClient(
       authProvider,
@@ -135,7 +137,7 @@ class LightsparkWalletClient {
   ): Promise<OutgoingPayment | undefined> {
     const walletId = this.requireWalletId();
     if (!this.nodeKeyCache.hasKey(walletId)) {
-      throw new Error("Wallet is not unlocked");
+      throw new LightsparkAuthException("Wallet is not unlocked");
     }
     return await this.fullClient.payInvoice(
       walletId,
@@ -148,7 +150,7 @@ class LightsparkWalletClient {
 
   requireWalletId(): string {
     if (!this.activeWalletId) {
-      throw new Error("No active wallet");
+      throw new LightsparkException("NoWallet", "No active wallet");
     }
     return this.activeWalletId!;
   }

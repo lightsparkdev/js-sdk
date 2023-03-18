@@ -10,8 +10,9 @@ import Query from "./Query.js";
 
 import AuthProvider from "../auth/AuthProvider.js";
 import StubAuthProvider from "../auth/StubAuthProvider.js";
-import { getNonce } from "../crypto/crypto.js";
+import { getNonce, LightsparkSigningException } from "../crypto/crypto.js";
 import NodeKeyCache from "../crypto/NodeKeyCache.js";
+import LightsparkException from "../LightsparkException.js";
 import { b64encode } from "../utils/base64.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
@@ -59,11 +60,14 @@ class Requester {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
-      throw new Error("Invalid query payload");
+      throw new LightsparkException("InvalidQuery", "Invalid query payload");
     }
     const operationType = operationMatch[1];
     if (operationType == "mutation") {
-      throw new Error("Mutation queries should call makeRawRequest instead");
+      throw new LightsparkException(
+        "InvalidQuery",
+        "Mutation queries should call makeRawRequest instead"
+      );
     }
     const operation = operationMatch[2];
     let bodyData = {
@@ -89,11 +93,14 @@ class Requester {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
-      throw new Error("Invalid query payload");
+      throw new LightsparkException("InvalidQuery", "Invalid query payload");
     }
     const operationType = operationMatch[1];
     if (operationType == "subscription") {
-      throw new Error("Subscription queries should call subscribe instead");
+      throw new LightsparkException(
+        "InvalidQuery",
+        "Subscription queries should call subscribe instead"
+      );
     }
     const operation = operationMatch[2];
     let bodyData = {
@@ -117,14 +124,18 @@ class Requester {
       body: JSON.stringify(bodyData),
     });
     if (!response.ok) {
-      console.error(`Request ${operation} failed.`, response.statusText);
-      return null;
+      throw new LightsparkException(
+        "RequestFailed",
+        `Request ${operation} failed. ${response.statusText}`
+      );
     }
     const responseJson = await response.json();
     const data = responseJson.data;
     if (!data) {
-      console.error(`Request ${operation} failed.`, JSON.stringify(responseJson.errors));
-      return null;
+      throw new LightsparkException(
+        "RequestFailed",
+        `Request ${operation} failed. ${JSON.stringify(responseJson.errors)}`
+      );
     }
     return data;
   }
@@ -155,7 +166,9 @@ class Requester {
 
     const key = await this.nodeKeyCache.getKey(signingNodeId);
     if (!key) {
-      throw new Error("Missing node of encrypted_signing_private_key");
+      throw new LightsparkSigningException(
+        "Missing node of encrypted_signing_private_key"
+      );
     }
 
     const encodedPayload = new TextEncoder().encode(JSON.stringify(payload));

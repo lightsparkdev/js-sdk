@@ -1,3 +1,4 @@
+import { FRAGMENT as CurrencyAmountFragment } from "../objects/CurrencyAmount.js";
 import { FRAGMENT as TransactionFragment } from "../objects/Transaction.js";
 
 export const TransactionsForNode = `
@@ -22,9 +23,7 @@ query TransactionsForNode(
         ) {
             count
             total_amount_transacted {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             entities {
                 ...TransactionFragment
@@ -37,4 +36,5 @@ query TransactionsForNode(
 }
 
 ${TransactionFragment}
+${CurrencyAmountFragment}
 `;

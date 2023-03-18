@@ -19,13 +19,15 @@ class TransactionObserver {
     }
 
     this.isListening = true;
-    this.subscription = this.lightsparkClient.listenToTransactions([nodeId]).subscribe({
-      next: (transaction) => {
-        if (transaction) {
-          this.broadcastTransactions([transaction]);
-        }
-      },
-    });
+    this.subscription = this.lightsparkClient
+      .listenToTransactions([nodeId])
+      .subscribe({
+        next: (transaction) => {
+          if (transaction) {
+            this.broadcastTransactions([transaction]);
+          }
+        },
+      });
   }
 
   public stopListening() {
@@ -39,9 +41,7 @@ class TransactionObserver {
     this.subscription = undefined;
   }
 
-  private async broadcastTransactions(
-    transactions: Transaction[]
-  ) {
+  private async broadcastTransactions(transactions: Transaction[]) {
     findActiveStreamingDemoTabs().then((tabs) => {
       if (tabs.length === 0) return;
       chrome.tabs.sendMessage(tabs[0].id!, {

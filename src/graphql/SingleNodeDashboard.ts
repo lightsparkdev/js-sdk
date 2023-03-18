@@ -1,8 +1,12 @@
-import CurrencyAmount from "../objects/CurrencyAmount.js";
+import CurrencyAmount, {
+  FRAGMENT as CurrencyAmountFragment,
+} from "../objects/CurrencyAmount.js";
 import LightsparkNodePurpose from "../objects/LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "../objects/LightsparkNodeStatus.js";
 import NodeAddressType from "../objects/NodeAddressType.js";
-import Transaction, { FRAGMENT as TransactionFragment } from "../objects/Transaction.js";
+import Transaction, {
+  FRAGMENT as TransactionFragment,
+} from "../objects/Transaction.js";
 import { Maybe } from "../utils/types.js";
 
 export type WalletDashboard = {
@@ -60,29 +64,17 @@ query SingleNodeDashboard(
                 public_key
                 status
                 local_balance {
-                    value
-                    unit
-                    value
-                    unit
-                    __typename
+                    ...CurrencyAmountFragment
                 }
                 remote_balance {
-                    value
-                    unit
-                    value
-                    unit
-                    __typename
+                    ...CurrencyAmountFragment
                 }
                 blockchain_balance {
                     available_balance {
-                        value
-                        unit
-                        __typename
+                        ...CurrencyAmountFragment
                     }
                     total_balance {
-                        value
-                        unit
-                        __typename
+                        ...CurrencyAmountFragment
                     }
                     __typename
                 }
@@ -92,36 +84,24 @@ query SingleNodeDashboard(
         }
         blockchain_balance(bitcoin_networks: [$network], node_ids: [$nodeId]) {
             l1_balance: total_balance {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             required_reserve {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             available_balance {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             unconfirmed_balance {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             __typename
         }
         local_balance(bitcoin_networks: [$network], node_ids: [$nodeId]) {
-            value
-            unit
-            __typename
+            ...CurrencyAmountFragment
         }
         remote_balance(bitcoin_networks: [$network], node_ids: [$nodeId]) {
-            value
-            unit
-            __typename
+            ...CurrencyAmountFragment
         }
         recent_transactions: transactions(
             first: $numTransactions
@@ -133,9 +113,7 @@ query SingleNodeDashboard(
         ) {
             count
             total_amount_transacted {
-                value
-                unit
-                __typename
+                ...CurrencyAmountFragment
             }
             entities {
                 ...TransactionFragment
@@ -148,4 +126,5 @@ query SingleNodeDashboard(
 }
 
 ${TransactionFragment}
+${CurrencyAmountFragment}
 `;

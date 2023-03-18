@@ -12,10 +12,7 @@
   "permissions": [
     "activeTab",
     "tabs",
-    "storage",
-    "webNavigation",
-    "alarms",
-    "gcm"
+    "storage"
   ],
   "icons": {
     "16": "lightspark_icon_circle.png",
@@ -23,7 +20,10 @@
     "48": "lightspark_icon_circle.png",
     "128": "lightspark_icon_circle.png"
   },
-  "host_permissions": ["https://api.dev.dev.sparkinfra.net/", "https://app.lightspark.com/"],
+  "host_permissions": [
+    "https://api.dev.dev.sparkinfra.net/",
+    "https://app.lightspark.com/"
+  ],
   "content_scripts": [
     {
       "matches": [
@@ -35,7 +35,11 @@
     }
   ],
   "externally_connectable": {
-    "matches": ["https://*/demos/streaming", "http://*/demos/streaming"]
+    "matches": [
+      "https://localhost:3000/demos/streaming",
+      "https://dev.dev.sparkinfra.net/demos/streaming",
+      "https://app.lightspark.com/demos/streaming"
+    ]
   },
   "background": {
     "service_worker": "./static/js/background.js"

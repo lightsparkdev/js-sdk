@@ -13,11 +13,13 @@ import AccountStorage from "./auth/AccountStorage";
 import { reserveStreamingDemoAccountCredentials } from "./auth/DemoAccountProvider";
 import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 import VideoProgressCache from "./background/VideoProgressCache";
+import { clearStorageKeepingInstanceId } from "./common/storage";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
 import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
 import LeftArrow from "./components/LeftArrow";
+import { LoadingSpinner } from "./components/Loading";
 import StreamingTransactionChip from "./components/StreamingTransactionChip";
 import TransactionRow from "./components/TransactionRow";
 import { getWalletClient } from "./lightsparkClientProvider";
@@ -51,7 +53,7 @@ function App() {
         const accountStorage = new AccountStorage();
         let credentials = await accountStorage.getAccountCredentials();
         if (credentials && Date.now() > credentials.expiresAt) {
-          await chrome.storage.local.clear();
+          await clearStorageKeepingInstanceId();
           credentials = null;
         }
         setCredentials(credentials);
@@ -189,16 +191,9 @@ function BalanceScreen(props: {
   isStreaming: boolean;
 }) {
   const screenContent = !props.balance ? (
-    <div
-      className="loading-text"
-      style={{
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      Loading wallet...
+    <div className="loading-text">
+      <LoadingSpinner size={24} />
+      <span style={{ marginInlineStart: "8px" }}>Loading wallet...</span>
     </div>
   ) : (
     <>
@@ -207,8 +202,8 @@ function BalanceScreen(props: {
         <CurrencyAmountRaw
           shortNumber
           shortUnit
-          value={props.balance?.value}
-          unit={props.balance?.unit}
+          value={props.balance?.preferredCurrencyValueApprox}
+          unit={props.balance?.preferredCurrencyUnit}
           symbol
         ></CurrencyAmountRaw>
       </div>
@@ -220,7 +215,7 @@ function BalanceScreen(props: {
         />
       ) : (
         <InstructionsText style={{ fontSize: "16px" }}>
-          Click the play button on the video to stream bitcoin in real-time.
+          Your wallet is now set up.
         </InstructionsText>
       )}
     </>
@@ -276,7 +271,7 @@ function LoginScreen(props: {
     >
       <LoginHeader>One more step</LoginHeader>
       <InstructionsText>
-        Create a wallet and we'll add funds for the demo.
+        Create a wallet in test mode and we’ll load test funds for the demo.
       </InstructionsText>
       <CreateWalletButton onClick={createWallet} disabled={isLoading}>
         {!isLoading ? (
@@ -311,7 +306,7 @@ const BalanceLabel = styled.p`
 `;
 
 const InstructionsText = styled.p`
-  font-size: 20px;
+  font-size: 14px;
   font-weight: 500;
   color: #666666;
   margin-bottom: 32px;
@@ -325,7 +320,7 @@ const ErrorText = styled.p`
 `;
 
 const LoginHeader = styled.p`
-  font-size: 28px;
+  font-size: 24px;
   color: black;
   margin-bottom: 0;
 `;

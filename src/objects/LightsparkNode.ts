@@ -1,29 +1,27 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Node from "./Node.js";
-import Entity from "./Entity.js";
-import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
-import { ChannelFromJson } from "./Channel.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import NodeAddressType from "./NodeAddressType.js";
-import LightsparkClient from "../client.js";
-import LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
-import ChannelStatus from "./ChannelStatus.js";
-import BitcoinNetwork from "./BitcoinNetwork.js";
-import NodeToAddressesConnection from "./NodeToAddressesConnection.js";
-import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import autoBind from "auto-bind";
-import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import Key from "./Key.js";
-import { KeyFromJson } from "./Key.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import LightsparkClient from "../client.js";
 import Query from "../requester/Query.js";
-import Channel from "./Channel.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import BlockchainBalance from "./BlockchainBalance.js";
-import { SecretFromJson } from "./Secret.js";
-import Secret from "./Secret.js";
+import BitcoinNetwork from "./BitcoinNetwork.js";
+import BlockchainBalance, {
+  BlockchainBalanceFromJson,
+} from "./BlockchainBalance.js";
+import Channel, { ChannelFromJson } from "./Channel.js";
+import ChannelStatus from "./ChannelStatus.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Key, { KeyFromJson } from "./Key.js";
+import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
+import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
+import LightsparkNodeToChannelsConnection, {
+  LightsparkNodeToChannelsConnectionFromJson,
+} from "./LightsparkNodeToChannelsConnection.js";
+import Node from "./Node.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
+import Secret, { SecretFromJson } from "./Secret.js";
 
 /** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. **/
 class LightsparkNode implements Node {
@@ -112,12 +110,22 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_opening_transaction_transaction_hash: transaction_hash
                     channel_opening_transaction_fees: fees {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_opening_transaction_block_hash: block_hash
                     channel_opening_transaction_block_height: block_height
@@ -131,36 +139,71 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_local_balance: local_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_local_unsettled_balance: local_unsettled_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_remote_balance: remote_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_remote_unsettled_balance: remote_unsettled_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_unsettled_balance: unsettled_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_total_balance: total_balance {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_status: status
                 channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -170,6 +213,11 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_fees_fee_rate_per_mil: fee_rate_per_mil
                 }
@@ -195,31 +243,61 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_confirmed_balance: confirmed_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_locked_balance: locked_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_required_reserve: required_reserve {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_available_balance: available_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                         }
                         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -242,6 +320,11 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_name: name
                         lightspark_node_purpose: purpose
@@ -249,6 +332,11 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
@@ -287,31 +375,61 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_confirmed_balance: confirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_locked_balance: locked_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_required_reserve: required_reserve {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_available_balance: available_balance {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -334,6 +452,11 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_name: name
                     lightspark_node_purpose: purpose
@@ -341,6 +464,11 @@ query FetchLightsparkNodeChannelFromPoint($entity_id: ID!, $channel_point: Strin
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
@@ -393,36 +521,71 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_balance: local_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_unsettled_balance: local_unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_balance: remote_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_unsettled_balance: remote_unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_unsettled_balance: unsettled_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_total_balance: total_balance {
                         __typename
                         currency_amount_value: value
                         currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_status: status
                     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -432,6 +595,11 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_fees_fee_rate_per_mil: fee_rate_per_mil
                     }
@@ -536,31 +704,61 @@ fragment LightsparkNodeFragment on LightsparkNode {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         blockchain_balance_confirmed_balance: confirmed_balance {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         blockchain_balance_locked_balance: locked_balance {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         blockchain_balance_required_reserve: required_reserve {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         blockchain_balance_available_balance: available_balance {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
     }
     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -583,6 +781,11 @@ fragment LightsparkNodeFragment on LightsparkNode {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     lightspark_node_name: name
     lightspark_node_purpose: purpose
@@ -590,6 +793,11 @@ fragment LightsparkNodeFragment on LightsparkNode {
         __typename
         currency_amount_value: value
         currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     lightspark_node_rest_url: rest_url
     lightspark_node_status: status

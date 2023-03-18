@@ -1,8 +1,7 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import React from "react";
 import styled from "@emotion/styled/macro";
-import type { Maybe } from "../common/types";
 import { CurrencyUnit } from "@lightsparkdev/js-sdk/objects";
+import type { Maybe } from "../common/types";
 
 type Props = {
   value: Maybe<number>;
@@ -21,6 +20,8 @@ const CurrencyAmountRaw = (props: Props) => {
     switch (props.unit) {
       case CurrencyUnit.SATOSHI:
         return <Satoshi />;
+      case CurrencyUnit.USD:
+        return "$";
     }
     return "";
   };

@@ -1,11 +1,15 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import OutgoingPaymentAttempt from "./OutgoingPaymentAttempt.js";
-import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
+import OutgoingPaymentAttempt, {
+  OutgoingPaymentAttemptFromJson,
+} from "./OutgoingPaymentAttempt.js";
 
 /** The connection from outgoing payment to all attempts. **/
 type OutgoingPaymentToAttemptsConnection = {
-  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). **/
+  /**
+   * The total count of objects in this connection, using the current filters. It is different from the
+   * number of objects returned in the current page (in the `entities` field).
+   **/
   count: number;
 
   /** The attempts for the current page of this connection. **/

@@ -1,11 +1,13 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { NodeAddressFromJson } from "./NodeAddress.js";
-import NodeAddress from "./NodeAddress.js";
+import NodeAddress, { NodeAddressFromJson } from "./NodeAddress.js";
 
 /** A connection between a node and the addresses it has announced for itself on Lightning Network. **/
 type NodeToAddressesConnection = {
-  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). **/
+  /**
+   * The total count of objects in this connection, using the current filters. It is different from the
+   * number of objects returned in the current page (in the `entities` field).
+   **/
   count: number;
 
   /** The addresses for the current page of this connection. **/

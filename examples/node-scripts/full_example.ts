@@ -26,10 +26,10 @@ const client = new LightsparkClient(
 
 const feeEstimate = await client.getFeeEstimate(BitcoinNetwork.REGTEST);
 console.log(
-  `Fees for a fast transaction ${feeEstimate.feeFast.value} ${feeEstimate.feeFast.unit}.`
+  `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`
 );
 console.log(
-  `Fees for a cheap transaction ${feeEstimate.feeMin.value} ${feeEstimate.feeMin.unit}.\n`
+  `Fees for a cheap transaction ${feeEstimate.feeMin.preferredCurrencyValueApprox} ${feeEstimate.feeMin.preferredCurrencyUnit}.\n`
 );
 
 // List your account's lightning nodes
@@ -59,7 +59,8 @@ const remoteBalance = await account.getRemoteBalance(client, [
 
 if (localBalance && remoteBalance) {
   console.log(
-    `Your local balance is ${localBalance.value} ${localBalance.unit}, your remote balance is ${remoteBalance.value} ${remoteBalance.unit}.`
+    `Your local balance is ${localBalance.preferredCurrencyValueApprox} ${localBalance.preferredCurrencyUnit}, 
+    your remote balance is ${remoteBalance.preferredCurrencyValueApprox} ${remoteBalance.preferredCurrencyUnit}.`
   );
 }
 
@@ -107,7 +108,9 @@ console.log(
 let depositTransactionId: string | undefined;
 for (const transaction of transactionsConnection.entities) {
   console.log(
-    `    - ${transaction.typename} at ${transaction.createdAt}: ${transaction.amount.value} ${transaction.amount.unit} (${transaction.status})`
+    `    - ${transaction.typename} at ${transaction.createdAt}:
+    ${transaction.amount.preferredCurrencyValueApprox} ${transaction.amount.preferredCurrencyUnit}
+    (${transaction.status})`
   );
   if (transaction.typename == "Deposit") {
     depositTransactionId = transaction.id;
@@ -123,7 +126,7 @@ for (const transaction of transactionsConnection.entities) {
   ) {
     fees = (transaction as unknown as { fees: CurrencyAmount }).fees;
     if (fees !== undefined)
-      console.log(`        Paid ${fees.value} ${fees.unit.name} in fees.`);
+      console.log(`        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`);
   }
 }
 console.log("");
@@ -212,9 +215,9 @@ console.log(
 );
 console.log(
   "    amount = " +
-    decodedInvoice.amount.value +
+    decodedInvoice.amount.preferredCurrencyValueApprox +
     " " +
-    decodedInvoice.amount.unit
+    decodedInvoice.amount.preferredCurrencyUnit
 );
 console.log("    memo = " + decodedInvoice.memo);
 console.log("");
@@ -264,7 +267,8 @@ for (const channel of channelsConnection.entities) {
     const alias = remoteNode?.alias ?? "UNKNOWN";
     if (channel.localBalance && channel.remoteBalance) {
       console.log(
-        `    - With ${alias}. Local/remote balance = ${channel.localBalance.value} ${channel.localBalance.unit}/${channel.remoteBalance.value} ${channel.remoteBalance.unit}`
+        `    - With ${alias}. Local/remote balance = ${channel.localBalance.preferredCurrencyValueApprox} ${channel.localBalance.preferredCurrencyUnit}
+        / ${channel.remoteBalance.preferredCurrencyValueApprox} ${channel.remoteBalance.preferredCurrencyUnit}`
       );
     }
   }

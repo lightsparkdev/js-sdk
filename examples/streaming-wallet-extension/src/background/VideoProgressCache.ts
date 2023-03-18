@@ -3,7 +3,6 @@ import PlaybackRangesTracker from "./VideoPlaybackRanges";
 class VideoProgressCache {
   private videoProgressCache: { [videoID: string]: PlaybackRangesTracker };
   private listeners: Array<(videoID: string) => void> = [];
-  private needsWrite: boolean = false;
   private resolveWhenLoaded: () => void = () => {};
   private whenLoadedPromise = new Promise<void>((resolve) => {
     this.resolveWhenLoaded = resolve;
@@ -20,7 +19,7 @@ class VideoProgressCache {
 
   public clear() {
     this.videoProgressCache = {};
-    this.needsWrite = true;
+    this.writeProgressToStorage();
   }
 
   addProgress(videoID: string, start: number, end: number) {
@@ -34,8 +33,8 @@ class VideoProgressCache {
         this.videoProgressCache[videoID].getPlayedRanges()
       )}`
     );
-    this.needsWrite = true;
     this.listeners.forEach((listener) => listener(videoID));
+    this.writeProgressToStorage();
   }
 
   listenForProgressChanges(listener: (videoID: string) => void) {
@@ -82,10 +81,6 @@ class VideoProgressCache {
       newEntrys[`video_${videoID}`] = videoRanges;
     });
     chrome.storage.local.set(newEntrys);
-  }
-
-  needsWriteToStorage() {
-    return this.needsWrite;
   }
 }
 

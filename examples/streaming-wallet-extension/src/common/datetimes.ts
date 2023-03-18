@@ -1,6 +1,6 @@
-import { Maybe } from "./types";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { Maybe } from "./types";
 
 const NOT_APPLICABLE = "-";
 
@@ -19,10 +19,10 @@ export const formatDateTime = (
 };
 
 export const getFormattedDateTimeOrDefault = (
-    datetime: Maybe<string>,
-    format: string
-  ): string => {
-    return datetime === undefined || datetime === null || datetime === ""
-      ? NOT_APPLICABLE
-      : formatDateTime(datetime, format);
-  };
+  datetime: Maybe<string>,
+  format: string
+): string => {
+  return datetime === undefined || datetime === null || datetime === ""
+    ? NOT_APPLICABLE
+    : formatDateTime(datetime, format);
+};

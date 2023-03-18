@@ -1,7 +1,5 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import React from "react";
-
 const LeftArrow = () => (
   <svg
     width="16"

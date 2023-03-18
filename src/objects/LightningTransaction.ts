@@ -1,22 +1,25 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Transaction from "./Transaction.js";
-import Entity from "./Entity.js";
-import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
-import { RichTextFromJson } from "./RichText.js";
-import PaymentFailureReason from "./PaymentFailureReason.js";
+import LightsparkException from "../LightsparkException.js";
 import Query from "../requester/Query.js";
-import OutgoingPayment from "./OutgoingPayment.js";
-import RoutingTransaction from "./RoutingTransaction.js";
-import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
-import CurrencyAmount from "./CurrencyAmount.js";
-import TransactionStatus from "./TransactionStatus.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import IncomingPayment from "./IncomingPayment.js";
+import OutgoingPayment from "./OutgoingPayment.js";
+import PaymentFailureReason from "./PaymentFailureReason.js";
+import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
+import { RichTextFromJson } from "./RichText.js";
+import RoutingTransaction from "./RoutingTransaction.js";
+import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
+import Transaction from "./Transaction.js";
+import TransactionStatus from "./TransactionStatus.js";
 
 type LightningTransaction = Transaction &
   Entity & {
-    /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. **/
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
     id: string;
 
     /** The date and time when this transaction was initiated. **/
@@ -44,6 +47,21 @@ type LightningTransaction = Transaction &
 export const LightningTransactionFromJson = (
   obj: any
 ): LightningTransaction => {
+  if (obj["__typename"] == "IncomingPayment") {
+    return new IncomingPayment(
+      obj["incoming_payment_id"],
+      obj["incoming_payment_created_at"],
+      obj["incoming_payment_updated_at"],
+      TransactionStatus[obj["incoming_payment_status"]],
+      CurrencyAmountFromJson(obj["incoming_payment_amount"]),
+      obj["incoming_payment_destination"].id,
+      "IncomingPayment",
+      obj["incoming_payment_resolved_at"],
+      obj["incoming_payment_transaction_hash"],
+      obj["incoming_payment_origin"]?.id ?? undefined,
+      obj["incoming_payment_payment_request"]?.id ?? undefined
+    );
+  }
   if (obj["__typename"] == "OutgoingPayment") {
     return new OutgoingPayment(
       obj["outgoing_payment_id"],
@@ -96,22 +114,8 @@ export const LightningTransactionFromJson = (
         ] ?? null,
     } as RoutingTransaction;
   }
-  if (obj["__typename"] == "IncomingPayment") {
-    return new IncomingPayment(
-      obj["incoming_payment_id"],
-      obj["incoming_payment_created_at"],
-      obj["incoming_payment_updated_at"],
-      TransactionStatus[obj["incoming_payment_status"]],
-      CurrencyAmountFromJson(obj["incoming_payment_amount"]),
-      obj["incoming_payment_destination"].id,
-      "IncomingPayment",
-      obj["incoming_payment_resolved_at"],
-      obj["incoming_payment_transaction_hash"],
-      obj["incoming_payment_origin"]?.id ?? undefined,
-      obj["incoming_payment_payment_request"]?.id ?? undefined
-    );
-  }
-  throw new Error(
+  throw new LightsparkException(
+    "DeserializationError",
     `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`
   );
 };
@@ -119,6 +123,34 @@ export const LightningTransactionFromJson = (
 export const FRAGMENT = `
 fragment LightningTransactionFragment on LightningTransaction {
     __typename
+    ... on IncomingPayment {
+        __typename
+        incoming_payment_id: id
+        incoming_payment_created_at: created_at
+        incoming_payment_updated_at: updated_at
+        incoming_payment_status: status
+        incoming_payment_resolved_at: resolved_at
+        incoming_payment_amount: amount {
+            __typename
+            currency_amount_value: value
+            currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+        }
+        incoming_payment_transaction_hash: transaction_hash
+        incoming_payment_origin: origin {
+            id
+        }
+        incoming_payment_destination: destination {
+            id
+        }
+        incoming_payment_payment_request: payment_request {
+            id
+        }
+    }
     ... on OutgoingPayment {
         __typename
         outgoing_payment_id: id
@@ -130,6 +162,11 @@ fragment LightningTransactionFragment on LightningTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         outgoing_payment_transaction_hash: transaction_hash
         outgoing_payment_origin: origin {
@@ -142,6 +179,11 @@ fragment LightningTransactionFragment on LightningTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         outgoing_payment_payment_request_data: payment_request_data {
             __typename
@@ -154,6 +196,11 @@ fragment LightningTransactionFragment on LightningTransaction {
                     __typename
                     currency_amount_value: value
                     currency_amount_unit: unit
+                    currency_amount_original_value: original_value
+                    currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 invoice_data_created_at: created_at
                 invoice_data_expires_at: expires_at
@@ -179,31 +226,61 @@ fragment LightningTransactionFragment on LightningTransaction {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_confirmed_balance: confirmed_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_locked_balance: locked_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_required_reserve: required_reserve {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_available_balance: available_balance {
                                 __typename
                                 currency_amount_value: value
                                 currency_amount_unit: unit
+                                currency_amount_original_value: original_value
+                                currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                         }
                         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -226,6 +303,11 @@ fragment LightningTransactionFragment on LightningTransaction {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_name: name
                         lightspark_node_purpose: purpose
@@ -233,6 +315,11 @@ fragment LightningTransactionFragment on LightningTransaction {
                             __typename
                             currency_amount_value: value
                             currency_amount_unit: unit
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
@@ -271,6 +358,11 @@ fragment LightningTransactionFragment on LightningTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         routing_transaction_transaction_hash: transaction_hash
         routing_transaction_incoming_channel: incoming_channel {
@@ -283,35 +375,17 @@ fragment LightningTransactionFragment on LightningTransaction {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         routing_transaction_failure_message: failure_message {
             __typename
             rich_text_text: text
         }
         routing_transaction_failure_reason: failure_reason
-    }
-    ... on IncomingPayment {
-        __typename
-        incoming_payment_id: id
-        incoming_payment_created_at: created_at
-        incoming_payment_updated_at: updated_at
-        incoming_payment_status: status
-        incoming_payment_resolved_at: resolved_at
-        incoming_payment_amount: amount {
-            __typename
-            currency_amount_value: value
-            currency_amount_unit: unit
-        }
-        incoming_payment_transaction_hash: transaction_hash
-        incoming_payment_origin: origin {
-            id
-        }
-        incoming_payment_destination: destination {
-            id
-        }
-        incoming_payment_payment_request: payment_request {
-            id
-        }
     }
 }`;
 

@@ -1,4 +1,6 @@
-import CurrencyAmount from "../objects/CurrencyAmount.js";
+import CurrencyAmount, {
+  FRAGMENT as CurrencyAmountFragment,
+} from "../objects/CurrencyAmount.js";
 import LightsparkNodePurpose from "../objects/LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "../objects/LightsparkNodeStatus.js";
 import NodeAddressType from "../objects/NodeAddressType.js";
@@ -68,25 +70,17 @@ export const MultiNodeDashboard = `
           public_key
           status
           local_balance {
-            value
-            unit
-            __typename
+            ...CurrencyAmountFragment
           }
           remote_balance {
-            value
-            unit
-            __typename
+            ...CurrencyAmountFragment
           }
           blockchain_balance {
             available_balance {
-              value
-              unit
-              __typename
+              ...CurrencyAmountFragment
             }
             total_balance {
-              value
-              unit
-              __typename
+              ...CurrencyAmountFragment
             }
             __typename
           }
@@ -96,37 +90,27 @@ export const MultiNodeDashboard = `
       }
       blockchain_balance(bitcoin_networks: [$network], node_ids: $nodeIds) {
         l1_balance: total_balance {
-          value
-          unit
-          __typename
+          ...CurrencyAmountFragment
         }
         required_reserve {
-          value
-          unit
-          __typename
+          ...CurrencyAmountFragment
         }
         available_balance {
-          value
-          unit
-          __typename
+          ...CurrencyAmountFragment
         }
         unconfirmed_balance {
-          value
-          unit
-          __typename
+          ...CurrencyAmountFragment
         }
         __typename
       }
       local_balance(bitcoin_networks: [$network], node_ids: $nodeIds) {
-        value
-        unit
-        __typename
+        ...CurrencyAmountFragment
       }
       remote_balance(bitcoin_networks: [$network], node_ids: $nodeIds) {
-        value
-        unit
-        __typename
+        ...CurrencyAmountFragment
       }
     }
   }
+
+  ${CurrencyAmountFragment}
 `;

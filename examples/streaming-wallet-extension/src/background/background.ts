@@ -1,17 +1,17 @@
-import { getWalletClient } from "../lightsparkClientProvider";
 import {
   AccountTokenAuthProvider,
   StubAuthProvider,
 } from "@lightsparkdev/js-sdk/auth";
 import AccountStorage from "../auth/AccountStorage";
-import { onMessageReceived } from "./messageHandling";
-import VideoProgressCache from "./VideoProgressCache";
-import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
-import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
-import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
 import { unreserveStreamingDemoAccountCredentials } from "../auth/DemoAccountProvider";
+import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
+import { clearStorageKeepingInstanceId } from "../common/storage";
+import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
+import { getWalletClient } from "../lightsparkClientProvider";
+import { onMessageReceived } from "./messageHandling";
+import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
-import { ENABLE_YOUTUBE_AND_TWITCH } from "../common/settings";
+import VideoProgressCache from "./VideoProgressCache";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
@@ -22,17 +22,24 @@ const transactionObserver = lightsparkClient.then(
 );
 let lastKnownStreamingTabId: number | undefined;
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "write_progress" && progressCache.needsWriteToStorage()) {
-    progressCache.writeProgressToStorage();
+const setStreamingTabIdIfSender = (
+  message: { id: string },
+  sender: chrome.runtime.MessageSender
+) => {
+  if (
+    message.id === "video_details" &&
+    sender.url?.includes("demos/streaming") &&
+    sender.tab &&
+    sender.tab?.id
+  ) {
+    lastKnownStreamingTabId = sender.tab.id;
   }
-});
+};
 
-chrome.alarms.create("write_progress", { periodInMinutes: 5 });
-
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   Promise.all([lightsparkClient, transactionObserver]).then(
     ([lightsparkClient, transactionObserver]) => {
+      setStreamingTabIdIfSender(message, sender);
       onMessageReceived(
         message,
         lightsparkClient,
@@ -48,9 +55,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 });
 
 chrome.runtime.onMessageExternal.addListener(
-  (message, _sender, sendResponse) => {
+  (message, sender, sendResponse) => {
     Promise.all([lightsparkClient, transactionObserver]).then(
       ([lightsparkClient, transactionObserver]) => {
+        setStreamingTabIdIfSender(message, sender);
         onMessageReceived(
           message,
           lightsparkClient,
@@ -65,42 +73,6 @@ chrome.runtime.onMessageExternal.addListener(
     return true;
   }
 );
-
-const onNavigation = (
-  details: chrome.webNavigation.WebNavigationFramedCallbackDetails
-) => {
-  console.log(`Navigated to ${details.url}`);
-  if (details.url.includes("demos/streaming")) {
-    lastKnownStreamingTabId = details.tabId;
-  }
-  chrome.tabs.sendMessage(
-    details.tabId,
-    { id: "get_video_details" },
-    (response) => {
-      console.log(`Got details from tab: ${JSON.stringify(response)}`);
-    }
-  );
-};
-
-type UrlFilter = {
-  pathContains: string;
-  hostSuffix?: undefined;
-} | {
-  hostSuffix: string;
-  pathContains?: undefined;
-};
-const youtubeAndTwitchFilter: UrlFilter[] = ENABLE_YOUTUBE_AND_TWITCH ? [
-  { hostSuffix: "youtube.com" },
-  { hostSuffix: "twitch.tv" }
-] : [];
-
-const urlFilter = {
-  url: youtubeAndTwitchFilter.concat([
-    { pathContains: "demos/streaming" }
-  ]),
-};
-chrome.webNavigation.onCompleted.addListener(onNavigation, urlFilter);
-chrome.webNavigation.onHistoryStateUpdated.addListener(onNavigation, urlFilter);
 
 const reloadOrOpenStreamingDemo = (openIfMissing: boolean = true) => {
   findActiveStreamingDemoTabs().then(async (tabs) => {
@@ -139,7 +111,10 @@ chrome.storage.local.onChanged.addListener((changes) => {
             credentials.clientSecret
           )
         );
-        await lightsparkClient.loadNodeKey(credentials.viewerWalletId, credentials.viewerSigningKey);
+        await lightsparkClient.loadNodeKey(
+          credentials.viewerWalletId,
+          credentials.viewerSigningKey
+        );
         await invoiceHolder
           .createInvoice(lightsparkClient, credentials.creatorWalletId)
           .then((invoice) => {
@@ -163,7 +138,7 @@ chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
     if (account) {
       await unreserveStreamingDemoAccountCredentials(account);
     }
-    chrome.storage.local.clear();
+    await clearStorageKeepingInstanceId();
     progressCache.clear();
   }
 });

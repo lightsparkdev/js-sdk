@@ -1,21 +1,23 @@
 // Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import Entity from "./Entity.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
-import NodeAddressType from "./NodeAddressType.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import LightsparkClient from "../client.js";
-import Query from "../requester/Query.js";
 import autoBind from "auto-bind";
+import LightsparkClient from "../client.js";
+import LightsparkException from "../LightsparkException.js";
+import Query from "../requester/Query.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import NodeToAddressesConnection from "./NodeToAddressesConnection.js";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import GraphNode from "./GraphNode.js";
+import { KeyFromJson } from "./Key.js";
 import LightsparkNode from "./LightsparkNode.js";
-import { SecretFromJson } from "./Secret.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import { KeyFromJson } from "./Key.js";
-import GraphNode from "./GraphNode.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
+import { SecretFromJson } from "./Secret.js";
 
 /** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. **/
 class Node implements Entity {
@@ -138,7 +140,8 @@ export const NodeFromJson = (obj: any): Node => {
       obj["graph_node_public_key"]
     );
   }
-  throw new Error(
+  throw new LightsparkException(
+    "DeserializationError",
     `Couldn't find a concrete type for interface Node corresponding to the typename=${obj["__typename"]}`
   );
 };
@@ -166,31 +169,61 @@ fragment NodeFragment on Node {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_confirmed_balance: confirmed_balance {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_locked_balance: locked_balance {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_required_reserve: required_reserve {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_available_balance: available_balance {
                 __typename
                 currency_amount_value: value
                 currency_amount_unit: unit
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -213,6 +246,11 @@ fragment NodeFragment on Node {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         lightspark_node_name: name
         lightspark_node_purpose: purpose
@@ -220,6 +258,11 @@ fragment NodeFragment on Node {
             __typename
             currency_amount_value: value
             currency_amount_unit: unit
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         lightspark_node_rest_url: rest_url
         lightspark_node_status: status
