@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import { FRAGMENT as WithdrawalRequestFragment } from "../objects/WithdrawalRequest.js";
 
 export const RequestWithdrawal = `

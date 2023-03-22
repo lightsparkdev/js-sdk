@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import LightsparkException from "../LightsparkException.js";
 import CurrencyAmount from "../objects/CurrencyAmount.js";
 import CurrencyUnit from "../objects/CurrencyUnit.js";

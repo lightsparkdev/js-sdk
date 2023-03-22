@@ -1,4 +1,4 @@
-// Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
 export type Maybe<T> = T | null | undefined;
 

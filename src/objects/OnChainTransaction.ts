@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import LightsparkException from "../LightsparkException.js";
 import Query from "../requester/Query.js";
@@ -72,7 +72,9 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       id: obj["channel_closing_transaction_id"],
       createdAt: obj["channel_closing_transaction_created_at"],
       updatedAt: obj["channel_closing_transaction_updated_at"],
-      status: TransactionStatus[obj["channel_closing_transaction_status"]],
+      status:
+        TransactionStatus[obj["channel_closing_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["channel_closing_transaction_amount"]),
       blockHeight: obj["channel_closing_transaction_block_height"],
       destinationAddresses:
@@ -93,7 +95,9 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       id: obj["channel_opening_transaction_id"],
       createdAt: obj["channel_opening_transaction_created_at"],
       updatedAt: obj["channel_opening_transaction_updated_at"],
-      status: TransactionStatus[obj["channel_opening_transaction_status"]],
+      status:
+        TransactionStatus[obj["channel_opening_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["channel_opening_transaction_amount"]),
       blockHeight: obj["channel_opening_transaction_block_height"],
       destinationAddresses:
@@ -114,7 +118,9 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       id: obj["deposit_id"],
       createdAt: obj["deposit_created_at"],
       updatedAt: obj["deposit_updated_at"],
-      status: TransactionStatus[obj["deposit_status"]],
+      status:
+        TransactionStatus[obj["deposit_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["deposit_amount"]),
       blockHeight: obj["deposit_block_height"],
       destinationAddresses: obj["deposit_destination_addresses"],
@@ -134,7 +140,9 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
       id: obj["withdrawal_id"],
       createdAt: obj["withdrawal_created_at"],
       updatedAt: obj["withdrawal_updated_at"],
-      status: TransactionStatus[obj["withdrawal_status"]],
+      status:
+        TransactionStatus[obj["withdrawal_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["withdrawal_amount"]),
       blockHeight: obj["withdrawal_block_height"],
       destinationAddresses: obj["withdrawal_destination_addresses"],
@@ -171,9 +179,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_transaction_hash: transaction_hash
         channel_closing_transaction_fees: fees {
@@ -182,9 +190,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_block_hash: block_hash
         channel_closing_transaction_block_height: block_height
@@ -207,9 +215,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_opening_transaction_transaction_hash: transaction_hash
         channel_opening_transaction_fees: fees {
@@ -218,9 +226,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_opening_transaction_block_hash: block_hash
         channel_opening_transaction_block_height: block_height
@@ -243,9 +251,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_transaction_hash: transaction_hash
         deposit_fees: fees {
@@ -254,9 +262,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_block_hash: block_hash
         deposit_block_height: block_height
@@ -279,9 +287,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_transaction_hash: transaction_hash
         withdrawal_fees: fees {
@@ -290,9 +298,9 @@ fragment OnChainTransactionFragment on OnChainTransaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_block_hash: block_hash
         withdrawal_block_height: block_height

@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -59,9 +59,9 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     hop_fee: fee {
                         __typename
@@ -69,9 +69,9 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     hop_expiry: expiry
                     hop_expiry_block_height: expiry_block_height
@@ -118,11 +118,14 @@ export const OutgoingPaymentAttemptFromJson = (
     obj["outgoing_payment_attempt_id"],
     obj["outgoing_payment_attempt_created_at"],
     obj["outgoing_payment_attempt_updated_at"],
-    OutgoingPaymentAttemptStatus[obj["outgoing_payment_attempt_status"]],
+    OutgoingPaymentAttemptStatus[obj["outgoing_payment_attempt_status"]] ??
+      OutgoingPaymentAttemptStatus.FUTURE_VALUE,
     obj["outgoing_payment_attempt_outgoing_payment"].id,
     "OutgoingPaymentAttempt",
-    HtlcAttemptFailureCode[obj["outgoing_payment_attempt_failure_code"]] ??
-      null,
+    !!obj["outgoing_payment_attempt_failure_code"]
+      ? HtlcAttemptFailureCode[obj["outgoing_payment_attempt_failure_code"]] ??
+        HtlcAttemptFailureCode.FUTURE_VALUE
+      : null,
     obj["outgoing_payment_attempt_failure_source_index"],
     obj["outgoing_payment_attempt_resolved_at"],
     !!obj["outgoing_payment_attempt_amount"]
@@ -150,9 +153,9 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_attempt_fees: fees {
         __typename
@@ -160,9 +163,9 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     outgoing_payment_attempt_outgoing_payment: outgoing_payment {
         id

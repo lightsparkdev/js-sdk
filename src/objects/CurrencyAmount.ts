@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import CurrencyUnit from "./CurrencyUnit.js";
 
@@ -24,28 +24,32 @@ type CurrencyAmount = {
   /** The original unit of currency for this CurrencyAmount. **/
   originalUnit: CurrencyUnit;
 
+  /** The unit of user's preferred currency for this CurrencyAmount. **/
+  preferredCurrencyUnit: CurrencyUnit;
+
   /** The rounded numeric value for this CurrencyAmount in user's preferred currency. **/
   preferredCurrencyValueRounded: number;
 
   /** The approximate float value for this CurrencyAmount in user's preferred currency. **/
   preferredCurrencyValueApprox: number;
-
-  /** The unit of user's preferred currency for this CurrencyAmount. **/
-  preferredCurrencyUnit: CurrencyUnit;
 };
 
 export const CurrencyAmountFromJson = (obj: any): CurrencyAmount => {
   return {
     value: obj["currency_amount_value"],
-    unit: CurrencyUnit[obj["currency_amount_unit"]],
+    unit:
+      CurrencyUnit[obj["currency_amount_unit"]] ?? CurrencyUnit.FUTURE_VALUE,
     originalValue: obj["currency_amount_original_value"],
-    originalUnit: CurrencyUnit[obj["currency_amount_original_unit"]],
+    originalUnit:
+      CurrencyUnit[obj["currency_amount_original_unit"]] ??
+      CurrencyUnit.FUTURE_VALUE,
+    preferredCurrencyUnit:
+      CurrencyUnit[obj["currency_amount_preferred_currency_unit"]] ??
+      CurrencyUnit.FUTURE_VALUE,
     preferredCurrencyValueRounded:
       obj["currency_amount_preferred_currency_value_rounded"],
     preferredCurrencyValueApprox:
       obj["currency_amount_preferred_currency_value_approx"],
-    preferredCurrencyUnit:
-      CurrencyUnit[obj["currency_amount_preferred_currency_unit"]],
   } as CurrencyAmount;
 };
 
@@ -56,9 +60,9 @@ fragment CurrencyAmountFragment on CurrencyAmount {
     currency_amount_unit: unit
     currency_amount_original_value: original_value
     currency_amount_original_unit: original_unit
+    currency_amount_preferred_currency_unit: preferred_currency_unit
     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-    currency_amount_preferred_currency_unit: preferred_currency_unit
 }`;
 
 export default CurrencyAmount;

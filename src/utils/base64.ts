@@ -1,4 +1,4 @@
-// Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
 export const b64decode = (encoded: string): Uint8Array => {
   return Uint8Array.from(atob(encoded), (c) => c.charCodeAt(0));

@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 export const getCredentialsFromEnvOrThrow = () => {
   const clientId = process.env["LIGHTSPARK_TOKEN_ID"];
   const clientSecret = process.env["LIGHTSPARK_TOKEN"];

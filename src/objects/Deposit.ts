@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -71,7 +71,9 @@ export const DepositFromJson = (obj: any): Deposit => {
     id: obj["deposit_id"],
     createdAt: obj["deposit_created_at"],
     updatedAt: obj["deposit_updated_at"],
-    status: TransactionStatus[obj["deposit_status"]],
+    status:
+      TransactionStatus[obj["deposit_status"]] ??
+      TransactionStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["deposit_amount"]),
     blockHeight: obj["deposit_block_height"],
     destinationAddresses: obj["deposit_destination_addresses"],
@@ -101,9 +103,9 @@ fragment DepositFragment on Deposit {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     deposit_transaction_hash: transaction_hash
     deposit_fees: fees {
@@ -112,9 +114,9 @@ fragment DepositFragment on Deposit {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     deposit_block_hash: block_hash
     deposit_block_height: block_height

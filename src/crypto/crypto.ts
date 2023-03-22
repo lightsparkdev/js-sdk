@@ -1,4 +1,5 @@
-// Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
+
 import NodeCrypto from "crypto";
 import LightsparkException from "../LightsparkException.js";
 

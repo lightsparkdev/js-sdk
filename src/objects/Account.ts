@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -69,6 +69,7 @@ query FetchAccountToApiTokensConnection($first: Int) {
                     api_token_updated_at: updated_at
                     api_token_client_id: client_id
                     api_token_name: name
+                    api_token_permissions: permissions
                 }
             }
         }
@@ -101,9 +102,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_confirmed_balance: confirmed_balance {
                     __typename
@@ -111,9 +112,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                     __typename
@@ -121,9 +122,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_locked_balance: locked_balance {
                     __typename
@@ -131,9 +132,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_required_reserve: required_reserve {
                     __typename
@@ -141,9 +142,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 blockchain_balance_available_balance: available_balance {
                     __typename
@@ -151,9 +152,9 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
             }
         }
@@ -207,9 +208,9 @@ query FetchAccountLocalBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids: 
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
     }
@@ -267,9 +268,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_confirmed_balance: confirmed_balance {
                             __typename
@@ -277,9 +278,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                             __typename
@@ -287,9 +288,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_locked_balance: locked_balance {
                             __typename
@@ -297,9 +298,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_required_reserve: required_reserve {
                             __typename
@@ -307,9 +308,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         blockchain_balance_available_balance: available_balance {
                             __typename
@@ -317,9 +318,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -344,9 +345,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_name: name
                     lightspark_node_purpose: purpose
@@ -356,9 +357,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
@@ -397,9 +398,9 @@ query FetchAccountRemoteBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids:
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
     }
@@ -474,9 +475,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_balance: local_balance {
                         __typename
@@ -484,9 +485,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_local_unsettled_balance: local_unsettled_balance {
                         __typename
@@ -494,9 +495,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_balance: remote_balance {
                         __typename
@@ -504,9 +505,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_remote_unsettled_balance: remote_unsettled_balance {
                         __typename
@@ -514,9 +515,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_unsettled_balance: unsettled_balance {
                         __typename
@@ -524,9 +525,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_total_balance: total_balance {
                         __typename
@@ -534,9 +535,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_status: status
                     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -548,9 +549,9 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_fees_fee_rate_per_mil: fee_rate_per_mil
                     }
@@ -606,9 +607,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_average_fee_earned: average_fee_earned {
                     __typename
@@ -616,9 +617,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_count: count
                 account_to_transactions_connection_total_amount_transacted: total_amount_transacted {
@@ -627,9 +628,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 account_to_transactions_connection_entities: entities {
                     __typename
@@ -646,9 +647,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_closing_transaction_transaction_hash: transaction_hash
                         channel_closing_transaction_fees: fees {
@@ -657,9 +658,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_closing_transaction_block_hash: block_hash
                         channel_closing_transaction_block_height: block_height
@@ -682,9 +683,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_opening_transaction_transaction_hash: transaction_hash
                         channel_opening_transaction_fees: fees {
@@ -693,9 +694,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         channel_opening_transaction_block_hash: block_hash
                         channel_opening_transaction_block_height: block_height
@@ -718,9 +719,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         deposit_transaction_hash: transaction_hash
                         deposit_fees: fees {
@@ -729,9 +730,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         deposit_block_hash: block_hash
                         deposit_block_height: block_height
@@ -754,9 +755,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         incoming_payment_transaction_hash: transaction_hash
                         incoming_payment_origin: origin {
@@ -782,9 +783,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         outgoing_payment_transaction_hash: transaction_hash
                         outgoing_payment_origin: origin {
@@ -799,9 +800,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         outgoing_payment_payment_request_data: payment_request_data {
                             __typename
@@ -816,9 +817,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                     currency_amount_unit: unit
                                     currency_amount_original_value: original_value
                                     currency_amount_original_unit: original_unit
+                                    currency_amount_preferred_currency_unit: preferred_currency_unit
                                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                    currency_amount_preferred_currency_unit: preferred_currency_unit
                                 }
                                 invoice_data_created_at: created_at
                                 invoice_data_expires_at: expires_at
@@ -846,9 +847,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_confirmed_balance: confirmed_balance {
                                                 __typename
@@ -856,9 +857,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                                 __typename
@@ -866,9 +867,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_locked_balance: locked_balance {
                                                 __typename
@@ -876,9 +877,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_required_reserve: required_reserve {
                                                 __typename
@@ -886,9 +887,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                             blockchain_balance_available_balance: available_balance {
                                                 __typename
@@ -896,9 +897,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_unit: unit
                                                 currency_amount_original_value: original_value
                                                 currency_amount_original_unit: original_unit
+                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                             }
                                         }
                                         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -923,9 +924,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         lightspark_node_name: name
                                         lightspark_node_purpose: purpose
@@ -935,9 +936,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         lightspark_node_rest_url: rest_url
                                         lightspark_node_status: status
@@ -978,9 +979,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         routing_transaction_transaction_hash: transaction_hash
                         routing_transaction_incoming_channel: incoming_channel {
@@ -995,9 +996,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         routing_transaction_failure_message: failure_message {
                             __typename
@@ -1018,9 +1019,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         withdrawal_transaction_hash: transaction_hash
                         withdrawal_fees: fees {
@@ -1029,9 +1030,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         withdrawal_block_hash: block_hash
                         withdrawal_block_height: block_height
@@ -1107,9 +1108,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             invoice_data_created_at: created_at
                             invoice_data_expires_at: expires_at
@@ -1137,9 +1138,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_confirmed_balance: confirmed_balance {
                                             __typename
@@ -1147,9 +1148,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                             __typename
@@ -1157,9 +1158,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_locked_balance: locked_balance {
                                             __typename
@@ -1167,9 +1168,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_required_reserve: required_reserve {
                                             __typename
@@ -1177,9 +1178,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                         blockchain_balance_available_balance: available_balance {
                                             __typename
@@ -1187,9 +1188,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_unit: unit
                                             currency_amount_original_value: original_value
                                             currency_amount_original_unit: original_unit
+                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                            currency_amount_preferred_currency_unit: preferred_currency_unit
                                         }
                                     }
                                     lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -1214,9 +1215,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         currency_amount_unit: unit
                                         currency_amount_original_value: original_value
                                         currency_amount_original_unit: original_unit
+                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                     }
                                     lightspark_node_name: name
                                     lightspark_node_purpose: purpose
@@ -1226,9 +1227,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         currency_amount_unit: unit
                                         currency_amount_original_value: original_value
                                         currency_amount_original_unit: original_unit
+                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                        currency_amount_preferred_currency_unit: preferred_currency_unit
                                     }
                                     lightspark_node_rest_url: rest_url
                                     lightspark_node_status: status
@@ -1256,9 +1257,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                     }
                 }

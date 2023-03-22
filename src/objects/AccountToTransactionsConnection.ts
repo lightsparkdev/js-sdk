@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
@@ -78,9 +78,9 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     account_to_transactions_connection_average_fee_earned: average_fee_earned {
         __typename
@@ -88,9 +88,9 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     account_to_transactions_connection_count: count
     account_to_transactions_connection_total_amount_transacted: total_amount_transacted {
@@ -99,9 +99,9 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     account_to_transactions_connection_entities: entities {
         id

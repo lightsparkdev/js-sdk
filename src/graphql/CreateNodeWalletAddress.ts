@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 export const CreateNodeWalletAddress = `
   mutation CreateNodeWalletAddress(
     $node_id: ID!

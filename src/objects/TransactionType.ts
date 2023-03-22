@@ -1,6 +1,11 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 export enum TransactionType {
+  /**
+   * This is an enum value that represents values that could be added in the future.
+   * Clients should support unknown values as more of them could be added without notice.
+   */
+  FUTURE_VALUE = "FUTURE_VALUE",
   /** Transactions initiated from a Lightspark node on Lightning Network. **/
   OUTGOING_PAYMENT = "OUTGOING_PAYMENT",
   /** Transactions received by a Lightspark node on Lightning Network. **/

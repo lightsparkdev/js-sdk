@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -92,7 +92,8 @@ export const NodeFromJson = (obj: any): Node => {
       obj["lightspark_node_id"],
       obj["lightspark_node_created_at"],
       obj["lightspark_node_updated_at"],
-      BitcoinNetwork[obj["lightspark_node_bitcoin_network"]],
+      BitcoinNetwork[obj["lightspark_node_bitcoin_network"]] ??
+        BitcoinNetwork.FUTURE_VALUE,
       obj["lightspark_node_display_name"],
       obj["lightspark_node_account"].id,
       obj["lightspark_node_name"],
@@ -118,12 +119,18 @@ export const NodeFromJson = (obj: any): Node => {
       !!obj["lightspark_node_local_balance"]
         ? CurrencyAmountFromJson(obj["lightspark_node_local_balance"])
         : undefined,
-      LightsparkNodePurpose[obj["lightspark_node_purpose"]] ?? null,
+      !!obj["lightspark_node_purpose"]
+        ? LightsparkNodePurpose[obj["lightspark_node_purpose"]] ??
+          LightsparkNodePurpose.FUTURE_VALUE
+        : null,
       !!obj["lightspark_node_remote_balance"]
         ? CurrencyAmountFromJson(obj["lightspark_node_remote_balance"])
         : undefined,
       obj["lightspark_node_rest_url"],
-      LightsparkNodeStatus[obj["lightspark_node_status"]] ?? null
+      !!obj["lightspark_node_status"]
+        ? LightsparkNodeStatus[obj["lightspark_node_status"]] ??
+          LightsparkNodeStatus.FUTURE_VALUE
+        : null
     );
   }
   if (obj["__typename"] == "GraphNode") {
@@ -131,7 +138,8 @@ export const NodeFromJson = (obj: any): Node => {
       obj["graph_node_id"],
       obj["graph_node_created_at"],
       obj["graph_node_updated_at"],
-      BitcoinNetwork[obj["graph_node_bitcoin_network"]],
+      BitcoinNetwork[obj["graph_node_bitcoin_network"]] ??
+        BitcoinNetwork.FUTURE_VALUE,
       obj["graph_node_display_name"],
       "GraphNode",
       obj["graph_node_alias"],
@@ -171,9 +179,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_confirmed_balance: confirmed_balance {
                 __typename
@@ -181,9 +189,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                 __typename
@@ -191,9 +199,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_locked_balance: locked_balance {
                 __typename
@@ -201,9 +209,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_required_reserve: required_reserve {
                 __typename
@@ -211,9 +219,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
             blockchain_balance_available_balance: available_balance {
                 __typename
@@ -221,9 +229,9 @@ fragment NodeFragment on Node {
                 currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                currency_amount_preferred_currency_unit: preferred_currency_unit
             }
         }
         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -248,9 +256,9 @@ fragment NodeFragment on Node {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         lightspark_node_name: name
         lightspark_node_purpose: purpose
@@ -260,9 +268,9 @@ fragment NodeFragment on Node {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         lightspark_node_rest_url: rest_url
         lightspark_node_status: status

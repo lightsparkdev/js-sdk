@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import autoBind from "auto-bind";
 import Observable from "zen-observable";
 import Query from "./requester/Query.js";
@@ -45,6 +47,7 @@ import InvoiceType from "./objects/InvoiceType.js";
 import OutgoingPayment, {
   OutgoingPaymentFromJson,
 } from "./objects/OutgoingPayment.js";
+import Permission from "./objects/Permission.js";
 import Transaction, { TransactionFromJson } from "./objects/Transaction.js";
 import Withdrawal, { WithdrawalFromJson } from "./objects/Withdrawal.js";
 import WithdrawalMode from "./objects/WithdrawalMode.js";
@@ -586,7 +589,7 @@ class LightsparkClient {
     const response = await this.requester.makeRawRequest(RequestWithdrawal, {
       amount_sats: amountSats,
       bitcoin_address: bitcoinAddress,
-      withdrawl_mode: mode,
+      withdrawal_mode: mode,
     });
     return WithdrawalRequestFromJson(response.request_withdrawal.request);
   }
@@ -617,11 +620,16 @@ class LightsparkClient {
    *
    * @param name Creates a new API token that can be used to authenticate requests for this account when using the
    *     Lightspark APIs and SDKs.
+   * @param permissions The permissions that this API token should have. Defaults to `Permission.ALL`.
    * @returns An object containing the API token and client secret.
    */
-  public async createApiToken(name: string): Promise<CreateApiTokenOutput> {
+  public async createApiToken(
+    name: string,
+    permissions: Permission[] = [Permission.ALL]
+  ): Promise<CreateApiTokenOutput> {
     const response = await this.requester.makeRawRequest(CreateApiToken, {
       name,
+      permissions,
     });
     return {
       apiToken: ApiTokenFromJson(response.create_api_token.api_token),

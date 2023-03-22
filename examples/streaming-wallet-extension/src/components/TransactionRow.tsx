@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import {
   ChannelClosingTransaction,
   ChannelOpeningTransaction,
-  CurrencyUnit,
   IncomingPayment,
   OutgoingPayment,
   RoutingTransaction,

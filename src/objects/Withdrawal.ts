@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -71,7 +71,9 @@ export const WithdrawalFromJson = (obj: any): Withdrawal => {
     id: obj["withdrawal_id"],
     createdAt: obj["withdrawal_created_at"],
     updatedAt: obj["withdrawal_updated_at"],
-    status: TransactionStatus[obj["withdrawal_status"]],
+    status:
+      TransactionStatus[obj["withdrawal_status"]] ??
+      TransactionStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["withdrawal_amount"]),
     blockHeight: obj["withdrawal_block_height"],
     destinationAddresses: obj["withdrawal_destination_addresses"],
@@ -101,9 +103,9 @@ fragment WithdrawalFragment on Withdrawal {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     withdrawal_transaction_hash: transaction_hash
     withdrawal_fees: fees {
@@ -112,9 +114,9 @@ fragment WithdrawalFragment on Withdrawal {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     withdrawal_block_hash: block_hash
     withdrawal_block_height: block_height

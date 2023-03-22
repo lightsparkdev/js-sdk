@@ -1,7 +1,8 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import Entity from "./Entity.js";
+import Permission from "./Permission.js";
 
 type ApiToken = Entity & {
   /**
@@ -28,6 +29,9 @@ type ApiToken = Entity & {
    **/
   name: string;
 
+  /** A list of permissions granted to the token. **/
+  permissions: Permission[];
+
   /** The typename of the object **/
   typename: string;
 };
@@ -39,6 +43,7 @@ export const ApiTokenFromJson = (obj: any): ApiToken => {
     updatedAt: obj["api_token_updated_at"],
     clientId: obj["api_token_client_id"],
     name: obj["api_token_name"],
+    permissions: obj["api_token_permissions"].map((e) => Permission[e]),
     typename: "ApiToken",
   } as ApiToken;
 };
@@ -51,6 +56,7 @@ fragment ApiTokenFragment on ApiToken {
     api_token_updated_at: updated_at
     api_token_client_id: client_id
     api_token_name: name
+    api_token_permissions: permissions
 }`;
 
 export const getApiTokenQuery = (id: string): Query<ApiToken> => {

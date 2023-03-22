@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import NodeAddressType from "./NodeAddressType.js";
 
@@ -14,7 +14,8 @@ type NodeAddress = {
 export const NodeAddressFromJson = (obj: any): NodeAddress => {
   return {
     address: obj["node_address_address"],
-    type: NodeAddressType[obj["node_address_type"]],
+    type:
+      NodeAddressType[obj["node_address_type"]] ?? NodeAddressType.FUTURE_VALUE,
   } as NodeAddress;
 };
 

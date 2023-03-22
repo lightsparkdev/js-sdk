@@ -1,6 +1,11 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 export enum CurrencyUnit {
+  /**
+   * This is an enum value that represents values that could be added in the future.
+   * Clients should support unknown values as more of them could be added without notice.
+   */
+  FUTURE_VALUE = "FUTURE_VALUE",
   /** Bitcoin is the cryptocurrency native to the Bitcoin network. It is used as the native medium for value transfer for the Lightning Network. **/
   BITCOIN = "BITCOIN",
   /** 0.00000001 (10e-8) Bitcoin or one hundred millionth of a Bitcoin. This is the unit most commonly used in Lightning transactions. **/

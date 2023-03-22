@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 class LightsparkException extends Error {
   code: string;
   message: string;

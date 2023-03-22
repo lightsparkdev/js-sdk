@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import autoBind from "auto-bind";
 import NodeCrypto from "crypto";
 import dayjs from "dayjs";
@@ -69,6 +71,12 @@ class Requester {
         "Mutation queries should call makeRawRequest instead"
       );
     }
+    // Undefined variables need to be null instead.
+    for (const key in variables) {
+      if (variables[key] === undefined) {
+        variables[key] = null;
+      }
+    }
     const operation = operationMatch[2];
     let bodyData = {
       query: queryPayload,
@@ -101,6 +109,12 @@ class Requester {
         "InvalidQuery",
         "Subscription queries should call subscribe instead"
       );
+    }
+    // Undefined variables need to be null instead.
+    for (const key in variables) {
+      if (variables[key] === undefined) {
+        variables[key] = null;
+      }
     }
     const operation = operationMatch[2];
     let bodyData = {

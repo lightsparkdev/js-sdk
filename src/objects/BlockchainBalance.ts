@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
@@ -55,9 +55,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_confirmed_balance: confirmed_balance {
         __typename
@@ -65,9 +65,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_unconfirmed_balance: unconfirmed_balance {
         __typename
@@ -75,9 +75,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_locked_balance: locked_balance {
         __typename
@@ -85,9 +85,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_required_reserve: required_reserve {
         __typename
@@ -95,9 +95,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     blockchain_balance_available_balance: available_balance {
         __typename
@@ -105,9 +105,9 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
 }`;
 

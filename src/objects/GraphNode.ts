@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -82,7 +82,8 @@ export const GraphNodeFromJson = (obj: any): GraphNode => {
     obj["graph_node_id"],
     obj["graph_node_created_at"],
     obj["graph_node_updated_at"],
-    BitcoinNetwork[obj["graph_node_bitcoin_network"]],
+    BitcoinNetwork[obj["graph_node_bitcoin_network"]] ??
+      BitcoinNetwork.FUTURE_VALUE,
     obj["graph_node_display_name"],
     "GraphNode",
     obj["graph_node_alias"],

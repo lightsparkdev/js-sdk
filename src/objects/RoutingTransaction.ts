@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -64,7 +64,9 @@ export const RoutingTransactionFromJson = (obj: any): RoutingTransaction => {
     id: obj["routing_transaction_id"],
     createdAt: obj["routing_transaction_created_at"],
     updatedAt: obj["routing_transaction_updated_at"],
-    status: TransactionStatus[obj["routing_transaction_status"]],
+    status:
+      TransactionStatus[obj["routing_transaction_status"]] ??
+      TransactionStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["routing_transaction_amount"]),
     typename: "RoutingTransaction",
     resolvedAt: obj["routing_transaction_resolved_at"],
@@ -79,10 +81,11 @@ export const RoutingTransactionFromJson = (obj: any): RoutingTransaction => {
     failureMessage: !!obj["routing_transaction_failure_message"]
       ? RichTextFromJson(obj["routing_transaction_failure_message"])
       : undefined,
-    failureReason:
-      RoutingTransactionFailureReason[
-        obj["routing_transaction_failure_reason"]
-      ] ?? null,
+    failureReason: !!obj["routing_transaction_failure_reason"]
+      ? RoutingTransactionFailureReason[
+          obj["routing_transaction_failure_reason"]
+        ] ?? RoutingTransactionFailureReason.FUTURE_VALUE
+      : null,
   } as RoutingTransaction;
 };
 
@@ -100,9 +103,9 @@ fragment RoutingTransactionFragment on RoutingTransaction {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     routing_transaction_transaction_hash: transaction_hash
     routing_transaction_incoming_channel: incoming_channel {
@@ -117,9 +120,9 @@ fragment RoutingTransactionFragment on RoutingTransaction {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     routing_transaction_failure_message: failure_message {
         __typename

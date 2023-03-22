@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -85,9 +85,9 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_to_transactions_connection_total_amount_transacted: total_amount_transacted {
                     __typename
@@ -95,9 +95,9 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 channel_to_transactions_connection_total_fees: total_fees {
                     __typename
@@ -105,9 +105,9 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
             }
         }
@@ -176,7 +176,9 @@ export const ChannelFromJson = (obj: any): Channel => {
     !!obj["channel_total_balance"]
       ? CurrencyAmountFromJson(obj["channel_total_balance"])
       : undefined,
-    ChannelStatus[obj["channel_status"]] ?? null,
+    !!obj["channel_status"]
+      ? ChannelStatus[obj["channel_status"]] ?? ChannelStatus.FUTURE_VALUE
+      : null,
     obj["channel_estimated_force_closure_wait_minutes"],
     !!obj["channel_fees"]
       ? ChannelFeesFromJson(obj["channel_fees"])
@@ -202,9 +204,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_local_balance: local_balance {
         __typename
@@ -212,9 +214,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_local_unsettled_balance: local_unsettled_balance {
         __typename
@@ -222,9 +224,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_remote_balance: remote_balance {
         __typename
@@ -232,9 +234,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_remote_unsettled_balance: remote_unsettled_balance {
         __typename
@@ -242,9 +244,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_unsettled_balance: unsettled_balance {
         __typename
@@ -252,9 +254,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_total_balance: total_balance {
         __typename
@@ -262,9 +264,9 @@ fragment ChannelFragment on Channel {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_status: status
     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
@@ -276,9 +278,9 @@ fragment ChannelFragment on Channel {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_fees_fee_rate_per_mil: fee_rate_per_mil
     }

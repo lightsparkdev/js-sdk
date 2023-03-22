@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import LightsparkException from "../LightsparkException.js";
 import Query from "../requester/Query.js";
@@ -52,7 +52,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       id: obj["channel_closing_transaction_id"],
       createdAt: obj["channel_closing_transaction_created_at"],
       updatedAt: obj["channel_closing_transaction_updated_at"],
-      status: TransactionStatus[obj["channel_closing_transaction_status"]],
+      status:
+        TransactionStatus[obj["channel_closing_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["channel_closing_transaction_amount"]),
       blockHeight: obj["channel_closing_transaction_block_height"],
       destinationAddresses:
@@ -73,7 +75,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       id: obj["channel_opening_transaction_id"],
       createdAt: obj["channel_opening_transaction_created_at"],
       updatedAt: obj["channel_opening_transaction_updated_at"],
-      status: TransactionStatus[obj["channel_opening_transaction_status"]],
+      status:
+        TransactionStatus[obj["channel_opening_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["channel_opening_transaction_amount"]),
       blockHeight: obj["channel_opening_transaction_block_height"],
       destinationAddresses:
@@ -94,7 +98,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       id: obj["deposit_id"],
       createdAt: obj["deposit_created_at"],
       updatedAt: obj["deposit_updated_at"],
-      status: TransactionStatus[obj["deposit_status"]],
+      status:
+        TransactionStatus[obj["deposit_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["deposit_amount"]),
       blockHeight: obj["deposit_block_height"],
       destinationAddresses: obj["deposit_destination_addresses"],
@@ -114,7 +120,8 @@ export const TransactionFromJson = (obj: any): Transaction => {
       obj["incoming_payment_id"],
       obj["incoming_payment_created_at"],
       obj["incoming_payment_updated_at"],
-      TransactionStatus[obj["incoming_payment_status"]],
+      TransactionStatus[obj["incoming_payment_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       CurrencyAmountFromJson(obj["incoming_payment_amount"]),
       obj["incoming_payment_destination"].id,
       "IncomingPayment",
@@ -129,7 +136,8 @@ export const TransactionFromJson = (obj: any): Transaction => {
       obj["outgoing_payment_id"],
       obj["outgoing_payment_created_at"],
       obj["outgoing_payment_updated_at"],
-      TransactionStatus[obj["outgoing_payment_status"]],
+      TransactionStatus[obj["outgoing_payment_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       CurrencyAmountFromJson(obj["outgoing_payment_amount"]),
       obj["outgoing_payment_origin"].id,
       "OutgoingPayment",
@@ -144,7 +152,10 @@ export const TransactionFromJson = (obj: any): Transaction => {
             obj["outgoing_payment_payment_request_data"]
           )
         : undefined,
-      PaymentFailureReason[obj["outgoing_payment_failure_reason"]] ?? null,
+      !!obj["outgoing_payment_failure_reason"]
+        ? PaymentFailureReason[obj["outgoing_payment_failure_reason"]] ??
+          PaymentFailureReason.FUTURE_VALUE
+        : null,
       !!obj["outgoing_payment_failure_message"]
         ? RichTextFromJson(obj["outgoing_payment_failure_message"])
         : undefined
@@ -155,7 +166,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       id: obj["routing_transaction_id"],
       createdAt: obj["routing_transaction_created_at"],
       updatedAt: obj["routing_transaction_updated_at"],
-      status: TransactionStatus[obj["routing_transaction_status"]],
+      status:
+        TransactionStatus[obj["routing_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["routing_transaction_amount"]),
       typename: "RoutingTransaction",
       resolvedAt: obj["routing_transaction_resolved_at"],
@@ -170,10 +183,11 @@ export const TransactionFromJson = (obj: any): Transaction => {
       failureMessage: !!obj["routing_transaction_failure_message"]
         ? RichTextFromJson(obj["routing_transaction_failure_message"])
         : undefined,
-      failureReason:
-        RoutingTransactionFailureReason[
-          obj["routing_transaction_failure_reason"]
-        ] ?? null,
+      failureReason: !!obj["routing_transaction_failure_reason"]
+        ? RoutingTransactionFailureReason[
+            obj["routing_transaction_failure_reason"]
+          ] ?? RoutingTransactionFailureReason.FUTURE_VALUE
+        : null,
     } as RoutingTransaction;
   }
   if (obj["__typename"] == "Withdrawal") {
@@ -181,7 +195,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       id: obj["withdrawal_id"],
       createdAt: obj["withdrawal_created_at"],
       updatedAt: obj["withdrawal_updated_at"],
-      status: TransactionStatus[obj["withdrawal_status"]],
+      status:
+        TransactionStatus[obj["withdrawal_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
       amount: CurrencyAmountFromJson(obj["withdrawal_amount"]),
       blockHeight: obj["withdrawal_block_height"],
       destinationAddresses: obj["withdrawal_destination_addresses"],
@@ -218,9 +234,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_transaction_hash: transaction_hash
         channel_closing_transaction_fees: fees {
@@ -229,9 +245,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_closing_transaction_block_hash: block_hash
         channel_closing_transaction_block_height: block_height
@@ -254,9 +270,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_opening_transaction_transaction_hash: transaction_hash
         channel_opening_transaction_fees: fees {
@@ -265,9 +281,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         channel_opening_transaction_block_hash: block_hash
         channel_opening_transaction_block_height: block_height
@@ -290,9 +306,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_transaction_hash: transaction_hash
         deposit_fees: fees {
@@ -301,9 +317,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         deposit_block_hash: block_hash
         deposit_block_height: block_height
@@ -326,9 +342,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         incoming_payment_transaction_hash: transaction_hash
         incoming_payment_origin: origin {
@@ -354,9 +370,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         outgoing_payment_transaction_hash: transaction_hash
         outgoing_payment_origin: origin {
@@ -371,9 +387,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         outgoing_payment_payment_request_data: payment_request_data {
             __typename
@@ -388,9 +404,9 @@ fragment TransactionFragment on Transaction {
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 invoice_data_created_at: created_at
                 invoice_data_expires_at: expires_at
@@ -418,9 +434,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_confirmed_balance: confirmed_balance {
                                 __typename
@@ -428,9 +444,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                                 __typename
@@ -438,9 +454,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_locked_balance: locked_balance {
                                 __typename
@@ -448,9 +464,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_required_reserve: required_reserve {
                                 __typename
@@ -458,9 +474,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                             blockchain_balance_available_balance: available_balance {
                                 __typename
@@ -468,9 +484,9 @@ fragment TransactionFragment on Transaction {
                                 currency_amount_unit: unit
                                 currency_amount_original_value: original_value
                                 currency_amount_original_unit: original_unit
+                                currency_amount_preferred_currency_unit: preferred_currency_unit
                                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                                currency_amount_preferred_currency_unit: preferred_currency_unit
                             }
                         }
                         lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -495,9 +511,9 @@ fragment TransactionFragment on Transaction {
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_name: name
                         lightspark_node_purpose: purpose
@@ -507,9 +523,9 @@ fragment TransactionFragment on Transaction {
                             currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
                         }
                         lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
@@ -550,9 +566,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         routing_transaction_transaction_hash: transaction_hash
         routing_transaction_incoming_channel: incoming_channel {
@@ -567,9 +583,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         routing_transaction_failure_message: failure_message {
             __typename
@@ -590,9 +606,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_transaction_hash: transaction_hash
         withdrawal_fees: fees {
@@ -601,9 +617,9 @@ fragment TransactionFragment on Transaction {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         withdrawal_block_hash: block_hash
         withdrawal_block_height: block_height

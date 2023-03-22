@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -41,7 +41,9 @@ export const InvoiceFromJson = (obj: any): Invoice => {
     createdAt: obj["invoice_created_at"],
     updatedAt: obj["invoice_updated_at"],
     data: InvoiceDataFromJson(obj["invoice_data"]),
-    status: PaymentRequestStatus[obj["invoice_status"]],
+    status:
+      PaymentRequestStatus[obj["invoice_status"]] ??
+      PaymentRequestStatus.FUTURE_VALUE,
     typename: "Invoice",
     amountPaid: !!obj["invoice_amount_paid"]
       ? CurrencyAmountFromJson(obj["invoice_amount_paid"])
@@ -66,9 +68,9 @@ fragment InvoiceFragment on Invoice {
             currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            currency_amount_preferred_currency_unit: preferred_currency_unit
         }
         invoice_data_created_at: created_at
         invoice_data_expires_at: expires_at
@@ -96,9 +98,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     blockchain_balance_confirmed_balance: confirmed_balance {
                         __typename
@@ -106,9 +108,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                         __typename
@@ -116,9 +118,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     blockchain_balance_locked_balance: locked_balance {
                         __typename
@@ -126,9 +128,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     blockchain_balance_required_reserve: required_reserve {
                         __typename
@@ -136,9 +138,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     blockchain_balance_available_balance: available_balance {
                         __typename
@@ -146,9 +148,9 @@ fragment InvoiceFragment on Invoice {
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                 }
                 lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
@@ -173,9 +175,9 @@ fragment InvoiceFragment on Invoice {
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 lightspark_node_name: name
                 lightspark_node_purpose: purpose
@@ -185,9 +187,9 @@ fragment InvoiceFragment on Invoice {
                     currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
+                    currency_amount_preferred_currency_unit: preferred_currency_unit
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
                 }
                 lightspark_node_rest_url: rest_url
                 lightspark_node_status: status
@@ -215,9 +217,9 @@ fragment InvoiceFragment on Invoice {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
 }`;
 

@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import LightsparkNode, { LightsparkNodeFromJson } from "./LightsparkNode.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
@@ -35,8 +35,10 @@ export const AccountToNodesConnectionFromJson = (
     entities: obj["account_to_nodes_connection_entities"].map((e) =>
       LightsparkNodeFromJson(e)
     ),
-    purpose:
-      LightsparkNodePurpose[obj["account_to_nodes_connection_purpose"]] ?? null,
+    purpose: !!obj["account_to_nodes_connection_purpose"]
+      ? LightsparkNodePurpose[obj["account_to_nodes_connection_purpose"]] ??
+        LightsparkNodePurpose.FUTURE_VALUE
+      : null,
   } as AccountToNodesConnection;
 };
 

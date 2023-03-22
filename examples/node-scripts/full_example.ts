@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import { LightsparkClient } from "@lightsparkdev/js-sdk";
 import { AccountTokenAuthProvider } from "@lightsparkdev/js-sdk/auth";
 import {
@@ -7,6 +9,7 @@ import {
   getDepositQuery,
   LightsparkNode,
   Node,
+  Permission,
 } from "@lightsparkdev/js-sdk/objects";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
@@ -39,6 +42,28 @@ if (!account) {
   throw new Error("Unable to fetch the account.");
 }
 console.log(`Your account name is ${account.name}.\n`);
+
+// Test API token logic:
+
+const apiTokenConnection = await account.getApiTokens(client);
+console.log(`You have ${apiTokenConnection.count} API tokens.`);
+
+const { apiToken, clientSecret } = await client.createApiToken("newTestToken", [
+  Permission.ACCOUNT_VIEW,
+]);
+console.log(
+  `Created API token ${apiToken.name} with ID ${
+    apiToken.id
+  }. Permissions: ${JSON.stringify(apiToken.permissions)}\n`
+);
+
+const apiTokenConnection2 = await account.getApiTokens(client);
+console.log(`You now have ${apiTokenConnection2.count} API tokens.\n`);
+
+client.deleteApiToken(apiToken.id);
+
+const apiTokenConnection3 = await account.getApiTokens(client);
+console.log(`You now have ${apiTokenConnection3.count} API tokens.\n`);
 
 // Check our account's conductivity on REGTEST
 
@@ -126,7 +151,9 @@ for (const transaction of transactionsConnection.entities) {
   ) {
     fees = (transaction as unknown as { fees: CurrencyAmount }).fees;
     if (fees !== undefined)
-      console.log(`        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`);
+      console.log(
+        `        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`
+      );
   }
 }
 console.log("");

@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import KeyType from "./KeyType.js";
 
@@ -10,7 +10,7 @@ type Key = {
 
 export const KeyFromJson = (obj: any): Key => {
   return {
-    type: KeyType[obj["key_type"]],
+    type: KeyType[obj["key_type"]] ?? KeyType.FUTURE_VALUE,
     publicKey: obj["key_public_key"],
   } as Key;
 };

@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -55,9 +55,9 @@ query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $st
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     incoming_payment_attempt_channel: channel {
                         id
@@ -100,7 +100,8 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     obj["incoming_payment_id"],
     obj["incoming_payment_created_at"],
     obj["incoming_payment_updated_at"],
-    TransactionStatus[obj["incoming_payment_status"]],
+    TransactionStatus[obj["incoming_payment_status"]] ??
+      TransactionStatus.FUTURE_VALUE,
     CurrencyAmountFromJson(obj["incoming_payment_amount"]),
     obj["incoming_payment_destination"].id,
     "IncomingPayment",
@@ -125,9 +126,9 @@ fragment IncomingPaymentFragment on IncomingPayment {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     incoming_payment_transaction_hash: transaction_hash
     incoming_payment_origin: origin {

@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import { FRAGMENT as InvoiceDataFragment } from "../objects/InvoiceData.js";
 
 export const DecodeInvoice = `

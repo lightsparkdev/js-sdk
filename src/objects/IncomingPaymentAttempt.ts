@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -43,7 +43,8 @@ export const IncomingPaymentAttemptFromJson = (
     createdAt: obj["incoming_payment_attempt_created_at"],
     updatedAt: obj["incoming_payment_attempt_updated_at"],
     status:
-      IncomingPaymentAttemptStatus[obj["incoming_payment_attempt_status"]],
+      IncomingPaymentAttemptStatus[obj["incoming_payment_attempt_status"]] ??
+      IncomingPaymentAttemptStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["incoming_payment_attempt_amount"]),
     channelId: obj["incoming_payment_attempt_channel"].id,
     typename: "IncomingPaymentAttempt",
@@ -65,9 +66,9 @@ fragment IncomingPaymentAttemptFragment on IncomingPaymentAttempt {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     incoming_payment_attempt_channel: channel {
         id

@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import Query from "../requester/Query.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
@@ -73,7 +73,9 @@ export const ChannelClosingTransactionFromJson = (
     id: obj["channel_closing_transaction_id"],
     createdAt: obj["channel_closing_transaction_created_at"],
     updatedAt: obj["channel_closing_transaction_updated_at"],
-    status: TransactionStatus[obj["channel_closing_transaction_status"]],
+    status:
+      TransactionStatus[obj["channel_closing_transaction_status"]] ??
+      TransactionStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["channel_closing_transaction_amount"]),
     blockHeight: obj["channel_closing_transaction_block_height"],
     destinationAddresses:
@@ -104,9 +106,9 @@ fragment ChannelClosingTransactionFragment on ChannelClosingTransaction {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_closing_transaction_transaction_hash: transaction_hash
     channel_closing_transaction_fees: fees {
@@ -115,9 +117,9 @@ fragment ChannelClosingTransactionFragment on ChannelClosingTransaction {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     channel_closing_transaction_block_hash: block_hash
     channel_closing_transaction_block_height: block_height

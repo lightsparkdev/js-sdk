@@ -1,3 +1,5 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import autoBind from "auto-bind";
 
 import AuthProvider from "./AuthProvider.js";

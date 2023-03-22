@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
 
@@ -33,6 +33,7 @@ fragment CreateApiTokenOutputFragment on CreateApiTokenOutput {
         api_token_updated_at: updated_at
         api_token_client_id: client_id
         api_token_name: name
+        api_token_permissions: permissions
     }
     create_api_token_output_client_secret: client_secret
 }`;

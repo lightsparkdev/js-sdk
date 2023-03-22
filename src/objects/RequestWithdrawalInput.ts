@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import WithdrawalMode from "./WithdrawalMode.js";
 
@@ -27,7 +27,8 @@ export const RequestWithdrawalInputFromJson = (
     bitcoinAddress: obj["request_withdrawal_input_bitcoin_address"],
     amountSats: obj["request_withdrawal_input_amount_sats"],
     withdrawalMode:
-      WithdrawalMode[obj["request_withdrawal_input_withdrawal_mode"]],
+      WithdrawalMode[obj["request_withdrawal_input_withdrawal_mode"]] ??
+      WithdrawalMode.FUTURE_VALUE,
   } as RequestWithdrawalInput;
 };
 

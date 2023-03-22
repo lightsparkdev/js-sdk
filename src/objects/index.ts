@@ -81,6 +81,7 @@ export {
 } from "./PaymentRequest.js";
 export { default as PaymentRequestData } from "./PaymentRequestData.js";
 export { default as PaymentRequestStatus } from "./PaymentRequestStatus.js";
+export { default as Permission } from "./Permission.js";
 export { default as RequestWithdrawalInput } from "./RequestWithdrawalInput.js";
 export { default as RequestWithdrawalOutput } from "./RequestWithdrawalOutput.js";
 export { default as RichText } from "./RichText.js";

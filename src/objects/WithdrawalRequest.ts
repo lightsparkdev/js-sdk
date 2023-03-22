@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
@@ -62,9 +62,9 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_closing_transaction_transaction_hash: transaction_hash
                     channel_closing_transaction_fees: fees {
@@ -73,9 +73,9 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_closing_transaction_block_hash: block_hash
                     channel_closing_transaction_block_height: block_height
@@ -132,9 +132,9 @@ query FetchWithdrawalRequestToChannelOpeningTransactionsConnection($entity_id: I
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_opening_transaction_transaction_hash: transaction_hash
                     channel_opening_transaction_fees: fees {
@@ -143,9 +143,9 @@ query FetchWithdrawalRequestToChannelOpeningTransactionsConnection($entity_id: I
                         currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
                     }
                     channel_opening_transaction_block_hash: block_hash
                     channel_opening_transaction_block_height: block_height
@@ -196,8 +196,10 @@ export const WithdrawalRequestFromJson = (obj: any): WithdrawalRequest => {
     obj["withdrawal_request_updated_at"],
     CurrencyAmountFromJson(obj["withdrawal_request_amount"]),
     obj["withdrawal_request_bitcoin_address"],
-    WithdrawalMode[obj["withdrawal_request_withdrawal_mode"]],
-    WithdrawalRequestStatus[obj["withdrawal_request_status"]],
+    WithdrawalMode[obj["withdrawal_request_withdrawal_mode"]] ??
+      WithdrawalMode.FUTURE_VALUE,
+    WithdrawalRequestStatus[obj["withdrawal_request_status"]] ??
+      WithdrawalRequestStatus.FUTURE_VALUE,
     "WithdrawalRequest",
     obj["withdrawal_request_completed_at"],
     obj["withdrawal_request_withdrawal"]?.id ?? undefined
@@ -216,9 +218,9 @@ fragment WithdrawalRequestFragment on WithdrawalRequest {
         currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        currency_amount_preferred_currency_unit: preferred_currency_unit
     }
     withdrawal_request_bitcoin_address: bitcoin_address
     withdrawal_request_withdrawal_mode: withdrawal_mode

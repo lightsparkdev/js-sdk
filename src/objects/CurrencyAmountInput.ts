@@ -1,4 +1,4 @@
-// Copyright ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import CurrencyUnit from "./CurrencyUnit.js";
 
@@ -11,7 +11,9 @@ type CurrencyAmountInput = {
 export const CurrencyAmountInputFromJson = (obj: any): CurrencyAmountInput => {
   return {
     value: obj["currency_amount_input_value"],
-    unit: CurrencyUnit[obj["currency_amount_input_unit"]],
+    unit:
+      CurrencyUnit[obj["currency_amount_input_unit"]] ??
+      CurrencyUnit.FUTURE_VALUE,
   } as CurrencyAmountInput;
 };
 
