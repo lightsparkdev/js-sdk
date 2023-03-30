@@ -1,0 +1,40 @@
+name: "Licenses"
+
+on:
+  pull_request:
+    paths:
+      - 'package-lock.json'
+      - '.github/workflows/licenses.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'package-lock.json'
+      - '.github/workflows/licenses.yaml'
+
+jobs:
+  fossa:
+    runs-on: "ubuntu-22.04"
+    env:
+      FOSSA_API_KEY: ${{ secrets.FOSSA_API_KEY }}
+      BRANCH: ${{ github.ref_name }}
+    steps:
+      - name: "Install fossa"
+        run: |
+          wget -q -P /tmp https://github.com/fossas/fossa-cli/releases/download/v3.4.5/fossa_3.4.5_linux_amd64.zip
+          cd /usr/local/bin
+          unzip /tmp/fossa_*.zip
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+          cache-dependency-path: "package-lock.json"
+      - name: "Install dependencies"
+        run: "npm install"
+
+      - name: "Run fossa analyze"
+        run: "fossa analyze -b $BRANCH"
