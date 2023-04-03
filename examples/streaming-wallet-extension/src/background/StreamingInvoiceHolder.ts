@@ -1,5 +1,5 @@
 import { LightsparkClient } from "@lightsparkdev/js-sdk";
-import { CurrencyUnit, InvoiceType } from "@lightsparkdev/js-sdk/objects";
+import { InvoiceType } from "@lightsparkdev/js-sdk/objects";
 import autoBind from "auto-bind";
 
 class StreamingInvoiceHolder {
@@ -13,7 +13,7 @@ class StreamingInvoiceHolder {
   ): Promise<String | undefined> {
     const encodedInvoice = await lightsparkClient.createInvoice(
       creatorWalletId,
-      { value: 0, unit: CurrencyUnit.SATOSHI },
+      0,
       "Streaming demo",
       InvoiceType.AMP
     );

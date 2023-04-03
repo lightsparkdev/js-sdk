@@ -12,7 +12,6 @@ import { WalletDashboard } from "./graphql/SingleNodeDashboard.js";
 import LightsparkException from "./LightsparkException.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
 import CurrencyAmount from "./objects/CurrencyAmount.js";
-import CurrencyAmountInput from "./objects/CurrencyAmountInput.js";
 import FeeEstimate from "./objects/FeeEstimate.js";
 import InvoiceData from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
@@ -91,13 +90,13 @@ class LightsparkWalletClient {
   }
 
   public async createInvoice(
-    amount: CurrencyAmountInput,
+    amountMsats: number,
     memo: string,
     type: InvoiceType | undefined = undefined
   ): Promise<string | undefined> {
     return await this.fullClient.createInvoice(
       this.requireWalletId(),
-      amount,
+      amountMsats,
       memo,
       type
     );
@@ -136,8 +135,8 @@ class LightsparkWalletClient {
   public async payInvoice(
     encodedInvoice: string,
     timeoutSecs: number = 60,
-    amount: CurrencyAmountInput | null = null,
-    maximumFees: CurrencyAmountInput | null = null
+    maximumFeesMsats: number,
+    amountMsats: number | null = null
   ): Promise<OutgoingPayment | undefined> {
     const walletId = this.requireWalletId();
     if (!this.nodeKeyCache.hasKey(walletId)) {
@@ -147,8 +146,8 @@ class LightsparkWalletClient {
       walletId,
       encodedInvoice,
       timeoutSecs,
-      amount,
-      maximumFees
+      maximumFeesMsats,
+      amountMsats
     );
   }
 
@@ -165,8 +164,8 @@ class LightsparkWalletClient {
   public async sendPayment(
     destinationPublicKey: string,
     timeoutSecs: number = 60,
-    amount: CurrencyAmountInput,
-    maximumFees: CurrencyAmountInput | null = null
+    amountMsats: number,
+    maximumFeesMsats: number
   ): Promise<OutgoingPayment | undefined> {
     const walletId = this.requireWalletId();
     if (!this.nodeKeyCache.hasKey(walletId)) {
@@ -176,8 +175,8 @@ class LightsparkWalletClient {
       walletId,
       destinationPublicKey,
       timeoutSecs,
-      amount,
-      maximumFees
+      amountMsats,
+      maximumFeesMsats
     );
   }
 
@@ -199,11 +198,13 @@ class LightsparkWalletClient {
    * added. This API only functions for nodes created on the REGTEST network and will return an error when called for
    * any non-REGTEST node.
    *
-   * @param amount The amount of funds to add to the node. Defaults to 10,000,000 SATOSHI.
+   * @param amountSats The amount of funds to add to the node. Defaults to 10,000,000 SATOSHI.
    * @returns
    */
-  public async fundNode(amount?: CurrencyAmountInput): Promise<CurrencyAmount> {
-    return this.fullClient.fundNode(this.requireWalletId(), amount);
+  public async fundNode(
+    amountSats: number | null = null
+  ): Promise<CurrencyAmount> {
+    return this.fullClient.fundNode(this.requireWalletId(), amountSats);
   }
 
   /**

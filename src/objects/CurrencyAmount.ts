@@ -24,13 +24,19 @@ type CurrencyAmount = {
   /** The original unit of currency for this CurrencyAmount. **/
   originalUnit: CurrencyUnit;
 
-  /** The unit of user's preferred currency for this CurrencyAmount. **/
+  /** The unit of user's preferred currency. **/
   preferredCurrencyUnit: CurrencyUnit;
 
-  /** The rounded numeric value for this CurrencyAmount in user's preferred currency. **/
+  /**
+   * The rounded numeric value for this CurrencyAmount in the very base level of user's preferred
+   * currency. For example, for USD, the value will be in cents.
+   **/
   preferredCurrencyValueRounded: number;
 
-  /** The approximate float value for this CurrencyAmount in user's preferred currency. **/
+  /**
+   * The approximate float value for this CurrencyAmount in the very base level of user's preferred
+   * currency. For example, for USD, the value will be in cents.
+   **/
   preferredCurrencyValueApprox: number;
 };
 

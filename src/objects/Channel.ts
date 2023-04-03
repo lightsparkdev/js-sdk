@@ -20,7 +20,6 @@ class Channel implements Entity {
     public readonly updatedAt: string,
     public readonly localNodeId: string,
     public readonly typename: string,
-    public readonly channelPoint?: string,
     public readonly fundingTransactionId?: string,
     public readonly capacity?: CurrencyAmount,
     public readonly localBalance?: CurrencyAmount,
@@ -31,6 +30,7 @@ class Channel implements Entity {
     public readonly totalBalance?: CurrencyAmount,
     public readonly status?: ChannelStatus,
     public readonly estimatedForceClosureWaitMinutes?: number,
+    public readonly commitFee?: CurrencyAmount,
     public readonly fees?: ChannelFees,
     public readonly remoteNodeId?: string,
     public readonly shortChannelId?: string
@@ -153,7 +153,6 @@ export const ChannelFromJson = (obj: any): Channel => {
     obj["channel_updated_at"],
     obj["channel_local_node"].id,
     "Channel",
-    obj["channel_channel_point"],
     obj["channel_funding_transaction"]?.id ?? undefined,
     !!obj["channel_capacity"]
       ? CurrencyAmountFromJson(obj["channel_capacity"])
@@ -180,6 +179,9 @@ export const ChannelFromJson = (obj: any): Channel => {
       ? ChannelStatus[obj["channel_status"]] ?? ChannelStatus.FUTURE_VALUE
       : null,
     obj["channel_estimated_force_closure_wait_minutes"],
+    !!obj["channel_commit_fee"]
+      ? CurrencyAmountFromJson(obj["channel_commit_fee"])
+      : undefined,
     !!obj["channel_fees"]
       ? ChannelFeesFromJson(obj["channel_fees"])
       : undefined,
@@ -194,7 +196,6 @@ fragment ChannelFragment on Channel {
     channel_id: id
     channel_created_at: created_at
     channel_updated_at: updated_at
-    channel_channel_point: channel_point
     channel_funding_transaction: funding_transaction {
         id
     }
@@ -270,6 +271,16 @@ fragment ChannelFragment on Channel {
     }
     channel_status: status
     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
+    channel_commit_fee: commit_fee {
+        __typename
+        currency_amount_value: value
+        currency_amount_unit: unit
+        currency_amount_original_value: original_value
+        currency_amount_original_unit: original_unit
+        currency_amount_preferred_currency_unit: preferred_currency_unit
+        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
     channel_fees: fees {
         __typename
         channel_fees_base_fee: base_fee {

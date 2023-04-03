@@ -214,6 +214,18 @@ fragment LightningTransactionFragment on LightningTransaction {
                 invoice_data_expires_at: expires_at
                 invoice_data_destination: destination {
                     __typename
+                    ... on GraphNode {
+                        __typename
+                        graph_node_id: id
+                        graph_node_created_at: created_at
+                        graph_node_updated_at: updated_at
+                        graph_node_alias: alias
+                        graph_node_bitcoin_network: bitcoin_network
+                        graph_node_color: color
+                        graph_node_conductivity: conductivity
+                        graph_node_display_name: display_name
+                        graph_node_public_key: public_key
+                    }
                     ... on LightsparkNode {
                         __typename
                         lightspark_node_id: id
@@ -291,22 +303,11 @@ fragment LightningTransactionFragment on LightningTransaction {
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                             }
                         }
-                        lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
-                            __typename
-                            secret_encrypted_value: encrypted_value
-                            secret_cipher: cipher
-                        }
                         lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
                             __typename
                             secret_encrypted_value: encrypted_value
                             secret_cipher: cipher
                         }
-                        lightspark_node_encryption_public_key: encryption_public_key {
-                            __typename
-                            key_type: type
-                            key_public_key: public_key
-                        }
-                        lightspark_node_grpc_hostname: grpc_hostname
                         lightspark_node_local_balance: local_balance {
                             __typename
                             currency_amount_value: value
@@ -317,7 +318,6 @@ fragment LightningTransactionFragment on LightningTransaction {
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
-                        lightspark_node_name: name
                         lightspark_node_purpose: purpose
                         lightspark_node_remote_balance: remote_balance {
                             __typename
@@ -329,21 +329,7 @@ fragment LightningTransactionFragment on LightningTransaction {
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
-                        lightspark_node_rest_url: rest_url
                         lightspark_node_status: status
-                        lightspark_node_upgrade_available: upgrade_available
-                    }
-                    ... on GraphNode {
-                        __typename
-                        graph_node_id: id
-                        graph_node_created_at: created_at
-                        graph_node_updated_at: updated_at
-                        graph_node_alias: alias
-                        graph_node_bitcoin_network: bitcoin_network
-                        graph_node_color: color
-                        graph_node_conductivity: conductivity
-                        graph_node_display_name: display_name
-                        graph_node_public_key: public_key
                     }
                 }
                 invoice_data_memo: memo

@@ -9,7 +9,10 @@ import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const account = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(
-  new AccountTokenAuthProvider(account.clientId, account.clientSecret)
+  new AccountTokenAuthProvider(
+    account.apiTokenClientId,
+    account.apiTokenClientSecret
+  )
 );
 client
   .getAccountDashboard(undefined, BitcoinNetwork.REGTEST)

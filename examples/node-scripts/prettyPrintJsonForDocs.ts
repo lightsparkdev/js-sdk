@@ -3,19 +3,24 @@
 
 import { LightsparkClient } from "@lightsparkdev/js-sdk";
 import { AccountTokenAuthProvider } from "@lightsparkdev/js-sdk/auth";
+import { BitcoinNetwork } from "@lightsparkdev/js-sdk/objects";
 
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const credentials = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(
-  new AccountTokenAuthProvider(credentials.clientId, credentials.clientSecret)
+  new AccountTokenAuthProvider(
+    credentials.apiTokenClientId,
+    credentials.apiTokenClientSecret
+  ),
+  "api.dev.dev.sparkinfra.net"
 );
 
 const makeRequest = async () => {
   // Replace this function's contents with whatever type you want to fetch.
   return await client
     .getCurrentAccount()
-    .then((account) => account.getNodes(client));
+    .then((account) => account.getChannels(client, BitcoinNetwork.REGTEST));
 };
 
 const oneLineAmounts = (initialJson: string) => {
@@ -28,7 +33,7 @@ const oneLineAmounts = (initialJson: string) => {
 };
 
 const shortenStrings = (initialJson: string) => {
-  const regex = RegExp(/"([\w\+\/\=]{25,})"/g);
+  const regex = RegExp(/"([\w\+\/\=]{35,})"/g);
   return initialJson.replace(regex, (match, p1) => {
     return `"${p1.substring(0, 7)}...${p1.substring(p1.length - 7)}"`;
   });

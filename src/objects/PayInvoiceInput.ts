@@ -1,9 +1,5 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmountInput, {
-  CurrencyAmountInputFromJson,
-} from "./CurrencyAmountInput.js";
-
 type PayInvoiceInput = {
   /** The node from where you want to send the payment. **/
   nodeId: string;
@@ -14,11 +10,14 @@ type PayInvoiceInput = {
   /** The timeout in seconds that we will try to make the payment. **/
   timeoutSecs: number;
 
-  /** The amount you will pay for this invoice. It should ONLY be set when the invoice amount is zero. **/
-  amount?: CurrencyAmountInput;
+  /** The maximum amount of fees that you want to pay for this payment to be sent, expressed in msats. **/
+  maximumFeesMsats: number;
 
-  /** The maximum amount of fees that you want to pay for this payment to be sent. **/
-  maximumFees?: CurrencyAmountInput;
+  /**
+   * The amount you will pay for this invoice, expressed in msats. It should ONLY be set when the
+   * invoice amount is zero.
+   **/
+  amountMsats?: number;
 };
 
 export const PayInvoiceInputFromJson = (obj: any): PayInvoiceInput => {
@@ -26,12 +25,8 @@ export const PayInvoiceInputFromJson = (obj: any): PayInvoiceInput => {
     nodeId: obj["pay_invoice_input_node_id"],
     encodedInvoice: obj["pay_invoice_input_encoded_invoice"],
     timeoutSecs: obj["pay_invoice_input_timeout_secs"],
-    amount: !!obj["pay_invoice_input_amount"]
-      ? CurrencyAmountInputFromJson(obj["pay_invoice_input_amount"])
-      : undefined,
-    maximumFees: !!obj["pay_invoice_input_maximum_fees"]
-      ? CurrencyAmountInputFromJson(obj["pay_invoice_input_maximum_fees"])
-      : undefined,
+    maximumFeesMsats: obj["pay_invoice_input_maximum_fees_msats"],
+    amountMsats: obj["pay_invoice_input_amount_msats"],
   } as PayInvoiceInput;
 };
 

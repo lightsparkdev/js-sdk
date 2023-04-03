@@ -1,14 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmountInput, {
-  CurrencyAmountInputFromJson,
-} from "./CurrencyAmountInput.js";
 import InvoiceType from "./InvoiceType.js";
 
 type CreateInvoiceInput = {
   nodeId: string;
 
-  amount: CurrencyAmountInput;
+  amountMsats: number;
 
   memo?: string;
 
@@ -18,7 +15,7 @@ type CreateInvoiceInput = {
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
   return {
     nodeId: obj["create_invoice_input_node_id"],
-    amount: CurrencyAmountInputFromJson(obj["create_invoice_input_amount"]),
+    amountMsats: obj["create_invoice_input_amount_msats"],
     memo: obj["create_invoice_input_memo"],
     invoiceType: !!obj["create_invoice_input_invoice_type"]
       ? InvoiceType[obj["create_invoice_input_invoice_type"]] ??

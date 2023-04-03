@@ -33,13 +33,6 @@ type Hop = Entity & {
   /** The destination node of the hop. **/
   destinationId?: string;
 
-  /**
-   * The public key of the node to which the hop is bound.
-   *
-   * @deprecated Use `public_key` instead.
-   **/
-  pubKey?: string;
-
   /** The public key of the node to which the hop is bound. **/
   publicKey?: string;
 
@@ -48,13 +41,6 @@ type Hop = Entity & {
 
   /** The fees to be collected by the source node for forwarding the payment over the hop. **/
   fee?: CurrencyAmount;
-
-  /**
-   * The block height at which an unsettled HTLC is considered expired.
-   *
-   * @deprecated Use `expiry_block_height` instead.
-   **/
-  expiry?: number;
 
   /** The block height at which an unsettled HTLC is considered expired. **/
   expiryBlockHeight?: number;
@@ -69,13 +55,11 @@ export const HopFromJson = (obj: any): Hop => {
     shortChannelId: obj["hop_short_channel_id"],
     typename: "Hop",
     destinationId: obj["hop_destination"]?.id ?? undefined,
-    pubKey: obj["hop_pub_key"],
     publicKey: obj["hop_public_key"],
     amountToForward: !!obj["hop_amount_to_forward"]
       ? CurrencyAmountFromJson(obj["hop_amount_to_forward"])
       : undefined,
     fee: !!obj["hop_fee"] ? CurrencyAmountFromJson(obj["hop_fee"]) : undefined,
-    expiry: obj["hop_expiry"],
     expiryBlockHeight: obj["hop_expiry_block_height"],
   } as Hop;
 };
@@ -91,7 +75,6 @@ fragment HopFragment on Hop {
     }
     hop_index: index
     hop_short_channel_id: short_channel_id
-    hop_pub_key: pub_key
     hop_public_key: public_key
     hop_amount_to_forward: amount_to_forward {
         __typename
@@ -113,7 +96,6 @@ fragment HopFragment on Hop {
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
-    hop_expiry: expiry
     hop_expiry_block_height: expiry_block_height
 }`;
 

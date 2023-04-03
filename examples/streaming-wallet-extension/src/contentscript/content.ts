@@ -54,8 +54,8 @@ const startListeningToVideoEvents = (videoElement: HTMLVideoElement) => {
     chrome.runtime
       .sendMessage({ id: "video_progress", ...currentTrackingDetails })
       .then((response) => {
-        if (response.amountToPay.value > 0) {
-          console.log(`Paying ${JSON.stringify(response.amountToPay)}!`);
+        if (response.amountToPay > 0) {
+          console.log(`Paying ${response.amountToPay} msats!`);
         }
       });
   };

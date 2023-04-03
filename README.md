@@ -99,8 +99,8 @@ Try the node script examples using ts-node!
 You'll need to set the following environment variables:
 
 ```bash
-$ export LIGHTSPARK_TOKEN_ID=<your api token id>
-$ export LIGHTSPARK_TOKEN=<your api token secret>
+$ export LIGHTSPARK_API_TOKEN_CLIENT_ID=<your api token id>
+$ export LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<your api token secret>
 $ export LIGHTSPARK_WALLET_NODE_ID=<the node ID of a node you can use as your default wallet>
 
 # If you want to run full_example.ts, you'll also need to set these:

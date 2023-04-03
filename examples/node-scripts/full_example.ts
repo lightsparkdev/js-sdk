@@ -5,7 +5,6 @@ import { AccountTokenAuthProvider } from "@lightsparkdev/js-sdk/auth";
 import {
   BitcoinNetwork,
   CurrencyAmount,
-  CurrencyUnit,
   getDepositQuery,
   LightsparkNode,
   Node,
@@ -21,7 +20,10 @@ day.extend(utc);
 // Let's start by creating a client
 const credentials = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(
-  new AccountTokenAuthProvider(credentials.clientId, credentials.clientSecret),
+  new AccountTokenAuthProvider(
+    credentials.apiTokenClientId,
+    credentials.apiTokenClientSecret
+  ),
   "api.dev.dev.sparkinfra.net"
 );
 
@@ -49,7 +51,7 @@ const apiTokenConnection = await account.getApiTokens(client);
 console.log(`You have ${apiTokenConnection.count} API tokens.`);
 
 const { apiToken, clientSecret } = await client.createApiToken("newTestToken", [
-  Permission.ACCOUNT_VIEW,
+  Permission.REGTEST_VIEW,
 ]);
 console.log(
   `Created API token ${apiToken.name} with ID ${
@@ -104,9 +106,9 @@ let node2Id: string | undefined;
 
 for (const node of nodesConnection.entities) {
   if (node) {
-    console.log(`    - ${node.name} (${node.status})`);
-    if (node.name == credentials.node1Name) node1Id = node.id;
-    else if (node.name == credentials.node2Name) node2Id = node.id;
+    console.log(`    - ${node.displayName} (${node.status})`);
+    if (node.displayName == credentials.node1Name) node1Id = node.id;
+    else if (node.displayName == credentials.node2Name) node2Id = node.id;
   }
 }
 console.log("");
@@ -221,7 +223,7 @@ console.log("");
 
 const invoice = await client.createInvoice(
   node1Id,
-  { value: 42, unit: CurrencyUnit.SATOSHI },
+  42000,
   "Pizza!"
 );
 if (!invoice) {
@@ -256,10 +258,7 @@ await client.unlockNode(node2Id, credentials.node2Password!);
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
-const payment = await client.payInvoice(node2Id, invoice, 60, null, {
-  value: 500,
-  unit: CurrencyUnit.SATOSHI,
-});
+const payment = await client.payInvoice(node2Id, invoice, 60, 1000, null);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 
@@ -267,12 +266,9 @@ const address = await client.createNodeWalletAddress(node1Id);
 console.log(`Got a bitcoin address for ${credentials.node1Name}: ${address}`);
 console.log("");
 
-const withdrawal = await client.withdrawFunds(node2Id, address, {
-  value: 1000,
-  unit: CurrencyUnit.SATOSHI,
-});
-console.log(`Money was withdrawn with ID = ${withdrawal.id}`);
-console.log("");
+// const withdrawal = await client.requestWithdrawal(node2Id, 1000000, address, WithdrawalMode.WALLET_THEN_CHANNELS);
+// console.log(`Money was withdrawn with ID = ${withdrawal.id}`);
+// console.log("");
 
 // Fetch the channels for Node 1
 const node1 = await client.executeRawQuery(

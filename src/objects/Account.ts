@@ -27,9 +27,6 @@ import Entity from "./Entity.js";
 import TransactionFailures from "./TransactionFailures.js";
 import TransactionStatus from "./TransactionStatus.js";
 import TransactionType from "./TransactionType.js";
-import WebhooksSettings, {
-  WebhooksSettingsFromJson,
-} from "./WebhooksSettings.js";
 
 class Account implements Entity {
   constructor(
@@ -37,8 +34,7 @@ class Account implements Entity {
     public readonly createdAt: string,
     public readonly updatedAt: string,
     public readonly typename: string,
-    public readonly name?: string,
-    public readonly webhooksSettings?: WebhooksSettings
+    public readonly name?: string
   ) {
     autoBind(this);
   }
@@ -323,22 +319,11 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
                     }
-                    lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
-                        __typename
-                        secret_encrypted_value: encrypted_value
-                        secret_cipher: cipher
-                    }
                     lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
                         __typename
                         secret_encrypted_value: encrypted_value
                         secret_cipher: cipher
                     }
-                    lightspark_node_encryption_public_key: encryption_public_key {
-                        __typename
-                        key_type: type
-                        key_public_key: public_key
-                    }
-                    lightspark_node_grpc_hostname: grpc_hostname
                     lightspark_node_local_balance: local_balance {
                         __typename
                         currency_amount_value: value
@@ -349,7 +334,6 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                     }
-                    lightspark_node_name: name
                     lightspark_node_purpose: purpose
                     lightspark_node_remote_balance: remote_balance {
                         __typename
@@ -361,9 +345,7 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                     }
-                    lightspark_node_rest_url: rest_url
                     lightspark_node_status: status
-                    lightspark_node_upgrade_available: upgrade_available
                 }
             }
         }
@@ -465,7 +447,6 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                     channel_id: id
                     channel_created_at: created_at
                     channel_updated_at: updated_at
-                    channel_channel_point: channel_point
                     channel_funding_transaction: funding_transaction {
                         id
                     }
@@ -541,6 +522,16 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
                     }
                     channel_status: status
                     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
+                    channel_commit_fee: commit_fee {
+                        __typename
+                        currency_amount_value: value
+                        currency_amount_unit: unit
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
                     channel_fees: fees {
                         __typename
                         channel_fees_base_fee: base_fee {
@@ -825,6 +816,18 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                 invoice_data_expires_at: expires_at
                                 invoice_data_destination: destination {
                                     __typename
+                                    ... on GraphNode {
+                                        __typename
+                                        graph_node_id: id
+                                        graph_node_created_at: created_at
+                                        graph_node_updated_at: updated_at
+                                        graph_node_alias: alias
+                                        graph_node_bitcoin_network: bitcoin_network
+                                        graph_node_color: color
+                                        graph_node_conductivity: conductivity
+                                        graph_node_display_name: display_name
+                                        graph_node_public_key: public_key
+                                    }
                                     ... on LightsparkNode {
                                         __typename
                                         lightspark_node_id: id
@@ -902,22 +905,11 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                             }
                                         }
-                                        lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
-                                            __typename
-                                            secret_encrypted_value: encrypted_value
-                                            secret_cipher: cipher
-                                        }
                                         lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
                                             __typename
                                             secret_encrypted_value: encrypted_value
                                             secret_cipher: cipher
                                         }
-                                        lightspark_node_encryption_public_key: encryption_public_key {
-                                            __typename
-                                            key_type: type
-                                            key_public_key: public_key
-                                        }
-                                        lightspark_node_grpc_hostname: grpc_hostname
                                         lightspark_node_local_balance: local_balance {
                                             __typename
                                             currency_amount_value: value
@@ -928,7 +920,6 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                         }
-                                        lightspark_node_name: name
                                         lightspark_node_purpose: purpose
                                         lightspark_node_remote_balance: remote_balance {
                                             __typename
@@ -940,21 +931,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                         }
-                                        lightspark_node_rest_url: rest_url
                                         lightspark_node_status: status
-                                        lightspark_node_upgrade_available: upgrade_available
-                                    }
-                                    ... on GraphNode {
-                                        __typename
-                                        graph_node_id: id
-                                        graph_node_created_at: created_at
-                                        graph_node_updated_at: updated_at
-                                        graph_node_alias: alias
-                                        graph_node_bitcoin_network: bitcoin_network
-                                        graph_node_color: color
-                                        graph_node_conductivity: conductivity
-                                        graph_node_display_name: display_name
-                                        graph_node_public_key: public_key
                                     }
                                 }
                                 invoice_data_memo: memo
@@ -1116,6 +1093,18 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                             invoice_data_expires_at: expires_at
                             invoice_data_destination: destination {
                                 __typename
+                                ... on GraphNode {
+                                    __typename
+                                    graph_node_id: id
+                                    graph_node_created_at: created_at
+                                    graph_node_updated_at: updated_at
+                                    graph_node_alias: alias
+                                    graph_node_bitcoin_network: bitcoin_network
+                                    graph_node_color: color
+                                    graph_node_conductivity: conductivity
+                                    graph_node_display_name: display_name
+                                    graph_node_public_key: public_key
+                                }
                                 ... on LightsparkNode {
                                     __typename
                                     lightspark_node_id: id
@@ -1193,22 +1182,11 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                         }
                                     }
-                                    lightspark_node_encrypted_admin_macaroon: encrypted_admin_macaroon {
-                                        __typename
-                                        secret_encrypted_value: encrypted_value
-                                        secret_cipher: cipher
-                                    }
                                     lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
                                         __typename
                                         secret_encrypted_value: encrypted_value
                                         secret_cipher: cipher
                                     }
-                                    lightspark_node_encryption_public_key: encryption_public_key {
-                                        __typename
-                                        key_type: type
-                                        key_public_key: public_key
-                                    }
-                                    lightspark_node_grpc_hostname: grpc_hostname
                                     lightspark_node_local_balance: local_balance {
                                         __typename
                                         currency_amount_value: value
@@ -1219,7 +1197,6 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                     }
-                                    lightspark_node_name: name
                                     lightspark_node_purpose: purpose
                                     lightspark_node_remote_balance: remote_balance {
                                         __typename
@@ -1231,21 +1208,7 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                                     }
-                                    lightspark_node_rest_url: rest_url
                                     lightspark_node_status: status
-                                    lightspark_node_upgrade_available: upgrade_available
-                                }
-                                ... on GraphNode {
-                                    __typename
-                                    graph_node_id: id
-                                    graph_node_created_at: created_at
-                                    graph_node_updated_at: updated_at
-                                    graph_node_alias: alias
-                                    graph_node_bitcoin_network: bitcoin_network
-                                    graph_node_color: color
-                                    graph_node_conductivity: conductivity
-                                    graph_node_display_name: display_name
-                                    graph_node_public_key: public_key
                                 }
                             }
                             invoice_data_memo: memo
@@ -1315,10 +1278,7 @@ export const AccountFromJson = (obj: any): Account => {
     obj["account_created_at"],
     obj["account_updated_at"],
     "Account",
-    obj["account_name"],
-    !!obj["account_webhooks_settings"]
-      ? WebhooksSettingsFromJson(obj["account_webhooks_settings"])
-      : undefined
+    obj["account_name"]
   );
 };
 
@@ -1329,13 +1289,6 @@ fragment AccountFragment on Account {
     account_created_at: created_at
     account_updated_at: updated_at
     account_name: name
-    account_webhooks_settings: webhooks_settings {
-        __typename
-        webhooks_settings_url: url
-        webhooks_settings_secret: secret
-        webhooks_settings_events: events
-        webhooks_settings_url_testing: url_testing
-    }
 }`;
 
 export default Account;

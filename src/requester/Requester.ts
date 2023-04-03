@@ -40,7 +40,7 @@ class Requester {
       websocketImpl = NodeWebSocket;
     }
     this.wsClient = createClient({
-      url: `wss://${this.baseUrl}/graphql/2023-01-01`,
+      url: `wss://${this.baseUrl}/graphql/release_candidate`,
       connectionParams: authProvider.addWsConnectionParams({}),
       webSocketImpl: websocketImpl,
     });
@@ -132,11 +132,14 @@ class Requester {
       signingNodeId
     );
 
-    const response = await fetch(`https://${this.baseUrl}/graphql/2023-01-01`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(bodyData),
-    });
+    const response = await fetch(
+      `https://${this.baseUrl}/graphql/release_candidate`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(bodyData),
+      }
+    );
     if (!response.ok) {
       throw new LightsparkException(
         "RequestFailed",

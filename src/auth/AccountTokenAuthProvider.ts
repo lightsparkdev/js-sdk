@@ -10,17 +10,19 @@ class AccountTokenAuthProvider implements AuthProvider {
   private readonly utf8AuthBytes: Uint8Array;
 
   constructor(
-    private readonly tokenId: string,
-    private readonly token: string
+    private readonly apiTokenClientId: string,
+    private readonly apiTokenClientSecret: string
   ) {
-    this.utf8AuthBytes = new TextEncoder().encode(`${tokenId}:${token}`);
+    this.utf8AuthBytes = new TextEncoder().encode(
+      `${apiTokenClientId}:${apiTokenClientSecret}`
+    );
     autoBind(this);
   }
 
   addWsConnectionParams(params: any): any {
     return Object.assign({}, params, {
-      client_id: this.tokenId,
-      client_secret: this.token,
+      client_id: this.apiTokenClientId,
+      client_secret: this.apiTokenClientSecret,
     });
   }
 

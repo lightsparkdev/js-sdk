@@ -7,16 +7,16 @@ export const PayInvoice = `
     $node_id: ID!
     $encoded_invoice: String!
     $timeout_secs: Int!
-    $amount: CurrencyAmountInput
-    $maximum_fees: CurrencyAmountInput
+    $maximum_fees_msats: Long!
+    $amount_msats: Long
   ) {
     pay_invoice(
       input: {
         node_id: $node_id
         encoded_invoice: $encoded_invoice
         timeout_secs: $timeout_secs
-        amount: $amount
-        maximum_fees: $maximum_fees
+        maximum_fees_msats: $maximum_fees_msats
+        amount_msats: $amount_msats
       }
     ) {
       payment {

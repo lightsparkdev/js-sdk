@@ -68,3 +68,57 @@ ${GITHUB_PR_BODY}
         core.move("", "js-sdk/"),
     ],
 )
+
+core.workflow(
+    name = "kotlin-sdk-push",
+    origin = git.github_origin(
+      url = "https://github.com/lightsparkdev/webdev.git",
+      ref = "main",
+    ),
+    destination = git.github_destination(
+        url = "https://github.com/lightsparkdev/kotlin-sdk.git",
+        push = "main",
+    ),
+    # Switch to ITERATIVE mode to import each commit separately.
+    mode = "SQUASH",
+
+    origin_files = glob(["kotlin-sdk/**", "copy.bara.sky"]),
+
+    authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
+    transformations = [
+        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+        metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
+        core.todo_replace(
+          mode = 'SCRUB_NAMES'
+        ),
+        core.move("kotlin-sdk/", "")
+    ],
+)
+
+core.workflow(
+    name = "rust-sdk-push",
+    origin = git.github_origin(
+      url = "https://github.com/lightsparkdev/webdev.git",
+      ref = "main",
+    ),
+    destination = git.github_destination(
+        url = "https://github.com/lightsparkdev/rust-sdk.git",
+        push = "main",
+    ),
+    # Switch to ITERATIVE mode to import each commit separately.
+    mode = "SQUASH",
+
+    origin_files = glob(["rust-sdk/**", "copy.bara.sky"]),
+
+    authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
+    transformations = [
+        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+        metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
+        core.todo_replace(
+          mode = 'SCRUB_NAMES'
+        ),
+        core.move("rust-sdk/", "")
+    ],
+)
+
+# TODO: Add python-sdk-push after reworking the directory structure a bit.

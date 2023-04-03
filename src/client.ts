@@ -23,7 +23,7 @@ import {
 } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
-import { RequestWithdrawal } from "./graphql/RequestWithdrawl.js";
+import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import {
   SingleNodeDashboard,
@@ -31,7 +31,6 @@ import {
 } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
-import { WithdrawFunds } from "./graphql/WithdrawFunds.js";
 import LightsparkException from "./LightsparkException.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
@@ -40,7 +39,6 @@ import CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
 import CurrencyAmount, {
   CurrencyAmountFromJson,
 } from "./objects/CurrencyAmount.js";
-import CurrencyAmountInput from "./objects/CurrencyAmountInput.js";
 import FeeEstimate, { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import InvoiceData, { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
@@ -49,7 +47,6 @@ import OutgoingPayment, {
 } from "./objects/OutgoingPayment.js";
 import Permission from "./objects/Permission.js";
 import Transaction, { TransactionFromJson } from "./objects/Transaction.js";
-import Withdrawal, { WithdrawalFromJson } from "./objects/Withdrawal.js";
 import WithdrawalMode from "./objects/WithdrawalMode.js";
 import WithdrawalRequest, {
   WithdrawalRequestFromJson,
@@ -330,7 +327,7 @@ class LightsparkClient {
    * Creates an invoice for the given node.
    *
    * @param nodeId The node ID for which to create an invoice.
-   * @param amount The amount of the invoice. You can create a zero-amount invoice to accept any payment amount.
+   * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
    * @param memo A string memo to include in the invoice as a description.
    * @param type The type of invoice to create. Defaults to a normal payment invoice, but you can pass InvoiceType.AMP
    *     to create an [AMP invoice](https://docs.lightning.engineering/lightning-network-tools/lnd/amp), which can be
@@ -339,13 +336,13 @@ class LightsparkClient {
    */
   public async createInvoice(
     nodeId: string,
-    amount: CurrencyAmountInput,
+    amountMsats: number,
     memo: string,
     type: InvoiceType | undefined = undefined
   ): Promise<string | undefined> {
     const response = await this.requester.makeRawRequest(CreateInvoice, {
-      nodeId,
-      amount,
+      node_id: nodeId,
+      amount_msats: amountMsats,
       memo,
       type,
     });
@@ -449,16 +446,19 @@ class LightsparkClient {
    * @param payerNodeId The ID of the node that will pay the invoice.
    * @param encodedInvoice The encoded invoice to pay.
    * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
-   * @param amount The amount to pay. Defaults to the full amount of the invoice.
-   * @param maximumFees Maximum fees to pay for the payment. Defaults to no maximum.
+   * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
+   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
+   *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async payInvoice(
     payerNodeId: string,
     encodedInvoice: string,
     timeoutSecs: number = 60,
-    amount: CurrencyAmountInput | null = null,
-    maximumFees: CurrencyAmountInput | null = null
+    maximumFeesMsats: number,
+    amountMsats: number | null = null
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
@@ -469,8 +469,8 @@ class LightsparkClient {
         node_id: payerNodeId,
         encoded_invoice: encodedInvoice,
         timeout_secs: timeoutSecs,
-        amount,
-        maximum_fees: maximumFees,
+        maximum_fees_msats: maximumFeesMsats,
+        amount_msats: amountMsats,
       },
       payerNodeId
     );
@@ -492,17 +492,18 @@ class LightsparkClient {
    * @param payerNodeId The ID of the node that will send the payment.
    * @param destinationPublicKey The public key of the destination node.
    * @param timeoutSecs The timeout in seconds that we will try to make the payment.
-   * @param amount The amount to pay.
-   * @param maximumFees The maximum amount of fees that you want to pay for this payment to be sent.
-   *     Defaults to no maximum.
+   * @param amountMsats The amount to pay in msats.
+   * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
+   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async sendPayment(
     payerNodeId: string,
     destinationPublicKey: string,
     timeoutSecs: number = 60,
-    amount: CurrencyAmountInput,
-    maximumFees: CurrencyAmountInput | null = null
+    amountMsats: number,
+    maximumFeesMsats: number
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
@@ -513,8 +514,8 @@ class LightsparkClient {
         node_id: payerNodeId,
         destination_public_key: destinationPublicKey,
         timeout_secs: timeoutSecs,
-        amount,
-        maximum_fees: maximumFees,
+        amount_msats: amountMsats,
+        maximum_fees_msats: maximumFeesMsats,
       },
       payerNodeId
     );
@@ -545,31 +546,6 @@ class LightsparkClient {
   }
 
   /**
-   * Withdraws funds from a given node to a given Bitcoin address.
-   *
-   * @deprecated Use `requestWithdrawal` instead.
-   * @param nodeId The ID of the node to withdraw funds from.
-   * @param bitcoinAddress The Bitcoin address to withdraw funds to.
-   * @param amount The amount of funds to withdraw.
-   */
-  public async withdrawFunds(
-    nodeId: string,
-    bitcoinAddress: string,
-    amount: CurrencyAmountInput
-  ): Promise<Withdrawal> {
-    const response = await this.requester.makeRawRequest(
-      WithdrawFunds,
-      {
-        node_id: nodeId,
-        bitcoin_address: bitcoinAddress,
-        amount,
-      },
-      nodeId
-    );
-    return WithdrawalFromJson(response.withdraw_funds.transaction);
-  }
-
-  /**
    * Withdraws funds from the account and sends it to the requested bitcoin address.
    *
    * Depending on the chosen mode, it will first take the funds from the wallet, and if applicable, close channels
@@ -577,16 +553,19 @@ class LightsparkClient {
    * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the
    * `WithdrawalRequest` that is created, or by subscribing to a webhook.
    *
-   * @param amountSats The amount of funds to withdraw in SATOSHI.
+   * @param nodeId The ID of the node from which to withdraw funds.
+   * @param amountSats The amount of funds to withdraw in satoshis.
    * @param bitcoinAddress The Bitcoin address to withdraw funds to.
    * @param mode The mode to use for the withdrawal. See `WithdrawalMode` for more information.
    */
   public async requestWithdrawal(
+    nodeId: string,
     amountSats: number,
     bitcoinAddress: string,
     mode: WithdrawalMode
   ): Promise<WithdrawalRequest> {
     const response = await this.requester.makeRawRequest(RequestWithdrawal, {
+      node_id: nodeId,
       amount_sats: amountSats,
       bitcoin_address: bitcoinAddress,
       withdrawal_mode: mode,
@@ -600,16 +579,16 @@ class LightsparkClient {
    * any non-REGTEST node.
    *
    * @param nodeId The ID of the node to fund. Must be a REGTEST node.
-   * @param amount The amount of funds to add to the node. Defaults to 10,000,000 SATOSHI.
+   * @param amountSats The amount of funds to add to the node in satoshis. Defaults to 10,000,000 SATOSHI.
    * @returns
    */
   public async fundNode(
     nodeId: string,
-    amount?: CurrencyAmountInput
+    amountSats: number | null = null
   ): Promise<CurrencyAmount> {
     const response = await this.requester.makeRawRequest(FundNode, {
       node_id: nodeId,
-      amount,
+      amount_sats: amountSats,
     });
     return CurrencyAmountFromJson(response.fund_node.amount);
   }

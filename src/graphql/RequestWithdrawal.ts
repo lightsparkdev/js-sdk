@@ -4,14 +4,16 @@ import { FRAGMENT as WithdrawalRequestFragment } from "../objects/WithdrawalRequ
 
 export const RequestWithdrawal = `
   mutation RequestWithdrawal(
-    $amount_sats: Int!
+    $node_id: ID!
     $bitcoin_address: String!
+    $amount_sats: Long!
     $withdrawal_mode: WithdrawalMode!
   ) {
     request_withdrawal(input: {
-        amount_sats: $amount_sats
-        bitcoin_address: $bitcoin_address
-        withdrawal_mode: $withdrawal_mode
+      node_id: $node_id
+      bitcoin_address: $bitcoin_address
+      amount_sats: $amount_sats
+      withdrawal_mode: $withdrawal_mode
     }) {
         request {
             ...WithdrawalRequestFragment

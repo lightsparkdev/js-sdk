@@ -26,7 +26,6 @@ export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";
 export { default as CreateNodeWalletAddressInput } from "./CreateNodeWalletAddressInput.js";
 export { default as CreateNodeWalletAddressOutput } from "./CreateNodeWalletAddressOutput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
-export { default as CurrencyAmountInput } from "./CurrencyAmountInput.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
 export { default as DeleteApiTokenInput } from "./DeleteApiTokenInput.js";
 export { default as DeleteApiTokenOutput } from "./DeleteApiTokenOutput.js";
@@ -48,8 +47,9 @@ export { default as IncomingPaymentToAttemptsConnection } from "./IncomingPaymen
 export { default as Invoice, getInvoiceQuery } from "./Invoice.js";
 export { default as InvoiceData } from "./InvoiceData.js";
 export { default as InvoiceType } from "./InvoiceType.js";
-export { default as Key } from "./Key.js";
-export { default as KeyType } from "./KeyType.js";
+export { default as LightningFeeEstimateForInvoiceInput } from "./LightningFeeEstimateForInvoiceInput.js";
+export { default as LightningFeeEstimateForNodeInput } from "./LightningFeeEstimateForNodeInput.js";
+export { default as LightningFeeEstimateOutput } from "./LightningFeeEstimateOutput.js";
 export {
   default as LightningTransaction,
   getLightningTransactionQuery,
@@ -98,12 +98,9 @@ export { default as TransactionFailures } from "./TransactionFailures.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
-export { default as WebhooksSettings } from "./WebhooksSettings.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";
 export { default as WithdrawalRequest } from "./WithdrawalRequest.js";
 export { default as WithdrawalRequestStatus } from "./WithdrawalRequestStatus.js";
 export { default as WithdrawalRequestToChannelClosingTransactionsConnection } from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
 export { default as WithdrawalRequestToChannelOpeningTransactionsConnection } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
-export { default as WithdrawFundsInput } from "./WithdrawFundsInput.js";
-export { default as WithdrawFundsOutput } from "./WithdrawFundsOutput.js";

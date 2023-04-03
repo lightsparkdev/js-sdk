@@ -7,10 +7,7 @@ import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
 import VideoProgressCache from "./VideoProgressCache";
 
-const paymentStrategy = new LinearPaymentStrategy(
-  { unit: CurrencyUnit.SATOSHI, value: 10 },
-  2
-);
+const paymentStrategy = new LinearPaymentStrategy(10_000, 1);
 
 const playbackMessageReceived = async (
   message: VideoPlaybackUpdateMessage,
@@ -28,7 +25,7 @@ const playbackMessageReceived = async (
   );
   // Only send payments for the demo streaming video for now:
   if (message.videoID !== "ls_demo") {
-    sendResponse({ amountToPay: { unit: CurrencyUnit.SATOSHI, value: 0 } });
+    sendResponse({ amountToPay: 0 });
     return;
   }
   const amountToPay = paymentStrategy.onPlayedRange(
@@ -36,7 +33,7 @@ const playbackMessageReceived = async (
     progressCache.getPlayedRanges(message.videoID)
   );
   const invoiceToPay = await invoiceHolder.getInvoiceData();
-  if (amountToPay.value > 0) {
+  if (amountToPay > 0) {
     if (!invoiceToPay || !viewerNodeId) {
       console.error("No invoice to pay while streaming");
     } else {
@@ -44,6 +41,7 @@ const playbackMessageReceived = async (
         viewerNodeId,
         invoiceToPay,
         60,
+        amountToPay * 0.0016,
         amountToPay
       );
     }

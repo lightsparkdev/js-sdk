@@ -1,9 +1,5 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmountInput, {
-  CurrencyAmountInputFromJson,
-} from "./CurrencyAmountInput.js";
-
 type SendPaymentInput = {
   /** The node from where you want to send the payment. **/
   nodeId: string;
@@ -14,11 +10,11 @@ type SendPaymentInput = {
   /** The timeout in seconds that we will try to make the payment. **/
   timeoutSecs: number;
 
-  /** The amount you will send to the destination node. **/
-  amount: CurrencyAmountInput;
+  /** The amount you will send to the destination node, expressed in msats. **/
+  amountMsats: number;
 
-  /** The maximum amount of fees that you want to pay for this payment to be sent. **/
-  maximumFees?: CurrencyAmountInput;
+  /** The maximum amount of fees that you want to pay for this payment to be sent, expressed in msats. **/
+  maximumFeesMsats: number;
 };
 
 export const SendPaymentInputFromJson = (obj: any): SendPaymentInput => {
@@ -26,10 +22,8 @@ export const SendPaymentInputFromJson = (obj: any): SendPaymentInput => {
     nodeId: obj["send_payment_input_node_id"],
     destinationPublicKey: obj["send_payment_input_destination_public_key"],
     timeoutSecs: obj["send_payment_input_timeout_secs"],
-    amount: CurrencyAmountInputFromJson(obj["send_payment_input_amount"]),
-    maximumFees: !!obj["send_payment_input_maximum_fees"]
-      ? CurrencyAmountInputFromJson(obj["send_payment_input_maximum_fees"])
-      : undefined,
+    amountMsats: obj["send_payment_input_amount_msats"],
+    maximumFeesMsats: obj["send_payment_input_maximum_fees_msats"],
   } as SendPaymentInput;
 };
 

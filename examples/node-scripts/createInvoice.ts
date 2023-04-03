@@ -3,7 +3,7 @@
 
 import { LightsparkClient } from "@lightsparkdev/js-sdk";
 import { AccountTokenAuthProvider } from "@lightsparkdev/js-sdk/auth";
-import { CurrencyUnit, InvoiceType } from "@lightsparkdev/js-sdk/objects";
+import { InvoiceType } from "@lightsparkdev/js-sdk/objects";
 import { Command } from "commander";
 
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
@@ -11,13 +11,13 @@ import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 const main = async (program: Command) => {
   const account = getCredentialsFromEnvOrThrow();
   const client = new LightsparkClient(
-    new AccountTokenAuthProvider(account.clientId, account.clientSecret)
+    new AccountTokenAuthProvider(account.apiTokenClientId, account.apiTokenClientSecret)
   );
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
   const invoice = await client.createInvoice(
     account.walletNodeId,
-    { value: options.amount, unit: CurrencyUnit.SATOSHI },
+    options.amount * 1000,
     options.memo,
     options.amp ? InvoiceType.AMP : InvoiceType.STANDARD
   );
@@ -35,7 +35,7 @@ const main = async (program: Command) => {
       "Add a memo describing the invoice.",
       undefined
     )
-    .option("-a, --amount <number>", "The amount of the invoice.", parseInt, 0)
+    .option("-a, --amount <number>", "The amount of the invoice in sats.", parseInt, 0)
     .option("--amp", "Flag to use AMP invoices.", false)
     .parse(process.argv);
 

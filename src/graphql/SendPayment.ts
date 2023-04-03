@@ -7,16 +7,16 @@ export const SendPayment = `
     $node_id: ID!
     $destination_public_key: String!
     $timeout_secs: Int!
-    $amount: CurrencyAmountInput
-    $maximum_fees: CurrencyAmountInput
+    $amount_msats: Long!
+    $maximum_fees_msats: Long!
   ) {
     send_payment(
       input: {
         node_id: $node_id
         destination_public_key: $destination_public_key
         timeout_secs: $timeout_secs
-        amount: $amount
-        maximum_fees: $maximum_fees
+        amount_msats: $amount_msats
+        maximum_fees_msats: $maximum_fees_msats
       }
     ) {
       payment {
