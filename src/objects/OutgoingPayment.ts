@@ -59,8 +59,6 @@ query FetchOutgoingPaymentToAttemptsConnection($entity_id: ID!, $first: Int) {
                     outgoing_payment_attempt_resolved_at: resolved_at
                     outgoing_payment_attempt_amount: amount {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -69,8 +67,6 @@ query FetchOutgoingPaymentToAttemptsConnection($entity_id: ID!, $first: Int) {
                     }
                     outgoing_payment_attempt_fees: fees {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -152,8 +148,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
     outgoing_payment_resolved_at: resolved_at
     outgoing_payment_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -169,8 +163,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
     }
     outgoing_payment_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -186,8 +178,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
             invoice_data_payment_hash: payment_hash
             invoice_data_amount: amount {
                 __typename
-                currency_amount_value: value
-                currency_amount_unit: unit
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
                 currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -228,8 +218,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         __typename
                         blockchain_balance_total_balance: total_balance {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -238,8 +226,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         }
                         blockchain_balance_confirmed_balance: confirmed_balance {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -248,8 +234,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         }
                         blockchain_balance_unconfirmed_balance: unconfirmed_balance {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -258,8 +242,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         }
                         blockchain_balance_locked_balance: locked_balance {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -268,8 +250,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         }
                         blockchain_balance_required_reserve: required_reserve {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -278,8 +258,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         }
                         blockchain_balance_available_balance: available_balance {
                             __typename
-                            currency_amount_value: value
-                            currency_amount_unit: unit
                             currency_amount_original_value: original_value
                             currency_amount_original_unit: original_unit
                             currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -292,10 +270,24 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                         secret_encrypted_value: encrypted_value
                         secret_cipher: cipher
                     }
+                    lightspark_node_total_balance: total_balance {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                    lightspark_node_total_local_balance: total_local_balance {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
                     lightspark_node_local_balance: local_balance {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -305,8 +297,6 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
                     lightspark_node_purpose: purpose
                     lightspark_node_remote_balance: remote_balance {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit

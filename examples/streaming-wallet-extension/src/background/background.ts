@@ -140,5 +140,6 @@ chrome.tabs.onRemoved.addListener(async (tabId, _removeInfo) => {
     }
     await clearStorageKeepingInstanceId();
     progressCache.clear();
+    (await transactionObserver).clearCache();
   }
 });

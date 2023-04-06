@@ -81,8 +81,6 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                 channel_to_transactions_connection_count: count
                 channel_to_transactions_connection_average_fee: average_fee {
                     __typename
-                    currency_amount_value: value
-                    currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
                     currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -91,8 +89,6 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                 }
                 channel_to_transactions_connection_total_amount_transacted: total_amount_transacted {
                     __typename
-                    currency_amount_value: value
-                    currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
                     currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -101,8 +97,6 @@ query FetchChannelToTransactionsConnection($entity_id: ID!, $types: [Transaction
                 }
                 channel_to_transactions_connection_total_fees: total_fees {
                     __typename
-                    currency_amount_value: value
-                    currency_amount_unit: unit
                     currency_amount_original_value: original_value
                     currency_amount_original_unit: original_unit
                     currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -201,8 +195,6 @@ fragment ChannelFragment on Channel {
     }
     channel_capacity: capacity {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -211,8 +203,6 @@ fragment ChannelFragment on Channel {
     }
     channel_local_balance: local_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -221,8 +211,6 @@ fragment ChannelFragment on Channel {
     }
     channel_local_unsettled_balance: local_unsettled_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -231,8 +219,6 @@ fragment ChannelFragment on Channel {
     }
     channel_remote_balance: remote_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -241,8 +227,6 @@ fragment ChannelFragment on Channel {
     }
     channel_remote_unsettled_balance: remote_unsettled_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -251,8 +235,6 @@ fragment ChannelFragment on Channel {
     }
     channel_unsettled_balance: unsettled_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -261,8 +243,6 @@ fragment ChannelFragment on Channel {
     }
     channel_total_balance: total_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -273,8 +253,6 @@ fragment ChannelFragment on Channel {
     channel_estimated_force_closure_wait_minutes: estimated_force_closure_wait_minutes
     channel_commit_fee: commit_fee {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -285,8 +263,6 @@ fragment ChannelFragment on Channel {
         __typename
         channel_fees_base_fee: base_fee {
             __typename
-            currency_amount_value: value
-            currency_amount_unit: unit
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit
             currency_amount_preferred_currency_unit: preferred_currency_unit

@@ -4,20 +4,6 @@ import CurrencyUnit from "./CurrencyUnit.js";
 
 /** Represents the value and unit for an amount of currency. **/
 type CurrencyAmount = {
-  /**
-   * The numeric value for this CurrencyAmount.
-   *
-   * @deprecated Use original_value or preferred_value instead.
-   **/
-  value: number;
-
-  /**
-   * The unit of currency for this CurrencyAmount.
-   *
-   * @deprecated Use original_unit or preferred_unit instead.
-   **/
-  unit: CurrencyUnit;
-
   /** The original numeric value for this CurrencyAmount. **/
   originalValue: number;
 
@@ -42,9 +28,6 @@ type CurrencyAmount = {
 
 export const CurrencyAmountFromJson = (obj: any): CurrencyAmount => {
   return {
-    value: obj["currency_amount_value"],
-    unit:
-      CurrencyUnit[obj["currency_amount_unit"]] ?? CurrencyUnit.FUTURE_VALUE,
     originalValue: obj["currency_amount_original_value"],
     originalUnit:
       CurrencyUnit[obj["currency_amount_original_unit"]] ??
@@ -62,8 +45,6 @@ export const CurrencyAmountFromJson = (obj: any): CurrencyAmount => {
 export const FRAGMENT = `
 fragment CurrencyAmountFragment on CurrencyAmount {
     __typename
-    currency_amount_value: value
-    currency_amount_unit: unit
     currency_amount_original_value: original_value
     currency_amount_original_unit: original_unit
     currency_amount_preferred_currency_unit: preferred_currency_unit

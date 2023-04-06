@@ -51,20 +51,27 @@ export const getAsText = (props: Props): string => {
   if (value === undefined || value === null) {
     return "ERROR";
   }
-  let number = value.toString();
+
+  let amountValue = value;
+  /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
+  if (unit === CurrencyUnit.USD) {
+    amountValue = value / 100;
+  }
+
+  let number = amountValue.toString();
   if (shortNumber) {
-    const abs_val = Math.abs(value);
+    const abs_val = Math.abs(amountValue);
     if (abs_val >= 1_000_000_000) {
-      const newValue = value / 1_000_000_000;
+      const newValue = amountValue / 1_000_000_000;
       number = newValue.toFixed(newValue >= 100 ? 0 : 1) + "B";
     } else if (abs_val >= 1_000_000) {
-      const newValue = value / 1_000_000;
+      const newValue = amountValue / 1_000_000;
       number = newValue.toFixed(newValue >= 100 ? 0 : 1) + "M";
     } else if (abs_val >= 1_000) {
-      const newValue = value / 1_000;
-      number = (value / 1_000).toFixed(newValue >= 100 ? 0 : 1) + "K";
+      const newValue = amountValue / 1_000;
+      number = (amountValue / 1_000).toFixed(newValue >= 100 ? 0 : 1) + "K";
     } else {
-      number = value.toFixed(2);
+      number = amountValue.toFixed(2);
     }
   } else if (useLocaleString) {
     const options: Intl.NumberFormatOptions = {};
@@ -85,7 +92,7 @@ export const getAsText = (props: Props): string => {
   if (shortUnit) {
     return number + " " + shorttext(unit);
   }
-  const isPlural = value > 1;
+  const isPlural = amountValue > 1;
   const unitText = isPlural ? plural(unit) : singular(unit);
   return number + " " + unitText;
 };

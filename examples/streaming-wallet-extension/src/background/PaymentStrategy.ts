@@ -31,7 +31,6 @@ export class LinearPaymentStrategy implements PaymentStrategy {
     const newChunks = this.numberOfChunksInRanges(newRanges);
     const previousChunks = this.numberOfChunksInRanges(previousRanges);
     const chunkDiff = newChunks - previousChunks;
-    console.log(`From ${previousChunks} to ${newChunks}`);
     return this.paymentPerChunkMsats * chunkDiff;
   }
 }

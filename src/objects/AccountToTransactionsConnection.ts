@@ -74,8 +74,6 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
     __typename
     account_to_transactions_connection_profit_loss: profit_loss {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -84,8 +82,6 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
     }
     account_to_transactions_connection_average_fee_earned: average_fee_earned {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -95,8 +91,6 @@ fragment AccountToTransactionsConnectionFragment on AccountToTransactionsConnect
     account_to_transactions_connection_count: count
     account_to_transactions_connection_total_amount_transacted: total_amount_transacted {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

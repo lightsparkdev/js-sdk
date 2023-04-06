@@ -5,7 +5,7 @@ type LightningFeeEstimateForInvoiceInput = {
   nodeId: string;
 
   /** The invoice you want to pay (as defined by the BOLT11 standard). **/
-  encodedInvoice: string;
+  encodedPaymentRequest: string;
 
   /**
    * If the invoice does not specify a payment amount, then the amount that you wish to pay, expressed
@@ -19,8 +19,8 @@ export const LightningFeeEstimateForInvoiceInputFromJson = (
 ): LightningFeeEstimateForInvoiceInput => {
   return {
     nodeId: obj["lightning_fee_estimate_for_invoice_input_node_id"],
-    encodedInvoice:
-      obj["lightning_fee_estimate_for_invoice_input_encoded_invoice"],
+    encodedPaymentRequest:
+      obj["lightning_fee_estimate_for_invoice_input_encoded_payment_request"],
     amountMsats: obj["lightning_fee_estimate_for_invoice_input_amount_msats"],
   } as LightningFeeEstimateForInvoiceInput;
 };

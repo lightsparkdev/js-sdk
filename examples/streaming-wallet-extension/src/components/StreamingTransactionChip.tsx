@@ -13,7 +13,7 @@ const StreamingTransactionChip = (props: {
   );
   // TODO: Probably need a unit normalization here to ensure they're all sats.
   const totalTransactionAmount = filteredTransactions.reduce(
-    (acc, t) => acc + t.amount.value,
+    (acc, t) => acc + t.amount.originalValue,
     0
   );
   return (

@@ -59,8 +59,6 @@ fragment ChannelToTransactionsConnectionFragment on ChannelToTransactionsConnect
     channel_to_transactions_connection_count: count
     channel_to_transactions_connection_average_fee: average_fee {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -69,8 +67,6 @@ fragment ChannelToTransactionsConnectionFragment on ChannelToTransactionsConnect
     }
     channel_to_transactions_connection_total_amount_transacted: total_amount_transacted {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -79,8 +75,6 @@ fragment ChannelToTransactionsConnectionFragment on ChannelToTransactionsConnect
     }
     channel_to_transactions_connection_total_fees: total_fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

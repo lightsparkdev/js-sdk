@@ -40,7 +40,7 @@ const CurrencyAmount = (props: Props) => {
 };
 
 // TODO: consider moving this to fetch the actual exchange rate.
-const SATS_TO_USD = .0268;
+const SATS_TO_USD = 0.0268;
 const btc_conversions: Map<CurrencyUnit, Map<CurrencyUnit, number>> = new Map([
   [
     CurrencyUnit.BITCOIN,
@@ -85,17 +85,17 @@ const convert = (
     return amount;
   const multiplier = btc_conversions.get(amount.originalUnit)?.get(unit);
   if (!multiplier) {
-    throw new ConversionError(`Unable to convert from {amount.unit} to {unit}`);
+    throw new ConversionError(
+      `Unable to convert from ${amount.originalUnit} to ${unit}`
+    );
   }
 
   return {
-    unit: amount.originalUnit,
-    value: amount.originalValue,
     originalUnit: amount.originalUnit,
     originalValue: amount.originalValue,
     preferredCurrencyUnit: unit,
     preferredCurrencyValueApprox: amount.originalValue * multiplier,
-    preferredCurrencyValueRounded: amount.originalValue * multiplier
+    preferredCurrencyValueRounded: amount.originalValue * multiplier,
   };
 };
 

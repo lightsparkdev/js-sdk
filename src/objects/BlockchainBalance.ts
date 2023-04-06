@@ -51,8 +51,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     __typename
     blockchain_balance_total_balance: total_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -61,8 +59,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     }
     blockchain_balance_confirmed_balance: confirmed_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -71,8 +67,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     }
     blockchain_balance_unconfirmed_balance: unconfirmed_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -81,8 +75,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     }
     blockchain_balance_locked_balance: locked_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -91,8 +83,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     }
     blockchain_balance_required_reserve: required_reserve {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -101,8 +91,6 @@ fragment BlockchainBalanceFragment on BlockchainBalance {
     }
     blockchain_balance_available_balance: available_balance {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

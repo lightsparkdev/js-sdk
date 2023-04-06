@@ -29,7 +29,7 @@ const client = new LightsparkClient(
 
 // Get some fee estimates for Bitcoin (L1) transactions
 
-const feeEstimate = await client.getFeeEstimate(BitcoinNetwork.REGTEST);
+const feeEstimate = await client.getBitcoinFeeEstimate(BitcoinNetwork.REGTEST);
 console.log(
   `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`
 );
@@ -121,7 +121,7 @@ if (!node1Id || !node2Id) {
 
 let transactionsConnection = await account.getTransactions(
   client,
-  30,
+  50,
   undefined,
   undefined,
   undefined,
@@ -221,11 +221,7 @@ console.log("");
 
 // Generate a payment request
 
-const invoice = await client.createInvoice(
-  node1Id,
-  42000,
-  "Pizza!"
-);
+const invoice = await client.createInvoice(node1Id, 42000, "Pizza!");
 if (!invoice) {
   throw new Error("Unable to create the invoice.");
 }
@@ -258,7 +254,7 @@ await client.unlockNode(node2Id, credentials.node2Password!);
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
-const payment = await client.payInvoice(node2Id, invoice, 60, 1000, null);
+const payment = await client.payInvoice(node2Id, invoice, 60, 1000);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 

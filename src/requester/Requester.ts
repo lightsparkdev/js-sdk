@@ -16,6 +16,7 @@ import { getNonce, LightsparkSigningException } from "../crypto/crypto.js";
 import NodeKeyCache from "../crypto/NodeKeyCache.js";
 import LightsparkException from "../LightsparkException.js";
 import { b64encode } from "../utils/base64.js";
+import { isNode } from "../utils/environment.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
 const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
@@ -40,7 +41,7 @@ class Requester {
       websocketImpl = NodeWebSocket;
     }
     this.wsClient = createClient({
-      url: `wss://${this.baseUrl}/graphql/release_candidate`,
+      url: `wss://${this.baseUrl}/graphql/2023-04-04`,
       connectionParams: authProvider.addWsConnectionParams({}),
       webSocketImpl: websocketImpl,
     });
@@ -122,9 +123,14 @@ class Requester {
       variables,
       operationName: operation,
     };
+    const browserUserAgent =
+      typeof navigator !== "undefined" ? navigator.userAgent : "";
+    const sdkUserAgent = this.getSdkUserAgent();
     const headers = await this.authProvider.addAuthHeaders({
       "Content-Type": "application/json",
       "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
+      "X-Lightspark-SDK": sdkUserAgent,
+      "User-Agent": browserUserAgent || sdkUserAgent,
     });
     bodyData = await this.addSigningDataIfNeeded(
       bodyData,
@@ -132,14 +138,11 @@ class Requester {
       signingNodeId
     );
 
-    const response = await fetch(
-      `https://${this.baseUrl}/graphql/release_candidate`,
-      {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(bodyData),
-      }
-    );
+    const response = await fetch(`https://${this.baseUrl}/graphql/2023-04-04`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(bodyData),
+    });
     if (!response.ok) {
       throw new LightsparkException(
         "RequestFailed",
@@ -155,6 +158,15 @@ class Requester {
       );
     }
     return data;
+  }
+
+  private getSdkUserAgent(): string {
+    const platform = isNode ? "NodeJS" : "Browser";
+    const platformVersion = isNode ? process.version : "";
+    // TODO: Figure out how to properly load this from the package.json. Using an import
+    // is breaking the streaming sats extension.
+    const sdkVersion = "0.0.1";
+    return `lightspark-js-sdk/${sdkVersion} ${platform}/${platformVersion}`;
   }
 
   private async addSigningDataIfNeeded(

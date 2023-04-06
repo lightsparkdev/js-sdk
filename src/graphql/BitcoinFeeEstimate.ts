@@ -2,9 +2,9 @@
 
 import { FRAGMENT as FeeEstimateFragment } from "../objects/FeeEstimate.js";
 
-export const FeeEstimate = `
-  query FeeEstimate($bitcoin_network: BitcoinNetwork!) {
-    fee_estimate(network: $bitcoin_network) {
+export const BitcoinFeeEstimate = `
+  query BitcoinFeeEstimate($bitcoin_network: BitcoinNetwork!) {
+    bitcoin_fee_estimate(network: $bitcoin_network) {
       ...FeeEstimateFragment
     }
   }

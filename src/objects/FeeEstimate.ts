@@ -20,8 +20,6 @@ fragment FeeEstimateFragment on FeeEstimate {
     __typename
     fee_estimate_fee_fast: fee_fast {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -30,8 +28,6 @@ fragment FeeEstimateFragment on FeeEstimate {
     }
     fee_estimate_fee_min: fee_min {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

@@ -10,13 +10,15 @@ import StubAuthProvider from "./auth/StubAuthProvider.js";
 import { decryptSecretWithNodePassword } from "./crypto/crypto.js";
 import LightsparkSigningException from "./crypto/LightsparkSigningException.js";
 import NodeKeyCache from "./crypto/NodeKeyCache.js";
+import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
-import { FeeEstimate as FeeEstimateQuery } from "./graphql/FeeEstimate.js";
 import { FundNode } from "./graphql/FundNode.js";
+import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
+import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
 import {
   AccountDashboard,
   MultiNodeDashboard,
@@ -368,13 +370,69 @@ class LightsparkClient {
    * @param bitcoinNetwork The bitcoin network for which to get a fee estimate. Defaults to MAINNET.
    * @returns A fee estimate for the given bitcoin network including a minimum fee rate, and a max-speed fee rate.
    */
-  public async getFeeEstimate(
+  public async getBitcoinFeeEstimate(
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET
   ): Promise<FeeEstimate> {
-    const response = await this.requester.makeRawRequest(FeeEstimateQuery, {
-      bitcoin_network: bitcoinNetwork,
-    });
-    return FeeEstimateFromJson(response.fee_estimate);
+    const response = await this.requester.makeRawRequest(
+      BitcoinFeeEstimateQuery,
+      {
+        bitcoin_network: bitcoinNetwork,
+      }
+    );
+    return FeeEstimateFromJson(response.bitcoin_fee_estimate);
+  }
+
+  /**
+   * Gets an estimate of the fees that will be paid for a Lightning invoice.
+   *
+   * @param nodeId The node from where you want to send the payment.
+   * @param encodedPaymentRequest The invoice you want to pay (as defined by the BOLT11 standard).
+   * @param amountMsats If the invoice does not specify a payment amount, then the amount that you wish to pay,
+   *     expressed in msats.
+   * @returns An estimate of the fees that will be paid for a Lightning invoice.
+   */
+  public async getLightningFeeEstimateForInvoice(
+    nodeId: string,
+    encodedPaymentRequest: string,
+    amountMsats: number | undefined = undefined
+  ): Promise<CurrencyAmount> {
+    const response = await this.requester.makeRawRequest(
+      LightningFeeEstimateForInvoice,
+      {
+        node_id: nodeId,
+        encoded_payment_request: encodedPaymentRequest,
+        amount_msats: amountMsats,
+      }
+    );
+    return CurrencyAmountFromJson(
+      response.lightning_fee_estimate_for_invoice.fee_estimate
+    );
+  }
+
+  /**
+   * Returns an estimate of the fees that will be paid to send a payment to another Lightning node.
+   *
+   * @param nodeId The node from where you want to send the payment.
+   * @param destinationNodePublicKey The public key of the node that you want to pay.
+   * @param amountMsats The payment amount expressed in msats.
+   * @returns An estimate of the fees that will be paid to send a payment to another Lightning node.
+   */
+  public async getLightningFeeEstimateForNode(
+    nodeId: string,
+    destinationNodePublicKey: string,
+    amountMsats: number
+  ): Promise<CurrencyAmount> {
+    const response = await this.requester.makeRawRequest(
+      LightningFeeEstimateForNode,
+      {
+        node_id: nodeId,
+        destination_node_public_key: destinationNodePublicKey,
+        amount_msats: amountMsats,
+      }
+    );
+    return CurrencyAmountFromJson(
+      response.lightning_fee_estimate_for_node.fee_estimate
+    );
   }
 
   /**
@@ -447,8 +505,8 @@ class LightsparkClient {
    * @param encodedInvoice The encoded invoice to pay.
    * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
    * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
    * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
    *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
@@ -458,20 +516,23 @@ class LightsparkClient {
     encodedInvoice: string,
     timeoutSecs: number = 60,
     maximumFeesMsats: number,
-    amountMsats: number | null = null
+    amountMsats: number | undefined = undefined
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
     }
+    const variables: any = {
+      node_id: payerNodeId,
+      encoded_invoice: encodedInvoice,
+      timeout_secs: timeoutSecs,
+      maximum_fees_msats: maximumFeesMsats,
+    };
+    if (amountMsats !== undefined) {
+      variables.amount_msats = amountMsats;
+    }
     const response = await this.requester.makeRawRequest(
       PayInvoice,
-      {
-        node_id: payerNodeId,
-        encoded_invoice: encodedInvoice,
-        timeout_secs: timeoutSecs,
-        maximum_fees_msats: maximumFeesMsats,
-        amount_msats: amountMsats,
-      },
+      variables,
       payerNodeId
     );
     if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
@@ -584,7 +645,7 @@ class LightsparkClient {
    */
   public async fundNode(
     nodeId: string,
-    amountSats: number | null = null
+    amountSats: number | undefined = undefined
   ): Promise<CurrencyAmount> {
     const response = await this.requester.makeRawRequest(FundNode, {
       node_id: nodeId,

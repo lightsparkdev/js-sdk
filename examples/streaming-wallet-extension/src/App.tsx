@@ -5,6 +5,7 @@ import { LightsparkClient } from "@lightsparkdev/js-sdk/index";
 import {
   BitcoinNetwork,
   CurrencyAmount,
+  CurrencyUnit,
   Transaction,
 } from "@lightsparkdev/js-sdk/objects";
 import React from "react";
@@ -17,6 +18,7 @@ import { clearStorageKeepingInstanceId } from "./common/storage";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
 import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
+import CurrencyAmountElement from "./components/CurrencyAmount";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
 import LeftArrow from "./components/LeftArrow";
 import { LoadingSpinner } from "./components/Loading";
@@ -35,6 +37,7 @@ const DEMO_VIDEO_ID = "ls_demo";
 function App() {
   const [walletDashboard, setWalletDashboard] =
     React.useState<WalletDashboard>();
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [screen, setScreen] = React.useState<Screen>(Screen.Login);
   const [lightsparkClient, setLightsparkClient] =
     React.useState<LightsparkClient>();
@@ -82,6 +85,8 @@ function App() {
           message.prevProgress || 0,
           message.progress
         );
+      } else if (message.id === "transactions_updated") {
+        setTransactions(message.transactions);
       }
     });
 
@@ -96,6 +101,48 @@ function App() {
       );
     });
   }, []);
+
+  const joinedTransactions = React.useMemo(() => {
+    const transactionMap = new Map<string, Transaction>();
+    walletDashboard?.recentTransactions.forEach((t) =>
+      transactionMap.set(t.id, t)
+    );
+    transactions.forEach((t) => transactionMap.set(t.id, t));
+    return Array.from(transactionMap.values());
+  }, [walletDashboard, transactions]);
+
+  const balance = React.useMemo(() => {
+    if (!walletDashboard || !walletDashboard.localBalance) return null;
+    const baseBalance = walletDashboard.localBalance;
+    const transactionsInBalance = new Set<string>();
+    walletDashboard?.recentTransactions.forEach((t) =>
+      transactionsInBalance.add(t.id)
+    );
+    const streamingTransactions = transactions.filter(
+      (t) => !transactionsInBalance.has(t.id)
+    );
+    return streamingTransactions.reduce((acc, t) => {
+      if (t.typename !== "OutgoingPayment") return acc;
+      if (
+        t.amount.preferredCurrencyUnit !== baseBalance.preferredCurrencyUnit ||
+        t.amount.originalUnit !== baseBalance.originalUnit
+      ) {
+        console.warn("Transaction amount units do not match wallet balance");
+        return acc;
+      }
+
+      return {
+        ...acc,
+        originalValue: acc.originalValue - t.amount.originalValue,
+        preferredCurrencyValueApprox:
+          acc.preferredCurrencyValueApprox -
+          t.amount.preferredCurrencyValueApprox,
+        preferredCurrencyValueRounded:
+          acc.preferredCurrencyValueRounded -
+          t.amount.preferredCurrencyValueRounded,
+      };
+    }, baseBalance);
+  }, [walletDashboard, transactions]);
 
   React.useEffect(() => {
     if (!lightsparkClient || !credentials) {
@@ -118,15 +165,13 @@ function App() {
     <></>
   ) : screen === Screen.Balance ? (
     <BalanceScreen
-      balance={walletDashboard?.localBalance}
-      transactions={walletDashboard?.recentTransactions || []}
+      balance={balance}
+      transactions={joinedTransactions}
       streamingDuration={demoStreamingDuration}
       isStreaming={isStreaming}
     />
   ) : screen === Screen.Transactions ? (
-    <TransactionsScreen
-      transactions={walletDashboard?.recentTransactions || []}
-    />
+    <TransactionsScreen transactions={joinedTransactions} />
   ) : (
     <LoginScreen
       lightsparkClient={lightsparkClient}
@@ -191,22 +236,30 @@ function BalanceScreen(props: {
   isStreaming: boolean;
 }) {
   const screenContent = !props.balance ? (
-    <div className="loading-text">
-      <LoadingSpinner size={24} />
-      <span style={{ marginInlineStart: "8px" }}>Loading wallet...</span>
-    </div>
+    <LoadingWrapper>
+      <LoadingSpinner size={48} />
+    </LoadingWrapper>
   ) : (
     <>
       <BalanceLabel>Balance</BalanceLabel>
-      <div className="balance">
+      <BigBalance>
+        <CurrencyAmountElement
+          useLocaleString
+          shortUnit
+          amount={props.balance}
+          displayUnit={CurrencyUnit.SATOSHI}
+          symbol
+        />
+      </BigBalance>
+      <SmallBalance>
         <CurrencyAmountRaw
           shortNumber
           shortUnit
           value={props.balance?.preferredCurrencyValueApprox}
           unit={props.balance?.preferredCurrencyUnit}
           symbol
-        ></CurrencyAmountRaw>
-      </div>
+        />
+      </SmallBalance>
       {props.transactions.length > 0 ? (
         <StreamingTransactionChip
           transactions={props.transactions}
@@ -275,7 +328,7 @@ function LoginScreen(props: {
       </InstructionsText>
       <CreateWalletButton onClick={createWallet} disabled={isLoading}>
         {!isLoading ? (
-          <span style={{ marginInlineEnd: "8px" }}>
+          <span style={{ marginInlineEnd: "8px", height: "13px" }}>
             <CirclePlusIcon />
           </span>
         ) : (
@@ -298,11 +351,32 @@ function TransactionsScreen(props: { transactions: Transaction[] }) {
   );
 }
 
+const LoadingWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
 const BalanceLabel = styled.p`
   font-size: 18px;
   font-weight: 600;
   color: #666666;
   margin-bottom: 4px;
+`;
+
+const BigBalance = styled.div`
+  overflow-wrap: break-word;
+  font-size: 48px;
+  font-weight: 800;
+`;
+
+const SmallBalance = styled.div`
+  overflow-wrap: break-word;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666666;
 `;
 
 const InstructionsText = styled.p`
@@ -320,7 +394,8 @@ const ErrorText = styled.p`
 `;
 
 const LoginHeader = styled.p`
-  font-size: 24px;
+  font-size: 21px;
+  font-weight: 700;
   color: black;
   margin-bottom: 0;
 `;
@@ -339,11 +414,12 @@ const CreateWalletButton = styled.button`
   border-radius: 32px;
   padding: 14px 24px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  margin-bottom: 24px;
+  margin-bottom: 46px;
   width: 162px;
   justify-content: center;
+  align-items: center;
 `;
 
 export default App;

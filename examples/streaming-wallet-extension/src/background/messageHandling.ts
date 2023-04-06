@@ -7,7 +7,7 @@ import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
 import VideoProgressCache from "./VideoProgressCache";
 
-const paymentStrategy = new LinearPaymentStrategy(10_000, 1);
+const paymentStrategy = new LinearPaymentStrategy(10_000, 2);
 
 const playbackMessageReceived = async (
   message: VideoPlaybackUpdateMessage,
@@ -34,6 +34,7 @@ const playbackMessageReceived = async (
   );
   const invoiceToPay = await invoiceHolder.getInvoiceData();
   if (amountToPay > 0) {
+    console.log(`Paying: ${amountToPay / 1000} sats`);
     if (!invoiceToPay || !viewerNodeId) {
       console.error("No invoice to pay while streaming");
     } else {

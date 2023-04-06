@@ -51,8 +51,6 @@ query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $st
                     incoming_payment_attempt_resolved_at: resolved_at
                     incoming_payment_attempt_amount: amount {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -122,8 +120,6 @@ fragment IncomingPaymentFragment on IncomingPayment {
     incoming_payment_resolved_at: resolved_at
     incoming_payment_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

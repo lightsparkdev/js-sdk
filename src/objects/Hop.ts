@@ -21,12 +21,6 @@ type Hop = Entity & {
   /** The zero-based index position of this hop in the path **/
   index: number;
 
-  /**
-   * The channel's short ID, which is the location in the chain that the channel was confirmed. The
-   * format is <block-height>:<tx-index>:<tx-output>.
-   **/
-  shortChannelId: string;
-
   /** The typename of the object **/
   typename: string;
 
@@ -52,7 +46,6 @@ export const HopFromJson = (obj: any): Hop => {
     createdAt: obj["hop_created_at"],
     updatedAt: obj["hop_updated_at"],
     index: obj["hop_index"],
-    shortChannelId: obj["hop_short_channel_id"],
     typename: "Hop",
     destinationId: obj["hop_destination"]?.id ?? undefined,
     publicKey: obj["hop_public_key"],
@@ -74,12 +67,9 @@ fragment HopFragment on Hop {
         id
     }
     hop_index: index
-    hop_short_channel_id: short_channel_id
     hop_public_key: public_key
     hop_amount_to_forward: amount_to_forward {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -88,8 +78,6 @@ fragment HopFragment on Hop {
     }
     hop_fee: fee {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

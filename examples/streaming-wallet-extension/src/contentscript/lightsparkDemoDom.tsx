@@ -59,28 +59,54 @@ const fakeBalanceChanges = () => {
   }
 
   console.log("initialBalances", JSON.stringify(initialBalances));
-  let viewerBalanceValue = initialBalances.viewerBalance.value;
-  let creatorBalanceValue = initialBalances.creatorBalance.value;
+  let viewerBalance = initialBalances.viewerBalance;
+  let creatorBalance = initialBalances.creatorBalance;
   for (const t of Array.from(transactions.values())) {
-    if (t.status === TransactionStatus.SUCCESS) {
-      viewerBalanceValue -= t.amount.value;
-      creatorBalanceValue += t.amount.value;
+    if (t.status !== TransactionStatus.SUCCESS) {
+      continue;
     }
+
+    if (
+      t.amount.preferredCurrencyUnit !== viewerBalance.preferredCurrencyUnit ||
+      t.amount.originalUnit !== viewerBalance.originalUnit
+    ) {
+      console.warn("Transaction amount units do not match wallet balance");
+      continue;
+    }
+
+    viewerBalance = addCurrencyAmounts(
+      viewerBalance,
+      negativeAmount(t.amount)
+    );
+    creatorBalance = addCurrencyAmounts(creatorBalance, t.amount);
   }
-  console.log(
-    "new values",
-    JSON.stringify({ viewerBalanceValue, creatorBalanceValue })
-  );
-  renderBalances({
-    viewerBalance: {
-      ...initialBalances.viewerBalance,
-      value: viewerBalanceValue,
-    },
-    creatorBalance: {
-      ...initialBalances.creatorBalance,
-      value: creatorBalanceValue,
-    },
-  });
+  console.log("new values", JSON.stringify({ viewerBalance, creatorBalance }));
+  renderBalances({ viewerBalance, creatorBalance });
+};
+
+const addCurrencyAmounts = (
+  amount1: CurrencyAmount,
+  amount2: CurrencyAmount
+) => {
+  return {
+    ...amount1,
+    originalValue: amount1.originalValue + amount2.originalValue,
+    preferredCurrencyValueApprox:
+      amount1.preferredCurrencyValueApprox +
+      amount2.preferredCurrencyValueApprox,
+    preferredCurrencyValueRounded:
+      amount1.preferredCurrencyValueRounded +
+      amount2.preferredCurrencyValueRounded,
+  };
+};
+
+const negativeAmount = (amount: CurrencyAmount) => {
+  return {
+    ...amount,
+    originalValue: -amount.originalValue,
+    preferredCurrencyValueApprox: -amount.preferredCurrencyValueApprox,
+    preferredCurrencyValueRounded: -amount.preferredCurrencyValueRounded,
+  };
 };
 
 const getWalletBalances = () => {

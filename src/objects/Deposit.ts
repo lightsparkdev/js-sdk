@@ -99,8 +99,6 @@ fragment DepositFragment on Deposit {
     deposit_resolved_at: resolved_at
     deposit_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -110,8 +108,6 @@ fragment DepositFragment on Deposit {
     deposit_transaction_hash: transaction_hash
     deposit_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

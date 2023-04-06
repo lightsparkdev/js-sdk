@@ -9,11 +9,7 @@
     "default_icon": "lightspark_icon_circle.png"
   },
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAx4PZEKMOT+8wEFd8QMoSC++lYxhxf45Wo8zB4DO/ZzEMHPdr5ugvttK8G11L7RVnWQcN2lzKIGbR1S1a5XNnEuv+SlOqv/qKMF+LBao5DOShWQbAg9ImDutSGqPIslQHYurayV8GcZY876NpaOkpCPnKDVddNmSn8MSRB6uYuqlHWn1xk5VDHi6/hDTIcDihEZkRvp/N1UQbjNTCgpCPbejoJ3SFMuCjD9joYo52NOwmEOcrJL4dlFnAnMWlWavlZD5dTol8Yh4VyLZP5thZUZ4IEUG0gpLFV9nue+qvJmge3dJmNYjOSg8QEr7D3feRqhWFRu2O6S5PHMSdd1O06QIDAQAB",
-  "permissions": [
-    "activeTab",
-    "tabs",
-    "storage"
-  ],
+  "permissions": ["activeTab", "tabs", "storage"],
   "icons": {
     "16": "lightspark_icon_circle.png",
     "32": "lightspark_icon_circle.png",

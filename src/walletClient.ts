@@ -106,10 +106,10 @@ class LightsparkWalletClient {
     return await this.fullClient.decodeInvoice(encodedInvoice);
   }
 
-  public async getFeeEstimate(
+  public async getBitcoinFeeEstimate(
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET
   ): Promise<FeeEstimate> {
-    return await this.fullClient.getFeeEstimate(bitcoinNetwork);
+    return await this.fullClient.getBitcoinFeeEstimate(bitcoinNetwork);
   }
 
   public setActiveWalletWithoutUnlocking(walletId: string | undefined) {
@@ -136,7 +136,7 @@ class LightsparkWalletClient {
     encodedInvoice: string,
     timeoutSecs: number = 60,
     maximumFeesMsats: number,
-    amountMsats: number | null = null
+    amountMsats: number | undefined = undefined
   ): Promise<OutgoingPayment | undefined> {
     const walletId = this.requireWalletId();
     if (!this.nodeKeyCache.hasKey(walletId)) {
@@ -202,7 +202,7 @@ class LightsparkWalletClient {
    * @returns
    */
   public async fundNode(
-    amountSats: number | null = null
+    amountSats: number | undefined = undefined
   ): Promise<CurrencyAmount> {
     return this.fullClient.fundNode(this.requireWalletId(), amountSats);
   }

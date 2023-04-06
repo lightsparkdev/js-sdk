@@ -11,7 +11,10 @@ import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 const main = async (program: Command) => {
   const account = getCredentialsFromEnvOrThrow();
   const client = new LightsparkClient(
-    new AccountTokenAuthProvider(account.apiTokenClientId, account.apiTokenClientSecret)
+    new AccountTokenAuthProvider(
+      account.apiTokenClientId,
+      account.apiTokenClientSecret
+    )
   );
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
@@ -35,7 +38,12 @@ const main = async (program: Command) => {
       "Add a memo describing the invoice.",
       undefined
     )
-    .option("-a, --amount <number>", "The amount of the invoice in sats.", parseInt, 0)
+    .option(
+      "-a, --amount <number>",
+      "The amount of the invoice in sats.",
+      parseInt,
+      0
+    )
     .option("--amp", "Flag to use AMP invoices.", false)
     .parse(process.argv);
 

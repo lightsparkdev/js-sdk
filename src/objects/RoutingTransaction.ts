@@ -99,8 +99,6 @@ fragment RoutingTransactionFragment on RoutingTransaction {
     routing_transaction_resolved_at: resolved_at
     routing_transaction_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -116,8 +114,6 @@ fragment RoutingTransactionFragment on RoutingTransaction {
     }
     routing_transaction_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

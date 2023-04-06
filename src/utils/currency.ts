@@ -59,16 +59,17 @@ export const convertCurrencyAmount = (
   from: CurrencyAmount,
   toUnit: CurrencyUnit
 ): CurrencyAmount => {
-  const conversionFn = CONVERSION_MAP[from.unit][toUnit];
+  const conversionFn = CONVERSION_MAP[from.originalUnit][toUnit];
   if (!conversionFn) {
     throw new LightsparkException(
       "CurrencyError",
-      `Cannot convert from ${from.unit} to ${toUnit}`
+      `Cannot convert from ${from.originalUnit} to ${toUnit}`
     );
   }
   return {
     ...from,
-    unit: toUnit,
-    value: conversionFn(from.value),
+    preferredCurrencyUnit: toUnit,
+    preferredCurrencyValueApprox: conversionFn(from.originalValue),
+    preferredCurrencyValueRounded: conversionFn(from.originalValue),
   };
 };

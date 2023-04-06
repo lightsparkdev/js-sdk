@@ -1,6 +1,9 @@
 import { ChannelSource, VideoPlaybackUpdateMessage } from "../types/Messages";
 
-type ParseResult = {trackingDetails: VideoPlaybackUpdateMessage, videoElement: HTMLVideoElement};
+type ParseResult = {
+  trackingDetails: VideoPlaybackUpdateMessage;
+  videoElement: HTMLVideoElement;
+};
 
 export const getDomDetailsForYoutube = (): ParseResult | null => {
   const searchParams = new URLSearchParams(window.location.search);
@@ -69,21 +72,21 @@ export const getDomDetailsForTwitch = (): ParseResult | null => {
 };
 
 export const getDomDetailsForLighstparkDemo = (): ParseResult | null => {
-    const videoElement = document.querySelector(
-      "video#stream-sats-video"
-    ) as HTMLVideoElement;
-    if (!videoElement) {
-      return null;
-    }
-    const newTrackingDetails = {
-      videoID: "ls_demo",
-      videoName: "Lightspark Streaming Demo",
-      channelID: "ls",
-      channelName: "Lightspark",
-      channelSource: ChannelSource.lightspark,
-      progress: 0,
-      duration: videoElement?.duration || 0,
-      isPlaying: !videoElement.paused,
-    };
-    return { trackingDetails: newTrackingDetails, videoElement };
+  const videoElement = document.querySelector(
+    "video#stream-sats-video"
+  ) as HTMLVideoElement;
+  if (!videoElement) {
+    return null;
+  }
+  const newTrackingDetails = {
+    videoID: "ls_demo",
+    videoName: "Lightspark Streaming Demo",
+    channelID: "ls",
+    channelName: "Lightspark",
+    channelSource: ChannelSource.lightspark,
+    progress: 0,
+    duration: videoElement?.duration || 0,
+    isPlaying: !videoElement.paused,
   };
+  return { trackingDetails: newTrackingDetails, videoElement };
+};

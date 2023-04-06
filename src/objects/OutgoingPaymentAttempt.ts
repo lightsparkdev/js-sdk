@@ -50,12 +50,9 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                         id
                     }
                     hop_index: index
-                    hop_short_channel_id: short_channel_id
                     hop_public_key: public_key
                     hop_amount_to_forward: amount_to_forward {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -64,8 +61,6 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
                     }
                     hop_fee: fee {
                         __typename
-                        currency_amount_value: value
-                        currency_amount_unit: unit
                         currency_amount_original_value: original_value
                         currency_amount_original_unit: original_unit
                         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -147,8 +142,6 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
     outgoing_payment_attempt_resolved_at: resolved_at
     outgoing_payment_attempt_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -157,8 +150,6 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
     }
     outgoing_payment_attempt_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

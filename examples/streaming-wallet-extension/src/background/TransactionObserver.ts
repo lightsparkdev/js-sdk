@@ -7,6 +7,7 @@ import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 class TransactionObserver {
   private isListening = false;
   private subscription?: Subscription;
+  private readonly cachedTransactions = new Map<string, Transaction>();
 
   constructor(private readonly lightsparkClient: LightsparkClient) {
     autoBind(this);
@@ -30,6 +31,10 @@ class TransactionObserver {
       });
   }
 
+  public clearCache() {
+    this.cachedTransactions.clear();
+  }
+
   public stopListening() {
     console.log("Stopping listening for transactions...");
     if (!this.isListening || !this.subscription) {
@@ -42,12 +47,19 @@ class TransactionObserver {
   }
 
   private async broadcastTransactions(transactions: Transaction[]) {
+    transactions.forEach((transaction) => {
+      this.cachedTransactions.set(transaction.id, transaction);
+    });
     findActiveStreamingDemoTabs().then((tabs) => {
       if (tabs.length === 0) return;
       chrome.tabs.sendMessage(tabs[0].id!, {
         id: "transactions_updated",
         transactions,
       });
+    });
+    chrome.runtime.sendMessage({
+      id: "transactions_updated",
+      transactions: Array.from(this.cachedTransactions.values()),
     });
   }
 }

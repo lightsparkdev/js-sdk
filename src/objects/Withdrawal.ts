@@ -99,8 +99,6 @@ fragment WithdrawalFragment on Withdrawal {
     withdrawal_resolved_at: resolved_at
     withdrawal_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -110,8 +108,6 @@ fragment WithdrawalFragment on Withdrawal {
     withdrawal_transaction_hash: transaction_hash
     withdrawal_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit

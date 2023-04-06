@@ -102,8 +102,6 @@ fragment ChannelOpeningTransactionFragment on ChannelOpeningTransaction {
     channel_opening_transaction_resolved_at: resolved_at
     channel_opening_transaction_amount: amount {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
@@ -113,8 +111,6 @@ fragment ChannelOpeningTransactionFragment on ChannelOpeningTransaction {
     channel_opening_transaction_transaction_hash: transaction_hash
     channel_opening_transaction_fees: fees {
         __typename
-        currency_amount_value: value
-        currency_amount_unit: unit
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
         currency_amount_preferred_currency_unit: preferred_currency_unit
