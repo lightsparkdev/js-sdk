@@ -4,14 +4,18 @@ This is the Lightspark Typescript SDK, which can be used either from a node or b
 
 ## Getting started
 
-> TODO: Add npm install instructions when this is published.
+To use the SDK, you'll need to install it from npm:
+
+```bash
+$ npm install @lightsparkdev/js-sdk
+```
 
 The entry-point to the SDK is the `LightsparkClient` class, which can be imported from the root package.
 To create and authenticate a client from a server-environment, you'll need to provide your API token ID and secret. You can create these from the [Lightspark API Tokens page](https://app.lightspark.com/api-config).
 
 ```typescript
-import { LightsparkClient } from "@lightspark/js-sdk";
-import { AccountTokenAuthProvider } from "@lightspark/js-sdk/auth";
+import { LightsparkClient } from "@lightsparkdev/js-sdk";
+import { AccountTokenAuthProvider } from "@lightsparkdev/js-sdk/auth";
 
 const TOKEN_ID = <your api token id>;
 // NOTE: This should be stored securely, e.g. in an environment variable and shouldn't be present in client-side code.
@@ -23,8 +27,6 @@ const lightsparkClient = new LightsparkClient(
 ```
 
 If you want to use the client in a browser environment, you'll need to use a different authentication provider. The `OAuthProvider` can be used to authenticate with the user's Lightspark account. It will open a popup window to the Lightspark login page, and then exchange the authorization code for an access token.
-
-> TODO: Add example of using OAuthProvider when that's available.
 
 You can then use the client to make API calls. For example, to create an invoice:
 

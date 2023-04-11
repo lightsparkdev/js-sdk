@@ -39,7 +39,7 @@ export const TransactionUpdateFromJson = (obj: any): TransactionUpdate => {
     updatedAt: obj["updated_at"],
     status: TransactionStatus[obj["status"]] ?? TransactionStatus.FUTURE_VALUE,
     amount: CurrencyAmountFromJson(obj["amount"]),
-    typename: "ChannelClosingTransaction",
+    typename: obj["__typename"] ?? "TransactionUpdate",
     resolvedAt: obj["resolved_at"],
     transactionHash: obj["transaction_hash"],
   };

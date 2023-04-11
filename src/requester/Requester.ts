@@ -168,7 +168,7 @@ class Requester {
     const platformVersion = isNode ? process.version : "";
     // TODO: Figure out how to properly load this from the package.json. Using an import
     // is breaking the streaming sats extension.
-    const sdkVersion = "1.0.1";
+    const sdkVersion = "1.0.4";
     return `lightspark-js-sdk/${sdkVersion} ${platform}/${platformVersion}`;
   }
 
