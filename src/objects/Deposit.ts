@@ -47,7 +47,7 @@ type Deposit = OnChainTransaction &
     /** The date and time when this transaction was completed or failed. **/
     resolvedAt?: string;
 
-    /** The hash of this transaction, so it can be uniquely identified on the Lightning network. **/
+    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
     transactionHash?: string;
 
     /**

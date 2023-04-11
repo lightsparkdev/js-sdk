@@ -8,12 +8,11 @@ import {
   getDepositQuery,
   LightsparkNode,
   Node,
-  Permission,
 } from "@lightsparkdev/js-sdk/objects";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+import { getCredentialsFromEnvOrThrow } from "./internalAuthHelpers.js";
 
 day.extend(utc);
 
@@ -50,9 +49,7 @@ console.log(`Your account name is ${account.name}.\n`);
 const apiTokenConnection = await account.getApiTokens(client);
 console.log(`You have ${apiTokenConnection.count} API tokens.`);
 
-const { apiToken, clientSecret } = await client.createApiToken("newTestToken", [
-  Permission.REGTEST_VIEW,
-]);
+const { apiToken, clientSecret } = await client.createApiToken("newTestToken", false, true);
 console.log(
   `Created API token ${apiToken.name} with ID ${
     apiToken.id
@@ -121,7 +118,7 @@ if (!node1Id || !node2Id) {
 
 let transactionsConnection = await account.getTransactions(
   client,
-  50,
+  100,
   undefined,
   undefined,
   undefined,
@@ -254,7 +251,7 @@ await client.unlockNode(node2Id, credentials.node2Password!);
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
-const payment = await client.payInvoice(node2Id, invoice, 60, 1000);
+const payment = await client.payInvoice(node2Id, invoice, 1000);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 

@@ -71,7 +71,7 @@ export const getAsText = (props: Props): string => {
       const newValue = amountValue / 1_000;
       number = (amountValue / 1_000).toFixed(newValue >= 100 ? 0 : 1) + "K";
     } else {
-      number = amountValue.toFixed(2);
+      number = amountValue.toFixed(3);
     }
   } else if (useLocaleString) {
     const options: Intl.NumberFormatOptions = {};

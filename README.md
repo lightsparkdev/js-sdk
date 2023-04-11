@@ -52,7 +52,7 @@ try {
 }
 
 // Now we can pay the invoice.
-const payment = await lightsparkClient.payInvoice(nodeID, encodedInvoice);
+const payment = await lightsparkClient.payInvoice(nodeID, encodedInvoice, 1000);
 console.log(`Payment details: ${payment}`);
 ```
 

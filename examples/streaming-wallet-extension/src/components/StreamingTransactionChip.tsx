@@ -13,7 +13,7 @@ const StreamingTransactionChip = (props: {
   );
   // TODO: Probably need a unit normalization here to ensure they're all sats.
   const totalTransactionAmount = filteredTransactions.reduce(
-    (acc, t) => acc + t.amount.originalValue,
+    (acc, t) => acc + t.amount.originalValue / 1000,
     0
   );
   return (
@@ -36,8 +36,6 @@ const StreamingTransactionChip = (props: {
           <CurrencyAmountRaw
             value={-totalTransactionAmount}
             unit={CurrencyUnit.SATOSHI}
-            shortNumber
-            shortUnit
             symbol
           />
         </TopTextRow>

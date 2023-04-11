@@ -12,7 +12,7 @@ export const getWalletClient = async (accountStorage: AccountStorage) => {
       account === null || Date.now() > account.expiresAt
         ? undefined
         : new AccountTokenAuthProvider(account.clientId, account.clientSecret);
-    instance = new LightsparkClient(authProvider, "api.dev.dev.sparkinfra.net");
+    instance = new LightsparkClient(authProvider);
     if (account && authProvider) {
       await instance.loadNodeKey(
         account.viewerWalletId,

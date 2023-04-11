@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
-import NodeCrypto from "crypto";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import { Client as WsClient, createClient } from "graphql-ws";
@@ -19,14 +18,18 @@ import { b64encode } from "../utils/base64.js";
 import { isNode } from "../utils/environment.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
-const LIGHTSPARK_BETA_HEADER = "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
+export const LIGHTSPARK_BETA_HEADER_KEY = "X-Lightspark-Beta";
+export const LIGHTSPARK_BETA_HEADER_VALUE =
+  "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 dayjs.extend(utc);
 
-let cryptoImpl: typeof NodeCrypto | typeof crypto;
+let cryptoImplPromise: Promise<typeof crypto>;
 if (typeof crypto !== "undefined") {
-  cryptoImpl = crypto;
+  cryptoImplPromise = Promise.resolve(crypto);
 } else {
-  cryptoImpl = NodeCrypto;
+  cryptoImplPromise = import("crypto").then((nodeCrypto) => {
+    return nodeCrypto as typeof crypto;
+  });
 }
 
 class Requester {
@@ -128,7 +131,7 @@ class Requester {
     const sdkUserAgent = this.getSdkUserAgent();
     const headers = await this.authProvider.addAuthHeaders({
       "Content-Type": "application/json",
-      "X-Lightspark-Beta": LIGHTSPARK_BETA_HEADER,
+      [LIGHTSPARK_BETA_HEADER_KEY]: LIGHTSPARK_BETA_HEADER_VALUE,
       "X-Lightspark-SDK": sdkUserAgent,
       "User-Agent": browserUserAgent || sdkUserAgent,
     });
@@ -165,7 +168,7 @@ class Requester {
     const platformVersion = isNode ? process.version : "";
     // TODO: Figure out how to properly load this from the package.json. Using an import
     // is breaking the streaming sats extension.
-    const sdkVersion = "0.0.1";
+    const sdkVersion = "1.0.1";
     return `lightspark-js-sdk/${sdkVersion} ${platform}/${platformVersion}`;
   }
 
@@ -182,7 +185,7 @@ class Requester {
     const variables = queryPayload.variables;
     const operationName = queryPayload.operationName;
 
-    const nonce = getNonce();
+    const nonce = await getNonce();
     const expiration = dayjs.utc().add(1, "hour").format();
 
     const payload = {
@@ -201,7 +204,7 @@ class Requester {
     }
 
     const encodedPayload = new TextEncoder().encode(JSON.stringify(payload));
-
+    const cryptoImpl = await cryptoImplPromise;
     const signedPayload = await cryptoImpl.subtle.sign(
       {
         name: "RSA-PSS",

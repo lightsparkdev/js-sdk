@@ -49,6 +49,9 @@ import OutgoingPayment, {
 } from "./objects/OutgoingPayment.js";
 import Permission from "./objects/Permission.js";
 import Transaction, { TransactionFromJson } from "./objects/Transaction.js";
+import TransactionUpdate, {
+  TransactionUpdateFromJson,
+} from "./objects/TransactionUpdate.js";
 import WithdrawalMode from "./objects/WithdrawalMode.js";
 import WithdrawalRequest, {
   WithdrawalRequestFromJson,
@@ -74,7 +77,7 @@ import { Maybe } from "./utils/types.js";
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice);
+ * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice, 1000);
  * console.log(payment);
  * ```
  *
@@ -170,7 +173,7 @@ class LightsparkClient {
    */
   public listenToTransactions(
     nodeIds: string[]
-  ): Observable<Transaction | undefined> {
+  ): Observable<TransactionUpdate | undefined> {
     const response = this.requester.subscribe(TransactionSubscription, {
       nodeIds,
     });
@@ -178,7 +181,7 @@ class LightsparkClient {
       (response) =>
         response &&
         response.data.transactions &&
-        TransactionFromJson(response.data.transactions)
+        TransactionUpdateFromJson(response.data.transactions)
     );
   }
 
@@ -503,10 +506,10 @@ class LightsparkClient {
    *
    * @param payerNodeId The ID of the node that will pay the invoice.
    * @param encodedInvoice The encoded invoice to pay.
-   * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
    * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
    *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
    *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
+   * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
    * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
    *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
@@ -514,8 +517,8 @@ class LightsparkClient {
   public async payInvoice(
     payerNodeId: string,
     encodedInvoice: string,
-    timeoutSecs: number = 60,
     maximumFeesMsats: number,
+    timeoutSecs: number = 60,
     amountMsats: number | undefined = undefined
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
@@ -625,12 +628,16 @@ class LightsparkClient {
     bitcoinAddress: string,
     mode: WithdrawalMode
   ): Promise<WithdrawalRequest> {
-    const response = await this.requester.makeRawRequest(RequestWithdrawal, {
-      node_id: nodeId,
-      amount_sats: amountSats,
-      bitcoin_address: bitcoinAddress,
-      withdrawal_mode: mode,
-    });
+    const response = await this.requester.makeRawRequest(
+      RequestWithdrawal,
+      {
+        node_id: nodeId,
+        amount_sats: amountSats,
+        bitcoin_address: bitcoinAddress,
+        withdrawal_mode: mode,
+      },
+      nodeId
+    );
     return WithdrawalRequestFromJson(response.request_withdrawal.request);
   }
 
@@ -660,13 +667,26 @@ class LightsparkClient {
    *
    * @param name Creates a new API token that can be used to authenticate requests for this account when using the
    *     Lightspark APIs and SDKs.
-   * @param permissions The permissions that this API token should have. Defaults to `Permission.ALL`.
+   * @param transact Whether the token should be able to transact or only view data.
+   * @param testMode True if the token should be able to access only testnet false to access only mainnet.
    * @returns An object containing the API token and client secret.
    */
   public async createApiToken(
     name: string,
-    permissions: Permission[] = [Permission.ALL]
+    transact: boolean = true,
+    testMode: boolean = true
   ): Promise<CreateApiTokenOutput> {
+    let permissions: Permission[];
+    if (transact && testMode) {
+      permissions = [Permission.REGTEST_VIEW, Permission.REGTEST_TRANSACT];
+    } else if (transact && !testMode) {
+      permissions = [Permission.MAINNET_VIEW, Permission.MAINNET_TRANSACT];
+    } else if (!transact && testMode) {
+      permissions = [Permission.REGTEST_VIEW];
+    } else {
+      permissions = [Permission.MAINNET_VIEW];
+    }
+
     const response = await this.requester.makeRawRequest(CreateApiToken, {
       name,
       permissions,

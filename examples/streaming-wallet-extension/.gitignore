@@ -1,3 +1,7 @@
+# Build outputs
+build/
+streaming-extension.zip
+
 # Logs
 logs
 *.log

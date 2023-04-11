@@ -44,12 +44,6 @@ module.exports = {
           content: "./src/contentscript/content.ts",
           background: "./src/background/background.ts",
         },
-        resolve: {
-          ...webpackConfig.resolve,
-          fallback: {
-            crypto: false,
-          },
-        },
         output: {
           ...webpackConfig.output,
           filename: "static/js/[name].js",

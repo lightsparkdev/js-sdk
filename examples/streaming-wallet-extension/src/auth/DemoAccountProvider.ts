@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 import { INSTANCE_ID_KEY } from "../common/storage";
 import StreamingDemoAccountCredentials from "./StreamingDemoCredentials";
 
-const GRAPH_QL_ENDPOINT = "https://api.dev.dev.sparkinfra.net/graphql";
+const GRAPH_QL_ENDPOINT = "https://api.lightspark.com/graphql";
 
 dayjs.extend(utc);
 

@@ -9,17 +9,20 @@ import { Command } from "commander";
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const main = async (program: Command) => {
-  const account = getCredentialsFromEnvOrThrow();
+  const credentials = getCredentialsFromEnvOrThrow();
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(
-      account.apiTokenClientId,
-      account.apiTokenClientSecret
-    )
+      credentials.apiTokenClientId,
+      credentials.apiTokenClientSecret
+    ),
+    credentials.baseUrl
   );
+  const account = await client.getCurrentAccount();
+  const nodeId = (await account.getNodes(client)).entities[0].id;
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
   const invoice = await client.createInvoice(
-    account.walletNodeId,
+    nodeId,
     options.amount * 1000,
     options.memo,
     options.amp ? InvoiceType.AMP : InvoiceType.STANDARD
@@ -48,7 +51,7 @@ const main = async (program: Command) => {
     .parse(process.argv);
 
   const options = program.opts();
-  if (!options.amount) {
+  if (options.amount === undefined) {
     program.outputHelp();
   } else {
     // tslint:disable-next-line

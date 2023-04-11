@@ -1,31 +1,31 @@
-// Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
-
-import NodeCrypto from "crypto";
+// Copyright  ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 import LightsparkException from "../LightsparkException.js";
 
 import { b64decode, b64encode } from "../utils/base64.js";
 
 const ITERATIONS = 500000;
-let cryptoImpl: typeof NodeCrypto | typeof crypto;
+let cryptoImplPromise: Promise<typeof crypto>;
 if (typeof crypto !== "undefined") {
-  cryptoImpl = crypto;
+  cryptoImplPromise = Promise.resolve(crypto);
 } else {
-  cryptoImpl = NodeCrypto;
+  cryptoImplPromise = import("crypto").then((nodeCrypto) => {
+    return nodeCrypto as typeof crypto;
+  });
 }
 
-const getRandomValues = (arr: Uint8Array): Uint8Array => {
+const getRandomValues = async (arr: Uint8Array): Promise<Uint8Array> => {
   if (typeof crypto !== "undefined") {
     return crypto.getRandomValues(arr);
   } else {
-    return NodeCrypto.getRandomValues(arr);
+    return cryptoImplPromise.then((c) => c.getRandomValues(arr));
   }
 };
 
-const getRandomValues32 = (arr: Uint32Array): Uint32Array => {
+const getRandomValues32 = async (arr: Uint32Array): Promise<Uint32Array> => {
   if (typeof crypto !== "undefined") {
     return crypto.getRandomValues(arr);
   } else {
-    return NodeCrypto.getRandomValues(arr);
+    return cryptoImplPromise.then((c) => c.getRandomValues(arr));
   }
 };
 
@@ -37,6 +37,7 @@ const deriveKey = async (
   bit_len: number
 ): Promise<[CryptoKey, ArrayBuffer]> => {
   const enc = new TextEncoder();
+  const cryptoImpl = await cryptoImplPromise;
   const password_key = await cryptoImpl.subtle.importKey(
     "raw",
     enc.encode(password),
@@ -81,6 +82,7 @@ export const encrypt = async (
   }
 
   const [key, iv] = await deriveKey(password, salt, ITERATIONS, "AES-GCM", 352);
+  const cryptoImpl = await cryptoImplPromise;
 
   const encrypted = new Uint8Array(
     await cryptoImpl.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext)
@@ -124,6 +126,7 @@ export const decrypt = async (
     );
   }
 
+  const cryptoImpl = await cryptoImplPromise;
   const algorithm = header.v < 2 ? "AES-CBC" : "AES-GCM";
   const bit_len = header.v < 4 ? 384 : 352;
   const salt_len = header.v < 4 ? 8 : 16;
@@ -185,6 +188,7 @@ export function decode(arrBuff: ArrayBuffer): string {
 }
 
 export const generateNodeKey = async (): Promise<CryptoKeyPair> => {
+  const cryptoImpl = await cryptoImplPromise;
   return await cryptoImpl.subtle.generateKey(
     /*algorithm:*/ {
       name: "RSA-PSS",
@@ -201,6 +205,7 @@ export const serializeNodeKey = async (
   key: CryptoKey,
   format: "pkcs8" | "spki"
 ): Promise<ArrayBuffer> => {
+  const cryptoImpl = await cryptoImplPromise;
   return await cryptoImpl.subtle.exportKey(/*format*/ format, /*key*/ key);
 };
 
@@ -226,6 +231,7 @@ export const loadNodeEncryptionKey = async (
   rawPublicKey: string
 ): Promise<CryptoKey> => {
   const encoded = b64decode(rawPublicKey);
+  const cryptoImpl = await cryptoImplPromise;
   return await cryptoImpl.subtle.importKey(
     /*format*/ "spki",
     /*keyData*/ encoded,
@@ -238,8 +244,9 @@ export const loadNodeEncryptionKey = async (
   );
 };
 
-export function getNonce() {
-  return Number(getRandomValues32(new Uint32Array(1)));
-}
+export const getNonce = async () => {
+  const nonceSt = await getRandomValues32(new Uint32Array(1));
+  return Number(nonceSt);
+};
 
 export { default as LightsparkSigningException } from "./LightsparkSigningException.js";

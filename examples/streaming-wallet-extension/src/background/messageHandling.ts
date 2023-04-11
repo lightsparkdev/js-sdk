@@ -7,7 +7,7 @@ import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
 import VideoProgressCache from "./VideoProgressCache";
 
-const paymentStrategy = new LinearPaymentStrategy(10_000, 2);
+const paymentStrategy = new LinearPaymentStrategy(10_000, 1);
 
 const playbackMessageReceived = async (
   message: VideoPlaybackUpdateMessage,
@@ -41,8 +41,8 @@ const playbackMessageReceived = async (
       await lightsparkClient.payInvoice(
         viewerNodeId,
         invoiceToPay,
+        Math.ceil(amountToPay * 0.0016 + 5),
         60,
-        amountToPay * 0.0016,
         amountToPay
       );
     }

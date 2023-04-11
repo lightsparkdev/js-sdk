@@ -12,7 +12,8 @@ const client = new LightsparkClient(
   new AccountTokenAuthProvider(
     account.apiTokenClientId,
     account.apiTokenClientSecret
-  )
+  ),
+  account.baseUrl
 );
 
 const main = async () => {

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/js-sdk",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -29,8 +29,11 @@
   "engines": {
     "node": ">=14.16"
   },
+  "browser": {
+    "crypto": false
+  },
   "scripts": {
-    "build": "npx tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md",
+    "build": "npx tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md && cp ./LICENSE ./dist/LICENSE",
     "clean": "rm -rf ./dist",
     "lint": "npx prettier --check ./src",
     "format": "npx prettier --write ./src",
@@ -42,6 +45,7 @@
   "dependencies": {
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",

@@ -1,15 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import autoBind from "auto-bind";
-import NodeCrypto from "crypto";
 
 import { b64decode } from "../utils/base64.js";
 
-let cryptoImpl: typeof NodeCrypto | typeof crypto;
+let cryptoImplPromise: Promise<typeof crypto>;
 if (typeof crypto !== "undefined") {
-  cryptoImpl = crypto;
+  cryptoImplPromise = Promise.resolve(crypto);
 } else {
-  cryptoImpl = NodeCrypto;
+  cryptoImplPromise = import("crypto").then((nodeCrypto) => {
+    return nodeCrypto as typeof crypto;
+  });
 }
 
 class NodeKeyCache {
@@ -22,6 +23,7 @@ class NodeKeyCache {
   public async loadKey(id: string, rawKey: string): Promise<CryptoKey | null> {
     const decoded = b64decode(rawKey);
     try {
+      const cryptoImpl = await cryptoImplPromise;
       const key = await cryptoImpl.subtle.importKey(
         "pkcs8",
         decoded,

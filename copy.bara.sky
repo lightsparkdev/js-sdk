@@ -14,7 +14,12 @@ core.workflow(
     # Switch to ITERATIVE mode to import each commit separately.
     mode = "SQUASH",
 
-    origin_files = glob(["js-sdk/**", "copy.bara.sky"]),
+    origin_files = glob(
+      ["js-sdk/**", "copy.bara.sky"],
+      exclude = [
+        "js-sdk/examples/internal_example.js",
+      ]
+    ),
 
     authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations = [
@@ -108,7 +113,10 @@ core.workflow(
     # Switch to ITERATIVE mode to import each commit separately.
     mode = "SQUASH",
 
-    origin_files = glob(["lightspark-rs/**", "copy.bara.sky"]),
+    origin_files = glob(
+	    ["rust-sdk/lightspark/**", "copy.bara.sky"],
+        exclude = ["rust-sdk/lightspark/examples/internal_example.rs"],
+    ),
 
     authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations = [
@@ -117,7 +125,7 @@ core.workflow(
         core.todo_replace(
           mode = 'SCRUB_NAMES'
         ),
-        core.move("lightspark-rs/", "")
+        core.move("rust-sdk/lightspark/", "")
     ],
 )
 
@@ -134,7 +142,10 @@ core.workflow(
     # Switch to ITERATIVE mode to import each commit separately.
     mode = "SQUASH",
 
-    origin_files = glob(["python-sdk/**", "copy.bara.sky"]),
+    origin_files = glob(
+	    ["python-sdk/**", "copy.bara.sky"],
+        exclude = ["python-sdk/examples/internal_example.py"],
+    ),
 
     authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations = [
