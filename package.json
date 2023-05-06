@@ -1,64 +1,23 @@
 {
-  "name": "@lightsparkdev/js-sdk",
-  "version": "1.0.4",
-  "description": "Lightspark JS SDK",
-  "author": "Lightspark Inc.",
-  "keywords": [
-    "lightspark",
-    "bitcoin",
-    "lightning",
-    "payments",
-    "typescript"
-  ],
-  "homepage": "https://github.com/lightsparkdev/js-sdk",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lightsparkdev/js-sdk.git"
-  },
-  "bugs": {
-    "url": "https://github.com/lightsparkdev/js-sdk/issues"
-  },
-  "exports": {
-    ".": "./index.js",
-    "./auth": "./auth/index.js",
-    "./objects": "./objects/index.js"
-  },
-  "type": "module",
-  "types": "./index.d.ts",
-  "module": "./index.js",
-  "engines": {
-    "node": ">=14.16"
-  },
-  "browser": {
-    "crypto": false
-  },
+  "name": "js",
+  "description": "Lightspark JS Projects",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "private": true,
   "scripts": {
-    "build": "npx tsc && cp ./package.json ./dist/package.json && cp ./README.md ./dist/README.md && cp ./LICENSE ./dist/LICENSE",
-    "clean": "rm -rf ./dist",
-    "lint": "npx prettier --check ./src",
-    "format": "npx prettier --write ./src",
-    "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
-    "type-check": "tsc --noEmit",
-    "postversion": "npm run build"
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint"
   },
-  "license": "APACHE 2.0",
-  "dependencies": {
-    "auto-bind": "^5.0.1",
-    "crypto": "^1.0.1",
-    "crypto-browserify": "^3.12.0",
-    "dayjs": "^1.11.7",
-    "graphql": "^16.6.0",
-    "graphql-ws": "^5.11.3",
-    "ws": "^8.12.1",
-    "zen-observable-ts": "^1.1.0"
-  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "devDependencies": {
-    "@types/crypto-js": "^4.1.1",
-    "@types/ws": "^8.5.4",
-    "jest": "^29.4.1",
-    "prettier": "^2.8.4",
-    "prettier-plugin-organize-imports": "^3.2.2",
-    "ts-jest": "^29.0.5",
-    "typescript": "^4.9.5"
+    "turbo": "^1.9.3"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.26.1"
   }
 }

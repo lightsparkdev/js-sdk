@@ -1,0 +1,6 @@
+version: 3
+
+project:
+  id: lightspark/js-lightspark-sdk
+  name: js-lightspark-sdk
+  url: https://github.com/lightsparkdev/js-sdk

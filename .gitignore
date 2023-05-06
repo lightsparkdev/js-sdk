@@ -52,11 +52,11 @@ build/
 # Vim swap files
 *.swp
 
-yarn.lock
-
 .npmrc
 
 stats.json
 
 # Flattened _locales files
 bin/locales
+
+.turbo
