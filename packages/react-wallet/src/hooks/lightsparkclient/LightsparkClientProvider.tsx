@@ -1,4 +1,8 @@
-import { AuthProvider, StubAuthProvider } from "@lightsparkdev/core";
+import {
+  AuthProvider,
+  CryptoInterface,
+  StubAuthProvider,
+} from "@lightsparkdev/core";
 import { LightsparkClient } from "@lightsparkdev/wallet-sdk";
 import React, { useState } from "react";
 import LightsparkClientContextType from "./LightsparkClientContext.js";
@@ -10,12 +14,14 @@ let LightsparkClientContext = React.createContext<LightsparkClientContextType>(
 function LightsparkClientProvider({
   children,
   serverUrl,
+  customCryptoImpl,
 }: {
   children: React.ReactNode;
   serverUrl?: string;
+  customCryptoImpl?: CryptoInterface;
 }) {
   const [client] = useState<LightsparkClient>(
-    new LightsparkClient(new StubAuthProvider(), serverUrl)
+    new LightsparkClient(new StubAuthProvider(), serverUrl, customCryptoImpl)
   );
 
   const getClient = () => {

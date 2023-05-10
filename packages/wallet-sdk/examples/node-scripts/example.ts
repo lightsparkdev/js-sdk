@@ -2,7 +2,7 @@
 
 import {
   CurrencyAmount,
-  getLightningTransactionQuery,
+  getTransactionQuery,
   InMemoryJwtStorage,
   LightsparkClient,
 } from "@lightsparkdev/wallet-sdk";
@@ -138,7 +138,7 @@ console.log(
 // Get details for a transaction
 if (transactionsConnection.entities.length > 0) {
   const transaction = await client.executeRawQuery(
-    getLightningTransactionQuery(transactionsConnection.entities[0].id)
+    getTransactionQuery(transactionsConnection.entities[0].id)
   );
   console.log("Details of transaction");
   console.log(JSON.stringify(transaction, undefined, 2));

@@ -116,7 +116,6 @@ Then, run the examples:
 ```bash
 $ cd examples/node-scripts
 $ npm install
-$ ts-node getWalletDashboard.ts
 $ ts-node createInvoice.ts -a "100" -m "Whasssupppp"
 ```
 

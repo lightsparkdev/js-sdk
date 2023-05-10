@@ -3,13 +3,13 @@ import { Maybe } from "@lightsparkdev/core";
 import {
   CurrencyAmount as CurrencyAmountType,
   CurrencyUnit,
+  SingleNodeDashboard,
   Transaction,
-  WalletDashboard,
 } from "@lightsparkdev/lightspark-sdk";
 import CurrencyAmount from "./CurrencyAmount";
 import { Table, Td, Th, Tr } from "./Table";
 
-const Dashboard = ({ data }: { data: WalletDashboard }) => {
+const Dashboard = ({ data }: { data: SingleNodeDashboard }) => {
   return (
     <Container>
       <Welcome>Welcome {data.displayName}!</Welcome>

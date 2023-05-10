@@ -5,7 +5,7 @@ import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import NodeAddressType from "./NodeAddressType.js";
 import Transaction from "./Transaction.js";
 
-type WalletDashboard = {
+type SingleNodeDashboard = {
   id: string;
   displayName: string;
   purpose: Maybe<LightsparkNodePurpose>;
@@ -29,4 +29,4 @@ type WalletDashboard = {
   recentTransactions: Transaction[];
 };
 
-export default WalletDashboard;
+export default SingleNodeDashboard;

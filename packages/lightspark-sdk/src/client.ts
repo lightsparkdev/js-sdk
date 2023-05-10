@@ -1,16 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { LightsparkSigningException, Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import Observable from "zen-observable";
 
 import {
   AuthProvider,
   b64encode,
-  decryptSecretWithNodePassword,
+  CryptoInterface,
+  DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
-  LightsparkSigningException,
   Maybe,
   NodeKeyCache,
   Requester,
@@ -33,7 +33,7 @@ import { PayInvoice } from "./graphql/PayInvoice.js";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
-import { SingleNodeDashboard } from "./graphql/SingleNodeDashboard.js";
+import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import Account from "./objects/Account.js";
@@ -50,11 +50,11 @@ import OutgoingPayment, {
   OutgoingPaymentFromJson,
 } from "./objects/OutgoingPayment.js";
 import Permission from "./objects/Permission.js";
+import SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import Transaction, { TransactionFromJson } from "./objects/Transaction.js";
 import TransactionUpdate, {
   TransactionUpdateFromJson,
 } from "./objects/TransactionUpdate.js";
-import WalletDashboard from "./objects/WalletDashboard.js";
 import WithdrawalMode from "./objects/WithdrawalMode.js";
 import WithdrawalRequest, {
   WithdrawalRequestFromJson,
@@ -85,6 +85,7 @@ import WithdrawalRequest, {
  */
 class LightsparkClient {
   private requester: Requester;
+  private readonly nodeKeyCache: NodeKeyCache;
 
   /**
    * Constructs a new LightsparkClient.
@@ -98,15 +99,17 @@ class LightsparkClient {
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     private readonly serverUrl: string = "api.lightspark.com",
-    private readonly nodeKeyCache: NodeKeyCache = new NodeKeyCache()
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
     const sdkVersion = require("../package.json").version;
+    this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
       this.nodeKeyCache,
       LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
-      serverUrl
+      serverUrl,
+      this.cryptoImpl
     );
 
     autoBind(this);
@@ -125,7 +128,8 @@ class LightsparkClient {
       LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
-      this.serverUrl
+      this.serverUrl,
+      this.cryptoImpl
     );
     this.authProvider = authProvider;
   }
@@ -288,7 +292,7 @@ class LightsparkClient {
   }
 
   /**
-   * Gets a basic dashboard for a single node, including recent transactions. See `WalletDashboard` for which info is
+   * Gets a basic dashboard for a single node, including recent transactions. See `SingleNodeDashboard` for which info is
    * included.
    *
    * @param nodeId The node ID for which to get a dashboard.
@@ -301,13 +305,16 @@ class LightsparkClient {
     nodeId: string,
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
     transactionsAfterDate: Maybe<string> = undefined
-  ): Promise<WalletDashboard> {
-    const response = await this.requester.makeRawRequest(SingleNodeDashboard, {
-      nodeId: nodeId,
-      network: bitcoinNetwork,
-      numTransactions: 20,
-      transactionsAfterDate,
-    });
+  ): Promise<SingleNodeDashboard> {
+    const response = await this.requester.makeRawRequest(
+      SingleNodeDashboardQuery,
+      {
+        nodeId: nodeId,
+        network: bitcoinNetwork,
+        numTransactions: 20,
+        transactionsAfterDate,
+      }
+    );
     if (!response.current_account) {
       throw new LightsparkAuthException("No current account");
     }
@@ -489,11 +496,12 @@ class LightsparkClient {
       return false;
     }
 
-    const signingPrivateKey = await decryptSecretWithNodePassword(
-      encryptedKey.cipher,
-      encryptedKey.encrypted_value,
-      password
-    );
+    const signingPrivateKey =
+      await this.cryptoImpl.decryptSecretWithNodePassword(
+        encryptedKey.cipher,
+        encryptedKey.encrypted_value,
+        password
+      );
 
     if (!signingPrivateKey) {
       throw new LightsparkSigningException(

@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import {
+  DefaultCrypto,
   b64encode,
-  generateSigningKeyPair,
-  serializeSigningKey,
 } from "@lightsparkdev/core";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
 import {
@@ -74,12 +73,12 @@ function DashboardPage() {
         status={wallet?.status || WalletStatus.FAILED}
         onInitialize={async () => {
           setLoading(true);
-          const keys = await generateSigningKeyPair();
-          const serializedPublicKeyBytes = await serializeSigningKey(
+          const keys = await DefaultCrypto.generateSigningKeyPair();
+          const serializedPublicKeyBytes = await DefaultCrypto.serializeSigningKey(
             keys.publicKey,
             "spki"
           );
-          const serializedPrivateKeyBytes = await serializeSigningKey(
+          const serializedPrivateKeyBytes = await DefaultCrypto.serializeSigningKey(
             keys.privateKey,
             "pkcs8"
           );

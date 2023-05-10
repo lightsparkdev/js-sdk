@@ -5,8 +5,8 @@ import {
   CurrencyAmount,
   CurrencyUnit,
   LightsparkClient,
+  SingleNodeDashboard,
   Transaction,
-  WalletDashboard,
 } from "@lightsparkdev/lightspark-sdk";
 import React from "react";
 import "./App.css";
@@ -35,8 +35,8 @@ enum Screen {
 const DEMO_VIDEO_ID = "ls_demo";
 
 function App() {
-  const [walletDashboard, setWalletDashboard] =
-    React.useState<WalletDashboard>();
+  const [accountNodeDashboard, setSingleNodeDashboard] =
+    React.useState<SingleNodeDashboard>();
   const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [screen, setScreen] = React.useState<Screen>(Screen.Login);
   const [lightsparkClient, setLightsparkClient] =
@@ -48,10 +48,10 @@ function App() {
 
   React.useEffect(() => {
     chrome.storage.local
-      .get(["walletDashboard"])
+      .get(["accountNodeDashboard"])
       .then(async (cachedBalance) => {
         if (cachedBalance) {
-          setWalletDashboard(cachedBalance.walletDashboard);
+          setSingleNodeDashboard(cachedBalance.accountNodeDashboard);
         }
         const accountStorage = new AccountStorage();
         let credentials = await accountStorage.getAccountCredentials();
@@ -104,18 +104,19 @@ function App() {
 
   const joinedTransactions = React.useMemo(() => {
     const transactionMap = new Map<string, Transaction>();
-    walletDashboard?.recentTransactions.forEach((t) =>
+    accountNodeDashboard?.recentTransactions.forEach((t) =>
       transactionMap.set(t.id, t)
     );
     transactions.forEach((t) => transactionMap.set(t.id, t));
     return Array.from(transactionMap.values());
-  }, [walletDashboard, transactions]);
+  }, [accountNodeDashboard, transactions]);
 
   const balance = React.useMemo(() => {
-    if (!walletDashboard || !walletDashboard.totalLocalBalance) return null;
-    const baseBalance = walletDashboard.totalLocalBalance;
+    if (!accountNodeDashboard || !accountNodeDashboard.totalLocalBalance)
+      return null;
+    const baseBalance = accountNodeDashboard.totalLocalBalance;
     const transactionsInBalance = new Set<string>();
-    walletDashboard?.recentTransactions.forEach((t) =>
+    accountNodeDashboard?.recentTransactions.forEach((t) =>
       transactionsInBalance.add(t.id)
     );
     const streamingTransactions = transactions.filter(
@@ -142,7 +143,7 @@ function App() {
           t.amount.preferredCurrencyValueRounded,
       };
     }, baseBalance);
-  }, [walletDashboard, transactions]);
+  }, [accountNodeDashboard, transactions]);
 
   React.useEffect(() => {
     if (!lightsparkClient || !credentials) {
@@ -156,8 +157,8 @@ function App() {
         credentials.allocationTime
       )
       .then(async (dashboard) => {
-        setWalletDashboard(dashboard);
-        await chrome.storage.local.set({ walletDashboard: dashboard });
+        setSingleNodeDashboard(dashboard);
+        await chrome.storage.local.set({ accountNodeDashboard: dashboard });
       });
   }, [lightsparkClient, credentials]);
 

@@ -25,7 +25,7 @@ a JWT allocated for the user by your own server.
 
 ![jwt diagram](./docs/jwt-diagram.png)
 
-First, you'll need to register your account public key with Lightspark. You can do this from the [Lightspark API Tokens page](https://app.lightspark.com/api-config). You'll need to provide the public key for the account you want to use to sign JWTs. You can generate a keypair using the _ES256_ algorithm using the following command:
+First, you'll need to register your account public key with Lightspark. You can do this from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). You'll need to provide the public key for the account you want to use to sign JWTs. You can generate a keypair using the _ES256_ algorithm using the following command:
 
 ```bash
 openssl ecparam -genkey -name prime256v1 -noout -out private.key
@@ -62,7 +62,7 @@ const token = jwt.sign(claims, "your private key");
 // Now send the token back to the client so that they can use it to authenticate with the Lightspark SDK.
 ```
 
-Now on the client, you can login using the JWT and your company's account ID from the api tokens page:
+Now on the client, you can login using the JWT and your company's account ID from the account settings page:
 
 ```typescript
 await client.loginWithJWT(ACCOUNT_ID, jwt, new LocalStorageJwtStorage());
@@ -128,20 +128,23 @@ Once the wallet is deployed, you can initialize it. However, first you'll need s
 
 When initializing the wallet, you'll need to provide a public key for the wallet to use to sign transactions. Note that this _is not_ the same as your JWT signing key used above. It should be unique to each user's wallet. It is the responsibility of your application to safely store the keypair for the user. Losing the private key will result in the user losing access to their wallet. Currently, the wallet SDK only supports RSA-PSS keys, but we plan to support other key types in the future.
 
-For convenience, the wallet SDK provides a `generateSigningKeyPair()` method which can be used to generate a keypair. You can then store the keys however you'd like in your application code.
+For convenience, the wallet SDK provides a `DefaultCrypto.generateSigningKeyPair()` method which can be used to generate a keypair. You can then store the keys however you'd like in your application code.
 
 ```typescript
-import {
-  generateSigningKeyPair,
-  serializeSigningKey,
-} from "@lightsparkdev/core";
+import { DefaultCrypto } from "@lightsparkdev/core";
 
-const keyPair = await generateSigningKeyPair();
+const keyPair = await DefaultCrypto.generateSigningKeyPair();
 const signingWalletPublicKey = keyPair.publicKey;
 const signingWalletPrivateKey = keyPair.privateKey;
 
-const serializedPublicKeyBytes = await serializeSigningKey(signingWalletPublicKey, "spki");
-const serializedPrivateKeyBytes = await serializeSigningKey(signingWalletPrivateKey, "pkcs8");
+const serializedPublicKeyBytes = await DefaultCrypto.serializeSigningKey(
+  signingWalletPublicKey,
+  "spki"
+);
+const serializedPrivateKeyBytes = await DefaultCrypto.serializeSigningKey(
+  signingWalletPrivateKey,
+  "pkcs8"
+);
 // Store the keys somewhere safe.
 ```
 

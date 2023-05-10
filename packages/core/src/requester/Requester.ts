@@ -12,8 +12,8 @@ import Query from "./Query.js";
 import AuthProvider from "../auth/AuthProvider.js";
 import StubAuthProvider from "../auth/StubAuthProvider.js";
 import {
-  getCrypto,
-  getNonce,
+  CryptoInterface,
+  DefaultCrypto,
   LightsparkSigningException,
 } from "../crypto/crypto.js";
 import NodeKeyCache from "../crypto/NodeKeyCache.js";
@@ -34,7 +34,8 @@ class Requester {
     private readonly schemaEndpoint: string,
     private readonly sdkUserAgent: string,
     private readonly authProvider: AuthProvider = new StubAuthProvider(),
-    private readonly baseUrl: string = DEFAULT_BASE_URL
+    private readonly baseUrl: string = DEFAULT_BASE_URL,
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
     let websocketImpl;
     if (typeof WebSocket === "undefined" && typeof window === "undefined") {
@@ -183,7 +184,7 @@ class Requester {
     const variables = queryPayload.variables;
     const operationName = queryPayload.operationName;
 
-    const nonce = await getNonce();
+    const nonce = await this.cryptoImpl.getNonce();
     const expiration = dayjs.utc().add(1, "hour").format();
 
     const payload = {
@@ -201,16 +202,11 @@ class Requester {
       );
     }
 
+    if (typeof TextEncoder === "undefined") {
+      const TextEncoder = (await import("text-encoding")).TextEncoder;
+    }
     const encodedPayload = new TextEncoder().encode(JSON.stringify(payload));
-    const cryptoImpl = await getCrypto();
-    const signedPayload = await cryptoImpl.subtle.sign(
-      {
-        name: "RSA-PSS",
-        saltLength: 32,
-      },
-      key,
-      encodedPayload
-    );
+    const signedPayload = await this.cryptoImpl.sign(key, encodedPayload);
     const encodedSignedPayload = b64encode(signedPayload);
 
     headers["X-Lightspark-Signing"] = JSON.stringify({

@@ -2,6 +2,8 @@
 
 import {
   AuthProvider,
+  CryptoInterface,
+  DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
@@ -74,7 +76,7 @@ import WithdrawalRequest, {
  */
 class LightsparkClient {
   private requester: Requester;
-  private readonly nodeKeyCache = new NodeKeyCache();
+  private readonly nodeKeyCache: NodeKeyCache;
 
   /**
    * Constructs a new LightsparkClient.
@@ -87,15 +89,18 @@ class LightsparkClient {
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
-    private readonly serverUrl: string = "api.lightspark.com"
+    private readonly serverUrl: string = "api.lightspark.com",
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
     const sdkVersion = require("../package.json").version;
+    this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
       this.nodeKeyCache,
       WALLET_SDK_ENDPOINT,
       `js-wallet-sdk/${sdkVersion}`,
       authProvider,
-      serverUrl
+      serverUrl,
+      this.cryptoImpl
     );
 
     autoBind(this);
@@ -114,7 +119,8 @@ class LightsparkClient {
       WALLET_SDK_ENDPOINT,
       `js-wallet-sdk/${sdkVersion}`,
       authProvider,
-      this.serverUrl
+      this.serverUrl,
+      this.cryptoImpl
     );
     this.authProvider = authProvider;
   }

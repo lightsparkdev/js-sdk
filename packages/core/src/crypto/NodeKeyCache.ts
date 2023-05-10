@@ -3,28 +3,25 @@
 import autoBind from "auto-bind";
 
 import { b64decode } from "../utils/base64.js";
-import { getCrypto } from "./crypto.js";
+import { CryptoInterface, DefaultCrypto } from "./crypto.js";
 
 class NodeKeyCache {
-  private idToKey: Map<string, CryptoKey>;
-  constructor() {
+  private idToKey: Map<string, CryptoKey | Uint8Array>;
+  constructor(private readonly cryptoImpl: CryptoInterface = DefaultCrypto) {
     this.idToKey = new Map();
     autoBind(this);
   }
 
-  public async loadKey(id: string, rawKey: string): Promise<CryptoKey | null> {
-    const decoded = b64decode(rawKey);
+  public async loadKey(
+    id: string,
+    rawKey: string,
+    format: "pkcs8" | "spki" = "pkcs8"
+  ): Promise<CryptoKey | Uint8Array | null> {
+    const decoded = b64decode(this.stripPemTags(rawKey));
     try {
-      const cryptoImpl = await getCrypto();
-      const key = await cryptoImpl.subtle.importKey(
-        "pkcs8",
+      const key = await this.cryptoImpl.importPrivateSigningKey(
         decoded,
-        {
-          name: "RSA-PSS",
-          hash: "SHA-256",
-        },
-        true,
-        ["sign"]
+        format
       );
       this.idToKey.set(id, key);
       return key;
@@ -34,12 +31,18 @@ class NodeKeyCache {
     return null;
   }
 
-  public getKey(id: string): CryptoKey | undefined {
+  public getKey(id: string): CryptoKey | Uint8Array | undefined {
     return this.idToKey.get(id);
   }
 
   public hasKey(id: string): boolean {
     return this.idToKey.has(id);
+  }
+
+  private stripPemTags(pem: string): string {
+    return pem
+      .replace(/-----BEGIN (.*)-----/, "")
+      .replace(/-----END (.*)----/, "");
   }
 }
 

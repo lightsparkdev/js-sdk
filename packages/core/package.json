@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -52,6 +52,7 @@
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
+    "text-encoding": "^0.7.0",
     "ws": "^8.12.1",
     "zen-observable-ts": "^1.1.0"
   },

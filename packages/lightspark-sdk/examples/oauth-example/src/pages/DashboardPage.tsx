@@ -1,5 +1,8 @@
 import styled from "@emotion/styled";
-import { BitcoinNetwork, WalletDashboard } from "@lightsparkdev/lightspark-sdk";
+import {
+  BitcoinNetwork,
+  SingleNodeDashboard,
+} from "@lightsparkdev/lightspark-sdk";
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthProvider";
 import RequireAuth from "../auth/RequireAuth";
@@ -12,7 +15,7 @@ function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const { account, nodeId } = useAccountInfo();
   const clientProvider = useLightsparkClient();
-  const [dashboard, setDashboard] = useState<WalletDashboard>();
+  const [dashboard, setDashboard] = useState<SingleNodeDashboard>();
   const auth = useAuth();
 
   useEffect(() => {

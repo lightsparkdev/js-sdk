@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.2.2
+
+### Patch Changes
+
+- Refactor internals to allow for a custom react native crypto implementation to be injected into the LightsparkClient.
+
 ## 0.2.1
 
 ### Patch Changes

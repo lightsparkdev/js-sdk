@@ -40,6 +40,9 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
 
     const encodedClientId = encodeURIComponent(this.clientId);
     const encodedClientSecret = encodeURIComponent(this.clientSecret);
+    if (typeof TextEncoder === "undefined") {
+      const TextEncoder = (await import("text-encoding")).TextEncoder;
+    }
     const credentialsBytes = new TextEncoder().encode(
       encodedClientId + ":" + encodedClientSecret
     );

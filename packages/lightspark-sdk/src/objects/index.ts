@@ -95,13 +95,13 @@ export { default as RoutingTransactionFailureReason } from "./RoutingTransaction
 export { default as Secret } from "./Secret.js";
 export { default as SendPaymentInput } from "./SendPaymentInput.js";
 export { default as SendPaymentOutput } from "./SendPaymentOutput.js";
+export { default as SingleNodeDashboard } from "./SingleNodeDashboard.js";
 export { default as Transaction, getTransactionQuery } from "./Transaction.js";
 export { default as TransactionFailures } from "./TransactionFailures.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
 export { default as Wallet } from "./Wallet.js";
-export { default as WalletDashboard } from "./WalletDashboard.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";

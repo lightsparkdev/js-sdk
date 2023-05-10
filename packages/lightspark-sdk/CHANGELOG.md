@@ -1,5 +1,19 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.2.4
+
+### Patch Changes
+
+- 5fb981cf8: Rename WalletDashboard to SingleNodeDashboard
+
+## 0.2.3
+
+### Patch Changes
+
+- Refactor internals to allow for a custom react native crypto implementation to be injected into the LightsparkClient.
+- Updated dependencies
+  - @lightsparkdev/core@0.2.2
+
 ## 0.2.2
 
 ### Patch Changes
