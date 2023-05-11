@@ -41,7 +41,7 @@ export const getJwt = functions.https.onRequest(async (request, response) => {
     test: true,
     iat: Math.floor(Date.now() / 1000),
     // Expriation time for the JWT is 30 days from now.
-    exp: Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 3) / 1000),
+    exp: Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000),
   };
   console.log("claims", claims);
 

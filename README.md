@@ -29,3 +29,5 @@ yarn changeset version
 git commit -nm 'Version for [package]'
 yarn changeset publish
 ```
+
+Once changesets is integrated into CI perhaps the diffs will work more automatically since they'll be running on every commit, but this needs more investigation. Ideally CI would autopublish patches on changes or larger version bumps if specified.

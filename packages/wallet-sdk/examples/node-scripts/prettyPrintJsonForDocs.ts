@@ -9,11 +9,12 @@ import {
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const credentials = getCredentialsFromEnvOrThrow();
-const client = new LightsparkClient(
-  undefined,
-  "api.dev.dev.sparkinfra.net"
+const client = new LightsparkClient(undefined, "api.dev.dev.sparkinfra.net");
+await client.loginWithJWT(
+  credentials.accountId,
+  credentials.jwt,
+  new InMemoryJwtStorage()
 );
-await client.loginWithJWT(credentials.accountId, credentials.jwt, new InMemoryJwtStorage());
 
 const makeRequest = async () => {
   // Replace this function's contents with whatever type you want to fetch.

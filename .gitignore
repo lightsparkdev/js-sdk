@@ -60,3 +60,5 @@ stats.json
 bin/locales
 
 .turbo
+
+packages/**/docs

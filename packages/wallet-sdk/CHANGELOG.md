@@ -1,5 +1,35 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- Add helper functions for awaiting outgoing payment results
+
+## 0.3.6
+
+### Patch Changes
+
+- OK last amount_msats fix, I swear...
+
+## 0.3.5
+
+### Patch Changes
+
+- One more amount_msats cleanup
+
+## 0.3.4
+
+### Patch Changes
+
+- CI error caused the previous patch to not actually pick up the fix.
+
+## 0.3.3
+
+### Patch Changes
+
+- Fix in encoding the amount_msats when it's undefined.
+
 ## 0.3.2
 
 ### Patch Changes

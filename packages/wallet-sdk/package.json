@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-sdk",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Lightspark JS Wallet SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -39,14 +39,14 @@
   ],
   "scripts": {
     "build": "tsup --entry src/index.ts --entry src/objects/index.ts --format cjs,esm --dts",
-    "copy-static": "cp ./package.json ./README.md ./LICENSE ./dist/",
-    "dev": "yarn build -- --watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "lint": "npx prettier --check ./src",
+    "dev": "yarn build -- --watch",
+    "docs": "typedoc --media docs-media src",
     "format": "npx prettier --write ./src",
+    "lint": "npx prettier --check ./src",
+    "postversion": "yarn build",
     "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
-    "type-check": "tsc --noEmit",
-    "postversion": "yarn build"
+    "type-check": "tsc --noEmit"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -58,6 +58,7 @@
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
+    "typedoc": "^0.24.7",
     "ws": "^8.12.1",
     "zen-observable-ts": "^1.1.0"
   },

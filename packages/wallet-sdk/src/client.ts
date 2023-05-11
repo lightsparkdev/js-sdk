@@ -30,6 +30,7 @@ import RequestWithdrawalMutation from "./graqhql/RequestWithdrawal.js";
 import SendPaymentMutation from "./graqhql/SendPayment.js";
 import TerminateWallet from "./graqhql/TerminateWallet.js";
 import WalletDashboardQuery from "./graqhql/WalletDashboard.js";
+import { TransactionStatus } from "./index.js";
 import { BalancesFromJson } from "./objects/Balances.js";
 import CurrencyAmount, {
   CurrencyAmountFromJson,
@@ -41,7 +42,10 @@ import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
 import KeyType from "./objects/KeyType.js";
 import { LoginWithJWTOutputFromJson } from "./objects/LoginWithJWTOutput.js";
-import { OutgoingPaymentFromJson } from "./objects/OutgoingPayment.js";
+import OutgoingPayment, {
+  FRAGMENT as OutgoingPaymentFragment,
+  OutgoingPaymentFromJson,
+} from "./objects/OutgoingPayment.js";
 import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import { TerminateWalletOutputFromJson } from "./objects/TerminateWalletOutput.js";
 import { TransactionFromJson } from "./objects/Transaction.js";
@@ -355,7 +359,57 @@ class LightsparkClient {
   }
 
   /**
-   * Pay a lightning invoice from the current wallet.
+   * Pay a lightning invoice from the current wallet. This function will return immediately with the payment details,
+   * which may still be in a PENDING state. You can use the [payInvoiceAndAwaitResult] function to wait for the payment
+   * to complete or fail.
+   *
+   * Note: This call will fail if the wallet is not unlocked yet via [loadWalletSigningKey]. You must successfully
+   * unlock the wallet before calling this function.
+   *
+   * @param encodedInvoice An encoded string representation of the invoice to pay.
+   * @param maxFeesMsats The maximum fees to pay in milli-satoshis. You must pass a value.
+   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   * @param amountMsats The amount to pay in milli-satoshis. Defaults to the full amount of the invoice.
+   * @param timeoutSecs The number of seconds to wait for the payment to complete. Defaults to 60.
+   * @return The payment details, which may still be in a PENDING state. You can use the [payInvoiceAndAwaitResult]
+   *     function to wait for the payment to complete or fail.
+   */
+  public async payInvoice(
+    encodedInvoice: string,
+    maxFeesMsats: number,
+    amountMsats: number | undefined = undefined,
+    timoutSecs: number = 60
+  ) {
+    this.requireValidAuth();
+    this.requireWalletUnlocked();
+    const variables: any = {
+      encoded_invoice: encodedInvoice,
+      maximum_fees_msats: maxFeesMsats,
+      timeout_secs: timoutSecs,
+    };
+    if (amountMsats !== undefined) {
+      variables.amount_msats = amountMsats;
+    }
+    const payment = await this.executeRawQuery({
+      queryPayload: PayInvoiceMutation,
+      variables,
+      constructObject: (responseJson: any) => {
+        return OutgoingPaymentFromJson(responseJson.pay_invoice.payment);
+      },
+      signingNodeId: WALLET_NODE_ID_KEY,
+    });
+    if (!payment) {
+      throw new LightsparkException(
+        "PaymentNullError",
+        "Unknown error paying invoice"
+      );
+    }
+    return payment;
+  }
+
+  /**
+   * Pay a lightning invoice from the current wallet and wait for the payment to complete or fail.
    *
    * Note: This call will fail if the wallet is not unlocked yet via [loadWalletSigningKey]. You must successfully
    * unlock the wallet before calling this function.
@@ -368,31 +422,79 @@ class LightsparkClient {
    * @param timeoutSecs The number of seconds to wait for the payment to complete. Defaults to 60.
    * @return The payment details.
    */
-  public async payInvoice(
+  public async payInvoiceAndAwaitResult(
     encodedInvoice: string,
     maxFeesMsats: number,
     amountMsats: number | undefined = undefined,
     timoutSecs: number = 60
   ) {
-    this.requireValidAuth();
-    this.requireWalletUnlocked();
-    return await this.executeRawQuery({
-      queryPayload: PayInvoiceMutation,
-      variables: {
-        encoded_invoice: encodedInvoice,
-        maximum_fees_msats: maxFeesMsats,
-        amount_msats: amountMsats,
-        timeout_secs: timoutSecs,
-      },
-      constructObject: (responseJson: any) => {
-        return OutgoingPaymentFromJson(responseJson.pay_invoice.payment);
-      },
-      signingNodeId: WALLET_NODE_ID_KEY,
+    const payment = await this.payInvoice(
+      encodedInvoice,
+      maxFeesMsats,
+      amountMsats,
+      timoutSecs
+    );
+    return await this.awaitPaymentResult(payment, timoutSecs);
+  }
+
+  private awaitPaymentResult(
+    payment: OutgoingPayment,
+    timeoutSecs: number = 60
+  ): Promise<OutgoingPayment> {
+    let timeout: NodeJS.Timeout;
+    let subscription: Subscription;
+    const completionStatuses = [
+      TransactionStatus.FAILED,
+      TransactionStatus.CANCELLED,
+      TransactionStatus.SUCCESS,
+    ];
+    if (completionStatuses.includes(payment.status)) {
+      return Promise.resolve(payment);
+    }
+    const result: Promise<OutgoingPayment> = new Promise((resolve, reject) => {
+      subscription = this.listenToPaymentStatus(payment.id).subscribe({
+        next: (payment) => {
+          if (completionStatuses.includes(payment.status)) {
+            resolve(payment);
+          }
+        },
+        error: (error) => {
+          reject(error);
+        },
+        complete: () => {
+          reject(
+            new LightsparkException(
+              "PaymentStatusAwaitError",
+              "Payment status subscription completed without receiving a completed status update."
+            )
+          );
+        },
+      });
+
+      timeout = setTimeout(() => {
+        reject(
+          new LightsparkException(
+            "PaymentStatusAwaitError",
+            `Timed out waiting for payment status to be one of ${completionStatuses.join(
+              ", "
+            )}.`
+          )
+        );
+      }, timeoutSecs * 1000);
     });
+
+    result.finally(() => {
+      clearTimeout(timeout);
+      subscription.unsubscribe();
+    });
+
+    return result;
   }
 
   /**
    * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
+   * This function will return immediately with the payment details, which may still be in a PENDING state. You can use
+   * the [sendPaymentAndAwaitResult] function to wait for the payment to complete or fail.
    *
    * @param destinationPublicKey The public key of the destination node.
    * @param amountMsats The amount to pay in milli-satoshis.
@@ -400,7 +502,8 @@ class LightsparkClient {
    *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
    *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
    * @param timeoutSecs The timeout in seconds that we will try to make the payment.
-   * @return An `OutgoingPayment` object. Check the `status` field to see if the payment succeeded or failed.
+   * @return An `OutgoingPayment` object, which may still be in a PENDING state. You can use the
+   *     [sendPaymentAndAwaitResult] function to wait for the payment to complete or fail.
    */
   public async sendPayment(
     destinationNodePublicKey: string,
@@ -410,7 +513,7 @@ class LightsparkClient {
   ) {
     this.requireValidAuth();
     this.requireWalletUnlocked();
-    return await this.executeRawQuery({
+    const payment = await this.executeRawQuery({
       queryPayload: SendPaymentMutation,
       variables: {
         destination_node_public_key: destinationNodePublicKey,
@@ -423,6 +526,40 @@ class LightsparkClient {
       },
       signingNodeId: WALLET_NODE_ID_KEY,
     });
+    if (!payment) {
+      throw new LightsparkException(
+        "PaymentNullError",
+        "Unknown error sending payment"
+      );
+    }
+    return payment;
+  }
+
+  /**
+   * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
+   * Waits for the payment to complete or fail.
+   *
+   * @param destinationPublicKey The public key of the destination node.
+   * @param amountMsats The amount to pay in milli-satoshis.
+   * @param maxFeesMsats The maximum amount of fees that you want to pay for this payment to be sent.
+   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   * @param timeoutSecs The timeout in seconds that we will try to make the payment.
+   * @return An `OutgoingPayment` object. Check the `status` field to see if the payment succeeded or failed.
+   */
+  public async sendPaymentAndAwaitResult(
+    destinationNodePublicKey: string,
+    amountMsats: number,
+    maxFeesMsats: number,
+    timeoutSecs: number = 60
+  ) {
+    const payment = await this.sendPayment(
+      destinationNodePublicKey,
+      amountMsats,
+      maxFeesMsats,
+      timeoutSecs
+    );
+    return await this.awaitPaymentResult(payment, timeoutSecs);
   }
 
   /**
@@ -664,6 +801,25 @@ class LightsparkClient {
           WalletStatus[responseJson.data.current_wallet.status] ??
           WalletStatus.FUTURE_VALUE
         );
+      });
+  }
+
+  private listenToPaymentStatus(
+    paymentId: string
+  ): Observable<OutgoingPayment> {
+    return this.requester
+      .subscribe(
+        `
+      subscription PaymentStatusSubscription {
+        entity(id: "${paymentId}") {
+          ...OutgoingPaymentFragment
+        }
+      }
+      ${OutgoingPaymentFragment}
+      `
+      )
+      .map((responseJson: any) => {
+        return OutgoingPaymentFromJson(responseJson.data.entity);
       });
   }
 

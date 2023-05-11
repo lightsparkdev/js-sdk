@@ -1,5 +1,46 @@
 # @lightsparkdev/react-wallet
 
+## 0.4.0
+
+### Minor Changes
+
+- Add helper functions for awaiting outgoing payment results
+
+### Patch Changes
+
+- Updated dependencies
+  - @lightsparkdev/wallet-sdk@0.4.0
+
+## 0.3.6
+
+### Patch Changes
+
+- OK last amount_msats fix, I swear...
+- Updated dependencies
+  - @lightsparkdev/wallet-sdk@0.3.6
+
+## 0.3.5
+
+### Patch Changes
+
+- One more amount_msats cleanup
+- Updated dependencies
+  - @lightsparkdev/wallet-sdk@0.3.5
+
+## 0.3.4
+
+### Patch Changes
+
+- CI error caused the previous patch to not actually pick up the fix.
+- Updated dependencies
+  - @lightsparkdev/wallet-sdk@0.3.4
+
+## 0.3.3
+
+### Patch Changes
+
+- Fixing encoding of amount_msats when undefined
+
 ## 0.3.2
 
 ### Patch Changes
