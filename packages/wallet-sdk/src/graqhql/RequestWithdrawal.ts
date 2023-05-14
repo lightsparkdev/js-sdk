@@ -4,7 +4,7 @@ import { FRAGMENT as WithdrawalRequestFragment } from "../objects/WithdrawalRequ
 
 const RequestWithdrawalMutation = `
   mutation RequestWithdrawal(
-    $amount_sats: Int!
+    $amount_sats: Long!
     $bitcoin_address: String!
   ) {
     request_withdrawal(input: {

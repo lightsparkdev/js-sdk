@@ -1,8 +1,5 @@
 import styled from "@emotion/styled";
-import {
-  DefaultCrypto,
-  b64encode,
-} from "@lightsparkdev/core";
+import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
 import {
   KeyType,
@@ -74,14 +71,10 @@ function DashboardPage() {
         onInitialize={async () => {
           setLoading(true);
           const keys = await DefaultCrypto.generateSigningKeyPair();
-          const serializedPublicKeyBytes = await DefaultCrypto.serializeSigningKey(
-            keys.publicKey,
-            "spki"
-          );
-          const serializedPrivateKeyBytes = await DefaultCrypto.serializeSigningKey(
-            keys.privateKey,
-            "pkcs8"
-          );
+          const serializedPublicKeyBytes =
+            await DefaultCrypto.serializeSigningKey(keys.publicKey, "spki");
+          const serializedPrivateKeyBytes =
+            await DefaultCrypto.serializeSigningKey(keys.privateKey, "pkcs8");
           // You can save the keys somewhere here if you want to use them later. Here,
           // we're just logging them to the console for demo purposes.
           console.log("Save these keys if you want to use this wallet later!");
@@ -91,7 +84,8 @@ function DashboardPage() {
             .getClient()
             .initializeWalletAndAwaitReady(
               KeyType.RSA_OAEP,
-              b64encode(serializedPublicKeyBytes)
+              b64encode(serializedPublicKeyBytes),
+              b64encode(serializedPrivateKeyBytes)
             );
           await refreshWallet();
           setLoading(false);

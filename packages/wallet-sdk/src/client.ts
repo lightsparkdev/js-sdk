@@ -212,7 +212,7 @@ class LightsparkClient {
       wallet?.status === WalletStatus.DEPLOYED ||
       wallet?.status === WalletStatus.FAILED
     ) {
-      return wallet;
+      return wallet.status;
     }
     return await this.waitForWalletStatus([
       WalletStatus.DEPLOYED,
@@ -227,16 +227,24 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
+   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
+   *     will not leave the device. It is only used for signing transactions locally.
    * @return The wallet that was initialized.
    */
-  public async initializeWallet(keyType: KeyType, signingPublicKey: string) {
+  public async initializeWallet(
+    keyType: KeyType,
+    signingPublicKey: string,
+    signingPrivateKey: string
+  ) {
     this.requireValidAuth();
+    await this.loadWalletSigningKey(signingPrivateKey);
     return await this.executeRawQuery({
       queryPayload: InitializeWallet,
       variables: {
         key_type: keyType,
         signing_public_key: signingPublicKey,
       },
+      signingNodeId: WALLET_NODE_ID_KEY,
       constructObject: (responseJson: any) => {
         return InitializeWalletOutputFromJson(responseJson.initialize_wallet)
           .wallet;
@@ -251,20 +259,27 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
+   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
+   *     will not leave the device. It is only used for signing transactions locally.
    * @return A Promise with the final wallet status after initialization or failure.
    * @throws LightsparkException if the wallet status is not `READY` or `FAILED` after 5 minutes,
    * or if the subscription fails.
    */
   public async initializeWalletAndAwaitReady(
     keyType: KeyType,
-    signingPublicKey: string
+    signingPublicKey: string,
+    signingPrivateKey: string
   ) {
-    const wallet = await this.initializeWallet(keyType, signingPublicKey);
+    const wallet = await this.initializeWallet(
+      keyType,
+      signingPublicKey,
+      signingPrivateKey
+    );
     if (
       wallet?.status === WalletStatus.READY ||
       wallet?.status === WalletStatus.FAILED
     ) {
-      return wallet;
+      return wallet.status;
     }
     return await this.waitForWalletStatus(
       [WalletStatus.READY, WalletStatus.FAILED],

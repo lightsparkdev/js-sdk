@@ -78,7 +78,11 @@ export default function DashboardPage({
           console.log("Private key:", keys.privateKey);
           await clientProvider
             .getClient()
-            .initializeWalletAndAwaitReady(KeyType.RSA_OAEP, keys.publicKey);
+            .initializeWalletAndAwaitReady(
+              KeyType.RSA_OAEP,
+              keys.publicKey,
+              keys.privateKey
+            );
           await refreshWallet();
           setLoading(false);
         }}

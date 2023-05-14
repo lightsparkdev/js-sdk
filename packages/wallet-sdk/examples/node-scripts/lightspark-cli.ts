@@ -1,12 +1,16 @@
 #!/usr/bin/env ts-node
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
 import {
   InMemoryJwtStorage,
   InvoiceType,
+  KeyType,
   LightsparkClient,
+  WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
 import { Command, OptionValues } from "commander";
+import * as fs from "fs/promises";
 import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
 import { EnvCredentials, getCredentialsFromEnvOrThrow } from "./authHelpers.js";
@@ -19,16 +23,51 @@ const main = async (
     client: LightsparkClient,
     options: OptionValues,
     credentials?: EnvCredentials
-  ) => Promise<void>
+  ) => Promise<any>,
+  skipLogin = false
 ) => {
-  const credentials = getCredentialsFromEnvOrThrow();
-  const client = new LightsparkClient(undefined, credentials.baseUrl);
-  await client.loginWithJWT(
-    credentials.accountId,
-    credentials.jwt,
-    new InMemoryJwtStorage()
+  const credentials = getCredentialsFromEnvOrThrow(
+    options.walletUserId ? `_${options.walletUserId}` : ""
   );
+  const client = new LightsparkClient(undefined, credentials.baseUrl);
+  if (!skipLogin) {
+    await client.loginWithJWT(
+      credentials.accountId,
+      credentials.jwt,
+      new InMemoryJwtStorage()
+    );
+  }
   await action(client, options, credentials);
+};
+
+const initEnv = async (options: OptionValues) => {
+  if (!options.accountId) {
+    throw new Error("Missing account ID. Pass -a <account ID>");
+  }
+  if (!options.jwtSigningKey) {
+    throw new Error("Missing JWT private signing key. Pass -k <key in pem>");
+  }
+  const filePath = process.env.HOME + "/.lightsparkenv";
+  let content = `alias lightspark-cli='ts-node ${process.cwd()}/lightspark-cli.ts'\n`;
+  content += `export LIGHTSPARK_ACCOUNT_ID="${options.accountId}"\n`;
+  content += `export LIGHTSPARK_JWT_PRIV_KEY="${options.jwtSigningKey}"\n`;
+  if (options.walletPrivateKey) {
+    content += `export LIGHTSPARK_WALLET_PRIV_KEY="${options.walletPrivateKey}"\n`;
+  }
+  if (options.jwt) {
+    content += `export LIGHTSPARK_JWT="${options.jwt}"\n`;
+  }
+  if (options.env === "dev") {
+    content += `export LIGHTSPARK_EXAMPLE_BASE_URL="api.dev.dev.sparkinfra.net"\n`;
+  }
+  await fs.writeFile(filePath, content);
+
+  console.log("Wrote environment variables to " + filePath);
+  console.log("Run `source " + filePath + "` to load them into your shell");
+  console.log(
+    "To add them to your shell permanently, add the above line to your shell's startup script"
+  );
+  console.log("You can now run `lightspark-cli` to interact with your wallet");
 };
 
 const createInvoice = async (
@@ -126,9 +165,17 @@ const decodeInvoice = async (
 
 const createBitcoinFundingAddress = async (
   client: LightsparkClient,
-  options: OptionValues
+  options: OptionValues,
+  credentials?: EnvCredentials
 ) => {
   console.log("Creating bitcoin funding address...\n");
+  const privateKey = credentials?.privKey;
+  if (!privateKey) {
+    throw new Error(
+      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
+    );
+  }
+  await client.loadWalletSigningKey(privateKey);
   const address = await client.createBitcoinFundingAddress();
   console.log("Address:", address);
 };
@@ -180,11 +227,89 @@ const createWalletJwt = async (
   const token = jwt.sign(claims, privateKey, { algorithm: "ES256" });
   console.log("Account ID:", credentials.accountId);
   console.log("JWT:", token);
+  return token;
+};
+
+const createDeployAndInitWallet = async (
+  client: LightsparkClient,
+  options: OptionValues,
+  credentials?: EnvCredentials
+) => {
+  const token = await createWalletJwt(client, options, credentials);
+  console.log("Creating wallet...\n");
+  const loginOutput = await client.loginWithJWT(
+    credentials.accountId,
+    token,
+    new InMemoryJwtStorage()
+  );
+  console.log("Wallet:", JSON.stringify(loginOutput.wallet, null, 2));
+  let serializedKeypair: { privateKey: string; publicKey: string };
+  let deployedResultStatus: WalletStatus = loginOutput.wallet.status;
+  if (loginOutput.wallet.status === WalletStatus.NOT_SETUP) {
+    console.log("Deploying wallet...\n");
+    deployedResultStatus = await client.deployWalletAndAwaitDeployed();
+    console.log(
+      "Deployed wallet:",
+      JSON.stringify(deployedResultStatus, null, 2)
+    );
+  }
+  if (deployedResultStatus === WalletStatus.DEPLOYED) {
+    console.log("Initializing wallet...\n");
+    const keypair = await DefaultCrypto.generateSigningKeyPair();
+    serializedKeypair = {
+      privateKey: b64encode(
+        await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
+      ),
+      publicKey: b64encode(
+        await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
+      ),
+    };
+    console.log("Keypair:", JSON.stringify(serializedKeypair, null, 2));
+    console.log("Initializing wallet now. This will take a while...\n");
+    const initializedWallet = await client.initializeWalletAndAwaitReady(
+      KeyType.RSA_OAEP,
+      serializedKeypair.publicKey,
+      serializedKeypair.privateKey
+    );
+    console.log(
+      "Initialized wallet:",
+      JSON.stringify(initializedWallet, null, 2)
+    );
+  } else {
+    console.log(
+      `Not initializing because the wallet status is ${loginOutput.wallet.status}`
+    );
+  }
+
+  console.log(
+    "\n\nExport these env vars to use this wallet. Appending to ~/.lightsparkenv:\n"
+  );
+  let content = `\n# Wallet for user ${options.userId}:\n# accountID: ${credentials.accountId}\n# test: ${options.test}\n`;
+  content += `export LIGHTSPARK_JWT_${options.userId}="${token}"\n`;
+  process.env[`LIGHTSPARK_JWT_${options.userId}`] = token;
+  if (serializedKeypair) {
+    content += `export LIGHTSPARK_WALLET_PRIV_KEY_${options.userId}="${serializedKeypair?.privateKey}"\n`;
+    content += `export LIGHTSPARK_WALLET_PUB_KEY_${options.userId}="${serializedKeypair?.publicKey}"\n`;
+
+    process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${options.userId}`] =
+      serializedKeypair.privateKey;
+    process.env[`LIGHTSPARK_WALLET_PUB_KEY_${options.userId}`] =
+      serializedKeypair.publicKey;
+  }
+
+  console.log(content);
+  const filePath = process.env.HOME + "/.lightsparkenv";
+  await fs.appendFile(filePath, content);
 };
 
 (() => {
   const createInvoiceCmd = new Command("create-invoice")
     .description("Create an invoice for your wallet")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
@@ -206,6 +331,11 @@ const createWalletJwt = async (
   const recentTxCmd = new Command("transactions")
     .description("Get recent transactions for your wallet")
     .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
+    .option(
       "-n, --count  <number>",
       "Max number of transactions to fetch.",
       parseInt,
@@ -219,6 +349,11 @@ const createWalletJwt = async (
 
   const recentInvoicesCmd = new Command("invoices")
     .description("Get recent payment requests from your wallet")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .option(
       "-n, --count  <number>",
       "Max number of invoices to fetch.",
@@ -242,6 +377,11 @@ const createWalletJwt = async (
 
   const balancesCmd = new Command("balances")
     .description("Get balances for your wallet")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .action((options) => {
       main(options, balances).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -258,6 +398,11 @@ const createWalletJwt = async (
 
   const walletDashboardCmd = new Command("wallet-dashboard")
     .description("Get wallet dashboard")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .action((options) => {
       main(options, walletDashboard).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -266,6 +411,11 @@ const createWalletJwt = async (
 
   const currentWalletCmd = new Command("wallet")
     .description("Get current wallet")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .action((options) => {
       main(options, currentWallet).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -274,6 +424,11 @@ const createWalletJwt = async (
 
   const createBitcoinFundingAddressCmd = new Command("funding-address")
     .description("Create a bitcoin funding address for your wallet.")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .action((options) => {
       main(options, createBitcoinFundingAddress).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -282,6 +437,11 @@ const createWalletJwt = async (
 
   const payInvoiceCmd = new Command("pay-invoice")
     .description("Pay an invoice from your wallet.")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option("-a, --amount <number>", "The amount to pay in sats.", parseInt, -1)
     .action((options) => {
@@ -301,12 +461,50 @@ const createWalletJwt = async (
     )
     .option("-t --test", "Flag to create this wallet jwt in test mode.", false)
     .action((options) => {
-      main(options, createWalletJwt).catch((err) =>
+      main(options, createWalletJwt, true).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
+  const createDeployAndInitWalletCmd = new Command("create-and-init-wallet")
+    .description(
+      "Create, deploy, and initialize a new wallet. Will print out all relevant keys, etc."
+    )
+    .option("-u, --user-id  <value>", "The user ID for the wallet.")
+    .option(
+      "-e, --expire-at <number>",
+      "The jwt expiration time in seconds since epoch. Defaults to 30 days from now.",
+      parseInt,
+      Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
+    )
+    .option("-t --test", "Flag to create this wallet in test mode.", false)
+    .action((options) => {
+      main(options, createDeployAndInitWallet, true).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
+  const InitEnvCmd = new Command("init-env")
+    .description("Initialize your environment with required variables.")
+    .option("-a --account-id <value>", "Your account ID.")
+    .option("-k --jwt-signing-key <value>", "Your JWT-signing private key.")
+    .option("-e --env <value>", "The environment to use (prod or dev).", "prod")
+    .option("-j --jwt <value>", "A default wallet jwt (optional).", undefined)
+    .option(
+      "-w --wallet-private-key <value>",
+      "Your default wallet signing private key (optional).",
+      undefined
+    )
+    .action((options) => {
+      initEnv(options).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   new Command("Lightspark Wallet")
+    .description(
+      "Lightspark Wallet CLI. Start by running init-env to set up your environment."
+    )
     .version("1.0.0")
     .addCommand(createInvoiceCmd)
     .addCommand(recentTxCmd)
@@ -319,6 +517,8 @@ const createWalletJwt = async (
     .addCommand(createBitcoinFundingAddressCmd)
     .addCommand(payInvoiceCmd)
     .addCommand(createWalletJwtCmd)
+    .addCommand(createDeployAndInitWalletCmd)
+    .addCommand(InitEnvCmd)
     .addHelpCommand()
     .parse(process.argv);
 })();

@@ -1,5 +1,17 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.5.0
+
+### Minor Changes
+
+- Require signing on the initialize wallet operation to allow channels to be created.
+
+## 0.4.1
+
+### Patch Changes
+
+- Fix a bug in the request_withrawal mutation.
+
 ## 0.4.0
 
 ### Minor Changes
