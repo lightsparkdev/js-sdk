@@ -1,5 +1,13 @@
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
+export {
+  default as ChannelClosingTransaction,
+  getChannelClosingTransactionQuery,
+} from "./ChannelClosingTransaction.js";
+export {
+  default as ChannelOpeningTransaction,
+  getChannelOpeningTransactionQuery,
+} from "./ChannelOpeningTransaction.js";
 export { default as CreateBitcoinFundingAddressOutput } from "./CreateBitcoinFundingAddressOutput.js";
 export { default as CreateInvoiceInput } from "./CreateInvoiceInput.js";
 export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";

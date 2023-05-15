@@ -155,7 +155,8 @@ Now that you've got keys, you can initialize the wallet! Just like when deployin
 ```typescript
 let wallet = await client.initializeWallet(
   KeyType.RSA_OAEP,
-  b64encode(serializedPublicKeyBytes)
+  b64encode(serializedPublicKeyBytes),
+  b64encode(serializedPrivateKeyBytes)
 );
 while (
   wallet.status !== WalletStatus.READY &&
@@ -173,7 +174,8 @@ Alternatively, here's an example using the helper, `initializeWalletAndAwaitRead
 ```typescript
 const walletSatus = await client.initializeWalletAndAwaitReady(
   KeyType.RSA_OAEP,
-  signingWalletPublicKey
+  signingWalletPublicKey,
+  signingWalletPrivateKey
 );
 if (walletStatus === WalletStatus.READY) {
   // The wallet is initialized!

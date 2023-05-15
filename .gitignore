@@ -48,6 +48,7 @@ Gemfile.lock
 # Compiled outputs
 dist/
 build/
+lib/
 
 # Vim swap files
 *.swp

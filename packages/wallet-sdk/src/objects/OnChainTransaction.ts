@@ -1,6 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { LightsparkException, Query } from "@lightsparkdev/core";
+import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
+import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import Deposit from "./Deposit.js";
 import Entity from "./Entity.js";
@@ -64,6 +66,50 @@ type OnChainTransaction = Transaction &
   };
 
 export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
+  if (obj["__typename"] == "ChannelClosingTransaction") {
+    return {
+      id: obj["channel_closing_transaction_id"],
+      createdAt: obj["channel_closing_transaction_created_at"],
+      updatedAt: obj["channel_closing_transaction_updated_at"],
+      status:
+        TransactionStatus[obj["channel_closing_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
+      amount: CurrencyAmountFromJson(obj["channel_closing_transaction_amount"]),
+      blockHeight: obj["channel_closing_transaction_block_height"],
+      destinationAddresses:
+        obj["channel_closing_transaction_destination_addresses"],
+      typename: "ChannelClosingTransaction",
+      resolvedAt: obj["channel_closing_transaction_resolved_at"],
+      transactionHash: obj["channel_closing_transaction_transaction_hash"],
+      fees: !!obj["channel_closing_transaction_fees"]
+        ? CurrencyAmountFromJson(obj["channel_closing_transaction_fees"])
+        : undefined,
+      blockHash: obj["channel_closing_transaction_block_hash"],
+      numConfirmations: obj["channel_closing_transaction_num_confirmations"],
+    } as ChannelClosingTransaction;
+  }
+  if (obj["__typename"] == "ChannelOpeningTransaction") {
+    return {
+      id: obj["channel_opening_transaction_id"],
+      createdAt: obj["channel_opening_transaction_created_at"],
+      updatedAt: obj["channel_opening_transaction_updated_at"],
+      status:
+        TransactionStatus[obj["channel_opening_transaction_status"]] ??
+        TransactionStatus.FUTURE_VALUE,
+      amount: CurrencyAmountFromJson(obj["channel_opening_transaction_amount"]),
+      blockHeight: obj["channel_opening_transaction_block_height"],
+      destinationAddresses:
+        obj["channel_opening_transaction_destination_addresses"],
+      typename: "ChannelOpeningTransaction",
+      resolvedAt: obj["channel_opening_transaction_resolved_at"],
+      transactionHash: obj["channel_opening_transaction_transaction_hash"],
+      fees: !!obj["channel_opening_transaction_fees"]
+        ? CurrencyAmountFromJson(obj["channel_opening_transaction_fees"])
+        : undefined,
+      blockHash: obj["channel_opening_transaction_block_hash"],
+      numConfirmations: obj["channel_opening_transaction_num_confirmations"],
+    } as ChannelOpeningTransaction;
+  }
   if (obj["__typename"] == "Deposit") {
     return {
       id: obj["deposit_id"],
@@ -115,6 +161,64 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
 export const FRAGMENT = `
 fragment OnChainTransactionFragment on OnChainTransaction {
     __typename
+    ... on ChannelClosingTransaction {
+        __typename
+        channel_closing_transaction_id: id
+        channel_closing_transaction_created_at: created_at
+        channel_closing_transaction_updated_at: updated_at
+        channel_closing_transaction_status: status
+        channel_closing_transaction_resolved_at: resolved_at
+        channel_closing_transaction_amount: amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_closing_transaction_transaction_hash: transaction_hash
+        channel_closing_transaction_fees: fees {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_closing_transaction_block_hash: block_hash
+        channel_closing_transaction_block_height: block_height
+        channel_closing_transaction_destination_addresses: destination_addresses
+        channel_closing_transaction_num_confirmations: num_confirmations
+    }
+    ... on ChannelOpeningTransaction {
+        __typename
+        channel_opening_transaction_id: id
+        channel_opening_transaction_created_at: created_at
+        channel_opening_transaction_updated_at: updated_at
+        channel_opening_transaction_status: status
+        channel_opening_transaction_resolved_at: resolved_at
+        channel_opening_transaction_amount: amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_opening_transaction_transaction_hash: transaction_hash
+        channel_opening_transaction_fees: fees {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_opening_transaction_block_hash: block_hash
+        channel_opening_transaction_block_height: block_height
+        channel_opening_transaction_destination_addresses: destination_addresses
+        channel_opening_transaction_num_confirmations: num_confirmations
+    }
     ... on Deposit {
         __typename
         deposit_id: id

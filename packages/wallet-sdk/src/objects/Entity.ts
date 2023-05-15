@@ -21,6 +21,64 @@ type Entity = {
 export const FRAGMENT = `
 fragment EntityFragment on Entity {
     __typename
+    ... on ChannelClosingTransaction {
+        __typename
+        channel_closing_transaction_id: id
+        channel_closing_transaction_created_at: created_at
+        channel_closing_transaction_updated_at: updated_at
+        channel_closing_transaction_status: status
+        channel_closing_transaction_resolved_at: resolved_at
+        channel_closing_transaction_amount: amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_closing_transaction_transaction_hash: transaction_hash
+        channel_closing_transaction_fees: fees {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_closing_transaction_block_hash: block_hash
+        channel_closing_transaction_block_height: block_height
+        channel_closing_transaction_destination_addresses: destination_addresses
+        channel_closing_transaction_num_confirmations: num_confirmations
+    }
+    ... on ChannelOpeningTransaction {
+        __typename
+        channel_opening_transaction_id: id
+        channel_opening_transaction_created_at: created_at
+        channel_opening_transaction_updated_at: updated_at
+        channel_opening_transaction_status: status
+        channel_opening_transaction_resolved_at: resolved_at
+        channel_opening_transaction_amount: amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_opening_transaction_transaction_hash: transaction_hash
+        channel_opening_transaction_fees: fees {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_opening_transaction_block_hash: block_hash
+        channel_opening_transaction_block_height: block_height
+        channel_opening_transaction_destination_addresses: destination_addresses
+        channel_opening_transaction_num_confirmations: num_confirmations
+    }
     ... on Deposit {
         __typename
         deposit_id: id

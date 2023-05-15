@@ -1,5 +1,13 @@
 # @lightsparkdev/react-wallet
 
+## 0.5.1
+
+### Patch Changes
+
+- Include channel opening and closing transactions
+- Updated dependencies
+  - @lightsparkdev/wallet-sdk@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

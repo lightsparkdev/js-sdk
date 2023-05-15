@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.5.1
+
+### Patch Changes
+
+- Include channel opening and closing transactions
+
 ## 0.5.0
 
 ### Minor Changes
