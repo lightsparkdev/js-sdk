@@ -1,5 +1,7 @@
 # The Lightspark JS+TS Wallet SDK
 
+![npm (scoped)](https://img.shields.io/npm/v/@lightsparkdev/wallet-sdk)
+
 This is the Lightspark Typescript Wallet SDK, which can be used from a browser or React Native environment. See the examples directory for some examples of how to use it! If you're using this SDK with React, you might also want to check out our [react-wallet](../react-wallet/README.md) library, which wraps this SDK and provides some convenient React hooks.
 
 ## Getting started

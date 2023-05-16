@@ -1,5 +1,7 @@
 # The Lightspark JS+TS SDK
 
+![npm (scoped)](https://img.shields.io/npm/v/@lightsparkdev/lightspark-sdk)
+
 This is the Lightspark Typescript SDK, which can be used either from a node or browser environment. It's used to manage accounts, nodes, wallets, etc. See the examples directory for some examples of how to use it!
 
 ## Getting started

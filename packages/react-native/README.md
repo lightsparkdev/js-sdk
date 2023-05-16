@@ -1,5 +1,7 @@
 # The Lightspark JS+TS React Native Utility package
 
+![npm (scoped)](https://img.shields.io/npm/v/@lightsparkdev/react-native)
+
 This package offers utilities and alternative implementations of some core Lightspark SDK interfaces to add compatibility with react-native. It can be imported in addition to the `@lightsparkdev/wallet-sdk` or `lightsparkdev/react-wallet` packages to add react-native support.
 
 ## Getting started

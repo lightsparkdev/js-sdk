@@ -1,5 +1,7 @@
 # The Lightspark JS+TS React Wallet package
 
+![npm (scoped)](https://img.shields.io/npm/v/@lightsparkdev/react-wallet)
+
 A thin wrapper around the Lightspark JS+TS Wallet SDK which offers convenient React hooks that simplify usage for React apps.
 
 ## Getting started

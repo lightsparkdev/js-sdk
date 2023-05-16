@@ -1,5 +1,7 @@
 # Lightspark Wallet CLI
 
+![npm (scoped)](https://img.shields.io/npm/v/@lightsparkdev/wallet-cli)
+
 The `lightspark-wallet` script is a wrapper around the `wallet-sdk` which can simplify testing simple wallet commands from your command-line. You can install it from source via `npm i -g` or from the [npm package](https://www.npmjs.com/package/@lightsparkdev/wallet-cli): `npm i -g @lightsparkdev/wallet-cli`.
 
 ## init-env
@@ -28,7 +30,7 @@ There are lots of commands! Check out `lightspark-wallet --help` for more usage 
 
 ## create-and-init-wallet
 
-This command will create a new wallet for the user and initialize it with a name and a currency. It will also mint a JWT for the user and store it in `.lightsparkenv` for future use.
+This command will create a new wallet for the user and initialize it using new signing keys. It will also mint a JWT for the user and store it in `.lightsparkenv` for future use.
 
 ```bash
 lightspark-wallet create-and-init-wallet -u someUserId123 --test
