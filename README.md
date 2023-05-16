@@ -14,7 +14,6 @@ Check out the READMEs for each package for more information on how to use them, 
 We're using Turbo and workspaces in combination with changesets to manage and build the packages. Currently this is a local manual process and the steps are as follows:
 
 ```
-cd webdev/js-sdk
 yarn
 # make some changes to one of the packages
 yarn build

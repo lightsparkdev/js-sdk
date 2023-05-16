@@ -15,9 +15,10 @@ core.workflow(
     mode = "SQUASH",
 
     origin_files = glob(
-      ["js-sdk/**", "copy.bara.sky"],
+      ["js/**", "copy.bara.sky"],
       exclude = [
-        "js-sdk/examples/internal_example.js",
+        "js/packages/private/**",
+        "js/apps/private/**"
       ]
     ),
 
@@ -28,7 +29,7 @@ core.workflow(
         core.todo_replace(
           mode = 'SCRUB_NAMES'
         ),
-        core.move("js-sdk/", "")
+        core.move("js/", "")
     ],
 )
 
@@ -63,14 +64,14 @@ ${GITHUB_PR_BODY}
       ),
     ),
 
-    destination_files = glob(["js-sdk/**"]),
+    destination_files = glob(["js/**"]),
 
     authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     mode = "CHANGE_REQUEST",
     transformations = [
         metadata.save_author("ORIGINAL_AUTHOR"),
         metadata.expose_label("GITHUB_PR_NUMBER", new_name = "Closes", separator = "lightsparkdev/webdev"),
-        core.move("", "js-sdk/"),
+        core.move("", "js/"),
     ],
 )
 

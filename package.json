@@ -12,7 +12,9 @@
   },
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "packages/private/*",
+    "apps/*",
+    "apps/private/*"
   ],
   "devDependencies": {
     "turbo": "^1.9.4"
