@@ -1,0 +1,39 @@
+name: "Documentation"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docs:
+    runs-on: "ubuntu-22.04"
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+
+      - run: "yarn install"
+      - run: "yarn build"
+      - run: "rm -rf packages/*/docs/"
+      - name: "Run yarn docs"
+        run: |
+          yarn workspace @lightsparkdev/lightspark-sdk docs
+          yarn workspace @lightsparkdev/wallet-sdk docs
+      - name: "Configure AWS credentials"
+        uses: "aws-actions/configure-aws-credentials@v1"
+        with:
+          role-to-assume: "arn:aws:iam::${{secrets.AWS_ACCOUNT_ID_DEV}}:role/github-actions-sdk"
+          aws-region: "us-west-2"
+      - name: "Run aws s3 sync"
+        run: |
+          aws s3 sync packages/lightspark-sdk/docs/ s3://${{secrets.FRONTEND_BUCKET_DEV}}/docs/js/lightspark-sdk/
+          aws s3 sync packages/wallet-sdk/docs/ s3://${{secrets.FRONTEND_BUCKET_DEV}}/docs/js/wallet-sdk/
