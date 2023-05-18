@@ -8,10 +8,10 @@ const WalletDashboardQuery = `
 query WalletDashboard(
     $numTransactions: Int,
     $numPaymentRequests: Int,
-    $transactionsAfterDate: DateTime,
-    $paymentRequestsAfterDate: DateTime,
-    $transactionTypes: [TransactionType!] = [PAYMENT, PAYMENT_REQUEST, ROUTE, L1_WITHDRAW, L1_DEPOSIT]
-    $transactionStatuses: [TransactionStatus!] = null
+    $transactionsAfterDate: DateTime = null,
+    $paymentRequestsAfterDate: DateTime = null,
+    $transactionTypes: [TransactionType!] = [CHANNEL_OPEN, CHANNEL_CLOSE, L1_DEPOSIT, L1_WITHDRAW, INCOMING_PAYMENT, OUTGOING_PAYMENT],
+    $transactionStatuses: [TransactionStatus!] = [SUCCESS, FAILED, PENDING]
 ) {
     current_wallet {
         id

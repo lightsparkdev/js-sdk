@@ -1,0 +1,25 @@
+name: Create Release PR
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  create-release-pr:
+    name: Create Release PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check if PR exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          on_error() {
+            echo "PR create attempt failed, assuming PR already exists."
+            exit 0
+          }
+
+          trap "on_error" INT TERM ERR
+          gh pr create --title "Release" --body "Please be sure to add a changeset using the button provided by the bot below before merging."
