@@ -13,7 +13,7 @@ core.workflow(
         push = "develop",
     ),
     # Switch to ITERATIVE mode to import each commit separately.
-    mode = "SQUASH",
+    mode = "ITERATIVE",
 
     origin_files = glob(
       ["js/**"],
