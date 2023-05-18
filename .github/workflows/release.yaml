@@ -37,7 +37,7 @@ jobs:
         if: steps.changesets.outputs.published == 'true'
         # You can do something when a publish happens.
         run: |
-          curl --data-binary @- --header "Content-Type: application/json" --silent ${SLACK_WEBHOOK_URL} <<EOF
+          curl --data-binary @- --header "Content-Type: application/json" --silent ${secrets.SLACK_WEBHOOK_URL} <<EOF
           {
             "text": ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions ${steps.changesets.outputs.publishedPackages} <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>"
           }
