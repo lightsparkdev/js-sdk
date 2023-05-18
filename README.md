@@ -11,7 +11,7 @@ Check out the READMEs for each package for more information on how to use them, 
 
 # Releases
 
-TODO
+TODO: Add release instructions.
 
 # Changesets
 
