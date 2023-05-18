@@ -22,4 +22,4 @@ jobs:
           }
 
           trap "on_error" INT TERM ERR
-          gh pr create --title "Release" --body "Please be sure to add a changeset using the button provided by the bot below before merging."
+          gh pr create --title "Release" --body "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below."
