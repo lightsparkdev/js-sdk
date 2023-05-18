@@ -43,60 +43,62 @@ jobs:
 
   create-webdev-pr:
     name: Create Webdev PR
-    - name: Install Bazel
-      run: |
-        sudo apt install apt-transport-https curl gnupg -y
-        curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg
-        sudo mv bazel-archive-keyring.gpg /usr/share/keyrings
-        echo "deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-        sudo apt update && sudo apt install bazel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Bazel
+        run: |
+          sudo apt install apt-transport-https curl gnupg -y
+          curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg
+          sudo mv bazel-archive-keyring.gpg /usr/share/keyrings
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+          sudo apt update && sudo apt install bazel
 
-  - name: "Clone Copybara"
-    uses: actions/checkout@v3
-    with:
-      path: copybara
-      repository: google/copybara
+      - name: "Clone Copybara"
+        uses: actions/checkout@v3
+        with:
+          path: copybara
+          repository: google/copybara
 
-  - name: "Build Copybara"
-    run: |
-      cd copybara
-      bazel build //java/com/google/copybara
-      ls -la
+      - name: "Build Copybara"
+        run: |
+          cd copybara
+          bazel build //java/com/google/copybara
+          ls -la
 
-  - name: Generate a token
-    id: generate_token
-    uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
-    with:
-      app_id: ${{ secrets.APP_ID }}
-      private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Generate a token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-  - name: "Run Copybara"
-    env:
-      TOKEN: ${{ steps.generate_token.outputs.token }}
-    run: |
-      ls -la
-      git config --global user.name 'Lightspark Eng'
-      git config --global user.email 'engineering@lightspark.com'
-      echo "https://x-access-token:${TOKEN}@github.com" > ~/.git-credentials
+      - name: "Run Copybara"
+        env:
+          TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          ls -la
+          git config --global user.name 'Lightspark Eng'
+          git config --global user.email 'engineering@lightspark.com'
+          echo "https://x-access-token:${TOKEN}@github.com" > ~/.git-credentials
 
-      on_exit() {
-        # See this for possible error codes from Copybara https://github.com/google/copybara/issues/236
-        exit_code=$?
-        case $exit_code in
-          0)
-            echo "Copybara completed successfully"
-            exit 0
-            ;;
-          4)
-            echo "Copybara completed with no changes detected, exiting 0"
-            exit 0
-            ;;
-          *)
-            echo "Copybara failed with exit code $exit_code"
-            exit $exit_code
-            ;;
-        esac
-      }
+          on_exit() {
+            # See this for possible error codes from Copybara https://github.com/google/copybara/issues/236
+            exit_code=$?
+            case $exit_code in
+              0)
+                echo "Copybara completed successfully"
+                exit 0
+                ;;
+              4)
+                echo "Copybara completed with no changes detected, exiting 0"
+                exit 0
+                ;;
+              *)
+                echo "Copybara failed with exit code $exit_code"
+                exit $exit_code
+                ;;
+            esac
+          }
 
-      trap on_exit EXIT
-      ./copybara/bazel-bin/java/com/google/copybara/copybara ./webdev/js/copy.bara.sky js-sdk-pull
+          trap on_exit EXIT
+          ./copybara/bazel-bin/java/com/google/copybara/copybara ./webdev/js/copy.bara.sky js-sdk-pull
