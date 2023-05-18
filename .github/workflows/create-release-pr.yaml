@@ -1,4 +1,4 @@
-name: Release
+name: Create Release PR
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - develop
 
 jobs:
-  release:
-    name: Release
+  create-release-pr:
+    name: Create Release PR
     runs-on: ubuntu-latest
 
     steps:
