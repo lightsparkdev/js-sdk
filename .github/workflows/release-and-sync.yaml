@@ -105,4 +105,4 @@ jobs:
           }
 
           trap on_exit EXIT
-          ./copybara/bazel-bin/java/com/google/copybara/copybara ./webdev/js/copy.bara.sky js-sdk-pull
+          ./copybara/bazel-bin/java/com/google/copybara/copybara ./copy.bara.sky js-sdk-pull
