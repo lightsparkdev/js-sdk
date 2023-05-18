@@ -1,5 +1,15 @@
 # @lightsparkdev/core
 
+## 0.2.3
+
+### Patch Changes
+
+- 8bf7fe0: Patch release for core and wallet sdks.
+
+  - Expose a function for raw subscriptions from the wallet client.
+  - Fix type exports.
+  - Fix a parsing bug in the wallet dashboard query
+
 ## 0.2.2
 
 ### Patch Changes
