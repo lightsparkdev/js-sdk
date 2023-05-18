@@ -39,7 +39,7 @@ core.workflow(
     name = "js-sdk-pull",
     origin = git.github_origin(
       url = "https://github.com/lightsparkdev/js-sdk.git",
-      branch = "main",
+      ref = "main",
     ),
     destination = git.github_pr_destination(
       url = "https://github.com/lightsparkdev/webdev.git",
