@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
       - name: Check if PR exists
+        uses: actions/checkout@v3
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [[ $(gh pr list --state open --head feature) == "" ]]; then
             gh pr create --title "Feature 123" --body "This PR adds a new feature."
