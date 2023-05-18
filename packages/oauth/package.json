@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/oauth",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Lightspark JS Oauth SDK",
   "author": "Lightspark Inc.",
   "keywords": [
