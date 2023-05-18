@@ -16,6 +16,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [[ $(gh pr list --state open --head feature) == "" ]]; then
-            gh pr create --title "Feature 123" --body "This PR adds a new feature."
-          fi
+          on_error() {
+            echo "PR create attempt failed, assuming PR already exists."
+            exit 0
+          }
+
+          trap "on_error" INT TERM ERR
+          gh pr create --title "Release" --body "Please be sure to add a changeset using the button provided by the bot below before merging."
