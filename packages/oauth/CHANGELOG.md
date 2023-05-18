@@ -1,11 +1,5 @@
 # @lightsparkdev/oauth
 
-## 0.1.5
-
-### Patch Changes
-
-- 9491bd4: Bumping to the newest core patch version.
-
 ## 0.1.4
 
 ### Patch Changes

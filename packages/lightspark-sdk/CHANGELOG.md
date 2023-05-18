@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 0.2.5
-
-### Patch Changes
-
-- 9491bd4: Bumping to the newest core patch version.
-
 ## 0.2.4
 
 ### Patch Changes

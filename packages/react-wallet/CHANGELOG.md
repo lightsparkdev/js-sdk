@@ -1,26 +1,5 @@
 # @lightsparkdev/react-wallet
 
-## 0.5.3
-
-### Patch Changes
-
-- 9491bd4: Bumping to the newest core patch version.
-- 9491bd4: Patch release for react wallet sdk.
-
-  - Expose a function for raw subscriptions from the wallet client.
-  - Fix type exports.
-  - Fix a parsing bug in the wallet dashboard query
-
-## 0.5.2
-
-### Patch Changes
-
-- 298387c: Patch release for react wallet sdk.
-
-  - Expose a function for raw subscriptions from the wallet client.
-  - Fix type exports.
-  - Fix a parsing bug in the wallet dashboard query
-
 ## 0.5.1
 
 ### Patch Changes
