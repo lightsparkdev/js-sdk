@@ -1,5 +1,13 @@
 # @lightsparkdev/core
 
+## 0.2.3
+
+### Patch Changes
+
+- 4c25dc8: Develop
+- 55f72fa: Develop
+- dc17b14: Develop
+
 ## 0.2.2
 
 ### Patch Changes
