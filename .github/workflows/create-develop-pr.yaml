@@ -1,0 +1,19 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check if PR exists
+        run: |
+          if [[ $(gh pr list --state open --head feature) == "" ]]; then
+            gh pr create --title "Feature 123" --body "This PR adds a new feature."
+          fi
