@@ -44,7 +44,18 @@ jobs:
   create-webdev-pr:
     name: Create Webdev PR
     runs-on: ubuntu-latest
+    environment: npm
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Generate a token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Install Bazel
         run: |
           sudo apt install apt-transport-https curl gnupg -y
@@ -64,13 +75,6 @@ jobs:
           cd copybara
           bazel build //java/com/google/copybara
           ls -la
-
-      - name: Generate a token
-        id: generate_token
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: "Run Copybara"
         env:
