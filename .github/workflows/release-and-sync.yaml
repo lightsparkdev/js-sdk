@@ -86,4 +86,8 @@ jobs:
 
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
+<<<<<<< HEAD
           java -jar copybara.jar ./copy.bara.sky js-sdk-pull
+=======
+          java -jar copybara.jar ./copy.bara.sky js-sdk-pull 4725
+>>>>>>> main
