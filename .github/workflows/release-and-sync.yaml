@@ -56,26 +56,6 @@ jobs:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Install Bazel
-        run: |
-          sudo apt install apt-transport-https curl gnupg -y
-          curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor >bazel-archive-keyring.gpg
-          sudo mv bazel-archive-keyring.gpg /usr/share/keyrings
-          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-          sudo apt update && sudo apt install bazel
-
-      - name: "Clone Copybara"
-        uses: actions/checkout@v3
-        with:
-          path: copybara
-          repository: google/copybara
-
-      - name: "Build Copybara"
-        run: |
-          cd copybara
-          bazel build //java/com/google/copybara
-          ls -la
-
       - name: "Run Copybara"
         env:
           TOKEN: ${{ steps.generate_token.outputs.token }}
@@ -104,5 +84,6 @@ jobs:
             esac
           }
 
+          curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
-          ./copybara/bazel-bin/java/com/google/copybara/copybara ./copy.bara.sky js-sdk-pull
+          java -jar copybara.jar ./copy.bara.sky js-sdk-pull
