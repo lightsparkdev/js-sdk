@@ -19,8 +19,28 @@
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./objects": "./dist/objects/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./objects": {
+      "types": "./dist/objects/index.d.ts",
+      "import": {
+        "types": "./dist/objects/index.d.ts",
+        "default": "./dist/objects/index.js"
+      },
+      "require": {
+        "types": "./dist/objects/index.d.ts",
+        "default": "./dist/objects/index.cjs"
+      }
+    }
   },
   "type": "module",
   "types": "./dist/index.d.ts",

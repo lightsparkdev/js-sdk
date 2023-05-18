@@ -334,13 +334,17 @@ class LightsparkClient {
           balances:
             currentWallet.balances && BalancesFromJson(currentWallet.balances),
           recentTransactions:
-            currentWallet.recent_transactions?.entities?.map((tx) => {
-              return TransactionFromJson(tx);
-            }) || [],
+            currentWallet.recent_transactions?.wallet_to_transactions_connection_entities?.map(
+              (tx) => {
+                return TransactionFromJson(tx);
+              }
+            ) || [],
           paymentRequests:
-            currentWallet.payment_requests?.entities?.map((pr) => {
-              return PaymentRequestFromJson(pr);
-            }) || [],
+            currentWallet.payment_requests?.wallet_to_payment_requests_connection_entities?.map(
+              (pr) => {
+                return PaymentRequestFromJson(pr);
+              }
+            ) || [],
         };
       },
     });
@@ -835,6 +839,23 @@ class LightsparkClient {
       )
       .map((responseJson: any) => {
         return OutgoingPaymentFromJson(responseJson.data.entity);
+      });
+  }
+
+  /**
+   * Executes a raw `Query` as a subscription and returns an `Observable` that emits the result of the query when it
+   * changes.
+   *
+   * This can only be used with `subscription` operations.
+   *
+   * @param query The `Query` to execute.
+   * @returns A zen-observable that emits the result of the query when it changes.
+   */
+  public subscribeToRawQuery<T>(query: Query<T>): Observable<T> {
+    return this.requester
+      .subscribe(query.queryPayload, query.variables)
+      .map((responseJson: any) => {
+        return query.constructObject(responseJson.data);
       });
   }
 
