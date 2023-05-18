@@ -66,7 +66,16 @@ ${GITHUB_PR_BODY}
       ),
     ),
 
-    destination_files = glob(["js/**"]),
+    origin_files = glob(
+      ["**"],
+      exclude = [
+        ".github/**"
+      ],
+    ),
+    destination_files = glob(["js/**"], exclude = [
+      "js/packages/private/**",
+      "js/apps/private/**"
+    ]),
 
     authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     mode = "CHANGE_REQUEST",
