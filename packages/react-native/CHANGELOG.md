@@ -1,5 +1,11 @@
 # @lightsparkdev/react-native
 
+## 0.1.2
+
+### Patch Changes
+
+- 9491bd4: Bumping to the newest core patch version.
+
 ## 0.1.1
 
 ### Patch Changes
