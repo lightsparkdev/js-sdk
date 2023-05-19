@@ -1,5 +1,5 @@
 ---
-"@lightsparkdev/wallet-sdk": patch
+"@lightsparkdev/wallet-sdk": minor
 ---
 
 Release
