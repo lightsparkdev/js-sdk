@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.5.3
+
+### Patch Changes
+
+- 2c5cfc7: Release
+
 ## 0.5.2
 
 ### Patch Changes
