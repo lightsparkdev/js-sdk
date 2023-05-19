@@ -49,8 +49,8 @@ core.workflow(
       update_description = True,
       body = (
         """Update public `js` sources with the latest code from the [public repository](https://github.com/lightsparkdev/js-sdk) main branch.
-This typically happens when new versions of the SDK are released and version updates need to be synced. The PR should be merged as soon as possible
-to avoid updates to webdev overwriting the changes in the js-sdk develop branch."""
+
+This typically happens when new versions of the SDK are released and version updates need to be synced. The PR should be merged as soon as possible to avoid updates to webdev overwriting the changes in the js-sdk develop branch."""
       ),
     ),
 
