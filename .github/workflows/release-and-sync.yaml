@@ -51,6 +51,7 @@ jobs:
 
       - name: Reset develop to main
         run: |
+          ls -la
           git checkout develop
           git reset --hard origin/main
           git push origin develop --force
