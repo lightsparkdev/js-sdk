@@ -45,7 +45,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "^0.2.3",
+    "@lightsparkdev/core": "0.2.3",
     "react-native-quick-crypto": "^0.6.1",
     "auto-bind": "^5.0.1",
     "dayjs": "^1.11.7"
