@@ -49,6 +49,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Reset develop to main
+        run: |
+          git checkout develop
+          git reset --hard origin/main
+          git push origin develop --force
+
       - name: Generate a token
         id: generate_token
         uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
