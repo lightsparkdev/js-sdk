@@ -49,17 +49,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
-          ref: develop
+          fetch-depth: 0
 
       - name: Reset develop to main
         run: |
+          git checkout develop
           git reset --hard origin/main
           git push origin develop --force
-
-      - name: Checkout Repo
-        uses: actions/checkout@v3
-        with:
-          ref: develop
+          git checkout main
 
       - name: Generate a token
         id: generate_token
