@@ -48,7 +48,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-        ref: develop
+        with:
+          ref: develop
 
       - name: Reset develop to main
         run: |
@@ -57,7 +58,8 @@ jobs:
 
       - name: Checkout Repo
         uses: actions/checkout@v3
-        ref: main
+        with:
+          ref: develop
 
       - name: Generate a token
         id: generate_token
