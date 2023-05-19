@@ -2,8 +2,13 @@
   "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
+<<<<<<< HEAD
+  "fixed": [],
+  "linked": [["@lightsparkdev/*"]],
+=======
   "fixed": [["@lightsparkdev/*"]],
   "linked": [],
+>>>>>>> main
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
