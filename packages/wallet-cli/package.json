@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-cli",
-  "version": "1.0.1",
+  "version": "0.0.1",
   "description": "CLI for the Lightspark JS Wallet sdk",
   "main": "./lib/index.js",
   "bin": {
