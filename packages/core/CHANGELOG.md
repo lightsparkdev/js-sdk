@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.5.4
+
+### Patch Changes
+
+- 7e39e21: Release
+
 ## 0.2.3
 
 ### Patch Changes
