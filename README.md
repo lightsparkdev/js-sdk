@@ -12,25 +12,3 @@ Check out the READMEs for each package for more information on how to use them, 
 # Releases
 
 TODO: Add release instructions.
-
-# Changesets
-
-We're using Turbo and workspaces in combination with changesets to manage and build the packages. Currently this is a local manual process and the steps are as follows:
-
-```
-yarn
-# make some changes to one of the packages
-yarn build
-```
-
-At this point depending on what you do the changesets command may or may not pick up changes automatically. It compares relative to the ref specified in .changeset/json.config (see [these lines](https://github.com/changesets/changesets/blob/main/packages/cli/src/commands/add/index.ts#L42-L46)) which is different from how e.g. the `yarn changesets status --since=some-ref` behaves. So if you know for sure you want to publish new versions as a result of your current uncommitted working tree you may do that, otherwise you'll have to manually pick the packages that have changed when it asks you.
-
-```
-yarn changeset
-git commit -nm 'Changeset for [package]'
-yarn changeset version
-git commit -nm 'Version for [package]'
-yarn changeset publish
-```
-
-Once changesets is integrated into CI the diffs will work more automatically since they'll be running on every commit, but this needs more investigation. Ideally CI would autopublish patches on changes or larger version bumps if specified.
