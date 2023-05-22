@@ -202,6 +202,18 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
                                 invoice_data_created_at: created_at
                                 invoice_data_expires_at: expires_at
                                 invoice_data_memo: memo
+                                invoice_data_destination: destination {
+                                    __typename
+                                    graph_node_id: id
+                                    graph_node_created_at: created_at
+                                    graph_node_updated_at: updated_at
+                                    graph_node_alias: alias
+                                    graph_node_bitcoin_network: bitcoin_network
+                                    graph_node_color: color
+                                    graph_node_conductivity: conductivity
+                                    graph_node_display_name: display_name
+                                    graph_node_public_key: public_key
+                                }
                             }
                         }
                         outgoing_payment_failure_reason: failure_reason
@@ -305,6 +317,18 @@ query FetchWalletToPaymentRequestsConnection($first: Int, $after: ID, $created_a
                             invoice_data_created_at: created_at
                             invoice_data_expires_at: expires_at
                             invoice_data_memo: memo
+                            invoice_data_destination: destination {
+                                __typename
+                                graph_node_id: id
+                                graph_node_created_at: created_at
+                                graph_node_updated_at: updated_at
+                                graph_node_alias: alias
+                                graph_node_bitcoin_network: bitcoin_network
+                                graph_node_color: color
+                                graph_node_conductivity: conductivity
+                                graph_node_display_name: display_name
+                                graph_node_public_key: public_key
+                            }
                         }
                         invoice_status: status
                         invoice_amount_paid: amount_paid {
