@@ -1,4 +1,4 @@
-name: "Test JS SDK"
+name: "Test"
 
 on:
   pull_request:
@@ -22,9 +22,9 @@ jobs:
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: "js/.nvmrc"
+          node-version-file: ".nvmrc"
           cache: "yarn"
-          cache-dependency-path: "js/yarn.lock"
+          cache-dependency-path: "yarn.lock"
 
       - name: "Install dependencies"
         run: "yarn"
