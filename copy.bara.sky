@@ -26,7 +26,7 @@ core.workflow(
         core.todo_replace(mode="SCRUB_NAMES"),
         core.move("js/", ""),
         core.move("js/README-PUBLIC.md", "README.md"),
-        core.remove("README-PUBLIC.md"),
+        core.remove(glob(["README-PUBLIC.md"])),
     ],
 )
 
