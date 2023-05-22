@@ -1,0 +1,45 @@
+name: "Test"
+
+on:
+  pull_request:
+    paths:
+      - "**"
+  push:
+    branches:
+      - main
+    paths:
+      - "**"
+
+jobs:
+  js-test:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          fetch-depth: 2
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
+
+      - name: "Install dependencies"
+        run: "yarn"
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Build
+        run: yarn build
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF

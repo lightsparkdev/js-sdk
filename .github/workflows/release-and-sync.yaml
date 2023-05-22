@@ -31,15 +31,24 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Send a Slack notification if a publish happens
-      #   if: steps.changesets.outputs.published == 'true'
-      #   # You can do something when a publish happens.
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent ${secrets.SLACK_WEBHOOK_URL} <<EOF
-      #     {
-      #       "text": ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions ${steps.changesets.outputs.publishedPackages} <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: Notify publish on Slack
+        if: steps.changesets.outputs.published == 'true'
+        # You can do something when a publish happens.
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions ${steps.changesets.outputs.publishedPackages} <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>"
+          }
+          EOF
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
 
   create-webdev-pr:
     name: Create Webdev PR
@@ -96,3 +105,12 @@ jobs:
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
           java -jar copybara.jar ./copy.bara.sky js-sdk-pull
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF

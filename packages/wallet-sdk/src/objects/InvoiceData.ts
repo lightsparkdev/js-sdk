@@ -2,6 +2,7 @@
 
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import GraphNode, { GraphNodeFromJson } from "./GraphNode.js";
 import PaymentRequestData from "./PaymentRequestData.js";
 
 /** This object represents the BOLT #11 invoice protocol for Lightning Payments. See https://github.com/lightning/bolts/blob/master/11-payment-encoding.md. **/
@@ -25,6 +26,9 @@ type InvoiceData = PaymentRequestData & {
   /** The date and time when this invoice will expire. **/
   expiresAt: string;
 
+  /** The lightning node that will be paid when fulfilling this invoice. **/
+  destination: GraphNode;
+
   /** The typename of the object **/
   typename: string;
 
@@ -42,6 +46,7 @@ export const InvoiceDataFromJson = (obj: any): InvoiceData => {
     amount: CurrencyAmountFromJson(obj["invoice_data_amount"]),
     createdAt: obj["invoice_data_created_at"],
     expiresAt: obj["invoice_data_expires_at"],
+    destination: GraphNodeFromJson(obj["invoice_data_destination"]),
     typename: "InvoiceData",
     memo: obj["invoice_data_memo"],
   } as InvoiceData;
@@ -64,6 +69,18 @@ fragment InvoiceDataFragment on InvoiceData {
     invoice_data_created_at: created_at
     invoice_data_expires_at: expires_at
     invoice_data_memo: memo
+    invoice_data_destination: destination {
+        __typename
+        graph_node_id: id
+        graph_node_created_at: created_at
+        graph_node_updated_at: updated_at
+        graph_node_alias: alias
+        graph_node_bitcoin_network: bitcoin_network
+        graph_node_color: color
+        graph_node_conductivity: conductivity
+        graph_node_display_name: display_name
+        graph_node_public_key: public_key
+    }
 }`;
 
 export default InvoiceData;

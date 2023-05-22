@@ -11,12 +11,17 @@ export {
 export { default as CreateBitcoinFundingAddressOutput } from "./CreateBitcoinFundingAddressOutput.js";
 export { default as CreateInvoiceInput } from "./CreateInvoiceInput.js";
 export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";
+export { default as CreateTestModeInvoiceInputWallet } from "./CreateTestModeInvoiceInputWallet.js";
+export { default as CreateTestModeInvoiceOutput } from "./CreateTestModeInvoiceOutput.js";
+export { default as CreateTestModePaymentInputWallet } from "./CreateTestModePaymentInputWallet.js";
+export { default as CreateTestModePaymentoutput } from "./CreateTestModePaymentoutput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
 export { default as DeployWalletOutput } from "./DeployWalletOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
 export { default as Entity } from "./Entity.js";
 export { default as FeeEstimate } from "./FeeEstimate.js";
+export { default as GraphNode } from "./GraphNode.js";
 export {
   default as IncomingPayment,
   getIncomingPaymentQuery,
@@ -37,6 +42,10 @@ export {
 } from "./LightningTransaction.js";
 export { default as LoginWithJWTInput } from "./LoginWithJWTInput.js";
 export { default as LoginWithJWTOutput } from "./LoginWithJWTOutput.js";
+export { default as Node } from "./Node.js";
+export { default as NodeAddress } from "./NodeAddress.js";
+export { default as NodeAddressType } from "./NodeAddressType.js";
+export { default as NodeToAddressesConnection } from "./NodeToAddressesConnection.js";
 export {
   default as OnChainTransaction,
   getOnChainTransactionQuery,
