@@ -62,6 +62,6 @@ This typically happens when new versions of the SDK are released and version upd
             "GITHUB_PR_NUMBER", new_name="Closes", separator="lightsparkdev/webdev"
         ),
         core.move("README.md", "js/README-PUBLIC.md"),
-        core.move("", "js/"),
+        core.move("", "js/", glob(["**"], exclude=["README.md"])),
     ],
 )
