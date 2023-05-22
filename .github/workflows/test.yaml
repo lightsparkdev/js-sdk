@@ -28,15 +28,12 @@ jobs:
 
       - name: "Install dependencies"
         run: "yarn"
-        working-directory: "js"
 
       - name: Lint
         run: yarn lint
-        working-directory: "js"
 
       - name: Build
         run: yarn build
-        working-directory: "js"
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
