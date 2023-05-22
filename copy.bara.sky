@@ -63,7 +63,7 @@ This typically happens when new versions of the SDK are released and version upd
         ),
         core.transform(
             [core.move("README.md", "js/README-PUBLIC.md", None, overwrite=True)],
-            reversal=[core.remove("js/README-PUBLIC.md")],
+            reversal=[core.remove(glob("js/README-PUBLIC.md"))],
         ),
         core.move("", "js/"),
     ],
