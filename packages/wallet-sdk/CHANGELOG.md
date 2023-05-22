@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - f2c65f3: Release
+- Regenerate the SDKs and fix a circular dep in the internal-sdk (#4762)
 
 ## 0.5.2
 
