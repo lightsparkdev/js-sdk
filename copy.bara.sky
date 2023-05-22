@@ -19,7 +19,8 @@ core.workflow(
       ["js/**"],
       exclude = [
         "js/packages/private/**",
-        "js/apps/private/**"
+        "js/apps/private/**",
+        "js/packages/README.md"
       ]
     ),
     destination_files = glob(["**"], exclude = [".github/**"]),
@@ -31,6 +32,7 @@ core.workflow(
         core.todo_replace(
           mode = 'SCRUB_NAMES'
         ),
+        core.replace("js/README.md", "js/README.md"),
         core.move("js/", "")
     ],
 )
