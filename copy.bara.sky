@@ -25,7 +25,8 @@ core.workflow(
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
         core.todo_replace(mode="SCRUB_NAMES"),
         core.move("js/", ""),
-        core.replace("README.md", "README.md"),
+        core.move("js/README-PUBLIC.md", "README.md"),
+        core.remove("README-PUBLIC.md"),
     ],
 )
 
