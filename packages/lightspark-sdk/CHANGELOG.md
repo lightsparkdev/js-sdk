@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.2.6
+
+### Patch Changes
+
+- f2c65f3: Release
+
 ## 0.2.5
 
 ### Patch Changes
