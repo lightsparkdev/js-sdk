@@ -24,8 +24,8 @@ core.workflow(
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
         core.todo_replace(mode="SCRUB_NAMES"),
-        core.replace("js/README.md", "js/README.md"),
         core.move("js/", ""),
+        core.replace("README.md", "README.md"),
     ],
 )
 
