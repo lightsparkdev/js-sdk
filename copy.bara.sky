@@ -3,73 +3,65 @@
 # $ ../copybara/bazel-bin/java/com/google/copybara/copybara copy.bara.sky js-sdk-push
 
 core.workflow(
-    name = "js-sdk-push",
-    origin = git.github_origin(
-      url = "https://github.com/lightsparkdev/webdev.git",
-      ref = "main",
+    name="js-sdk-push",
+    origin=git.github_origin(
+        url="https://github.com/lightsparkdev/webdev.git",
+        ref="main",
     ),
-    destination = git.github_destination(
-        url = "https://github.com/lightsparkdev/js-sdk.git",
-        push = "develop",
+    destination=git.github_destination(
+        url="https://github.com/lightsparkdev/js-sdk.git",
+        push="develop",
     ),
     # Switch to ITERATIVE mode to import each commit separately.
-    mode = "ITERATIVE",
-
-    origin_files = glob(
-      ["js/**"],
-      exclude = [
-        "js/packages/private/**",
-        "js/apps/private/**"
-      ]
+    mode="ITERATIVE",
+    origin_files=glob(
+        ["js/**"],
+        exclude=["js/packages/private/**", "js/apps/private/**", "js/README.md"],
     ),
-    destination_files = glob(["**"], exclude = [".github/**"]),
-
-    authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
-    transformations = [
-        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes = True),
+    destination_files=glob(["**"], exclude=[".github/**"]),
+    authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
+    transformations=[
+        metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
-        core.todo_replace(
-          mode = 'SCRUB_NAMES'
-        ),
-        core.move("js/", "")
+        core.todo_replace(mode="SCRUB_NAMES"),
+        core.move("js/README-PUBLIC.md", "README.md"),
+        core.move("js/", ""),
     ],
 )
 
 core.workflow(
-    name = "js-sdk-pull",
-    origin = git.github_origin(
-      url = "https://github.com/lightsparkdev/js-sdk.git",
-      ref = "main",
+    name="js-sdk-pull",
+    origin=git.github_origin(
+        url="https://github.com/lightsparkdev/js-sdk.git",
+        ref="main",
     ),
-    destination = git.github_pr_destination(
-      url = "https://github.com/lightsparkdev/webdev.git",
-      destination_ref = "main",
-      integrates = [],
-      title = "Update from public js-sdk main branch",
-      update_description = True,
-      body = (
-        """Update public `js` sources with the latest code from the [public repository](https://github.com/lightsparkdev/js-sdk) main branch.
+    destination=git.github_pr_destination(
+        url="https://github.com/lightsparkdev/webdev.git",
+        destination_ref="main",
+        integrates=[],
+        title="Update from public js-sdk main branch",
+        update_description=True,
+        body=(
+            """Update public `js` sources with the latest code from the [public repository](https://github.com/lightsparkdev/js-sdk) main branch.
 
 This typically happens when new versions of the SDK are released and version updates need to be synced. The PR should be merged as soon as possible to avoid updates to webdev overwriting the changes in the js-sdk develop branch."""
-      ),
+        ),
     ),
-
-    origin_files = glob(
-      ["**"],
-      exclude = [
-        ".github/**"
-      ],
+    origin_files=glob(
+        ["**"],
+        exclude=[".github/**"],
     ),
-    destination_files = glob(["js/**"], exclude = [
-      "js/packages/private/**",
-      "js/apps/private/**"
-    ]),
-
-    authoring = authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
-    mode = "CHANGE_REQUEST",
-    transformations = [
+    destination_files=glob(
+        ["js/**"], exclude=["js/packages/private/**", "js/apps/private/**"]
+    ),
+    authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
+    mode="CHANGE_REQUEST",
+    transformations=[
         metadata.save_author("ORIGINAL_AUTHOR"),
-        metadata.expose_label("GITHUB_PR_NUMBER", new_name = "Closes", separator = "lightsparkdev/webdev"),
+        metadata.expose_label(
+            "GITHUB_PR_NUMBER", new_name="Closes", separator="lightsparkdev/webdev"
+        ),
+        core.move("README.md", "js/README-PUBLIC.md"),
         core.move("", "js/"),
     ],
 )
