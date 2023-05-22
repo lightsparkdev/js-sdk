@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.2.6
+
+### Patch Changes
+
+- f2c65f3: Release
+- Regenerate the SDKs and fix a circular dep in the internal-sdk (#4762)
+
 ## 0.2.5
 
 ### Patch Changes
