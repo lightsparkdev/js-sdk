@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.2.5
+
+### Patch Changes
+
+- 615bb86: Trigger release to test publish action
+
 ## 0.2.4
 
 ### Patch Changes
