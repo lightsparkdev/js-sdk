@@ -25,7 +25,7 @@ const client = new LightsparkClient();
 The current version of the SDK supports JWT authentication, which is intended for client-side use. To authenticate, you'll need to login using your lightspark account ID and
 a JWT allocated for the user by your own server.
 
-![jwt diagram](./media/jwt-diagram.png)
+![jwt diagram](./docs-media/jwt-diagram.png)
 
 First, you'll need to register your account public key with Lightspark. You can do this from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). You'll need to provide the public key for the account you want to use to sign JWTs. You can generate a keypair using the _ES256_ algorithm using the following command:
 
@@ -85,7 +85,7 @@ const client = new LightsparkClient(new CustomJwtAuthProvider(jwtStorage));
 
 ### Deploying and initializing a wallet
 
-![wallet state diagram](./media/wallet-state-diagram.png)
+![wallet state diagram](./docs-media/wallet-state-diagram.png)
 
 When a user logs in for the first time, initially, their wallet will be in a `NOT_SETUP` status. You can identify this status by querying the current wallet:
 
