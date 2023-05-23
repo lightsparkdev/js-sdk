@@ -1,5 +1,0 @@
----
-"@lightsparkdev/core": patch
----
-
-Release
