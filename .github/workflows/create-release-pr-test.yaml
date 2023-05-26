@@ -91,6 +91,7 @@ jobs:
         run: "yarn add ts-node@10.9.1 -W"
 
       - name: Test git command
+        run: "git status"
         run: "git merge-base main HEAD"
 
       - name: Run changeset
