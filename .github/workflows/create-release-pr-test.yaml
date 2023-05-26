@@ -43,14 +43,22 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const head = 'develop-test';
+            const base = 'main';
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
               repo,
             });
 
-            const pr = prs.find((pr) => pr.head.ref === 'develop-test');
-
-            console.log(pr.head);
-            console.log(pr.base);
-            console.log(pr);
+            const pr = prs.find((pr) => {
+              return pr.head.ref === head && pr.base.ref === base;
+            });
+            if (!pr) {
+              await github.rest.pulls.create({
+                owner,
+                repo,
+                head,
+                base,
+              });
+            }
