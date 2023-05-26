@@ -7,3 +7,5 @@ const changed = await git.getChangedPackagesSinceRef({
 });
 
 console.log(changed);
+
+export {};
