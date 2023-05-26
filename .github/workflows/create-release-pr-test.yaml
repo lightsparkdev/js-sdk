@@ -96,11 +96,60 @@ jobs:
       - name: Run changeset
         id: changed-packages
         run: |
-          echo $(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs | grep changedPackages) >> $GITHUB_OUTPUT
+          echo $(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs | grep changedPackages) >> $GITHUB_OUTPUT
 
       # - name: Get changed packages
       #   run: "echo ::set-output name=changed-packages::${GITHUB_OUTPUT}"
 
+      # if (!comment) {
+      #   github.rest.issues.createComment({
+      #     owner,
+      #     repo,
+      #     issue_number: pr.number,
+      #     body: "Comment test",
+      #   });
+      # }
+
       - name: Get changed packages
         run: |
           echo "${{ steps.changed-packages.outputs.changedPackages }}"
+
+      - name: Update or post comment on PR with link to create changeset
+        id: pr-comment
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const head = 'develop-test';
+            const base = 'main';
+
+            const { data: prs } = await github.rest.pulls.list({
+              owner,
+              repo,
+            });
+
+            let pr = prs.find((pr) => {
+              return pr.head.ref === head && pr.base.ref === base;
+            });
+
+            if (!pr) {
+              const result = await github.rest.pulls.create({
+                owner,
+                repo,
+                head,
+                base,
+                title: "Test CI Updates",
+                body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
+              });
+              pr = result.data;
+            }
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: pr.number,
+            });
+
+            console.log(comments);
