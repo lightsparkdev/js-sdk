@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
+    "lib": ["esnext"],
     "target": "esnext",
     "module": "esnext",
+    "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "types": ["node"]
   }
 }
