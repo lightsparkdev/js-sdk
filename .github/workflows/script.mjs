@@ -1,7 +1,7 @@
 import * as git from "@changesets/git";
 
 const changed = await git.getChangedPackagesSinceRef({
-  cwd: "../..",
+  cwd: ".",
   ref: "main",
   changedFilePatterns: ["**"],
 });
