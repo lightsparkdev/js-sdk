@@ -255,7 +255,7 @@ await client.unlockNode(node2Id, credentials.node2Password!);
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
-const payment = await client.payInvoice(node2Id, invoice, 1000);
+const payment = await client.payInvoice(node2Id, invoice, 100000);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 

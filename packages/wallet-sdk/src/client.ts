@@ -4,6 +4,7 @@ import {
   AuthProvider,
   CryptoInterface,
   DefaultCrypto,
+  KeyOrAliasType,
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
@@ -18,6 +19,8 @@ import JwtStorage from "./auth/jwt/JwtStorage.js";
 import BitcoinFeeEstimateQuery from "./graqhql/BitcoinFeeEstimate.js";
 import CreateBitcoinFundingAddress from "./graqhql/CreateBitcoinFundingAddress.js";
 import CreateInvoice from "./graqhql/CreateInvoice.js";
+import CreateTestModeInvoice from "./graqhql/CreateTestModeInvoice.js";
+import CreateTestModePayment from "./graqhql/CreateTestModePayment.js";
 import CurrentWalletQuery from "./graqhql/CurrentWallet.js";
 import DecodeInvoiceQuery from "./graqhql/DecodeInvoice.js";
 import DeployWallet from "./graqhql/DeployWallet.js";
@@ -72,7 +75,7 @@ import WithdrawalRequest, {
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(encodedInvoice, 1000);
+ * const payment = await lightsparkClient.payInvoice(encodedInvoice, 1_000_000);
  * console.log(payment);
  * ```
  *
@@ -88,8 +91,8 @@ class LightsparkClient {
    * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
-   * @param nodeKeyCache This is used to cache node keys for the duration of the session. Defaults to a new instance of
-   *     `NodeKeyCache`. You should not need to change this.
+   * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
+   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
@@ -162,6 +165,7 @@ class LightsparkClient {
       constructObject: (responseJson: any) => {
         return LoginWithJWTOutputFromJson(responseJson.login_with_jwt);
       },
+      skipAuth: true,
     });
 
     if (!response) {
@@ -227,17 +231,18 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
-   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
-   *     will not leave the device. It is only used for signing transactions locally.
+   * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
+   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
+   *     key will not leave the device. It is only used for signing transactions locally.
    * @return The wallet that was initialized.
    */
   public async initializeWallet(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKey: string
+    signingPrivateKeyOrAlias: KeyOrAliasType
   ) {
     this.requireValidAuth();
-    await this.loadWalletSigningKey(signingPrivateKey);
+    await this.loadWalletSigningKey(signingPrivateKeyOrAlias);
     return await this.executeRawQuery({
       queryPayload: InitializeWallet,
       variables: {
@@ -259,8 +264,9 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
-   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
-   *     will not leave the device. It is only used for signing transactions locally.
+   * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
+   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
+   *     key will not leave the device. It is only used for signing transactions locally.
    * @return A Promise with the final wallet status after initialization or failure.
    * @throws LightsparkException if the wallet status is not `READY` or `FAILED` after 5 minutes,
    * or if the subscription fails.
@@ -268,12 +274,12 @@ class LightsparkClient {
   public async initializeWalletAndAwaitReady(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKey: string
+    signingPrivateKeyOrAlias: KeyOrAliasType
   ) {
     const wallet = await this.initializeWallet(
       keyType,
       signingPublicKey,
-      signingPrivateKey
+      signingPrivateKeyOrAlias
     );
     if (
       wallet?.status === WalletStatus.READY ||
@@ -353,6 +359,8 @@ class LightsparkClient {
   /**
    * Creates a lightning invoice from the current wallet.
    *
+   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   *
    * @param amountMsats The amount of the invoice in milli-satoshis.
    * @param memo Optional memo to include in the invoice.
    * @param type The type of invoice to create. Defaults to [InvoiceType.STANDARD].
@@ -384,6 +392,9 @@ class LightsparkClient {
    *
    * Note: This call will fail if the wallet is not unlocked yet via [loadWalletSigningKey]. You must successfully
    * unlock the wallet before calling this function.
+   *
+   * Test mode note: For test mode, you can use the [createTestModeInvoice] function to create an invoice you can
+   * pay in test mode.
    *
    * @param encodedInvoice An encoded string representation of the invoice to pay.
    * @param maxFeesMsats The maximum fees to pay in milli-satoshis. You must pass a value.
@@ -669,10 +680,11 @@ class LightsparkClient {
    * application outside of the SDK. It is the responsibility of the application to ensure that the key is valid and
    * that it is the correct key for the wallet. Otherwise signed requests will fail.
    *
-   * @param signingKeyBytesPEM The PEM encoded bytes of the wallet's private signing key.
+   * @param sigingKeyBytesOrAlias An object holding either the PEM encoded bytes of the wallet's private signing key or,
+   *     in the case of ReactNative, the alias of the key in the mobile keychain.
    */
-  public loadWalletSigningKey(sigingKeyBytesPEM: string) {
-    return this.nodeKeyCache.loadKey(WALLET_NODE_ID_KEY, sigingKeyBytesPEM);
+  public loadWalletSigningKey(sigingKeyBytesOrAlias: KeyOrAliasType) {
+    return this.nodeKeyCache.loadKey(WALLET_NODE_ID_KEY, sigingKeyBytesOrAlias);
   }
 
   /**
@@ -730,6 +742,70 @@ class LightsparkClient {
       constructObject: (responseJson: any) => {
         return WithdrawalRequestFromJson(
           responseJson.request_withdrawal.request
+        );
+      },
+      signingNodeId: WALLET_NODE_ID_KEY,
+    });
+  }
+
+  /**
+   * In test mode, generates a Lightning Invoice which can be paid by a local node.
+   * This call is only valid in test mode. You can then pay the invoice using [payInvoice].
+   *
+   * @param amountMsats The amount to pay in milli-satoshis.
+   * @param memo An optional memo to attach to the invoice.
+   * @param invoiceType The type of invoice to create.
+   */
+  public async createTestModeInvoice(
+    amountMsats: number,
+    memo: string | undefined = undefined,
+    invoiceType: InvoiceType = InvoiceType.STANDARD
+  ): Promise<string | null> {
+    this.requireValidAuth();
+    return await this.executeRawQuery({
+      queryPayload: CreateTestModeInvoice,
+      variables: {
+        amount_msats: amountMsats,
+        memo,
+        invoice_type: invoiceType,
+      },
+      constructObject: (responseJson: any) => {
+        const encodedPaymentRequest =
+          responseJson.create_test_mode_invoice?.encoded_payment_request;
+        if (!encodedPaymentRequest) {
+          throw new LightsparkException(
+            "CreateTestModeInvoiceError",
+            "Unable to create test mode invoice"
+          );
+        }
+        return encodedPaymentRequest as string;
+      },
+    });
+  }
+
+  /**
+   * In test mode, simulates a payment of a Lightning Invoice from another node.
+   * This can only be used in test mode and should be used with invoices generated by [createInvoice].
+   *
+   * @param encodedInvoice The encoded invoice to pay.
+   * @param amountMsats The amount to pay in milli-satoshis for 0-amount invoices. This should be null for non-zero
+   *     amount invoices.
+   */
+  public async createTestModePayment(
+    encodedInvoice: string,
+    amountMsats: number | undefined = undefined
+  ): Promise<OutgoingPayment | null> {
+    this.requireValidAuth();
+    this.requireWalletUnlocked();
+    return await this.executeRawQuery({
+      queryPayload: CreateTestModePayment,
+      variables: {
+        encoded_invoice: encodedInvoice,
+        amount_msats: amountMsats,
+      },
+      constructObject: (responseJson: any) => {
+        return OutgoingPaymentFromJson(
+          responseJson.create_test_mode_payment?.payment
         );
       },
       signingNodeId: WALLET_NODE_ID_KEY,

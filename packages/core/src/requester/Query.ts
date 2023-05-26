@@ -12,6 +12,9 @@ type Query<T> = {
 
   /** The id of the node that will be used to sign the query. **/
   signingNodeId?: string;
+
+  /** True if auth headers should be omitted for this query. **/
+  skipAuth?: boolean;
 };
 
 export default Query;

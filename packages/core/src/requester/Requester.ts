@@ -53,7 +53,8 @@ class Requester {
     const data = await this.makeRawRequest(
       query.queryPayload,
       query.variables || {},
-      query.signingNodeId
+      query.signingNodeId,
+      !!query.skipAuth
     );
     return query.constructObject(data);
   }
@@ -99,7 +100,8 @@ class Requester {
   public async makeRawRequest(
     queryPayload: string,
     variables: { [key: string]: any } = {},
-    signingNodeId: string | undefined = undefined
+    signingNodeId: string | undefined = undefined,
+    skipAuth: boolean = false
   ): Promise<any | null> {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
@@ -128,12 +130,15 @@ class Requester {
     const browserUserAgent =
       typeof navigator !== "undefined" ? navigator.userAgent : "";
     const sdkUserAgent = this.getSdkUserAgent();
-    const headers = await this.authProvider.addAuthHeaders({
+    const baseHeaders = {
       "Content-Type": "application/json",
       [LIGHTSPARK_BETA_HEADER_KEY]: LIGHTSPARK_BETA_HEADER_VALUE,
       "X-Lightspark-SDK": sdkUserAgent,
       "User-Agent": browserUserAgent || sdkUserAgent,
-    });
+    };
+    const headers = skipAuth
+      ? baseHeaders
+      : await this.authProvider.addAuthHeaders(baseHeaders);
     bodyData = await this.addSigningDataIfNeeded(
       bodyData,
       headers,

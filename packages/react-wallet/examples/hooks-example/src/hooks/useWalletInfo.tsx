@@ -31,7 +31,6 @@ const useWalletInfo = () => {
     refresh();
   }, [clientProvider, refresh]);
 
-
   return { wallet, refresh };
 };
 

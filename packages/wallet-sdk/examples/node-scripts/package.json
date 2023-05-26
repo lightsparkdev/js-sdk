@@ -1,5 +1,5 @@
 {
-  "name": "@lightsparkdev/node-scripts",
+  "name": "@lightsparkdev/wallet-node-scripts",
   "version": "1.0.0",
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",

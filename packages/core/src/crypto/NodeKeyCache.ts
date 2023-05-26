@@ -4,9 +4,10 @@ import autoBind from "auto-bind";
 
 import { b64decode } from "../utils/base64.js";
 import { CryptoInterface, DefaultCrypto } from "./crypto.js";
+import { KeyOrAliasType } from "./KeyOrAlias.js";
 
 class NodeKeyCache {
-  private idToKey: Map<string, CryptoKey | Uint8Array>;
+  private idToKey: Map<string, CryptoKey | string>;
   constructor(private readonly cryptoImpl: CryptoInterface = DefaultCrypto) {
     this.idToKey = new Map();
     autoBind(this);
@@ -14,15 +15,15 @@ class NodeKeyCache {
 
   public async loadKey(
     id: string,
-    rawKey: string,
-    format: "pkcs8" | "spki" = "pkcs8"
-  ): Promise<CryptoKey | Uint8Array | null> {
-    const decoded = b64decode(this.stripPemTags(rawKey));
+    keyOrAlias: KeyOrAliasType
+  ): Promise<CryptoKey | string | null> {
+    if (keyOrAlias.alias !== undefined) {
+      this.idToKey.set(id, keyOrAlias.alias);
+      return keyOrAlias.alias;
+    }
+    const decoded = b64decode(this.stripPemTags(keyOrAlias.key));
     try {
-      const key = await this.cryptoImpl.importPrivateSigningKey(
-        decoded,
-        format
-      );
+      const key = await this.cryptoImpl.importPrivateSigningKey(decoded);
       this.idToKey.set(id, key);
       return key;
     } catch (e) {
@@ -31,7 +32,7 @@ class NodeKeyCache {
     return null;
   }
 
-  public getKey(id: string): CryptoKey | Uint8Array | undefined {
+  public getKey(id: string): CryptoKey | string | undefined {
     return this.idToKey.get(id);
   }
 
