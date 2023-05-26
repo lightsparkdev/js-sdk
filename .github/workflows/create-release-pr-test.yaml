@@ -91,4 +91,4 @@ jobs:
         run: "yarn add ts-node@10.9.1 -W"
 
       - name: Run changeset
-        run: "yarn ts-node -v && yarn ts-node ./.github/workflows/script.ts"
+        run: "yarn ts-node -v && yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.ts"
