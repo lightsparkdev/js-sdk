@@ -101,15 +101,6 @@ jobs:
       # - name: Get changed packages
       #   run: "echo ::set-output name=changed-packages::${GITHUB_OUTPUT}"
 
-      # if (!comment) {
-      #   github.rest.issues.createComment({
-      #     owner,
-      #     repo,
-      #     issue_number: pr.number,
-      #     body: "Comment test",
-      #   });
-      # }
-
       - name: Get changed packages
         run: |
           echo "${{ steps.changed-packages.outputs.changedPackages }}"
@@ -153,3 +144,12 @@ jobs:
             });
 
             console.log(comments);
+
+            if (true) {
+              github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pr.number,
+                body: "Comment test",
+              });
+            }
