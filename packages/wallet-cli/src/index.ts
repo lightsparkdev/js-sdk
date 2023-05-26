@@ -248,7 +248,7 @@ const createWalletJwt = async (
   const claims = {
     aud: "https://api.lightspark.com",
     // Any unique identifier for the user.
-    sub: options.userId,
+    sub: userId,
     // True to use the test environment, false to use production.
     test: options.test,
     iat: Math.floor(Date.now() / 1000),
