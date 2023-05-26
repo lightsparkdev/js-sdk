@@ -44,7 +44,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const prs = await octokit.rest.pulls.list({
+            const prs = await github.rest.pulls.list({
               owner,
               repo,
             });
