@@ -32,12 +32,21 @@ jobs:
       #   body: '👋 Thanks for reporting!'
       # })
 
+      # const { data: pullRequest } = await github.rest.pulls.get({
+      #   owner: context.repo.owner,
+      #   repo: context.repo.repo,
+      # });
+
       - uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const { data: pullRequest } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const prs = await octokit.rest.pulls.list({
+              owner,
+              repo,
             });
-            console.log(pullRequest);
+
+            console.log(prs);
