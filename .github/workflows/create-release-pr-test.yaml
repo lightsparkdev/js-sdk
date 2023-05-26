@@ -88,7 +88,7 @@ jobs:
 
       # CI only dependency, install this version locally to test:
       - name: Install ts-node
-        run: "yarn add ts-node@10.9.1"
+        run: "yarn add ts-node@10.9.1 -W"
 
-      # - name: Run changeset
-      #   run: "yarn changeset"
+      - name: Run changeset
+        run: "ts-node -v && ts-node script.ts"
