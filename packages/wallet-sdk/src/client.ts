@@ -4,6 +4,7 @@ import {
   AuthProvider,
   CryptoInterface,
   DefaultCrypto,
+  KeyOrAliasType,
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
@@ -74,7 +75,7 @@ import WithdrawalRequest, {
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(encodedInvoice, 1000);
+ * const payment = await lightsparkClient.payInvoice(encodedInvoice, 1_000_000);
  * console.log(payment);
  * ```
  *
@@ -90,8 +91,8 @@ class LightsparkClient {
    * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
-   * @param nodeKeyCache This is used to cache node keys for the duration of the session. Defaults to a new instance of
-   *     `NodeKeyCache`. You should not need to change this.
+   * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
+   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
@@ -164,6 +165,7 @@ class LightsparkClient {
       constructObject: (responseJson: any) => {
         return LoginWithJWTOutputFromJson(responseJson.login_with_jwt);
       },
+      skipAuth: true,
     });
 
     if (!response) {
@@ -229,17 +231,18 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
-   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
-   *     will not leave the device. It is only used for signing transactions locally.
+   * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
+   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
+   *     key will not leave the device. It is only used for signing transactions locally.
    * @return The wallet that was initialized.
    */
   public async initializeWallet(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKey: string
+    signingPrivateKeyOrAlias: KeyOrAliasType
   ) {
     this.requireValidAuth();
-    await this.loadWalletSigningKey(signingPrivateKey);
+    await this.loadWalletSigningKey(signingPrivateKeyOrAlias);
     return await this.executeRawQuery({
       queryPayload: InitializeWallet,
       variables: {
@@ -261,8 +264,9 @@ class LightsparkClient {
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
-   * @param signingPrivateKey The base64-encoded private key to use for signing transactions. This
-   *     will not leave the device. It is only used for signing transactions locally.
+   * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
+   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
+   *     key will not leave the device. It is only used for signing transactions locally.
    * @return A Promise with the final wallet status after initialization or failure.
    * @throws LightsparkException if the wallet status is not `READY` or `FAILED` after 5 minutes,
    * or if the subscription fails.
@@ -270,12 +274,12 @@ class LightsparkClient {
   public async initializeWalletAndAwaitReady(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKey: string
+    signingPrivateKeyOrAlias: KeyOrAliasType
   ) {
     const wallet = await this.initializeWallet(
       keyType,
       signingPublicKey,
-      signingPrivateKey
+      signingPrivateKeyOrAlias
     );
     if (
       wallet?.status === WalletStatus.READY ||
@@ -676,10 +680,11 @@ class LightsparkClient {
    * application outside of the SDK. It is the responsibility of the application to ensure that the key is valid and
    * that it is the correct key for the wallet. Otherwise signed requests will fail.
    *
-   * @param signingKeyBytesPEM The PEM encoded bytes of the wallet's private signing key.
+   * @param sigingKeyBytesOrAlias An object holding either the PEM encoded bytes of the wallet's private signing key or,
+   *     in the case of ReactNative, the alias of the key in the mobile keychain.
    */
-  public loadWalletSigningKey(sigingKeyBytesPEM: string) {
-    return this.nodeKeyCache.loadKey(WALLET_NODE_ID_KEY, sigingKeyBytesPEM);
+  public loadWalletSigningKey(sigingKeyBytesOrAlias: KeyOrAliasType) {
+    return this.nodeKeyCache.loadKey(WALLET_NODE_ID_KEY, sigingKeyBytesOrAlias);
   }
 
   /**

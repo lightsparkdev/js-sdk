@@ -1,3 +1,4 @@
+import { KeyOrAlias } from "@lightsparkdev/core";
 import {
   AccountTokenAuthProvider,
   LightsparkClient,
@@ -18,7 +19,7 @@ export const getWalletClient = async (accountStorage: AccountStorage) => {
     if (account && authProvider) {
       await instance.loadNodeKey(
         account.viewerWalletId,
-        account.viewerSigningKey
+        KeyOrAlias.key(account.viewerSigningKey)
       );
     }
   }

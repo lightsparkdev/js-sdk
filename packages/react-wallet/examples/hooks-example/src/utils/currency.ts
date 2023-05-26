@@ -1,7 +1,4 @@
-import {
-  CurrencyAmount,
-  CurrencyUnit,
-} from "@lightsparkdev/wallet-sdk";
+import { CurrencyAmount, CurrencyUnit } from "@lightsparkdev/wallet-sdk";
 
 const currentLocale = Intl.NumberFormat().resolvedOptions().locale;
 const defaultCurrencyCode = "USD";

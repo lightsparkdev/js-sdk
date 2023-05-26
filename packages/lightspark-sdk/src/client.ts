@@ -1,6 +1,5 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkSigningException, Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import Observable from "zen-observable";
 
@@ -9,10 +8,14 @@ import {
   b64encode,
   CryptoInterface,
   DefaultCrypto,
+  KeyOrAlias,
+  KeyOrAliasType,
   LightsparkAuthException,
   LightsparkException,
+  LightsparkSigningException,
   Maybe,
   NodeKeyCache,
+  Query,
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
@@ -79,7 +82,7 @@ import WithdrawalRequest, {
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice, 1000);
+ * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice, 100000);
  * console.log(payment);
  * ```
  *
@@ -95,8 +98,8 @@ class LightsparkClient {
    * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
-   * @param nodeKeyCache This is used to cache node keys for the duration of the session. Defaults to a new instance of
-   *     `NodeKeyCache`. You should not need to change this.
+   * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
+   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
@@ -522,7 +525,10 @@ class LightsparkClient {
       signingPrivateKeyPEM = dec.decode(signingPrivateKey);
     }
 
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyPEM);
+    await this.nodeKeyCache.loadKey(
+      nodeId,
+      KeyOrAlias.key(signingPrivateKeyPEM)
+    );
     return true;
   }
 
@@ -541,13 +547,16 @@ class LightsparkClient {
   }
 
   /**
-   * Directly unlocks a node with a signing private key.
+   * Directly unlocks a node with a signing private key or alias.
    *
    * @param nodeId The ID of the node to unlock.
    * @param signingPrivateKeyPEM The PEM-encoded signing private key.
    */
-  public async loadNodeKey(nodeId: string, signingPrivateKeyPEM: string) {
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyPEM);
+  public async loadNodeKey(
+    nodeId: string,
+    signingPrivateKeyOrAlias: KeyOrAliasType
+  ) {
+    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyOrAlias);
   }
 
   /**
