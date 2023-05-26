@@ -71,6 +71,11 @@ jobs:
 
             return pr.number;
 
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          fetch-depth: 2
+
       - name: Setup node
         uses: "actions/setup-node@v3"
         with:
