@@ -37,7 +37,8 @@ jobs:
       #   repo: context.repo.repo,
       # });
 
-      - uses: actions/github-script@v5
+      - name: Create Release PR or get existing PR id
+        uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -51,11 +52,12 @@ jobs:
               repo,
             });
 
-            const pr = prs.find((pr) => {
+            let pr = prs.find((pr) => {
               return pr.head.ref === head && pr.base.ref === base;
             });
+
             if (!pr) {
-              await github.rest.pulls.create({
+              ({ data: pr }) = await github.rest.pulls.create({
                 owner,
                 repo,
                 head,
@@ -64,3 +66,5 @@ jobs:
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
               });
             }
+
+            return pr.number;
