@@ -90,5 +90,8 @@ jobs:
       - name: Install ts-node
         run: "yarn add ts-node@10.9.1 -W"
 
+      - name: Test git command
+        run: "git merge-base main HEAD"
+
       - name: Run changeset
         run: "yarn ts-node -v && yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs"
