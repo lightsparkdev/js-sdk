@@ -95,10 +95,12 @@ jobs:
 
       - name: Run changeset
         id: changed-packages
-        run: "GITHUB_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs | grep changedPackages)"
+        run: |
+          GITHUB_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs | grep changedPackages)
 
       # - name: Get changed packages
       #   run: "echo ::set-output name=changed-packages::${GITHUB_OUTPUT}"
 
       - name: Get changed packages
-        run: "echo ${{ steps.changed-packages.outputs.changedPackages }}"
+        run: |
+          echo "${{ steps.changed-packages.outputs.changedPackages }}"
