@@ -76,6 +76,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Create main branch
+        run: "git branch --track main origin/main"
+        run: "git merge-base main HEAD"
+
       - name: Setup node
         uses: "actions/setup-node@v3"
         with:
@@ -89,10 +93,6 @@ jobs:
       # CI only dependency, install this version locally to test:
       - name: Install ts-node
         run: "yarn add ts-node@10.9.1 -W"
-
-      - name: Test git command
-        run: "git status"
-        run: "git merge-base main HEAD"
 
       - name: Run changeset
         run: "yarn ts-node -v && yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs"
