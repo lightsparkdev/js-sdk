@@ -77,7 +77,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create main branch
-        run: "git branch --track main origin/main && git merge-base main HEAD"
+        run: "git branch --track main origin/main"
 
       - name: Setup node
         uses: "actions/setup-node@v3"
@@ -94,4 +94,11 @@ jobs:
         run: "yarn add ts-node@10.9.1 -W"
 
       - name: Run changeset
-        run: "git branch && yarn ts-node -v && yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs"
+        id: changed-packages
+        run: "GITHUB_OUTPUT=(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/script.mjs | grep changedPackages)"
+
+      # - name: Get changed packages
+      #   run: "echo ::set-output name=changed-packages::${GITHUB_OUTPUT}"
+
+      - name: Get changed packages
+        run: "echo ${{ steps.changed-packages.outputs.changedPackages }}"

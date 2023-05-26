@@ -6,6 +6,4 @@ const changed = await git.getChangedPackagesSinceRef({
   changedFilePatterns: ["**"],
 });
 
-console.log(changed);
-
-export {};
+process.stdout.write(`\nchangedPackages="${JSON.stringify(changed)}"\n`);
