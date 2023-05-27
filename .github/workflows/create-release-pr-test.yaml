@@ -118,9 +118,9 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
-            const changedPackagesStr = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }}).map(x => `"${x}": patch`).join("\n"));
+            const changedPackagesStr = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }}).map(x => `"${x}": patch`).join("\n");
 
-            encodeURIComponent(`---${changedPackagesStr}---Release`);
+            const commitChangesetLink = encodeURIComponent(`---${changedPackagesStr}---Release`);
             const commentBody = `Changed packages: ${changedPackagesStr}`;
 
             if (!comment) {
