@@ -120,13 +120,14 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
-            const changedPackagesStr = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }});
+            const changedPackages = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }});
+            const changedPackagesLines = changedPackages.map(x => `"${x}": patch`).join("\n");
 
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
-            const commitChangesetLink = encodeURIComponent(`---${changedPackagesStr}---Release`);
+            const commitChangesetLink = encodeURIComponent(`---${changedPackagesLines}---Release`);
             const changedPackages = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }});
             const changedPackagesStr = changedPackages.length
-              ? `Changed packages:\n${changedPackages.map(x => `"${x}": patch`).join("\n")}`
+              ? `Changed packages:\n${changedPackagesLines}`
               : 'No packages changed.';
             const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}`;
 
