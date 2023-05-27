@@ -250,7 +250,7 @@ console.log(`${nodeName}'s signing key has been loaded.`);
 // you can't actually pay your own invoice. Let's just pay a pre-existing AMP invoice instead.
 const ampInvoice =
   "lnbcrt1pjr8xwypp5xqj2jfpkz095s8zu57ktsq8vt8yazwcmqpcke9pvl67ne9cpdr0qdqj2a5xzumnwd6hqurswqcqzpgxq9z0rgqsp55hfn0caa5sexea8u979cckkmwelw6h3zpwel5l8tn8s0elgwajss9q8pqqqssqefmmw79tknhl5xhnh7yfepzypxknwr9r4ya7ueqa6vz20axvys8se986hwj6gppeyzst44hm4yl04c4dqjjpqgtt0df254q087sjtfsq35yagj";
-const payment = await client.payInvoice(nodeId, ampInvoice, 1000, 60, 10);
+const payment = await client.payInvoice(nodeId, ampInvoice, 100_000, 60, 10_000);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 

@@ -1,4 +1,4 @@
-import {createHash} from "crypto";
+import { createHash } from "crypto";
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as jwt from "jsonwebtoken";
@@ -45,10 +45,10 @@ export const getJwt = functions.https.onRequest(async (request, response) => {
   };
   console.log("claims", claims);
 
-  const token = jwt.sign(claims, privateSigningKey, {algorithm: "ES256"});
+  const token = jwt.sign(claims, privateSigningKey, { algorithm: "ES256" });
 
-  functions.logger.info("Generating JWT for a user", {userId, accountId});
-  response.send({token, accountId});
+  functions.logger.info("Generating JWT for a user", { userId, accountId });
+  response.send({ token, accountId });
 });
 
 const checkOrCreateUser = async (userId: string, password: string) => {

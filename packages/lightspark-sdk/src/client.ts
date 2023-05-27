@@ -1,6 +1,5 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkSigningException, Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import Observable from "zen-observable";
 
@@ -9,10 +8,14 @@ import {
   b64encode,
   CryptoInterface,
   DefaultCrypto,
+  KeyOrAlias,
+  KeyOrAliasType,
   LightsparkAuthException,
   LightsparkException,
+  LightsparkSigningException,
   Maybe,
   NodeKeyCache,
+  Query,
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
@@ -20,6 +23,8 @@ import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/Bitcoin
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
+import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
+import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FundNode } from "./graphql/FundNode.js";
@@ -77,7 +82,7 @@ import WithdrawalRequest, {
  * const invoiceDetails = await lightsparkClient.decodeInvoice(encodedInvoice);
  * console.log(invoiceDetails);
  *
- * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice, 1000);
+ * const payment = await lightsparkClient.payInvoice(PAYING_NODE_ID, encodedInvoice, 100000);
  * console.log(payment);
  * ```
  *
@@ -93,8 +98,8 @@ class LightsparkClient {
    * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
-   * @param nodeKeyCache This is used to cache node keys for the duration of the session. Defaults to a new instance of
-   *     `NodeKeyCache`. You should not need to change this.
+   * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
+   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
@@ -375,6 +380,8 @@ class LightsparkClient {
   /**
    * Creates an invoice for the given node.
    *
+   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   *
    * @param nodeId The node ID for which to create an invoice.
    * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
    * @param memo A string memo to include in the invoice as a description.
@@ -518,7 +525,10 @@ class LightsparkClient {
       signingPrivateKeyPEM = dec.decode(signingPrivateKey);
     }
 
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyPEM);
+    await this.nodeKeyCache.loadKey(
+      nodeId,
+      KeyOrAlias.key(signingPrivateKeyPEM)
+    );
     return true;
   }
 
@@ -537,17 +547,23 @@ class LightsparkClient {
   }
 
   /**
-   * Directly unlocks a node with a signing private key.
+   * Directly unlocks a node with a signing private key or alias.
    *
    * @param nodeId The ID of the node to unlock.
    * @param signingPrivateKeyPEM The PEM-encoded signing private key.
    */
-  public async loadNodeKey(nodeId: string, signingPrivateKeyPEM: string) {
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyPEM);
+  public async loadNodeKey(
+    nodeId: string,
+    signingPrivateKeyOrAlias: KeyOrAliasType
+  ) {
+    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyOrAlias);
   }
 
   /**
    * Sends a lightning payment for a given invoice.
+   *
+   * Test mode note: For test mode, you can use the [createTestModeInvoice] function to create an invoice you can
+   * pay in test mode.
    *
    * @param payerNodeId The ID of the node that will pay the invoice.
    * @param encodedInvoice The encoded invoice to pay.
@@ -749,6 +765,72 @@ class LightsparkClient {
    */
   public async deleteApiToken(id: string): Promise<void> {
     await this.requester.makeRawRequest(DeleteApiToken, { api_token_id: id });
+  }
+
+  /**
+   * In test mode, generates a Lightning Invoice which can be paid by a local node.
+   * This call is only valid in test mode. You can then pay the invoice using [payInvoice].
+   *
+   * @param localNodeId The ID of the node that will pay the invoice.
+   * @param amountMsats The amount to pay in milli-satoshis.
+   * @param memo An optional memo to attach to the invoice.
+   * @param invoiceType The type of invoice to create.
+   */
+  public async createTestModeInvoice(
+    localNodeId: string,
+    amountMsats: number,
+    memo: string | undefined = undefined,
+    invoiceType: InvoiceType = InvoiceType.STANDARD
+  ): Promise<string | null> {
+    return await this.executeRawQuery({
+      queryPayload: CreateTestModeInvoice,
+      variables: {
+        local_node_id: localNodeId,
+        amount_msats: amountMsats,
+        memo,
+        invoice_type: invoiceType,
+      },
+      constructObject: (responseJson: any) => {
+        const encodedPaymentRequest =
+          responseJson.create_test_mode_invoice?.encoded_payment_request;
+        if (!encodedPaymentRequest) {
+          throw new LightsparkException(
+            "CreateTestModeInvoiceError",
+            "Unable to create test mode invoice"
+          );
+        }
+        return encodedPaymentRequest as string;
+      },
+    });
+  }
+
+  /**
+   * In test mode, simulates a payment of a Lightning Invoice from another node.
+   * This can only be used in test mode and should be used with invoices generated by [createInvoice].
+   *
+   * @param localNodeId The ID of the node that will receive the payment.
+   * @param encodedInvoice The encoded invoice to pay.
+   * @param amountMsats The amount to pay in milli-satoshis for 0-amount invoices. This should be null for non-zero
+   *     amount invoices.
+   */
+  public async createTestModePayment(
+    localNodeId: string,
+    encodedInvoice: string,
+    amountMsats: number | undefined = undefined
+  ): Promise<OutgoingPayment | null> {
+    return await this.executeRawQuery({
+      queryPayload: CreateTestModePayment,
+      variables: {
+        local_node_id: localNodeId,
+        encoded_invoice: encodedInvoice,
+        amount_msats: amountMsats,
+      },
+      constructObject: (responseJson: any) => {
+        return OutgoingPaymentFromJson(
+          responseJson.create_test_mode_payment?.payment
+        );
+      },
+    });
   }
 
   /**

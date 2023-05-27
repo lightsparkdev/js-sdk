@@ -1,3 +1,4 @@
+import { KeyOrAlias } from "@lightsparkdev/core";
 import { ReactNativeCrypto } from "@lightsparkdev/react-native";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
 import {
@@ -76,12 +77,13 @@ export default function DashboardPage({
           console.log("Save these keys if you want to use this wallet later!");
           console.log("Public key:", keys.publicKey);
           console.log("Private key:", keys.privateKey);
+          console.log("Alias:", keys.keyAlias ?? "none");
           await clientProvider
             .getClient()
             .initializeWalletAndAwaitReady(
               KeyType.RSA_OAEP,
-              keys.publicKey,
-              keys.privateKey
+              keys.publicKey as string,
+              KeyOrAlias.alias(keys.keyAlias)
             );
           await refreshWallet();
           setLoading(false);
@@ -105,15 +107,21 @@ export default function DashboardPage({
           onUnlockWallet={async (privateKey: string) => {
             const loaded = await clientProvider
               .getClient()
-              .loadWalletSigningKey(privateKey);
+              .loadWalletSigningKey(KeyOrAlias.alias(privateKey));
             console.log("Loaded:", loaded);
           }}
           onSendTestPayment={async () => {
-            const ampInvoice =
-              "lnbcrt1pjr8xwypp5xqj2jfpkz095s8zu57ktsq8vt8yazwcmqpcke9pvl67ne9cpdr0qdqj2a5xzumnwd6hqurswqcqzpgxq9z0rgqsp55hfn0caa5sexea8u979cckkmwelw6h3zpwel5l8tn8s0elgwajss9q8pqqqssqefmmw79tknhl5xhnh7yfepzypxknwr9r4ya7ueqa6vz20axvys8se986hwj6gppeyzst44hm4yl04c4dqjjpqgtt0df254q087sjtfsq35yagj";
+            const invoice = await clientProvider
+              .getClient()
+              .createTestModeInvoice(0, "Thanks for the test money!");
+            if (!invoice) {
+              console.error("Failed to create test invoice.");
+              return;
+            }
+            console.log("Paying test invoice:", invoice);
             const payment = await clientProvider
               .getClient()
-              .payInvoice(ampInvoice, 1000, 60, 10);
+              .payInvoice(invoice, 100_000, 100_000);
             console.log(`Payment done with ID = ${payment?.id}`);
           }}
         />

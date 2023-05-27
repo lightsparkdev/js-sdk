@@ -2,6 +2,13 @@
 import LightsparkException from "../LightsparkException.js";
 
 import { b64decode } from "../utils/base64.js";
+import LightsparkSigningException from "./LightsparkSigningException.js";
+
+export type GeneratedKeyPair = {
+  publicKey: CryptoKey | string;
+  privateKey: CryptoKey | string;
+  keyAlias?: string;
+};
 
 export type CryptoInterface = {
   decryptSecretWithNodePassword: (
@@ -10,10 +17,7 @@ export type CryptoInterface = {
     nodePassword: string
   ) => Promise<ArrayBuffer | null>;
 
-  generateSigningKeyPair: () => Promise<{
-    publicKey: CryptoKey | string;
-    privateKey: CryptoKey | string;
-  }>;
+  generateSigningKeyPair: () => Promise<GeneratedKeyPair>;
 
   serializeSigningKey: (
     key: CryptoKey | string,
@@ -22,12 +26,12 @@ export type CryptoInterface = {
 
   getNonce: () => Promise<number>;
 
-  sign: (key: CryptoKey | Uint8Array, data: Uint8Array) => Promise<ArrayBuffer>;
+  sign: (
+    keyOrAlias: CryptoKey | string,
+    data: Uint8Array
+  ) => Promise<ArrayBuffer>;
 
-  importPrivateSigningKey: (
-    keyData: Uint8Array,
-    format: "pkcs8" | "spki"
-  ) => Promise<CryptoKey | Uint8Array>;
+  importPrivateSigningKey: (keyData: Uint8Array) => Promise<CryptoKey | string>;
 };
 
 const getCrypto = () => {
@@ -175,9 +179,7 @@ async function decryptSecretWithNodePassword(
   return decryptedValue;
 }
 
-const generateSigningKeyPair = async (): Promise<
-  CryptoKeyPair | { publicKey: string; privateKey: string }
-> => {
+const generateSigningKeyPair = async (): Promise<GeneratedKeyPair> => {
   const cryptoImpl = await getCrypto();
   return await cryptoImpl.subtle.generateKey(
     /*algorithm:*/ {
@@ -209,27 +211,31 @@ const getNonce = async () => {
 };
 
 const sign = async (
-  key: CryptoKey | Uint8Array,
+  keyOrAlias: CryptoKey | string,
   data: Uint8Array
 ): Promise<ArrayBuffer> => {
+  if (typeof keyOrAlias === "string") {
+    throw new LightsparkSigningException(
+      "Key alias not supported for default crypto."
+    );
+  }
   const cryptoImpl = await getCrypto();
   return await cryptoImpl.subtle.sign(
     {
       name: "RSA-PSS",
       saltLength: 32,
     },
-    key as CryptoKey,
+    keyOrAlias as CryptoKey,
     data
   );
 };
 
 const importPrivateSigningKey = async (
-  keyData: Uint8Array,
-  format: "pkcs8" | "spki"
-): Promise<CryptoKey | Uint8Array> => {
+  keyData: Uint8Array
+): Promise<CryptoKey | string> => {
   const cryptoImpl = await getCrypto();
   return await cryptoImpl.subtle.importKey(
-    /*format*/ format,
+    /*format*/ "pkcs8",
     /*keyData*/ keyData,
     /*algorithm*/ {
       name: "RSA-PSS",
