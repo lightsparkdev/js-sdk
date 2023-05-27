@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
+import { b64encode, DefaultCrypto, KeyOrAlias } from "@lightsparkdev/core";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
 import {
   KeyType,
@@ -85,7 +85,7 @@ function DashboardPage() {
             .initializeWalletAndAwaitReady(
               KeyType.RSA_OAEP,
               b64encode(serializedPublicKeyBytes),
-              b64encode(serializedPrivateKeyBytes)
+              KeyOrAlias.key(b64encode(serializedPrivateKeyBytes))
             );
           await refreshWallet();
           setLoading(false);

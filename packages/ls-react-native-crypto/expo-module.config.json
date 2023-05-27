@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "android", "web"],
+  "ios": {
+    "modules": ["LightsparkdevReactNativeCryptoModule"]
+  },
+  "android": {
+    "modules": ["com.lightspark.sdk.rn.crypto.LightsparkdevReactNativeCryptoModule"]
+  }
+}

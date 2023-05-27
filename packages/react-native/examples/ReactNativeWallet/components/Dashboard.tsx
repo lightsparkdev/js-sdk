@@ -38,7 +38,7 @@ const Dashboard = ({
         />
       </AmountBar>
       <TextInput
-        placeholder="Private key"
+        placeholder="Key Alias"
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
         onChangeText={setPrivateKey}
         value={privateKey}

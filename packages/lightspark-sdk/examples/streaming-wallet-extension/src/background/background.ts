@@ -1,6 +1,5 @@
-import {
-  AccountTokenAuthProvider,
-} from "@lightsparkdev/lightspark-sdk";
+import { KeyOrAlias, StubAuthProvider } from "@lightsparkdev/core";
+import { AccountTokenAuthProvider } from "@lightsparkdev/lightspark-sdk";
 import AccountStorage from "../auth/AccountStorage";
 import { unreserveStreamingDemoAccountCredentials } from "../auth/DemoAccountProvider";
 import StreamingDemoAccountCredentials from "../auth/StreamingDemoCredentials";
@@ -11,7 +10,6 @@ import { onMessageReceived } from "./messageHandling";
 import StreamingInvoiceHolder from "./StreamingInvoiceHolder";
 import TransactionObserver from "./TransactionObserver";
 import VideoProgressCache from "./VideoProgressCache";
-import { StubAuthProvider } from "@lightsparkdev/core";
 
 const progressCache = new VideoProgressCache();
 const accountStorage = new AccountStorage();
@@ -113,7 +111,7 @@ chrome.storage.local.onChanged.addListener((changes) => {
         );
         await lightsparkClient.loadNodeKey(
           credentials.viewerWalletId,
-          credentials.viewerSigningKey
+          KeyOrAlias.key(credentials.viewerSigningKey)
         );
         await invoiceHolder
           .createInvoice(lightsparkClient, credentials.creatorWalletId)

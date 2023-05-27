@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.0
+
+### Minor Changes
+
+- d14f64e: Release
+
 ## 0.2.5
 
 ### Patch Changes

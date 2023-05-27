@@ -1,5 +1,17 @@
 # @lightsparkdev/react-native
 
+## 0.2.0
+
+### Minor Changes
+
+- d14f64e: Release
+
+### Patch Changes
+
+- Updated dependencies [d14f64e]
+  - @lightsparkdev/core@0.3.0
+  - @lightsparkdev/ls-react-native-crypto@0.2.0
+
 ## 0.1.4
 
 ### Patch Changes

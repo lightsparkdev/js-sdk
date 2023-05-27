@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
+import { b64encode, DefaultCrypto, KeyOrAlias } from "@lightsparkdev/core";
 import {
   InMemoryJwtStorage,
   InvoiceType,
@@ -175,7 +175,7 @@ const createBitcoinFundingAddress = async (
       "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
     );
   }
-  await client.loadWalletSigningKey(privateKey);
+  await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
   const address = await client.createBitcoinFundingAddress();
   console.log("Address:", address);
 };
@@ -192,11 +192,11 @@ const payInvoice = async (
       "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
     );
   }
-  await client.loadWalletSigningKey(privateKey);
+  await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
   const payment = await client.payInvoice(
     options.invoice,
-    100,
-    options.amount === -1 ? undefined : options.amount
+    1_000_000,
+    options.amount === -1 ? undefined : (options.amount * 1000)
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
@@ -269,7 +269,7 @@ const createDeployAndInitWallet = async (
     const initializedWallet = await client.initializeWalletAndAwaitReady(
       KeyType.RSA_OAEP,
       serializedKeypair.publicKey,
-      serializedKeypair.privateKey
+      KeyOrAlias.key(serializedKeypair.privateKey)
     );
     console.log(
       "Initialized wallet:",
