@@ -1,5 +1,16 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.3.0
+
+### Minor Changes
+
+- d14f64e: Release
+
+### Patch Changes
+
+- Updated dependencies [d14f64e]
+  - @lightsparkdev/core@0.3.0
+
 ## 0.2.8
 
 ### Patch Changes
