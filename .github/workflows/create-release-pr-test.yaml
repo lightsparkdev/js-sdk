@@ -11,32 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - uses: actions/checkout@v3
-      # - name: Check if PR exists
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
-      #   run: |
-      #     on_error() {
-      #       echo "PR create attempt failed, assuming PR already exists."
-      #       exit 0
-      #     }
-
-      #     NEWLINE=$'\n'
-      #     # trap "on_error" INT TERM ERR
-      #     gh pr create --title "Test CI Updates" --body "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.${NEWLINE}${NEWLINE}Please note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally \`yarn changeset\` and push it to the branch."
-
-      # github.rest.issues.createComment({
-      #   issue_number: context.issue.number,
-      #   owner: context.repo.owner,
-      #   repo: context.repo.repo,
-      #   body: '👋 Thanks for reporting!'
-      # })
-
-      # const { data: pullRequest } = await github.rest.pulls.get({
-      #   owner: context.repo.owner,
-      #   repo: context.repo.repo,
-      # });
-
       - name: Create Release PR or get existing PR id
         id: get-pr
         uses: actions/github-script@v5
@@ -68,7 +42,6 @@ jobs:
               });
               pr = result.data;
             }
-
             return pr.number;
 
       - name: "Checkout"
@@ -131,7 +104,7 @@ jobs:
                 repo,
                 head,
                 base,
-                title: "Test CI Updates",
+                title: "Release",
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
               });
               pr = result.data;
@@ -145,8 +118,10 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
+            const changedPackagesStr = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }}).map(x => `"${x}": patch`).join("\n"));
 
-            const commentBody = `Changed packages: ${{ steps.changed-packages.outputs.changedPackages }}`;
+            encodeURIComponent(`---${changedPackagesStr}---Release`);
+            const commentBody = `Changed packages: ${changedPackagesStr}`;
 
             if (!comment) {
               github.rest.issues.createComment({
