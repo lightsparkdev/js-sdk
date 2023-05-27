@@ -1,4 +1,4 @@
-name: Create Release PR Test
+name: Update Release PR
 
 on:
   push:
@@ -143,13 +143,23 @@ jobs:
               issue_number: pr.number,
             });
 
-            console.log(comments);
+            /* 41898282 is github-actions[bot] */
+            let comment = comments.find(comment => comment.user.id === 41898282);
 
-            if (true) {
+            const commentBody = `Changed packages: ${{ steps.changed-packages.outputs.changedPackages }}`;
+
+            if (!comment) {
               github.rest.issues.createComment({
                 owner,
                 repo,
                 issue_number: pr.number,
-                body: "Comment test",
+                body: commentBody,
+              });
+            } else {
+              github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: comment.id,
+                body: commentBody,
               });
             }
