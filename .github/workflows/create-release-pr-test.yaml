@@ -71,12 +71,14 @@ jobs:
         run: |
           echo $(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs | grep changedPackages) >> $GITHUB_OUTPUT
 
-      # - name: Get changed packages
-      #   run: "echo ::set-output name=changed-packages::${GITHUB_OUTPUT}"
-
       - name: Get changed packages
         run: |
           echo "${{ steps.changed-packages.outputs.changedPackages }}"
+
+      - name: Get PR comment vars
+        id: pr-comment-vars
+        run: |
+          echo "lastCommit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Update or post comment on PR with link to create changeset
         id: pr-comment
@@ -120,8 +122,9 @@ jobs:
             let comment = comments.find(comment => comment.user.id === 41898282);
             const changedPackagesStr = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }}).map(x => `"${x}": patch`).join("\n");
 
+            const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
             const commitChangesetLink = encodeURIComponent(`---${changedPackagesStr}---Release`);
-            const commentBody = `Changed packages: ${changedPackagesStr}`;
+            const commentBody = `Last commit: ${lastCommit}\n\nChanged packages: ${changedPackagesStr}`;
 
             if (!comment) {
               github.rest.issues.createComment({
