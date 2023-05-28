@@ -24,9 +24,8 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = "develop-test";
+            const head = context.ref;
             const base = "main";
-            console.log(context.ref);
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
@@ -93,7 +92,7 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = "develop-test";
+            const head = context.ref;
             const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
