@@ -133,7 +133,7 @@ jobs:
             const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
             const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
             const changesetCount = changeset.changesets.length;
-            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. Add one [using this link](${commitChangesetLink}) if the changes in this PR should result in new published versions for the changed packages above. Once this PR is merged all packages that depend on the planned updates will be updated automatically in separate PR.`;
+            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. If the changes in this PR should result in new published versions for the packages above please [add a changeset](${commitChangesetLink}). Once the PR is merged all packages that depend on the planned release will be updated automatically in separate PR.`;
             const releasesStr = `Planned releases based on existing changesets: ${changeset.releases.length}`;
 
             const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}`;
