@@ -72,8 +72,7 @@ jobs:
         run: |
           export CHANGED_PACKAGE_OUTPUT=$(node ./.github/workflows/getChangedPackages.mjs)
           echo $CHANGED_PACKAGE_OUTPUT
-          echo "$(echo $CHANGED_PACKAGE_OUTPUT | grep changedPackages)"$'\n' >> $GITHUB_OUTPUT
-          echo "$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan)" >> $GITHUB_OUTPUT
+          echo "$(echo $CHANGED_PACKAGE_OUTPUT | grep changedPackages)"$'\n'"$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan)" >> $GITHUB_OUTPUT
 
       - name: Get changed packages
         run: |
