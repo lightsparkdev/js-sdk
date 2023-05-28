@@ -128,7 +128,7 @@ jobs:
 
             const changesetCount = changeset.changesets.length;
             const changedPackagesStr = changeset.changedPackages.length
-              ? `| Name | Current version |\n| - | - |\n${changedPackagesLines}`
+              ? `| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
               : "No packages changed.";
             const changesetSingle = changesetCount === 1;
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
