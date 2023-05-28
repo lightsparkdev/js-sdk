@@ -120,3 +120,5 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
+
+            console.log('${{ steps.changed-packages.outputs.changedPackages }}')
