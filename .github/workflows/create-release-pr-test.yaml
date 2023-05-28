@@ -11,6 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Save branch name output
+        shell: bash
+        run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: current-branch-name
+
       - name: Create Release PR or get existing PR id
         id: get-pr
         uses: actions/github-script@v5
@@ -21,6 +26,7 @@ jobs:
             const repo = context.repo.repo;
             const head = "develop-test";
             const base = "main";
+            console.log(context.ref);
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
@@ -69,7 +75,9 @@ jobs:
       - name: Run changeset
         id: changed-packages
         run: |
-          echo $(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs | grep changedPackages) >> $GITHUB_OUTPUT
+          CHANGED_PACKAGE_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs)
+          echo $(CHANGED_PACKAGE_OUTPUT | grep changedPackages=) >> $GITHUB_OUTPUT
+          echo $(CHANGED_PACKAGE_OUTPUT | grep releasePlan=) >> $GITHUB_OUTPUT
 
       - name: Get changed packages
         run: |
@@ -121,4 +129,4 @@ jobs:
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
 
-            console.log('${{ steps.changed-packages.outputs.changedPackages }}')
+            console.log(${{ steps.changed-packages.outputs.changedPackages }})
