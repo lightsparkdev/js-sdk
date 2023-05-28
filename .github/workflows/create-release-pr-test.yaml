@@ -126,7 +126,7 @@ jobs:
             const changedPackagesLines = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
 
-            const changedPackagesStr = changedPackages.length
+            const changedPackagesStr = changeset.changedPackages.length
               ? `Changed packages:\n${changedPackagesLines}`
               : "No packages changed.";
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
