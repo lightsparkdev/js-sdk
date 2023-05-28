@@ -84,4 +84,4 @@ const releasePlan = assembleReleasePlan.default(
 
 // console.log("releasePlan", releasePlan);
 
-process.stdout.write(`\nchangedPackages="${JSON.stringify(changed)}"\n`);
+process.stdout.write(`\nchangedPackages=${JSON.stringify(changed)}\n`);
