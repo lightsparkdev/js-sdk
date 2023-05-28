@@ -125,7 +125,6 @@ jobs:
 
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
             const commitChangesetLink = encodeURIComponent(`---${changedPackagesLines}---Release`);
-            const changedPackages = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }});
             const changedPackagesStr = changedPackages.length
               ? `Changed packages:\n${changedPackagesLines}`
               : 'No packages changed.';
