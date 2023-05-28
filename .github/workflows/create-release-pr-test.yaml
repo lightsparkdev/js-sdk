@@ -24,7 +24,7 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = context.ref;
+            const head = context.ref.split('/').pop();
             const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
@@ -92,7 +92,7 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = context.ref;
+            const head = context.ref.split('/').pop();
             const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
