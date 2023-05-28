@@ -74,7 +74,7 @@ jobs:
 
       - name: List changed packages
         run: |
-          echo "${{ steps.changed-packages.outputs.changeset }}"
+          echo "${{ steps.changeset.outputs.changeset }}"
 
       - name: Get PR comment vars
         id: pr-comment-vars
@@ -131,11 +131,11 @@ jobs:
               : "No packages changed.";
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---${changedPackagesLines}---Release`)}`;
-            const changesetCount = changeset.releasePlan.changesets.length;
+            const changesetCount = changeset.releases.changesets.length;
             const changesetStr = `${changesetCount} changeset${changesetCount === 1 ? '' : 's'} found for this branch. Add one [here](${commitChangesetLink}) if these changes should result in new published versions for the changed packages listed above.`;
-            const releasePlanStr = `Planned releases based on existing changesets: ${changeset.releasePlan.releases.length}`;
+            const releasesStr = `Planned releases based on existing changesets: ${changeset.releases.length}`;
 
-            const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasePlanStr}`;
+            const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}`;
             if (!comment) {
               github.rest.issues.createComment({
                 owner,
