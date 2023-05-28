@@ -128,16 +128,17 @@ jobs:
 
             const changesetCount = changeset.changesets.length;
             const changedPackagesStr = changeset.changedPackages.length
-              ? `| Changed packages | Current version |\n| - | - |\n${changedPackagesLines}`
+              ? `| Name | Current version |\n| - | - |\n${changedPackagesLines}`
               : "No packages changed.";
+            const changesetSingle = changesetCount === 1;
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
             const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
             const noChangesetStr = `If the changes in this PR should result in new published versions for the packages above please [add a changeset](${commitChangesetLink})`;
             const hasChangesetStr = `If additional changes have been made that require different versions for any package simply [add another changeset](${commitChangesetLink})`;
-            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Once the PR is merged all packages that depend on the planned release will be updated automatically in separate PR.${changeset.releases.length ? " The following releases are planned based on the existing changesets:" : ""}`;
+            const changesetStr = `There ${changesetSingle ? "is" : "are"} ${changesetCount} changeset${changesetSingle ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Any packages that depend on the planned releases will be updated and released automatically in separate PR.`;
             const packageReleasesStr = changeset.releases.map(x => `| ${x.name} | ${x.type} |`).join("\n");
-            const releasesStr = `${changeset.releases.length ? `| Planned releases | Update |\n\| - | - |\n${packageReleasesStr}` : "No releases planned."}`;
+            const releasesStr = `${changeset.releases.length ? `The following releases are planned based on the existing changesets:\n\n| Planned releases | Update |\n\| - | - |\n${packageReleasesStr}` : "No releases planned."}`;
 
             const commentBody = `The following packages have been changed:\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}\n\nLast updated by commit ${lastCommit}`;
             if (!comment) {
