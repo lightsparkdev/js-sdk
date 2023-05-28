@@ -68,14 +68,10 @@ jobs:
       - name: Install dependencies
         run: "yarn"
 
-      # CI only dependency, install this version locally to test:
-      - name: Install ts-node
-        run: "yarn add ts-node@10.9.1 -W"
-
       - name: Run changeset
         id: changed-packages
         run: |
-          CHANGED_PACKAGE_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs)
+          export CHANGED_PACKAGE_OUTPUT=$(node ./.github/workflows/getChangedPackages.mjs)
           echo $CHANGED_PACKAGE_OUTPUT
           echo "$(echo $CHANGED_PACKAGE_OUTPUT | grep changedPackages=)" >> $GITHUB_OUTPUT
           echo "$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan=)" >> $GITHUB_OUTPUT

@@ -2,10 +2,7 @@ import assembleReleasePlan from "@changesets/assemble-release-plan";
 import { parse as parseConfig } from "@changesets/config";
 import * as git from "@changesets/git";
 import parseChangeset from "@changesets/parse";
-import types from "@changesets/types";
 import * as fs from "fs";
-
-const { PreState, NewChangeset } = types;
 
 const changed = await git.getChangedPackagesSinceRef({
   cwd: ".",
