@@ -19,8 +19,8 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = 'develop-test';
-            const base = 'main';
+            const head = "develop-test";
+            const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
@@ -88,8 +88,8 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = 'develop-test';
-            const base = 'main';
+            const head = "develop-test";
+            const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
@@ -127,7 +127,7 @@ jobs:
             const commitChangesetLink = encodeURIComponent(`---${changedPackagesLines}---Release`);
             const changedPackagesStr = changedPackages.length
               ? `Changed packages:\n${changedPackagesLines}`
-              : 'No packages changed.';
+              : "No packages changed.";
             const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}`;
 
             if (!comment) {
