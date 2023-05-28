@@ -75,7 +75,7 @@ jobs:
           export CHANGED_PACKAGES="$(echo $CHANGED_PACKAGE_OUTPUT | grep changedPackages)"
           echo $CHANGED_PACKAGES
           echo "$CHANGED_PACKAGES" >> $GITHUB_OUTPUT
-          export RELEASE_PLAN="$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan)" >> $GITHUB_OUTPUT
+          export RELEASE_PLAN="$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan)"
           echo $RELEASE_PLAN
           echo "$RELEASE_PLAN" >> $GITHUB_OUTPUT
 
