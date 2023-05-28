@@ -24,7 +24,7 @@ files.forEach(function (filename) {
   const changesetText = fs.readFileSync(`.changeset/${filename}`, {
     encoding: "utf8",
   });
-  const changeset = parseChangeset(changesetText);
+  const changeset = parseChangeset.default(changesetText);
   changesets.push(changeset);
 });
 
