@@ -123,16 +123,17 @@ jobs:
             let comment = comments.find(comment => comment.user.id === 41898282);
             const changeset = JSON.parse(${{ steps.changeset.outputs.changeset }});
 
-            const changedPackagesLines = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
+            const changedPackagesLines = changeset.changedPackages.map(x => `| ${x.name} | ${x.version} |`).join("\n");
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
 
             const changedPackagesStr = changeset.changedPackages.length
-              ? `Changed packages:\n${changedPackagesLines}`
+              ? `| Changed packages | Current version |\n${changedPackagesLines}`
               : "No packages changed.";
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
-            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---${changedPackagesLines}---Release`)}`;
+            const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
+            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
             const changesetCount = changeset.changesets.length;
-            const changesetStr = `${changesetCount} changeset${changesetCount === 1 ? '' : 's'} found for this branch. Add one [here](${commitChangesetLink}) if these changes should result in new published versions for the changed packages listed above.`;
+            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. Add one [using this link](${commitChangesetLink}) if the changes in this PR should result in new published versions for the changed packages above. Once this PR is merged all packages that depend on the planned updates will be updated automatically in separate PR.`;
             const releasesStr = `Planned releases based on existing changesets: ${changeset.releases.length}`;
 
             const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}`;
