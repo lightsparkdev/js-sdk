@@ -135,7 +135,7 @@ jobs:
             const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
             const noChangesetStr = `If the changes in this PR should result in new published versions for the packages above please [add a changeset](${commitChangesetLink})`;
             const hasChangesetStr = `If additional changes have been made that require different versions for any package simply [add another changeset](${commitChangesetLink}).`;
-            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. ${changesetCount > 0 ?  : noChangesetStr}. Once the PR is merged all packages that depend on the planned release will be updated automatically in separate PR.`;
+            const changesetStr = `Found ${changesetCount} changeset${changesetCount === 1 ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Once the PR is merged all packages that depend on the planned release will be updated automatically in separate PR.${changeset.releases.length ? "The following releases are planned based on the existing changesets:" : ""}`;
             const packageReleasesStr = changeset.releases.map(x => `| ${x.name} | ${x.type} |`).join("\n");
             const releasesStr = `${changeset.releases.length ? `| Planned releases | Update |\n\| - | - |\n${packageReleasesStr}` : "No releases planned."}`;
 
