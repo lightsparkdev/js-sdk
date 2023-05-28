@@ -75,7 +75,7 @@ jobs:
       - name: Run changeset
         id: changed-packages
         run: |
-          CHANGED_PACKAGE_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs)
+          export CHANGED_PACKAGE_OUTPUT=$(yarn ts-node --project ./.github/workflows/tsconfig.json ./.github/workflows/getChangedPackages.mjs)
           echo $(CHANGED_PACKAGE_OUTPUT | grep changedPackages=) >> $GITHUB_OUTPUT
           echo $(CHANGED_PACKAGE_OUTPUT | grep releasePlan=) >> $GITHUB_OUTPUT
 
