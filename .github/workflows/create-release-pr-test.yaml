@@ -120,7 +120,7 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
-            const changedPackages = JSON.parse(${{ steps.changed-packages.outputs.changedPackages }});
+            const changedPackages = JSON.parse("${{ steps.changed-packages.outputs.changedPackages }}");
             const changedPackagesLines = changedPackages.map(x => `"${x}": patch`).join("\n");
 
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
