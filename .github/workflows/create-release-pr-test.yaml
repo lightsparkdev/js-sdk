@@ -70,16 +70,8 @@ jobs:
       - name: Run changeset
         id: changed-packages
         run: |
-          export CHANGED_PACKAGE_OUTPUT=$(node ./.github/workflows/getChangedPackages.mjs)
-          echo "a: $CHANGED_PACKAGE_OUTPUT"
-          export CHANGED_PACKAGES="$(echo -e $CHANGED_PACKAGE_OUTPUT | grep changedPackages)"
-          echo "b: $CHANGED_PACKAGES"
-          printf "%s\n" "$CHANGED_PACKAGES" >> "$GITHUB_OUTPUT"
-          export RELEASE_PLAN="$(echo -e $CHANGED_PACKAGE_OUTPUT | grep releasePlan)"
-          echo "c: $RELEASE_PLAN"
-          printf "%s\n" "$RELEASE_PLAN" >> "$GITHUB_OUTPUT"
-          echo "d: cat GITHUB_OUTPUT:"
-          cat $GITHUB_OUTPUT
+          $(node ./.github/workflows/getChangedPackages.mjs | grep changedPackages) >> $GITHUB_OUTPUT
+          $(node ./.github/workflows/getChangedPackages.mjs | grep releasePlan) >> $GITHUB_OUTPUT
 
       - name: Get changed packages
         run: |
