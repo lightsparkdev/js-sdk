@@ -131,7 +131,7 @@ jobs:
               : "No packages changed.";
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---${changedPackagesLines}---Release`)}`;
-            const changesetCount = changeset.releases.changesets.length;
+            const changesetCount = changeset.changesets.length;
             const changesetStr = `${changesetCount} changeset${changesetCount === 1 ? '' : 's'} found for this branch. Add one [here](${commitChangesetLink}) if these changes should result in new published versions for the changed packages listed above.`;
             const releasesStr = `Planned releases based on existing changesets: ${changeset.releases.length}`;
 

@@ -78,6 +78,7 @@ const changedPackagesMapped = changed.map((changedPackage) => ({
 const changeset = {
   changedPackages: changedPackagesMapped,
   releases: releasePlan.releases,
+  changesets: releasePlan.changesets,
   suggestedChangesetId: humanId({
     separator: "-",
     capitalize: false,
