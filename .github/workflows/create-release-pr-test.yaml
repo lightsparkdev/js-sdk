@@ -78,7 +78,7 @@ jobs:
           export RELEASE_PLAN="$(echo $CHANGED_PACKAGE_OUTPUT | grep releasePlan)"
           # echo "$RELEASE_PLAN"
           echo "$RELEASE_PLAN" >> $GITHUB_OUTPUT
-          echo "$GITHUB_OUTPUT"
+          cat $GITHUB_OUTPUT
 
       - name: Get changed packages
         run: |
