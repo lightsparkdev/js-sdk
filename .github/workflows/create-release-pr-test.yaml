@@ -70,8 +70,8 @@ jobs:
       - name: Run changeset
         id: changed-packages
         run: |
-          $(node ./.github/workflows/getChangedPackages.mjs | grep changedPackages) >> $GITHUB_OUTPUT
-          $(node ./.github/workflows/getChangedPackages.mjs | grep releasePlan) >> $GITHUB_OUTPUT
+          echo "$(node ./.github/workflows/getChangedPackages.mjs | grep changedPackages)" >> $GITHUB_OUTPUT
+          echo "$(node ./.github/workflows/getChangedPackages.mjs | grep releasePlan)" >> $GITHUB_OUTPUT
 
       - name: Get changed packages
         run: |
