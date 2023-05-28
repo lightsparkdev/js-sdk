@@ -3,6 +3,7 @@ import { parse as parseConfig } from "@changesets/config";
 import * as git from "@changesets/git";
 import parseChangeset from "@changesets/parse";
 import * as fs from "fs";
+import humanId from "human-id";
 
 const changed = await git.getChangedPackagesSinceRef({
   cwd: ".",
@@ -74,7 +75,13 @@ const changedPackagesMapped = changed.map((changedPackage) => ({
   version: changedPackage.packageJson.version,
 }));
 
-process.stdout.write(
-  `\nchangedPackages='${JSON.stringify(changedPackagesMapped)}'` +
-    `\nreleasePlan='${JSON.stringify(releasePlan)}'`
-);
+const changeset = {
+  changedPackages: changedPackagesMapped,
+  releases: releasePlan.releases,
+  suggestedChangesetId: humanId({
+    separator: "-",
+    capitalize: false,
+  }),
+};
+
+process.stdout.write(`\nchangeset='${JSON.stringify(changeset)}'`);

@@ -68,15 +68,13 @@ jobs:
         run: "yarn"
 
       - name: Run changeset
-        id: changed-packages
+        id: changeset
         run: |
-          echo "$(node ./.github/workflows/getChangedPackages.mjs | grep changedPackages)" >> $GITHUB_OUTPUT
-          echo "$(node ./.github/workflows/getChangedPackages.mjs | grep releasePlan)" >> $GITHUB_OUTPUT
+          echo "$(node ./.github/workflows/runChangeset.mjs | grep changeset)" >> $GITHUB_OUTPUT
 
-      - name: Get changed packages
+      - name: List changed packages
         run: |
-          echo "${{ steps.changed-packages.outputs.changedPackages }}"
-          echo "${{ steps.changed-packages.outputs.releasePlan }}"
+          echo "${{ steps.changed-packages.outputs.changeset }}"
 
       - name: Get PR comment vars
         id: pr-comment-vars
@@ -123,5 +121,33 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
+            const changeset = JSON.parse(${{ steps.changeset.outputs.changeset }});
 
-            console.log(${{ steps.changed-packages.outputs.changedPackages }})
+            const changedPackagesLines = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
+            const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
+
+            const changedPackagesStr = changedPackages.length
+              ? `Changed packages:\n${changedPackagesLines}`
+              : "No packages changed.";
+            const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
+            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---${changedPackagesLines}---Release`)}`;
+            const changesetCount = changeset.releasePlan.changesets.length;
+            const changesetStr = `${changesetCount} changeset${changesetCount === 1 ? '' : 's'} found for this branch. Add one [here](${commitChangesetLink}) if these changes should result in new published versions for the changed packages listed above.`;
+            const releasePlanStr = `Planned releases based on existing changesets: ${changeset.releasePlan.releases.length}`;
+
+            const commentBody = `Last commit: ${lastCommit}\n\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasePlanStr}`;
+            if (!comment) {
+              github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pr.number,
+                body: commentBody,
+              });
+            } else {
+              github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: comment.id,
+                body: commentBody,
+              });
+            }
