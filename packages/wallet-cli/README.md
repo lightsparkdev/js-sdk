@@ -70,5 +70,3 @@ lightspark-wallet create-invoice -u user2 -a 100 -m "Pizza time"
 # Pay the invoice from user1.
 lightspark-wallet pay-invoice -u user1 -i <encoded invoice here>
 ```
-
-TODO
