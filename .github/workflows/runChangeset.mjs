@@ -51,8 +51,8 @@ const publicPackages = packageDirPaths
       packageJson,
     };
   })
-  .filter((package) => {
-    return package.packageJson.private !== true;
+  .filter((pkg) => {
+    return pkg.packageJson.private !== true;
   });
 
 const workspace = {
