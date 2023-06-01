@@ -42,7 +42,7 @@ jobs:
                 repo,
                 head,
                 base,
-                title: "Test CI Updates",
+                title: "Release",
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the link provided by changeset bot below."
               });
               pr = result.data;
