@@ -128,7 +128,7 @@ jobs:
 
             const changesetCount = changeset.changesets.length;
             const changedPackagesStr = changeset.changedPackages.length
-              ? `| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
+              ? `The following packages have been changed:\n| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
               : "No packages changed.";
             const changesetSingle = changesetCount === 1;
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
@@ -140,7 +140,7 @@ jobs:
             const packageReleasesStr = changeset.releases.map(x => `| ${x.name} | ${x.type} |`).join("\n");
             const releasesStr = `${changeset.releases.length ? `The following releases are planned based on the existing changesets:\n\n| Planned releases | Update |\n\| - | - |\n${packageReleasesStr}` : "No releases planned."}`;
 
-            const commentBody = `The following packages have been changed:\n${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}\n\nLast updated by commit ${lastCommit}`;
+            const commentBody = `${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}\n\nLast updated by commit ${lastCommit}`;
             if (!comment) {
               github.rest.issues.createComment({
                 owner,
