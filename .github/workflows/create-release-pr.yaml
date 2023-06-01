@@ -3,7 +3,7 @@ name: Update Release PR
 on:
   push:
     branches:
-      - develop-test
+      - develop
 
 jobs:
   create-release-pr:
