@@ -1889,6 +1889,39 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@lightsparkdev/core@0.2.5", "@lightsparkdev/core@^0.2.2":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@lightsparkdev/core/-/core-0.2.5.tgz#4c6fd47392e1d4349cdd1720a13d686b23e00e01"
+  integrity sha512-rUTUkzjq4pztrrBRiz3eTiWKW2pKX7zFp60F8gBCHw2VMIhvW8PGMzgGmSYvlkFk0JGCSMBW79mzYJQMBgAKsQ==
+  dependencies:
+    "@openid/appauth" "^1.3.1"
+    auto-bind "^5.0.1"
+    crypto "^1.0.1"
+    crypto-browserify "^3.12.0"
+    dayjs "^1.11.7"
+    graphql "^16.6.0"
+    graphql-ws "^5.11.3"
+    text-encoding "^0.7.0"
+    ws "^8.12.1"
+    zen-observable-ts "^1.1.0"
+
+"@lightsparkdev/wallet-sdk@^0.5.1":
+  version "0.5.5"
+  resolved "https://registry.yarnpkg.com/@lightsparkdev/wallet-sdk/-/wallet-sdk-0.5.5.tgz#806c32864ee1fa1af4d42e247b1d27d4275a322a"
+  integrity sha512-jf7vRG+IJ6CfdH7c9lVdoNCff8t6YP8qpfqjCp8RkLMN9exhX7ak0b2fuVC19B7GjU93tQF8JuVbpCt42Yl45A==
+  dependencies:
+    "@lightsparkdev/core" "0.2.5"
+    "@react-native-async-storage/async-storage" "^1.18.1"
+    auto-bind "^5.0.1"
+    crypto "^1.0.1"
+    crypto-browserify "^3.12.0"
+    dayjs "^1.11.7"
+    graphql "^16.6.0"
+    graphql-ws "^5.11.3"
+    typedoc "^0.24.7"
+    ws "^8.12.1"
+    zen-observable-ts "^1.1.0"
+
 "@manypkg/find-root@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@manypkg/find-root/-/find-root-1.1.0.tgz"
@@ -6949,47 +6982,47 @@ tty-table@^4.1.5:
     wcwidth "^1.0.1"
     yargs "^17.7.1"
 
-turbo-darwin-64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/turbo-darwin-64/-/turbo-darwin-64-1.9.4.tgz#3f40cba2dcc13011f4c51101ba03f4c1aa511daf"
-  integrity sha512-kCmDmxyUWWI+BstTZQKNM87UbNx40C0ZHUTFqs9tmeH7d5+gA2QhqrSoBuwQYw7YYNLpbkqu1ObbppsUlIFPdQ==
+turbo-darwin-64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-darwin-64/-/turbo-darwin-64-1.10.1.tgz#0e3c1a1936e7269e56c9d4ee20f019ea626dfb2a"
+  integrity sha512-isLLoPuAOMNsYovOq9BhuQOZWQuU13zYsW988KkkaA4OJqOn7qwa9V/KBYCJL8uVQqtG+/Y42J37lO8RJjyXuA==
 
-turbo-darwin-arm64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.npmjs.org/turbo-darwin-arm64/-/turbo-darwin-arm64-1.9.4.tgz"
-  integrity sha512-Of64jMEaDDHx0dzU7RwdOuh1lP021vtQun9wmEHhT0Hk/TQF+kDCywoHcY7R5nlSRcssFjysVyhCeZW6CkWrrA==
+turbo-darwin-arm64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-darwin-arm64/-/turbo-darwin-arm64-1.10.1.tgz#1d14ef94d1254396cb884e387201202ca0356971"
+  integrity sha512-x1nloPR10fLElNCv17BKr0kCx/O5gse/UXAcVscMZH2tvRUtXrdBmut62uw2YU3J9hli2fszYjUWXkulVpQvFA==
 
-turbo-linux-64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/turbo-linux-64/-/turbo-linux-64-1.9.4.tgz#a4d7a06b8b786144d3c967a8f647561a71d8057a"
-  integrity sha512-kajvUnXlUNtgVzLW3Y/RoHrC64G+G0Ky/o1F+oP6QK/T85H8NwNHXq2F6hyIrZPNGbKpPgpetuQ1waIibxJ0rA==
+turbo-linux-64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-linux-64/-/turbo-linux-64-1.10.1.tgz#ce4bd4f916fdcb388a40b891440a3db771643157"
+  integrity sha512-abV+ODCeOlz0503OZlHhPWdy3VwJZc1jObf1VQj7uQM+JqJ/kXbMyqJIMQVz+m7QJUFdferYPRxGhYT/NbYK7Q==
 
-turbo-linux-arm64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/turbo-linux-arm64/-/turbo-linux-arm64-1.9.4.tgz#5426bd72ef2a80cad390ecf4220779824faab41f"
-  integrity sha512-11P9Y8MoimqUzib3SU3md4g1loLF0FRHpYCbPzUTWPT3beOcdM2nop2u/yFHyBnbSxz1rTWczRJPnNoAki0B/Q==
+turbo-linux-arm64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-linux-arm64/-/turbo-linux-arm64-1.10.1.tgz#1076169a133a57e8cc9e564c34d5650eddf448e5"
+  integrity sha512-zRC3nZbHQ63tofOmbuySzEn1ROISWTkemYYr1L98rpmT5aVa0kERlGiYcfDwZh3cBso/Ylg/wxexRAaPzcCJYQ==
 
-turbo-windows-64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/turbo-windows-64/-/turbo-windows-64-1.9.4.tgz#b6458e3f715f0b0ab0b1bf1ded3ed6f2a8e0f1f9"
-  integrity sha512-2tFcFhuqs1c1DGFAk2wjU0TXrOXKoPdma9vxrTVdwvtz5Nc8XPF8RNW+1jbmRjpumGUkXou6Pe973GSvPjvD5w==
+turbo-windows-64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-windows-64/-/turbo-windows-64-1.10.1.tgz#058e61da78ed1df0fcf7f0a08c6e9b23c321f1b3"
+  integrity sha512-Irqz8IU+o7Q/5V44qatZBTunk+FQAOII1hZTsEU54ah62f9Y297K6/LSp+yncmVQOZlFVccXb6MDqcETExIQtA==
 
-turbo-windows-arm64@1.9.4:
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/turbo-windows-arm64/-/turbo-windows-arm64-1.9.4.tgz#d4959a8b81dc5c3561b8e22355ab74b05d47f803"
-  integrity sha512-wJfEwUyWXxn6VKD2Vbycke6cm99gJ0llkr9gUnbR06eaRu1TiLY24FcFqN95/wftp0n5nne7b6K7Wz1TLh1fJQ==
+turbo-windows-arm64@1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo-windows-arm64/-/turbo-windows-arm64-1.10.1.tgz#2be91d5b165901f904b054bf910b387a97a1131d"
+  integrity sha512-124IT15d2gyjC+NEn11pHOaVFvZDRHpxfF+LDUzV7YxfNIfV0mGkR3R/IyVXtQHOgqOdtQTbC4y411sm31+SEw==
 
-turbo@^1.9.4:
-  version "1.9.4"
-  resolved "https://registry.npmjs.org/turbo/-/turbo-1.9.4.tgz"
-  integrity sha512-PqhlMCmu6sOqcVswt1tYL0TV/O0uQ8kUZWfmlEl0EHPusc2R3nzg7KVXrZbXTHXzQH5HE2oJm9iUI0mYz31i7Q==
+turbo@v1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/turbo/-/turbo-1.10.1.tgz#5289ac8d04f0aa456692404bef0eefcda76d21a1"
+  integrity sha512-wq0YeSv6P/eEDXOL42jkMUr+T4z34dM8mdHu5u6C6OOAq8JuLJ72F/v4EVR1JmY8icyTkFz10ICLV0haUUYhbQ==
   optionalDependencies:
-    turbo-darwin-64 "1.9.4"
-    turbo-darwin-arm64 "1.9.4"
-    turbo-linux-64 "1.9.4"
-    turbo-linux-arm64 "1.9.4"
-    turbo-windows-64 "1.9.4"
-    turbo-windows-arm64 "1.9.4"
+    turbo-darwin-64 "1.10.1"
+    turbo-darwin-arm64 "1.10.1"
+    turbo-linux-64 "1.10.1"
+    turbo-linux-arm64 "1.10.1"
+    turbo-windows-64 "1.10.1"
+    turbo-windows-arm64 "1.10.1"
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"
