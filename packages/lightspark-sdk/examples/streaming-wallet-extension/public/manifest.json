@@ -1,7 +1,7 @@
 {
   "name": "Lightspark Streaming Money Wallet Demo",
   "description": "A Lightspark demo that shows money streaming in real-time using the Lightning Network.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "manifest_version": 3,
   "action": {
     "default_popup": "index.html",
