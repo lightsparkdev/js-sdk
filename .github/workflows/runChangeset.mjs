@@ -35,7 +35,7 @@ const packageJson = JSON.parse(packageJsonContent);
 const packageGlobs = packageJson.workspaces;
 const packageDirPaths = fs.readdirSync("packages", { withFileTypes: true });
 
-const publicPackages = packageDirPaths
+const packages = packageDirPaths
   .filter((packageDirPath) => packageDirPath.isDirectory())
   .map((packageDirs) => {
     const packageJsonContent = fs.readFileSync(
@@ -50,9 +50,6 @@ const publicPackages = packageDirPaths
       dir: `packages/${packageDirs.name}`,
       packageJson,
     };
-  })
-  .filter((pkg) => {
-    return pkg.packageJson.private !== true;
   });
 
 const workspace = {
@@ -61,7 +58,7 @@ const workspace = {
     packageJson,
   },
   tool: "yarn",
-  packages: publicPackages,
+  packages,
 };
 
 const parsedConfig = parseConfig(config, workspace);
