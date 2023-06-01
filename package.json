@@ -15,7 +15,8 @@
     "packages/*",
     "packages/private/*",
     "apps/*",
-    "apps/private/*"
+    "apps/private/*",
+    "apps/examples/*"
   ],
   "devDependencies": {
     "turbo": "v1.10.1"

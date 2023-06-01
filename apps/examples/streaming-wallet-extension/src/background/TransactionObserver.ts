@@ -5,7 +5,7 @@ import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
 
 class TransactionObserver {
   private isListening = false;
-  private subscription?: Subscription;
+  private subscription?: Subscription | undefined;
   private readonly cachedTransactions = new Map<string, Transaction>();
 
   constructor(private readonly lightsparkClient: LightsparkClient) {

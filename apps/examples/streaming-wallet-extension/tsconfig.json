@@ -1,7 +1,7 @@
 {
-  "extends": "tsconfig/base.json",
+  "extends": "tsconfig/react-app.json",
   "compilerOptions": {
-    "exactOptionalPropertyTypes": false
+    "types": ["chrome"]
   },
   "include": ["src"],
   "exclude": ["test", "node_modules", "dist"]
