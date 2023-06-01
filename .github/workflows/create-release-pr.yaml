@@ -128,8 +128,8 @@ jobs:
 
             const changesetCount = changeset.changesets.length;
             const changedPackagesStr = changeset.changedPackages.length
-              ? `The following public packages have changed files:\n| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
-              : "No public packages have changed files.";
+              ? `The following packages have changed files:\n| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
+              : "No packages have changed files.";
             const changesetSingle = changesetCount === 1;
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
