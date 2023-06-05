@@ -9,6 +9,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
+    "format": "turbo run format",
     "release": "turbo build && changeset publish"
   },
   "workspaces": [
@@ -18,10 +19,10 @@
     "apps/private/*",
     "apps/examples/*"
   ],
-  "devDependencies": {
-    "turbo": "v1.10.1"
-  },
   "dependencies": {
+    "turbo": "v1.10.1",
+    "prettier": "2.8.7",
+    "typescript": "^4.9.5",
     "@changesets/cli": "^2.26.1"
   }
 }
