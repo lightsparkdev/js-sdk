@@ -6,13 +6,13 @@ import type { Maybe } from "../common/types";
 type Props = {
   value: Maybe<number>;
   unit: Maybe<CurrencyUnit>;
-  shortUnit?: boolean;
-  symbol?: boolean;
-  shortNumber?: boolean;
-  useLocaleString?: boolean;
-  maximumSignificantDigits?: number;
-  maximumFractionDigits?: number;
-  minimumFractionDigits?: number;
+  shortUnit?: boolean | undefined;
+  symbol?: boolean | undefined;
+  shortNumber?: boolean | undefined;
+  useLocaleString?: boolean | undefined;
+  maximumSignificantDigits?: number | undefined;
+  maximumFractionDigits?: number | undefined;
+  minimumFractionDigits?: number | undefined;
 };
 
 const CurrencyAmountRaw = (props: Props) => {
