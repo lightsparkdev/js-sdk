@@ -28,7 +28,8 @@ const main = async (
   skipLogin = false
 ) => {
   const credentials = getCredentialsFromEnvOrThrow(
-    options.walletUserId ? `_${options.walletUserId}` : ""
+    options.walletUserId ? `_${options.walletUserId}` : "",
+    !skipLogin
   );
   const client = new LightsparkClient(undefined, credentials.baseUrl);
   if (!skipLogin) {
@@ -59,8 +60,8 @@ const initEnv = async (options: OptionValues) => {
     });
   }
   const filePath = process.env.HOME + "/.lightsparkenv";
-  let content = `export LIGHTSPARK_ACCOUNT_ID="${options.accountId}"\n`;
-  content += `export LIGHTSPARK_JWT_PRIV_KEY="${options.jwtSigningKey}"\n`;
+  let content = `export LIGHTSPARK_ACCOUNT_ID="${accountId}"\n`;
+  content += `export LIGHTSPARK_JWT_PRIV_KEY="${jwtSigningKey}"\n`;
   if (options.walletPrivateKey) {
     content += `export LIGHTSPARK_WALLET_PRIV_KEY="${options.walletPrivateKey}"\n`;
   }
@@ -220,7 +221,7 @@ const payInvoice = async (
   const payment = await client.payInvoice(
     options.invoice,
     1000_000,
-    options.amount === -1 ? undefined : (options.amount * 1000)
+    options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };

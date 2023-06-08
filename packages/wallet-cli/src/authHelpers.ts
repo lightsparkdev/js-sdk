@@ -10,7 +10,8 @@ export type EnvCredentials = {
 };
 
 export const getCredentialsFromEnvOrThrow = (
-  walletEnvSuffix: string = ``
+  walletEnvSuffix: string = ``,
+  requireJwt: boolean = true
 ): EnvCredentials => {
   const accountId = process.env[`LIGHTSPARK_ACCOUNT_ID`];
   const jwtSigningPrivateKey = process.env[`LIGHTSPARK_JWT_PRIV_KEY`];
@@ -19,14 +20,14 @@ export const getCredentialsFromEnvOrThrow = (
   const privKey = process.env[`LIGHTSPARK_WALLET_PRIV_KEY${walletEnvSuffix}`];
   const baseUrl =
     process.env[`LIGHTSPARK_EXAMPLE_BASE_URL`] || `api.lightspark.com`;
-  if (!accountId || !jwt) {
+  if (!accountId || (!jwt && requireJwt)) {
     throw new Error(
       `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT.`
     );
   }
   return {
     accountId,
-    jwt,
+    jwt: jwt || "",
     pubKey,
     privKey,
     baseUrl,
