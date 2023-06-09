@@ -121,8 +121,8 @@ jobs:
 
             /* 41898282 is github-actions[bot] */
             let comment = comments.find(comment => comment.user.id === 41898282);
-            const changesetStr = ${{ steps.changeset.outputs.changeset }}.replace(/\n/g, "\\n");
-            const changeset = JSON.parse(changesetStr);
+            const changesetRawStr = ${{ steps.changeset.outputs.changeset }}.replace(/\n/g, "\\n");
+            const changeset = JSON.parse(changesetRawStr);
 
             const changedPackagesLines = changeset.changedPackages.map(x => `| ${x.name} | ${x.version} |`).join("\n");
             const lastCommit = "${{ steps.pr-comment-vars.outputs.lastCommit }}";
