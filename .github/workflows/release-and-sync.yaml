@@ -40,7 +40,15 @@ jobs:
             printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
           }
 
-          text=$(json_escape ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions ${{ steps.changesets.outputs.publishedPackages }} <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>")
+          format_packages () {
+            local json_input="$1"
+            local formatted_output
+            formatted_output=$(python -c "import json; data = $json_input; formatted_data = [f\"{item['name']}: {item['version']}\" for item in data]; print('\n'.join(formatted_data))")
+            echo "\n$formatted_output"
+          }
+
+          formatted_packages=$(format_packages "${{ steps.changesets.outputs.publishedPackages }}")
+          text=$(json_escape ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions from <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>:$formatted_packages")
 
           curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
           {
