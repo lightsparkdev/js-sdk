@@ -85,5 +85,9 @@ const changeset = {
   }),
 };
 
-const changesetStr = JSON.stringify(changeset).replace(/\n/g, "\\n");
-process.stdout.write(`\nchangeset='${changesetStr}'`);
+// process.stdout.write(changeset);
+// console.log(changeset);
+
+const changesetStr = JSON.stringify(changeset);
+process.stdout.write(changesetStr);
+// process.stdout.write(`\nchangeset='${changesetStr}'`);
