@@ -1,7 +1,7 @@
 import { createHmac } from "crypto";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
-const SIGNATURE_HEADER = "lightspark-signature";
+export const WEBHOOKS_SIGNATURE_HEADER = "lightspark-signature";
 
 export interface WebhookEvent {
   event_type: WebhookEventType;
