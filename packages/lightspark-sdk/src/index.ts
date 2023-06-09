@@ -3,3 +3,4 @@
 export * from "./auth/index.js";
 export { default as LightsparkClient } from "./client.js";
 export * from "./objects/index.js";
+export * from "./webhooks.js";

@@ -63,7 +63,7 @@
     "format": "npx prettier --write ./src",
     "lint": "npx prettier --check ./src",
     "postversion": "yarn build",
-    "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
+    "test": "jest --no-cache --runInBand --bail",
     "type-check": "tsc --noEmit"
   },
   "license": "Apache-2.0",
@@ -81,11 +81,12 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.1.1",
+    "@types/jest": "^29.5.2",
     "@types/ws": "^8.5.4",
-    "jest": "^29.4.1",
+    "jest": "^29.5.0",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "tsconfig": "*",
     "typescript": "^4.9.5"
