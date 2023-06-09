@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.2
+
+### Patch Changes
+
+- b28feac: Fix jwt signing key generation docs in JS
+  Add webhooks support to the ts lightspark-sdk
+
 ## 0.6.1
 
 ### Patch Changes
