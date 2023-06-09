@@ -47,7 +47,7 @@ jobs:
             echo "\n$formatted_output"
           }
 
-          formatted_packages=$(format_packages "${{ steps.changesets.outputs.publishedPackages }}")
+          formatted_packages=$(format_packages '${{ steps.changesets.outputs.publishedPackages }}')
           text=$(json_escape ":white_check_mark: ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|published> new js-sdk versions from <${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}|${{ github.ref_name }}>:$formatted_packages")
 
           curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
