@@ -16,13 +16,13 @@ $ firebase functions:config:set account.signing_private_key=<your private key>
 The signing key should be a private key in PEM format. You can generate a keypair using the _ES256_ algorithm using the following command:
 
 ```bash
-openssl ecparam -genkey -name prime256v1 -noout -out private.key
+openssl genrsa -out private.key 2048
 ```
 
 This will generate a private key file called private.key. You can then generate the public key file using the following command:
 
 ```bash
-openssl ec -in private.key -pubout -out public.key
+openssl rsa -in private.key -pubout -out public.key
 ```
 
 You can then copy the contents of the public key file into the "JWT Public Key" field on the API Tokens page on the Lightspark Dashboard. You'll also want to copy the private key into your server code (or rather in secret keystore or environment variable), so that you can use it to sign JWTs.

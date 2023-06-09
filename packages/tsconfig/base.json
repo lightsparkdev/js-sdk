@@ -12,7 +12,7 @@
     "noImplicitReturns": true,
     "baseUrl": "./src",
     "moduleResolution": "node16",
-    "types": ["node"],
+    "types": ["node", "jest"],
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
