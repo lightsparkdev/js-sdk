@@ -7,10 +7,17 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
+    "build-storybook": "turbo run build-storybook",
+    "clean": "turbo run clean",
+    "checks": "turbo lint format gql-codegen test circular-deps",
+    "build-no-cache": "yarn build --force",
+    "circular-deps": "turbo run circular-deps",
     "format": "turbo run format",
-    "release": "turbo build && changeset publish"
+    "gql-codegen": "turbo run gql-codegen",
+    "lint": "turbo run lint",
+    "release": "turbo build && changeset publish",
+    "test": "turbo run test",
+    "types": "turbo run types"
   },
   "workspaces": [
     "packages/*",
@@ -20,9 +27,11 @@
     "apps/examples/*"
   ],
   "dependencies": {
-    "turbo": "v1.10.1",
+    "@changesets/cli": "^2.26.1",
     "prettier": "2.8.7",
-    "typescript": "^4.9.5",
-    "@changesets/cli": "^2.26.1"
-  }
+    "tsup": "^6.7.0",
+    "turbo": "v1.10.1",
+    "typescript": "^4.9.5"
+  },
+  "packageManager": "yarn@3.6.0"
 }

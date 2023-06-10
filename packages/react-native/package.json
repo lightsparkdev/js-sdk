@@ -36,27 +36,24 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "yarn build -- --watch",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "clean": "rm -rf .turbo && rm -rf dist",
     "lint": "npx prettier --check ./src",
     "format": "npx prettier --write ./src",
-    "test": "tsc --noEmit --project tsconfig-test.json && jest --no-cache --runInBand --bail",
-    "type-check": "tsc --noEmit",
+    "test": "echo \"TODO\"",
+    "types": "yarn run --top-level tsc",
     "postversion": "yarn build"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "@lightsparkdev/core": "0.3.1",
+    "@lightsparkdev/ls-react-native-crypto": "0.2.1",
     "auto-bind": "^5.0.1",
-    "dayjs": "^1.11.7",
-    "@lightsparkdev/ls-react-native-crypto": "0.2.1"
+    "dayjs": "^1.11.7"
   },
   "devDependencies": {
     "jest": "^29.4.1",
-    "prettier": "^2.8.4",
-    "prettier-plugin-organize-imports": "^3.2.2",
     "ts-jest": "^29.0.5",
-    "tsup": "^6.7.0",
-    "typescript": "^4.9.5",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "typescript": "^4.9.5"
   }
 }

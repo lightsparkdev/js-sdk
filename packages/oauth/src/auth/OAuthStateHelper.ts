@@ -294,6 +294,7 @@ const authDomainForEnvironment = (environment: ServerEnvironment) => {
     case ServerEnvironment.PRODUCTION:
       return "app.lightspark.com";
     case ServerEnvironment.DEV:
+    default:
       return "dev.dev.sparkinfra.net";
   }
 };

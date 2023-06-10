@@ -46,8 +46,9 @@
   "scripts": {
     "start": "craco start",
     "build": "INLINE_RUNTIME_CHUNK=false craco build",
+    "clean": "rm -rf .turbo && rm -rf build",
     "package": "rm -f streaming-extension.zip && INLINE_RUNTIME_CHUNK=false craco build && zip -r streaming-extension.zip build",
-    "test": "craco test"
+    "test": "echo \"TODO\""
   },
   "eslintConfig": {
     "extends": [

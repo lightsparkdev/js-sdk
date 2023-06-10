@@ -1,4 +1,4 @@
-# Run by downloading and installing copybara, then running:
+# Copybara is run by CI automatically. To run manually locally download and install copybara, then run:
 # $ cd <webdev repo>
 # $ ../copybara/bazel-bin/java/com/google/copybara/copybara copy.bara.sky js-sdk-push
 
@@ -52,7 +52,8 @@ This typically happens when new versions of the SDK are released and version upd
         exclude=[".github/**"],
     ),
     destination_files=glob(
-        ["js/**"], exclude=["js/packages/private/**", "js/apps/private/**", "js/README.md"]
+        ["js/**"],
+        exclude=["js/packages/private/**", "js/apps/private/**", "js/README.md"],
     ),
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     mode="CHANGE_REQUEST",

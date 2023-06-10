@@ -2,17 +2,23 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": ["dist/**"],
+      "outputs": ["dist/**", "build/**"],
       "dependsOn": ["^build"]
     },
-    "lint": {},
-    "format": {},
+    "build-storybook": {
+      "outputs": ["storybook-static/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "clean": {
       "cache": false
-    }
+    },
+    "circular-deps": {},
+    "gql-codegen": {},
+    "format": {},
+    "lint": {},
+    "test": {}
   }
 }
