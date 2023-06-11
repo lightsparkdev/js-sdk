@@ -32,6 +32,7 @@ jobs:
             const base = "main";
 
             console.log(`>>>>>> head: ${head}`)
+            console.log(`>>>>>> context.ref: ${context.ref}`)
 
             const { data: prs } = await github.rest.pulls.list({
               owner,
