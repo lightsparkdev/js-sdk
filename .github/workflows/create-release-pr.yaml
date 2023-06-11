@@ -26,6 +26,12 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            /* We already have the id if this is a PR edit event: */
+            const editedId = context.ref.match(/^refs\/pull\/(\d+)\//)?.[1]
+            if (editedId) {
+              return editedId;
+            }
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const head = context.ref.split('/').pop();
@@ -104,34 +110,48 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = context.ref.split('/').pop();
             const base = "main";
+            let pr;
 
-            const { data: prs } = await github.rest.pulls.list({
-              owner,
-              repo,
-            });
+            /* We already have the id if this is a PR edit event: */
+            const editedId = context.ref.match(/^refs\/pull\/(\d+)\//)?.[1]
 
-            let pr = prs.find((pr) => {
-              return pr.head.ref === head && pr.base.ref === base;
-            });
-
-            if (!pr) {
-              const { data: latestCommit } = await github.rest.repos.getCommit({
+            if (editedId) {
+              const prRequest = await github.rest.pulls.get({
                 owner,
                 repo,
-                ref: head,
+                pull_number: editedId,
               });
+              pr = prRequest.data;
+            } else {
+              const head = context.ref.split('/').pop();
 
-              const result = await github.rest.pulls.create({
+              const { data: prs } = await github.rest.pulls.list({
                 owner,
                 repo,
-                head,
-                base,
-                title: latestCommit.commit.message,
-                body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
               });
-              pr = result.data;
+
+              pr = prs.find((pr) => {
+                return pr.head.ref === head && pr.base.ref === base;
+              });
+
+              if (!pr) {
+                const { data: latestCommit } = await github.rest.repos.getCommit({
+                  owner,
+                  repo,
+                  ref: head,
+                });
+
+                const result = await github.rest.pulls.create({
+                  owner,
+                  repo,
+                  head,
+                  base,
+                  title: latestCommit.commit.message,
+                  body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
+                });
+                pr = result.data;
+              }
             }
 
             const { data: comments } = await github.rest.issues.listComments({
