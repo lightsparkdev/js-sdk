@@ -213,7 +213,7 @@ jobs:
 
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
-          java -jar copybara.jar ./copy.bara.sky js-sdk-pull --nogit-destination-rebase
+          java -jar copybara.jar ./copy.bara.sky js-sdk-pull
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
