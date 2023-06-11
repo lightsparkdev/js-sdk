@@ -59,7 +59,7 @@ jobs:
                 repo,
                 head: triggeringRefHead,
                 base,
-                title: latestCommit.commit.message,
+                title: latestCommit.commit.message.replace(/\sGitOrigin-RevId.*/, ""),
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the link provided by changeset bot below."
               });
               pr = result.data;
@@ -146,7 +146,7 @@ jobs:
                   repo,
                   head: triggeringRefHead,
                   base,
-                  title: latestCommit.commit.message,
+                  title: latestCommit.commit.message.replace(/\sGitOrigin-RevId.*/, ""),
                   body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
                 });
                 pr = result.data;
