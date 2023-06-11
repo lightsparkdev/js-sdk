@@ -64,8 +64,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
-      - name: Install dependencies
-        run: "yarn"
+      - name: yarn install with cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
 
       - name: Run changeset
         id: changeset
