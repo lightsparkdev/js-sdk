@@ -8,5 +8,3 @@ This repository contains all of the Lightspark Javascript/Typescript SDKs. The S
 - [oauth](./packages/oauth/README.md): A client-side OAuth library, which can be used from a browser or React Native environment. This library currently only authenticates lightspark administrator accounts, not wallet users. _Note_: This package is currently in unpublished beta, and is subject to change.
 
 Check out the READMEs for each package for more information on how to use them, or see the `examples` directory in each package for sample use cases.
-
-TODO

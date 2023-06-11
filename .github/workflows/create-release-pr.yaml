@@ -16,7 +16,7 @@ jobs:
         run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: current-branch-name
 
-      - name: Create Release PR or get existing PR id
+      - name: Create release PR or get existing PR ID
         id: get-pr
         uses: actions/github-script@v5
         with:
