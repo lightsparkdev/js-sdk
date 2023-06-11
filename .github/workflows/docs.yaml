@@ -21,13 +21,24 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
-      - run: "yarn install"
-      - run: "yarn build"
-      - run: "rm -rf packages/*/docs/"
-      - name: "Run yarn docs"
-        run: |
-          yarn workspace @lightsparkdev/lightspark-sdk docs
-          yarn workspace @lightsparkdev/wallet-sdk docs
+      - name: Install dependencies with yarn cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+
+      - name: Restore turbo cache
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.cache/turbo
+          # see https://bit.ly/43Til68 - we only need a single cache for all turbo files
+          # but the cache still needs a unique id in order for it to properly save each time.
+          # restore-keys will always take the latest matching cache:
+          key: turbo-checks-${{ runner.os }}-${{ github.run_id }} # Can use time based key as well
+          restore-keys: |
+            turbo-checks-${{ runner.os }}
+
+      - run: "yarn docs"
+
       - name: "Configure AWS credentials"
         uses: "aws-actions/configure-aws-credentials@v1"
         with:
