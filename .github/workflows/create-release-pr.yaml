@@ -29,6 +29,8 @@ jobs:
             const head = context.ref.split('/').pop();
             const base = "main";
 
+            console.log(`>>>>>> head: ${head}`)
+
             const { data: prs } = await github.rest.pulls.list({
               owner,
               repo,
