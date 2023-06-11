@@ -20,9 +20,9 @@ jobs:
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: "js/.nvmrc"
+          node-version-file: ".nvmrc"
           cache: "yarn"
-          cache-dependency-path: "js/yarn.lock"
+          cache-dependency-path: "yarn.lock"
 
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
@@ -63,9 +63,9 @@ jobs:
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: "js/.nvmrc"
+          node-version-file: ".nvmrc"
           cache: "yarn"
-          cache-dependency-path: "js/yarn.lock"
+          cache-dependency-path: "yarn.lock"
 
       - name: yarn install with cache
         uses: ./.github/actions/yarn-nm-install
