@@ -2,9 +2,7 @@ name: Create or update release PR
 
 on:
   pull_request:
-    types: edited
-    branches:
-      - develop
+    types: [edited]
   push:
     branches:
       - develop
