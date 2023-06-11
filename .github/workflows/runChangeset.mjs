@@ -5,12 +5,6 @@ import parseChangeset from "@changesets/parse";
 import * as fs from "fs";
 import humanId from "human-id";
 
-const changed = await git.getChangedPackagesSinceRef({
-  cwd: ".",
-  ref: "main",
-  changedFilePatterns: ["**"],
-});
-
 const configText = fs.readFileSync(".changeset/config.json", {
   encoding: "utf8",
 });
@@ -70,13 +64,32 @@ const releasePlan = assembleReleasePlan.default(
   undefined
 );
 
-const changedPackagesMapped = changed.map((changedPackage) => ({
-  name: changedPackage.packageJson.name,
-  version: changedPackage.packageJson.version,
-}));
+const changedPackages = await git.getChangedPackagesSinceRef({
+  cwd: ".",
+  ref: "main",
+  changedFilePatterns: ["**"],
+});
+
+const changedPublicPackagesMapped = changedPackages
+  .filter((changedPackage) => {
+    /* All public published packages must be in the packages directory */
+    const isApp = changedPackage.dir.includes("apps");
+    /* Some utility packages are not meant to be published and eg tsconfig.
+       They have packageJson.private set to true which prevents publishing to
+       npm but doesn't necessarily mean that the source should be private - tsconfig
+       is necessary to have in the public repo so that the workspaces can be built */
+    const isPrivate = changedPackage.packageJson.private;
+    return !isApp && !isPrivate;
+  })
+  .map((changedPackage) => {
+    return {
+      name: changedPackage.packageJson.name,
+      version: changedPackage.packageJson.version,
+    };
+  });
 
 const changeset = {
-  changedPackages: changedPackagesMapped,
+  changedPackages: changedPublicPackagesMapped,
   releases: releasePlan.releases,
   changesets: releasePlan.changesets,
   suggestedChangesetId: humanId({

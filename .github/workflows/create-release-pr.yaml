@@ -1,13 +1,17 @@
-name: Update Release PR
+name: Create or update release PR
 
 on:
+  pull_request:
+    types: [edited]
+    branches:
+      - main
   push:
     branches:
       - develop
 
 jobs:
   create-release-pr:
-    name: Create Release PR
+    name: Create or update release PR
     runs-on: ubuntu-latest
 
     steps:
@@ -16,15 +20,22 @@ jobs:
         run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: current-branch-name
 
-      - name: Create Release PR or get existing PR id
+      - name: Create release PR or get existing PR ID
         id: get-pr
         uses: actions/github-script@v5
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
+            /* We already have the id if this is a PR edit event: */
+            const editedIdMatch = context.ref.match(/^refs\/pull\/(\d+)\//);
+            const editedId = editedIdMatch ? editedIdMatch[1] : null;
+            if (editedId) {
+              return editedId;
+            }
+
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = context.ref.split('/').pop();
+            const triggeringRefHead = context.ref.split('/').pop();
             const base = "main";
 
             const { data: prs } = await github.rest.pulls.list({
@@ -33,16 +44,22 @@ jobs:
             });
 
             let pr = prs.find((pr) => {
-              return pr.head.ref === head && pr.base.ref === base;
+              return pr.head.ref === triggeringRefHead && pr.base.ref === base;
             });
 
             if (!pr) {
+              const { data: latestCommit } = await github.rest.repos.getCommit({
+                owner,
+                repo,
+                ref: triggeringRefHead,
+              });
+
               const result = await github.rest.pulls.create({
                 owner,
                 repo,
-                head,
+                head: triggeringRefHead,
                 base,
-                title: "Release",
+                title: latestCommit.commit.message,
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the link provided by changeset bot below."
               });
               pr = result.data;
@@ -64,8 +81,10 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
-      - name: Install dependencies
-        run: "yarn"
+      - name: yarn install with cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
 
       - name: Run changeset
         id: changeset
@@ -89,28 +108,49 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const head = context.ref.split('/').pop();
             const base = "main";
+            let pr;
 
-            const { data: prs } = await github.rest.pulls.list({
-              owner,
-              repo,
-            });
+            /* We already have the id if this is a PR edit event: */
+            const editedIdMatch = context.ref.match(/^refs\/pull\/(\d+)\//);
+            const editedId = editedIdMatch ? editedIdMatch[1] : null;
 
-            let pr = prs.find((pr) => {
-              return pr.head.ref === head && pr.base.ref === base;
-            });
-
-            if (!pr) {
-              const result = await github.rest.pulls.create({
+            if (editedId) {
+              const prRequest = await github.rest.pulls.get({
                 owner,
                 repo,
-                head,
-                base,
-                title: "Release",
-                body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
+                pull_number: editedId,
               });
-              pr = result.data;
+              pr = prRequest.data;
+            } else {
+              const triggeringRefHead = context.ref.split('/').pop();
+
+              const { data: prs } = await github.rest.pulls.list({
+                owner,
+                repo,
+              });
+
+              pr = prs.find((pr) => {
+                return pr.head.ref === triggeringRefHead && pr.base.ref === base;
+              });
+
+              if (!pr) {
+                const { data: latestCommit } = await github.rest.repos.getCommit({
+                  owner,
+                  repo,
+                  ref: triggeringRefHead,
+                });
+
+                const result = await github.rest.pulls.create({
+                  owner,
+                  repo,
+                  head: triggeringRefHead,
+                  base,
+                  title: latestCommit.commit.message,
+                  body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
+                });
+                pr = result.data;
+              }
             }
 
             const { data: comments } = await github.rest.issues.listComments({
@@ -129,12 +169,12 @@ jobs:
 
             const changesetCount = changeset.changesets.length;
             const changedPackagesStr = changeset.changedPackages.length
-              ? `The following packages have changed files:\n| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
-              : "No packages have changed files.";
+              ? `The following public packages have changed files:\n| Changed | Current version |\n| - | - |\n${changedPackagesLines}`
+              : "No public packages have changed files.";
             const changesetSingle = changesetCount === 1;
-            const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
+            const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${pr.head.ref}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
-            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
+            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\n\n${pr.title}`)}`;
             const noChangesetStr = `If the changes in this PR should result in new published versions for the packages above please [add a changeset](${commitChangesetLink})`;
             const hasChangesetStr = `If additional changes have been made that require different versions for any package simply [add another changeset](${commitChangesetLink})`;
             const changesetStr = `There ${changesetSingle ? "is" : "are"} ${changesetCount || "no"} existing changeset${changesetSingle ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Any packages that depend on the planned releases will be updated and released automatically in a separate PR.`;

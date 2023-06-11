@@ -4,7 +4,7 @@
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"TODO\""
   },
   "type": "module",
   "author": "",
