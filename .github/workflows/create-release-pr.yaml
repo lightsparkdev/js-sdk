@@ -37,12 +37,18 @@ jobs:
             });
 
             if (!pr) {
+              const { data: latestCommit } = await github.rest.repos.getCommit({
+                owner,
+                repo,
+                ref: head,
+              });
+
               const result = await github.rest.pulls.create({
                 owner,
                 repo,
                 head,
                 base,
-                title: "Release",
+                title: latestCommit.commit.message,
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the link provided by changeset bot below."
               });
               pr = result.data;
@@ -104,12 +110,18 @@ jobs:
             });
 
             if (!pr) {
+              const { data: latestCommit } = await github.rest.repos.getCommit({
+                owner,
+                repo,
+                ref: head,
+              });
+
               const result = await github.rest.pulls.create({
                 owner,
                 repo,
                 head,
                 base,
-                title: "Release",
+                title: latestCommit.commit.message,
                 body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
               });
               pr = result.data;
@@ -136,7 +148,7 @@ jobs:
             const changesetSingle = changesetCount === 1;
             const commitChangesetLinkBase = `https://github.com/lightsparkdev/js-sdk/new/${head}?filename=.changeset/${changeset.suggestedChangesetId}.md`;
             const suggestedChangesets = changeset.changedPackages.map(x => `"${x.name}": patch`).join("\n");
-            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\nRelease`)}`;
+            const commitChangesetLink = `${commitChangesetLinkBase}&value=${encodeURIComponent(`---\n${suggestedChangesets}\n---\n\n${pr.title}`)}`;
             const noChangesetStr = `If the changes in this PR should result in new published versions for the packages above please [add a changeset](${commitChangesetLink})`;
             const hasChangesetStr = `If additional changes have been made that require different versions for any package simply [add another changeset](${commitChangesetLink})`;
             const changesetStr = `There ${changesetSingle ? "is" : "are"} ${changesetCount || "no"} existing changeset${changesetSingle ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Any packages that depend on the planned releases will be updated and released automatically in a separate PR.`;
