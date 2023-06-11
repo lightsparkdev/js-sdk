@@ -1,26 +1,121 @@
 name: Release and sync
 
 on:
+  pull_request:
+    paths:
+      - "**"
   push:
     branches:
       - main
+    paths:
+      - "**"
 
 jobs:
+  checks:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: "js/.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "js/yarn.lock"
+
+      - name: Install dependencies with yarn cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+
+      - name: Restore turbo cache
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.cache/turbo
+          # see https://bit.ly/43Til68 - we only need a single cache for all turbo files
+          # but the cache still needs a unique id in order for it to properly save each time.
+          # restore-keys will always take the latest matching cache:
+          key: turbo-checks-${{ runner.os }}-${{ github.run_id }} # Can use time based key as well
+          restore-keys: |
+            turbo-checks-${{ runner.os }}
+
+      - run: "yarn checks"
+        working-directory: "js"
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
+
+  # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
+  # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
+  build:
+    runs-on: "ubuntu-22.04"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: "js/.nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "js/yarn.lock"
+
+      - name: yarn install with cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+
+      - name: Restore turbo cache
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules/.cache/turbo
+          # see https://bit.ly/43Til68 - we only need a single cache for all turbo files
+          # but the cache still needs a unique id in order for it to properly save each time.
+          # restore-keys will always take the latest matching cache:
+          key: turbo-build-${{ runner.os }}-${{ github.run_id }} # Can use time based key as well
+          restore-keys: |
+            turbo-build-${{ runner.os }}
+
+      - run: "yarn build"
+        working-directory: "js"
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
+
   release:
     name: Release
+    needs: ["checks", "build"]
+    if: "success() && github.event_name == 'push'"
     runs-on: ubuntu-latest
     environment: npm
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Setup Node.js 16
-        uses: actions/setup-node@v3
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
         with:
-          node-version: 16
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+          cache-dependency-path: "yarn.lock"
 
-      - name: Install Dependencies
-        run: yarn
+      - name: Install dependencies with yarn cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "./js"
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
@@ -67,6 +162,7 @@ jobs:
 
   create-webdev-pr:
     name: Create Webdev PR
+    if: "github.event_name == 'push'"
     runs-on: ubuntu-latest
     environment: npm
     steps:
