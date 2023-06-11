@@ -3,7 +3,7 @@
 # $ ../copybara/bazel-bin/java/com/google/copybara/copybara copy.bara.sky js-sdk-push
 
 core.workflow(
-    name="js-sdk-push",
+    name="webdev-push-to-js-sdk",
     origin=git.github_origin(
         url="https://github.com/lightsparkdev/webdev.git",
         ref="main",
@@ -16,9 +16,19 @@ core.workflow(
     mode="ITERATIVE",
     origin_files=glob(
         ["js/**"],
-        exclude=["js/packages/private/**", "js/apps/private/**", "js/yarn.lock", "js/README.md"],
+        exclude=[
+            "js/packages/private/**",
+            "js/apps/private/**",
+            # dependencies and lock file are different between public and private repos:
+            "js/yarn.lock",
+            # different README for private repo, see README-PUBLIC.md:
+            "js/README.md",
+            # changesets and releases are created and managed from the public repo only so we don't want to overwrite them:
+            "js/.changeset/*.md"
+        ],
     ),
-    destination_files=glob(["**"], exclude=[".github/**", "yarn.lock"]),
+    # GH actions, yarn.lock, and changesets are managed separately in each repo.
+    destination_files=glob(["**"], exclude=[".github/**", "yarn.lock", ".changeset/*.md"]),
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations=[
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
@@ -30,7 +40,7 @@ core.workflow(
 )
 
 core.workflow(
-    name="js-sdk-pull",
+    name="js-sdk-push-to-webdev",
     origin=git.github_origin(
         url="https://github.com/lightsparkdev/js-sdk.git",
         ref="main",
@@ -49,7 +59,8 @@ This typically happens when new versions of the SDK are released and version upd
     ),
     origin_files=glob(
         ["**"],
-        exclude=[".github/**", "yarn.lock"],
+        # GH actions, yarn.lock, and changesets are managed separately in each repo.
+        exclude=[".github/**", "yarn.lock", ".changeset/*.md"],
     ),
     destination_files=glob(
         ["js/**"],
