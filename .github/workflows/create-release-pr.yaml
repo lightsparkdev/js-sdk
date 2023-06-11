@@ -1,8 +1,8 @@
 name: Create or update release PR
 
 on:
-  pull_request_target:
-    types: [synchronize]
+  pull_request:
+    types: [edited]
     branches:
       - develop
   push:
