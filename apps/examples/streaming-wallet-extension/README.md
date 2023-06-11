@@ -6,9 +6,7 @@ Navigate to "https://app.lightspark.com/demos/streaming" to try it out!
 
 ## Building
 
-First build the JS sdk by running `npm install` then `npm run build` in the root of the js-sdk directory.
-
-Then run those same commands in this directory to build the extension. It will output the compiled source to the `build`
+Run `yarn && yarn run build` from js-sdk root directory. It will output the compiled source to the `packages/apps/examples/streaming-wallet-extension/build`
 directory.
 
 ## Installing from source
