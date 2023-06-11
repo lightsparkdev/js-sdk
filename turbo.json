@@ -16,7 +16,10 @@
       "cache": false,
       "persistent": true
     },
-    "docs": {},
+    "docs": {
+      "outputs": ["docs/**"],
+      "dependsOn": ["^build"]
+    },
     "format": {},
     "gql-codegen": {},
     "lint": {},
