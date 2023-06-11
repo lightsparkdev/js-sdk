@@ -41,7 +41,6 @@ jobs:
             turbo-checks-${{ runner.os }}
 
       - run: "yarn checks"
-        working-directory: "js"
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
@@ -84,7 +83,6 @@ jobs:
             turbo-build-${{ runner.os }}
 
       - run: "yarn build"
-        working-directory: "js"
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
