@@ -115,7 +115,7 @@ jobs:
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
         with:
-          cwd: "./js"
+          cwd: "."
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
