@@ -9,4 +9,4 @@
 "@lightsparkdev/core": patch
 ---
 
-Declare shared deps in workspaces that require them (#4962)
+Declare shared deps in workspaces that require them (\#4962)
