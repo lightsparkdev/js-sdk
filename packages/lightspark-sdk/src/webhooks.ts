@@ -27,10 +27,12 @@ export const verify_and_parse_webhook = (
 export const parse_webhook = async (
   data: Uint8Array
 ): Promise<WebhookEvent> => {
-  if (typeof TextDecoder === "undefined") {
-    const TextDecoder = (await import("text-encoding")).TextDecoder;
+  let td = TextDecoder;
+  if (typeof td === "undefined") {
+    const tdModule = await import("text-encoding");
+    td = tdModule.TextDecoder;
   }
-  const dataStr = new TextDecoder().decode(data);
+  const dataStr = new td().decode(data);
   const event = JSON.parse(dataStr);
 
   return {
