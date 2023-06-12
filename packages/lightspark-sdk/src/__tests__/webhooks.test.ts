@@ -1,5 +1,5 @@
 import WebhookEventType from "../objects/WebhookEventType.js";
-import { verify_and_parse_webhook } from "../webhooks.js";
+import { verifyAndParseWebhook } from "../webhooks.js";
 
 describe("Webhooks", () => {
   test("should verify and parse webhook data", async () => {
@@ -12,8 +12,8 @@ describe("Webhooks", () => {
       "62a8829aeb48b4142533520b1f7f86cdb1ee7d718bf3ea15bc1c662d4c453b74";
     const webhookSecret = "3gZ5oQQUASYmqQNuEk0KambNMVkOADDItIJjzUlAWjX";
 
-    const webhook = await verify_and_parse_webhook(
-      new TextEncoder().encode(data),
+    const webhook = await verifyAndParseWebhook(
+      Buffer.from(data, "utf-8"),
       hexdigest,
       webhookSecret
     );

@@ -10,7 +10,7 @@ export interface WebhookEvent {
   entity_id: string;
 }
 
-export const verify_and_parse_webhook = (
+export const verifyAndParseWebhook = (
   data: Uint8Array,
   hexdigest: string,
   webhook_secret: string
@@ -21,12 +21,10 @@ export const verify_and_parse_webhook = (
     throw new Error("Webhook message hash does not match signature");
   }
 
-  return parse_webhook(data);
+  return parseWebhook(data);
 };
 
-export const parse_webhook = async (
-  data: Uint8Array
-): Promise<WebhookEvent> => {
+const parseWebhook = async (data: Uint8Array): Promise<WebhookEvent> => {
   let td = TextDecoder;
   if (typeof td === "undefined") {
     const tdModule = await import("text-encoding");
