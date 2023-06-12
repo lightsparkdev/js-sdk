@@ -19,7 +19,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.2",
-    "@types/node": "^20.1.4",
+    "@types/node": "^20.2.5",
     "@types/qrcode-terminal": "^0.12.0",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",

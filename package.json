@@ -9,9 +9,11 @@
     "build-no-cache": "yarn build --force",
     "build-storybook": "turbo run build-storybook",
     "build": "turbo run build",
-    "checks": "turbo lint format gql-codegen test circular-deps",
+    "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
+    "deps:check": "manypkg check",
+    "deps:fix": "manypkg fix",
     "docs": "turbo run docs",
     "format": "turbo run format",
     "gql-codegen": "turbo run gql-codegen",
@@ -29,10 +31,8 @@
   ],
   "dependencies": {
     "@changesets/cli": "^2.26.1",
-    "prettier": "2.8.7",
-    "tsup": "^6.7.0",
-    "turbo": "v1.10.1",
-    "typescript": "^4.9.5"
+    "@manypkg/cli": "^0.21.0",
+    "turbo": "v1.10.1"
   },
   "packageManager": "yarn@3.6.0"
 }

@@ -33,11 +33,15 @@
     "expo-modules-core": "~1.2.7"
   },
   "devDependencies": {
-    "@types/react": "^18.0.25",
+    "@types/react": "^18.2.0",
     "@types/react-native": "^0.70.6",
     "babel-eslint": "^10.1.0",
-    "eslint": "^8.41.0",
-    "expo-module-scripts": "^3.0.4"
+    "eslint": "^8.3.0",
+    "expo": "*",
+    "expo-module-scripts": "^3.0.4",
+    "react": "^18.2.0",
+    "react-native": "*",
+    "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "expo": "*",

@@ -6,7 +6,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "format": "npx prettier --write ./"
+    "format": "prettier src --check",
+    "format:fix": "prettier src --write"
   },
   "main": "index.js",
   "dependencies": {
@@ -27,7 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "prettier": "^2.8.4"
+    "prettier": "2.8.7"
   },
   "expo": {
     "autolinking": {

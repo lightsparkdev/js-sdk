@@ -38,9 +38,10 @@
     "dev": "yarn build -- --watch",
     "clean": "rm -rf .turbo && rm -rf dist",
     "lint": "npx prettier --check ./src",
-    "format": "npx prettier --write ./src",
+    "format": "prettier src --check",
+    "format:fix": "prettier src --write",
     "test": "echo \"TODO\"",
-    "types": "yarn run --top-level tsc",
+    "types": "tsc",
     "postversion": "yarn build"
   },
   "license": "Apache-2.0",
@@ -52,8 +53,10 @@
   },
   "devDependencies": {
     "jest": "^29.4.1",
+    "prettier": "2.8.7",
     "ts-jest": "^29.0.5",
     "tsconfig": "*",
+    "tsup": "^6.7.0",
     "typescript": "^4.9.5"
   }
 }
