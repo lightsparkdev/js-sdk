@@ -1,5 +1,17 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.3
+
+### Patch Changes
+
+- cf73a38: Upgrade yarn to latest
+- 9c0a2fe: Declare shared deps in workspaces that require them
+- Updated dependencies [cf73a38]
+- Updated dependencies [9c0a2fe]
+- Updated dependencies [9c0a2fe]
+  - @lightsparkdev/wallet-sdk@0.6.3
+  - @lightsparkdev/core@0.3.2
+
 ## 0.6.2
 
 ### Patch Changes
