@@ -8,6 +8,7 @@ export interface WebhookEvent {
   event_id: string;
   timestamp: Date;
   entity_id: string;
+  wallet_id?: string;
 }
 
 export const verifyAndParseWebhook = (
@@ -38,5 +39,6 @@ const parseWebhook = async (data: Uint8Array): Promise<WebhookEvent> => {
     event_id: event.event_id,
     timestamp: new Date(event.timestamp),
     entity_id: event.entity_id,
+    wallet_id: event.wallet_id,
   };
 };
