@@ -1,5 +1,14 @@
 # @lightsparkdev/oauth
 
+## 0.1.10
+
+### Patch Changes
+
+- 9c0a2fe: Declare shared deps in workspaces that require them
+- Updated dependencies [cf73a38]
+- Updated dependencies [9c0a2fe]
+  - @lightsparkdev/core@0.3.2
+
 ## 0.1.9
 
 ### Patch Changes

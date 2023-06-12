@@ -1,5 +1,18 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.3.3
+
+### Patch Changes
+
+- cf73a38: Upgrade yarn to latest
+- 9c0a2fe: Move typedoc into dev deps for sdks
+- 9c0a2fe: Declare shared deps in workspaces that require them
+- 9c0a2fe: Fix importing TextDecoder when not available
+- 9c0a2fe: Fix webhook JS docs and function names
+- Updated dependencies [cf73a38]
+- Updated dependencies [9c0a2fe]
+  - @lightsparkdev/core@0.3.2
+
 ## 0.3.2
 
 ### Patch Changes

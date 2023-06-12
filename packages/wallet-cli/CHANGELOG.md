@@ -1,5 +1,17 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.8
+
+### Patch Changes
+
+- cf73a38: Upgrade yarn to latest
+- 9c0a2fe: Declare shared deps in workspaces that require them
+- Updated dependencies [cf73a38]
+- Updated dependencies [9c0a2fe]
+- Updated dependencies [9c0a2fe]
+  - @lightsparkdev/wallet-sdk@0.6.3
+  - @lightsparkdev/core@0.3.2
+
 ## 0.0.7
 
 ### Patch Changes

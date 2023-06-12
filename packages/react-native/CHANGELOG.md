@@ -1,5 +1,16 @@
 # @lightsparkdev/react-native
 
+## 0.2.2
+
+### Patch Changes
+
+- cf73a38: Upgrade yarn to latest
+- 9c0a2fe: Declare shared deps in workspaces that require them
+- Updated dependencies [cf73a38]
+- Updated dependencies [9c0a2fe]
+  - @lightsparkdev/ls-react-native-crypto@0.2.2
+  - @lightsparkdev/core@0.3.2
+
 ## 0.2.1
 
 ### Patch Changes
