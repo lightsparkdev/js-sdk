@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 0.3.4
-
-### Patch Changes
-
-- 55f31db: Add walletID to relevant webhook events.
-
 ## 0.3.3
 
 ### Patch Changes
