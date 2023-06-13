@@ -30,6 +30,7 @@ class LightsparkNode implements Node {
     public readonly bitcoinNetwork: BitcoinNetwork,
     public readonly displayName: string,
     public readonly accountId: string,
+    public readonly ownerId: string,
     public readonly typename: string,
     public readonly alias?: string,
     public readonly color?: string,
@@ -233,6 +234,7 @@ export const LightsparkNodeFromJson = (obj: any): LightsparkNode => {
       BitcoinNetwork.FUTURE_VALUE,
     obj["lightspark_node_display_name"],
     obj["lightspark_node_account"].id,
+    obj["lightspark_node_owner"].id,
     "LightsparkNode",
     obj["lightspark_node_alias"],
     obj["lightspark_node_color"],
@@ -280,6 +282,9 @@ fragment LightsparkNodeFragment on LightsparkNode {
     lightspark_node_display_name: display_name
     lightspark_node_public_key: public_key
     lightspark_node_account: account {
+        id
+    }
+    lightspark_node_owner: owner {
         id
     }
     lightspark_node_blockchain_balance: blockchain_balance {

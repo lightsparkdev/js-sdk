@@ -5,14 +5,16 @@ import autoBind from "auto-bind";
 import LightsparkClient from "../client.js";
 import Balances, { BalancesFromJson } from "./Balances.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import WalletStatus from "./WalletStatus.js";
 
-class Wallet implements Entity {
+class Wallet implements LightsparkNodeOwner {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
     public readonly updatedAt: string,
     public readonly thirdPartyIdentifier: string,
+    public readonly status: WalletStatus,
     public readonly typename: string,
     public readonly lastLoginAt?: string,
     public readonly balances?: Balances
@@ -86,11 +88,11 @@ query FetchWalletTotalAmountSent($created_after_date: DateTime, $created_before_
     }))!;
   }
 
-  static getWalletQuery(): Query<Wallet> {
+  static getWalletQuery(id: string): Query<Wallet> {
     return {
       queryPayload: `
-query GetWallet {
-    current_wallet {
+query GetWallet($id: ID!) {
+    entity(id: $id) {
         ... on Wallet {
             ...WalletFragment
         }
@@ -99,8 +101,8 @@ query GetWallet {
 
 ${FRAGMENT}    
 `,
-      variables: {},
-      constructObject: (data: any) => WalletFromJson(data.current_wallet),
+      variables: { id },
+      constructObject: (data: any) => WalletFromJson(data.entity),
     };
   }
 }
@@ -111,6 +113,7 @@ export const WalletFromJson = (obj: any): Wallet => {
     obj["wallet_created_at"],
     obj["wallet_updated_at"],
     obj["wallet_third_party_identifier"],
+    WalletStatus[obj["wallet_status"]] ?? WalletStatus.FUTURE_VALUE,
     "Wallet",
     obj["wallet_last_login_at"],
     !!obj["wallet_balances"]
@@ -154,6 +157,7 @@ fragment WalletFragment on Wallet {
         }
     }
     wallet_third_party_identifier: third_party_identifier
+    wallet_status: status
 }`;
 
 export default Wallet;

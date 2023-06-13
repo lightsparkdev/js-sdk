@@ -109,6 +109,7 @@ export const NodeFromJson = (obj: any): Node => {
         BitcoinNetwork.FUTURE_VALUE,
       obj["lightspark_node_display_name"],
       obj["lightspark_node_account"].id,
+      obj["lightspark_node_owner"].id,
       "LightsparkNode",
       obj["lightspark_node_alias"],
       obj["lightspark_node_color"],
@@ -175,6 +176,9 @@ fragment NodeFragment on Node {
         lightspark_node_display_name: display_name
         lightspark_node_public_key: public_key
         lightspark_node_account: account {
+            id
+        }
+        lightspark_node_owner: owner {
             id
         }
         lightspark_node_blockchain_balance: blockchain_balance {
