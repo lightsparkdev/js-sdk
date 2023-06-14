@@ -21,6 +21,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
+          # use branch name instead of triggering ref:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
 
@@ -55,6 +56,8 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
@@ -101,6 +104,8 @@ jobs:
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
