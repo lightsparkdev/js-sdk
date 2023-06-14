@@ -21,7 +21,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
-          # use branch name instead of triggering ref:
+          # use branch name instead of triggering ref so we can commit to the PR branch:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
 
