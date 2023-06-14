@@ -361,6 +361,9 @@ fragment EntityFragment on Entity {
                     lightspark_node_account: account {
                         id
                     }
+                    lightspark_node_owner: owner {
+                        id
+                    }
                     lightspark_node_blockchain_balance: blockchain_balance {
                         __typename
                         blockchain_balance_total_balance: total_balance {
@@ -476,6 +479,9 @@ fragment EntityFragment on Entity {
         lightspark_node_display_name: display_name
         lightspark_node_public_key: public_key
         lightspark_node_account: account {
+            id
+        }
+        lightspark_node_owner: owner {
             id
         }
         lightspark_node_blockchain_balance: blockchain_balance {
@@ -643,6 +649,9 @@ fragment EntityFragment on Entity {
                         lightspark_node_display_name: display_name
                         lightspark_node_public_key: public_key
                         lightspark_node_account: account {
+                            id
+                        }
+                        lightspark_node_owner: owner {
                             id
                         }
                         lightspark_node_blockchain_balance: blockchain_balance {
@@ -844,6 +853,7 @@ fragment EntityFragment on Entity {
             }
         }
         wallet_third_party_identifier: third_party_identifier
+        wallet_status: status
     }
     ... on Withdrawal {
         __typename

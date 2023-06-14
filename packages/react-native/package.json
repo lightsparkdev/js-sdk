@@ -54,6 +54,7 @@
   "devDependencies": {
     "jest": "^29.4.1",
     "prettier": "2.8.7",
+    "prettier-plugin-organize-imports": "^3.2.2",
     "ts-jest": "^29.0.5",
     "tsconfig": "*",
     "tsup": "^6.7.0",

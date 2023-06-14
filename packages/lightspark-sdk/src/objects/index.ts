@@ -25,6 +25,7 @@ export { default as CreateApiTokenInput } from "./CreateApiTokenInput.js";
 export { default as CreateApiTokenOutput } from "./CreateApiTokenOutput.js";
 export { default as CreateInvoiceInput } from "./CreateInvoiceInput.js";
 export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";
+export { default as CreateLnurlInvoiceInput } from "./CreateLnurlInvoiceInput.js";
 export { default as CreateNodeWalletAddressInput } from "./CreateNodeWalletAddressInput.js";
 export { default as CreateNodeWalletAddressOutput } from "./CreateNodeWalletAddressOutput.js";
 export { default as CreateTestModeInvoiceInput } from "./CreateTestModeInvoiceInput.js";
@@ -61,6 +62,10 @@ export {
   getLightningTransactionQuery,
 } from "./LightningTransaction.js";
 export { default as LightsparkNode } from "./LightsparkNode.js";
+export {
+  default as LightsparkNodeOwner,
+  getLightsparkNodeOwnerQuery,
+} from "./LightsparkNodeOwner.js";
 export { default as LightsparkNodePurpose } from "./LightsparkNodePurpose.js";
 export { default as LightsparkNodeStatus } from "./LightsparkNodeStatus.js";
 export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeToChannelsConnection.js";
@@ -106,6 +111,7 @@ export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
 export { default as Wallet } from "./Wallet.js";
+export { default as WalletStatus } from "./WalletStatus.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";

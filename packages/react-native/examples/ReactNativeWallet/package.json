@@ -28,7 +28,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "prettier": "2.8.7"
+    "prettier": "2.8.7",
+    "prettier-plugin-organize-imports": "^3.2.2"
   },
   "expo": {
     "autolinking": {

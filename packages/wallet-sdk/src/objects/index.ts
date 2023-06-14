@@ -1,3 +1,4 @@
+export { default as AmazonS3FundsRecoveryKit } from "./AmazonS3FundsRecoveryKit.js";
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
 export {
@@ -17,10 +18,12 @@ export { default as CreateTestModePaymentInputWallet } from "./CreateTestModePay
 export { default as CreateTestModePaymentoutput } from "./CreateTestModePaymentoutput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
+export { default as DeleteFundsRecoveryKitOutput } from "./DeleteFundsRecoveryKitOutput.js";
 export { default as DeployWalletOutput } from "./DeployWalletOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
 export { default as Entity } from "./Entity.js";
 export { default as FeeEstimate } from "./FeeEstimate.js";
+export { default as FundsRecoveryKit } from "./FundsRecoveryKit.js";
 export { default as GraphNode } from "./GraphNode.js";
 export {
   default as IncomingPayment,
@@ -73,6 +76,8 @@ export { default as TerminateWalletOutput } from "./TerminateWalletOutput.js";
 export { default as Transaction, getTransactionQuery } from "./Transaction.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
+export { default as UpdateFundsRecoveryKitInput } from "./UpdateFundsRecoveryKitInput.js";
+export { default as UpdateFundsRecoveryKitOutput } from "./UpdateFundsRecoveryKitOutput.js";
 export { default as Wallet } from "./Wallet.js";
 export { default as WalletDashboard } from "./WalletDashboard.js";
 export { default as WalletStatus } from "./WalletStatus.js";

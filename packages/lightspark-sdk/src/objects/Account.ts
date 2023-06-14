@@ -26,12 +26,12 @@ import BlockchainBalance, {
   BlockchainBalanceFromJson,
 } from "./BlockchainBalance.js";
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
 import TransactionFailures from "./TransactionFailures.js";
 import TransactionStatus from "./TransactionStatus.js";
 import TransactionType from "./TransactionType.js";
 
-class Account implements Entity {
+class Account implements LightsparkNodeOwner {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
@@ -243,6 +243,9 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                     lightspark_node_display_name: display_name
                     lightspark_node_public_key: public_key
                     lightspark_node_account: account {
+                        id
+                    }
+                    lightspark_node_owner: owner {
                         id
                     }
                     lightspark_node_blockchain_balance: blockchain_balance {
@@ -786,6 +789,9 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                         lightspark_node_account: account {
                                             id
                                         }
+                                        lightspark_node_owner: owner {
+                                            id
+                                        }
                                         lightspark_node_blockchain_balance: blockchain_balance {
                                             __typename
                                             blockchain_balance_total_balance: total_balance {
@@ -1053,6 +1059,9 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                                     lightspark_node_account: account {
                                         id
                                     }
+                                    lightspark_node_owner: owner {
+                                        id
+                                    }
                                     lightspark_node_blockchain_balance: blockchain_balance {
                                         __typename
                                         blockchain_balance_total_balance: total_balance {
@@ -1237,6 +1246,7 @@ query FetchAccountToWalletsConnection($first: Int) {
                         }
                     }
                     wallet_third_party_identifier: third_party_identifier
+                    wallet_status: status
                 }
             }
         }

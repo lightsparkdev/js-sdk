@@ -19,9 +19,11 @@ import {
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
+import { createHash } from "crypto";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
+import { CreateLnurlInvoice } from "./graphql/CreateLnurlInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
@@ -49,6 +51,7 @@ import CurrencyAmount, {
   CurrencyAmountFromJson,
 } from "./objects/CurrencyAmount.js";
 import FeeEstimate, { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
+import Invoice, { InvoiceFromJson } from "./objects/Invoice.js";
 import InvoiceData, { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
 import OutgoingPayment, {
@@ -403,6 +406,37 @@ class LightsparkClient {
       type,
     });
     return response.create_invoice?.invoice.data?.encoded_payment_request;
+  }
+
+  /**
+   * Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment
+   * from another Lightning Node. This should only be used for generating invoices for LNURLs,
+   * with [createInvoice] preferred in the general case.
+   *
+   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   *
+   * @param nodeId The node ID for which to create an invoice.
+   * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
+   * @param metadata The LNURL metadata payload field in the initial payreq response. This wil be hashed and present in the
+   *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
+   *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
+   * @returns An Invoice object representing the generated invoice.
+   */
+  public async createLnurlInvoice(
+    nodeId: string,
+    amountMsats: number,
+    metadata: string
+  ): Promise<Invoice | undefined> {
+    const response = await this.requester.makeRawRequest(CreateLnurlInvoice, {
+      node_id: nodeId,
+      amount_msats: amountMsats,
+      metadata_hash: createHash("sha256").update(metadata).digest("hex"),
+    });
+    const invoiceJson = response.create_lnurl_invoice?.invoice;
+    if (!invoiceJson) {
+      return undefined;
+    }
+    return InvoiceFromJson(invoiceJson);
   }
 
   /**
