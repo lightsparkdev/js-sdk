@@ -1,13 +1,5 @@
 # @lightsparkdev/react-native
 
-## 0.2.3
-
-### Patch Changes
-
-- 7d81e43: Turn prettier organize imports plugin back on except for site
-- Updated dependencies [7d81e43]
-  - @lightsparkdev/core@0.3.3
-
 ## 0.2.2
 
 ### Patch Changes

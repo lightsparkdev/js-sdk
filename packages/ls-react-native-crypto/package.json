@@ -33,7 +33,7 @@
     "expo-modules-core": "~1.2.7"
   },
   "devDependencies": {
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.2.12",
     "@types/react-native": "^0.70.6",
     "babel-eslint": "^10.1.0",
     "eslint": "^8.3.0",

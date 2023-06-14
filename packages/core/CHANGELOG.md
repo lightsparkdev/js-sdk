@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 0.3.3
-
-### Patch Changes
-
-- 7d81e43: Turn prettier organize imports plugin back on except for site
-
 ## 0.3.2
 
 ### Patch Changes

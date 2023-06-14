@@ -1,12 +1,5 @@
 # @lightsparkdev/oauth
 
-## 0.1.11
-
-### Patch Changes
-
-- Updated dependencies [7d81e43]
-  - @lightsparkdev/core@0.3.3
-
 ## 0.1.10
 
 ### Patch Changes

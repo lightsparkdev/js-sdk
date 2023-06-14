@@ -1,15 +1,5 @@
 # @lightsparkdev/react-wallet
 
-## 0.6.4
-
-### Patch Changes
-
-- 7d81e43: Turn prettier organize imports plugin back on except for site
-- Updated dependencies [7d81e43]
-- Updated dependencies [7d81e43]
-  - @lightsparkdev/wallet-sdk@0.6.4
-  - @lightsparkdev/core@0.3.3
-
 ## 0.6.3
 
 ### Patch Changes
