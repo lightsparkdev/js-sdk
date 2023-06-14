@@ -27,12 +27,12 @@ jobs:
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: "js/.nvmrc"
+          node-version-file: ".nvmrc"
 
       - name: "Install dependencies with yarn cache"
         uses: ./.github/actions/yarn-nm-install
         with:
-          cwd: "./js"
+          cwd: "."
           prevent-lock-update: false
 
       - name: "Commit and push changes if modified"
