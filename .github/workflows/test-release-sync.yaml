@@ -11,11 +11,53 @@ on:
       - "**"
 
 jobs:
+  update-lock-file:
+    runs-on: "ubuntu-22.04"
+    outputs:
+      VERIFIED_LOCK_COMMIT: ${{ steps.sync-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+    # Only ever update lock file for PRs
+    if: "github.event_name == 'pull_request'"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          # use branch name instead of triggering ref so we can commit to the PR branch:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: "Install dependencies with yarn cache"
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+          prevent-lock-update: false
+
+      - name: "Commit and push changes if modified"
+        id: sync-lock-file
+        run: |
+          git config --global user.name 'Lightspark Eng'
+          git config --global user.email 'engineering@lightspark.com'
+          git add -A
+          git diff-index --quiet HEAD || git commit -nm "CI update lock file for PR"
+          git push
+          echo "$(git rev-parse HEAD)"
+          echo "VERIFIED_LOCK_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
   checks:
+    # Wait to see if the lock file should be updated before running checks:
+    needs: "update-lock-file"
+    # Needed when depending on a conditional job (update-lock-file) https://bit.ly/440oM7G
+    if: "always()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
@@ -54,10 +96,16 @@ jobs:
   # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
+    # Wait to see if the lock file should be updated before running checks:
+    needs: "update-lock-file"
+    # Needed when depending on a conditional job (update-lock-file) https://bit.ly/440oM7G
+    if: "always()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
