@@ -45,7 +45,11 @@ inputs:
   enable-corepack:
     description: "Enable corepack"
     required: false
-    default: "false"
+    default: "true"
+  prevent-lock-update:
+    description: "Prevent yarn.lock update"
+    required: false
+    default: "true"
 
 runs:
   using: "composite"
@@ -93,10 +97,24 @@ runs:
         path: ${{ inputs.cwd }}/.yarn/ci-cache
         key: yarn-install-state-cache-${{ inputs.cache-prefix }}-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ steps.yarn-config.outputs.CURRENT_BRANCH }}-${{ hashFiles(format('{0}/yarn.lock', inputs.cwd), format('{0}/.yarnrc.yml', inputs.cwd)) }}
 
-    - name: 📥 Install dependencies
+    - name: 📥 Install dependencies with prevent lock update
+      if: inputs.prevent-lock-update == 'true'
       shell: bash
       working-directory: ${{ inputs.cwd }}
       run: yarn install --immutable --inline-builds
+      env:
+        # Overrides/align yarnrc.yml options (v3, v4) for a CI context
+        YARN_ENABLE_GLOBAL_CACHE: "false" # Use local cache folder to keep downloaded archives
+        YARN_NM_MODE: "hardlinks-local" # Reduce node_modules size
+        YARN_INSTALL_STATE_PATH: ".yarn/ci-cache/install-state.gz" # Might speed up resolution step when node_modules present
+        # Other environment variables
+        HUSKY: "0" # By default do not run HUSKY install
+
+    - name: 📥 Install dependencies allow lock update
+      if: inputs.prevent-lock-update == 'false'
+      shell: bash
+      working-directory: ${{ inputs.cwd }}
+      run: yarn install --mode update-lockfile
       env:
         # Overrides/align yarnrc.yml options (v3, v4) for a CI context
         YARN_ENABLE_GLOBAL_CACHE: "false" # Use local cache folder to keep downloaded archives
