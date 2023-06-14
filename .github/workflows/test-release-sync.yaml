@@ -15,8 +15,6 @@ jobs:
     runs-on: "ubuntu-22.04"
     outputs:
       VERIFIED_LOCK_COMMIT: ${{ steps.sync-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
-    # Only ever update lock file for PRs
-    if: "github.event_name == 'pull_request'"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -50,8 +48,6 @@ jobs:
   checks:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    # Needed when depending on a conditional job (update-lock-file) https://bit.ly/440oM7G
-    if: "always()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
@@ -98,8 +94,6 @@ jobs:
   build:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    # Needed when depending on a conditional job (update-lock-file) https://bit.ly/440oM7G
-    if: "always()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
