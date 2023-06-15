@@ -78,13 +78,15 @@ jobs:
         uses: "actions/setup-node@v3"
         with:
           node-version-file: ".nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
 
       - name: yarn install with cache
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
+          # Lock file differences shouldn't matter for these jobs and it's difficult to
+          # sync up with the test-release-sync workflow (which actually needs the lock
+          # to be updated and runs at the same time)
+          update-mode: "install-allow-lock-update"
 
       - name: Run changeset
         id: changeset
@@ -146,7 +148,7 @@ jobs:
                   repo,
                   head: triggeringRefHead,
                   base,
-                  title: latestCommit.commit.message.replace(/\sGitOrigin-RevId.*/, ""),
+                  title: latestCommit.commit.message.replace(/\sGitOrigin-RevId.*/, "").substring(0, 30),
                   body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch."
                 });
                 pr = result.data;

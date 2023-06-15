@@ -46,10 +46,10 @@ inputs:
     description: "Enable corepack"
     required: false
     default: "true"
-  prevent-lock-update:
-    description: "Prevent yarn.lock update"
+  update-mode:
+    description: "Install mode: install-prevent-lock-update, install-allow-lock-update, update-lock-only"
     required: false
-    default: "true"
+    default: "install-prevent-lock-update"
 
 runs:
   using: "composite"
@@ -98,7 +98,7 @@ runs:
         key: yarn-install-state-cache-${{ inputs.cache-prefix }}-${{ runner.os }}-${{ steps.yarn-config.outputs.CURRENT_NODE_VERSION }}-${{ steps.yarn-config.outputs.CURRENT_BRANCH }}-${{ hashFiles(format('{0}/yarn.lock', inputs.cwd), format('{0}/.yarnrc.yml', inputs.cwd)) }}
 
     - name: 📥 Install dependencies with prevent lock update
-      if: inputs.prevent-lock-update == 'true'
+      if: inputs.update-mode == 'install-prevent-lock-update'
       shell: bash
       working-directory: ${{ inputs.cwd }}
       run: yarn install --immutable --inline-builds
@@ -110,8 +110,22 @@ runs:
         # Other environment variables
         HUSKY: "0" # By default do not run HUSKY install
 
+    - name: 📥 Install dependencies with prevent lock update
+      if: inputs.update-mode == 'install-allow-lock-update'
+      shell: bash
+      working-directory: ${{ inputs.cwd }}
+      run: yarn install
+      env:
+        # Overrides/align yarnrc.yml options (v3, v4) for a CI context
+        YARN_ENABLE_GLOBAL_CACHE: "false" # Use local cache folder to keep downloaded archives
+        YARN_ENABLE_IMMUTABLE_INSTALLS: "false" # Allow lock update
+        YARN_NM_MODE: "hardlinks-local" # Reduce node_modules size
+        YARN_INSTALL_STATE_PATH: ".yarn/ci-cache/install-state.gz" # Might speed up resolution step when node_modules present
+        # Other environment variables
+        HUSKY: "0" # By default do not run HUSKY install
+
     - name: 📥 Install dependencies allow lock update
-      if: inputs.prevent-lock-update == 'false'
+      if: inputs.update-mode == 'update-lock-only'
       shell: bash
       working-directory: ${{ inputs.cwd }}
       run: yarn install --mode update-lockfile
