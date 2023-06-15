@@ -78,13 +78,15 @@ jobs:
         uses: "actions/setup-node@v3"
         with:
           node-version-file: ".nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
 
       - name: yarn install with cache
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
+          # Lock file differences shouldn't matter for these jobs and it's difficult to
+          # sync up with the test-release-sync workflow (which actually needs the lock
+          # to be updated and runs at the same time)
+          prevent-lock-update: false
 
       - name: Run changeset
         id: changeset
