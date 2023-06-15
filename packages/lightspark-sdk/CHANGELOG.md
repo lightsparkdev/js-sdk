@@ -1,5 +1,18 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.0
+
+### Minor Changes
+
+- 7d81e43: Add createLnurlInvoice function with examples. Allows creating LNURL-pay invoices.
+
+### Patch Changes
+
+- 7d81e43: Turn prettier organize imports plugin back on except for site
+- 7d81e43: Rerun the SDK generator to pick up several changes
+- Updated dependencies [7d81e43]
+  - @lightsparkdev/core@0.3.3
+
 ## 0.3.4
 
 ### Patch Changes

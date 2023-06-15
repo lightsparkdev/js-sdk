@@ -1,5 +1,14 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.4
+
+### Patch Changes
+
+- 7d81e43: Turn prettier organize imports plugin back on except for site
+- 7d81e43: Rerun the SDK generator to pick up several changes
+- Updated dependencies [7d81e43]
+  - @lightsparkdev/core@0.3.3
+
 ## 0.6.3
 
 ### Patch Changes
