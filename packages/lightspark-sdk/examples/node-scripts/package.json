@@ -17,6 +17,7 @@
     "@lightsparkdev/core": "file:../../../core",
     "@lightsparkdev/lightspark-sdk": "file:../..",
     "commander": "^10.0.0",
-    "dayjs": "^1.11.7"
+    "dayjs": "^1.11.7",
+    "node-fetch": "^3.3.1"
   }
 }

@@ -12,7 +12,16 @@ import {
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
+import fetch, { Headers, Request, Response } from "node-fetch";
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+
+// Need to polyfill fetch if running on node 16.
+if (!globalThis.fetch) {
+  globalThis.fetch = fetch;
+  globalThis.Headers = Headers;
+  globalThis.Request = Request;
+  globalThis.Response = Response;
+}
 
 day.extend(utc);
 
@@ -247,10 +256,13 @@ await client.unlockNode(nodeId, credentials.nodePassword!);
 console.log(`${nodeName}'s signing key has been loaded.`);
 
 // Then we can send the payment. Note that this isn't paying the invoice we just made because
-// you can't actually pay your own invoice. Let's just pay a pre-existing AMP invoice instead.
-const ampInvoice =
-  "lnbcrt1pjr8xwypp5xqj2jfpkz095s8zu57ktsq8vt8yazwcmqpcke9pvl67ne9cpdr0qdqj2a5xzumnwd6hqurswqcqzpgxq9z0rgqsp55hfn0caa5sexea8u979cckkmwelw6h3zpwel5l8tn8s0elgwajss9q8pqqqssqefmmw79tknhl5xhnh7yfepzypxknwr9r4ya7ueqa6vz20axvys8se986hwj6gppeyzst44hm4yl04c4dqjjpqgtt0df254q087sjtfsq35yagj";
-const payment = await client.payInvoice(nodeId, ampInvoice, 100_000, 60, 10_000);
+// you can't actually pay your own invoice. Let's just pay a test invoice instead.
+const testInvoice = await client.createTestModeInvoice(
+  nodeId,
+  100_000,
+  "example script payment"
+);
+const payment = await client.payInvoice(nodeId, testInvoice, 100_000, 60);
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 

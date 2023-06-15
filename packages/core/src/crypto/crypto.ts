@@ -40,7 +40,23 @@ const getCrypto = () => {
     cryptoImplPromise = Promise.resolve(crypto);
   } else {
     cryptoImplPromise = import("crypto").then((nodeCrypto) => {
-      return nodeCrypto as typeof crypto;
+      let cryptoModule = nodeCrypto as typeof crypto;
+      if (!nodeCrypto.subtle) {
+        cryptoModule = Object.assign({}, cryptoModule, {
+          subtle: nodeCrypto.webcrypto.subtle,
+        }) as typeof crypto;
+      }
+      if (!nodeCrypto.getRandomValues) {
+        cryptoModule = Object.assign({}, cryptoModule, {
+          getRandomValues: (array) => {
+            const buffer = Buffer.from(array.buffer);
+            nodeCrypto.randomFillSync(buffer);
+            return array;
+          },
+        }) as typeof crypto;
+      }
+
+      return cryptoModule;
     });
   }
   return cryptoImplPromise;
