@@ -1,5 +1,14 @@
 # @lightsparkdev/react-native
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies [3092c6b]
+- Updated dependencies [f973f73]
+  - @lightsparkdev/core@0.3.4
+  - @lightsparkdev/ls-react-native-crypto@0.2.3
+
 ## 0.2.3
 
 ### Patch Changes
