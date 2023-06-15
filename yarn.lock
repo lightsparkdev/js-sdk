@@ -3892,7 +3892,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto"
   dependencies:
-    "@types/react": ^18.2.0
+    "@types/react": ^18.2.12
     "@types/react-native": ^0.70.6
     babel-eslint: ^10.1.0
     eslint: ^8.3.0
@@ -3949,7 +3949,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 0.3.3
     "@lightsparkdev/wallet-sdk": 0.6.4
-    "@types/react": ^18.2.0
+    "@types/react": ^18.2.12
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     jest: ^29.4.1
@@ -3979,7 +3979,7 @@ __metadata:
     "@types/chrome": ^0.0.227
     "@types/jest": ^29.5.2
     "@types/node": ^20.2.5
-    "@types/react": ^18.2.0
+    "@types/react": ^18.2.12
     "@types/react-dom": ^18.0.0
     "@types/uuid": ^9.0.1
     babel-loader: ^9.1.2
@@ -5480,7 +5480,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^18.2.0":
+"@types/react@npm:*, @types/react@npm:>=16.9.0":
   version: 18.2.9
   resolution: "@types/react@npm:18.2.9"
   dependencies:
@@ -5488,6 +5488,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: f155256171a2d701eb962a1d3aa2a1c9ee36d9dd4a4aecb911d29e50717aab1a76914aef25242665147c455b9e8d081d1a60275d13ca81075c148ebd6607414a
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:^18.2.12":
+  version: 18.2.12
+  resolution: "@types/react@npm:18.2.12"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: ad85a7eadaf1b35cfeee9f715b39311420ff46d46e0650377d918b3f888c2e47416037da4a765e1dccd3d1916abd54c105a3bee803c971ba56c955a7768ce976
   languageName: node
   linkType: hard
 
