@@ -22,7 +22,6 @@ jobs:
           # use branch name instead of triggering ref so we can commit to the PR branch:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
-
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
@@ -37,6 +36,11 @@ jobs:
       - name: "Commit and push changes if modified"
         id: sync-lock-file
         run: |
+          if [[ $(git rev-parse --abbrev-ref HEAD) == "develop" ]] && ! git diff-index --quiet HEAD; then
+            echo "Lock file must not be modified by CI on main branch."
+            exit 1;
+          fi
+
           git config --global user.name 'Lightspark Eng'
           git config --global user.email 'engineering@lightspark.com'
           git add -A
