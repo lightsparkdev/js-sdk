@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-sdk",
-  "version": "0.6.5",
+  "version": "0.6.4",
   "description": "Lightspark JS Wallet SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -71,7 +71,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "0.3.4",
+    "@lightsparkdev/core": "0.3.3",
     "@react-native-async-storage/async-storage": "^1.18.1",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",

@@ -1,11 +1,5 @@
 # @lightsparkdev/ls-react-native-crypto
 
-## 0.2.3
-
-### Patch Changes
-
-- f973f73: Bump @types/react
-
 ## 0.2.2
 
 ### Patch Changes

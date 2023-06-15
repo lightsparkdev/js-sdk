@@ -50,11 +50,11 @@ export const LS_TEST_USER: User = {
   nodeId: `LightsparkNode:${LNURL_NODE_UUID}`,
 };
 
-const generate_callback_for_user = (request: Request, user: User): string => {
+const generateCallbackForUser = (request: Request, user: User): string => {
   return `${request.baseUrl}/api/lnurl/payreq/${user.uuid}`;
 };
 
-const generate_metadata_for_user = (user: User): string => {
+const generateMetadataForUser = (user: User): string => {
   return JSON.stringify([
     ["text/plain", `Pay ${user.username} on Lightspark`],
     ["text/identifier", `${user.username}@domain.org`],
@@ -66,11 +66,10 @@ const app = express();
 app.get("/.well-known/lnurlp/:username", (req, res) => {
   const username = req.params.username;
   if (username !== LNURL_USERNAME) {
-    res.status(404).send("Not found");
-    return;
+    throw new Error("User not found.");
   }
-  const callback = generate_callback_for_user(req, LS_TEST_USER);
-  const metadata = generate_metadata_for_user(LS_TEST_USER);
+  const callback = generateCallbackForUser(req, LS_TEST_USER);
+  const metadata = generateMetadataForUser(LS_TEST_USER);
 
   res.send({
     callback: callback,
@@ -81,11 +80,10 @@ app.get("/.well-known/lnurlp/:username", (req, res) => {
   });
 });
 
-app.get("/api/lnurl/payreq/:uuid", async (req, res) => {
+app.get("/api/lnurl/payreq/:uuid", async (req, res, next) => {
   const uuid = req.params.uuid;
   if (uuid !== LS_TEST_USER.uuid) {
-    res.status(404).send("Not found");
-    return;
+    return next(new Error("User not found."));
   }
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(
@@ -97,21 +95,44 @@ app.get("/api/lnurl/payreq/:uuid", async (req, res) => {
 
   const amountMsats = parseInt(req.query.amountMsats as string);
   if (!amountMsats) {
-    res.status(400).send("Missing amountMsats query parameter.");
+    res.status(400).send(errorMessage("Missing amountMsats query parameter."));
     return;
   }
 
   const invoice = await client.createLnurlInvoice(
     LS_TEST_USER.nodeId,
     amountMsats,
-    generate_metadata_for_user(LS_TEST_USER)
+    generateMetadataForUser(LS_TEST_USER)
   );
   if (!invoice) {
-    res.status(500).send("Invoice creation failed.");
-    return;
+    return next(new Error("Invoice creation failed."));
   }
   res.send({ pr: invoice.data.encodedPaymentRequest, routes: [] });
 });
+
+// Default 404 handler.
+app.use(function (req, res, next) {
+  res.status(404);
+  res.send(errorMessage("Not found."));
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  if (err.message === "User not found.") {
+    res.status(404).send(errorMessage(err.message));
+    return;
+  }
+
+  res.status(500).send(errorMessage(`Something broke! ${err.message}`));
+});
+
+const errorMessage = (message: string) => {
+  return { status: "ERROR", reason: message };
+};
 
 // Start the server
 app.listen(3000, () => {
