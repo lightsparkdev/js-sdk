@@ -114,7 +114,9 @@ runs:
       if: inputs.update-mode == 'install-allow-lock-update'
       shell: bash
       working-directory: ${{ inputs.cwd }}
-      run: yarn install
+      run: |
+        YARN_ENABLE_IMMUTABLE_INSTALLS=false
+        yarn install
       env:
         # Overrides/align yarnrc.yml options (v3, v4) for a CI context
         YARN_ENABLE_GLOBAL_CACHE: "false" # Use local cache folder to keep downloaded archives
