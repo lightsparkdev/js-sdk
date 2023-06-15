@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.11
+
+### Patch Changes
+
+- d28d166: Test CI changes for release
+
 ## 0.0.10
 
 ### Patch Changes
