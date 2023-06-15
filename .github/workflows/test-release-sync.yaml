@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
-          prevent-lock-update: "update-lock-only"
+          update-mode: "update-lock-only"
 
       - name: "Commit and push changes if modified"
         id: sync-lock-file

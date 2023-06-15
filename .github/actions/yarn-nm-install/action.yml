@@ -46,10 +46,10 @@ inputs:
     description: "Enable corepack"
     required: false
     default: "true"
-  prevent-lock-update:
-    description: "Prevent yarn.lock update"
+  update-mode:
+    description: "Install mode: install-prevent-lock-update, install-allow-lock-update, update-lock-only"
     required: false
-    default: "true"
+    default: "install-prevent-lock-update"
 
 runs:
   using: "composite"

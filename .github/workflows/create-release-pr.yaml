@@ -86,7 +86,7 @@ jobs:
           # Lock file differences shouldn't matter for these jobs and it's difficult to
           # sync up with the test-release-sync workflow (which actually needs the lock
           # to be updated and runs at the same time)
-          prevent-lock-update: "install-allow-lock-update"
+          update-mode: "install-allow-lock-update"
 
       - name: Run changeset
         id: changeset
