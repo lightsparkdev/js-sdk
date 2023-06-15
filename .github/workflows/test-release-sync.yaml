@@ -36,7 +36,7 @@ jobs:
       - name: "Commit and push changes if modified"
         id: sync-lock-file
         run: |
-          if [[ $(git rev-parse --abbrev-ref HEAD) == "develop" ]] && ! git diff-index --quiet HEAD; then
+          if [[ $(git rev-parse --abbrev-ref HEAD) == "main" ]] && ! git diff-index --quiet HEAD; then
             echo "Lock file must not be modified by CI on main branch."
             exit 1;
           fi
