@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.4
+
+### Patch Changes
+
+- 3092c6b: Add crypto polyfill fixes for node 16.
+
 ## 0.3.3
 
 ### Patch Changes
