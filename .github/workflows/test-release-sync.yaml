@@ -184,7 +184,6 @@ jobs:
           install-mode: "update-lock-only"
 
       - name: Update lock file for Version Packages PR
-        needs: update-lock-file-for-version-packages-pr
         if: steps.changesets.outputs.published == 'false' && github.ref == 'refs/heads/main'
         run: |
           git fetch origin changeset-release/main
