@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.1
+
+### Patch Changes
+
+- 44be15f: Add the LNURL docs for JS
+- Updated dependencies [44be15f]
+  - @lightsparkdev/core@0.3.4
+
 ## 0.4.0
 
 ### Minor Changes

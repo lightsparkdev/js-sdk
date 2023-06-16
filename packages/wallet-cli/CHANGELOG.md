@@ -1,5 +1,14 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.10
+
+### Patch Changes
+
+- 44be15f: Add the LNURL docs for JS
+- Updated dependencies [44be15f]
+  - @lightsparkdev/wallet-sdk@0.6.5
+  - @lightsparkdev/core@0.3.4
+
 ## 0.0.9
 
 ### Patch Changes
