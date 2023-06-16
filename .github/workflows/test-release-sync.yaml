@@ -173,6 +173,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      # If the Version Packages PR has been created in the changesets step we should check if our workspace
+      # package.json files have been updated from dependency bumps and update the lock file if so:
+      - name: "Install dependencies with yarn cache"
+        id: update-lock-file-for-version-packages-pr
+        if: steps.changesets.outputs.published == 'false' && github.ref == 'refs/heads/main'
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+          install-mode: "update-lock-only"
+
+      - name: Update lock file for Version Packages PR
+        needs: update-lock-file-for-version-packages-pr
+        if: steps.changesets.outputs.published == 'false' && github.ref == 'refs/heads/main'
+        run: |
+          git fetch origin changeset-release/main
+          if git show-ref --quiet changeset-release/main; then
+            git checkout changeset-release/main
+            git config --global user.name 'Lightspark Eng'
+            git config --global user.email 'engineering@lightspark.com'
+            git add -A
+            git diff-index --quiet HEAD || git commit -nm "CI update lock file for PR"
+            git push
+            echo "$(git rev-parse HEAD)"
+          else
+            echo "changeset-release/main branch does not exist."
+          fi
+
       - name: Notify publish on Slack
         if: steps.changesets.outputs.published == 'true'
         # You can do something when a publish happens.
