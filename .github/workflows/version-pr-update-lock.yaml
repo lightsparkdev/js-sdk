@@ -1,3 +1,5 @@
+# We need to do this separately from test-release-sync because files
+# are modified there after the lock file is updated for that step.
 name: Update lock for Version Packages PR
 
 on:
