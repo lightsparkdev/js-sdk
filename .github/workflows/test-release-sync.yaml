@@ -189,6 +189,7 @@ jobs:
           git fetch origin changeset-release/main
           if git show-ref --quiet changeset-release/main; then
             git checkout changeset-release/main
+            git push --set-upstream origin changeset-release/main
             git config --global user.name 'Lightspark Eng'
             git config --global user.email 'engineering@lightspark.com'
             git add -A
