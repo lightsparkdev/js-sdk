@@ -1,11 +1,22 @@
+import {
+  verifyAndParseWebhook,
+  WEBHOOKS_SIGNATURE_HEADER,
+} from "@lightsparkdev/lightspark-sdk";
 import { createHash } from "crypto";
-import * as admin from "firebase-admin";
-import * as functions from "firebase-functions";
-import * as jwt from "jsonwebtoken";
+import { initializeApp } from "firebase-admin/app";
+import * as firestore from "firebase-admin/firestore";
+import { defineString } from "firebase-functions/params";
+import { logger } from "firebase-functions/v2";
+import { onRequest } from "firebase-functions/v2/https";
+import jwt from "jsonwebtoken";
 
-admin.initializeApp();
+initializeApp();
 
-export const getJwt = functions.https.onRequest(async (request, response) => {
+const accountIdParam = defineString("ACCOUNT_ID");
+const privateSigningKeyParam = defineString("ACCOUNT_PRIVATE_SIGNING_KEY");
+const webhookSecretParam = defineString("WEBHOOK_SECRET");
+
+export const getJwt = onRequest({ cors: true }, async (request, response) => {
   const userId = request.query.userId as string;
   const password = request.query.password as string;
   response.set("Access-Control-Allow-Origin", "*");
@@ -20,9 +31,8 @@ export const getJwt = functions.https.onRequest(async (request, response) => {
     return;
   }
 
-  const accountId = functions.config().account.id;
-  const privateSigningKey = functions.config().account.private_signing_key;
-  console.log("account", accountId, privateSigningKey);
+  const accountId = accountIdParam.value();
+  const privateSigningKey = privateSigningKeyParam.value();
   if (!accountId || !privateSigningKey) {
     response
       .status(500)
@@ -45,22 +55,53 @@ export const getJwt = functions.https.onRequest(async (request, response) => {
   };
   console.log("claims", claims);
 
+  console.log(`jwt: ${JSON.stringify(Object.entries(jwt))}`);
   const token = jwt.sign(claims, privateSigningKey, { algorithm: "ES256" });
 
-  functions.logger.info("Generating JWT for a user", { userId, accountId });
+  logger.info("Generating JWT for a user", { userId, accountId });
   response.send({ token, accountId });
 });
+
+export const handleWebhook = onRequest(
+  { cors: true },
+  async (request, response) => {
+    const hexdigest = request.header(WEBHOOKS_SIGNATURE_HEADER) || "";
+    const bodyData = new TextEncoder().encode(JSON.stringify(request.body));
+    const event = await verifyAndParseWebhook(
+      bodyData,
+      hexdigest,
+      webhookSecretParam.value()
+    );
+    console.log(`Received webhook event: ${event.event_type}`);
+    console.log(`Event data: ${JSON.stringify(event)}`);
+
+    // From here, you could take some action based on the event type. For example:
+    // if (event.event_type === WebhookEventType.WALLET_INCOMING_PAYMENT_FINISHED) {
+    //   const payment = await lightsparkClient.executeRawQuery(
+    //       IncomingPayment.getIncomingPaymentQuery(event.entity_id)
+    //   );
+    //   console.log(`Incoming payment: ${JSON.stringify(payment)}`);
+    //   const wallet = await lightsparkClient.executeRawQuery(Wallet.getWalletQuery(payment.wallet_id));
+    //   await sendPaymentReceivedNotification(wallet.thirdPartyIdentifier, payment.amount);
+    // }
+
+    response.send("ok");
+  }
+);
 
 const checkOrCreateUser = async (userId: string, password: string) => {
   const hash = createHash("sha256");
   const hashedPassword = hash.update(password).digest("base64");
-  const existingUser = await admin.firestore().doc(`users/${userId}`).get();
+  const existingUser = await firestore
+    .getFirestore()
+    .doc(`users/${userId}`)
+    .get();
   if (existingUser.exists) {
     const userData = existingUser.data();
     return userData?.passwordHash === hashedPassword;
   }
 
-  await admin.firestore().doc(`users/${userId}`).set({
+  await firestore.getFirestore().doc(`users/${userId}`).set({
     passwordHash: hashedPassword,
   });
   return true;
