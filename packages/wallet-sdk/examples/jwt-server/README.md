@@ -6,11 +6,10 @@ You can see how this server is called in `js-sdk/packages/react-wallet/examples/
 
 ## Configuration
 
-The signing private key and account ID are saved in the [firebase functions config](https://firebase.google.com/docs/functions/config-env?authuser=2#environment_configuration). The currently deployed instance of this server uses a test account config, whose wallets are periodically cleaned out. If you want to use this server for your own testing, you'll need to create your own firebase project and set up your own account config. You can do this by running the following commands from the `functions` directory:
+The signing private key and account ID are saved in the [firebase functions config](https://firebase.google.com/docs/functions/config-env?authuser=2#environment_configuration). The currently deployed instance of this server uses a test account config, whose wallets are periodically cleaned out. If you want to use this server for your own testing, you'll need to create your own firebase project and set up your own account config. The firebase CLI will ask you for credentials the first time you deploy:
 
 ```bash
-$ firebase functions:config:set account.id=<your lightspark account id>
-$ firebase functions:config:set account.signing_private_key=<your private key>
+$ firebase deploy --only functions
 ```
 
 The signing key should be a private key in PEM format. You can generate a keypair using the _ES256_ algorithm using the following command:
