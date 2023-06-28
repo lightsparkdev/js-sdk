@@ -24,6 +24,8 @@ export enum PaymentFailureReason {
   SELF_PAYMENT = "SELF_PAYMENT",
 
   INVOICE_EXPIRED = "INVOICE_EXPIRED",
+
+  RISK_SCREENING_FAILED = "RISK_SCREENING_FAILED",
 }
 
 export default PaymentFailureReason;
