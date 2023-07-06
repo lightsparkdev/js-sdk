@@ -1,5 +1,11 @@
 # @lightsparkdev/ls-react-native-crypto
 
+## 0.2.4
+
+### Patch Changes
+
+- c92f1d8: Force patch to sync with npm versions
+
 ## 0.2.3
 
 ### Patch Changes
