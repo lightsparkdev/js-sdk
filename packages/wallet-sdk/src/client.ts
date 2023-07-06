@@ -49,12 +49,12 @@ import OutgoingPayment, {
   FRAGMENT as OutgoingPaymentFragment,
   OutgoingPaymentFromJson,
 } from "./objects/OutgoingPayment.js";
-import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import { TerminateWalletOutputFromJson } from "./objects/TerminateWalletOutput.js";
-import { TransactionFromJson } from "./objects/Transaction.js";
 import { WalletFromJson } from "./objects/Wallet.js";
 import WalletDashboard from "./objects/WalletDashboard.js";
 import WalletStatus from "./objects/WalletStatus.js";
+import { WalletToPaymentRequestsConnectionFromJson } from "./objects/WalletToPaymentRequestsConnection.js";
+import { WalletToTransactionsConnectionFromJson } from "./objects/WalletToTransactionsConnection.js";
 import WithdrawalRequest, {
   WithdrawalRequestFromJson,
 } from "./objects/WithdrawalRequest.js";
@@ -340,17 +340,15 @@ class LightsparkClient {
           balances:
             currentWallet.balances && BalancesFromJson(currentWallet.balances),
           recentTransactions:
-            currentWallet.recent_transactions?.wallet_to_transactions_connection_entities?.map(
-              (tx) => {
-                return TransactionFromJson(tx);
-              }
-            ) || [],
+            currentWallet.recent_transactions &&
+            WalletToTransactionsConnectionFromJson(
+              currentWallet.recent_transactions
+            ),
           paymentRequests:
-            currentWallet.payment_requests?.wallet_to_payment_requests_connection_entities?.map(
-              (pr) => {
-                return PaymentRequestFromJson(pr);
-              }
-            ) || [],
+            currentWallet.payment_requests &&
+            WalletToPaymentRequestsConnectionFromJson(
+              currentWallet.payment_requests
+            ),
         };
       },
     });
