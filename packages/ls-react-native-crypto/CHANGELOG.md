@@ -1,5 +1,11 @@
 # @lightsparkdev/ls-react-native-crypto
 
+## 0.2.3
+
+### Patch Changes
+
+- 44be15f: Add the LNURL docs for JS
+
 ## 0.2.2
 
 ### Patch Changes

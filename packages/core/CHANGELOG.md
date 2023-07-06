@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 0.3.4
+
+### Patch Changes
+
+- 1528704: Allow setting a protocol manually in the js sdk
+- 44be15f: Add the LNURL docs for JS
+
 ## 0.3.3
 
 ### Patch Changes

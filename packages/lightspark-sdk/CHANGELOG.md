@@ -1,5 +1,15 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.1
+
+### Patch Changes
+
+- 5e86b60: Update payment failure reason
+- 44be15f: Add the LNURL docs for JS
+- Updated dependencies [1528704]
+- Updated dependencies [44be15f]
+  - @lightsparkdev/core@0.3.4
+
 ## 0.4.0
 
 ### Minor Changes

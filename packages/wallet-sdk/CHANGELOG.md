@@ -1,5 +1,18 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.5
+
+### Patch Changes
+
+- 5e86b60: Update payment failure reason
+- 5e86b60: Adding a developer test helper for webhooks.
+- 1528704: Allow setting a protocol manually in the js sdk
+- 44be15f: Add the LNURL docs for JS
+- 828f234: Fix the types when parsing JS walletDashboards
+- Updated dependencies [1528704]
+- Updated dependencies [44be15f]
+  - @lightsparkdev/core@0.3.4
+
 ## 0.6.4
 
 ### Patch Changes
