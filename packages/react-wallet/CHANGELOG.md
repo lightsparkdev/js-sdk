@@ -1,5 +1,18 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.5
+
+### Patch Changes
+
+- 44be15f: Add the LNURL docs for JS
+- Updated dependencies [5e86b60]
+- Updated dependencies [5e86b60]
+- Updated dependencies [1528704]
+- Updated dependencies [44be15f]
+- Updated dependencies [828f234]
+  - @lightsparkdev/wallet-sdk@0.6.5
+  - @lightsparkdev/core@0.3.4
+
 ## 0.6.4
 
 ### Patch Changes
