@@ -42,7 +42,7 @@ class Requester {
       websocketImpl = NodeWebSocket;
     }
     this.wsClient = createClient({
-      url: `wss://${this.baseUrl}/${this.schemaEndpoint}`,
+      url: `wss://${this.stripProtocol(this.baseUrl)}/${this.schemaEndpoint}`,
       connectionParams: () => authProvider.addWsConnectionParams({}),
       webSocketImpl: websocketImpl,
     });
@@ -145,14 +145,18 @@ class Requester {
       signingNodeId
     );
 
-    const response = await fetch(
-      `https://${this.baseUrl}/${this.schemaEndpoint}`,
-      {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(bodyData),
-      }
-    );
+    let urlWithProtocol = this.baseUrl;
+    if (
+      !urlWithProtocol.startsWith("https://") &&
+      !urlWithProtocol.startsWith("http://")
+    ) {
+      urlWithProtocol = `https://${urlWithProtocol}`;
+    }
+    const response = await fetch(`${urlWithProtocol}/${this.schemaEndpoint}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(bodyData),
+    });
     if (!response.ok) {
       throw new LightsparkException(
         "RequestFailed",
@@ -174,6 +178,10 @@ class Requester {
     const platform = isNode ? "NodeJS" : "Browser";
     const platformVersion = isNode ? process.version : "";
     return `${this.sdkUserAgent} ${platform}/${platformVersion}`;
+  }
+
+  private stripProtocol(url: string): string {
+    return url.replace(/.*?:\/\//g, "");
   }
 
   private async addSigningDataIfNeeded(
