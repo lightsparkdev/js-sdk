@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.5
+
+### Patch Changes
+
+- c92f1d8: Force patch to sync with npm versions
+
 ## 0.3.4
 
 ### Patch Changes

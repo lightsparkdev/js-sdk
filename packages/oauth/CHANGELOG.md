@@ -1,5 +1,13 @@
 # @lightsparkdev/oauth
 
+## 0.1.13
+
+### Patch Changes
+
+- c92f1d8: Force patch to sync with npm versions
+- Updated dependencies [c92f1d8]
+  - @lightsparkdev/core@0.3.5
+
 ## 0.1.12
 
 ### Patch Changes
