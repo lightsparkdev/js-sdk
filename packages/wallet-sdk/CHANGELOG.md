@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.7
+
+### Patch Changes
+
+- 664f18d: Remove signing key requirement for createBitcoinFundingAddress. It is not needed.
+
 ## 0.6.6
 
 ### Patch Changes
