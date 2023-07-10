@@ -190,17 +190,9 @@ const decodeInvoice = async (
 
 const createBitcoinFundingAddress = async (
   client: LightsparkClient,
-  options: OptionValues,
-  credentials?: EnvCredentials
+  options: OptionValues
 ) => {
   console.log("Creating bitcoin funding address...\n");
-  const privateKey = credentials?.privKey;
-  if (!privateKey) {
-    throw new Error(
-      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
-    );
-  }
-  await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
   const address = await client.createBitcoinFundingAddress();
   console.log("Address:", address);
 };

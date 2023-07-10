@@ -692,14 +692,12 @@ class LightsparkClient {
    */
   public async createBitcoinFundingAddress() {
     this.requireValidAuth();
-    this.requireWalletUnlocked();
     return await this.executeRawQuery({
       queryPayload: CreateBitcoinFundingAddress,
       constructObject: (responseJson: any) => {
         return responseJson.create_bitcoin_funding_address
           .bitcoin_address as string;
       },
-      signingNodeId: WALLET_NODE_ID_KEY,
     });
   }
 
