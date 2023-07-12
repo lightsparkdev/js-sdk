@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.6
+
+### Patch Changes
+
+- a09f51f: Allow websockets without ssl for local testing.
+
 ## 0.3.5
 
 ### Patch Changes
