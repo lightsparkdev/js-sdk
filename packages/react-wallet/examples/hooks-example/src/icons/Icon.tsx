@@ -1,4 +1,4 @@
-import styled from "@emotion/styled/macro";
+import styled from "@emotion/styled";
 import { useLayoutEffect, useState } from "react";
 
 const rootFontSizePx = 12;

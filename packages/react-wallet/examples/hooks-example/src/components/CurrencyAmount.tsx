@@ -1,5 +1,5 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import styled from "@emotion/styled/macro";
+import styled from "@emotion/styled";
 import {
   CurrencyAmount as GraphQLCurrencyAmountType,
   CurrencyUnit,
