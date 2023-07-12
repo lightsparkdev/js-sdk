@@ -41,8 +41,14 @@ class Requester {
     if (typeof WebSocket === "undefined" && typeof window === "undefined") {
       websocketImpl = NodeWebSocket;
     }
+    let websocketProtocol = "wss";
+    if (baseUrl.startsWith("http://")) {
+      websocketProtocol = "ws";
+    }
     this.wsClient = createClient({
-      url: `wss://${this.stripProtocol(this.baseUrl)}/${this.schemaEndpoint}`,
+      url: `${websocketProtocol}://${this.stripProtocol(this.baseUrl)}/${
+        this.schemaEndpoint
+      }`,
       connectionParams: () => authProvider.addWsConnectionParams({}),
       webSocketImpl: websocketImpl,
     });
