@@ -14,6 +14,7 @@
     "clean": "turbo run clean",
     "deps:check": "manypkg check",
     "deps:fix": "manypkg fix",
+    "dev": "turbo run dev --concurrency 14",
     "docs": "turbo run docs",
     "format": "turbo run format",
     "gql-codegen": "turbo run gql-codegen",

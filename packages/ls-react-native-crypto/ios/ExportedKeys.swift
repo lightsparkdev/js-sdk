@@ -7,7 +7,7 @@ internal struct ExportedKey: Record {
   @Field
   var keyBytes: String
 
-  internal enum Format: String, Enumerable {
+  internal enum Format: String {
     case pkcs8 = "pkcs8"
     case spki = "spki"
     case pkcs1 = "pkcs1"
