@@ -10,5 +10,3 @@
 
 Minor tsconfig update
 Fixes in the react native library to run with older versions of expo
-
-Co-authored-by: Lightspark Eng <engineering@lightspark.com>
