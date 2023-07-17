@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.4
+
+### Patch Changes
+
+- 4c09daf: Minor tsconfig update
+  Fixes in the react native library to run with older versions of expo
+- Updated dependencies [4c09daf]
+  - @lightsparkdev/core@0.3.7
+
 ## 0.4.3
 
 ### Patch Changes

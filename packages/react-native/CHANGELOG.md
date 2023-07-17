@@ -1,5 +1,15 @@
 # @lightsparkdev/react-native
 
+## 0.2.7
+
+### Patch Changes
+
+- 4c09daf: Minor tsconfig update
+  Fixes in the react native library to run with older versions of expo
+- Updated dependencies [4c09daf]
+  - @lightsparkdev/ls-react-native-crypto@0.2.5
+  - @lightsparkdev/core@0.3.7
+
 ## 0.2.6
 
 ### Patch Changes

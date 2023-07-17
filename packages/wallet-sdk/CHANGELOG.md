@@ -1,5 +1,14 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.9
+
+### Patch Changes
+
+- 4c09daf: Minor tsconfig update
+  Fixes in the react native library to run with older versions of expo
+- Updated dependencies [4c09daf]
+  - @lightsparkdev/core@0.3.7
+
 ## 0.6.8
 
 ### Patch Changes
