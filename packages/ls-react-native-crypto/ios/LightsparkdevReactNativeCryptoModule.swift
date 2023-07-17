@@ -11,11 +11,11 @@ public class LightsparkdevReactNativeCryptoModule: Module {
     AsyncFunction("generateSigningKeyPair") { () throws -> ExportedKeys in
       let randomTag = UUID().uuidString
       try Keys.generateNewRSASigningKeyPair(tag: randomTag, permanent: true)
-      return try exportKey(forTag: randomTag)
+      return try self.exportKey(forTag: randomTag)
     }
 
     AsyncFunction("serializeSigningKey") { (tag: String) throws -> ExportedKeys in
-      return try exportKey(forTag: tag)
+      return try self.exportKey(forTag: tag)
     }
 
     // NOTE: iOS can only import pkcs1 format private keys! Other formats will fail.
