@@ -102,6 +102,26 @@ const createInvoice = async (
   qrcode.generate(invoice.encodedPaymentRequest, { small: true });
 };
 
+const createTestModeInvoice = async (
+  client: LightsparkClient,
+  options: OptionValues
+) => {
+  console.log(
+    "Creating a test-mode invoice with options: ",
+    JSON.stringify(options, null, 2),
+    "\n"
+  );
+  const invoice = await client.createTestModeInvoice(
+    options.amount * 1000,
+    options.memo
+  );
+  if (!invoice) {
+    throw new Error("Failed to create invoice");
+  }
+  console.log("Invoice:", JSON.stringify(invoice, null, 2));
+  qrcode.generate(invoice, { small: true });
+};
+
 const transactions = async (
   client: LightsparkClient,
   options: OptionValues
@@ -213,6 +233,26 @@ const payInvoice = async (
   const payment = await client.payInvoice(
     options.invoice,
     1000_000,
+    options.amount === -1 ? undefined : options.amount * 1000
+  );
+  console.log("Payment:", JSON.stringify(payment, null, 2));
+};
+
+const createTestModePayment = async (
+  client: LightsparkClient,
+  options: OptionValues,
+  credentials?: EnvCredentials
+) => {
+  console.log("Paying invoice...\n");
+  const privateKey = credentials?.privKey;
+  if (!privateKey) {
+    throw new Error(
+      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
+    );
+  }
+  await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
+  const payment = await client.createTestModePayment(
+    options.invoice,
     options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
@@ -361,6 +401,30 @@ const createDeployAndInitWallet = async (
       );
     });
 
+  const createTestModeInvoiceCmd = new Command("create-test-mode-invoice")
+    .description("Create an invoice that you can pay in test mode.")
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
+    .option(
+      "-m, --memo  <value>",
+      "Add a memo describing the invoice.",
+      undefined
+    )
+    .option(
+      "-a, --amount <number>",
+      "The amount of the invoice in sats.",
+      parseInt,
+      0
+    )
+    .action((options) => {
+      main(options, createTestModeInvoice).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
   const recentTxCmd = new Command("transactions")
     .description("Get recent transactions for your wallet")
     .option(
@@ -400,7 +464,7 @@ const createDeployAndInitWallet = async (
     });
 
   const decodeInvoiceCmd = new Command("decode-invoice")
-    .description("Decode and encoded payment request")
+    .description("Decode an encoded payment request")
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .action((options) => {
       main(options, decodeInvoice).catch((err) =>
@@ -483,6 +547,23 @@ const createDeployAndInitWallet = async (
       );
     });
 
+  const createTestModePaymentCmd = new Command("create-test-mode-payment")
+    .description(
+      "In test mode, simulates a payment from another node to an invoice."
+    )
+    .option(
+      "-u --wallet-user-id <value>",
+      "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
+      undefined
+    )
+    .option("-i, --invoice  <value>", "The encoded payment request.")
+    .option("-a, --amount <number>", "The amount to pay in sats.", parseInt, -1)
+    .action((options) => {
+      main(options, createTestModePayment).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
   const createWalletJwtCmd = new Command("create-jwt")
     .description("Create a wallet JWT for your wallet.")
     .option("-u, --user-id  <value>", "The user ID for the wallet.")
@@ -540,6 +621,7 @@ const createDeployAndInitWallet = async (
     )
     .version("1.0.0")
     .addCommand(createInvoiceCmd)
+    .addCommand(createTestModeInvoiceCmd)
     .addCommand(recentTxCmd)
     .addCommand(balancesCmd)
     .addCommand(recentInvoicesCmd)
@@ -549,6 +631,7 @@ const createDeployAndInitWallet = async (
     .addCommand(decodeInvoiceCmd)
     .addCommand(createBitcoinFundingAddressCmd)
     .addCommand(payInvoiceCmd)
+    .addCommand(createTestModePaymentCmd)
     .addCommand(createWalletJwtCmd)
     .addCommand(createDeployAndInitWalletCmd)
     .addCommand(InitEnvCmd)
