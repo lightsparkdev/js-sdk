@@ -1,5 +1,11 @@
 # @lightsparkdev/react-native
 
+## 0.2.8
+
+### Patch Changes
+
+- 25c1055: Move react deps to peerDependencies to avoid collisions.
+
 ## 0.2.7
 
 ### Patch Changes

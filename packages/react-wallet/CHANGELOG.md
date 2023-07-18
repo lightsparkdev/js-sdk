@@ -1,5 +1,11 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.10
+
+### Patch Changes
+
+- 25c1055: Move react deps to peerDependencies to avoid collisions.
+
 ## 0.6.9
 
 ### Patch Changes
