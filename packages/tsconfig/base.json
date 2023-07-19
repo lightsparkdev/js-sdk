@@ -24,21 +24,3 @@
   "include": ["src"],
   "exclude": ["test", "node_modules", "dist"]
 }
-
-// "target": "ESNext",
-// "lib": ["DOM", "DOM.Iterable", "ESNext"],
-// "allowJs": true,
-// "skipLibCheck": true,
-// "esModuleInterop": true,
-// "allowSyntheticDefaultImports": true,
-// "strict": true,
-// "forceConsistentCasingInFileNames": true,
-// "noFallthroughCasesInSwitch": true,
-// "module": "ESNext",
-// "moduleResolution": "node",
-// "resolveJsonModule": true,
-// "exactOptionalPropertyTypes": true,
-// "noEmit": true,
-// "jsx": "react-jsx",
-// "jsxImportSource": "@emotion/react",
-// "isolatedModules": true,
