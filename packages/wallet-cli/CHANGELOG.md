@@ -1,5 +1,14 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.15
+
+### Patch Changes
+
+- 98e2511: implement test mode commands for wallet-cli
+- Updated dependencies [98e2511]
+  - @lightsparkdev/wallet-sdk@0.6.10
+  - @lightsparkdev/core@0.3.8
+
 ## 0.0.14
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.10
+
+### Patch Changes
+
+- 98e2511: Consolidate tsconfigs for apps and stricter rules for packages
+- Updated dependencies [98e2511]
+  - @lightsparkdev/core@0.3.8
+
 ## 0.6.9
 
 ### Patch Changes

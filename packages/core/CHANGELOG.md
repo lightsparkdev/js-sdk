@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.8
+
+### Patch Changes
+
+- 98e2511: Consolidate tsconfigs for apps and stricter rules for packages
+
 ## 0.3.7
 
 ### Patch Changes
