@@ -7,7 +7,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
     "baseUrl": "./src",

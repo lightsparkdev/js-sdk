@@ -1,4 +1,8 @@
-import { LightsparkClient, Transaction } from "@lightsparkdev/lightspark-sdk";
+import {
+  LightsparkClient,
+  Transaction,
+  TransactionUpdate,
+} from "@lightsparkdev/lightspark-sdk";
 import autoBind from "auto-bind";
 import { Subscription } from "zen-observable-ts";
 import { findActiveStreamingDemoTabs } from "../common/streamingTabs";
@@ -22,7 +26,7 @@ class TransactionObserver {
     this.subscription = this.lightsparkClient
       .listenToTransactions([nodeId])
       .subscribe({
-        next: (transaction) => {
+        next: (transaction: TransactionUpdate) => {
           if (transaction) {
             this.broadcastTransactions([transaction]);
           }

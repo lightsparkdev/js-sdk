@@ -103,6 +103,15 @@ export const convertCurrencyAmount = (
   from: CurrencyAmount,
   toUnit: CurrencyUnit
 ): CurrencyAmount => {
+  if (
+    from.originalUnit === CurrencyUnit.FUTURE_VALUE ||
+    from.originalUnit === CurrencyUnit.USD ||
+    toUnit === CurrencyUnit.FUTURE_VALUE ||
+    toUnit === CurrencyUnit.USD
+  ) {
+    throw new LightsparkException("CurrencyError", `Unsupported CurrencyUnit.`);
+  }
+
   const conversionFn = CONVERSION_MAP[from.originalUnit][toUnit];
   if (!conversionFn) {
     throw new LightsparkException(

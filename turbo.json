@@ -23,6 +23,7 @@
     "format": {},
     "gql-codegen": {},
     "lint": {},
-    "test": {}
+    "test": {},
+    "types": {}
   }
 }

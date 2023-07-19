@@ -48,7 +48,11 @@ const getCrypto = () => {
       }
       if (!nodeCrypto.getRandomValues) {
         cryptoModule = Object.assign({}, cryptoModule, {
-          getRandomValues: (array) => {
+          getRandomValues: <T extends ArrayBufferView | null>(array: T): T => {
+            if (!array) {
+              return array;
+            }
+
             const buffer = Buffer.from(array.buffer);
             nodeCrypto.randomFillSync(buffer);
             return array;
