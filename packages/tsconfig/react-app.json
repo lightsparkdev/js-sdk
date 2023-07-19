@@ -2,9 +2,10 @@
   "extends": "tsconfig/base.json",
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "moduleResolution": "node" /* Can use node16 or nodenext here to match base? */,
+    "moduleResolution": "node",
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "noEmit": true
+    "noEmit": true,
+    "jsxImportSource": "@emotion/react"
   }
 }
