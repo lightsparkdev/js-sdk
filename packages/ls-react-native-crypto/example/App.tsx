@@ -6,8 +6,8 @@ export default function App() {
   const [exportedKey, setExportedKey] =
     useState<LightsparkdevReactNativeCrypto.ExportedKeys>();
   const [keyData, setKeyData] = useState<string>("");
-  const [mnemonic, setMnmonic] = useState<LightsparkdevReactNativeCrypto.ExportedMnemonic>();
-  const [seed, setSeed] = useState<LightsparkdevReactNativeCrypto.ExportedSeed>();
+  const [mnemonic, setMnmonic] = useState<LightsparkdevReactNativeCrypto.Mnemonic>();
+  const [seed, setSeed] = useState<LightsparkdevReactNativeCrypto.Seed>();
   return (
     <View style={styles.container}>
       <Text>Your key alias in the keystore is:</Text>
