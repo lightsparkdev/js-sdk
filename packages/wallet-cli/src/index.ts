@@ -10,7 +10,7 @@ import {
   LightsparkClient,
   WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
-import { Command, OptionValues } from "commander";
+import { Command, InvalidArgumentError, OptionValues } from "commander";
 import * as fs from "fs/promises";
 import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
@@ -222,7 +222,11 @@ const payInvoice = async (
   options: OptionValues,
   credentials?: EnvCredentials
 ) => {
-  console.log("Paying invoice...\n");
+  console.log(
+    "Paying invoice with options: ",
+    JSON.stringify(options, null, 2),
+    "\n"
+  );
   const privateKey = credentials?.privKey;
   if (!privateKey) {
     throw new Error(
@@ -375,6 +379,15 @@ const createDeployAndInitWallet = async (
   await fs.appendFile(filePath, content);
 };
 
+const safeParseInt = (value: string, dummyPrevious: any) => {
+  // parseInt takes a string and a radix
+  const parsedValue = parseInt(value, 10);
+  if (isNaN(parsedValue)) {
+    throw new InvalidArgumentError("Not a number.");
+  }
+  return parsedValue;
+};
+
 (() => {
   const createInvoiceCmd = new Command("create-invoice")
     .description("Create an invoice for your wallet")
@@ -391,7 +404,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
-      parseInt,
+      safeParseInt,
       0
     )
     .option("--amp", "Flag to use AMP invoices.", false)
@@ -416,7 +429,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
-      parseInt,
+      safeParseInt,
       0
     )
     .action((options) => {
@@ -435,7 +448,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-n, --count  <number>",
       "Max number of transactions to fetch.",
-      parseInt,
+      safeParseInt,
       25
     )
     .action((options) => {
@@ -454,7 +467,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-n, --count  <number>",
       "Max number of invoices to fetch.",
-      parseInt,
+      safeParseInt,
       25
     )
     .action((options) => {
@@ -540,7 +553,12 @@ const createDeployAndInitWallet = async (
       undefined
     )
     .option("-i, --invoice  <value>", "The encoded payment request.")
-    .option("-a, --amount <number>", "The amount to pay in sats.", parseInt, -1)
+    .option(
+      "-a, --amount <number>",
+      "The amount to pay in sats.",
+      safeParseInt,
+      -1
+    )
     .action((options) => {
       main(options, payInvoice).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -557,7 +575,12 @@ const createDeployAndInitWallet = async (
       undefined
     )
     .option("-i, --invoice  <value>", "The encoded payment request.")
-    .option("-a, --amount <number>", "The amount to pay in sats.", parseInt, -1)
+    .option(
+      "-a, --amount <number>",
+      "The amount to pay in sats.",
+      safeParseInt,
+      -1
+    )
     .action((options) => {
       main(options, createTestModePayment).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -570,7 +593,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-e, --expire-at <number>",
       "The jwt expiration time in seconds since epoch. Defaults to 30 days from now.",
-      parseInt,
+      safeParseInt,
       Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet jwt in test mode.", false)
@@ -588,7 +611,7 @@ const createDeployAndInitWallet = async (
     .option(
       "-e, --expire-at <number>",
       "The jwt expiration time in seconds since epoch. Defaults to 30 days from now.",
-      parseInt,
+      safeParseInt,
       Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet in test mode.", false)
