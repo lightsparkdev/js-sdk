@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.16
+
+### Patch Changes
+
+- 8057543: Fix integer parsing in wallet CLI with commander
+
 ## 0.0.15
 
 ### Patch Changes
