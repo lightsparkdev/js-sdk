@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "@lightsparkdev/ls-react-native-crypto",
+    "slug": "@lightsparkdevls-react-native-crypto",
+    "version": "0.2.5",
+    "description": "A thin react native library for crypto operations required by the Lightspark SDKs.",
+    "sdkVersion": "48.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  }
+}
