@@ -104,11 +104,10 @@ You'll need to set the following environment variables:
 ```bash
 $ export LIGHTSPARK_API_TOKEN_CLIENT_ID=<your api token id>
 $ export LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<your api token secret>
-$ export LIGHTSPARK_WALLET_NODE_ID=<the node ID of a node you can use as your default wallet>
+$ export LIGHTSPARK_TEST_NODE_PASSWORD=<the test node password (1234!@#$)>
 
-# If you want to run full_example.ts, you'll also need to set these:
+# If you want to run internal_example.ts, you'll also need to set these:
 $ export LIGHTSPARK_EXAMPLE_NODE_1_NAME=<the display name of a node to use in the example>
-$ export LIGHTSPARK_EXAMPLE_NODE_1_PASSWORD=<the password used to unlock node 1>
 $ export LIGHTSPARK_EXAMPLE_NODE_2_NAME=<the display name of a node to use in the example>
 $ export LIGHTSPARK_EXAMPLE_NODE_2_PASSWORD=<the password used to unlock node 2>
 ```
@@ -118,7 +117,7 @@ Then, run the examples:
 ```bash
 $ cd examples/node-scripts
 $ npm install
-$ ts-node createInvoice.ts -a "100" -m "Whasssupppp"
+$ npx ts-node createInvoice.ts -a "100" -m "Whasssupppp"
 ```
 
 ### Streaming Wallet Extension
