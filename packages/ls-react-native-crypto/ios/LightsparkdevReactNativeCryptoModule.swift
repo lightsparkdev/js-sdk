@@ -34,6 +34,54 @@ public class LightsparkdevReactNativeCryptoModule: Module {
     AsyncFunction("getNonce") { () -> UInt32 in
       return UInt32.random(in: UInt32.min...UInt32.max)
     }
+
+    AsyncFunction("generateMnemonic") { (entropy: [UInt8]?) throws -> RNMnemonic in
+      let mnemonic: Mnemonic
+      if let entropy = entropy {
+        mnemonic = try Mnemonic.fromEntropy(entropy: entropy)
+      } else {
+        mnemonic = Mnemonic()
+      }
+      let record = RNMnemonic()
+      record.mnemonic = mnemonic.asString()
+      return record
+    }
+
+    AsyncFunction("getSeed") { (rnMnemonic: RNMnemonic) throws -> RNSeed in
+      let mnemonic = try Mnemonic.fromPhrase(phrase: rnMnemonic.mnemonic)
+      let seed = Seed.fromMnemonic(mnemonic: mnemonic)
+      let record = RNSeed()
+      record.seed = seed.asBytes()
+      return record
+    }
+
+    AsyncFunction("derivePublicKey") { (rnSeed: RNSeed, derivationPath: String) throws -> String in
+      let seed = Seed(seed: rnSeed.seed)
+      let signer = LightsparkSigner()
+      return try signer.derivePublicKey(seed: seed, derivationPath: derivationPath)
+    }
+
+    AsyncFunction("deriveKeyAndSign") { (rnSeed: RNSeed, 
+                                         message: [UInt8], 
+                                         derivationPath: String, 
+                                         addTweak: [UInt8]?, 
+                                         mulTweak: [UInt8]?) throws -> [UInt8] in
+      let seed = Seed(seed: rnSeed.seed)
+      let signer = LightsparkSigner()
+      return try signer.deriveKeyAndSign(
+        seed: seed, 
+        message: message, 
+        derivationPath: derivationPath,
+        addTweak: addTweak,
+        mulTweak: mulTweak
+      )
+    }
+
+    AsyncFunction("ecdh") { (rnSeed: RNSeed, derivationPath: String, publicKey: String) throws -> [UInt8] in
+      let seed = Seed(seed: rnSeed.seed)
+      let signer = LightsparkSigner()
+      return try signer.ecdh(seed: seed, derivationPath: derivationPath, publicKey: publicKey)
+    }
   }
 
   private func exportKey(forTag tag: String) throws -> ExportedKeys {
