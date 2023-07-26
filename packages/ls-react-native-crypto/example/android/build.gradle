@@ -3,7 +3,7 @@
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '33')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '33')
         if (findProperty('android.kotlinVersion')) {
@@ -38,5 +38,6 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
+        maven { url 'https://repo.repsy.io/mvn/chrynan/public' }
     }
 }

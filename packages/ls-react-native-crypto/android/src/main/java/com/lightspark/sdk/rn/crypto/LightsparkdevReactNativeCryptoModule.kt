@@ -4,6 +4,7 @@ import android.security.keystore.KeyProperties
 import android.security.keystore.KeyProtection
 import android.util.Base64
 import android.util.Log
+import com.lightspark.sdk.crypto.Signing
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import org.bouncycastle.asn1.x500.X500Name
@@ -33,6 +34,7 @@ import java.security.spec.RSAKeyGenParameterSpec
 import java.security.spec.RSAPublicKeySpec
 import java.util.Calendar
 import java.util.UUID
+import kotlin.random.Random
 
 
 class LightsparkdevReactNativeCryptoModule : Module() {
@@ -107,6 +109,45 @@ class LightsparkdevReactNativeCryptoModule : Module() {
             val bytes = ByteArray(4)
             SecureRandom().nextBytes(bytes)
             bytes.toUInt().toLong()
+        }
+
+        AsyncFunction("generateMnemonic") { entropy: String? ->
+            val entropyBytes = entropy?.let { Base64.decode(it, Base64.NO_WRAP) } ?: Random.nextBytes(32)
+            val phrase = Signing.getMnemonicSeedPhrase(entropyBytes).joinToString(" ")
+            Mnemonic(phrase)
+        }
+
+        AsyncFunction("getSeed") { mnemonic: Mnemonic ->
+            val mnemonicWords = mnemonic.phrase.split(" ")
+            val seedBytes = Signing.mnemonicToSeed(mnemonicWords)
+            Seed(Base64.encodeToString(seedBytes, Base64.NO_WRAP))
+        }
+
+        AsyncFunction("derivePublicKey") { seed: Seed, derivationPath: String ->
+            val seedBytes = Base64.decode(seed.seedBytes, Base64.NO_WRAP)
+            Signing.derivePublicKey(seedBytes = seedBytes, derivationPath = derivationPath)
+        }
+
+        AsyncFunction("deriveKeyAndSign") { seed: Seed,
+                                            messageBase64: String,
+                                            derivationPath: String,
+                                            addTweak: String?,
+                                            mulTweak: String? ->
+            val seedBytes = Base64.decode(seed.seedBytes, Base64.NO_WRAP)
+            val signature = Signing.signMessage(
+                message = Base64.decode(messageBase64, Base64.NO_WRAP),
+                seedBytes = seedBytes,
+                derivationPath = derivationPath,
+                addTweak = addTweak?.let { Base64.decode(it, Base64.NO_WRAP) },
+                multTweak = mulTweak?.let { Base64.decode(it, Base64.NO_WRAP) }
+            )
+            Base64.encodeToString(signature, Base64.NO_WRAP)
+        }
+
+        AsyncFunction("ecdh") { seed: Seed, derivationPath: String, publicKey: String ->
+            val seedBytes = Base64.decode(seed.seedBytes, Base64.NO_WRAP)
+            val secret = Signing.ecdh(seedBytes = seedBytes, derivationPath = derivationPath, otherPubKey = publicKey)
+            Base64.encodeToString(secret, Base64.NO_WRAP)
         }
     }
 
