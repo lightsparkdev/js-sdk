@@ -292,6 +292,10 @@ const createWalletJwt = async (
     // Expriation time for the JWT is 30 days from now.
     exp: options.expireAt,
   };
+  if (options.extraProps) {
+    const extraProps = JSON.parse(options.extraProps);
+    Object.assign(claims, extraProps);
+  }
   console.log("claims", claims);
   const token = jwt.sign(claims, privateKey, { algorithm: "ES256" });
   console.log("Account ID:", credentials.accountId);
@@ -597,6 +601,10 @@ const safeParseInt = (value: string, dummyPrevious: any) => {
       Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet jwt in test mode.", false)
+    .option(
+      "-p, --extra-props  <value>",
+      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\''
+    )
     .action((options) => {
       main(options, createWalletJwt, true).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -615,6 +623,10 @@ const safeParseInt = (value: string, dummyPrevious: any) => {
       Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet in test mode.", false)
+    .option(
+      "-p, --extra-props  <value>",
+      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\''
+    )
     .action((options) => {
       main(options, createDeployAndInitWallet, true).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
