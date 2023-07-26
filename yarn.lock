@@ -3876,7 +3876,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@0.4.5, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@0.4.6, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
@@ -3904,7 +3904,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ls-react-native-crypto@0.2.5, @lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto":
+"@lightsparkdev/ls-react-native-crypto@0.2.6, @lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto"
   dependencies:
@@ -3947,7 +3947,7 @@ __metadata:
   resolution: "@lightsparkdev/react-native@workspace:packages/react-native"
   dependencies:
     "@lightsparkdev/core": 0.3.8
-    "@lightsparkdev/ls-react-native-crypto": 0.2.5
+    "@lightsparkdev/ls-react-native-crypto": 0.2.6
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     jest: ^29.4.1
@@ -4020,7 +4020,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 0.3.8
-    "@lightsparkdev/lightspark-sdk": 0.4.5
+    "@lightsparkdev/lightspark-sdk": 0.4.6
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^7.0.0
     "@types/chrome": ^0.0.227
