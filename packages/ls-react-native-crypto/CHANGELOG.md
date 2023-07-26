@@ -1,5 +1,11 @@
 # @lightsparkdev/ls-react-native-crypto
 
+## 0.2.6
+
+### Patch Changes
+
+- c1105d2: - Adding some remote signing capabilities to the react native crypto lib.
+
 ## 0.2.5
 
 ### Patch Changes
