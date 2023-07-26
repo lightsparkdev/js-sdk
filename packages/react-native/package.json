@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/react-native",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "Lightspark Wallet React Native helpers SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -47,7 +47,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@lightsparkdev/core": "0.3.8",
-    "@lightsparkdev/ls-react-native-crypto": "0.2.5",
+    "@lightsparkdev/ls-react-native-crypto": "0.2.6",
     "auto-bind": "^5.0.1",
     "dayjs": "^1.11.7"
   },

@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.17
+
+### Patch Changes
+
+- c1105d2: - [wallet-cli] Add the ability to pass extra claims in the jwt creation command
+
 ## 0.0.16
 
 ### Patch Changes

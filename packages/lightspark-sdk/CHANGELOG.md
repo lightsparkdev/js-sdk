@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.6
+
+### Patch Changes
+
+- c1105d2: - Adding some remote signing capabilities to the react native crypto lib.
+
 ## 0.4.5
 
 ### Patch Changes
