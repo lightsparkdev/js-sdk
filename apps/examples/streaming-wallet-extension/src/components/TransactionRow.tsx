@@ -8,7 +8,7 @@ import {
   Transaction,
   Withdrawal,
 } from "@lightsparkdev/lightspark-sdk";
-import { Maybe } from "../common/types";
+import { Maybe } from "@lightsparkdev/ui/types/utils";
 import CurrencyAmount from "./CurrencyAmount";
 
 export const getTransactionType = (typename: string): string => {

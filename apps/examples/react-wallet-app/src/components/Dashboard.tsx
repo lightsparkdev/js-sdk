@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
 import { Maybe } from "@lightsparkdev/core";
+import { CurrencyAmount } from "@lightsparkdev/ui/components/CurrencyAmount";
 import {
   CurrencyAmount as CurrencyAmountType,
   CurrencyUnit,
   Transaction,
   WalletDashboard,
 } from "@lightsparkdev/wallet-sdk";
-import CurrencyAmount from "./CurrencyAmount";
+import { Button } from "src/components/Button";
 import { Table, Td, Th, Tr } from "./Table";
 
 const Dashboard = ({ data }: { data: WalletDashboard }) => {
@@ -28,6 +29,15 @@ const Dashboard = ({ data }: { data: WalletDashboard }) => {
           amount={data.balances?.availableToWithdrawBalance}
         />
       </AmountBar>
+      <ActionsBar>
+        <Button
+          text="Send Payment"
+          primary
+          // mt={isSm ? 0 : 24}
+          // loading={sendingPayment}
+          // onClick={onSubmit}
+        />
+      </ActionsBar>
       <TransactionTable transactions={data.recentTransactions.entities} />
     </Container>
   );
@@ -94,6 +104,13 @@ const AmountBar = styled.div`
   align-items: center;
   justify-content: center;
   gap: 24px;
+`;
+
+const ActionsBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 const AmountWithLabel = ({

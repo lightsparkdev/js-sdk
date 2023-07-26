@@ -1,0 +1,27 @@
+{
+  "name": "@lightsparkdev/ui",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./index.js",
+  "scripts": {
+    "gql-codegen": "graphql-codegen --config gql-codegen.yml"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.11",
+    "@emotion/css": "^11.11.0",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@lightsparkdev/wallet-sdk": "0.6.10",
+    "gql": "^1.1.2",
+    "lodash-es": "^4.17.21",
+    "nanoid": "^4.0.0",
+    "react": "^18.2.0",
+    "react-tooltip": "^5.10.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^3.2.2",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-operations": "^3.0.2",
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7"
+  }
+}

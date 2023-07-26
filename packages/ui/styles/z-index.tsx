@@ -1,0 +1,23 @@
+export const z = {
+  card: 1,
+  fieldError: 1,
+  textInput: 2,
+  select: 3,
+  selectFocused: 4,
+  walletActionPreviewTopGradient: 1,
+  headerContainer: 99,
+  smBanner: 99,
+  headerTop: 100,
+  navMenu: 100,
+  smNavMenu: 100,
+  navAction: 101,
+  smNavAction: 100, // keep under navDropdown
+  tooltip: 160,
+  notificationBanner: 170,
+  qrReaderVideo: 180,
+  qrReaderOverlay: 181,
+  modalOverlay: 190,
+  modalContainer: 191,
+  dropdown: 192,
+  toast: 200,
+};

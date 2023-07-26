@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import { useJwtAuth } from "@lightsparkdev/react-wallet";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "../components/Button";
+import { useNavigate } from "src/common/router";
+import { Button } from "src/components/Button";
+import { Routes } from "src/routes";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const auth = useJwtAuth();
   const [accountId, setAccountId] = useState("");
   const [jwt, setJwt] = useState("");
@@ -16,22 +16,14 @@ const LoginPage = () => {
   useEffect(() => {
     auth.isAuthorized().then((isAuthorized: boolean) => {
       if (isAuthorized) {
-        navigate("/");
+        navigate(Routes.Dashboard);
       }
     });
   }, [auth, navigate]);
 
-  const from = location.state?.from?.pathname || "/";
-
   function handleLogin() {
     auth.login(accountId, jwt).then(() => {
-      // Send them back to the page they tried to visit when they were
-      // redirected to the login page. Use { replace: true } so we don't create
-      // another entry in the history stack for the login page.  This means that
-      // when they get to the protected page and click the back button, they
-      // won't end up back on the login page, which is also really nice for the
-      // user experience.
-      navigate(from, { replace: true });
+      navigate(Routes.Dashboard);
     });
   }
 
@@ -40,7 +32,7 @@ const LoginPage = () => {
       `https://us-central1-jwt-minter.cloudfunctions.net/getJwt?userId=${userName}&password=${password}`
     ).then((res) => res.json());
     await auth.login("Account:01857e8b-cc47-9af2-0000-eb2de1fdecce", jwt);
-    navigate(from, { replace: true });
+    navigate(Routes.Dashboard);
   };
 
   return (
@@ -63,9 +55,7 @@ const LoginPage = () => {
           onChange={(e) => setJwt(e.target.value)}
         />
       </Label>
-      <Button primary onClick={handleLogin}>
-        Login
-      </Button>
+      <Button primary onClick={handleLogin} text="Login" />
       <Description>
         Alternatively, use our demo jwt server with a user name and password.
         <br />
@@ -87,9 +77,11 @@ const LoginPage = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
       </Label>
-      <Button primary onClick={generateDemoTokens}>
-        Generate Demo Tokens
-      </Button>
+      <Button
+        primary
+        onClick={generateDemoTokens}
+        text="Generate Demo Tokens"
+      />
     </Container>
   );
 };
