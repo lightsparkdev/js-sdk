@@ -8,6 +8,7 @@ import {
   SingleNodeDashboard,
   Transaction,
 } from "@lightsparkdev/lightspark-sdk";
+import { Maybe } from "@lightsparkdev/ui/types/utils";
 import React from "react";
 import "./App.css";
 import AccountStorage from "./auth/AccountStorage";
@@ -16,7 +17,6 @@ import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 import VideoProgressCache from "./background/VideoProgressCache";
 import { clearStorageKeepingInstanceId } from "./common/storage";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
-import { Maybe } from "./common/types";
 import CirclePlusIcon from "./components/CirclePlusIcon";
 import CurrencyAmountElement from "./components/CurrencyAmount";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";

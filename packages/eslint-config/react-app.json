@@ -1,0 +1,75 @@
+{
+  "extends": ["react-app", "react-app/jest"],
+  "ignorePatterns": [
+    "build/*",
+    "dist/*",
+    "src/generated/graphql.tsx",
+    "storybook-static"
+  ],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "importNames": ["Link", "Navigate", "useNavigate"],
+            "message": "Please use imports from common/Router instead.",
+            "name": "react-router-dom"
+          },
+          {
+            "importNames": ["default", "QRCodeSVG"],
+            "message": "Please use imports from common/QRCode instead.",
+            "name": "qrcode.react"
+          },
+          {
+            "importNames": ["isApolloError"],
+            "message": "Please use imports from src/utils/errors instead.",
+            "name": "@apollo/client"
+          },
+          {
+            "importNames": ["useWhatChanged"],
+            "message": "This is for use in local development only.",
+            "name": "@simbathesailor/use-what-changed"
+          },
+          {
+            "importNames": ["useWhatChanged"],
+            "message": "This is for use in local development only.",
+            "name": "dev/useWhatChanged"
+          },
+          {
+            "importNames": ["NodeSecretManager"],
+            "message": "Please do not import services directly, use Services class to access.",
+            "name": "services/NodeSecretManager"
+          },
+          {
+            "importNames": ["Button", "ButtonProps"],
+            "message": "Please do not import Button directly, use typesafe Button in common/Button instead.",
+            "name": "@lightsparkdev/ui/components"
+          }
+        ],
+        "patterns": [
+          {
+            "group": [
+              "*/AssetLoader/AssetLoader",
+              "*/apollo/apolloClient",
+              "*/Auth/Auth",
+              "*/InitAccount/InitAccount"
+            ],
+            "message": "Please do not import services directly, use Services class to access."
+          }
+        ]
+      }
+    ],
+    "import/no-anonymous-default-export": "off",
+    "@typescript-eslint/no-unused-vars": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/__tests__/**/*", "cypress/**/*"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "warn",
+        "@typescript-eslint/no-unused-vars": "warn"
+      }
+    }
+  ]
+}

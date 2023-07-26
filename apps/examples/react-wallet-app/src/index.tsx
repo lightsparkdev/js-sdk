@@ -1,19 +1,32 @@
+import { ThemeProvider } from "@emotion/react";
+import { themes } from "@lightsparkdev/ui/styles/colors";
+import { GlobalStyles } from "@lightsparkdev/ui/styles/global";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Route, Routes as RRoutes } from "react-router-dom";
 import App from "./App";
 import "./index.css";
+import DashboardPage from "./pages/DashboardPage";
+import LoginPage from "./pages/LoginPage";
 import reportWebVitals from "./reportWebVitals";
-import routes from "./routes";
+import { Routes } from "./routes";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
-      <App>{routes}</App>
-    </BrowserRouter>
+    <ThemeProvider theme={themes.light}>
+      <GlobalStyles />
+      <BrowserRouter basename={"/"}>
+        <App>
+          <RRoutes>
+            <Route path={Routes.Dashboard} element={<DashboardPage />} />
+            <Route path={Routes.Login} element={<LoginPage />} />
+          </RRoutes>
+        </App>
+      </BrowserRouter>
+    </ThemeProvider>
   </React.StrictMode>
 );
 

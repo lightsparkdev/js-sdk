@@ -7,9 +7,10 @@ import {
   WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "src/common/router";
+import { Button } from "src/components/Button";
+import { Routes } from "src/routes";
 import RequireAuth from "../auth/RequireAuth";
-import { Button } from "../components/Button";
 import Dashboard from "../components/Dashboard";
 import useWalletInfo from "../hooks/useWalletInfo";
 
@@ -97,14 +98,13 @@ function DashboardPage() {
       <div>
         <Header>
           <Button
+            text="Sign out"
             primary
             onClick={async () => {
               await auth.logout();
-              navigate("/login");
+              navigate(Routes.Login);
             }}
-          >
-            Sign out
-          </Button>
+          />
         </Header>
         <Dashboard data={dashboard} />
       </div>
@@ -124,9 +124,7 @@ const DeployWallet = ({
   return (
     <div>
       <h1>Wallet not yet deployed. Status: {status}</h1>
-      <Button primary onClick={onDeploy}>
-        Deploy Wallet
-      </Button>
+      <Button primary onClick={onDeploy} text="Deploy Wallet" />
     </div>
   );
 };
@@ -141,9 +139,7 @@ const InitializeWallet = ({
   return (
     <div>
       <h1>Wallet not yet initialized. Status: {status}</h1>
-      <Button primary onClick={onInitialize}>
-        Initialize Wallet
-      </Button>
+      <Button primary onClick={onInitialize} text="Initialize Wallet" />
     </div>
   );
 };

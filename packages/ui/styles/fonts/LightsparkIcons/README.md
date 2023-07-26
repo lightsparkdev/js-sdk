@@ -1,0 +1,1 @@
+Generated with https://icomoon.io/app/#/select/font. When adding new glyphs from Figma be sure to first choose "Outline stroke" after right clicking the icon. Source files used for each gliph are located in the glyph-svg-src directory.
