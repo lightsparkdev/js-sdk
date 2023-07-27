@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { currencyAmountFragment } from "@lightsparkdev/ui/gql/fragments";
 import {
   CurrencyUnit,
-  type CurrencyAmount,
+  type CurrencyAmount as GQLCurrencyAmountType,
 } from "@lightsparkdev/ui/gql/generated/graphql";
 import { Icon } from "@lightsparkdev/ui/icons";
 import {
@@ -132,7 +132,7 @@ CurrencyAmount.fragments = {
 };
 
 export type CurrencyAmountType = Omit<
-  CurrencyAmount,
+  GQLCurrencyAmountType,
   | "__typename"
   | "original_value"
   | "original_unit"

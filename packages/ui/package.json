@@ -4,7 +4,15 @@
   "private": true,
   "main": "./index.js",
   "scripts": {
-    "gql-codegen": "graphql-codegen --config gql-codegen.yml"
+    "build": "echo \"Currently requires outside dependencies, skipping for now\"",
+    "circular-deps": "madge --circular --extensions ts,tsx .",
+    "clean": "rm -rf .turbo",
+    "format:fix": "prettier . --write",
+    "format": "prettier . --check",
+    "gql-codegen": "graphql-codegen --config gql-codegen.yml",
+    "lint": "NODE_ENV=production eslint .",
+    "test": "echo \"TODO\"",
+    "types": "echo \"TODO: Some imports depend on the inheriting app config. May not be possible to run types here separately unless we fix that.\""
   },
   "dependencies": {
     "@apollo/client": "^3.7.11",
@@ -22,6 +30,11 @@
     "@graphql-codegen/cli": "^3.2.2",
     "@graphql-codegen/typescript": "^3.0.2",
     "@graphql-codegen/typescript-operations": "^3.0.2",
-    "@graphql-codegen/typescript-react-apollo": "^3.3.7"
+    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
+    "eslint": "^8.3.0",
+    "madge": "^6.1.0",
+    "prettier": "2.8.7",
+    "prettier-plugin-organize-imports": "^3.2.2",
+    "typescript": "^4.9.5"
   }
 }
