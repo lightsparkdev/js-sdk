@@ -506,6 +506,10 @@ export type CreateTestModePaymentoutput = {
   payment: OutgoingPayment;
 };
 
+export enum CryptoSanctionsScreeningProvider {
+  Chainalysis = 'CHAINALYSIS'
+}
+
 /** Represents the value and unit for an amount of currency. */
 export type CurrencyAmount = {
   __typename: 'CurrencyAmount';
@@ -984,6 +988,7 @@ export type Mutation = {
    * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
    */
   request_withdrawal: RequestWithdrawalOutput;
+  screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
 };
@@ -1036,6 +1041,11 @@ export type MutationPay_InvoiceArgs = {
 
 export type MutationRequest_WithdrawalArgs = {
   input: RequestWithdrawalInput;
+};
+
+
+export type MutationScreen_Bitcoin_AddressesArgs = {
+  input: ScreenBitcoinAddressesInput;
 };
 
 
@@ -1368,6 +1378,12 @@ export type RichText = {
   text: Scalars['String'];
 };
 
+export enum RiskRating {
+  HighRisk = 'HIGH_RISK',
+  LowRisk = 'LOW_RISK',
+  Unknown = 'UNKNOWN'
+}
+
 /** A transaction that was forwarded through a Lightspark node on the Lightning Network. */
 export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   __typename: 'RoutingTransaction';
@@ -1402,6 +1418,16 @@ export enum RoutingTransactionFailureReason {
   IncomingLinkFailure = 'INCOMING_LINK_FAILURE',
   OutgoingLinkFailure = 'OUTGOING_LINK_FAILURE'
 }
+
+export type ScreenBitcoinAddressesInput = {
+  addresses: Array<Scalars['String']>;
+  provider: CryptoSanctionsScreeningProvider;
+};
+
+export type ScreenBitcoinAddressesOutput = {
+  __typename: 'ScreenBitcoinAddressesOutput';
+  ratings: Array<RiskRating>;
+};
 
 export type Secret = {
   __typename: 'Secret';
