@@ -23,6 +23,7 @@
   "scripts": {
     "start": "yarn vite",
     "build": "yarn tsc && yarn vite build",
+    "clean": "rm -rf .turbo && rm -rf dist",
     "lint": "NODE_ENV=production eslint .",
     "test": "echo \"TODO\""
   },

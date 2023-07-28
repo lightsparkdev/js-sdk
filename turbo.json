@@ -24,6 +24,11 @@
     "gql-codegen": {},
     "lint": {},
     "test": {},
-    "types": {}
+    "types": {},
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    }
   }
 }

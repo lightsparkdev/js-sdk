@@ -44,7 +44,7 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "PORT=3006 BROWSER=none craco start",
     "build": "INLINE_RUNTIME_CHUNK=false craco build",
     "clean": "rm -rf .turbo && rm -rf build",
     "package": "rm -f streaming-extension.zip && INLINE_RUNTIME_CHUNK=false craco build && zip -r streaming-extension.zip build",
