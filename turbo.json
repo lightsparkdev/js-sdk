@@ -1,12 +1,12 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"]
+    },
     "build-storybook": {
       "outputs": ["storybook-static/**"]
-    },
-    "build": {
-      "outputs": ["dist/**", "build/**"],
-      "dependsOn": ["^build"]
     },
     "circular-deps": {},
     "clean": {
@@ -17,18 +17,26 @@
       "persistent": true
     },
     "docs": {
-      "outputs": ["docs/**"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": ["docs/**"]
     },
     "format": {},
     "gql-codegen": {},
     "lint": {},
-    "test": {},
-    "types": {},
+    "lint:watch": {
+      "cache": false,
+      "persistent": true
+    },
     "start": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
+    "test": {},
+    "types": {},
+    "types:watch": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

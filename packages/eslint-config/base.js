@@ -1,3 +1,3 @@
 module.exports = {
-  ignorePatterns: ["build/*", "dist/*"],
+  ignorePatterns: ["build/*", "dist/*", "node_modules/*"],
 };
