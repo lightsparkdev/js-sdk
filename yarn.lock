@@ -4930,10 +4930,12 @@ __metadata:
     "@types/react-dom": ^18.0.0
     "@vitejs/plugin-react": ^4.0.1
     eslint: ^8.3.0
+    eslint-watch: ^8.0.0
     qrcode.react: ^3.1.0
     react: ^18.2.0
     react-dom: ^18.1.0
     react-router-dom: 6.11.2
+    tsc-absolute: ^1.0.1
     typescript: ^4.9.5
     vite: ^4.3.9
     web-vitals: ^3.3.0
@@ -12405,6 +12407,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-watch@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "eslint-watch@npm:8.0.0"
+  dependencies:
+    chokidar: ^3.5.2
+    debug: ^4.3.2
+    execa: ^5.1.1
+    keypress: ^0.2.1
+    lodash.debounce: ^4.0.8
+    lodash.isempty: ^4.4.0
+    lodash.isequal: ^4.5.0
+    lodash.kebabcase: ^4.1.1
+    lodash.unionwith: ^4.6.0
+    optionator: ^0.9.1
+  peerDependencies:
+    eslint: ">=8 <9.0.0"
+  bin:
+    esw: bin/esw
+  checksum: 8de107294c392dc708e7551c9d9b911d7265a52d11380a13065649e3fcbd6ade65591813472cc609e5f094d91a46988c12b117510bb379a11bde313c81ecabb0
+  languageName: node
+  linkType: hard
+
 "eslint-webpack-plugin@npm:^3.1.1":
   version: 3.2.0
   resolution: "eslint-webpack-plugin@npm:3.2.0"
@@ -12621,7 +12645,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:^5.0.0":
+"execa@npm:^5.0.0, execa@npm:^5.1.1":
   version: 5.1.1
   resolution: "execa@npm:5.1.1"
   dependencies:
@@ -17047,6 +17071,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"keypress@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "keypress@npm:0.2.1"
+  checksum: 8f643113fc64d4ab873c98e6b6da54de511c0b32ecefcaa4315b7466dde6c94cba0b9231421655c71b1878c7bc7c932eb75c19d0d67b6af15677778f37cd3e9e
+  languageName: node
+  linkType: hard
+
 "keyv@npm:^3.0.0":
   version: 3.1.0
   resolution: "keyv@npm:3.1.0"
@@ -17283,6 +17314,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.isempty@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "lodash.isempty@npm:4.4.0"
+  checksum: a8118f23f7ed72a1dbd176bf27f297d1e71aa1926288449cb8f7cef99ba1bc7527eab52fe7899ab080fa1dc150aba6e4a6367bf49fa4e0b78da1ecc095f8d8c5
+  languageName: node
+  linkType: hard
+
+"lodash.isequal@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
+  languageName: node
+  linkType: hard
+
+"lodash.kebabcase@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.kebabcase@npm:4.1.1"
+  checksum: 5a6c59161914e1bae23438a298c7433e83d935e0f59853fa862e691164696bc07f6dfa4c313d499fbf41ba8d53314e9850416502376705a357d24ee6ca33af78
+  languageName: node
+  linkType: hard
+
 "lodash.memoize@npm:4.x, lodash.memoize@npm:^4.1.2":
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
@@ -17315,6 +17367,13 @@ __metadata:
   version: 4.1.1
   resolution: "lodash.throttle@npm:4.1.1"
   checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
+  languageName: node
+  linkType: hard
+
+"lodash.unionwith@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "lodash.unionwith@npm:4.6.0"
+  checksum: 295a69bdc20d392a8759781aa7a98b1e315dff3b40ce225e8430c72194badd90684b4f2d2a5217dec14430bd88ad35575dfc1cbe6e0b3b81b7ae52b36062af73
   languageName: node
   linkType: hard
 
@@ -21219,6 +21278,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"process-wrapper@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "process-wrapper@npm:1.0.0"
+  checksum: 442371ccb9b2a2104cc5cdfb6e14a993f726ec3a9540d6a757c964ed2593ffc40c7fa1d0f66eecee6b07e0c107a25c74708d97cc8b9fc7dc3920e769c05ba29b
+  languageName: node
+  linkType: hard
+
 "progress@npm:2.0.3":
   version: 2.0.3
   resolution: "progress@npm:2.0.3"
@@ -24692,6 +24758,19 @@ __metadata:
   bin:
     ts-prune: lib/index.js
   checksum: 2cbc4d64a2e50637d06691e7f962b913d87aba2419ba772a3a1cb6e4b7542412cd77af592ba7b376ed273f5e37d9be180613b479602b9f92693e4d72f0f5a373
+  languageName: node
+  linkType: hard
+
+"tsc-absolute@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "tsc-absolute@npm:1.0.1"
+  dependencies:
+    process-wrapper: ^1.0.0
+  peerDependencies:
+    typescript: ">=4.6"
+  bin:
+    tsc-absolute: dist/index.js
+  checksum: b24eb01f93c36f72342b5634471df47b8e56bf566b75d0f22852803c8d79e2e6fc7bb14cc293d454df1ab572fc531626857073d6c83d8228b08cb7c7eb23f916
   languageName: node
   linkType: hard
 
