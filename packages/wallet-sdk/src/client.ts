@@ -14,6 +14,7 @@ import {
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import { Observable, Subscription } from "zen-observable-ts";
+import packageJson from "../package.json";
 import CustomJwtAuthProvider from "./auth/jwt/CustomJwtAuthProvider.js";
 import JwtStorage from "./auth/jwt/JwtStorage.js";
 import BitcoinFeeEstimateQuery from "./graqhql/BitcoinFeeEstimate.js";
@@ -59,6 +60,8 @@ import WithdrawalRequest, {
   WithdrawalRequestFromJson,
 } from "./objects/WithdrawalRequest.js";
 
+const sdkVersion = packageJson.version;
+
 /**
  * The LightsparkClient is the main entrypoint for interacting with the Lightspark Wallet SDK.
  *
@@ -99,7 +102,6 @@ class LightsparkClient {
     private readonly serverUrl: string = "api.lightspark.com",
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
-    const sdkVersion = require("../package.json").version;
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
       this.nodeKeyCache,
@@ -120,7 +122,6 @@ class LightsparkClient {
    * @param authProvider
    */
   public async setAuthProvider(authProvider: AuthProvider) {
-    const sdkVersion = require("../package.json").version;
     this.requester = new Requester(
       this.nodeKeyCache,
       WALLET_SDK_ENDPOINT,

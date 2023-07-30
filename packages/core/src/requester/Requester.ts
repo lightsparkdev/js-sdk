@@ -65,10 +65,10 @@ class Requester {
     return query.constructObject(data);
   }
 
-  public subscribe(
+  public subscribe<T>(
     queryPayload: string,
-    variables: { [key: string]: any } = {}
-  ): Observable<any> {
+    variables: { [key: string]: unknown } = {}
+  ) {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
@@ -88,15 +88,15 @@ class Requester {
       }
     }
     const operation = operationMatch[2];
-    let bodyData = {
+    const bodyData = {
       query: queryPayload,
       variables,
       operationName: operation,
     };
 
-    return new Observable((observer) =>
+    return new Observable<{ data: T }>((observer) =>
       this.wsClient.subscribe(bodyData, {
-        next: (data) => observer.next(data),
+        next: (data) => observer.next(data as { data: T }),
         error: (err) => observer.error(err),
         complete: () => observer.complete(),
       })
@@ -105,9 +105,10 @@ class Requester {
 
   public async makeRawRequest(
     queryPayload: string,
-    variables: { [key: string]: any } = {},
+    variables: { [key: string]: unknown } = {},
     signingNodeId: string | undefined = undefined,
     skipAuth: boolean = false
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<any | null> {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
@@ -191,9 +192,10 @@ class Requester {
   }
 
   private async addSigningDataIfNeeded(
-    queryPayload: { query: string; variables: any; operationName: string },
+    queryPayload: { query: string; variables: unknown; operationName: string },
     headers: { [key: string]: string },
     signingNodeId: string | undefined
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<any> {
     if (!signingNodeId) {
       return queryPayload;
@@ -221,10 +223,13 @@ class Requester {
       );
     }
 
+    let TextEncoderImpl = TextEncoder;
     if (typeof TextEncoder === "undefined") {
-      const TextEncoder = (await import("text-encoding")).TextEncoder;
+      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
     }
-    const encodedPayload = new TextEncoder().encode(JSON.stringify(payload));
+    const encodedPayload = new TextEncoderImpl().encode(
+      JSON.stringify(payload)
+    );
     const signedPayload = await this.cryptoImpl.sign(key, encodedPayload);
     const encodedSignedPayload = b64encode(signedPayload);
 

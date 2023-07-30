@@ -4,7 +4,7 @@ const chars =
   "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 const Base64 = {
   btoa: (input: string = "") => {
-    let str = input;
+    const str = input;
     let output = "";
 
     for (
@@ -27,7 +27,7 @@ const Base64 = {
   },
 
   atob: (input: string = "") => {
-    let str = input.replace(/=+$/, "");
+    const str = input.replace(/=+$/, "");
     let output = "";
 
     if (str.length % 4 == 1) {

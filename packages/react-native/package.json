@@ -35,14 +35,17 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "yarn build -- --watch",
     "clean": "rm -rf .turbo && rm -rf dist",
-    "lint": "npx prettier --check ./src",
-    "format": "prettier src --check",
+    "dev": "yarn build -- --watch",
     "format:fix": "prettier src --write",
+    "format": "prettier src --check",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
+    "postversion": "yarn build",
     "test": "echo \"TODO\"",
-    "types": "tsc",
-    "postversion": "yarn build"
+    "types:watch": "tsc-absolute --watch",
+    "types": "tsc"
   },
   "license": "Apache-2.0",
   "dependencies": {
@@ -52,10 +55,13 @@
     "dayjs": "^1.11.7"
   },
   "devDependencies": {
+    "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
     "jest": "^29.4.1",
     "prettier": "2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
     "ts-jest": "^29.0.5",
+    "tsc-absolute": "^1.0.1",
     "tsconfig": "*",
     "tsup": "^6.7.0",
     "typescript": "^4.9.5"

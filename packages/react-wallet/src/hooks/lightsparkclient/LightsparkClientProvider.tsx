@@ -7,9 +7,8 @@ import { LightsparkClient } from "@lightsparkdev/wallet-sdk";
 import React, { useState } from "react";
 import LightsparkClientContextType from "./LightsparkClientContext.js";
 
-let LightsparkClientContext = React.createContext<LightsparkClientContextType>(
-  null!
-);
+const LightsparkClientContext =
+  React.createContext<LightsparkClientContextType>(null!);
 
 function LightsparkClientProvider({
   children,
@@ -36,7 +35,7 @@ function LightsparkClientProvider({
     client.setAuthProvider(authProvider);
   };
 
-  let value = { getClient, setAuthProvider, isAuthenticated };
+  const value = { getClient, setAuthProvider, isAuthenticated };
 
   return (
     <LightsparkClientContext.Provider value={value}>

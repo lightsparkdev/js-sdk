@@ -8,7 +8,9 @@ class OAuthProvider implements AuthProvider {
     autoBind(this);
   }
 
-  async addWsConnectionParams(params: any): Promise<any> {
+  async addWsConnectionParams(
+    params: Record<string, string>
+  ): Promise<Record<string, string>> {
     try {
       const accessToken = await this.oauthHelper.getFreshAccessToken();
       return Object.assign({}, params, {
@@ -20,7 +22,9 @@ class OAuthProvider implements AuthProvider {
     }
   }
 
-  async addAuthHeaders(headers: any): Promise<any> {
+  async addAuthHeaders(
+    headers: Record<string, string>
+  ): Promise<Record<string, string>> {
     try {
       const accessToken = await this.oauthHelper.getFreshAccessToken();
       return Object.assign({}, headers, {

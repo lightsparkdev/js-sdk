@@ -3,7 +3,7 @@
 import LightsparkException from "../LightsparkException.js";
 
 class LightsparkSigningException extends LightsparkException {
-  constructor(message: string, extraInfo?: any) {
+  constructor(message: string, extraInfo?: Record<string, unknown>) {
     super("SigningException", message, extraInfo);
   }
 }

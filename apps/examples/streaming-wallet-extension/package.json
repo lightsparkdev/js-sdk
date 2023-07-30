@@ -49,6 +49,7 @@
     "clean": "rm -rf .turbo && rm -rf build",
     "package": "rm -f streaming-extension.zip && INLINE_RUNTIME_CHUNK=false craco build && zip -r streaming-extension.zip build",
     "test": "echo \"TODO\"",
+    "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },
   "eslintConfig": {
@@ -76,6 +77,8 @@
     "@types/react": "^18.2.12",
     "@types/react-dom": "^18.0.0",
     "@types/uuid": "^9.0.1",
+    "eslint-watch": "^8.0.0",
+    "tsc-absolute": "^1.0.1",
     "tsconfig": "*",
     "typescript": "^4.9.5"
   }

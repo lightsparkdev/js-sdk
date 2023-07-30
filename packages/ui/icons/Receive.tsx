@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-type Props = {};
+type Props = Record<string, never>;
 
 const Receive = (props: Props) => (
   <svg

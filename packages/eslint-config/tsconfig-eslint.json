@@ -1,0 +1,11 @@
+/* Allows linting ts files outside src */
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "**/.*.js" // eg .eslintrc.js
+  ]
+}

@@ -24,7 +24,7 @@ const main = async (
     client: LightsparkClient,
     options: OptionValues,
     credentials?: EnvCredentials
-  ) => Promise<any>,
+  ) => Promise<unknown>,
   skipLogin = false
 ) => {
   const credentials = getCredentialsFromEnvOrThrow(
@@ -162,7 +162,9 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
   );
 };
 
-const balances = async (client: LightsparkClient, options: OptionValues) => {
+const balances = async (
+  client: LightsparkClient /* options: OptionValues */
+) => {
   console.log("Fetching wallet balances...\n");
   const wallet = await client.getCurrentWallet();
   if (!wallet) {
@@ -173,8 +175,8 @@ const balances = async (client: LightsparkClient, options: OptionValues) => {
 };
 
 const l1FeeEstimate = async (
-  client: LightsparkClient,
-  options: OptionValues
+  client: LightsparkClient
+  /* options: OptionValues */
 ) => {
   console.log("Fetching bitcoin L1 fee estimate...\n");
   const feeEstimate = await client.getBitcoinFeeEstimate();
@@ -182,8 +184,8 @@ const l1FeeEstimate = async (
 };
 
 const walletDashboard = async (
-  client: LightsparkClient,
-  options: OptionValues
+  client: LightsparkClient
+  /* options: OptionValues */
 ) => {
   console.log("Fetching wallet dashboard...\n");
   const dashboard = await client.getWalletDashboard();
@@ -191,8 +193,8 @@ const walletDashboard = async (
 };
 
 const currentWallet = async (
-  client: LightsparkClient,
-  options: OptionValues
+  client: LightsparkClient
+  /* options: OptionValues */
 ) => {
   console.log("Fetching current wallet...\n");
   const wallet = await client.getCurrentWallet();
@@ -209,8 +211,8 @@ const decodeInvoice = async (
 };
 
 const createBitcoinFundingAddress = async (
-  client: LightsparkClient,
-  options: OptionValues
+  client: LightsparkClient
+  /* options: OptionValues */
 ) => {
   console.log("Creating bitcoin funding address...\n");
   const address = await client.createBitcoinFundingAddress();
@@ -383,7 +385,7 @@ const createDeployAndInitWallet = async (
   await fs.appendFile(filePath, content);
 };
 
-const safeParseInt = (value: string, dummyPrevious: any) => {
+const safeParseInt = (value: string /* dummyPrevious: any */) => {
   // parseInt takes a string and a radix
   const parsedValue = parseInt(value, 10);
   if (isNaN(parsedValue)) {

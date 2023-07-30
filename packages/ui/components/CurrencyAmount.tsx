@@ -1,10 +1,10 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
-import { currencyAmountFragment } from "@lightsparkdev/ui/gql/fragments";
+import { currencyAmountFragment } from "@lightsparkdev/gql/fragments";
 import {
   CurrencyUnit,
   type CurrencyAmount as GQLCurrencyAmountType,
-} from "@lightsparkdev/ui/gql/generated/graphql";
+} from "@lightsparkdev/gql/generated/graphql";
 import { Icon } from "@lightsparkdev/ui/icons";
 import {
   CurrencyAmountArg,

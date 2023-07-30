@@ -1,0 +1,26 @@
+overwrite: true
+schema: ["third_party_RC_schema.graphql"]
+documents: ["**/*.tsx", "**/*.graphql"]
+generates:
+  generated/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+    config:
+      nonOptionalTypename: true
+
+  generated/graphql-apollo.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      nonOptionalTypename: true
+
+  generated/graphql-request.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-graphql-request"
+    config:
+      nonOptionalTypename: true

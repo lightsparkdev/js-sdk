@@ -9,10 +9,12 @@
     "clean": "rm -rf .turbo",
     "format:fix": "prettier . --write",
     "format": "prettier . --check",
-    "gql-codegen": "graphql-codegen --config gql-codegen.yml",
-    "lint": "NODE_ENV=production eslint .",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw . -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
     "test": "echo \"TODO\"",
-    "types": "echo \"TODO: Some imports depend on the inheriting app config. May not be possible to run types here separately unless we fix that.\""
+    "types": "echo \"TODO: Some imports depend on the inheriting app config. May not be possible to run types here separately unless we fix that.\"",
+    "types:watch": "yarn run types"
   },
   "dependencies": {
     "@apollo/client": "^3.7.11",
@@ -27,14 +29,12 @@
     "react-tooltip": "^5.10.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^3.2.2",
-    "@graphql-codegen/typescript": "^3.0.2",
-    "@graphql-codegen/typescript-operations": "^3.0.2",
-    "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
     "madge": "^6.1.0",
     "prettier": "2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
+    "tsconfig": "*",
     "typescript": "^4.9.5"
   }
 }
