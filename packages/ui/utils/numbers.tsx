@@ -22,7 +22,11 @@ export function linearInterpolate(
 
 /* https://stackoverflow.com/a/48764436 */
 export function round(num: number, decimalPlaces = 0) {
-  var p = Math.pow(10, decimalPlaces);
-  var n = num * p * (1 + Number.EPSILON);
+  const p = Math.pow(10, decimalPlaces);
+  const n = num * p * (1 + Number.EPSILON);
   return Math.round(n) / p;
+}
+
+export function isNumber(value: unknown): value is number {
+  return typeof value === "number";
 }

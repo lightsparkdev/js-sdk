@@ -34,21 +34,24 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
     configuration: AuthorizationServiceConfiguration,
     request: TokenRequest
   ): Promise<TokenResponse> {
-    const headers: any = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/x-www-form-urlencoded",
     };
 
     const encodedClientId = encodeURIComponent(this.clientId);
     const encodedClientSecret = encodeURIComponent(this.clientSecret);
+    let TextEncoderImpl = TextEncoder;
     if (typeof TextEncoder === "undefined") {
-      const TextEncoder = (await import("text-encoding")).TextEncoder;
+      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
     }
-    const credentialsBytes = new TextEncoder().encode(
+    const credentialsBytes = new TextEncoderImpl().encode(
       encodedClientId + ":" + encodedClientSecret
     );
     headers["Authorization"] = `Basic ${b64encode(credentialsBytes)}`;
 
-    let tokenResponse = this.requestor.xhr<TokenResponseJson | TokenErrorJson>({
+    const tokenResponse = this.requestor.xhr<
+      TokenResponseJson | TokenErrorJson
+    >({
       url: configuration.tokenEndpoint,
       method: "POST",
       dataType: "json", // adding implicit dataType

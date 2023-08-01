@@ -122,9 +122,9 @@ const decrypt = async (
   ciphertext: string,
   password: string
 ): Promise<ArrayBuffer> => {
-  var decoded = b64decode(ciphertext);
+  let decoded = b64decode(ciphertext);
 
-  var header;
+  let header;
   if (header_json === "AES_256_CBC_PBKDF2_5000_SHA256") {
     header = {
       v: 0,
@@ -225,7 +225,6 @@ const serializeSigningKey = async (
 };
 
 const getNonce = async () => {
-  const cryptoImpl = await getCrypto();
   const nonceSt = await getRandomValues32(new Uint32Array(1));
   return Number(nonceSt);
 };

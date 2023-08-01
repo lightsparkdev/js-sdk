@@ -141,7 +141,7 @@ export function Button<RoutesType extends string>({
     );
   }
 
-  let content: ReactNode = (
+  const content: ReactNode = (
     <div
       css={{ display: "flex", alignItems: "center", justifyContent: "center" }}
     >

@@ -8,7 +8,7 @@ typescript, react, emotion, react-router, vite
 
 # Running
 
-1. `cd [ops|site]`
+1. `cd private/[ops|site]`
 2. `yarn`
 3. `yarn start`
 4. Open http://localhost:3000/

@@ -1,4 +1,4 @@
-import { CurrencyUnit } from "@lightsparkdev/ui/gql/generated/graphql";
+import { CurrencyUnit } from "@lightsparkdev/gql/generated/graphql";
 import { CurrencyAmount as SDKCurrencyAmountType } from "@lightsparkdev/wallet-sdk";
 import { isNumber } from "lodash-es";
 import { getCurrentLocale } from "./getCurrentLocale";
@@ -475,8 +475,14 @@ export function mapCurrencyAmount(
   };
 }
 
-export const isCurrencyMap = (currencyMap: any): currencyMap is CurrencyMap =>
-  currencyMap && currencyMap.type === "CurrencyMap";
+export const isCurrencyMap = (
+  currencyMap: unknown
+): currencyMap is CurrencyMap =>
+  typeof currencyMap === "object" &&
+  currencyMap !== null &&
+  "type" in currencyMap &&
+  typeof currencyMap.type === "string" &&
+  currencyMap.type === "CurrencyMap";
 
 export const abbrCurrencyUnit = (unit: CurrencyUnit) => {
   switch (unit) {
@@ -499,7 +505,9 @@ export function formatCurrencyStr(
   showBtcSymbol = false,
   options: Intl.NumberFormatOptions = {}
 ) {
-  let { value: num, unit } = getCurrencyAmount(amount);
+  const currencyAmount = getCurrencyAmount(amount);
+  let { value: num } = currencyAmount;
+  const { unit } = currencyAmount;
 
   /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
   if (unit === CurrencyUnit.Usd) {

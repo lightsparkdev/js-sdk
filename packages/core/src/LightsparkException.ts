@@ -3,9 +3,13 @@
 class LightsparkException extends Error {
   code: string;
   message: string;
-  extraInfo: any;
+  extraInfo: Record<string, unknown> | undefined;
 
-  constructor(code: string, message: string, extraInfo?: any) {
+  constructor(
+    code: string,
+    message: string,
+    extraInfo?: Record<string, unknown>
+  ) {
     super(message);
     this.code = code;
     this.message = message;

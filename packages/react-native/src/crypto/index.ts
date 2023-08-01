@@ -8,11 +8,7 @@ import {
 } from "@lightsparkdev/core";
 import * as LsCrypto from "@lightsparkdev/ls-react-native-crypto";
 
-export async function decryptSecretWithNodePassword(
-  cipher: string,
-  encryptedSecret: string,
-  nodePassword: string
-): Promise<ArrayBuffer | null> {
+export async function decryptSecretWithNodePassword(/* cipher: string, encryptedSecret: string, nodePassword: string */): Promise<ArrayBuffer | null> {
   throw new LightsparkException(
     "NOT_IMPLEMENTED",
     "Recovering the signing key is not yet supported in React Native."

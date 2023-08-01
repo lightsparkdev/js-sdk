@@ -83,22 +83,30 @@ interface BaseTheme {
   warning: string;
 }
 
-type LightsparkTheme = BaseTheme & {
+type LightsparkSurfaces = {
   header: BaseTheme;
   nav: BaseTheme; // eg nav bar
   content: BaseTheme; // eg main contener
   controls: BaseTheme; // eg secondary nav
 };
+type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}
 }
 
-function extend(obj: any, rest: any) {
+function extend(obj: BaseTheme, rest: LightsparkSurfaces) {
   return {
     ...obj,
     ...rest,
   };
+}
+
+function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
+  return {
+    ...obj,
+    ...rest,
+  } as BaseTheme;
 }
 
 function hcNeutralFromBg(bgHex: string, defaultHex: string, altHex: string) {
@@ -177,17 +185,17 @@ const darkBaseTheme: BaseTheme = {
 };
 
 const lightTheme = extend(lightBaseTheme, {
-  header: extend(lightBaseTheme, {
+  header: extendBase(lightBaseTheme, {
     text: colors.gray60,
   }),
-  nav: extend(lightBaseTheme, {
+  nav: extendBase(lightBaseTheme, {
     text: colors.gray60,
   }),
-  content: extend(lightBaseTheme, {
+  content: extendBase(lightBaseTheme, {
     bg: colors.white,
     smBg: colors.white,
   }),
-  controls: extend(lightBaseTheme, {
+  controls: extendBase(lightBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
@@ -195,10 +203,10 @@ const lightTheme = extend(lightBaseTheme, {
 });
 
 const darkTheme = extend(darkBaseTheme, {
-  header: extend(darkBaseTheme, {}),
-  nav: extend(darkBaseTheme, {}),
-  content: extend(darkBaseTheme, {}),
-  controls: extend(darkBaseTheme, {
+  header: extendBase(darkBaseTheme, {}),
+  nav: extendBase(darkBaseTheme, {}),
+  content: extendBase(darkBaseTheme, {}),
+  controls: extendBase(darkBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
@@ -217,8 +225,7 @@ export const isDark = (theme: Theme) => theme.type === Themes.Dark;
 export const isLight = (theme: Theme) => theme.type === Themes.Light;
 export const themeOr =
   (lightValue: string, darkValue: string) =>
-  // theme needs to be any here due to the way its interpreted through emotion
-  ({ theme }: { theme: any }) => {
+  ({ theme }: { theme: Theme }) => {
     return isLight(theme) ? lightValue : darkValue;
   };
 
@@ -246,7 +253,7 @@ export function ifDark(style: CSSInterpolation) {
 
 /* https://bit.ly/3WUawKh */
 export function luminance(r: number, g: number, b: number) {
-  var a = [r, g, b].map(function (v) {
+  const a = [r, g, b].map(function (v) {
     v /= 255;
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   });
@@ -256,15 +263,15 @@ export function luminance(r: number, g: number, b: number) {
 type RGB = [number, number, number];
 
 export function contrast(rgb1: RGB, rgb2: RGB) {
-  var lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
-  var lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
-  var brightest = Math.max(lum1, lum2);
-  var darkest = Math.min(lum1, lum2);
+  const lum1 = luminance(rgb1[0], rgb1[1], rgb1[2]);
+  const lum2 = luminance(rgb2[0], rgb2[1], rgb2[2]);
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
   return (brightest + 0.05) / (darkest + 0.05);
 }
 
 export function componentToHex(c: number) {
-  var hex = c.toString(16);
+  const hex = c.toString(16);
   return hex.length === 1 ? "0" + hex : hex;
 }
 
@@ -273,7 +280,7 @@ export function rgbToHex(r: number, g: number, b: number) {
 }
 
 export function hexToRGB(hex: string) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? ([
         parseInt(result[1], 16),

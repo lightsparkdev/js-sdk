@@ -44,11 +44,12 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "PORT=3006 BROWSER=none craco start",
     "build": "INLINE_RUNTIME_CHUNK=false craco build",
     "clean": "rm -rf .turbo && rm -rf build",
     "package": "rm -f streaming-extension.zip && INLINE_RUNTIME_CHUNK=false craco build && zip -r streaming-extension.zip build",
     "test": "echo \"TODO\"",
+    "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },
   "eslintConfig": {
@@ -70,13 +71,15 @@
     ]
   },
   "devDependencies": {
+    "@lightsparkdev/tsconfig": "*",
     "@types/chrome": "^0.0.227",
     "@types/jest": "^29.5.2",
     "@types/node": "^20.2.5",
     "@types/react": "^18.2.12",
     "@types/react-dom": "^18.0.0",
     "@types/uuid": "^9.0.1",
-    "tsconfig": "*",
+    "eslint-watch": "^8.0.0",
+    "tsc-absolute": "^1.0.1",
     "typescript": "^4.9.5"
   }
 }

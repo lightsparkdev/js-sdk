@@ -3,7 +3,7 @@
 import LightsparkException from "../LightsparkException.js";
 
 class LightsparkAuthException extends LightsparkException {
-  constructor(message: string, extraInfo?: any) {
+  constructor(message: string, extraInfo?: Record<string, unknown>) {
     super("AuthException", message, extraInfo);
   }
 }

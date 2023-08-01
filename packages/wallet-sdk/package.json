@@ -62,9 +62,11 @@
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "docs": "typedoc --media docs-media src",
-    "format": "prettier src --check",
     "format:fix": "prettier src --write",
-    "lint": "npx prettier --check ./src",
+    "format": "prettier src --check",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
     "postversion": "yarn build",
     "test": "echo \"TODO\"",
     "types": "tsc"
@@ -83,8 +85,11 @@
     "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
+    "@lightsparkdev/eslint-config": "*",
     "@types/crypto-js": "^4.1.1",
     "@types/ws": "^8.5.4",
+    "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
     "jest": "^29.4.1",
     "prettier": "2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",

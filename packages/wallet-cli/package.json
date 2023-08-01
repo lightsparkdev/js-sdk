@@ -2,27 +2,41 @@
   "name": "@lightsparkdev/wallet-cli",
   "version": "0.0.17",
   "description": "CLI for the Lightspark JS Wallet sdk",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "bin": {
-    "lightspark-wallet": "./lib/index.js"
+    "lightspark-wallet": "./dist/index.js"
   },
   "scripts": {
-    "clean": "rm -rf .turbo && rm -rf dist",
-    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "start:windows": "nodemon --watch 'src/**/*.ts' --exec \"npx ts-node\" src/index.ts",
     "build": "tsc -p .",
+    "clean": "rm -rf .turbo && rm -rf dist",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "cli": "ts-node src/index.ts",
+    "format:fix": "prettier src --write",
+    "format": "prettier src --check",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
     "local": "sudo npm i -g && lightspark-wallet",
-    "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install"
+    "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",
+    "start:windows": "nodemon --watch 'src/**/*.ts' --exec \"npx ts-node\" src/index.ts",
+    "types": "tsc",
+    "types:watch": "tsc-absolute --watch"
   },
   "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@lightsparkdev/eslint-config": "*",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.2.5",
     "@types/qrcode-terminal": "^0.12.0",
+    "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
     "nodemon": "^2.0.22",
+    "prettier": "2.8.7",
+    "prettier-plugin-organize-imports": "^3.2.2",
     "ts-node": "^10.9.1",
+    "tsc-absolute": "^1.0.1",
     "typescript": "^4.9.5"
   },
   "dependencies": {

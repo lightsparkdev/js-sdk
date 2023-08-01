@@ -23,8 +23,13 @@
   "scripts": {
     "start": "yarn vite",
     "build": "yarn tsc && yarn vite build",
-    "lint": "NODE_ENV=production eslint .",
-    "test": "echo \"TODO\""
+    "clean": "rm -rf .turbo && rm -rf dist",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
+    "test": "echo \"TODO\"",
+    "types:watch": "tsc-absolute --watch",
+    "types": "tsc"
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
@@ -36,6 +41,8 @@
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^4.0.1",
     "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
+    "tsc-absolute": "^1.0.1",
     "vite": "^4.3.9"
   }
 }

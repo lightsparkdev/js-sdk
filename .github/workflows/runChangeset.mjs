@@ -74,12 +74,7 @@ const changedPublicPackagesMapped = changedPackages
   .filter((changedPackage) => {
     /* All public published packages must be in the packages directory */
     const isApp = changedPackage.dir.includes("apps");
-    /* Some utility packages are not meant to be published and eg tsconfig.
-       They have packageJson.private set to true which prevents publishing to
-       npm but doesn't necessarily mean that the source should be private - tsconfig
-       is necessary to have in the public repo so that the workspaces can be built */
-    const isPrivate = changedPackage.packageJson.private;
-    return !isApp && !isPrivate;
+    return !isApp;
   })
   .map((changedPackage) => {
     return {

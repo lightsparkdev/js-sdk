@@ -1,4 +1,6 @@
-import { gql } from '@apollo/client';
+import { GraphQLClient } from 'graphql-request';
+import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
+import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -506,6 +508,10 @@ export type CreateTestModePaymentoutput = {
   payment: OutgoingPayment;
 };
 
+export enum CryptoSanctionsScreeningProvider {
+  Chainalysis = 'CHAINALYSIS'
+}
+
 /** Represents the value and unit for an amount of currency. */
 export type CurrencyAmount = {
   __typename: 'CurrencyAmount';
@@ -984,6 +990,7 @@ export type Mutation = {
    * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
    */
   request_withdrawal: RequestWithdrawalOutput;
+  screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
 };
@@ -1036,6 +1043,11 @@ export type MutationPay_InvoiceArgs = {
 
 export type MutationRequest_WithdrawalArgs = {
   input: RequestWithdrawalInput;
+};
+
+
+export type MutationScreen_Bitcoin_AddressesArgs = {
+  input: ScreenBitcoinAddressesInput;
 };
 
 
@@ -1368,6 +1380,12 @@ export type RichText = {
   text: Scalars['String'];
 };
 
+export enum RiskRating {
+  HighRisk = 'HIGH_RISK',
+  LowRisk = 'LOW_RISK',
+  Unknown = 'UNKNOWN'
+}
+
 /** A transaction that was forwarded through a Lightspark node on the Lightning Network. */
 export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   __typename: 'RoutingTransaction';
@@ -1402,6 +1420,16 @@ export enum RoutingTransactionFailureReason {
   IncomingLinkFailure = 'INCOMING_LINK_FAILURE',
   OutgoingLinkFailure = 'OUTGOING_LINK_FAILURE'
 }
+
+export type ScreenBitcoinAddressesInput = {
+  addresses: Array<Scalars['String']>;
+  provider: CryptoSanctionsScreeningProvider;
+};
+
+export type ScreenBitcoinAddressesOutput = {
+  __typename: 'ScreenBitcoinAddressesOutput';
+  ratings: Array<RiskRating>;
+};
 
 export type Secret = {
   __typename: 'Secret';
@@ -1687,8 +1715,422 @@ export type WithdrawalRequestToChannelOpeningTransactionsConnection = {
   page_info: PageInfo;
 };
 
+export type TransactionsForNodeQueryVariables = Exact<{
+  network: BitcoinNetwork;
+  nodeId: Scalars['ID'];
+  numTransactions?: InputMaybe<Scalars['Int']>;
+  afterDate?: InputMaybe<Scalars['DateTime']>;
+  transactionTypes?: InputMaybe<Array<TransactionType> | TransactionType>;
+  transaction_statuses?: InputMaybe<Array<TransactionStatus> | TransactionStatus>;
+}>;
+
+
+export type TransactionsForNodeQuery = { __typename: 'Query', current_account?: { __typename: 'Account', id: string, name?: string | null, recent_transactions: { __typename: 'AccountToTransactionsConnection', count: number, total_amount_transacted?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, entities: Array<{ __typename: 'ChannelClosingTransaction', channel_closing_transaction_id: string, channel_closing_transaction_created_at: any, channel_closing_transaction_updated_at: any, channel_closing_transaction_status: TransactionStatus, channel_closing_transaction_resolved_at?: any | null, channel_closing_transaction_transaction_hash?: string | null, channel_closing_transaction_block_hash?: string | null, channel_closing_transaction_block_height: number, channel_closing_transaction_destination_addresses: Array<string>, channel_closing_transaction_num_confirmations?: number | null, channel_closing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_closing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_closing_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'ChannelOpeningTransaction', channel_opening_transaction_id: string, channel_opening_transaction_created_at: any, channel_opening_transaction_updated_at: any, channel_opening_transaction_status: TransactionStatus, channel_opening_transaction_resolved_at?: any | null, channel_opening_transaction_transaction_hash?: string | null, channel_opening_transaction_block_hash?: string | null, channel_opening_transaction_block_height: number, channel_opening_transaction_destination_addresses: Array<string>, channel_opening_transaction_num_confirmations?: number | null, channel_opening_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_opening_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_opening_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNode', id: string } } | { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_origin?: { __typename: 'LightsparkNode', id: string } | null, incoming_payment_destination: { __typename: 'LightsparkNode', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null } | { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNode', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNode', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_purpose?: LightsparkNodePurpose | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_account: { __typename: 'Account', id: string }, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_blockchain_balance?: { __typename: 'BlockchainBalance', blockchain_balance_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_confirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_unconfirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_locked_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_required_reserve?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_available_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | null, lightspark_node_encrypted_signing_private_key?: { __typename: 'Secret', secret_encrypted_value: string, secret_cipher: string } | null, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_remote_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'RoutingTransaction', routing_transaction_id: string, routing_transaction_created_at: any, routing_transaction_updated_at: any, routing_transaction_status: TransactionStatus, routing_transaction_resolved_at?: any | null, routing_transaction_transaction_hash?: string | null, routing_transaction_failure_reason?: RoutingTransactionFailureReason | null, routing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, routing_transaction_incoming_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_outgoing_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, routing_transaction_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNode', id: string } }> } } | null };
+
+type TransactionFragment_ChannelClosingTransaction_Fragment = { __typename: 'ChannelClosingTransaction', channel_closing_transaction_id: string, channel_closing_transaction_created_at: any, channel_closing_transaction_updated_at: any, channel_closing_transaction_status: TransactionStatus, channel_closing_transaction_resolved_at?: any | null, channel_closing_transaction_transaction_hash?: string | null, channel_closing_transaction_block_hash?: string | null, channel_closing_transaction_block_height: number, channel_closing_transaction_destination_addresses: Array<string>, channel_closing_transaction_num_confirmations?: number | null, channel_closing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_closing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_closing_transaction_channel?: { __typename: 'Channel', id: string } | null };
+
+type TransactionFragment_ChannelOpeningTransaction_Fragment = { __typename: 'ChannelOpeningTransaction', channel_opening_transaction_id: string, channel_opening_transaction_created_at: any, channel_opening_transaction_updated_at: any, channel_opening_transaction_status: TransactionStatus, channel_opening_transaction_resolved_at?: any | null, channel_opening_transaction_transaction_hash?: string | null, channel_opening_transaction_block_hash?: string | null, channel_opening_transaction_block_height: number, channel_opening_transaction_destination_addresses: Array<string>, channel_opening_transaction_num_confirmations?: number | null, channel_opening_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_opening_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_opening_transaction_channel?: { __typename: 'Channel', id: string } | null };
+
+type TransactionFragment_Deposit_Fragment = { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNode', id: string } };
+
+type TransactionFragment_IncomingPayment_Fragment = { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_origin?: { __typename: 'LightsparkNode', id: string } | null, incoming_payment_destination: { __typename: 'LightsparkNode', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null };
+
+type TransactionFragment_OutgoingPayment_Fragment = { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNode', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNode', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_purpose?: LightsparkNodePurpose | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_account: { __typename: 'Account', id: string }, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_blockchain_balance?: { __typename: 'BlockchainBalance', blockchain_balance_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_confirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_unconfirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_locked_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_required_reserve?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_available_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | null, lightspark_node_encrypted_signing_private_key?: { __typename: 'Secret', secret_encrypted_value: string, secret_cipher: string } | null, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_remote_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null };
+
+type TransactionFragment_RoutingTransaction_Fragment = { __typename: 'RoutingTransaction', routing_transaction_id: string, routing_transaction_created_at: any, routing_transaction_updated_at: any, routing_transaction_status: TransactionStatus, routing_transaction_resolved_at?: any | null, routing_transaction_transaction_hash?: string | null, routing_transaction_failure_reason?: RoutingTransactionFailureReason | null, routing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, routing_transaction_incoming_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_outgoing_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, routing_transaction_failure_message?: { __typename: 'RichText', rich_text_text: string } | null };
+
+type TransactionFragment_Withdrawal_Fragment = { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNode', id: string } };
+
+export type TransactionFragmentFragment = TransactionFragment_ChannelClosingTransaction_Fragment | TransactionFragment_ChannelOpeningTransaction_Fragment | TransactionFragment_Deposit_Fragment | TransactionFragment_IncomingPayment_Fragment | TransactionFragment_OutgoingPayment_Fragment | TransactionFragment_RoutingTransaction_Fragment | TransactionFragment_Withdrawal_Fragment;
+
+export type CurrencyAmountFragmentFragment = { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number };
+
 export type CurrencyAmount_AmountFragment = { __typename: 'CurrencyAmount', original_value: any, original_unit: CurrencyUnit, preferred_currency_unit: CurrencyUnit, preferred_currency_value_rounded: any, preferred_currency_value_approx: number };
 
+export const TransactionFragmentFragmentDoc = gql`
+    fragment TransactionFragment on Transaction {
+  __typename
+  ... on ChannelClosingTransaction {
+    __typename
+    channel_closing_transaction_id: id
+    channel_closing_transaction_created_at: created_at
+    channel_closing_transaction_updated_at: updated_at
+    channel_closing_transaction_status: status
+    channel_closing_transaction_resolved_at: resolved_at
+    channel_closing_transaction_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    channel_closing_transaction_transaction_hash: transaction_hash
+    channel_closing_transaction_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    channel_closing_transaction_block_hash: block_hash
+    channel_closing_transaction_block_height: block_height
+    channel_closing_transaction_destination_addresses: destination_addresses
+    channel_closing_transaction_num_confirmations: num_confirmations
+    channel_closing_transaction_channel: channel {
+      id
+    }
+  }
+  ... on ChannelOpeningTransaction {
+    __typename
+    channel_opening_transaction_id: id
+    channel_opening_transaction_created_at: created_at
+    channel_opening_transaction_updated_at: updated_at
+    channel_opening_transaction_status: status
+    channel_opening_transaction_resolved_at: resolved_at
+    channel_opening_transaction_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    channel_opening_transaction_transaction_hash: transaction_hash
+    channel_opening_transaction_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    channel_opening_transaction_block_hash: block_hash
+    channel_opening_transaction_block_height: block_height
+    channel_opening_transaction_destination_addresses: destination_addresses
+    channel_opening_transaction_num_confirmations: num_confirmations
+    channel_opening_transaction_channel: channel {
+      id
+    }
+  }
+  ... on Deposit {
+    __typename
+    deposit_id: id
+    deposit_created_at: created_at
+    deposit_updated_at: updated_at
+    deposit_status: status
+    deposit_resolved_at: resolved_at
+    deposit_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    deposit_transaction_hash: transaction_hash
+    deposit_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    deposit_block_hash: block_hash
+    deposit_block_height: block_height
+    deposit_destination_addresses: destination_addresses
+    deposit_num_confirmations: num_confirmations
+    deposit_destination: destination {
+      id
+    }
+  }
+  ... on IncomingPayment {
+    __typename
+    incoming_payment_id: id
+    incoming_payment_created_at: created_at
+    incoming_payment_updated_at: updated_at
+    incoming_payment_status: status
+    incoming_payment_resolved_at: resolved_at
+    incoming_payment_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    incoming_payment_transaction_hash: transaction_hash
+    incoming_payment_origin: origin {
+      id
+    }
+    incoming_payment_destination: destination {
+      id
+    }
+    incoming_payment_payment_request: payment_request {
+      id
+    }
+  }
+  ... on OutgoingPayment {
+    __typename
+    outgoing_payment_id: id
+    outgoing_payment_created_at: created_at
+    outgoing_payment_updated_at: updated_at
+    outgoing_payment_status: status
+    outgoing_payment_resolved_at: resolved_at
+    outgoing_payment_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    outgoing_payment_transaction_hash: transaction_hash
+    outgoing_payment_origin: origin {
+      id
+    }
+    outgoing_payment_destination: destination {
+      id
+    }
+    outgoing_payment_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    outgoing_payment_payment_request_data: payment_request_data {
+      __typename
+      ... on InvoiceData {
+        __typename
+        invoice_data_encoded_payment_request: encoded_payment_request
+        invoice_data_bitcoin_network: bitcoin_network
+        invoice_data_payment_hash: payment_hash
+        invoice_data_amount: amount {
+          __typename
+          currency_amount_original_value: original_value
+          currency_amount_original_unit: original_unit
+          currency_amount_preferred_currency_unit: preferred_currency_unit
+          currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+          currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        invoice_data_created_at: created_at
+        invoice_data_expires_at: expires_at
+        invoice_data_memo: memo
+        invoice_data_destination: destination {
+          __typename
+          ... on GraphNode {
+            __typename
+            graph_node_id: id
+            graph_node_created_at: created_at
+            graph_node_updated_at: updated_at
+            graph_node_alias: alias
+            graph_node_bitcoin_network: bitcoin_network
+            graph_node_color: color
+            graph_node_conductivity: conductivity
+            graph_node_display_name: display_name
+            graph_node_public_key: public_key
+          }
+          ... on LightsparkNode {
+            __typename
+            lightspark_node_id: id
+            lightspark_node_created_at: created_at
+            lightspark_node_updated_at: updated_at
+            lightspark_node_alias: alias
+            lightspark_node_bitcoin_network: bitcoin_network
+            lightspark_node_color: color
+            lightspark_node_conductivity: conductivity
+            lightspark_node_display_name: display_name
+            lightspark_node_public_key: public_key
+            lightspark_node_account: account {
+              id
+            }
+            lightspark_node_owner: owner {
+              id
+            }
+            lightspark_node_blockchain_balance: blockchain_balance {
+              __typename
+              blockchain_balance_total_balance: total_balance {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+              blockchain_balance_confirmed_balance: confirmed_balance {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+              blockchain_balance_unconfirmed_balance: unconfirmed_balance {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+              blockchain_balance_locked_balance: locked_balance {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+              blockchain_balance_required_reserve: required_reserve {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+              blockchain_balance_available_balance: available_balance {
+                __typename
+                currency_amount_original_value: original_value
+                currency_amount_original_unit: original_unit
+                currency_amount_preferred_currency_unit: preferred_currency_unit
+                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+              }
+            }
+            lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
+              __typename
+              secret_encrypted_value: encrypted_value
+              secret_cipher: cipher
+            }
+            lightspark_node_total_balance: total_balance {
+              __typename
+              currency_amount_original_value: original_value
+              currency_amount_original_unit: original_unit
+              currency_amount_preferred_currency_unit: preferred_currency_unit
+              currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+              currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            }
+            lightspark_node_total_local_balance: total_local_balance {
+              __typename
+              currency_amount_original_value: original_value
+              currency_amount_original_unit: original_unit
+              currency_amount_preferred_currency_unit: preferred_currency_unit
+              currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+              currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            }
+            lightspark_node_local_balance: local_balance {
+              __typename
+              currency_amount_original_value: original_value
+              currency_amount_original_unit: original_unit
+              currency_amount_preferred_currency_unit: preferred_currency_unit
+              currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+              currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            }
+            lightspark_node_purpose: purpose
+            lightspark_node_remote_balance: remote_balance {
+              __typename
+              currency_amount_original_value: original_value
+              currency_amount_original_unit: original_unit
+              currency_amount_preferred_currency_unit: preferred_currency_unit
+              currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+              currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+            }
+            lightspark_node_status: status
+          }
+        }
+      }
+    }
+    outgoing_payment_failure_reason: failure_reason
+    outgoing_payment_failure_message: failure_message {
+      __typename
+      rich_text_text: text
+    }
+  }
+  ... on RoutingTransaction {
+    __typename
+    routing_transaction_id: id
+    routing_transaction_created_at: created_at
+    routing_transaction_updated_at: updated_at
+    routing_transaction_status: status
+    routing_transaction_resolved_at: resolved_at
+    routing_transaction_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    routing_transaction_transaction_hash: transaction_hash
+    routing_transaction_incoming_channel: incoming_channel {
+      id
+    }
+    routing_transaction_outgoing_channel: outgoing_channel {
+      id
+    }
+    routing_transaction_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    routing_transaction_failure_message: failure_message {
+      __typename
+      rich_text_text: text
+    }
+    routing_transaction_failure_reason: failure_reason
+  }
+  ... on Withdrawal {
+    __typename
+    withdrawal_id: id
+    withdrawal_created_at: created_at
+    withdrawal_updated_at: updated_at
+    withdrawal_status: status
+    withdrawal_resolved_at: resolved_at
+    withdrawal_amount: amount {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    withdrawal_transaction_hash: transaction_hash
+    withdrawal_fees: fees {
+      __typename
+      currency_amount_original_value: original_value
+      currency_amount_original_unit: original_unit
+      currency_amount_preferred_currency_unit: preferred_currency_unit
+      currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+      currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+    }
+    withdrawal_block_hash: block_hash
+    withdrawal_block_height: block_height
+    withdrawal_destination_addresses: destination_addresses
+    withdrawal_num_confirmations: num_confirmations
+    withdrawal_origin: origin {
+      id
+    }
+  }
+}
+    `;
+export const CurrencyAmountFragmentFragmentDoc = gql`
+    fragment CurrencyAmountFragment on CurrencyAmount {
+  __typename
+  currency_amount_original_value: original_value
+  currency_amount_original_unit: original_unit
+  currency_amount_preferred_currency_unit: preferred_currency_unit
+  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+}
+    `;
 export const CurrencyAmount_AmountFragmentDoc = gql`
     fragment CurrencyAmount_amount on CurrencyAmount {
   original_value
@@ -1698,3 +2140,45 @@ export const CurrencyAmount_AmountFragmentDoc = gql`
   preferred_currency_value_approx
 }
     `;
+export const TransactionsForNodeDocument = gql`
+    query TransactionsForNode($network: BitcoinNetwork!, $nodeId: ID!, $numTransactions: Int, $afterDate: DateTime, $transactionTypes: [TransactionType!] = [PAYMENT, PAYMENT_REQUEST, ROUTE, L1_WITHDRAW, L1_DEPOSIT], $transaction_statuses: [TransactionStatus!] = null) {
+  current_account {
+    id
+    name
+    recent_transactions: transactions(
+      first: $numTransactions
+      types: $transactionTypes
+      bitcoin_network: $network
+      lightning_node_id: $nodeId
+      statuses: $transaction_statuses
+      after_date: $afterDate
+    ) {
+      count
+      total_amount_transacted {
+        ...CurrencyAmountFragment
+      }
+      entities {
+        ...TransactionFragment
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+    ${CurrencyAmountFragmentFragmentDoc}
+${TransactionFragmentFragmentDoc}`;
+
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+
+
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
+
+export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
+  return {
+    TransactionsForNode(variables: TransactionsForNodeQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<TransactionsForNodeQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<TransactionsForNodeQuery>(TransactionsForNodeDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'TransactionsForNode', 'query');
+    }
+  };
+}
+export type Sdk = ReturnType<typeof getSdk>;

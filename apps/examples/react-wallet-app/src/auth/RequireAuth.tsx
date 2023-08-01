@@ -5,9 +5,9 @@ import { useNavigate } from "src/common/router";
 import { Routes } from "src/routes";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
-  let auth = useJwtAuth();
-  let location = useLocation();
-  let navigate = useNavigate();
+  const auth = useJwtAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     auth.isAuthorized().then((isAuthorized: boolean) => {

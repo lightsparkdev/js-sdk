@@ -19,7 +19,12 @@ import {
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
+import {
+  type OutgoingPayment as GQLOutgoingPayment,
+  type Subscription as GQLSubscription,
+} from "@lightsparkdev/gql/generated/graphql.js";
 import { createHash } from "crypto";
+import packageJson from "../package.json";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
@@ -68,6 +73,8 @@ import WithdrawalRequest, {
   WithdrawalRequestFromJson,
 } from "./objects/WithdrawalRequest.js";
 
+const sdkVersion = packageJson.version;
+
 /**
  * The LightsparkClient is the main entrypoint for interacting with the Lightspark API.
  *
@@ -109,7 +116,6 @@ class LightsparkClient {
     private readonly serverUrl: string = "api.lightspark.com",
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
-    const sdkVersion = require("../package.json").version;
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
       this.nodeKeyCache,
@@ -130,7 +136,6 @@ class LightsparkClient {
    * @param authProvider
    */
   public async setAuthProvider(authProvider: AuthProvider) {
-    const sdkVersion = require("../package.json").version;
     this.requester = new Requester(
       this.nodeKeyCache,
       LIGHTSPARK_SDK_ENDPOINT,
@@ -195,7 +200,9 @@ class LightsparkClient {
   public listenToTransactions(
     nodeIds: string[]
   ): Observable<TransactionUpdate | undefined> {
-    const response = this.requester.subscribe(TransactionSubscription, {
+    const response = this.requester.subscribe<
+      Pick<GQLSubscription, "transactions">
+    >(TransactionSubscription, {
       nodeIds,
     });
     return response.map(
@@ -619,7 +626,7 @@ class LightsparkClient {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
     }
-    const variables: any = {
+    const variables: Record<string, string | number> = {
       node_id: payerNodeId,
       encoded_invoice: encodedInvoice,
       timeout_secs: timeoutSecs,
@@ -824,7 +831,11 @@ class LightsparkClient {
         memo,
         invoice_type: invoiceType,
       },
-      constructObject: (responseJson: any) => {
+      constructObject: (responseJson: {
+        create_test_mode_invoice: {
+          encoded_payment_request: string;
+        } | null;
+      }) => {
         const encodedPaymentRequest =
           responseJson.create_test_mode_invoice?.encoded_payment_request;
         if (!encodedPaymentRequest) {
@@ -833,7 +844,7 @@ class LightsparkClient {
             "Unable to create test mode invoice"
           );
         }
-        return encodedPaymentRequest as string;
+        return encodedPaymentRequest;
       },
     });
   }
@@ -859,7 +870,11 @@ class LightsparkClient {
         encoded_invoice: encodedInvoice,
         amount_msats: amountMsats,
       },
-      constructObject: (responseJson: any) => {
+      constructObject: (responseJson: {
+        create_test_mode_payment: {
+          payment: GQLOutgoingPayment;
+        } | null;
+      }) => {
         return OutgoingPaymentFromJson(
           responseJson.create_test_mode_payment?.payment
         );

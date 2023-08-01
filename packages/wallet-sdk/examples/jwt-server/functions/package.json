@@ -1,14 +1,16 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
-    "build": "tsc",
     "build:watch": "tsc --watch",
+    "build": "tsc",
+    "deploy": "firebase deploy --only functions",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
+    "logs": "firebase functions:log",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
-    "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "start": "npm run shell"
   },
   "type": "module",
   "engines": {

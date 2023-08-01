@@ -80,12 +80,12 @@ export const bp = {
     return currentBp as CurrentBreakpointReturnType<T>;
   } as CurrentBreakpointType,
 
-  switch: (
-    smVal: any,
-    minSmMaxMdVal: any,
-    minMdMaxLgVal: any,
-    lgVal: any
-  ): any => {
+  switch: <Sm, MinSm, MinMd, Lg>(
+    smVal: Sm,
+    minSmMaxMdVal: MinSm,
+    minMdMaxLgVal: MinMd,
+    lgVal: Lg
+  ) => {
     const currentBp = bp.current();
     if (currentBp === BreakpointRanges.sm) {
       return smVal;

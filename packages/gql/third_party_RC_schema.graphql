@@ -655,6 +655,10 @@ type CreateTestModePaymentoutput {
   payment: OutgoingPayment!
 }
 
+enum CryptoSanctionsScreeningProvider {
+  CHAINALYSIS
+}
+
 """Represents the value and unit for an amount of currency."""
 type CurrencyAmount {
   """The original numeric value for this CurrencyAmount."""
@@ -1325,6 +1329,7 @@ type Mutation {
   Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
   """
   send_payment(input: SendPaymentInput!): SendPaymentOutput!
+  screen_bitcoin_addresses(input: ScreenBitcoinAddressesInput!): ScreenBitcoinAddressesOutput!
 
   """
   Withdraws funds from the account and sends it to the requested bitcoin address.
@@ -1754,6 +1759,12 @@ type RichText {
   text: String!
 }
 
+enum RiskRating {
+  HIGH_RISK
+  LOW_RISK
+  UNKNOWN
+}
+
 """
 A transaction that was forwarded through a Lightspark node on the Lightning Network.
 """
@@ -1807,6 +1818,15 @@ enum RoutingTransactionFailureReason {
   INCOMING_LINK_FAILURE
   OUTGOING_LINK_FAILURE
   FORWARDING_FAILURE
+}
+
+input ScreenBitcoinAddressesInput {
+  provider: CryptoSanctionsScreeningProvider!
+  addresses: [String!]!
+}
+
+type ScreenBitcoinAddressesOutput {
+  ratings: [RiskRating!]!
 }
 
 type Secret {
