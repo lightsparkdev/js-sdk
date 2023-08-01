@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.9
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+
 ## 0.3.8
 
 ### Patch Changes

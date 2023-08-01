@@ -1,5 +1,13 @@
 # @lightsparkdev/oauth
 
+## 0.1.17
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+- Updated dependencies [19c8513]
+  - @lightsparkdev/core@0.3.9
+
 ## 0.1.16
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.7
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+- Updated dependencies [19c8513]
+  - @lightsparkdev/core@0.3.9
+
 ## 0.4.6
 
 ### Patch Changes
