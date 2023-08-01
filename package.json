@@ -20,7 +20,8 @@
     "gql-codegen": "turbo run gql-codegen",
     "lint": "turbo run lint",
     "release": "turbo build && changeset publish",
-    "start": "turbo run build && turbo run start types:watch lint:watch --parallel --concurrency 60",
+    "start:check": "turbo run build && turbo run start types:watch lint:watch --parallel --concurrency 60",
+    "start": "turbo run build && turbo run start",
     "test": "turbo run test",
     "types": "turbo run types"
   },

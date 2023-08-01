@@ -2,14 +2,8 @@
 
 This example demonstrates how to use the react-wallet library to initialize and authenticate a Lightspark Wallet SDK client. See the `src/auth` directory for the most relevant code. The LoginPage uses the `useJwtAuth` hook to handle the OAuth flow and redirects to the DashboardPage when the user is authenticated.
 
-## Available Scripts
+## Running the example
 
-In the project directory, you can run:
+Please follow the [instructions](https://github.com/lightsparkdev/js-sdk#running-the-sdks-and-examples) on setting up the js-sdk workspace to run these examples locally.
 
-### `npm start`
-
-Runs the app in the development mode.
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.
-You will also see any lint errors in the console.
+Then run `yarn start` from this directory to launch the app at http://localhost:3002.
