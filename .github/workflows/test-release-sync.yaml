@@ -34,6 +34,10 @@ jobs:
         with:
           cwd: "."
           install-mode: "update-lock-only"
+          # Since we are in update-lock-only mode the resulting yarn cache is much smaller and less useful
+          # for the rest of the steps. But since this is the first step and the cache is restored for each
+          # step in the workflow, they all get the same useless cache unless we set a different prefix here:
+          cache-prefix: "update-lock-file-for-prs"
 
       - name: "Commit and push changes if modified"
         id: sync-lock-file
