@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
-    "@lightsparkdev/tsconfig": "0.0.0",
+    "@lightsparkdev/tsconfig": "0.0.1",
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
     "madge": "^6.1.0",
