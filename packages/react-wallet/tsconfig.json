@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/react-package.json",
+  "extends": "@lightsparkdev/tsconfig/react-package.json",
   "include": ["src"],
   "exclude": ["test", "node_modules", "dist"]
 }

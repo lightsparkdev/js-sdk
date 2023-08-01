@@ -71,6 +71,7 @@
     ]
   },
   "devDependencies": {
+    "@lightsparkdev/tsconfig": "*",
     "@types/chrome": "^0.0.227",
     "@types/jest": "^29.5.2",
     "@types/node": "^20.2.5",
@@ -79,7 +80,6 @@
     "@types/uuid": "^9.0.1",
     "eslint-watch": "^8.0.0",
     "tsc-absolute": "^1.0.1",
-    "tsconfig": "*",
     "typescript": "^4.9.5"
   }
 }

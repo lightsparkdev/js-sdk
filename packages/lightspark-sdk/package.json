@@ -83,7 +83,9 @@
     "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
-    "@lightsparkdev/gql": "*",
+    "@lightsparkdev/eslint-config": "*",
+    "@lightsparkdev/gql": "0.0.0",
+    "@lightsparkdev/tsconfig": "0.0.0",
     "@types/crypto-js": "^4.1.1",
     "@types/jest": "^29.5.2",
     "@types/ws": "^8.5.4",
@@ -95,7 +97,6 @@
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "tsc-absolute": "^1.0.1",
-    "tsconfig": "*",
     "tsup": "^6.7.0",
     "typedoc": "^0.24.7",
     "typescript": "^4.9.5"

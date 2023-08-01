@@ -26,6 +26,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@lightsparkdev/eslint-config": "*",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.2.5",
     "@types/qrcode-terminal": "^0.12.0",
