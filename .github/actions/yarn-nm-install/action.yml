@@ -33,7 +33,7 @@ inputs:
   cache-prefix:
     description: "Add a specific cache-prefix"
     required: false
-    default: "default"
+    default: "v2"
   cache-node-modules:
     description: "Cache node_modules, might speed up link step (invalidated lock/os/node-version/branch)"
     required: false
