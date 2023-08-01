@@ -4832,7 +4832,7 @@ __metadata:
   resolution: "@lightsparkdev/core@workspace:packages/core"
   dependencies:
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     "@types/crypto-js": ^4.1.1
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
@@ -4886,7 +4886,7 @@ __metadata:
     "@lightsparkdev/core": 0.3.9
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/gql": 0.0.1
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     "@types/crypto-js": ^4.1.1
     "@types/jest": ^29.5.2
     "@types/ws": ^8.5.4
@@ -4943,7 +4943,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 0.3.9
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     "@openid/appauth": ^1.3.1
     "@types/text-encoding": ^0.0.36
     auto-bind: ^5.0.1
@@ -4967,7 +4967,7 @@ __metadata:
     "@lightsparkdev/core": 0.3.9
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/ls-react-native-crypto": 0.2.7
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     eslint: ^8.3.0
@@ -5023,7 +5023,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 0.3.9
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     "@lightsparkdev/wallet-sdk": 0.6.11
     "@types/react": ^18.2.12
     auto-bind: ^5.0.1
@@ -5100,7 +5100,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/tsconfig@*, @lightsparkdev/tsconfig@0.0.0, @lightsparkdev/tsconfig@workspace:packages/tsconfig":
+"@lightsparkdev/tsconfig@*, @lightsparkdev/tsconfig@0.0.1, @lightsparkdev/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/tsconfig@workspace:packages/tsconfig"
   dependencies:
@@ -5117,7 +5117,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/tsconfig": 0.0.1
     "@lightsparkdev/wallet-sdk": 0.6.11
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
