@@ -11,7 +11,9 @@ import {
   WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
 import { Command, InvalidArgumentError, OptionValues } from "commander";
+import { KeyObject } from "crypto";
 import * as fs from "fs/promises";
+import * as jose from "jose";
 import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
 import { EnvCredentials, getCredentialsFromEnvOrThrow } from "./authHelpers.js";
@@ -44,7 +46,8 @@ const main = async (
 
 const initEnv = async (options: OptionValues) => {
   let accountId = options.accountId;
-  let jwtSigningKey = options.jwtSigningKey;
+  let jwtPrivateSigningKey = options.jwtPrivateSigningKey;
+  let jwtPublicSigningKey;
   if (!accountId) {
     accountId = await input({
       message:
@@ -52,16 +55,59 @@ const initEnv = async (options: OptionValues) => {
       validate: (value) => value.startsWith("Account:"),
     });
   }
-  if (!options.jwtSigningKey) {
-    jwtSigningKey = await input({
+  if (!options.jwtPrivateSigningKey) {
+    const shouldGenerateNewKeyPair = await input({
       message:
-        "What is your JWT signing key (should start with -----BEGIN PRIVATE KEY-----)?",
-      validate: (value) => value.startsWith("-----BEGIN"),
+        "Generate a new JWT key pair? To import an existing key, say no. (Y/n)",
+      validate: (value) =>
+        value.toUpperCase() === "Y" || value.toUpperCase() === "N",
     });
+    if (shouldGenerateNewKeyPair.toLocaleUpperCase() !== "Y") {
+      jwtPrivateSigningKey = await input({
+        message:
+          "What is your JWT signing key (should start with -----BEGIN PRIVATE KEY-----)?",
+        validate: (value) => value.startsWith("-----BEGIN"),
+      });
+    }
+
+    if (!jwtPrivateSigningKey) {
+      const { publicKey, privateKey } = await jose.generateKeyPair<KeyObject>(
+        "ES256"
+      );
+      jwtPublicSigningKey = publicKey.export({
+        type: "spki",
+        format: "pem",
+      });
+      jwtPrivateSigningKey = privateKey.export({
+        type: "pkcs8",
+        format: "pem",
+      });
+    }
   }
+
   const filePath = process.env.HOME + "/.lightsparkenv";
+  const backupFilePath = process.env.HOME + "/.lightsparkenv-backup";
+  try {
+    await fs.stat(filePath);
+    const shouldBackup = await input({
+      message: `${filePath} already exists. Backup env file (Y/n)?`,
+      validate: (value) =>
+        value.toUpperCase() === "Y" || value.toUpperCase() === "N",
+    });
+
+    if (shouldBackup.toUpperCase() === "Y") {
+      await fs.copyFile(filePath, backupFilePath);
+      console.log("Created backup env file at " + backupFilePath);
+    }
+  } catch (e) {
+    // Do nothing
+  }
+
   let content = `export LIGHTSPARK_ACCOUNT_ID="${accountId}"\n`;
-  content += `export LIGHTSPARK_JWT_PRIV_KEY="${jwtSigningKey}"\n`;
+  content += `export LIGHTSPARK_JWT_PRIV_KEY="${jwtPrivateSigningKey}"\n`;
+  if (jwtPublicSigningKey) {
+    content += `export LIGHTSPARK_JWT_PUB_KEY="${jwtPublicSigningKey}"\n`;
+  }
   if (options.walletPrivateKey) {
     content += `export LIGHTSPARK_WALLET_PRIV_KEY="${options.walletPrivateKey}"\n`;
   }
@@ -78,7 +124,9 @@ const initEnv = async (options: OptionValues) => {
   console.log(
     "To add them to your shell permanently, add the above line to your shell's startup script"
   );
-  console.log("You can now run `lightspark-cli` to interact with your wallet");
+  console.log(
+    "You can now run `lightspark-wallet` to interact with your wallet"
+  );
 };
 
 const createInvoice = async (
@@ -291,7 +339,7 @@ const createWalletJwt = async (
     // True to use the test environment, false to use production.
     test: options.test,
     iat: Math.floor(Date.now() / 1000),
-    // Expriation time for the JWT is 30 days from now.
+    // Expiration time for the JWT is 30 days from now.
     exp: options.expireAt,
   };
   if (options.extraProps) {
@@ -638,8 +686,12 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
   const InitEnvCmd = new Command("init-env")
     .description("Initialize your environment with required variables.")
     .option("-a --account-id <value>", "Your account ID.")
-    .option("-k --jwt-signing-key <value>", "Your JWT-signing private key.")
     .option("-e --env <value>", "The environment to use (prod or dev).", "prod")
+    .option(
+      "-k --jwt-signing-key <value>",
+      "Your JWT-signing private key (optional).",
+      undefined
+    )
     .option("-j --jwt <value>", "A default wallet jwt (optional).", undefined)
     .option(
       "-w --wallet-private-key <value>",
