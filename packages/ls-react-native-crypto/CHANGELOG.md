@@ -1,5 +1,11 @@
 # @lightsparkdev/ls-react-native-crypto
 
+## 0.2.7
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+
 ## 0.2.6
 
 ### Patch Changes

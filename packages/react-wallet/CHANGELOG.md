@@ -1,5 +1,14 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.12
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+- Updated dependencies [19c8513]
+  - @lightsparkdev/wallet-sdk@0.6.11
+  - @lightsparkdev/core@0.3.9
+
 ## 0.6.11
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @lightsparkdev/react-native
 
+## 0.2.11
+
+### Patch Changes
+
+- 19c8513: Add lint to js packages
+- Updated dependencies [19c8513]
+  - @lightsparkdev/ls-react-native-crypto@0.2.7
+  - @lightsparkdev/core@0.3.9
+
 ## 0.2.10
 
 ### Patch Changes
