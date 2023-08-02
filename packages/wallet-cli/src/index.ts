@@ -249,6 +249,32 @@ const currentWallet = async (
   console.log("Wallet:", JSON.stringify(wallet, null, 2));
 };
 
+const terminateWallet = async (
+  client: LightsparkClient,
+  options: OptionValues
+) => {
+  if (!options.force) {
+    const shouldTerminate = await input({
+      message:
+        "Are you sure you want to terminate your wallet? " +
+        "It won't be connected to the Lightning network anymore and its funds won't be " +
+        "accessible outside of the Funds Recovery Kit process. (Y/n)",
+      validate: (value) =>
+        value.toUpperCase() === "Y" || value.toUpperCase() === "N",
+    });
+    if (shouldTerminate.toUpperCase() !== "Y") {
+      console.log("Canceled terminating wallet.");
+      return;
+    }
+  }
+  console.log("Terminating wallet...\n");
+  const wallet = await client.terminateWallet();
+  if (!wallet) {
+    throw new Error("Failed to terminate wallet");
+  }
+  console.log("Wallet terminated.");
+};
+
 const decodeInvoice = async (
   client: LightsparkClient,
   options: OptionValues
@@ -683,6 +709,20 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       );
     });
 
+  const terminateWalletCmd = new Command("terminate-wallet")
+    .description("Terminate an exisiting wallet.")
+    .option("-u, --user-id  <value>", "The user ID for the wallet.")
+    .option(
+      "-f --force",
+      "Flag to force terminate the wallet without a confirmation.",
+      false
+    )
+    .action((options) => {
+      main(options, terminateWallet, true).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
   const InitEnvCmd = new Command("init-env")
     .description("Initialize your environment with required variables.")
     .option("-a --account-id <value>", "Your account ID.")
@@ -723,6 +763,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .addCommand(createTestModePaymentCmd)
     .addCommand(createWalletJwtCmd)
     .addCommand(createDeployAndInitWalletCmd)
+    .addCommand(terminateWalletCmd)
     .addCommand(InitEnvCmd)
     .addHelpCommand()
     .parse(process.argv);
