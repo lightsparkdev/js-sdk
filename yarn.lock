@@ -5156,6 +5156,7 @@ __metadata:
     dayjs: ^1.11.7
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
+    jose: ^4.14.4
     jsonwebtoken: ^9.0.0
     nodemon: ^2.0.22
     prettier: 2.8.7
@@ -16874,7 +16875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.11.4":
+"jose@npm:^4.11.4, jose@npm:^4.14.4":
   version: 4.14.4
   resolution: "jose@npm:4.14.4"
   checksum: 2d820a91a8fd97c05d8bc8eedc373b944a0cd7f5fe41063086da233d0473c73fb523912a9f026ea870782bd221f4a515f441a2d3af4de48c6f2c76dac5082377

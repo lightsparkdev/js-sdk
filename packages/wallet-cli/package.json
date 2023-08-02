@@ -45,6 +45,7 @@
     "@lightsparkdev/wallet-sdk": "0.6.11",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
+    "jose": "^4.14.4",
     "jsonwebtoken": "^9.0.0",
     "qrcode-terminal": "^0.12.0"
   }
