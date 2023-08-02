@@ -68,7 +68,7 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "echo \"TODO\"",
+    "test": "jest --no-cache --runInBand --bail",
     "types": "tsc"
   },
   "license": "Apache-2.0",
