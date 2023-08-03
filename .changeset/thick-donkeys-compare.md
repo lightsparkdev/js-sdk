@@ -1,6 +1,5 @@
 ---
 "@lightsparkdev/lightspark-sdk": patch
-"@lightsparkdev/eslint-config": patch
 "@lightsparkdev/react-native": patch
 "@lightsparkdev/react-wallet": patch
 "@lightsparkdev/wallet-cli": patch
