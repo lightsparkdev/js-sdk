@@ -27,6 +27,7 @@ module.exports = {
           {
             /* Allow dynamic import() type refs: */
             disallowTypeAnnotations: false,
+            fixStyle: "inline-type-imports",
           },
         ],
       },
