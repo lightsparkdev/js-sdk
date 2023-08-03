@@ -1,17 +1,19 @@
 import { b64encode } from "@lightsparkdev/core";
+import type {
+  AuthorizationServiceConfiguration,
+  QueryStringUtils,
+  Requestor,
+  TokenErrorJson,
+  TokenRequest,
+  TokenResponseJson,
+} from "@openid/appauth";
 import {
   AppAuthError,
-  AuthorizationServiceConfiguration,
   BaseTokenRequestHandler,
   BasicQueryStringUtils,
   FetchRequestor,
-  QueryStringUtils,
-  Requestor,
   TokenError,
-  TokenErrorJson,
-  TokenRequest,
   TokenResponse,
-  TokenResponseJson,
 } from "@openid/appauth";
 
 class OAuthTokenRequestHandler extends BaseTokenRequestHandler {

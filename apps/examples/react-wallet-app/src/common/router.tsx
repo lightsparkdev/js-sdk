@@ -9,7 +9,7 @@ import {
   useNavigate as useNavigateBase,
   type LinkProps as LinkPropsBase,
 } from "@lightsparkdev/ui/router";
-import { RoutesType } from "src/routes";
+import type { RoutesType } from "src/routes";
 
 export const replaceParams = replaceParamsBase<RoutesType>;
 export const Link = LinkBase<RoutesType>;

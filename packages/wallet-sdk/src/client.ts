@@ -1,22 +1,24 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import {
+import type {
   AuthProvider,
   CryptoInterface,
-  DefaultCrypto,
   KeyOrAliasType,
+  Query,
+} from "@lightsparkdev/core";
+import {
+  DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
-  Query,
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import { Observable, Subscription } from "zen-observable-ts";
+import type { Observable, Subscription } from "zen-observable-ts";
 import packageJson from "../package.json";
 import CustomJwtAuthProvider from "./auth/jwt/CustomJwtAuthProvider.js";
-import JwtStorage from "./auth/jwt/JwtStorage.js";
+import type JwtStorage from "./auth/jwt/JwtStorage.js";
 import BitcoinFeeEstimateQuery from "./graqhql/BitcoinFeeEstimate.js";
 import CreateBitcoinFundingAddress from "./graqhql/CreateBitcoinFundingAddress.js";
 import CreateInvoice from "./graqhql/CreateInvoice.js";
@@ -36,29 +38,29 @@ import TerminateWallet from "./graqhql/TerminateWallet.js";
 import WalletDashboardQuery from "./graqhql/WalletDashboard.js";
 import { TransactionStatus } from "./index.js";
 import { BalancesFromJson } from "./objects/Balances.js";
-import CurrencyAmount, {
-  CurrencyAmountFromJson,
-} from "./objects/CurrencyAmount.js";
+import type CurrencyAmount from "./objects/CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
 import { DeployWalletOutputFromJson } from "./objects/DeployWalletOutput.js";
-import FeeEstimate, { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
+import type FeeEstimate from "./objects/FeeEstimate.js";
+import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import { InitializeWalletOutputFromJson } from "./objects/InitializeWalletOutput.js";
 import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
-import KeyType from "./objects/KeyType.js";
+import type KeyType from "./objects/KeyType.js";
 import { LoginWithJWTOutputFromJson } from "./objects/LoginWithJWTOutput.js";
-import OutgoingPayment, {
+import type OutgoingPayment from "./objects/OutgoingPayment.js";
+import {
   FRAGMENT as OutgoingPaymentFragment,
   OutgoingPaymentFromJson,
 } from "./objects/OutgoingPayment.js";
 import { TerminateWalletOutputFromJson } from "./objects/TerminateWalletOutput.js";
 import { WalletFromJson } from "./objects/Wallet.js";
-import WalletDashboard from "./objects/WalletDashboard.js";
+import type WalletDashboard from "./objects/WalletDashboard.js";
 import WalletStatus from "./objects/WalletStatus.js";
 import { WalletToPaymentRequestsConnectionFromJson } from "./objects/WalletToPaymentRequestsConnection.js";
 import { WalletToTransactionsConnectionFromJson } from "./objects/WalletToTransactionsConnection.js";
-import WithdrawalRequest, {
-  WithdrawalRequestFromJson,
-} from "./objects/WithdrawalRequest.js";
+import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
+import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
 
 const sdkVersion = packageJson.version;
 

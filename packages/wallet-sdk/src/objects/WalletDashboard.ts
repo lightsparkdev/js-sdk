@@ -1,8 +1,8 @@
-import { Maybe } from "@lightsparkdev/core";
-import Balances from "./Balances.js";
-import WalletStatus from "./WalletStatus.js";
-import WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import type { Maybe } from "@lightsparkdev/core";
+import type Balances from "./Balances.js";
+import type WalletStatus from "./WalletStatus.js";
+import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
 type WalletDashboard = {
   id: string;

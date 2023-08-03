@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import { b64encode, DefaultCrypto, KeyOrAlias } from "@lightsparkdev/core";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
+import type {
+  WalletDashboard} from "@lightsparkdev/wallet-sdk";
 import {
   KeyType,
-  WalletDashboard,
   WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
 import { useEffect, useState } from "react";

@@ -1,5 +1,6 @@
-import { CSSInterpolation } from "@emotion/css";
-import { css, Theme, useTheme } from "@emotion/react";
+import type { CSSInterpolation } from "@emotion/css";
+import type { Theme } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints";
 
 const neutral = {

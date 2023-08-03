@@ -6,9 +6,11 @@ import {
   type CurrencyAmount as GQLCurrencyAmountType,
 } from "@lightsparkdev/gql/generated/graphql";
 import { Icon } from "@lightsparkdev/ui/icons";
-import {
+import type {
   CurrencyAmountArg,
   CurrencyMap,
+} from "@lightsparkdev/ui/utils/currency";
+import {
   formatCurrencyStr,
   isCurrencyMap,
   mapCurrencyAmount,

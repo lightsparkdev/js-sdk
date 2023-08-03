@@ -1,4 +1,5 @@
-import { css, Theme, useTheme } from "@emotion/react";
+import type { Theme } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { bp } from "@lightsparkdev/ui/styles/breakpoints";
 import { firstChild, pxToRems } from "@lightsparkdev/ui/styles/utils";

@@ -1,18 +1,20 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, Query } from "@lightsparkdev/core";
-import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Deposit from "./Deposit.js";
-import Entity from "./Entity.js";
-import IncomingPayment from "./IncomingPayment.js";
-import OutgoingPayment from "./OutgoingPayment.js";
+import type { Query } from "@lightsparkdev/core";
+import { LightsparkException } from "@lightsparkdev/core";
+import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
+import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Deposit from "./Deposit.js";
+import type Entity from "./Entity.js";
+import type IncomingPayment from "./IncomingPayment.js";
+import type OutgoingPayment from "./OutgoingPayment.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
 import { RichTextFromJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
-import Withdrawal from "./Withdrawal.js";
+import type Withdrawal from "./Withdrawal.js";
 
 type Transaction = Entity & {
   /**

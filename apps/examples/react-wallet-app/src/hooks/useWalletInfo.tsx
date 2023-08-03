@@ -1,8 +1,9 @@
 import { useLightsparkClient } from "@lightsparkdev/react-wallet";
+import type {
+  Wallet} from "@lightsparkdev/wallet-sdk";
 import {
   CustomJwtAuthProvider,
-  LocalStorageJwtStorage,
-  Wallet,
+  LocalStorageJwtStorage
 } from "@lightsparkdev/wallet-sdk";
 import { useCallback, useEffect, useState } from "react";
 

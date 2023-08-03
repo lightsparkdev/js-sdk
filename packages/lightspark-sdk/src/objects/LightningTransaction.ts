@@ -1,16 +1,18 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, Query } from "@lightsparkdev/core";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import type { Query } from "@lightsparkdev/core";
+import { LightsparkException } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import IncomingPayment from "./IncomingPayment.js";
 import OutgoingPayment from "./OutgoingPayment.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
 import { RichTextFromJson } from "./RichText.js";
-import RoutingTransaction from "./RoutingTransaction.js";
+import type RoutingTransaction from "./RoutingTransaction.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
-import Transaction from "./Transaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 type LightningTransaction = Transaction &

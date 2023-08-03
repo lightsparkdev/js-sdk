@@ -1,9 +1,9 @@
-import { Maybe } from "@lightsparkdev/core";
-import CurrencyAmount from "./CurrencyAmount.js";
-import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import NodeAddressType from "./NodeAddressType.js";
-import Transaction from "./Transaction.js";
+import type { Maybe } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import type LightsparkNodePurpose from "./LightsparkNodePurpose.js";
+import type LightsparkNodeStatus from "./LightsparkNodeStatus.js";
+import type NodeAddressType from "./NodeAddressType.js";
+import type Transaction from "./Transaction.js";
 
 type SingleNodeDashboard = {
   id: string;

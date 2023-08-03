@@ -1,4 +1,4 @@
-import { CSSInterpolation } from "@emotion/css";
+import type { CSSInterpolation } from "@emotion/css";
 import { css } from "@emotion/react";
 import { rootFontSizePx } from "./common";
 

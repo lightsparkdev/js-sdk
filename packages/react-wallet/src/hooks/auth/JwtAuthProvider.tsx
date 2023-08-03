@@ -5,7 +5,7 @@ import {
 } from "@lightsparkdev/wallet-sdk";
 import React, { useEffect, useState } from "react";
 import { useLightsparkClient } from "../lightsparkclient/LightsparkClientProvider.js";
-import JwtAuthContextType from "./JwtAuthContext.js";
+import type JwtAuthContextType from "./JwtAuthContext.js";
 
 const AuthContext = React.createContext<JwtAuthContextType>(null!);
 

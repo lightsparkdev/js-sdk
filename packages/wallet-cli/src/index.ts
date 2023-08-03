@@ -10,13 +10,15 @@ import {
   LightsparkClient,
   WalletStatus,
 } from "@lightsparkdev/wallet-sdk";
-import { Command, InvalidArgumentError, OptionValues } from "commander";
-import { KeyObject } from "crypto";
+import type { OptionValues } from "commander";
+import { Command, InvalidArgumentError } from "commander";
+import type { KeyObject } from "crypto";
 import * as fs from "fs/promises";
 import * as jose from "jose";
 import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
-import { EnvCredentials, getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+import type { EnvCredentials } from "./authHelpers.js";
+import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const jwt = jsonwebtoken["default"] as unknown as typeof jsonwebtoken;
 

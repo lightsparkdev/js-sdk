@@ -1,9 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import ChannelOpeningTransaction, {
-  ChannelOpeningTransactionFromJson,
-} from "./ChannelOpeningTransaction.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
+import { ChannelOpeningTransactionFromJson } from "./ChannelOpeningTransaction.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 type WithdrawalRequestToChannelOpeningTransactionsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/

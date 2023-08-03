@@ -21,6 +21,15 @@ module.exports = {
       parserOptions: {
         project: [path.join(process.cwd(), "tsconfig.json")],
       },
+      rules: {
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            /* Allow dynamic import() type refs: */
+            disallowTypeAnnotations: false,
+          },
+        ],
+      },
     },
   ],
 };
