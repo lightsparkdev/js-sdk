@@ -1,7 +1,7 @@
 import { css, Theme, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { bp } from "@lightsparkdev/ui/styles/breakpoints";
-import { firstChild, pxToRems } from "@lightsparkdev/ui/styles/common";
+import { firstChild, pxToRems } from "@lightsparkdev/ui/styles/utils";
 
 const HeadingTypes = ["h1", "h2", "h3", "h4"] as const;
 type HeadingType = (typeof HeadingTypes)[number];

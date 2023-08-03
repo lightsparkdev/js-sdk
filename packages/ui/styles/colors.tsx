@@ -304,3 +304,7 @@ export function useThemeBg() {
   }
   return darkGradient;
 }
+
+export type ThemeProp = {
+  theme: Theme;
+};
