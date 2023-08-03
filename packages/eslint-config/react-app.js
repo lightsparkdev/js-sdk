@@ -27,6 +27,11 @@ module.exports = {
               "Please do not import Button directly, use typesafe Button in common/Button instead.",
             name: "@lightsparkdev/ui/components",
           },
+          {
+            importNames: ["useWhatChanged"],
+            message: "This is for use in local development only.",
+            name: "@lightsparkdev/private-ui/src/hooks/useWhatChanged",
+          },
         ],
         patterns: [
           {
