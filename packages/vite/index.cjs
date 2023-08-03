@@ -38,17 +38,17 @@ module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
       host: "0.0.0.0",
       proxy: {
         "/graphql/internal": {
-          target: "http://127.0.0.1:5000",
+          target: "https://app.lightspark.com",
           changeOrigin: true,
           ws: true,
         },
         "/graphql/frontend": {
-          target: "http://127.0.0.1:5000",
+          target: "https://app.lightspark.com",
           changeOrigin: true,
           ws: true,
         },
         "/clientlogs": {
-          target: "http://127.0.0.1:5000",
+          target: "https://app.lightspark.com",
           changeOrigin: true,
         },
       },
