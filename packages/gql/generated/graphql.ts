@@ -462,6 +462,8 @@ export type CreateInvoiceOutput = {
 export type CreateLnurlInvoiceInput = {
   /** The amount for which the invoice should be created, in millisatoshis. */
   amount_msats: Scalars['Long'];
+  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). */
+  expiry_secs?: InputMaybe<Scalars['Int']>;
   /** The SHA256 hash of the LNURL metadata payload. This will be present in the h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. */
   metadata_hash: Scalars['String'];
   /** The node from which to create the invoice. */
