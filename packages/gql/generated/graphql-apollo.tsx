@@ -17,6 +17,8 @@ export type Scalars = {
   DateTime: any;
   /** The `Long` scalar type represents a 64 bit integer. */
   Long: any;
+  /** Represents NULL values */
+  Void: any;
 };
 
 export type Account = Entity & LightsparkNodeOwner & {
@@ -995,6 +997,8 @@ export type Mutation = {
   screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
+  /** Updates shared scret of a server signing node. */
+  update_node_shared_secret?: Maybe<Scalars['Void']>;
 };
 
 
@@ -1055,6 +1059,11 @@ export type MutationScreen_Bitcoin_AddressesArgs = {
 
 export type MutationSend_PaymentArgs = {
   input: SendPaymentInput;
+};
+
+
+export type MutationUpdate_Node_Shared_SecretArgs = {
+  input: UpdateNodeSharedSecretInput;
 };
 
 /** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. */
@@ -1551,6 +1560,11 @@ export enum TransactionType {
   /** Transactions that forwarded payments through Lightspark nodes on Lightning Network. */
   Routed = 'ROUTED'
 }
+
+export type UpdateNodeSharedSecretInput = {
+  node_id: Scalars['ID'];
+  shared_secret: Scalars['String'];
+};
 
 export type Wallet = Entity & LightsparkNodeOwner & {
   __typename: 'Wallet';
