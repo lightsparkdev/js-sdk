@@ -860,6 +860,9 @@ type GraphNode implements Node & Entity {
   addresses(first: Int = null, types: [NodeAddressType!] = null): NodeToAddressesConnection!
 }
 
+"""A 32-byte scalar value."""
+scalar Hash32
+
 """
 One hop signifies a payment moving one node ahead on a payment route; a list of sequential hops defines the path from sender node to recipient node for a payment attempt.
 """
@@ -1539,7 +1542,7 @@ type Mutation {
   update_channel_per_commitment_point(input: UpdateChannelPerCommitmentPointInput!): UpdateChannelPerCommitmentPointOutput!
 
   """Updates shared scret of a remote signing node."""
-  update_node_shared_secret(input: UpdateNodeSharedSecretInput!): Void
+  update_node_shared_secret(input: UpdateNodeSharedSecretInput!): UpdateNodeSharedSecretOutput!
 }
 
 """
@@ -2248,11 +2251,12 @@ type UpdateChannelPerCommitmentPointOutput {
 
 input UpdateNodeSharedSecretInput {
   node_id: ID!
-  shared_secret: String!
+  shared_secret: Hash32!
 }
 
-"""Represents NULL values"""
-scalar Void
+type UpdateNodeSharedSecretOutput {
+  node: LightsparkNode!
+}
 
 type Wallet implements LightsparkNodeOwner & Entity {
   """

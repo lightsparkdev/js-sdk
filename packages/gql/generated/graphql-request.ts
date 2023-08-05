@@ -15,12 +15,12 @@ export type Scalars = {
   Float: number;
   /** Date with time (isoformat) */
   DateTime: any;
+  /** A 32-byte scalar value. */
+  Hash32: any;
   /** The `Long` scalar type represents a 64 bit integer. */
   Long: any;
   /** A Secp256k1 public key. */
   PublicKey: any;
-  /** Represents NULL values */
-  Void: any;
 };
 
 export type Account = Entity & LightsparkNodeOwner & {
@@ -1137,7 +1137,7 @@ export type Mutation = {
   /** Updates per commitment point of a channel connecting to a local remote signing node. */
   update_channel_per_commitment_point: UpdateChannelPerCommitmentPointOutput;
   /** Updates shared scret of a remote signing node. */
-  update_node_shared_secret?: Maybe<Scalars['Void']>;
+  update_node_shared_secret: UpdateNodeSharedSecretOutput;
 };
 
 
@@ -1767,7 +1767,12 @@ export type UpdateChannelPerCommitmentPointOutput = {
 
 export type UpdateNodeSharedSecretInput = {
   node_id: Scalars['ID'];
-  shared_secret: Scalars['String'];
+  shared_secret: Scalars['Hash32'];
+};
+
+export type UpdateNodeSharedSecretOutput = {
+  __typename: 'UpdateNodeSharedSecretOutput';
+  node: LightsparkNode;
 };
 
 export type Wallet = Entity & LightsparkNodeOwner & {
