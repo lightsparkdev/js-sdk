@@ -1830,6 +1830,18 @@ export enum WalletStatus {
   Unavailable = 'UNAVAILABLE'
 }
 
+export enum WebhookEventType {
+  Ecdh = 'ECDH',
+  GetPerCommitmentPoint = 'GET_PER_COMMITMENT_POINT',
+  NodeStatus = 'NODE_STATUS',
+  PaymentFinished = 'PAYMENT_FINISHED',
+  WalletFundsReceived = 'WALLET_FUNDS_RECEIVED',
+  WalletIncomingPaymentFinished = 'WALLET_INCOMING_PAYMENT_FINISHED',
+  WalletOutgoingPaymentFinished = 'WALLET_OUTGOING_PAYMENT_FINISHED',
+  WalletStatus = 'WALLET_STATUS',
+  WalletWithdrawalFinished = 'WALLET_WITHDRAWAL_FINISHED'
+}
+
 /** The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet. */
 export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   __typename: 'Withdrawal';
