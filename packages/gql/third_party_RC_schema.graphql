@@ -1191,11 +1191,6 @@ interface LightsparkNode implements Node & Entity {
   status: LightsparkNodeStatus
 
   """
-  The main purpose of this node. It is used by Lightspark for optimizations on the node's channels.
-  """
-  purpose: LightsparkNodePurpose
-
-  """
   The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
   """
   total_balance: CurrencyAmount
@@ -1222,12 +1217,6 @@ interface LightsparkNodeOwner implements Entity {
 
   """The date and time when the entity was last updated."""
   updated_at: DateTime!
-}
-
-enum LightsparkNodePurpose {
-  SEND
-  RECEIVE
-  ROUTING
 }
 
 enum LightsparkNodeStatus {
@@ -1314,11 +1303,6 @@ type LightsparkNodeWithOSKLND implements LightsparkNode & Node & Entity {
   status: LightsparkNodeStatus
 
   """
-  The main purpose of this node. It is used by Lightspark for optimizations on the node's channels.
-  """
-  purpose: LightsparkNodePurpose
-
-  """
   The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
   """
   total_balance: CurrencyAmount
@@ -1403,11 +1387,6 @@ type LightsparkNodeWithOSKSparknode implements Sparknode & LightsparkNode & Node
   status: LightsparkNodeStatus
 
   """
-  The main purpose of this node. It is used by Lightspark for optimizations on the node's channels.
-  """
-  purpose: LightsparkNodePurpose
-
-  """
   The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
   """
   total_balance: CurrencyAmount
@@ -1477,11 +1456,6 @@ type LightsparkNodeWithServerSigning implements Sparknode & LightsparkNode & Nod
 
   """The current status of this node."""
   status: LightsparkNodeStatus
-
-  """
-  The main purpose of this node. It is used by Lightspark for optimizations on the node's channels.
-  """
-  purpose: LightsparkNodePurpose
 
   """
   The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
@@ -2135,11 +2109,6 @@ interface Sparknode implements LightsparkNode & Node & Entity {
 
   """The current status of this node."""
   status: LightsparkNodeStatus
-
-  """
-  The main purpose of this node. It is used by Lightspark for optimizations on the node's channels.
-  """
-  purpose: LightsparkNodePurpose
 
   """
   The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.

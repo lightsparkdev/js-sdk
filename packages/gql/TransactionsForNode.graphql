@@ -324,7 +324,6 @@ fragment TransactionFragment on Transaction {
               currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
               currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
             }
-            lightspark_node_purpose: purpose
             lightspark_node_status: status
           }
         }
