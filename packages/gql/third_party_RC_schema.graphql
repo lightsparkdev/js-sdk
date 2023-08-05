@@ -2042,16 +2042,6 @@ enum WalletStatus {
   TERMINATED
 }
 
-enum WebhookEventType {
-  PAYMENT_FINISHED
-  NODE_STATUS
-  WALLET_STATUS
-  WALLET_OUTGOING_PAYMENT_FINISHED
-  WALLET_INCOMING_PAYMENT_FINISHED
-  WALLET_WITHDRAWAL_FINISHED
-  WALLET_FUNDS_RECEIVED
-}
-
 """
 The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet.
 """
