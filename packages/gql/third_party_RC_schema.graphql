@@ -1533,7 +1533,12 @@ type Mutation {
   """
   request_withdrawal(input: RequestWithdrawalInput!): RequestWithdrawalOutput!
 
-  """Updates shared scret of a server signing node."""
+  """
+  Updates per commitment point of a channel connecting to a local remote signing node.
+  """
+  update_channel_per_commitment_point(input: UpdateChannelPerCommitmentPointInput!): UpdateChannelPerCommitmentPointOutput!
+
+  """Updates shared scret of a remote signing node."""
   update_node_shared_secret(input: UpdateNodeSharedSecretInput!): Void
 }
 
@@ -1903,6 +1908,9 @@ enum Permission {
   ACCOUNT_MANAGE
 }
 
+"""A Secp256k1 public key."""
+scalar PublicKey
+
 type Query {
   """Returns the current connected account."""
   current_account: Account
@@ -2227,6 +2235,15 @@ enum TransactionType {
   Transactions that forwarded payments through Lightspark nodes on Lightning Network.
   """
   ROUTE @deprecated(reason: "Use ROUTED instead.")
+}
+
+input UpdateChannelPerCommitmentPointInput {
+  channel_id: ID!
+  per_commitment_point: PublicKey!
+}
+
+type UpdateChannelPerCommitmentPointOutput {
+  channel: Channel!
 }
 
 input UpdateNodeSharedSecretInput {

@@ -17,6 +17,8 @@ export type Scalars = {
   DateTime: any;
   /** The `Long` scalar type represents a 64 bit integer. */
   Long: any;
+  /** A Secp256k1 public key. */
+  PublicKey: any;
   /** Represents NULL values */
   Void: any;
 };
@@ -1132,7 +1134,9 @@ export type Mutation = {
   screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
-  /** Updates shared scret of a server signing node. */
+  /** Updates per commitment point of a channel connecting to a local remote signing node. */
+  update_channel_per_commitment_point: UpdateChannelPerCommitmentPointOutput;
+  /** Updates shared scret of a remote signing node. */
   update_node_shared_secret?: Maybe<Scalars['Void']>;
 };
 
@@ -1194,6 +1198,11 @@ export type MutationScreen_Bitcoin_AddressesArgs = {
 
 export type MutationSend_PaymentArgs = {
   input: SendPaymentInput;
+};
+
+
+export type MutationUpdate_Channel_Per_Commitment_PointArgs = {
+  input: UpdateChannelPerCommitmentPointInput;
 };
 
 
@@ -1745,6 +1754,16 @@ export enum TransactionType {
   /** Transactions that forwarded payments through Lightspark nodes on Lightning Network. */
   Routed = 'ROUTED'
 }
+
+export type UpdateChannelPerCommitmentPointInput = {
+  channel_id: Scalars['ID'];
+  per_commitment_point: Scalars['PublicKey'];
+};
+
+export type UpdateChannelPerCommitmentPointOutput = {
+  __typename: 'UpdateChannelPerCommitmentPointOutput';
+  channel: Channel;
+};
 
 export type UpdateNodeSharedSecretInput = {
   node_id: Scalars['ID'];
