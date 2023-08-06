@@ -1561,6 +1561,19 @@ type Mutation {
   pay_invoice(input: PayInvoiceInput!): PayInvoiceOutput!
 
   """
+  Release per commitment secret of a channel connecting to a local remote signing node.
+  """
+  release_channel_per_commitment_secret(input: ReleaseChannelPerCommitmentSecretInput!): ReleaseChannelPerCommitmentSecretOutput!
+
+  """
+  Withdraws funds from the account and sends it to the requested bitcoin address.
+  
+  Depending on the chosen mode, it will first take the funds from the wallet, and if applicable, close channels appropriately to recover enough funds and reopen channels with the remaining funds.
+  The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
+  """
+  request_withdrawal(input: RequestWithdrawalInput!): RequestWithdrawalOutput!
+
+  """
   Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
   """
   send_payment(input: SendPaymentInput!): SendPaymentOutput!
@@ -1573,23 +1586,13 @@ type Mutation {
   """Sign an invoice generated from a remote signing node."""
   sign_invoice(input: SignInvoiceInput!): SignInvoiceOutput!
 
-  """
-  Withdraws funds from the account and sends it to the requested bitcoin address.
-  
-  Depending on the chosen mode, it will first take the funds from the wallet, and if applicable, close channels appropriately to recover enough funds and reopen channels with the remaining funds.
-  The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
-  """
-  request_withdrawal(input: RequestWithdrawalInput!): RequestWithdrawalOutput!
+  """Upload the signatures of a list of messages that need to be signed."""
+  sign_messages(input: SignMessagesInput!): SignMessagesOutput!
 
   """
   Updates per commitment point of a channel connecting to a local remote signing node.
   """
   update_channel_per_commitment_point(input: UpdateChannelPerCommitmentPointInput!): UpdateChannelPerCommitmentPointOutput!
-
-  """
-  Release per commitment secret of a channel connecting to a local remote signing node.
-  """
-  release_channel_per_commitment_secret(input: ReleaseChannelPerCommitmentSecretInput!): ReleaseChannelPerCommitmentSecretOutput!
 
   """Updates shared scret of a remote signing node."""
   update_node_shared_secret(input: UpdateNodeSharedSecretInput!): UpdateNodeSharedSecretOutput!
@@ -2158,6 +2161,70 @@ input SignInvoiceInput {
 
 type SignInvoiceOutput {
   invoice: Invoice!
+}
+
+input SignMessagesInput {
+  signatures: [Signature!]!
+}
+
+type SignMessagesOutput {
+  signed_payloads: [SignablePayload!]!
+}
+
+type Signable implements Entity {
+  """
+  The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
+  """
+  id: ID!
+
+  """The date and time when the entity was first created."""
+  created_at: DateTime!
+
+  """The date and time when the entity was last updated."""
+  updated_at: DateTime!
+}
+
+type SignablePayload implements Entity {
+  """
+  The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
+  """
+  id: ID!
+
+  """The date and time when the entity was first created."""
+  created_at: DateTime!
+
+  """The date and time when the entity was last updated."""
+  updated_at: DateTime!
+
+  """The payload that needs to be signed."""
+  payload: String!
+
+  """
+  The consistent method for generating the same set of accounts and wallets for a given private key
+  """
+  derivation_path: String!
+
+  """The status of the payload."""
+  status: SignablePayloadStatus!
+
+  """The tweak value to add."""
+  add_tweak: Hash32
+
+  """The tweak value to multiply."""
+  mul_tweak: Hash32
+
+  """The signable this payload belongs to."""
+  signable: Signable!
+}
+
+enum SignablePayloadStatus {
+  CREATED
+  SIGNED
+}
+
+input Signature {
+  id: ID!
+  signature: String!
 }
 
 """This is a Sparknode."""

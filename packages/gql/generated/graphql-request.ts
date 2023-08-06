@@ -1164,6 +1164,8 @@ export type Mutation = {
   send_payment: SendPaymentOutput;
   /** Sign an invoice generated from a remote signing node. */
   sign_invoice: SignInvoiceOutput;
+  /** Upload the signatures of a list of messages that need to be signed. */
+  sign_messages: SignMessagesOutput;
   /** Updates per commitment point of a channel connecting to a local remote signing node. */
   update_channel_per_commitment_point: UpdateChannelPerCommitmentPointOutput;
   /** Updates shared scret of a remote signing node. */
@@ -1238,6 +1240,11 @@ export type MutationSend_PaymentArgs = {
 
 export type MutationSign_InvoiceArgs = {
   input: SignInvoiceInput;
+};
+
+
+export type MutationSign_MessagesArgs = {
+  input: SignMessagesInput;
 };
 
 
@@ -1677,6 +1684,57 @@ export type SignInvoiceInput = {
 export type SignInvoiceOutput = {
   __typename: 'SignInvoiceOutput';
   invoice: Invoice;
+};
+
+export type SignMessagesInput = {
+  signatures: Array<Signature>;
+};
+
+export type SignMessagesOutput = {
+  __typename: 'SignMessagesOutput';
+  signed_payloads: Array<SignablePayload>;
+};
+
+export type Signable = Entity & {
+  __typename: 'Signable';
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+export type SignablePayload = Entity & {
+  __typename: 'SignablePayload';
+  /** The tweak value to add. */
+  add_tweak?: Maybe<Scalars['Hash32']>;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The consistent method for generating the same set of accounts and wallets for a given private key */
+  derivation_path: Scalars['String'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The tweak value to multiply. */
+  mul_tweak?: Maybe<Scalars['Hash32']>;
+  /** The payload that needs to be signed. */
+  payload: Scalars['String'];
+  /** The signable this payload belongs to. */
+  signable: Signable;
+  /** The status of the payload. */
+  status: SignablePayloadStatus;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+export enum SignablePayloadStatus {
+  Created = 'CREATED',
+  Signed = 'SIGNED'
+}
+
+export type Signature = {
+  id: Scalars['ID'];
+  signature: Scalars['String'];
 };
 
 /** This is a Sparknode. */
