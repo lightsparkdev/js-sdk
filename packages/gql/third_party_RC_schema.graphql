@@ -1583,6 +1583,11 @@ type Mutation {
   """
   update_channel_per_commitment_point(input: UpdateChannelPerCommitmentPointInput!): UpdateChannelPerCommitmentPointOutput!
 
+  """
+  Release per commitment secret of a channel connecting to a local remote signing node.
+  """
+  release_channel_per_commitment_secret(input: ReleaseChannelPerCommitmentSecretInput!): ReleaseChannelPerCommitmentSecretOutput!
+
   """Updates shared scret of a remote signing node."""
   update_node_shared_secret(input: UpdateNodeSharedSecretInput!): UpdateNodeSharedSecretOutput!
 }
@@ -2001,6 +2006,15 @@ type Query {
   This is a query for estimating what the Lightning Network fees will be for sending a payment to a specific Lightning Node.
   """
   lightning_fee_estimate_for_node(input: LightningFeeEstimateForNodeInput!): LightningFeeEstimateOutput!
+}
+
+input ReleaseChannelPerCommitmentSecretInput {
+  channel_id: ID!
+  per_commitment_secret: Hash32!
+}
+
+type ReleaseChannelPerCommitmentSecretOutput {
+  channel: Channel!
 }
 
 input RequestWithdrawalInput {
