@@ -1159,6 +1159,8 @@ export type Mutation = {
   screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
+  /** Sign an invoice generated from a remote signing node. */
+  sign_invoice: SignInvoiceOutput;
   /** Updates per commitment point of a channel connecting to a local remote signing node. */
   update_channel_per_commitment_point: UpdateChannelPerCommitmentPointOutput;
   /** Updates shared scret of a remote signing node. */
@@ -1228,6 +1230,11 @@ export type MutationScreen_Bitcoin_AddressesArgs = {
 
 export type MutationSend_PaymentArgs = {
   input: SendPaymentInput;
+};
+
+
+export type MutationSign_InvoiceArgs = {
+  input: SignInvoiceInput;
 };
 
 
@@ -1656,6 +1663,17 @@ export type SendPaymentOutput = {
   __typename: 'SendPaymentOutput';
   /** The payment that has been sent. */
   payment: OutgoingPayment;
+};
+
+export type SignInvoiceInput = {
+  invoice_id: Scalars['ID'];
+  recovery_id: Scalars['Int'];
+  signature: Scalars['String'];
+};
+
+export type SignInvoiceOutput = {
+  __typename: 'SignInvoiceOutput';
+  invoice: Invoice;
 };
 
 /** This is a Sparknode. */

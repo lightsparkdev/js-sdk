@@ -1570,6 +1570,9 @@ type Mutation {
   """
   screen_bitcoin_addresses(input: ScreenBitcoinAddressesInput!): ScreenBitcoinAddressesOutput!
 
+  """Sign an invoice generated from a remote signing node."""
+  sign_invoice(input: SignInvoiceInput!): SignInvoiceOutput!
+
   """
   Withdraws funds from the account and sends it to the requested bitcoin address.
   
@@ -2145,6 +2148,16 @@ input SendPaymentInput {
 type SendPaymentOutput {
   """The payment that has been sent."""
   payment: OutgoingPayment!
+}
+
+input SignInvoiceInput {
+  invoice_id: ID!
+  signature: String!
+  recovery_id: Int!
+}
+
+type SignInvoiceOutput {
+  invoice: Invoice!
 }
 
 """This is a Sparknode."""
