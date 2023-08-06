@@ -1873,10 +1873,9 @@ export enum WalletStatus {
 
 /** This is an enum of the potential event types that can be associated with your Lightspark wallets. */
 export enum WebhookEventType {
-  Ecdh = 'ECDH',
-  GetPerCommitmentPoint = 'GET_PER_COMMITMENT_POINT',
   NodeStatus = 'NODE_STATUS',
   PaymentFinished = 'PAYMENT_FINISHED',
+  RemoteSigning = 'REMOTE_SIGNING',
   WalletFundsReceived = 'WALLET_FUNDS_RECEIVED',
   WalletIncomingPaymentFinished = 'WALLET_INCOMING_PAYMENT_FINISHED',
   WalletOutgoingPaymentFinished = 'WALLET_OUTGOING_PAYMENT_FINISHED',
