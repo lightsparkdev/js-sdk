@@ -20,6 +20,7 @@ export type Scalars = {
   PublicKey: any;
 };
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type Account = Entity & LightsparkNodeOwner & {
   __typename: 'Account';
   /** The API tokens that can be used to authenticate this account when making API calls or using our SDKs. See the "Authentication" section of our API docs for more details on its usage. */
@@ -55,17 +56,20 @@ export type Account = Entity & LightsparkNodeOwner & {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountApi_TokensArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountBlockchain_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountChannelsArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -75,18 +79,21 @@ export type AccountChannelsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountConductivityArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountLocal_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountNodesArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   first?: InputMaybe<Scalars['Int']>;
@@ -94,6 +101,7 @@ export type AccountNodesArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountPayment_RequestsArgs = {
   after?: InputMaybe<Scalars['String']>;
   after_date?: InputMaybe<Scalars['DateTime']>;
@@ -104,12 +112,14 @@ export type AccountPayment_RequestsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountRemote_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountTransactionsArgs = {
   after?: InputMaybe<Scalars['String']>;
   after_date?: InputMaybe<Scalars['DateTime']>;
@@ -123,6 +133,7 @@ export type AccountTransactionsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountUptime_PercentageArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -131,6 +142,7 @@ export type AccountUptime_PercentageArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountWalletsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
@@ -205,6 +217,7 @@ export type AccountToWalletsConnection = {
   page_info: PageInfo;
 };
 
+/** This is an object representing a Lightspark API token, that can be used to authenticate this account when making API calls or using our SDKs. See the “Authentication” section of our API docs for more details on its usage. */
 export type ApiToken = Entity & {
   __typename: 'ApiToken';
   /** An opaque identifier that should be used as a client_id (or username) in the HTTP Basic Authentication scheme when issuing requests against the Lightspark API. */
@@ -221,6 +234,7 @@ export type ApiToken = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an object representing the balance associated with your Lightspark account. You can retrieve this object to see your balance, which can be broken down into several different categorizations. */
 export type Balances = {
   __typename: 'Balances';
   /**
@@ -243,6 +257,7 @@ export type Balances = {
   owned_balance: CurrencyAmount;
 };
 
+/** This is an enum identifying a particular Bitcoin Network. */
 export enum BitcoinNetwork {
   /** The production version of the Bitcoin Blockchain. */
   Mainnet = 'MAINNET',
@@ -257,7 +272,7 @@ export enum BitcoinNetwork {
   Testnet = 'TESTNET'
 }
 
-/** This object provides a detailed breakdown of a `LightsparkNode`'s current balance on the Bitcoin Network. */
+/** This is an object representing a detailed breakdown of the balance for a Lightspark Node. */
 export type BlockchainBalance = {
   __typename: 'BlockchainBalance';
   /** Funds available for creating channels or withdrawing. */
@@ -274,7 +289,7 @@ export type BlockchainBalance = {
   unconfirmed_balance?: Maybe<CurrencyAmount>;
 };
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type Channel = Entity & {
   __typename: 'Channel';
   /** The total amount of funds in this channel, including the channel balance on the local node, the channel balance on the remote node and the on-chain fees to close the channel. */
@@ -320,7 +335,7 @@ export type Channel = Entity & {
 };
 
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type ChannelTransactionsArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -328,13 +343,13 @@ export type ChannelTransactionsArgs = {
 };
 
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type ChannelUptime_PercentageArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
-/** The transaction on Bitcoin blockchain to close a channel on Lightning Network where the balances are allocated back to local and remote nodes. */
+/** This is an object representing a transaction which closes a channel on the Lightning Network. This operation allocates balances back to the local and remote nodes. */
 export type ChannelClosingTransaction = Entity & OnChainTransaction & Transaction & {
   __typename: 'ChannelClosingTransaction';
   /** The amount of money involved in this transaction. */
@@ -365,13 +380,14 @@ export type ChannelClosingTransaction = Entity & OnChainTransaction & Transactio
   updated_at: Scalars['DateTime'];
 };
 
+/** This represents the fee policies set for a channel on the Lightning Network. */
 export type ChannelFees = {
   __typename: 'ChannelFees';
   base_fee?: Maybe<CurrencyAmount>;
   fee_rate_per_mil?: Maybe<Scalars['Int']>;
 };
 
-/** The transaction on Bitcoin blockchain to open a channel on Lightning Network funded by the local Lightspark node. */
+/** This is an object representing a transaction which opens a channel on the Lightning Network. This object occurs only for channels funded by the local Lightspark node. */
 export type ChannelOpeningTransaction = Entity & OnChainTransaction & Transaction & {
   __typename: 'ChannelOpeningTransaction';
   /** The amount of money involved in this transaction. */
@@ -402,6 +418,7 @@ export type ChannelOpeningTransaction = Entity & OnChainTransaction & Transactio
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum representing the status of a channel on the Lightning Network. */
 export enum ChannelStatus {
   /** The channel has been closed. Information about the channel is still available for historical purposes but the channel cannot be used anymore. */
   Closed = 'CLOSED',
@@ -503,17 +520,19 @@ export type CreateTestModePaymentInput = {
   local_node_id: Scalars['ID'];
 };
 
+/** This is an object identifying the output of a test mode payment. This object can be used to retrieve the associated payment made from a Test Mode Payment call. */
 export type CreateTestModePaymentoutput = {
   __typename: 'CreateTestModePaymentoutput';
   /** The payment that has been sent. */
   payment: OutgoingPayment;
 };
 
+/** This is an enum identifying a type of crypto sanctions screening provider. */
 export enum CryptoSanctionsScreeningProvider {
   Chainalysis = 'CHAINALYSIS'
 }
 
-/** Represents the value and unit for an amount of currency. */
+/** This object represents the value and unit for an amount of currency. */
 export type CurrencyAmount = {
   __typename: 'CurrencyAmount';
   /** The original unit of currency for this CurrencyAmount. */
@@ -528,6 +547,7 @@ export type CurrencyAmount = {
   preferred_currency_value_rounded: Scalars['Long'];
 };
 
+/** This enum identifies the unit of currency associated with a CurrencyAmount. */
 export enum CurrencyUnit {
   /** Bitcoin is the cryptocurrency native to the Bitcoin network. It is used as the native medium for value transfer for the Lightning Network. */
   Bitcoin = 'BITCOIN',
@@ -563,7 +583,7 @@ export type DeleteApiTokenOutput = {
   account: Account;
 };
 
-/** The transaction on Bitcoin blockchain to fund the Lightspark node's wallet. */
+/** This object represents a Deposit made to a Lightspark node wallet. This operation occurs for any L1 funding transaction to the wallet. You can retrieve this object to receive detailed information about the deposit. */
 export type Deposit = Entity & OnChainTransaction & Transaction & {
   __typename: 'Deposit';
   /** The amount of money involved in this transaction. */
@@ -594,7 +614,7 @@ export type Deposit = Entity & OnChainTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
-/** This interface is used by all the entities in the Lightspark systems. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. */
+/** This interface is used by all the entities in the Lightspark system. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. */
 export type Entity = {
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
@@ -604,6 +624,7 @@ export type Entity = {
   updated_at: Scalars['DateTime'];
 };
 
+/** This object represents the estimated L1 transaction fees for the Bitcoin network. Fee estimates are separated by potential confirmation speeds for settlement. */
 export type FeeEstimate = {
   __typename: 'FeeEstimate';
   fee_fast: CurrencyAmount;
@@ -620,7 +641,7 @@ export type FundNodeOutput = {
   amount: CurrencyAmount;
 };
 
-/** This is a node on the Lightning Network, managed by a third party. The information about this node is public data that has been obtained by observing the Lightning Network. */
+/** This object represents a node that exists on the Lightning Network, including nodes not managed by Lightspark. You can retrieve this object to get publicly available information about any node on the Lightning Network. */
 export type GraphNode = Entity & Node & {
   __typename: 'GraphNode';
   /** The addresses that this node has announced for itself on the Lightning Network. */
@@ -646,13 +667,13 @@ export type GraphNode = Entity & Node & {
 };
 
 
-/** This is a node on the Lightning Network, managed by a third party. The information about this node is public data that has been obtained by observing the Lightning Network. */
+/** This object represents a node that exists on the Lightning Network, including nodes not managed by Lightspark. You can retrieve this object to get publicly available information about any node on the Lightning Network. */
 export type GraphNodeAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
-/** One hop signifies a payment moving one node ahead on a payment route; a list of sequential hops defines the path from sender node to recipient node for a payment attempt. */
+/** This object represents a specific node that existed on a particular payment route. You can retrieve this object to get information about a node on a particular payment path and all payment-relevant information for that node. */
 export type Hop = Entity & {
   __typename: 'Hop';
   /** The amount that is to be forwarded to the destination node. */
@@ -675,6 +696,7 @@ export type Hop = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum representing a particular reason why an htlc sent over the Lightning Network may have failed. */
 export enum HtlcAttemptFailureCode {
   AmountBelowMinimum = 'AMOUNT_BELOW_MINIMUM',
   ChannelDisabled = 'CHANNEL_DISABLED',
@@ -705,7 +727,7 @@ export enum HtlcAttemptFailureCode {
   UnreadableFailure = 'UNREADABLE_FAILURE'
 }
 
-/** A transaction that was sent to a Lightspark node on the Lightning Network. */
+/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. */
 export type IncomingPayment = Entity & LightningTransaction & Transaction & {
   __typename: 'IncomingPayment';
   /** The amount of money involved in this transaction. */
@@ -731,13 +753,13 @@ export type IncomingPayment = Entity & LightningTransaction & Transaction & {
 };
 
 
-/** A transaction that was sent to a Lightspark node on the Lightning Network. */
+/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. */
 export type IncomingPaymentAttemptsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   statuses?: InputMaybe<Array<IncomingPaymentAttemptStatus>>;
 };
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents any attempted payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific incoming payment attempt. */
 export type IncomingPaymentAttempt = Entity & {
   __typename: 'IncomingPaymentAttempt';
   /** The total amount of that was attempted to send. */
@@ -756,7 +778,7 @@ export type IncomingPaymentAttempt = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
-/** Enum that enumerates all the possible status of an incoming payment attempt. */
+/** This is an enum that enumerates all potential statuses for an incoming payment attempt. */
 export enum IncomingPaymentAttemptStatus {
   Accepted = 'ACCEPTED',
   Canceled = 'CANCELED',
@@ -773,7 +795,7 @@ export type IncomingPaymentToAttemptsConnection = {
   entities: Array<IncomingPaymentAttempt>;
 };
 
-/** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) initiated by a Lightspark Node. */
+/** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) created by a Lightspark Node. You can retrieve this object to receive relevant payment information for a specific invoice generated by a Lightspark node. */
 export type Invoice = Entity & PaymentRequest & {
   __typename: 'Invoice';
   /** The total amount that has been paid to this invoice. */
@@ -790,7 +812,7 @@ export type Invoice = Entity & PaymentRequest & {
   updated_at: Scalars['DateTime'];
 };
 
-/** This object represents the BOLT #11 invoice protocol for Lightning Payments. See https://github.com/lightning/bolts/blob/master/11-payment-encoding.md. */
+/** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. */
 export type InvoiceData = PaymentRequestData & {
   __typename: 'InvoiceData';
   /** The requested amount in this invoice. If it is equal to 0, the sender should choose the amount to send. */
@@ -809,6 +831,7 @@ export type InvoiceData = PaymentRequestData & {
   payment_hash: Scalars['String'];
 };
 
+/** This is an enum for potential invoice types. */
 export enum InvoiceType {
   /** An AMP (Atomic Multi-path Payment) invoice. */
   Amp = 'AMP',
@@ -840,6 +863,7 @@ export type LightningFeeEstimateOutput = {
   fee_estimate: CurrencyAmount;
 };
 
+/** This is an object representing a transaction made over the Lightning Network. You can retrieve this object to receive information about a specific transaction made over Lightning for a Lightspark node. */
 export type LightningTransaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -857,7 +881,7 @@ export type LightningTransaction = {
   updated_at: Scalars['DateTime'];
 };
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
 export type LightsparkNode = {
   /** The addresses that this node has announced for itself on the Lightning Network. */
   addresses: NodeToAddressesConnection;
@@ -894,19 +918,20 @@ export type LightsparkNode = {
 };
 
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
 export type LightsparkNodeAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
 export type LightsparkNodeChannelsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   statuses?: InputMaybe<Array<ChannelStatus>>;
 };
 
+/** This is an object representing the owner of a LightsparkNode. */
 export type LightsparkNodeOwner = {
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
@@ -1100,26 +1125,26 @@ export type LightsparkNodeWithServerSigningChannelsArgs = {
 
 export type Mutation = {
   __typename: 'Mutation';
-  /** Creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs and SDKs. */
+  /** This function creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs and SDKs. */
   create_api_token: CreateApiTokenOutput;
-  /** Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment from another Lightning Node. If you are in test mode, the generated invoice can only be paid by create_test_mode_payment mutation. */
+  /** This function generates a Lightning Invoice (following the Bolt 11 specification). This invoice can be used to request a payment from any other Lightning Node. If you are in test mode, the generated invoice can only be paid by the create_test_mode_payment mutation. */
   create_invoice: CreateInvoiceOutput;
-  /** Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment from another Lightning Node. This should only be used for generating invoices for LNURLs, with `create_invoice` preferred in the general case. */
+  /** This function generates a Lightning Invoice (following the Bolt 11 specification). This invoice can be used to request a payment from any other Lightning Node. This function should only be used for generating invoices for LNURLs, with `create_invoice` preferred in the general case. */
   create_lnurl_invoice: CreateInvoiceOutput;
-  /** Creates a Bitcoin address for the wallet associated with your Lightning Node. You can use this address to send funds to your node. It is a best practice to generate a new wallet address every time you need to send money. You can generate as many wallet addresses as you want. */
+  /** This function creates a Bitcoin address for the wallet associated with your Lightning Node. You can use this address to send funds to your node. It is a best practice to generate a new wallet address every time you need to send money. You can generate as many wallet addresses as you want. */
   create_node_wallet_address: CreateNodeWalletAddressOutput;
-  /** In test mode, generates a Lightning Invoice which can be paid by a local node. */
+  /** In test mode, this function generates a Lightning Invoice which can be paid by a local node in the test mode environment. */
   create_test_mode_invoice: CreateTestModeInvoiceOutput;
-  /** In test mode, simulates a payment from other node to an invoice. */
+  /** In test mode, this function simulates sending a payment from your Lightspark node given a test mode invoice. */
   create_test_mode_payment: CreateTestModePaymentoutput;
-  /** Deletes an existing API token from this account. */
+  /** Deletes an existing API token from your Lightspark account. */
   delete_api_token: DeleteApiTokenOutput;
   /**
-   * Adds funds to a Lightspark node on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be added.
+   * Adds funds to a Lightspark node in test mode, on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be added.
    * This API only functions for nodes created on the REGTEST network and will return an error when called for any non-REGTEST node.
    */
   fund_node: FundNodeOutput;
-  /** Sends a payment to a node on the Lightning Network, based on the invoice (as defined by the BOLT11 specification) that you provide. If you are in test mode, the invoice has to be generated by create_test_mode_invoice mutation. */
+  /** Sends a payment to a node on the Lightning Network, based on the invoice (as defined by the BOLT11 specification) that you provide. If you are in test mode, the invoice has to be generated by the create_test_mode_invoice mutation. */
   pay_invoice: PayInvoiceOutput;
   /**
    * Withdraws funds from the account and sends it to the requested bitcoin address.
@@ -1128,6 +1153,7 @@ export type Mutation = {
    * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
    */
   request_withdrawal: RequestWithdrawalOutput;
+  /** This function screens a Bitcoin address against a CryptoSanctionsScreeningProvider and returns a risk rating for the associated Bitcoin address. You can call this mutation when performing risk or compliance assessments. */
   screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
@@ -1207,7 +1233,7 @@ export type MutationUpdate_Node_Shared_SecretArgs = {
   input: UpdateNodeSharedSecretInput;
 };
 
-/** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. */
+/** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. */
 export type Node = {
   /** The addresses that this node has announced for itself on the Lightning Network. */
   addresses: NodeToAddressesConnection;
@@ -1232,13 +1258,13 @@ export type Node = {
 };
 
 
-/** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. */
+/** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. */
 export type NodeAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
-/** An object that represents the address of a node on the Lightning Network. */
+/** This object represents the address of a node on the Lightning Network. */
 export type NodeAddress = {
   __typename: 'NodeAddress';
   /** The string representation of the address. */
@@ -1247,7 +1273,7 @@ export type NodeAddress = {
   type: NodeAddressType;
 };
 
-/** An enum that enumerates all possible types of addresses of a node on the Lightning Network. */
+/** This is an enum of the potential types of addresses that a node on the Lightning Network can have. */
 export enum NodeAddressType {
   Ipv4 = 'IPV4',
   Ipv6 = 'IPV6',
@@ -1263,7 +1289,7 @@ export type NodeToAddressesConnection = {
   entities: Array<NodeAddress>;
 };
 
-/** Transaction happened on Bitcoin blockchain. */
+/** This object represents an L1 transaction that occurred on the Bitcoin Network. You can retrieve this object to receive information about a specific on-chain transaction made on the Lightning Network associated with your Lightspark Node. */
 export type OnChainTransaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -1291,7 +1317,7 @@ export type OnChainTransaction = {
   updated_at: Scalars['DateTime'];
 };
 
-/** A transaction that was sent from a Lightspark node on the Lightning Network. */
+/** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. */
 export type OutgoingPayment = Entity & LightningTransaction & Transaction & {
   __typename: 'OutgoingPayment';
   /** The amount of money involved in this transaction. */
@@ -1325,12 +1351,12 @@ export type OutgoingPayment = Entity & LightningTransaction & Transaction & {
 };
 
 
-/** A transaction that was sent from a Lightspark node on the Lightning Network. */
+/** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. */
 export type OutgoingPaymentAttemptsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. */
 export type OutgoingPaymentAttempt = Entity & {
   __typename: 'OutgoingPaymentAttempt';
   /** The total amount of funds required to complete a payment over this route. This value includes the cumulative fees for each hop. As a result, the attempt extended to the first-hop in the route will need to have at least this much value, otherwise the route will fail at an intermediate node due to an insufficient amount. */
@@ -1358,12 +1384,12 @@ export type OutgoingPaymentAttempt = Entity & {
 };
 
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. */
 export type OutgoingPaymentAttemptHopsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
-/** Enum that enumerates all the possible status of an outgoing payment attempt. */
+/** This is an enum of all potential statuses of a payment attempt made from a Lightspark Node. */
 export enum OutgoingPaymentAttemptStatus {
   Failed = 'FAILED',
   InFlight = 'IN_FLIGHT',
@@ -1388,6 +1414,7 @@ export type OutgoingPaymentToAttemptsConnection = {
   entities: Array<OutgoingPaymentAttempt>;
 };
 
+/** This is an object representing information about a page returned by the Lightspark API. For more information, please see the “Pagination” section of our API docs for more information about its usage. */
 export type PageInfo = {
   __typename: 'PageInfo';
   end_cursor?: Maybe<Scalars['String']>;
@@ -1415,6 +1442,7 @@ export type PayInvoiceOutput = {
   payment: OutgoingPayment;
 };
 
+/** This is an enum of the potential reasons why an OutgoingPayment sent from a Lightspark Node may have failed. */
 export enum PaymentFailureReason {
   Error = 'ERROR',
   IncorrectPaymentDetails = 'INCORRECT_PAYMENT_DETAILS',
@@ -1428,6 +1456,7 @@ export enum PaymentFailureReason {
   Timeout = 'TIMEOUT'
 }
 
+/** This object contains information related to a payment request generated or received by a LightsparkNode. You can retrieve this object to receive payment information about a specific invoice. */
 export type PaymentRequest = {
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
@@ -1441,17 +1470,19 @@ export type PaymentRequest = {
   updated_at: Scalars['DateTime'];
 };
 
-/** The interface of a payment request on the Lightning Network (a.k.a. Lightning Invoice). */
+/** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. */
 export type PaymentRequestData = {
   bitcoin_network: BitcoinNetwork;
   encoded_payment_request: Scalars['String'];
 };
 
+/** This is an enum of the potential states that a payment request on the Lightning Network can take. */
 export enum PaymentRequestStatus {
   Closed = 'CLOSED',
   Open = 'OPEN'
 }
 
+/** This is an enum of the potential permissions that a Lightspark user can have in regards to account management. */
 export enum Permission {
   AccountManage = 'ACCOUNT_MANAGE',
   AccountView = 'ACCOUNT_VIEW',
@@ -1471,17 +1502,17 @@ export enum Permission {
 
 export type Query = {
   __typename: 'Query';
-  /** Returns an estimate of the fees of a transaction on the Bitcoin Network. */
+  /** This is a query that retrieves the current fee estimates for an L1 transaction. You can call this query to get estimates for different confirmation speeds of an L1 transaction on a specific Bitcoin Network. */
   bitcoin_fee_estimate: FeeEstimate;
-  /** Returns the current connected account. */
+  /** This is a query that retrieves the currently connected Lightspark account. You can call this query to get an object with detailed information about your connected Lightspark account. */
   current_account?: Maybe<Account>;
-  /** Decodes the content of an encoded payment request into structured data that can be used by the client. */
+  /** This is a query that decodes a Lightning payment request into structured data that can be used by the client. */
   decoded_payment_request: PaymentRequestData;
-  /** Returns any `Entity`, identified by its unique ID. */
+  /** This is a query that returns any Entity object from the Lightspark API. You can call this query when you want to receive detailed information about any particular Entity. */
   entity?: Maybe<Entity>;
-  /** Returns an estimate of the fees that will be paid for a Lightning invoice. */
+  /** This is a query for estimating what the Lightning Network fees for paying a specific Lightning Invoice. */
   lightning_fee_estimate_for_invoice: LightningFeeEstimateOutput;
-  /** Returns an estimate of the fees that will be paid to send a payment to another Lightning node. */
+  /** This is a query for estimating what the Lightning Network fees will be for sending a payment to a specific Lightning Node. */
   lightning_fee_estimate_for_node: LightningFeeEstimateOutput;
 };
 
@@ -1532,13 +1563,14 @@ export type RichText = {
   text: Scalars['String'];
 };
 
+/** This is an enum of the potential risk ratings related to a transaction made over the Lightning Network. These risk ratings are returned from the CryptoSanctionScreeningProvider. */
 export enum RiskRating {
   HighRisk = 'HIGH_RISK',
   LowRisk = 'LOW_RISK',
   Unknown = 'UNKNOWN'
 }
 
-/** A transaction that was forwarded through a Lightspark node on the Lightning Network. */
+/** This object represents a transaction that was forwarded through a Lightspark node on the Lightning Network, i.e., a routed transaction. You can retrieve this object to receive information about any transaction routed through your Lightspark Node. */
 export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   __typename: 'RoutingTransaction';
   /** The amount of money involved in this transaction. */
@@ -1567,6 +1599,7 @@ export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum of the potential reasons that an attempted routed transaction through a Lightspark node may have failed. */
 export enum RoutingTransactionFailureReason {
   ForwardingFailure = 'FORWARDING_FAILURE',
   IncomingLinkFailure = 'INCOMING_LINK_FAILURE',
@@ -1674,6 +1707,7 @@ export type SubscriptionTransactionsArgs = {
   node_ids: Array<Scalars['ID']>;
 };
 
+/** This object represents a payment transaction. The transaction can occur either on a Bitcoin Network, or over the Lightning Network. You can retrieve this object to receive specific information about a particular transaction tied to your Lightspark Node. */
 export type Transaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -1691,11 +1725,13 @@ export type Transaction = {
   updated_at: Scalars['DateTime'];
 };
 
+/** This object represents payment failures associated with your Lightspark Node. */
 export type TransactionFailures = {
   payment_failures?: InputMaybe<Array<PaymentFailureReason>>;
   routing_transaction_failures?: InputMaybe<Array<RoutingTransactionFailureReason>>;
 };
 
+/** This is an enum of the potential statuses a transaction associated with your Lightspark Node can take. */
 export enum TransactionStatus {
   /**
    * For transaction type PAYMENT_REQUEST only.
@@ -1720,6 +1756,7 @@ export enum TransactionStatus {
   Success = 'SUCCESS'
 }
 
+/** This is an enum of the potential types of transactions that can be associated with your Lightspark Node. */
 export enum TransactionType {
   /** Transactions on Bitcoin blockchain to close a channel on Lightning Network where the balances are allocated back to local and remote nodes. */
   ChannelClose = 'CHANNEL_CLOSE',
@@ -1772,6 +1809,7 @@ export type UpdateNodeSharedSecretOutput = {
   node: LightsparkNode;
 };
 
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type Wallet = Entity & LightsparkNodeOwner & {
   __typename: 'Wallet';
   /** The balances that describe the funds in this wallet. */
@@ -1795,17 +1833,20 @@ export type Wallet = Entity & LightsparkNodeOwner & {
 };
 
 
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type WalletTotal_Amount_ReceivedArgs = {
   created_after_date?: InputMaybe<Scalars['DateTime']>;
   created_before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
 
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type WalletTotal_Amount_SentArgs = {
   created_after_date?: InputMaybe<Scalars['DateTime']>;
   created_before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
+/** This is an enum of the potential statuses that your Lightspark wallet can take.  */
 export enum WalletStatus {
   /** The wallet has been deployed in the Lightspark infrastructure and is ready to be initialized. */
   Deployed = 'DEPLOYED',
@@ -1827,6 +1868,7 @@ export enum WalletStatus {
   Unavailable = 'UNAVAILABLE'
 }
 
+/** This is an enum of the potential event types that can be associated with your Lightspark wallets. */
 export enum WebhookEventType {
   Ecdh = 'ECDH',
   GetPerCommitmentPoint = 'GET_PER_COMMITMENT_POINT',
@@ -1839,7 +1881,7 @@ export enum WebhookEventType {
   WalletWithdrawalFinished = 'WALLET_WITHDRAWAL_FINISHED'
 }
 
-/** The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet. */
+/** This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any L1 withdrawal associated with your Lightspark Node or account. */
 export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   __typename: 'Withdrawal';
   /** The amount of money involved in this transaction. */
@@ -1870,11 +1912,13 @@ export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum of the potential modes that your Bitcoin withdrawal can take. */
 export enum WithdrawalMode {
   WalletOnly = 'WALLET_ONLY',
   WalletThenChannels = 'WALLET_THEN_CHANNELS'
 }
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequest = Entity & {
   __typename: 'WithdrawalRequest';
   /** The amount of money that should be withdrawn in this request. */
@@ -1904,15 +1948,18 @@ export type WithdrawalRequest = Entity & {
 };
 
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequestChannel_Closing_TransactionsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequestChannel_Opening_TransactionsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
+/** This is an enum of the potential statuses that a Withdrawal can take. */
 export enum WithdrawalRequestStatus {
   Failed = 'FAILED',
   InProgress = 'IN_PROGRESS',
