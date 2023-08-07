@@ -1,5 +1,19 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.13
+
+### Patch Changes
+
+- df28af1: Remove unused lightspark-cli in wallet-sdk examples
+
+## 0.6.12
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+- Updated dependencies [141d73a]
+  - @lightsparkdev/core@0.3.10
+
 ## 0.6.11
 
 ### Patch Changes

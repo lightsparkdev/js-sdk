@@ -21,8 +21,10 @@
       "outputs": ["docs/**"]
     },
     "format": {},
+    "format:fix": {},
     "gql-codegen": {},
     "lint": {},
+    "lint:fix": {},
     "lint:watch": {
       "cache": false,
       "persistent": true

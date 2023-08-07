@@ -1,11 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
+import { LightsparkException } from "@lightsparkdev/core";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
-import Invoice from "./Invoice.js";
+import type Entity from "./Entity.js";
+import type Invoice from "./Invoice.js";
 import { InvoiceDataFromJson } from "./InvoiceData.js";
-import PaymentRequestData from "./PaymentRequestData.js";
+import type PaymentRequestData from "./PaymentRequestData.js";
 import PaymentRequestStatus from "./PaymentRequestStatus.js";
 
 type PaymentRequest = Entity & {

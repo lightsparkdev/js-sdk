@@ -1,15 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import type LightsparkClient from "../client.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import HtlcAttemptFailureCode from "./HtlcAttemptFailureCode.js";
 import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
-import OutgoingPaymentAttemptToHopsConnection, {
-  OutgoingPaymentAttemptToHopsConnectionFromJson,
-} from "./OutgoingPaymentAttemptToHopsConnection.js";
+import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
+import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
 
 /** An attempt for a payment over a route from sender node to recipient node. **/
 class OutgoingPaymentAttempt implements Entity {

@@ -3,8 +3,9 @@
 import autoBind from "auto-bind";
 
 import { b64decode } from "../utils/base64.js";
-import { CryptoInterface, DefaultCrypto } from "./crypto.js";
-import { KeyOrAliasType } from "./KeyOrAlias.js";
+import type { CryptoInterface } from "./crypto.js";
+import { DefaultCrypto } from "./crypto.js";
+import type { KeyOrAliasType } from "./KeyOrAlias.js";
 
 class NodeKeyCache {
   private idToKey: Map<string, CryptoKey | string>;

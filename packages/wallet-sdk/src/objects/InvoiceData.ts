@@ -1,9 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import GraphNode, { GraphNodeFromJson } from "./GraphNode.js";
-import PaymentRequestData from "./PaymentRequestData.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type GraphNode from "./GraphNode.js";
+import { GraphNodeFromJson } from "./GraphNode.js";
+import type PaymentRequestData from "./PaymentRequestData.js";
 
 /** This object represents the BOLT #11 invoice protocol for Lightning Payments. See https://github.com/lightning/bolts/blob/master/11-payment-encoding.md. **/
 type InvoiceData = PaymentRequestData & {

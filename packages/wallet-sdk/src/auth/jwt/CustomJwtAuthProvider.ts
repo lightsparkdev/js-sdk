@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { AuthProvider } from "@lightsparkdev/core";
-import JwtStorage from "./JwtStorage.js";
-import JwtTokenInfo from "./JwtTokenInfo.js";
+import type { AuthProvider } from "@lightsparkdev/core";
+import type JwtStorage from "./JwtStorage.js";
+import type JwtTokenInfo from "./JwtTokenInfo.js";
 
 /**
  * A custom [AuthProvider] that uses a JWT token to authenticate requests.

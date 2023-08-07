@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { AuthProvider, b64encode } from "@lightsparkdev/core";
+import type { AuthProvider } from "@lightsparkdev/core";
+import { b64encode } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 
 class AccountTokenAuthProvider implements AuthProvider {

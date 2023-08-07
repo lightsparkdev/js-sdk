@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 0.3.10
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+
 ## 0.3.9
 
 ### Patch Changes

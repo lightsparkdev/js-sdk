@@ -1,5 +1,21 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.21
+
+### Patch Changes
+
+- Updated dependencies [df28af1]
+  - @lightsparkdev/wallet-sdk@0.6.13
+
+## 0.0.20
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+- Updated dependencies [141d73a]
+  - @lightsparkdev/wallet-sdk@0.6.12
+  - @lightsparkdev/core@0.3.10
+
 ## 0.0.19
 
 ### Patch Changes

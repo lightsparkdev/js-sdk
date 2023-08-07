@@ -15,10 +15,15 @@ export type Scalars = {
   Float: number;
   /** Date with time (isoformat) */
   DateTime: any;
+  /** A 32-byte scalar value. */
+  Hash32: any;
   /** The `Long` scalar type represents a 64 bit integer. */
   Long: any;
+  /** A Secp256k1 public key. */
+  PublicKey: any;
 };
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type Account = Entity & LightsparkNodeOwner & {
   __typename: 'Account';
   /** The API tokens that can be used to authenticate this account when making API calls or using our SDKs. See the "Authentication" section of our API docs for more details on its usage. */
@@ -54,17 +59,20 @@ export type Account = Entity & LightsparkNodeOwner & {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountApi_TokensArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountBlockchain_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountChannelsArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -74,18 +82,21 @@ export type AccountChannelsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountConductivityArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountLocal_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountNodesArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   first?: InputMaybe<Scalars['Int']>;
@@ -93,6 +104,7 @@ export type AccountNodesArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountPayment_RequestsArgs = {
   after?: InputMaybe<Scalars['String']>;
   after_date?: InputMaybe<Scalars['DateTime']>;
@@ -103,12 +115,14 @@ export type AccountPayment_RequestsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountRemote_BalanceArgs = {
   bitcoin_networks?: InputMaybe<Array<BitcoinNetwork>>;
   node_ids?: InputMaybe<Array<Scalars['ID']>>;
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountTransactionsArgs = {
   after?: InputMaybe<Scalars['String']>;
   after_date?: InputMaybe<Scalars['DateTime']>;
@@ -122,6 +136,7 @@ export type AccountTransactionsArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountUptime_PercentageArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -130,6 +145,7 @@ export type AccountUptime_PercentageArgs = {
 };
 
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountWalletsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
@@ -166,8 +182,6 @@ export type AccountToNodesConnection = {
   entities: Array<LightsparkNode>;
   /** An object that holds pagination information about the objects in this connection. */
   page_info: PageInfo;
-  /** The main purpose for the selected set of nodes. It is automatically determined from the nodes that are selected in this connection and is used for optimization purposes, as well as to determine the variation of the UI that should be presented to the user. */
-  purpose?: Maybe<LightsparkNodePurpose>;
 };
 
 export type AccountToPaymentRequestsConnection = {
@@ -206,6 +220,7 @@ export type AccountToWalletsConnection = {
   page_info: PageInfo;
 };
 
+/** This is an object representing a Lightspark API token, that can be used to authenticate this account when making API calls or using our SDKs. See the “Authentication” section of our API docs for more details on its usage. */
 export type ApiToken = Entity & {
   __typename: 'ApiToken';
   /** An opaque identifier that should be used as a client_id (or username) in the HTTP Basic Authentication scheme when issuing requests against the Lightspark API. */
@@ -222,6 +237,7 @@ export type ApiToken = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an object representing the balance associated with your Lightspark account. You can retrieve this object to see your balance, which can be broken down into several different categorizations. */
 export type Balances = {
   __typename: 'Balances';
   /**
@@ -244,6 +260,7 @@ export type Balances = {
   owned_balance: CurrencyAmount;
 };
 
+/** This is an enum identifying a particular Bitcoin Network. */
 export enum BitcoinNetwork {
   /** The production version of the Bitcoin Blockchain. */
   Mainnet = 'MAINNET',
@@ -258,7 +275,7 @@ export enum BitcoinNetwork {
   Testnet = 'TESTNET'
 }
 
-/** This object provides a detailed breakdown of a `LightsparkNode`'s current balance on the Bitcoin Network. */
+/** This is an object representing a detailed breakdown of the balance for a Lightspark Node. */
 export type BlockchainBalance = {
   __typename: 'BlockchainBalance';
   /** Funds available for creating channels or withdrawing. */
@@ -275,7 +292,7 @@ export type BlockchainBalance = {
   unconfirmed_balance?: Maybe<CurrencyAmount>;
 };
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type Channel = Entity & {
   __typename: 'Channel';
   /** The total amount of funds in this channel, including the channel balance on the local node, the channel balance on the remote node and the on-chain fees to close the channel. */
@@ -321,7 +338,7 @@ export type Channel = Entity & {
 };
 
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type ChannelTransactionsArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
@@ -329,13 +346,13 @@ export type ChannelTransactionsArgs = {
 };
 
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. */
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. */
 export type ChannelUptime_PercentageArgs = {
   after_date?: InputMaybe<Scalars['DateTime']>;
   before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
-/** The transaction on Bitcoin blockchain to close a channel on Lightning Network where the balances are allocated back to local and remote nodes. */
+/** This is an object representing a transaction which closes a channel on the Lightning Network. This operation allocates balances back to the local and remote nodes. */
 export type ChannelClosingTransaction = Entity & OnChainTransaction & Transaction & {
   __typename: 'ChannelClosingTransaction';
   /** The amount of money involved in this transaction. */
@@ -366,13 +383,14 @@ export type ChannelClosingTransaction = Entity & OnChainTransaction & Transactio
   updated_at: Scalars['DateTime'];
 };
 
+/** This represents the fee policies set for a channel on the Lightning Network. */
 export type ChannelFees = {
   __typename: 'ChannelFees';
   base_fee?: Maybe<CurrencyAmount>;
   fee_rate_per_mil?: Maybe<Scalars['Int']>;
 };
 
-/** The transaction on Bitcoin blockchain to open a channel on Lightning Network funded by the local Lightspark node. */
+/** This is an object representing a transaction which opens a channel on the Lightning Network. This object occurs only for channels funded by the local Lightspark node. */
 export type ChannelOpeningTransaction = Entity & OnChainTransaction & Transaction & {
   __typename: 'ChannelOpeningTransaction';
   /** The amount of money involved in this transaction. */
@@ -403,6 +421,7 @@ export type ChannelOpeningTransaction = Entity & OnChainTransaction & Transactio
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum representing the status of a channel on the Lightning Network. */
 export enum ChannelStatus {
   /** The channel has been closed. Information about the channel is still available for historical purposes but the channel cannot be used anymore. */
   Closed = 'CLOSED',
@@ -465,6 +484,8 @@ export type CreateInvoiceOutput = {
 export type CreateLnurlInvoiceInput = {
   /** The amount for which the invoice should be created, in millisatoshis. */
   amount_msats: Scalars['Long'];
+  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). */
+  expiry_secs?: InputMaybe<Scalars['Int']>;
   /** The SHA256 hash of the LNURL metadata payload. This will be present in the h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. */
   metadata_hash: Scalars['String'];
   /** The node from which to create the invoice. */
@@ -502,17 +523,19 @@ export type CreateTestModePaymentInput = {
   local_node_id: Scalars['ID'];
 };
 
+/** This is an object identifying the output of a test mode payment. This object can be used to retrieve the associated payment made from a Test Mode Payment call. */
 export type CreateTestModePaymentoutput = {
   __typename: 'CreateTestModePaymentoutput';
   /** The payment that has been sent. */
   payment: OutgoingPayment;
 };
 
+/** This is an enum identifying a type of crypto sanctions screening provider. */
 export enum CryptoSanctionsScreeningProvider {
   Chainalysis = 'CHAINALYSIS'
 }
 
-/** Represents the value and unit for an amount of currency. */
+/** This object represents the value and unit for an amount of currency. */
 export type CurrencyAmount = {
   __typename: 'CurrencyAmount';
   /** The original unit of currency for this CurrencyAmount. */
@@ -527,6 +550,7 @@ export type CurrencyAmount = {
   preferred_currency_value_rounded: Scalars['Long'];
 };
 
+/** This enum identifies the unit of currency associated with a CurrencyAmount. */
 export enum CurrencyUnit {
   /** Bitcoin is the cryptocurrency native to the Bitcoin network. It is used as the native medium for value transfer for the Lightning Network. */
   Bitcoin = 'BITCOIN',
@@ -562,7 +586,7 @@ export type DeleteApiTokenOutput = {
   account: Account;
 };
 
-/** The transaction on Bitcoin blockchain to fund the Lightspark node's wallet. */
+/** This object represents a Deposit made to a Lightspark node wallet. This operation occurs for any L1 funding transaction to the wallet. You can retrieve this object to receive detailed information about the deposit. */
 export type Deposit = Entity & OnChainTransaction & Transaction & {
   __typename: 'Deposit';
   /** The amount of money involved in this transaction. */
@@ -593,7 +617,7 @@ export type Deposit = Entity & OnChainTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
-/** This interface is used by all the entities in the Lightspark systems. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. */
+/** This interface is used by all the entities in the Lightspark system. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. */
 export type Entity = {
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
@@ -603,6 +627,7 @@ export type Entity = {
   updated_at: Scalars['DateTime'];
 };
 
+/** This object represents the estimated L1 transaction fees for the Bitcoin network. Fee estimates are separated by potential confirmation speeds for settlement. */
 export type FeeEstimate = {
   __typename: 'FeeEstimate';
   fee_fast: CurrencyAmount;
@@ -619,7 +644,7 @@ export type FundNodeOutput = {
   amount: CurrencyAmount;
 };
 
-/** This is a node on the Lightning Network, managed by a third party. The information about this node is public data that has been obtained by observing the Lightning Network. */
+/** This object represents a node that exists on the Lightning Network, including nodes not managed by Lightspark. You can retrieve this object to get publicly available information about any node on the Lightning Network. */
 export type GraphNode = Entity & Node & {
   __typename: 'GraphNode';
   /** The addresses that this node has announced for itself on the Lightning Network. */
@@ -645,13 +670,13 @@ export type GraphNode = Entity & Node & {
 };
 
 
-/** This is a node on the Lightning Network, managed by a third party. The information about this node is public data that has been obtained by observing the Lightning Network. */
+/** This object represents a node that exists on the Lightning Network, including nodes not managed by Lightspark. You can retrieve this object to get publicly available information about any node on the Lightning Network. */
 export type GraphNodeAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
-/** One hop signifies a payment moving one node ahead on a payment route; a list of sequential hops defines the path from sender node to recipient node for a payment attempt. */
+/** This object represents a specific node that existed on a particular payment route. You can retrieve this object to get information about a node on a particular payment path and all payment-relevant information for that node. */
 export type Hop = Entity & {
   __typename: 'Hop';
   /** The amount that is to be forwarded to the destination node. */
@@ -674,6 +699,7 @@ export type Hop = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum representing a particular reason why an htlc sent over the Lightning Network may have failed. */
 export enum HtlcAttemptFailureCode {
   AmountBelowMinimum = 'AMOUNT_BELOW_MINIMUM',
   ChannelDisabled = 'CHANNEL_DISABLED',
@@ -704,7 +730,7 @@ export enum HtlcAttemptFailureCode {
   UnreadableFailure = 'UNREADABLE_FAILURE'
 }
 
-/** A transaction that was sent to a Lightspark node on the Lightning Network. */
+/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. */
 export type IncomingPayment = Entity & LightningTransaction & Transaction & {
   __typename: 'IncomingPayment';
   /** The amount of money involved in this transaction. */
@@ -717,8 +743,6 @@ export type IncomingPayment = Entity & LightningTransaction & Transaction & {
   destination: LightsparkNode;
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
   id: Scalars['ID'];
-  /** If known, the Lightspark node this payment originated from. */
-  origin?: Maybe<LightsparkNode>;
   /** The optional payment request for this incoming payment, which will be null if the payment is sent through keysend. */
   payment_request?: Maybe<PaymentRequest>;
   /** The date and time when this transaction was completed or failed. */
@@ -732,13 +756,13 @@ export type IncomingPayment = Entity & LightningTransaction & Transaction & {
 };
 
 
-/** A transaction that was sent to a Lightspark node on the Lightning Network. */
+/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. */
 export type IncomingPaymentAttemptsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   statuses?: InputMaybe<Array<IncomingPaymentAttemptStatus>>;
 };
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents any attempted payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific incoming payment attempt. */
 export type IncomingPaymentAttempt = Entity & {
   __typename: 'IncomingPaymentAttempt';
   /** The total amount of that was attempted to send. */
@@ -757,7 +781,7 @@ export type IncomingPaymentAttempt = Entity & {
   updated_at: Scalars['DateTime'];
 };
 
-/** Enum that enumerates all the possible status of an incoming payment attempt. */
+/** This is an enum that enumerates all potential statuses for an incoming payment attempt. */
 export enum IncomingPaymentAttemptStatus {
   Accepted = 'ACCEPTED',
   Canceled = 'CANCELED',
@@ -774,7 +798,7 @@ export type IncomingPaymentToAttemptsConnection = {
   entities: Array<IncomingPaymentAttempt>;
 };
 
-/** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) initiated by a Lightspark Node. */
+/** This object represents a BOLT #11 invoice (https://github.com/lightning/bolts/blob/master/11-payment-encoding.md) created by a Lightspark Node. You can retrieve this object to receive relevant payment information for a specific invoice generated by a Lightspark node. */
 export type Invoice = Entity & PaymentRequest & {
   __typename: 'Invoice';
   /** The total amount that has been paid to this invoice. */
@@ -791,7 +815,7 @@ export type Invoice = Entity & PaymentRequest & {
   updated_at: Scalars['DateTime'];
 };
 
-/** This object represents the BOLT #11 invoice protocol for Lightning Payments. See https://github.com/lightning/bolts/blob/master/11-payment-encoding.md. */
+/** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. */
 export type InvoiceData = PaymentRequestData & {
   __typename: 'InvoiceData';
   /** The requested amount in this invoice. If it is equal to 0, the sender should choose the amount to send. */
@@ -810,6 +834,7 @@ export type InvoiceData = PaymentRequestData & {
   payment_hash: Scalars['String'];
 };
 
+/** This is an enum for potential invoice types. */
 export enum InvoiceType {
   /** An AMP (Atomic Multi-path Payment) invoice. */
   Amp = 'AMP',
@@ -841,6 +866,7 @@ export type LightningFeeEstimateOutput = {
   fee_estimate: CurrencyAmount;
 };
 
+/** This is an object representing a transaction made over the Lightning Network. You can retrieve this object to receive information about a specific transaction made over Lightning for a Lightspark node. */
 export type LightningTransaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -858,14 +884,92 @@ export type LightningTransaction = {
   updated_at: Scalars['DateTime'];
 };
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
-export type LightsparkNode = Entity & Node & {
-  __typename: 'LightsparkNode';
-  /**
-   * The account that owns this LightsparkNode.
-   * @deprecated Use owner instead.
-   */
-  account: Account;
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
+export type LightsparkNode = {
+  /** The addresses that this node has announced for itself on the Lightning Network. */
+  addresses: NodeToAddressesConnection;
+  /** A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator. */
+  alias?: Maybe<Scalars['String']>;
+  /** The Bitcoin Network this node is deployed in. */
+  bitcoin_network: BitcoinNetwork;
+  /** The channels that are connected to this node. */
+  channels: LightsparkNodeToChannelsConnection;
+  /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
+  color?: Maybe<Scalars['String']>;
+  /** A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included). */
+  conductivity?: Maybe<Scalars['Int']>;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node. */
+  display_name: Scalars['String'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The sum of the channel balances (online only) that are available to send on this node. */
+  local_balance?: Maybe<CurrencyAmount>;
+  /** The owner of this LightsparkNode. */
+  owner: LightsparkNodeOwner;
+  /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
+  public_key?: Maybe<Scalars['String']>;
+  /** The current status of this node. */
+  status?: Maybe<LightsparkNodeStatus>;
+  /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
+  total_balance?: Maybe<CurrencyAmount>;
+  /** The total sum of the channel balances (online and offline) on this node. */
+  total_local_balance?: Maybe<CurrencyAmount>;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
+export type LightsparkNodeAddressesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  types?: InputMaybe<Array<NodeAddressType>>;
+};
+
+
+/** This is an object representing a node managed by Lightspark and owned by the current connected account. This object contains information about the node’s configuration, state, and metadata. */
+export type LightsparkNodeChannelsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  statuses?: InputMaybe<Array<ChannelStatus>>;
+};
+
+/** This is an object representing the owner of a LightsparkNode. */
+export type LightsparkNodeOwner = {
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+export enum LightsparkNodeStatus {
+  Created = 'CREATED',
+  Deployed = 'DEPLOYED',
+  FailedToDeploy = 'FAILED_TO_DEPLOY',
+  Ready = 'READY',
+  Started = 'STARTED',
+  Stopped = 'STOPPED',
+  Syncing = 'SYNCING',
+  Terminated = 'TERMINATED',
+  Terminating = 'TERMINATING',
+  WalletLocked = 'WALLET_LOCKED'
+}
+
+export type LightsparkNodeToChannelsConnection = {
+  __typename: 'LightsparkNodeToChannelsConnection';
+  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). */
+  count: Scalars['Int'];
+  /** The channels for the current page of this connection. */
+  entities: Array<Channel>;
+  /** An object that holds pagination information about the objects in this connection. */
+  page_info: PageInfo;
+};
+
+/** This is a Lightspark node with OSK on LND. */
+export type LightsparkNodeWithOsklnd = Entity & LightsparkNode & Node & {
+  __typename: 'LightsparkNodeWithOSKLND';
   /** The addresses that this node has announced for itself on the Lightning Network. */
   addresses: NodeToAddressesConnection;
   /** A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator. */
@@ -894,8 +998,6 @@ export type LightsparkNode = Entity & Node & {
   owner: LightsparkNodeOwner;
   /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
   public_key?: Maybe<Scalars['String']>;
-  /** The main purpose of this node. It is used by Lightspark for optimizations on the node's channels. */
-  purpose?: Maybe<LightsparkNodePurpose>;
   /** The sum of the channel balances that are available to receive on this node. */
   remote_balance?: Maybe<CurrencyAmount>;
   /** The current status of this node. */
@@ -909,80 +1011,146 @@ export type LightsparkNode = Entity & Node & {
 };
 
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
-export type LightsparkNodeAddressesArgs = {
+/** This is a Lightspark node with OSK on LND. */
+export type LightsparkNodeWithOsklndAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
 
-/** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. */
-export type LightsparkNodeChannelsArgs = {
+/** This is a Lightspark node with OSK on LND. */
+export type LightsparkNodeWithOsklndChannelsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   statuses?: InputMaybe<Array<ChannelStatus>>;
 };
 
-export type LightsparkNodeOwner = {
+/** This is a Sparknode with OSK. */
+export type LightsparkNodeWithOskSparknode = Entity & LightsparkNode & Node & Sparknode & {
+  __typename: 'LightsparkNodeWithOSKSparknode';
+  /** The addresses that this node has announced for itself on the Lightning Network. */
+  addresses: NodeToAddressesConnection;
+  /** A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator. */
+  alias?: Maybe<Scalars['String']>;
+  /** The Bitcoin Network this node is deployed in. */
+  bitcoin_network: BitcoinNetwork;
+  /** The channels that are connected to this node. */
+  channels: LightsparkNodeToChannelsConnection;
+  /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
+  color?: Maybe<Scalars['String']>;
+  /** A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included). */
+  conductivity?: Maybe<Scalars['Int']>;
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
+  /** The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node. */
+  display_name: Scalars['String'];
   /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
   id: Scalars['ID'];
+  /** The sum of the channel balances (online only) that are available to send on this node. */
+  local_balance?: Maybe<CurrencyAmount>;
+  /** The owner of this LightsparkNode. */
+  owner: LightsparkNodeOwner;
+  /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
+  public_key?: Maybe<Scalars['String']>;
+  /** The current status of this node. */
+  status?: Maybe<LightsparkNodeStatus>;
+  /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
+  total_balance?: Maybe<CurrencyAmount>;
+  /** The total sum of the channel balances (online and offline) on this node. */
+  total_local_balance?: Maybe<CurrencyAmount>;
   /** The date and time when the entity was last updated. */
   updated_at: Scalars['DateTime'];
 };
 
-export enum LightsparkNodePurpose {
-  Receive = 'RECEIVE',
-  Routing = 'ROUTING',
-  Send = 'SEND'
-}
 
-export enum LightsparkNodeStatus {
-  Created = 'CREATED',
-  Deployed = 'DEPLOYED',
-  FailedToDeploy = 'FAILED_TO_DEPLOY',
-  Ready = 'READY',
-  Started = 'STARTED',
-  Stopped = 'STOPPED',
-  Syncing = 'SYNCING',
-  Terminated = 'TERMINATED',
-  Terminating = 'TERMINATING',
-  WalletLocked = 'WALLET_LOCKED'
-}
+/** This is a Sparknode with OSK. */
+export type LightsparkNodeWithOskSparknodeAddressesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  types?: InputMaybe<Array<NodeAddressType>>;
+};
 
-export type LightsparkNodeToChannelsConnection = {
-  __typename: 'LightsparkNodeToChannelsConnection';
-  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). */
-  count: Scalars['Int'];
-  /** The channels for the current page of this connection. */
-  entities: Array<Channel>;
-  /** An object that holds pagination information about the objects in this connection. */
-  page_info: PageInfo;
+
+/** This is a Sparknode with OSK. */
+export type LightsparkNodeWithOskSparknodeChannelsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  statuses?: InputMaybe<Array<ChannelStatus>>;
+};
+
+/** This is a Sparknode with server remote signing. */
+export type LightsparkNodeWithServerSigning = Entity & LightsparkNode & Node & Sparknode & {
+  __typename: 'LightsparkNodeWithServerSigning';
+  /** The addresses that this node has announced for itself on the Lightning Network. */
+  addresses: NodeToAddressesConnection;
+  /** A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator. */
+  alias?: Maybe<Scalars['String']>;
+  /** The Bitcoin Network this node is deployed in. */
+  bitcoin_network: BitcoinNetwork;
+  /** The channels that are connected to this node. */
+  channels: LightsparkNodeToChannelsConnection;
+  /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
+  color?: Maybe<Scalars['String']>;
+  /** A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included). */
+  conductivity?: Maybe<Scalars['Int']>;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node. */
+  display_name: Scalars['String'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The sum of the channel balances (online only) that are available to send on this node. */
+  local_balance?: Maybe<CurrencyAmount>;
+  /** The owner of this LightsparkNode. */
+  owner: LightsparkNodeOwner;
+  /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
+  public_key?: Maybe<Scalars['String']>;
+  /** The current status of this node. */
+  status?: Maybe<LightsparkNodeStatus>;
+  /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
+  total_balance?: Maybe<CurrencyAmount>;
+  /** The total sum of the channel balances (online and offline) on this node. */
+  total_local_balance?: Maybe<CurrencyAmount>;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+
+/** This is a Sparknode with server remote signing. */
+export type LightsparkNodeWithServerSigningAddressesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  types?: InputMaybe<Array<NodeAddressType>>;
+};
+
+
+/** This is a Sparknode with server remote signing. */
+export type LightsparkNodeWithServerSigningChannelsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  statuses?: InputMaybe<Array<ChannelStatus>>;
 };
 
 export type Mutation = {
   __typename: 'Mutation';
-  /** Creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs and SDKs. */
+  /** This function creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs and SDKs. */
   create_api_token: CreateApiTokenOutput;
-  /** Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment from another Lightning Node. If you are in test mode, the generated invoice can only be paid by create_test_mode_payment mutation. */
+  /** This function generates a Lightning Invoice (following the Bolt 11 specification). This invoice can be used to request a payment from any other Lightning Node. If you are in test mode, the generated invoice can only be paid by the create_test_mode_payment mutation. */
   create_invoice: CreateInvoiceOutput;
-  /** Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment from another Lightning Node. This should only be used for generating invoices for LNURLs, with `create_invoice` preferred in the general case. */
+  /** This function generates a Lightning Invoice (following the Bolt 11 specification). This invoice can be used to request a payment from any other Lightning Node. This function should only be used for generating invoices for LNURLs, with `create_invoice` preferred in the general case. */
   create_lnurl_invoice: CreateInvoiceOutput;
-  /** Creates a Bitcoin address for the wallet associated with your Lightning Node. You can use this address to send funds to your node. It is a best practice to generate a new wallet address every time you need to send money. You can generate as many wallet addresses as you want. */
+  /** This function creates a Bitcoin address for the wallet associated with your Lightning Node. You can use this address to send funds to your node. It is a best practice to generate a new wallet address every time you need to send money. You can generate as many wallet addresses as you want. */
   create_node_wallet_address: CreateNodeWalletAddressOutput;
-  /** In test mode, generates a Lightning Invoice which can be paid by a local node. */
+  /** In test mode, this function generates a Lightning Invoice which can be paid by a local node in the test mode environment. */
   create_test_mode_invoice: CreateTestModeInvoiceOutput;
-  /** In test mode, simulates a payment from other node to an invoice. */
+  /** In test mode, this function simulates sending a payment from your Lightspark node given a test mode invoice. */
   create_test_mode_payment: CreateTestModePaymentoutput;
-  /** Deletes an existing API token from this account. */
+  /** Deletes an existing API token from your Lightspark account. */
   delete_api_token: DeleteApiTokenOutput;
   /**
-   * Adds funds to a Lightspark node on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be added.
+   * Adds funds to a Lightspark node in test mode, on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be added.
    * This API only functions for nodes created on the REGTEST network and will return an error when called for any non-REGTEST node.
    */
   fund_node: FundNodeOutput;
-  /** Sends a payment to a node on the Lightning Network, based on the invoice (as defined by the BOLT11 specification) that you provide. If you are in test mode, the invoice has to be generated by create_test_mode_invoice mutation. */
+  /** Sends a payment to a node on the Lightning Network, based on the invoice (as defined by the BOLT11 specification) that you provide. If you are in test mode, the invoice has to be generated by the create_test_mode_invoice mutation. */
   pay_invoice: PayInvoiceOutput;
+  /** Release per commitment secret of a channel connecting to a local remote signing node. */
+  release_channel_per_commitment_secret: ReleaseChannelPerCommitmentSecretOutput;
   /**
    * Withdraws funds from the account and sends it to the requested bitcoin address.
    *
@@ -990,9 +1158,18 @@ export type Mutation = {
    * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the `WithdrawalRequest` that is created, or by subscribing to a webhook.
    */
   request_withdrawal: RequestWithdrawalOutput;
+  /** This function screens a Bitcoin address against a CryptoSanctionsScreeningProvider and returns a risk rating for the associated Bitcoin address. You can call this mutation when performing risk or compliance assessments. */
   screen_bitcoin_addresses: ScreenBitcoinAddressesOutput;
   /** Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice. */
   send_payment: SendPaymentOutput;
+  /** Sign an invoice generated from a remote signing node. */
+  sign_invoice: SignInvoiceOutput;
+  /** Upload the signatures of a list of messages that need to be signed. */
+  sign_messages: SignMessagesOutput;
+  /** Updates per commitment point of a channel connecting to a local remote signing node. */
+  update_channel_per_commitment_point: UpdateChannelPerCommitmentPointOutput;
+  /** Updates shared scret of a remote signing node. */
+  update_node_shared_secret: UpdateNodeSharedSecretOutput;
 };
 
 
@@ -1041,6 +1218,11 @@ export type MutationPay_InvoiceArgs = {
 };
 
 
+export type MutationRelease_Channel_Per_Commitment_SecretArgs = {
+  input: ReleaseChannelPerCommitmentSecretInput;
+};
+
+
 export type MutationRequest_WithdrawalArgs = {
   input: RequestWithdrawalInput;
 };
@@ -1055,7 +1237,27 @@ export type MutationSend_PaymentArgs = {
   input: SendPaymentInput;
 };
 
-/** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. */
+
+export type MutationSign_InvoiceArgs = {
+  input: SignInvoiceInput;
+};
+
+
+export type MutationSign_MessagesArgs = {
+  input: SignMessagesInput;
+};
+
+
+export type MutationUpdate_Channel_Per_Commitment_PointArgs = {
+  input: UpdateChannelPerCommitmentPointInput;
+};
+
+
+export type MutationUpdate_Node_Shared_SecretArgs = {
+  input: UpdateNodeSharedSecretInput;
+};
+
+/** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. */
 export type Node = {
   /** The addresses that this node has announced for itself on the Lightning Network. */
   addresses: NodeToAddressesConnection;
@@ -1080,13 +1282,13 @@ export type Node = {
 };
 
 
-/** This interface represents a lightning node that can be connected to the Lightning Network to send and receive transactions. */
+/** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. */
 export type NodeAddressesArgs = {
   first?: InputMaybe<Scalars['Int']>;
   types?: InputMaybe<Array<NodeAddressType>>;
 };
 
-/** An object that represents the address of a node on the Lightning Network. */
+/** This object represents the address of a node on the Lightning Network. */
 export type NodeAddress = {
   __typename: 'NodeAddress';
   /** The string representation of the address. */
@@ -1095,7 +1297,7 @@ export type NodeAddress = {
   type: NodeAddressType;
 };
 
-/** An enum that enumerates all possible types of addresses of a node on the Lightning Network. */
+/** This is an enum of the potential types of addresses that a node on the Lightning Network can have. */
 export enum NodeAddressType {
   Ipv4 = 'IPV4',
   Ipv6 = 'IPV6',
@@ -1111,7 +1313,7 @@ export type NodeToAddressesConnection = {
   entities: Array<NodeAddress>;
 };
 
-/** Transaction happened on Bitcoin blockchain. */
+/** This object represents an L1 transaction that occurred on the Bitcoin Network. You can retrieve this object to receive information about a specific on-chain transaction made on the Lightning Network associated with your Lightspark Node. */
 export type OnChainTransaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -1139,7 +1341,7 @@ export type OnChainTransaction = {
   updated_at: Scalars['DateTime'];
 };
 
-/** A transaction that was sent from a Lightspark node on the Lightning Network. */
+/** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. */
 export type OutgoingPayment = Entity & LightningTransaction & Transaction & {
   __typename: 'OutgoingPayment';
   /** The amount of money involved in this transaction. */
@@ -1173,12 +1375,12 @@ export type OutgoingPayment = Entity & LightningTransaction & Transaction & {
 };
 
 
-/** A transaction that was sent from a Lightspark node on the Lightning Network. */
+/** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. */
 export type OutgoingPaymentAttemptsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. */
 export type OutgoingPaymentAttempt = Entity & {
   __typename: 'OutgoingPaymentAttempt';
   /** The total amount of funds required to complete a payment over this route. This value includes the cumulative fees for each hop. As a result, the attempt extended to the first-hop in the route will need to have at least this much value, otherwise the route will fail at an intermediate node due to an insufficient amount. */
@@ -1206,12 +1408,12 @@ export type OutgoingPaymentAttempt = Entity & {
 };
 
 
-/** An attempt for a payment over a route from sender node to recipient node. */
+/** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. */
 export type OutgoingPaymentAttemptHopsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
-/** Enum that enumerates all the possible status of an outgoing payment attempt. */
+/** This is an enum of all potential statuses of a payment attempt made from a Lightspark Node. */
 export enum OutgoingPaymentAttemptStatus {
   Failed = 'FAILED',
   InFlight = 'IN_FLIGHT',
@@ -1236,6 +1438,7 @@ export type OutgoingPaymentToAttemptsConnection = {
   entities: Array<OutgoingPaymentAttempt>;
 };
 
+/** This is an object representing information about a page returned by the Lightspark API. For more information, please see the “Pagination” section of our API docs for more information about its usage. */
 export type PageInfo = {
   __typename: 'PageInfo';
   end_cursor?: Maybe<Scalars['String']>;
@@ -1263,6 +1466,7 @@ export type PayInvoiceOutput = {
   payment: OutgoingPayment;
 };
 
+/** This is an enum of the potential reasons why an OutgoingPayment sent from a Lightspark Node may have failed. */
 export enum PaymentFailureReason {
   Error = 'ERROR',
   IncorrectPaymentDetails = 'INCORRECT_PAYMENT_DETAILS',
@@ -1276,6 +1480,7 @@ export enum PaymentFailureReason {
   Timeout = 'TIMEOUT'
 }
 
+/** This object contains information related to a payment request generated or received by a LightsparkNode. You can retrieve this object to receive payment information about a specific invoice. */
 export type PaymentRequest = {
   /** The date and time when the entity was first created. */
   created_at: Scalars['DateTime'];
@@ -1289,17 +1494,19 @@ export type PaymentRequest = {
   updated_at: Scalars['DateTime'];
 };
 
-/** The interface of a payment request on the Lightning Network (a.k.a. Lightning Invoice). */
+/** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. */
 export type PaymentRequestData = {
   bitcoin_network: BitcoinNetwork;
   encoded_payment_request: Scalars['String'];
 };
 
+/** This is an enum of the potential states that a payment request on the Lightning Network can take. */
 export enum PaymentRequestStatus {
   Closed = 'CLOSED',
   Open = 'OPEN'
 }
 
+/** This is an enum of the potential permissions that a Lightspark user can have in regards to account management. */
 export enum Permission {
   AccountManage = 'ACCOUNT_MANAGE',
   AccountView = 'ACCOUNT_VIEW',
@@ -1319,17 +1526,17 @@ export enum Permission {
 
 export type Query = {
   __typename: 'Query';
-  /** Returns an estimate of the fees of a transaction on the Bitcoin Network. */
+  /** This is a query that retrieves the current fee estimates for an L1 transaction. You can call this query to get estimates for different confirmation speeds of an L1 transaction on a specific Bitcoin Network. */
   bitcoin_fee_estimate: FeeEstimate;
-  /** Returns the current connected account. */
+  /** This is a query that retrieves the currently connected Lightspark account. You can call this query to get an object with detailed information about your connected Lightspark account. */
   current_account?: Maybe<Account>;
-  /** Decodes the content of an encoded payment request into structured data that can be used by the client. */
+  /** This is a query that decodes a Lightning payment request into structured data that can be used by the client. */
   decoded_payment_request: PaymentRequestData;
-  /** Returns any `Entity`, identified by its unique ID. */
+  /** This is a query that returns any Entity object from the Lightspark API. You can call this query when you want to receive detailed information about any particular Entity. */
   entity?: Maybe<Entity>;
-  /** Returns an estimate of the fees that will be paid for a Lightning invoice. */
+  /** This is a query for estimating what the Lightning Network fees for paying a specific Lightning Invoice. */
   lightning_fee_estimate_for_invoice: LightningFeeEstimateOutput;
-  /** Returns an estimate of the fees that will be paid to send a payment to another Lightning node. */
+  /** This is a query for estimating what the Lightning Network fees will be for sending a payment to a specific Lightning Node. */
   lightning_fee_estimate_for_node: LightningFeeEstimateOutput;
 };
 
@@ -1358,6 +1565,16 @@ export type QueryLightning_Fee_Estimate_For_NodeArgs = {
   input: LightningFeeEstimateForNodeInput;
 };
 
+export type ReleaseChannelPerCommitmentSecretInput = {
+  channel_id: Scalars['ID'];
+  per_commitment_secret: Scalars['Hash32'];
+};
+
+export type ReleaseChannelPerCommitmentSecretOutput = {
+  __typename: 'ReleaseChannelPerCommitmentSecretOutput';
+  channel: Channel;
+};
+
 export type RequestWithdrawalInput = {
   /** The amount you want to withdraw from this node in Satoshis. Use the special value -1 to withdrawal all funds from this node. */
   amount_sats: Scalars['Long'];
@@ -1380,13 +1597,14 @@ export type RichText = {
   text: Scalars['String'];
 };
 
+/** This is an enum of the potential risk ratings related to a transaction made over the Lightning Network. These risk ratings are returned from the CryptoSanctionScreeningProvider. */
 export enum RiskRating {
   HighRisk = 'HIGH_RISK',
   LowRisk = 'LOW_RISK',
   Unknown = 'UNKNOWN'
 }
 
-/** A transaction that was forwarded through a Lightspark node on the Lightning Network. */
+/** This object represents a transaction that was forwarded through a Lightspark node on the Lightning Network, i.e., a routed transaction. You can retrieve this object to receive information about any transaction routed through your Lightspark Node. */
 export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   __typename: 'RoutingTransaction';
   /** The amount of money involved in this transaction. */
@@ -1415,6 +1633,7 @@ export type RoutingTransaction = Entity & LightningTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum of the potential reasons that an attempted routed transaction through a Lightspark node may have failed. */
 export enum RoutingTransactionFailureReason {
   ForwardingFailure = 'FORWARDING_FAILURE',
   IncomingLinkFailure = 'INCOMING_LINK_FAILURE',
@@ -1456,6 +1675,118 @@ export type SendPaymentOutput = {
   payment: OutgoingPayment;
 };
 
+export type SignInvoiceInput = {
+  invoice_id: Scalars['ID'];
+  recovery_id: Scalars['Int'];
+  signature: Scalars['String'];
+};
+
+export type SignInvoiceOutput = {
+  __typename: 'SignInvoiceOutput';
+  invoice: Invoice;
+};
+
+export type SignMessagesInput = {
+  signatures: Array<Signature>;
+};
+
+export type SignMessagesOutput = {
+  __typename: 'SignMessagesOutput';
+  signed_payloads: Array<SignablePayload>;
+};
+
+export type Signable = Entity & {
+  __typename: 'Signable';
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+export type SignablePayload = Entity & {
+  __typename: 'SignablePayload';
+  /** The tweak value to add. */
+  add_tweak?: Maybe<Scalars['Hash32']>;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The consistent method for generating the same set of accounts and wallets for a given private key */
+  derivation_path: Scalars['String'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The tweak value to multiply. */
+  mul_tweak?: Maybe<Scalars['Hash32']>;
+  /** The payload that needs to be signed. */
+  payload: Scalars['String'];
+  /** The signable this payload belongs to. */
+  signable: Signable;
+  /** The status of the payload. */
+  status: SignablePayloadStatus;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+export enum SignablePayloadStatus {
+  Created = 'CREATED',
+  Signed = 'SIGNED'
+}
+
+export type Signature = {
+  id: Scalars['ID'];
+  signature: Scalars['String'];
+};
+
+/** This is a Sparknode. */
+export type Sparknode = {
+  /** The addresses that this node has announced for itself on the Lightning Network. */
+  addresses: NodeToAddressesConnection;
+  /** A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator. */
+  alias?: Maybe<Scalars['String']>;
+  /** The Bitcoin Network this node is deployed in. */
+  bitcoin_network: BitcoinNetwork;
+  /** The channels that are connected to this node. */
+  channels: LightsparkNodeToChannelsConnection;
+  /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
+  color?: Maybe<Scalars['String']>;
+  /** A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included). */
+  conductivity?: Maybe<Scalars['Int']>;
+  /** The date and time when the entity was first created. */
+  created_at: Scalars['DateTime'];
+  /** The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node. */
+  display_name: Scalars['String'];
+  /** The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string. */
+  id: Scalars['ID'];
+  /** The sum of the channel balances (online only) that are available to send on this node. */
+  local_balance?: Maybe<CurrencyAmount>;
+  /** The owner of this LightsparkNode. */
+  owner: LightsparkNodeOwner;
+  /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
+  public_key?: Maybe<Scalars['String']>;
+  /** The current status of this node. */
+  status?: Maybe<LightsparkNodeStatus>;
+  /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
+  total_balance?: Maybe<CurrencyAmount>;
+  /** The total sum of the channel balances (online and offline) on this node. */
+  total_local_balance?: Maybe<CurrencyAmount>;
+  /** The date and time when the entity was last updated. */
+  updated_at: Scalars['DateTime'];
+};
+
+
+/** This is a Sparknode. */
+export type SparknodeAddressesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  types?: InputMaybe<Array<NodeAddressType>>;
+};
+
+
+/** This is a Sparknode. */
+export type SparknodeChannelsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  statuses?: InputMaybe<Array<ChannelStatus>>;
+};
+
 export type Subscription = {
   __typename: 'Subscription';
   entity: Entity;
@@ -1472,6 +1803,7 @@ export type SubscriptionTransactionsArgs = {
   node_ids: Array<Scalars['ID']>;
 };
 
+/** This object represents a payment transaction. The transaction can occur either on a Bitcoin Network, or over the Lightning Network. You can retrieve this object to receive specific information about a particular transaction tied to your Lightspark Node. */
 export type Transaction = {
   /** The amount of money involved in this transaction. */
   amount: CurrencyAmount;
@@ -1489,11 +1821,13 @@ export type Transaction = {
   updated_at: Scalars['DateTime'];
 };
 
+/** This object represents payment failures associated with your Lightspark Node. */
 export type TransactionFailures = {
   payment_failures?: InputMaybe<Array<PaymentFailureReason>>;
   routing_transaction_failures?: InputMaybe<Array<RoutingTransactionFailureReason>>;
 };
 
+/** This is an enum of the potential statuses a transaction associated with your Lightspark Node can take. */
 export enum TransactionStatus {
   /**
    * For transaction type PAYMENT_REQUEST only.
@@ -1518,6 +1852,7 @@ export enum TransactionStatus {
   Success = 'SUCCESS'
 }
 
+/** This is an enum of the potential types of transactions that can be associated with your Lightspark Node. */
 export enum TransactionType {
   /** Transactions on Bitcoin blockchain to close a channel on Lightning Network where the balances are allocated back to local and remote nodes. */
   ChannelClose = 'CHANNEL_CLOSE',
@@ -1550,6 +1885,27 @@ export enum TransactionType {
   Routed = 'ROUTED'
 }
 
+export type UpdateChannelPerCommitmentPointInput = {
+  channel_id: Scalars['ID'];
+  per_commitment_point: Scalars['PublicKey'];
+};
+
+export type UpdateChannelPerCommitmentPointOutput = {
+  __typename: 'UpdateChannelPerCommitmentPointOutput';
+  channel: Channel;
+};
+
+export type UpdateNodeSharedSecretInput = {
+  node_id: Scalars['ID'];
+  shared_secret: Scalars['Hash32'];
+};
+
+export type UpdateNodeSharedSecretOutput = {
+  __typename: 'UpdateNodeSharedSecretOutput';
+  node: LightsparkNode;
+};
+
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type Wallet = Entity & LightsparkNodeOwner & {
   __typename: 'Wallet';
   /** The balances that describe the funds in this wallet. */
@@ -1573,17 +1929,20 @@ export type Wallet = Entity & LightsparkNodeOwner & {
 };
 
 
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type WalletTotal_Amount_ReceivedArgs = {
   created_after_date?: InputMaybe<Scalars['DateTime']>;
   created_before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
 
+/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. */
 export type WalletTotal_Amount_SentArgs = {
   created_after_date?: InputMaybe<Scalars['DateTime']>;
   created_before_date?: InputMaybe<Scalars['DateTime']>;
 };
 
+/** This is an enum of the potential statuses that your Lightspark wallet can take.  */
 export enum WalletStatus {
   /** The wallet has been deployed in the Lightspark infrastructure and is ready to be initialized. */
   Deployed = 'DEPLOYED',
@@ -1605,9 +1964,11 @@ export enum WalletStatus {
   Unavailable = 'UNAVAILABLE'
 }
 
+/** This is an enum of the potential event types that can be associated with your Lightspark wallets. */
 export enum WebhookEventType {
   NodeStatus = 'NODE_STATUS',
   PaymentFinished = 'PAYMENT_FINISHED',
+  RemoteSigning = 'REMOTE_SIGNING',
   WalletFundsReceived = 'WALLET_FUNDS_RECEIVED',
   WalletIncomingPaymentFinished = 'WALLET_INCOMING_PAYMENT_FINISHED',
   WalletOutgoingPaymentFinished = 'WALLET_OUTGOING_PAYMENT_FINISHED',
@@ -1615,7 +1976,7 @@ export enum WebhookEventType {
   WalletWithdrawalFinished = 'WALLET_WITHDRAWAL_FINISHED'
 }
 
-/** The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet. */
+/** This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any L1 withdrawal associated with your Lightspark Node or account. */
 export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   __typename: 'Withdrawal';
   /** The amount of money involved in this transaction. */
@@ -1646,11 +2007,13 @@ export type Withdrawal = Entity & OnChainTransaction & Transaction & {
   updated_at: Scalars['DateTime'];
 };
 
+/** This is an enum of the potential modes that your Bitcoin withdrawal can take. */
 export enum WithdrawalMode {
   WalletOnly = 'WALLET_ONLY',
   WalletThenChannels = 'WALLET_THEN_CHANNELS'
 }
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequest = Entity & {
   __typename: 'WithdrawalRequest';
   /** The amount of money that should be withdrawn in this request. */
@@ -1680,15 +2043,18 @@ export type WithdrawalRequest = Entity & {
 };
 
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequestChannel_Closing_TransactionsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. */
 export type WithdrawalRequestChannel_Opening_TransactionsArgs = {
   first?: InputMaybe<Scalars['Int']>;
 };
 
+/** This is an enum of the potential statuses that a Withdrawal can take. */
 export enum WithdrawalRequestStatus {
   Failed = 'FAILED',
   InProgress = 'IN_PROGRESS',
@@ -1725,21 +2091,21 @@ export type TransactionsForNodeQueryVariables = Exact<{
 }>;
 
 
-export type TransactionsForNodeQuery = { __typename: 'Query', current_account?: { __typename: 'Account', id: string, name?: string | null, recent_transactions: { __typename: 'AccountToTransactionsConnection', count: number, total_amount_transacted?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, entities: Array<{ __typename: 'ChannelClosingTransaction', channel_closing_transaction_id: string, channel_closing_transaction_created_at: any, channel_closing_transaction_updated_at: any, channel_closing_transaction_status: TransactionStatus, channel_closing_transaction_resolved_at?: any | null, channel_closing_transaction_transaction_hash?: string | null, channel_closing_transaction_block_hash?: string | null, channel_closing_transaction_block_height: number, channel_closing_transaction_destination_addresses: Array<string>, channel_closing_transaction_num_confirmations?: number | null, channel_closing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_closing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_closing_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'ChannelOpeningTransaction', channel_opening_transaction_id: string, channel_opening_transaction_created_at: any, channel_opening_transaction_updated_at: any, channel_opening_transaction_status: TransactionStatus, channel_opening_transaction_resolved_at?: any | null, channel_opening_transaction_transaction_hash?: string | null, channel_opening_transaction_block_hash?: string | null, channel_opening_transaction_block_height: number, channel_opening_transaction_destination_addresses: Array<string>, channel_opening_transaction_num_confirmations?: number | null, channel_opening_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_opening_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_opening_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNode', id: string } } | { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_origin?: { __typename: 'LightsparkNode', id: string } | null, incoming_payment_destination: { __typename: 'LightsparkNode', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null } | { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNode', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNode', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_purpose?: LightsparkNodePurpose | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_account: { __typename: 'Account', id: string }, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_blockchain_balance?: { __typename: 'BlockchainBalance', blockchain_balance_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_confirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_unconfirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_locked_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_required_reserve?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_available_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | null, lightspark_node_encrypted_signing_private_key?: { __typename: 'Secret', secret_encrypted_value: string, secret_cipher: string } | null, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_remote_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'RoutingTransaction', routing_transaction_id: string, routing_transaction_created_at: any, routing_transaction_updated_at: any, routing_transaction_status: TransactionStatus, routing_transaction_resolved_at?: any | null, routing_transaction_transaction_hash?: string | null, routing_transaction_failure_reason?: RoutingTransactionFailureReason | null, routing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, routing_transaction_incoming_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_outgoing_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, routing_transaction_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNode', id: string } }> } } | null };
+export type TransactionsForNodeQuery = { __typename: 'Query', current_account?: { __typename: 'Account', id: string, name?: string | null, recent_transactions: { __typename: 'AccountToTransactionsConnection', count: number, total_amount_transacted?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, entities: Array<{ __typename: 'ChannelClosingTransaction', channel_closing_transaction_id: string, channel_closing_transaction_created_at: any, channel_closing_transaction_updated_at: any, channel_closing_transaction_status: TransactionStatus, channel_closing_transaction_resolved_at?: any | null, channel_closing_transaction_transaction_hash?: string | null, channel_closing_transaction_block_hash?: string | null, channel_closing_transaction_block_height: number, channel_closing_transaction_destination_addresses: Array<string>, channel_closing_transaction_num_confirmations?: number | null, channel_closing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_closing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_closing_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'ChannelOpeningTransaction', channel_opening_transaction_id: string, channel_opening_transaction_created_at: any, channel_opening_transaction_updated_at: any, channel_opening_transaction_status: TransactionStatus, channel_opening_transaction_resolved_at?: any | null, channel_opening_transaction_transaction_hash?: string | null, channel_opening_transaction_block_hash?: string | null, channel_opening_transaction_block_height: number, channel_opening_transaction_destination_addresses: Array<string>, channel_opening_transaction_num_confirmations?: number | null, channel_opening_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_opening_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_opening_transaction_channel?: { __typename: 'Channel', id: string } | null } | { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } } | { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_destination: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null } | { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNodeWithOSKLND', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | { __typename: 'LightsparkNodeWithOSKSparknode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | { __typename: 'LightsparkNodeWithServerSigning', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'RoutingTransaction', routing_transaction_id: string, routing_transaction_created_at: any, routing_transaction_updated_at: any, routing_transaction_status: TransactionStatus, routing_transaction_resolved_at?: any | null, routing_transaction_transaction_hash?: string | null, routing_transaction_failure_reason?: RoutingTransactionFailureReason | null, routing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, routing_transaction_incoming_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_outgoing_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, routing_transaction_failure_message?: { __typename: 'RichText', rich_text_text: string } | null } | { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } }> } } | null };
 
 type TransactionFragment_ChannelClosingTransaction_Fragment = { __typename: 'ChannelClosingTransaction', channel_closing_transaction_id: string, channel_closing_transaction_created_at: any, channel_closing_transaction_updated_at: any, channel_closing_transaction_status: TransactionStatus, channel_closing_transaction_resolved_at?: any | null, channel_closing_transaction_transaction_hash?: string | null, channel_closing_transaction_block_hash?: string | null, channel_closing_transaction_block_height: number, channel_closing_transaction_destination_addresses: Array<string>, channel_closing_transaction_num_confirmations?: number | null, channel_closing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_closing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_closing_transaction_channel?: { __typename: 'Channel', id: string } | null };
 
 type TransactionFragment_ChannelOpeningTransaction_Fragment = { __typename: 'ChannelOpeningTransaction', channel_opening_transaction_id: string, channel_opening_transaction_created_at: any, channel_opening_transaction_updated_at: any, channel_opening_transaction_status: TransactionStatus, channel_opening_transaction_resolved_at?: any | null, channel_opening_transaction_transaction_hash?: string | null, channel_opening_transaction_block_hash?: string | null, channel_opening_transaction_block_height: number, channel_opening_transaction_destination_addresses: Array<string>, channel_opening_transaction_num_confirmations?: number | null, channel_opening_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, channel_opening_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, channel_opening_transaction_channel?: { __typename: 'Channel', id: string } | null };
 
-type TransactionFragment_Deposit_Fragment = { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNode', id: string } };
+type TransactionFragment_Deposit_Fragment = { __typename: 'Deposit', deposit_id: string, deposit_created_at: any, deposit_updated_at: any, deposit_status: TransactionStatus, deposit_resolved_at?: any | null, deposit_transaction_hash?: string | null, deposit_block_hash?: string | null, deposit_block_height: number, deposit_destination_addresses: Array<string>, deposit_num_confirmations?: number | null, deposit_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, deposit_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, deposit_destination: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } };
 
-type TransactionFragment_IncomingPayment_Fragment = { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_origin?: { __typename: 'LightsparkNode', id: string } | null, incoming_payment_destination: { __typename: 'LightsparkNode', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null };
+type TransactionFragment_IncomingPayment_Fragment = { __typename: 'IncomingPayment', incoming_payment_id: string, incoming_payment_created_at: any, incoming_payment_updated_at: any, incoming_payment_status: TransactionStatus, incoming_payment_resolved_at?: any | null, incoming_payment_transaction_hash?: string | null, incoming_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, incoming_payment_destination: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string }, incoming_payment_payment_request?: { __typename: 'Invoice', id: string } | null };
 
-type TransactionFragment_OutgoingPayment_Fragment = { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNode', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNode', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_purpose?: LightsparkNodePurpose | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_account: { __typename: 'Account', id: string }, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_blockchain_balance?: { __typename: 'BlockchainBalance', blockchain_balance_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_confirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_unconfirmed_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_locked_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_required_reserve?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, blockchain_balance_available_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | null, lightspark_node_encrypted_signing_private_key?: { __typename: 'Secret', secret_encrypted_value: string, secret_cipher: string } | null, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_remote_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null };
+type TransactionFragment_OutgoingPayment_Fragment = { __typename: 'OutgoingPayment', outgoing_payment_id: string, outgoing_payment_created_at: any, outgoing_payment_updated_at: any, outgoing_payment_status: TransactionStatus, outgoing_payment_resolved_at?: any | null, outgoing_payment_transaction_hash?: string | null, outgoing_payment_failure_reason?: PaymentFailureReason | null, outgoing_payment_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, outgoing_payment_origin: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string }, outgoing_payment_destination?: { __typename: 'GraphNode', id: string } | { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } | null, outgoing_payment_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, outgoing_payment_payment_request_data?: { __typename: 'InvoiceData', invoice_data_encoded_payment_request: string, invoice_data_bitcoin_network: BitcoinNetwork, invoice_data_payment_hash: string, invoice_data_created_at: any, invoice_data_expires_at: any, invoice_data_memo?: string | null, invoice_data_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, invoice_data_destination: { __typename: 'GraphNode', graph_node_id: string, graph_node_created_at: any, graph_node_updated_at: any, graph_node_alias?: string | null, graph_node_bitcoin_network: BitcoinNetwork, graph_node_color?: string | null, graph_node_conductivity?: number | null, graph_node_display_name: string, graph_node_public_key?: string | null } | { __typename: 'LightsparkNodeWithOSKLND', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | { __typename: 'LightsparkNodeWithOSKSparknode', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } | { __typename: 'LightsparkNodeWithServerSigning', lightspark_node_id: string, lightspark_node_created_at: any, lightspark_node_updated_at: any, lightspark_node_alias?: string | null, lightspark_node_bitcoin_network: BitcoinNetwork, lightspark_node_color?: string | null, lightspark_node_conductivity?: number | null, lightspark_node_display_name: string, lightspark_node_public_key?: string | null, lightspark_node_status?: LightsparkNodeStatus | null, lightspark_node_owner: { __typename: 'Account', id: string } | { __typename: 'Wallet', id: string }, lightspark_node_total_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_total_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, lightspark_node_local_balance?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null } } | null, outgoing_payment_failure_message?: { __typename: 'RichText', rich_text_text: string } | null };
 
 type TransactionFragment_RoutingTransaction_Fragment = { __typename: 'RoutingTransaction', routing_transaction_id: string, routing_transaction_created_at: any, routing_transaction_updated_at: any, routing_transaction_status: TransactionStatus, routing_transaction_resolved_at?: any | null, routing_transaction_transaction_hash?: string | null, routing_transaction_failure_reason?: RoutingTransactionFailureReason | null, routing_transaction_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, routing_transaction_incoming_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_outgoing_channel?: { __typename: 'Channel', id: string } | null, routing_transaction_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, routing_transaction_failure_message?: { __typename: 'RichText', rich_text_text: string } | null };
 
-type TransactionFragment_Withdrawal_Fragment = { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNode', id: string } };
+type TransactionFragment_Withdrawal_Fragment = { __typename: 'Withdrawal', withdrawal_id: string, withdrawal_created_at: any, withdrawal_updated_at: any, withdrawal_status: TransactionStatus, withdrawal_resolved_at?: any | null, withdrawal_transaction_hash?: string | null, withdrawal_block_hash?: string | null, withdrawal_block_height: number, withdrawal_destination_addresses: Array<string>, withdrawal_num_confirmations?: number | null, withdrawal_amount: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number }, withdrawal_fees?: { __typename: 'CurrencyAmount', currency_amount_original_value: any, currency_amount_original_unit: CurrencyUnit, currency_amount_preferred_currency_unit: CurrencyUnit, currency_amount_preferred_currency_value_rounded: any, currency_amount_preferred_currency_value_approx: number } | null, withdrawal_origin: { __typename: 'LightsparkNodeWithOSKLND', id: string } | { __typename: 'LightsparkNodeWithOSKSparknode', id: string } | { __typename: 'LightsparkNodeWithServerSigning', id: string } };
 
 export type TransactionFragmentFragment = TransactionFragment_ChannelClosingTransaction_Fragment | TransactionFragment_ChannelOpeningTransaction_Fragment | TransactionFragment_Deposit_Fragment | TransactionFragment_IncomingPayment_Fragment | TransactionFragment_OutgoingPayment_Fragment | TransactionFragment_RoutingTransaction_Fragment | TransactionFragment_Withdrawal_Fragment;
 
@@ -1862,9 +2228,6 @@ export const TransactionFragmentFragmentDoc = gql`
       currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
     incoming_payment_transaction_hash: transaction_hash
-    incoming_payment_origin: origin {
-      id
-    }
     incoming_payment_destination: destination {
       id
     }
@@ -1945,15 +2308,67 @@ export const TransactionFragmentFragmentDoc = gql`
             lightspark_node_conductivity: conductivity
             lightspark_node_display_name: display_name
             lightspark_node_public_key: public_key
-            lightspark_node_account: account {
-              id
-            }
             lightspark_node_owner: owner {
               id
             }
-            lightspark_node_blockchain_balance: blockchain_balance {
-              __typename
-              blockchain_balance_total_balance: total_balance {
+            ... on LightsparkNodeWithOSKLND {
+              lightspark_node_with_osk_lnd_blockchain_balance: blockchain_balance {
+                __typename
+                blockchain_balance_total_balance: total_balance {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+                blockchain_balance_confirmed_balance: confirmed_balance {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+                blockchain_balance_unconfirmed_balance: unconfirmed_balance {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+                blockchain_balance_locked_balance: locked_balance {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+                blockchain_balance_required_reserve: required_reserve {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+                blockchain_balance_available_balance: available_balance {
+                  __typename
+                  currency_amount_original_value: original_value
+                  currency_amount_original_unit: original_unit
+                  currency_amount_preferred_currency_unit: preferred_currency_unit
+                  currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                  currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                }
+              }
+              lightspark_node_with_osk_lnd_encrypted_signing_private_key: encrypted_signing_private_key {
+                __typename
+                secret_encrypted_value: encrypted_value
+                secret_cipher: cipher
+              }
+              lightspark_node_with_osk_lnd_remote_balance: remote_balance {
                 __typename
                 currency_amount_original_value: original_value
                 currency_amount_original_unit: original_unit
@@ -1961,51 +2376,6 @@ export const TransactionFragmentFragmentDoc = gql`
                 currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
               }
-              blockchain_balance_confirmed_balance: confirmed_balance {
-                __typename
-                currency_amount_original_value: original_value
-                currency_amount_original_unit: original_unit
-                currency_amount_preferred_currency_unit: preferred_currency_unit
-                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-              }
-              blockchain_balance_unconfirmed_balance: unconfirmed_balance {
-                __typename
-                currency_amount_original_value: original_value
-                currency_amount_original_unit: original_unit
-                currency_amount_preferred_currency_unit: preferred_currency_unit
-                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-              }
-              blockchain_balance_locked_balance: locked_balance {
-                __typename
-                currency_amount_original_value: original_value
-                currency_amount_original_unit: original_unit
-                currency_amount_preferred_currency_unit: preferred_currency_unit
-                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-              }
-              blockchain_balance_required_reserve: required_reserve {
-                __typename
-                currency_amount_original_value: original_value
-                currency_amount_original_unit: original_unit
-                currency_amount_preferred_currency_unit: preferred_currency_unit
-                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-              }
-              blockchain_balance_available_balance: available_balance {
-                __typename
-                currency_amount_original_value: original_value
-                currency_amount_original_unit: original_unit
-                currency_amount_preferred_currency_unit: preferred_currency_unit
-                currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-              }
-            }
-            lightspark_node_encrypted_signing_private_key: encrypted_signing_private_key {
-              __typename
-              secret_encrypted_value: encrypted_value
-              secret_cipher: cipher
             }
             lightspark_node_total_balance: total_balance {
               __typename
@@ -2024,15 +2394,6 @@ export const TransactionFragmentFragmentDoc = gql`
               currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
             }
             lightspark_node_local_balance: local_balance {
-              __typename
-              currency_amount_original_value: original_value
-              currency_amount_original_unit: original_unit
-              currency_amount_preferred_currency_unit: preferred_currency_unit
-              currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-              currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-            }
-            lightspark_node_purpose: purpose
-            lightspark_node_remote_balance: remote_balance {
               __typename
               currency_amount_original_value: original_value
               currency_amount_original_unit: original_unit

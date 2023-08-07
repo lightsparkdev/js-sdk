@@ -1,11 +1,8 @@
-import {
-  AuthProvider,
-  CryptoInterface,
-  StubAuthProvider,
-} from "@lightsparkdev/core";
+import type { AuthProvider, CryptoInterface } from "@lightsparkdev/core";
+import { StubAuthProvider } from "@lightsparkdev/core";
 import { LightsparkClient } from "@lightsparkdev/wallet-sdk";
 import React, { useState } from "react";
-import LightsparkClientContextType from "./LightsparkClientContext.js";
+import type LightsparkClientContextType from "./LightsparkClientContext.js";
 
 const LightsparkClientContext =
   React.createContext<LightsparkClientContextType>(null!);

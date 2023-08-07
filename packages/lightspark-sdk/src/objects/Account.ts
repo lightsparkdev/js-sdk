@@ -1,35 +1,29 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import AccountToApiTokensConnection, {
-  AccountToApiTokensConnectionFromJson,
-} from "./AccountToApiTokensConnection.js";
-import AccountToChannelsConnection, {
-  AccountToChannelsConnectionFromJson,
-} from "./AccountToChannelsConnection.js";
-import AccountToNodesConnection, {
-  AccountToNodesConnectionFromJson,
-} from "./AccountToNodesConnection.js";
-import AccountToPaymentRequestsConnection, {
-  AccountToPaymentRequestsConnectionFromJson,
-} from "./AccountToPaymentRequestsConnection.js";
-import AccountToTransactionsConnection, {
-  AccountToTransactionsConnectionFromJson,
-} from "./AccountToTransactionsConnection.js";
-import AccountToWalletsConnection, {
-  AccountToWalletsConnectionFromJson,
-} from "./AccountToWalletsConnection.js";
-import BitcoinNetwork from "./BitcoinNetwork.js";
-import BlockchainBalance, {
-  BlockchainBalanceFromJson,
-} from "./BlockchainBalance.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
-import TransactionFailures from "./TransactionFailures.js";
-import TransactionStatus from "./TransactionStatus.js";
-import TransactionType from "./TransactionType.js";
+import type LightsparkClient from "../client.js";
+import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
+import { AccountToApiTokensConnectionFromJson } from "./AccountToApiTokensConnection.js";
+import type AccountToChannelsConnection from "./AccountToChannelsConnection.js";
+import { AccountToChannelsConnectionFromJson } from "./AccountToChannelsConnection.js";
+import type AccountToNodesConnection from "./AccountToNodesConnection.js";
+import { AccountToNodesConnectionFromJson } from "./AccountToNodesConnection.js";
+import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
+import { AccountToPaymentRequestsConnectionFromJson } from "./AccountToPaymentRequestsConnection.js";
+import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
+import { AccountToTransactionsConnectionFromJson } from "./AccountToTransactionsConnection.js";
+import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
+import { AccountToWalletsConnectionFromJson } from "./AccountToWalletsConnection.js";
+import type BitcoinNetwork from "./BitcoinNetwork.js";
+import type BlockchainBalance from "./BlockchainBalance.js";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import type TransactionFailures from "./TransactionFailures.js";
+import type TransactionStatus from "./TransactionStatus.js";
+import type TransactionType from "./TransactionType.js";
 
 class Account implements LightsparkNodeOwner {
   constructor(

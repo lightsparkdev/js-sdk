@@ -1,9 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
+import { LightsparkException } from "@lightsparkdev/core";
 import Account from "./Account.js";
 import { BalancesFromJson } from "./Balances.js";
-import Entity from "./Entity.js";
+import type Entity from "./Entity.js";
 import Wallet from "./Wallet.js";
 import WalletStatus from "./WalletStatus.js";
 

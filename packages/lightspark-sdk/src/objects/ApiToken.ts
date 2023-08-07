@@ -1,7 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
-import Entity from "./Entity.js";
+import type { Query } from "@lightsparkdev/core";
+import type Entity from "./Entity.js";
 import Permission from "./Permission.js";
 
 type ApiToken = Entity & {

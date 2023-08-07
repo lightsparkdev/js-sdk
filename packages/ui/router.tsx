@@ -1,13 +1,14 @@
 /* eslint-disable no-restricted-imports */
-import { Theme } from "@emotion/react";
-import { Interpolation } from "@emotion/styled";
+import type { Theme } from "@emotion/react";
+import type { Interpolation } from "@emotion/styled";
 import { omit } from "lodash-es";
-import React, { MouseEventHandler, useCallback } from "react";
+import type { MouseEventHandler } from "react";
+import React, { useCallback } from "react";
+import type { PathMatch } from "react-router-dom";
 import {
   Link as RLink,
   matchPath,
   Navigate as RNavigate,
-  PathMatch,
   useLocation,
   useNavigate as useRNavigate,
 } from "react-router-dom";

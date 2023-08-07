@@ -1,5 +1,21 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies [df28af1]
+  - @lightsparkdev/wallet-sdk@0.6.13
+
+## 0.6.13
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+- Updated dependencies [141d73a]
+  - @lightsparkdev/wallet-sdk@0.6.12
+  - @lightsparkdev/core@0.3.10
+
 ## 0.6.12
 
 ### Patch Changes
