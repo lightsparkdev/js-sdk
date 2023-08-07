@@ -1,11 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Balances, { BalancesFromJson } from "./Balances.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import type LightsparkClient from "../client.js";
+import type Balances from "./Balances.js";
+import { BalancesFromJson } from "./Balances.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
 import WalletStatus from "./WalletStatus.js";
 
 class Wallet implements LightsparkNodeOwner {

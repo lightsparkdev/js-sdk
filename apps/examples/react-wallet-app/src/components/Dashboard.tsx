@@ -1,11 +1,12 @@
 import styled from "@emotion/styled";
-import { Maybe } from "@lightsparkdev/core";
+import type { Maybe } from "@lightsparkdev/core";
 import { CurrencyAmount } from "@lightsparkdev/ui/components/CurrencyAmount";
-import {
+import type {
   CurrencyAmount as CurrencyAmountType,
-  CurrencyUnit,
   Transaction,
-  WalletDashboard,
+  WalletDashboard} from "@lightsparkdev/wallet-sdk";
+import {
+  CurrencyUnit
 } from "@lightsparkdev/wallet-sdk";
 import { Button } from "src/components/Button";
 import { Table, Td, Th, Tr } from "./Table";

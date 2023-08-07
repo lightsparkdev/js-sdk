@@ -1,7 +1,7 @@
 import autoBind from "auto-bind";
 
-import { AuthProvider } from "@lightsparkdev/core";
-import OAuthStateHelper from "./OAuthStateHelper.js";
+import type { AuthProvider } from "@lightsparkdev/core";
+import type OAuthStateHelper from "./OAuthStateHelper.js";
 
 class OAuthProvider implements AuthProvider {
   constructor(private readonly oauthHelper: OAuthStateHelper) {

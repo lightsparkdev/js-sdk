@@ -1,5 +1,5 @@
 import { CurrencyUnit } from "@lightsparkdev/gql/generated/graphql";
-import { CurrencyAmount as SDKCurrencyAmountType } from "@lightsparkdev/wallet-sdk";
+import type { CurrencyAmount as SDKCurrencyAmountType } from "@lightsparkdev/wallet-sdk";
 import { isNumber } from "lodash-es";
 import { getCurrentLocale } from "./getCurrentLocale";
 import { round } from "./numbers";

@@ -1,14 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import type { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import IncomingPaymentToAttemptsConnection, {
-  IncomingPaymentToAttemptsConnectionFromJson,
-} from "./IncomingPaymentToAttemptsConnection.js";
-import LightningTransaction from "./LightningTransaction.js";
+import type LightsparkClient from "../client.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
+import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
+import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
+import type LightningTransaction from "./LightningTransaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** A transaction that was sent to a Lightspark node on the Lightning Network. **/

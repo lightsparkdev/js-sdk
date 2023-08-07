@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import JwtStorage from "./JwtStorage.js";
-import JwtTokenInfo from "./JwtTokenInfo.js";
+import type JwtStorage from "./JwtStorage.js";
+import type JwtTokenInfo from "./JwtTokenInfo.js";
 
 const STORAGE_KEY = "lightspark-jwt";
 

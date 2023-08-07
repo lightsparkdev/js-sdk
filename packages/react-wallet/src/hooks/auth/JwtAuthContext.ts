@@ -1,4 +1,4 @@
-import { LoginWithJWTOutput } from "@lightsparkdev/wallet-sdk";
+import type { LoginWithJWTOutput } from "@lightsparkdev/wallet-sdk";
 
 interface JwtAuthContextType {
   login: (accountId: string, jwt: string) => Promise<LoginWithJWTOutput>;

@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Hop, { HopFromJson } from "./Hop.js";
+import type Hop from "./Hop.js";
+import { HopFromJson } from "./Hop.js";
 
 /** The connection from an outgoing payment attempt to the list of sequential hops that define the path from sender node to recipient node. **/
 type OutgoingPaymentAttemptToHopsConnection = {

@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** This object provides a detailed breakdown of a `LightsparkNode`'s current balance on the Bitcoin Network. **/
 type BlockchainBalance = {

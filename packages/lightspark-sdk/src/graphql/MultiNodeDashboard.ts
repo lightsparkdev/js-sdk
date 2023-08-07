@@ -1,12 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Maybe } from "@lightsparkdev/core";
-import CurrencyAmount, {
-  FRAGMENT as CurrencyAmountFragment,
-} from "../objects/CurrencyAmount.js";
-import LightsparkNodePurpose from "../objects/LightsparkNodePurpose.js";
-import LightsparkNodeStatus from "../objects/LightsparkNodeStatus.js";
-import NodeAddressType from "../objects/NodeAddressType.js";
+import type { Maybe } from "@lightsparkdev/core";
+import type CurrencyAmount from "../objects/CurrencyAmount.js";
+import { FRAGMENT as CurrencyAmountFragment } from "../objects/CurrencyAmount.js";
+import type LightsparkNodePurpose from "../objects/LightsparkNodePurpose.js";
+import type LightsparkNodeStatus from "../objects/LightsparkNodeStatus.js";
+import type NodeAddressType from "../objects/NodeAddressType.js";
 
 export type AccountDashboard = {
   id: string;

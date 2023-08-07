@@ -1,11 +1,6 @@
 // Copyright  ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
-import {
-  b64decode,
-  b64encode,
-  CryptoInterface,
-  GeneratedKeyPair,
-  LightsparkException,
-} from "@lightsparkdev/core";
+import type { CryptoInterface, GeneratedKeyPair } from "@lightsparkdev/core";
+import { b64decode, b64encode, LightsparkException } from "@lightsparkdev/core";
 import * as LsCrypto from "@lightsparkdev/ls-react-native-crypto";
 
 export async function decryptSecretWithNodePassword(/* cipher: string, encryptedSecret: string, nodePassword: string */): Promise<ArrayBuffer | null> {

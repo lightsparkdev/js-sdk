@@ -1,7 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Channel, { ChannelFromJson } from "./Channel.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type Channel from "./Channel.js";
+import { ChannelFromJson } from "./Channel.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 type LightsparkNodeToChannelsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/

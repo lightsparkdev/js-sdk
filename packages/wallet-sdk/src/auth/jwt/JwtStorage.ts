@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import JwtTokenInfo from "./JwtTokenInfo.js";
+import type JwtTokenInfo from "./JwtTokenInfo.js";
 
 /**
  * Interface for storing and retrieving JWT token info.

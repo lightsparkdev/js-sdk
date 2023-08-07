@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import KeyInput, { KeyInputFromJson } from "./KeyInput.js";
+import type KeyInput from "./KeyInput.js";
+import { KeyInputFromJson } from "./KeyInput.js";
 
 type InitializeWalletInput = {
   signingPublicKey: KeyInput;

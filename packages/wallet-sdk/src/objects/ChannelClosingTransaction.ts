@@ -1,10 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
-import OnChainTransaction from "./OnChainTransaction.js";
-import Transaction from "./Transaction.js";
+import type { Query } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type OnChainTransaction from "./OnChainTransaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** The transaction on Bitcoin blockchain to close a channel on Lightning Network where the balances are allocated back to local and remote nodes. **/

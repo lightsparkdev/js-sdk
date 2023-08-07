@@ -3,19 +3,21 @@ import {
   LightsparkAuthException,
   ServerEnvironment,
 } from "@lightsparkdev/core";
+import type {
+  AuthorizationResponse,
+  BaseTokenRequestHandler,
+  StringMap,
+  TokenResponse,
+} from "@openid/appauth";
 import {
   AuthorizationNotifier,
   AuthorizationRequest,
-  AuthorizationResponse,
   AuthorizationServiceConfiguration,
-  BaseTokenRequestHandler,
   GRANT_TYPE_AUTHORIZATION_CODE,
   GRANT_TYPE_REFRESH_TOKEN,
   RedirectRequestHandler,
   RevokeTokenRequest,
-  StringMap,
   TokenRequest,
-  TokenResponse,
 } from "@openid/appauth";
 import OAuthTokenRequestHandler from "./OAuthTokenRequestHandler.js";
 

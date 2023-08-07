@@ -1,5 +1,5 @@
-import { AuthProvider } from "@lightsparkdev/core";
-import { LightsparkClient } from "@lightsparkdev/wallet-sdk";
+import type { AuthProvider } from "@lightsparkdev/core";
+import type { LightsparkClient } from "@lightsparkdev/wallet-sdk";
 
 interface LightsparkClientContextType {
   getClient: () => LightsparkClient;

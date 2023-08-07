@@ -3,20 +3,18 @@
 import autoBind from "auto-bind";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
-import { Client as WsClient, createClient } from "graphql-ws";
+import type { Client as WsClient } from "graphql-ws";
+import { createClient } from "graphql-ws";
 import NodeWebSocket from "ws";
 import { Observable } from "zen-observable-ts";
 
-import Query from "./Query.js";
+import type Query from "./Query.js";
 
-import AuthProvider from "../auth/AuthProvider.js";
+import type AuthProvider from "../auth/AuthProvider.js";
 import StubAuthProvider from "../auth/StubAuthProvider.js";
-import {
-  CryptoInterface,
-  DefaultCrypto,
-  LightsparkSigningException,
-} from "../crypto/crypto.js";
-import NodeKeyCache from "../crypto/NodeKeyCache.js";
+import type { CryptoInterface } from "../crypto/crypto.js";
+import { DefaultCrypto, LightsparkSigningException } from "../crypto/crypto.js";
+import type NodeKeyCache from "../crypto/NodeKeyCache.js";
 import LightsparkException from "../LightsparkException.js";
 import { b64encode } from "../utils/base64.js";
 import { isNode } from "../utils/environment.js";

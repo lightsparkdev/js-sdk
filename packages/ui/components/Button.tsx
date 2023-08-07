@@ -1,10 +1,11 @@
-import { css, Theme } from "@emotion/react";
+import type { Theme } from "@emotion/react";
+import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Icon } from "@lightsparkdev/ui/icons";
 import { type RouteParams } from "@lightsparkdev/ui/router";
 import { colors, themeOr } from "@lightsparkdev/ui/styles/colors";
 import { getFocusOutline } from "@lightsparkdev/ui/styles/common";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Link } from "../router";
 import { Loading } from "./Loading";
 import { UnstyledButton } from "./UnstyledButton";
