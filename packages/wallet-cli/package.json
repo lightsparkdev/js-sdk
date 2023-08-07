@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-cli",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "CLI for the Lightspark JS Wallet sdk",
   "main": "./dist/index.js",
   "bin": {
@@ -42,7 +42,7 @@
   "dependencies": {
     "@inquirer/prompts": "^1.1.3",
     "@lightsparkdev/core": "0.3.10",
-    "@lightsparkdev/wallet-sdk": "0.6.12",
+    "@lightsparkdev/wallet-sdk": "0.6.13",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
     "jose": "^4.14.4",
