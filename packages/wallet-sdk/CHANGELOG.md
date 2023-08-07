@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.13
+
+### Patch Changes
+
+- df28af1: Remove unused lightspark-cli in wallet-sdk examples
+
 ## 0.6.12
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @lightsparkdev/react-wallet
 
+## 0.6.14
+
+### Patch Changes
+
+- Updated dependencies [df28af1]
+  - @lightsparkdev/wallet-sdk@0.6.13
+
 ## 0.6.13
 
 ### Patch Changes
