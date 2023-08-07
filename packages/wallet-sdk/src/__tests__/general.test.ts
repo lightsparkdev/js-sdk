@@ -16,15 +16,22 @@ import jwt from 'jsonwebtoken'
 import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
 import {confirm, input} from "@inquirer/prompts";
 import {InMemoryJwtStorage} from "../../dist/index.js";
+import fs from "fs/promises";
 
-const test_userId = '_testUser1'
+export function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+
+const test_userId = 'testUser4'
+
+const test_filePath = process.env.HOME + `/.lightsparkenv`
 
 const createWalletJwt = async (
     client: LightsparkClient,
     options: Record<string, any>,
     credentials?: EnvCredentials
 ) => {
-    console.log("Creating wallet JWT...\n");
     const privateKey = credentials?.jwtSigningPrivateKey;
 
     if (!privateKey) {
@@ -59,12 +66,7 @@ const createWalletJwt = async (
         Object.assign(claims, extraProps);
     }
 
-    console.log("claims", claims);
-
     const token = jwt.sign(claims, privateKey, { algorithm: "ES256" });
-
-    console.log("Account ID:", credentials.accountId);
-    console.log("JWT:", token);
 
     return { token, userId, test };
 };
@@ -84,86 +86,77 @@ const createDeployAndInitWallet = async (
         credentials
     );
 
-    console.log('here')
-    console.log(token, userId, test)
-
-    console.log("Creating wallet...\n");
-
     const loginOutput = await client.loginWithJWT(
         credentials.accountId,
         token,
         new InMemoryJwtStorage()
     );
 
-    console.log("Wallet:", JSON.stringify(loginOutput.wallet, null, 2));
-
     let serializedKeypair: { privateKey: string; publicKey: string } | undefined =
         undefined
 
-    let deployedResultStatus: WalletStatus = loginOutput.wallet.status;
+    let walletStatus: WalletStatus | undefined = loginOutput.wallet.status
 
     if (loginOutput.wallet.status === WalletStatus.NOT_SETUP) {
-        console.log("Deploying wallet...\n");
-
-        deployedResultStatus = await client.deployWalletAndAwaitDeployed();
-
-        console.log(
-            "Deployed wallet:",
-            JSON.stringify(deployedResultStatus, null, 2)
-        );
+        walletStatus = await client.deployWalletAndAwaitDeployed();
     }
 
-    if (deployedResultStatus === WalletStatus.DEPLOYED) {
-        console.log("Initializing wallet...\n");
+    while (walletStatus === WalletStatus.INITIALIZING) {
+        walletStatus = (await client.getCurrentWallet())?.status;
 
-        const keypair = await DefaultCrypto.generateSigningKeyPair();
+        if (walletStatus === WalletStatus.DEPLOYED) {
+            const keypair = await DefaultCrypto.generateSigningKeyPair();
 
-        serializedKeypair = {
-            privateKey: b64encode(
-                await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
-            ),
-            publicKey: b64encode(
-                await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
-            ),
-        };
+            serializedKeypair = {
+                privateKey: b64encode(
+                    await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
+                ),
+                publicKey: b64encode(
+                    await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
+                ),
+            };
 
-        console.log("Keypair:", JSON.stringify(serializedKeypair, null, 2));
-        console.log("Initializing wallet now. This will take a while...\n");
-        const initializedWallet = await client.initializeWalletAndAwaitReady(
-            KeyType.RSA_OAEP,
-            serializedKeypair.publicKey,
-            KeyOrAlias.key(serializedKeypair.privateKey)
-        );
-        console.log(
-            "Initialized wallet:",
-            JSON.stringify(initializedWallet, null, 2)
-        );
-    } else {
+            await client.initializeWalletAndAwaitReady(
+                KeyType.RSA_OAEP,
+                serializedKeypair.publicKey,
+                KeyOrAlias.key(serializedKeypair.privateKey)
+            );
+        }
+
+        await sleep(30_000)
+    }
+
+    if (walletStatus !== WalletStatus.DEPLOYED) {
         console.log(
             `Not initializing because the wallet status is ${loginOutput.wallet.status}`
         );
     }
 
-    console.log(
-        "\n\nExport these env vars to use this wallet. Appending to ~/.lightsparkenv:\n"
-    );
     let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
+
     content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
-    process.env[`LIGHTSPARK_JWT_${userId}`] = token;
+    // process.env[`LIGHTSPARK_JWT_${userId}`] = token;
     if (serializedKeypair) {
         content += `export LIGHTSPARK_WALLET_PRIV_KEY_${userId}="${serializedKeypair?.privateKey}"\n`;
         content += `export LIGHTSPARK_WALLET_PUB_KEY_${userId}="${serializedKeypair?.publicKey}"\n`;
 
-        process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${userId}`] =
-            serializedKeypair.privateKey;
-        process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
-            serializedKeypair.publicKey;
+        // process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${userId}`] =
+        //     serializedKeypair.privateKey;
+        // process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
+        //     serializedKeypair.publicKey;
+
+        const filePath = test_filePath;
+        await fs.appendFile(filePath, content);
     }
 
     console.log(content);
 
     return {
         userId,
+
+        jwt: token,
+        pubKey: serializedKeypair?.publicKey,
+        privKey: serializedKeypair?.privateKey,
     }
 };
 
@@ -172,55 +165,49 @@ const client = new LightsparkClient()
 
 const credentials = getCredentialsFromEnvOrThrow('_testUser1')
 
+let createDeployAndInitWalletResponse: Awaited<ReturnType<typeof createDeployAndInitWallet>> | undefined = undefined
+
 describe('Sanity tests', () => {
 
-    test('should deploy the wallet', async () => {
-        const { userId } = await createDeployAndInitWallet(client, {
+    test('should deploy and init the wallet', async () => {
+        createDeployAndInitWalletResponse = await createDeployAndInitWallet(client, {
             userId: test_userId,
             test: true,
         }, credentials)
 
-        expect(userId).not.toBe(null)
-    }, 600_000)
+        expect(createDeployAndInitWalletResponse.userId).not.toBe(null)
+    }, 900_000)
 
-    // test('should init the wallet', async () => {
-    //     const keyPair = await DefaultCrypto.generateSigningKeyPair()
-    //     const signingWalletPublicKey = keyPair.publicKey
-    //     const signingWalletPrivateKey = keyPair.privateKey
-    //
-    //     const walletStatus = await client.initializeWalletAndAwaitReady(
-    //         KeyType.RSA_OAEP,
-    //         signingWalletPublicKey as string,
-    //         {
-    //             key: signingWalletPrivateKey as string,
-    //         },
-    //     )
-    //
-    //     expect(walletStatus).toBe(WalletStatus.READY)
-    // })
-    //
-    // let invoiceData: InvoiceData | null
-    //
-    // test('should create an invoice', async () => {
-    //     const _invoiceData = await client.createInvoice(100_000, 'mmmmm pizza')
-    //
-    //     invoiceData = _invoiceData as InvoiceData | null
-    //
-    //     expect(invoiceData).not.toBe(null)
-    // })
-    //
-    // test('should pay an invoice', async () => {
-    //     if (!invoiceData?.encodedPaymentRequest)
-    //         throw new Error('invoiceData is null')
-    //
-    //     const payment = await client.payInvoice(
-    //         invoiceData.encodedPaymentRequest,
-    //         50_000,
-    //     )
-    //
-    //     expect(payment.status).toBe(TransactionStatus.SUCCESS)
-    // })
-    //
+    test('should unlock the wallet', async () => {
+        await client.loadWalletSigningKey(
+            KeyOrAlias.key(`LIGHTSPARK_WALLET_PRIV_KEY_${test_userId}`)
+        )
+
+        expect(client.isWalletUnlocked()).toBe(true)
+    })
+
+    let invoiceData: InvoiceData | null
+
+    test('should create an invoice', async () => {
+        const _invoiceData = await client.createInvoice(100_000, 'mmmmm pizza')
+
+        invoiceData = _invoiceData as InvoiceData | null
+
+        expect(invoiceData).not.toBe(null)
+    })
+
+    test('should pay an invoice', async () => {
+        if (!invoiceData?.encodedPaymentRequest)
+            throw new Error('invoiceData is null')
+
+        const payment = await client.payInvoice(
+            invoiceData.encodedPaymentRequest,
+            50_000,
+        )
+
+        expect(payment.status).toBe(TransactionStatus.SUCCESS)
+    })
+
     // test('should deposit', async () => {
     //     expect(1).toBe(1)
     // })
