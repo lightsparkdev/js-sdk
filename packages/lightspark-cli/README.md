@@ -47,3 +47,5 @@ lightspark create-invoice -a 100 -m "Pizza time"
 # Pay the invoice with a test payment.
 lightspark create-test-mode-payment -i <encoded invoice here>
 ```
+
+TODO
