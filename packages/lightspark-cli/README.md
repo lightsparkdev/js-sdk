@@ -10,7 +10,7 @@ The first command you'll need to run get set up is init-env.
 
 You'll need to provide your API token's client ID and client secret. You can set this up from the [Lightspark API config page](https://app.lightspark.com/api-config). For more info on API authentication, see the [Lightspark API Authentication docs](https://app.lightspark.com/docs/api/authentication).
 
-If you run it without any arguments, it will prompt you for your API token's clientID and client secret:
+If you run it without any arguments, it will prompt you for your API token's client ID and client secret:
 
 ```bash
 lightspark init-env
@@ -34,14 +34,14 @@ Here's full example of how you might use the `lightspark` script to test out the
 # Get the balances for the account.
 lightspark balances
 
-# Create a bitcoin funding address for the account
+# Create a bitcoin funding address for the account.
 lightspark funding-address
 
 # Fund the account by sending bitcoin to the address you just created.
 # Once that transaction is confirmed, you can check the balances again.
 lightspark balances
 
-# Create an invoice
+# Create an invoice.
 lightspark create-invoice -a 100 -m "Pizza time"
 
 # Pay the invoice with a test payment.
