@@ -12,6 +12,8 @@ pids
 node_modules/*
 **/node_modules/*
 
+.npmrc
+
 # https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
 .pnp.*
 .yarn/*
