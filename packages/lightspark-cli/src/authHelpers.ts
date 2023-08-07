@@ -3,7 +3,7 @@
 export type EnvCredentials = {
   apiTokenClientId: string;
   apiTokenClientSecret: string;
-  nodePassword: string;
+  testNodePassword: string;
   baseUrl: string;
 };
 
@@ -27,13 +27,13 @@ export const getCredentialsFromEnvOrThrow = (): EnvCredentials => {
   const apiTokenClientId = process.env[RequiredTestCredentials.ClientId]!;
   const apiTokenClientSecret =
     process.env[RequiredTestCredentials.ClientSecret]!;
-  const nodePassword = "1234!@#$";
+  const testNodePassword = "1234!@#$";
   const baseUrl =
     process.env["LIGHTSPARK_EXAMPLE_BASE_URL"] || "api.lightspark.com";
   return {
     apiTokenClientId,
     apiTokenClientSecret,
-    nodePassword,
+    testNodePassword,
     baseUrl,
   };
 };
