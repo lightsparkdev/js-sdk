@@ -1,5 +1,13 @@
 # @lightsparkdev/oauth
 
+## 0.1.18
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+- Updated dependencies [141d73a]
+  - @lightsparkdev/core@0.3.10
+
 ## 0.1.17
 
 ### Patch Changes
