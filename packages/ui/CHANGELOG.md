@@ -1,5 +1,12 @@
 # @lightsparkdev/ui
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [141d73a]
+  - @lightsparkdev/wallet-sdk@0.6.12
+
 ## 0.0.1
 
 ### Patch Changes

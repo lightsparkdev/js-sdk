@@ -1,5 +1,13 @@
 # @lightsparkdev/react-native
 
+## 0.2.12
+
+### Patch Changes
+
+- 141d73a: Enable/fix consistent-type-imports lint rule
+- Updated dependencies [141d73a]
+  - @lightsparkdev/core@0.3.10
+
 ## 0.2.11
 
 ### Patch Changes
