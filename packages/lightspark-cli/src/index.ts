@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { input } from "@inquirer/prompts";
+import { input, password } from "@inquirer/prompts";
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
@@ -14,11 +14,15 @@ import * as fs from "fs/promises";
 import qrcode from "qrcode-terminal";
 import type { EnvCredentials } from "./authHelpers.js";
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+import {
+  getBitcoinNetworkOrDefault,
+  getNodeId,
+  getPackageVersion,
+} from "./helpers.js";
 
 const main = async (
   options: OptionValues,
   action: (
-    nodeId: string,
     client: LightsparkClient,
     options: OptionValues,
     credentials?: EnvCredentials
@@ -32,12 +36,7 @@ const main = async (
     ),
     credentials.baseUrl
   );
-  const account = await client.getCurrentAccount();
-  if (!account) {
-    throw new Error("Failed to get current account");
-  }
-  const nodeId = (await account.getNodes(client)).entities[0].id;
-  await action(nodeId, client, options, credentials);
+  await action(client, options, credentials);
 };
 
 const initEnv = async (options: OptionValues) => {
@@ -91,10 +90,12 @@ const initEnv = async (options: OptionValues) => {
 };
 
 const createInvoice = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues
 ) => {
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+  const nodeId = await getNodeId(client, bitcoinNetwork);
+
   let { amount, memo, amp } = options;
   if (!amount) {
     amount = await input({
@@ -115,6 +116,7 @@ const createInvoice = async (
     });
     amp = ampYn.toLowerCase() === "y";
   }
+
   console.log(
     "Creating an invoice with options: ",
     JSON.stringify({ amount, memo, amp }, null, 2),
@@ -134,10 +136,11 @@ const createInvoice = async (
 };
 
 const createTestModeInvoice = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues
 ) => {
+  const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
+
   console.log(
     "Creating a test-mode invoice with options: ",
     JSON.stringify(options, null, 2),
@@ -156,7 +159,6 @@ const createTestModeInvoice = async (
 };
 
 const transactions = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues
 ) => {
@@ -176,11 +178,7 @@ const transactions = async (
   );
 };
 
-const invoices = async (
-  nodeId: string,
-  client: LightsparkClient,
-  options: OptionValues
-) => {
+const invoices = async (client: LightsparkClient, options: OptionValues) => {
   console.log(
     "Fetching payment requests with options: ",
     JSON.stringify(options, null, 2),
@@ -201,7 +199,6 @@ const invoices = async (
 };
 
 const balances = async (
-  nodeId: string,
   client: LightsparkClient /* options: OptionValues */
 ) => {
   console.log("Fetching account balances...\n");
@@ -218,7 +215,6 @@ const balances = async (
 };
 
 const l1FeeEstimate = async (
-  nodeId: string,
   client: LightsparkClient
   /* options: OptionValues */
 ) => {
@@ -228,33 +224,29 @@ const l1FeeEstimate = async (
 };
 
 const accountDashboard = async (
-  nodeId: string,
-  client: LightsparkClient
-  /* options: OptionValues */
+  client: LightsparkClient,
+  options: OptionValues
 ) => {
-  console.log("Fetching account dashboard...\n");
-  const dashboard = await client.getAccountDashboard(
-    undefined,
-    BitcoinNetwork.REGTEST
-  );
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+
+  console.log(`Fetching account dashboard for ${bitcoinNetwork}...\n`);
+  const dashboard = await client.getAccountDashboard(undefined, bitcoinNetwork);
   console.log("Dashboard:", JSON.stringify(dashboard, null, 2));
 };
 
 const singleNodeDashboard = async (
-  nodeId: string,
-  client: LightsparkClient
-  /* options: OptionValues */
+  client: LightsparkClient,
+  options: OptionValues
 ) => {
-  console.log("Fetching single node dashboard...\n");
-  const dashboard = await client.getSingleNodeDashboard(
-    nodeId,
-    BitcoinNetwork.REGTEST
-  );
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+  const nodeId = await getNodeId(client, bitcoinNetwork);
+
+  console.log(`Fetching single node dashboard in ${bitcoinNetwork}...\n`);
+  const dashboard = await client.getSingleNodeDashboard(nodeId, bitcoinNetwork);
   console.log("Dashboard:", JSON.stringify(dashboard, null, 2));
 };
 
 const currentAccount = async (
-  nodeId: string,
   client: LightsparkClient
   /* options: OptionValues */
 ) => {
@@ -264,7 +256,6 @@ const currentAccount = async (
 };
 
 const decodeInvoice = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues
 ) => {
@@ -281,21 +272,25 @@ const decodeInvoice = async (
 };
 
 const createNodeWalletAddress = async (
-  nodeId: string,
-  client: LightsparkClient
-  /* options: OptionValues */
+  client: LightsparkClient,
+  options: OptionValues
 ) => {
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+  const nodeId = await getNodeId(client, bitcoinNetwork);
+
   console.log(`Creating bitcoin funding address for node ${nodeId}...\n`);
   const address = await client.createNodeWalletAddress(nodeId);
   console.log("Address:", address);
 };
 
 const payInvoice = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues,
   credentials?: EnvCredentials
 ) => {
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+  const nodeId = await getNodeId(client, bitcoinNetwork);
+
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
     encodedInvoice = await input({
@@ -304,15 +299,21 @@ const payInvoice = async (
     });
   }
 
+  let nodePassword = options.password;
+  if (bitcoinNetwork === BitcoinNetwork.MAINNET) {
+    nodePassword = nodePassword || credentials?.testNodePassword;
+  } else if (!nodePassword) {
+    nodePassword = await password({
+      message: `What is the password for the node (${nodeId})?`,
+      mask: "*",
+    });
+  }
+
   console.log(
     "Paying invoice with options: ",
     JSON.stringify({ ...options, invoice: encodedInvoice }, null, 2),
     "\n"
   );
-  const nodePassword = credentials?.nodePassword;
-  if (!nodePassword) {
-    throw new Error("Node password not found in environment.");
-  }
 
   await client.unlockNode(nodeId, nodePassword);
   const payment = await client.payInvoice(
@@ -326,11 +327,12 @@ const payInvoice = async (
 };
 
 const createTestModePayment = async (
-  nodeId: string,
   client: LightsparkClient,
   options: OptionValues,
   credentials?: EnvCredentials
 ) => {
+  const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
+
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
     encodedInvoice = await input({
@@ -340,7 +342,7 @@ const createTestModePayment = async (
   }
 
   console.log("Paying invoice...\n");
-  const nodePassword = credentials?.nodePassword;
+  const nodePassword = credentials?.testNodePassword;
   if (!nodePassword) {
     throw new Error("Node password not found in environment.");
   }
@@ -355,17 +357,18 @@ const createTestModePayment = async (
 };
 
 const getNodeChannels = async (
-  nodeId: string,
-  client: LightsparkClient
-  /* options: OptionValues */
+  client: LightsparkClient,
+  options: OptionValues
 ) => {
+  const bitcoinNetwork = getBitcoinNetworkOrDefault(options);
+
   const account = await client.getCurrentAccount();
   console.log("Got account:", JSON.stringify(account, null, 2));
 
-  const nodes = await account!.getNodes(client, 100, [BitcoinNetwork.REGTEST]);
+  const nodes = await account!.getNodes(client, 100, [bitcoinNetwork]);
   console.log("Got nodes:", JSON.stringify(nodes, null, 2));
 
-  const channels = await nodes.entities[0].getChannels(client, 20);
+  const channels = (await nodes.entities[0]?.getChannels(client, 20)) || {};
   console.log("Got channels:", JSON.stringify(channels, null, 2));
 };
 
@@ -381,6 +384,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 (() => {
   const createInvoiceCmd = new Command("create-invoice")
     .description("Create an invoice for your account")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
@@ -401,6 +408,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const createTestModeInvoiceCmd = new Command("create-test-mode-invoice")
     .description("Create an invoice that you can pay in test mode.")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
@@ -473,6 +484,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const accountDashboardCmd = new Command("account-dashboard")
     .description("Get account dashboard")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network to include in the dashboard. Defaults to MAINNET."
+    )
     .action((options) => {
       main(options, accountDashboard).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -481,6 +496,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const singleNodeDashboardCmd = new Command("single-node-dashboard")
     .description("Get a single node's dashboard")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's dashboard. Defaults to MAINNET."
+    )
     .action((options) => {
       main(options, singleNodeDashboard).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -497,6 +516,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const createNodeWalletAddressCmd = new Command("funding-address")
     .description("Create a bitcoin funding address for your account.")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .action((options) => {
       main(options, createNodeWalletAddress).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -505,6 +528,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const payInvoiceCmd = new Command("pay-invoice")
     .description("Pay an invoice from your account.")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option(
       "-a, --amount <number>",
@@ -522,6 +549,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description(
       "In test mode, simulates a payment from another node to an invoice."
     )
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option(
       "-a, --amount <number>",
@@ -537,6 +568,10 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
 
   const getNodeChannelsCmd = new Command("node-channels")
     .description("Gets node channels.")
+    .option(
+      "-b --bitcoin-network <value>",
+      "The bitcoin network for which to get a node's channels. Defaults to MAINNET."
+    )
     .action((options) => {
       main(options, getNodeChannels).catch((err) =>
         console.error("Oh no, something went wrong.\n", err)
@@ -558,7 +593,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description(
       "Lightspark API CLI. Start by running init-env to set up your environment."
     )
-    .version("1.0.0")
+    .version(getPackageVersion())
     .addCommand(createInvoiceCmd)
     .addCommand(createTestModeInvoiceCmd)
     .addCommand(recentTxCmd)
