@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.5
-
-### Patch Changes
-
-- 0b71a9c: Add generate-node-key command
-
 ## 0.0.4
 
 ### Patch Changes
