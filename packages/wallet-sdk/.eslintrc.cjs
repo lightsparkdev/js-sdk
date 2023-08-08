@@ -11,8 +11,6 @@ module.exports = {
       rules: {
         /* Temporarily turn off no-explicit-any until these can be resolved LIG-3400: */
         "@typescript-eslint/no-explicit-any": "off",
-        /* Broken for generated files: */
-        "@typescript-eslint/consistent-type-imports": "off",
       },
     },
   ],

@@ -1,10 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
-import LightningTransaction from "./LightningTransaction.js";
-import Transaction from "./Transaction.js";
+import { type Query } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type LightningTransaction from "./LightningTransaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
