@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.4
+
+### Patch Changes
+
+- 565f0ab: Fix tsconfigs for CLIs to ensure builds output to dist
+
 ## 0.0.3
 
 ### Patch Changes
