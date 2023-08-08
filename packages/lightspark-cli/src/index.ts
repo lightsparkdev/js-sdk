@@ -12,6 +12,11 @@ import type { OptionValues } from "commander";
 import { Command, InvalidArgumentError } from "commander";
 import * as fs from "fs/promises";
 import qrcode from "qrcode-terminal";
+import {
+  LightsparkSigner,
+  Mnemonic,
+  Seed,
+} from "../lightspark_crypto/lightspark_crypto.js";
 import type { EnvCredentials } from "./authHelpers.js";
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 import {
@@ -372,6 +377,41 @@ const getNodeChannels = async (
   console.log("Got channels:", JSON.stringify(channels, null, 2));
 };
 
+const generateNodeKeys = async (
+  client: LightsparkClient,
+  options: OptionValues
+) => {
+  let mnemonic: Mnemonic;
+  let seedPhrase = options.seedPhrase;
+  if (!seedPhrase) {
+    const isProvidingSeedPhrase = await input({
+      message: "Provide your own seed phrase (Y/n)?",
+      validate: (value) =>
+        value.toUpperCase() === "Y" || value.toUpperCase() === "N",
+    });
+
+    if (isProvidingSeedPhrase.toUpperCase() === "Y") {
+      seedPhrase = await input({
+        message: "What is your seed phrase (ex: horse battery staple ...)?",
+        validate: (value) => value.split(" ").length === 24,
+      });
+      mnemonic = Mnemonic.from_phrase(seedPhrase);
+    } else {
+      mnemonic = Mnemonic.new();
+    }
+  } else {
+    mnemonic = Mnemonic.from_phrase(seedPhrase);
+  }
+
+  console.log("Generating node keys...\n");
+
+  const lightsparkSigner = LightsparkSigner.new(Seed.from_mnemonic(mnemonic));
+  const extendedPublicKey = lightsparkSigner.get_master_public_key();
+
+  console.log(`Seed phrase:\n${mnemonic.as_string()}\n`);
+  console.log(`Extended public key:\n${extendedPublicKey}`);
+};
+
 const safeParseInt = (value: string /* dummyPrevious: any */) => {
   // parseInt takes a string and a radix
   const parsedValue = parseInt(value, 10);
@@ -578,6 +618,18 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       );
     });
 
+  const generateNodeKeysCmd = new Command("generate-node-keys")
+    .description("Generates keys needed for your Lightspark node.")
+    .option(
+      "-s --seed-phrase <value>",
+      "The seed phrase used to generate the keys need for your Lightspark node."
+    )
+    .action((options) => {
+      main(options, generateNodeKeys).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err)
+      );
+    });
+
   const InitEnvCmd = new Command("init-env")
     .description("Initialize your environment with required variables.")
     .option("-c --client-id <value>", "Your client ID.")
@@ -608,6 +660,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .addCommand(payInvoiceCmd)
     .addCommand(createTestModePaymentCmd)
     .addCommand(getNodeChannelsCmd)
+    .addCommand(generateNodeKeysCmd)
     .addCommand(InitEnvCmd)
     .addHelpCommand()
     .parse(process.argv);
