@@ -1575,6 +1575,15 @@ export type ReleaseChannelPerCommitmentSecretOutput = {
   channel: Channel;
 };
 
+/** This is an enum of the potential sub-event types for Remote Signing webook events. */
+export enum RemoteSigningSubEventType {
+  DeriveKeyAndSign = 'DERIVE_KEY_AND_SIGN',
+  Ecdh = 'ECDH',
+  GetPerCommitmentPoint = 'GET_PER_COMMITMENT_POINT',
+  ReleasePerCommitmentSecret = 'RELEASE_PER_COMMITMENT_SECRET',
+  SignInvoice = 'SIGN_INVOICE'
+}
+
 export type RequestWithdrawalInput = {
   /** The amount you want to withdraw from this node in Satoshis. Use the special value -1 to withdrawal all funds from this node. */
   amount_sats: Scalars['Long'];
