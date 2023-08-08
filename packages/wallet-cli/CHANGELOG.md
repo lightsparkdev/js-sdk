@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [cf11549]
+  - @lightsparkdev/wallet-sdk@0.6.14
+
 ## 0.0.21
 
 ### Patch Changes
