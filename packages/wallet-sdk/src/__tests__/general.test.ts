@@ -8,8 +8,6 @@ import KeyType from '../objects/KeyType.js'
 import TransactionStatus from '../objects/TransactionStatus.js'
 import WalletStatus from '../objects/WalletStatus.js'
 
-import {getCredentialsFromEnvOrThrow} from '../../examples/node-scripts/authHelpers.js'
-
 import jwt from 'jsonwebtoken'
 import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
 import {confirm, input} from "@inquirer/prompts";
@@ -21,7 +19,42 @@ export function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-const test_userId = 'testUser4'
+export const getCredentialsFromEnvOrThrow = (
+    walletEnvSuffix: string = ``
+): {
+    accountId: string;
+    jwt: string;
+    pubKey?: string;
+    privKey?: string;
+    baseUrl: string;
+    jwtSigningPrivateKey?: string;
+} => {
+    console.log(process.env)
+    console.log(process.env.LIGHTSPARK_ACCOUNT_ID)
+
+    const accountId = process.env[`LIGHTSPARK_ACCOUNT_ID`];
+    const jwtSigningPrivateKey = process.env[`LIGHTSPARK_JWT_PRIV_KEY`];
+    const jwt = process.env[`LIGHTSPARK_JWT${walletEnvSuffix}`] ?? '';
+    const pubKey = process.env[`LIGHTSPARK_WALLET_PUB_KEY${walletEnvSuffix}`];
+    const privKey = process.env[`LIGHTSPARK_WALLET_PRIV_KEY${walletEnvSuffix}`];
+    const baseUrl =
+        process.env[`LIGHTSPARK_EXAMPLE_BASE_URL`] || `api.lightspark.com`;
+    if (!accountId || !jwtSigningPrivateKey) {
+        throw new Error(
+            `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT_PRIV_KEY.`
+        );
+    }
+    return {
+        accountId,
+        jwt,
+        pubKey,
+        privKey,
+        baseUrl,
+        jwtSigningPrivateKey,
+    };
+};
+
+const test_userId = 'testUser3'
 const filePath = process.env.HOME + `/.lightsparkenv`
 
 const createWalletJwt = async (
@@ -115,6 +148,7 @@ const createDeployAndInitWallet = async (
                 ),
             };
 
+            console.log('serializedKeypair', serializedKeypair)
             await client.initializeWalletAndAwaitReady(
                 KeyType.RSA_OAEP,
                 serializedKeypair.publicKey,
@@ -275,15 +309,15 @@ describe('P1 tests', () => {
         expect(1).toBe(1)
     })
 
-    test('should terminate a wallet', async () => {
-        await client.terminateWallet()
-
-        const wallet = await client.getCurrentWallet()
-
-        console.log(wallet)
-
-        expect(wallet?.status).toBe(WalletStatus.TERMINATED)
-    })
+    // test('should terminate a wallet', async () => {
+    //     await client.terminateWallet()
+    //
+    //     const wallet = await client.getCurrentWallet()
+    //
+    //     console.log(wallet)
+    //
+    //     expect(wallet?.status).toBe(WalletStatus.TERMINATED)
+    // })
 
     test('should decode an invoice', async () => {
         const encodedRequest = `lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse`

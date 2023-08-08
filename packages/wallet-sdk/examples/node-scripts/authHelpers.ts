@@ -12,6 +12,9 @@ export type EnvCredentials = {
 export const getCredentialsFromEnvOrThrow = (
   walletEnvSuffix: string = ``
 ): EnvCredentials => {
+  console.log(process.env)
+  console.log(process.env.LIGHTSPARK_ACCOUNT_ID)
+
   const accountId = process.env[`LIGHTSPARK_ACCOUNT_ID`];
   const jwtSigningPrivateKey = process.env[`LIGHTSPARK_JWT_PRIV_KEY`];
   const jwt = process.env[`LIGHTSPARK_JWT${walletEnvSuffix}`];
