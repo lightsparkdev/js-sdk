@@ -1,11 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.6.14
-
-### Patch Changes
-
-- cf11549: Add ability to set the invoice expiration in createInvoice.
-
 ## 0.6.13
 
 ### Patch Changes

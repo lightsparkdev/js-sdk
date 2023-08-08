@@ -1,7 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import Transaction, { TransactionFromJson } from "./Transaction.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import type Transaction from "./Transaction.js";
+import { TransactionFromJson } from "./Transaction.js";
 
 type WalletToTransactionsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/
