@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals'
+import {describe, expect, test} from '@jest/globals'
 import {b64encode, DefaultCrypto, KeyOrAlias} from '@lightsparkdev/core'
 
 import LightsparkClient from '../client.js'
@@ -7,25 +7,22 @@ import type InvoiceData from '../objects/InvoiceData.js'
 import KeyType from '../objects/KeyType.js'
 import TransactionStatus from '../objects/TransactionStatus.js'
 import WalletStatus from '../objects/WalletStatus.js'
-import WithdrawalRequestStatus from '../objects/WithdrawalRequestStatus.js'
 
-import { getCredentialsFromEnvOrThrow } from '../../examples/node-scripts/authHelpers.js'
-import { LocalStorageJwtStorage } from '../auth/index.js'
+import {getCredentialsFromEnvOrThrow} from '../../examples/node-scripts/authHelpers.js'
 
 import jwt from 'jsonwebtoken'
 import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
 import {confirm, input} from "@inquirer/prompts";
 import {InMemoryJwtStorage} from "../../dist/index.js";
 import fs from "fs/promises";
+import {InvoiceType, WithdrawalRequestStatus} from "../objects/index.js";
 
 export function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-
 const test_userId = 'testUser4'
-
-const test_filePath = process.env.HOME + `/.lightsparkenv`
+const filePath = process.env.HOME + `/.lightsparkenv`
 
 const createWalletJwt = async (
     client: LightsparkClient,
@@ -101,10 +98,12 @@ const createDeployAndInitWallet = async (
         walletStatus = await client.deployWalletAndAwaitDeployed();
     }
 
-    while (walletStatus === WalletStatus.INITIALIZING) {
+    do {
         walletStatus = (await client.getCurrentWallet())?.status;
 
-        if (walletStatus === WalletStatus.DEPLOYED) {
+        console.log('walletStatus', walletStatus)
+
+        if (walletStatus === WalletStatus.DEPLOYED || walletStatus === WalletStatus.READY) {
             const keypair = await DefaultCrypto.generateSigningKeyPair();
 
             serializedKeypair = {
@@ -124,9 +123,9 @@ const createDeployAndInitWallet = async (
         }
 
         await sleep(30_000)
-    }
+    } while (walletStatus === WalletStatus.INITIALIZING || walletStatus === WalletStatus.DEPLOYING)
 
-    if (walletStatus !== WalletStatus.DEPLOYED) {
+    if (walletStatus !== WalletStatus.DEPLOYED && walletStatus !== WalletStatus.READY) {
         console.log(
             `Not initializing because the wallet status is ${loginOutput.wallet.status}`
         );
@@ -145,7 +144,6 @@ const createDeployAndInitWallet = async (
         // process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
         //     serializedKeypair.publicKey;
 
-        const filePath = test_filePath;
         await fs.appendFile(filePath, content);
     }
 
@@ -163,7 +161,7 @@ const createDeployAndInitWallet = async (
 // Let's start by creating a client
 const client = new LightsparkClient()
 
-const credentials = getCredentialsFromEnvOrThrow('_testUser1')
+const credentials = getCredentialsFromEnvOrThrow(`_${test_userId}`)
 
 let createDeployAndInitWalletResponse: Awaited<ReturnType<typeof createDeployAndInitWallet>> | undefined = undefined
 
@@ -187,11 +185,12 @@ describe('Sanity tests', () => {
     })
 
     let invoiceData: InvoiceData | null
+    const invoiceAmount = 50 * 1000
 
     test('should create an invoice', async () => {
-        const _invoiceData = await client.createInvoice(100_000, 'mmmmm pizza')
+        invoiceData = await client.createInvoice(invoiceAmount, 'mmmmm pizza', InvoiceType.STANDARD)
 
-        invoiceData = _invoiceData as InvoiceData | null
+        console.log('created Invoice:', invoiceData)
 
         expect(invoiceData).not.toBe(null)
     })
@@ -200,10 +199,13 @@ describe('Sanity tests', () => {
         if (!invoiceData?.encodedPaymentRequest)
             throw new Error('invoiceData is null')
 
-        const payment = await client.payInvoice(
+        const payment = await client.payInvoiceAndAwaitResult(
             invoiceData.encodedPaymentRequest,
-            50_000,
+            1_000_000,
+            undefined,
         )
+
+        console.log(`Payment done with status= ${payment.status}, ID = ${payment.id}`)
 
         expect(payment.status).toBe(TransactionStatus.SUCCESS)
     })
@@ -211,104 +213,143 @@ describe('Sanity tests', () => {
     // test('should deposit', async () => {
     //     expect(1).toBe(1)
     // })
-    //
-    // test('should withdraw', async () => {
-    //     const withdrawalRequest = await client.requestWithdrawal(
-    //         50_000,
-    //         'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
-    //     )
-    //
-    //     expect(withdrawalRequest?.status).toBe(WithdrawalRequestStatus.SUCCESSFUL)
-    // })
+
+    test('should withdraw', async () => {
+        const bitcoinAddress = await client.createBitcoinFundingAddress()
+
+        const withdrawalRequest = await client.requestWithdrawal(
+            50_000,
+            bitcoinAddress!,
+        )
+
+        console.log(withdrawalRequest, bitcoinAddress)
+
+        expect(withdrawalRequest?.status).toBe(WithdrawalRequestStatus.SUCCESSFUL)
+    })
 })
 
-// describe('P1 tests', () => {
-//     test('should generate a key', async () => {
-//         const keyPair = await DefaultCrypto.generateSigningKeyPair()
-//         const signingWalletPublicKey = keyPair.publicKey
-//         const signingWalletPrivateKey = keyPair.privateKey
-//
-//         expect(signingWalletPrivateKey).not.toBe(null)
-//         expect(signingWalletPublicKey).not.toBe(null)
-//     })
-//
-//     test('should fetch the current wallet', async () => {
-//         const wallet = await client.getCurrentWallet()
-//
-//         expect(wallet).not.toBe(null)
-//     })
-//
-//     test('should list current payment requests', async () => {
-//         const dashboard = await client.getWalletDashboard()
-//
-//         expect(dashboard?.paymentRequests).not.toBe(null)
-//     })
-//
-//     test('should list recent transactions', async () => {
-//         const dashboard = await client.getWalletDashboard()
-//
-//         expect(dashboard?.recentTransactions).not.toBe(null)
-//     })
-//
-//     test('should fetch an entity by ID', async () => {
-//         expect(1).toBe(1)
-//     })
-//
-//     test('should terminate a wallet', async () => {
-//         await client.terminateWallet()
-//
-//         const wallet = await client.getCurrentWallet()
-//
-//         expect(wallet?.status).toBe(WalletStatus.TERMINATED)
-//     })
-//
-//     test('should decode an invoice', async () => {
-//         expect(1).toBe(1)
-//     })
-// })
-//
-// describe('P2 tests', () => {
-//     test('should get bitcoin fee estimates', async () => {
-//         const feeEstimates = await client.getBitcoinFeeEstimate()
-//
-//         expect(feeEstimates).not.toBe(null)
-//     })
-//
-//     test('should send a keysend payment', async () => {
-//         expect(1).toBe(1)
-//     })
-//
-//     test('should create a test mode invoice', async () => {
-//         const testInvoice = await client.createTestModeInvoice(
-//             100_000,
-//             'mmmmm pizza',
-//         )
-//
-//         expect(testInvoice).not.toBe(null)
-//     })
-//
-//     test('should create a test mode payment', async () => {
-//         // const testPayment = await client.createTestModePayment(100_000)
-//         //
-//         // expect(testPayment).not.toBe(null)
-//
-//         expect(1).toBe(1)
-//     })
-//
-//     test('should execute a raw graphql query', async () => {
-//         const query = `
-//       query {
-//         getWallet {
-//           id
-//           status
-//         }
-//       }
-//     `
-//         const result = await client.executeRawQuery({
-//             queryPayload: query,
-//             constructObject: data => data.getWallet,
-//         })
-//
-//         expect(result).not.toBe(null)
-//     })
-// })
+describe('P1 tests', () => {
+    test('should generate a key', async () => {
+        const keypair = await DefaultCrypto.generateSigningKeyPair();
+
+        const serializedKeypair = {
+            privateKey: b64encode(
+                await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
+            ),
+            publicKey: b64encode(
+                await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
+            ),
+        };
+
+        console.log(serializedKeypair)
+
+        expect(serializedKeypair.privateKey).not.toBe(null)
+        expect(serializedKeypair.publicKey).not.toBe(null)
+    })
+
+    test('should fetch the current wallet', async () => {
+        const wallet = await client.getCurrentWallet()
+
+        console.log(wallet)
+
+        expect(wallet).not.toBe(null)
+    })
+
+    test('should list current payment requests', async () => {
+        const dashboard = await client.getWalletDashboard()
+
+        console.log(dashboard?.paymentRequests)
+
+        expect(dashboard?.paymentRequests).not.toBe(null)
+    })
+
+    test('should list recent transactions', async () => {
+        const dashboard = await client.getWalletDashboard()
+
+        console.log(dashboard?.recentTransactions)
+
+        expect(dashboard?.recentTransactions).not.toBe(null)
+    })
+
+    test('should fetch an entity by ID', async () => {
+        expect(1).toBe(1)
+    })
+
+    test('should terminate a wallet', async () => {
+        await client.terminateWallet()
+
+        const wallet = await client.getCurrentWallet()
+
+        console.log(wallet)
+
+        expect(wallet?.status).toBe(WalletStatus.TERMINATED)
+    })
+
+    test('should decode an invoice', async () => {
+        const encodedRequest = `lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse`
+
+        const decodedInvoice = await client.decodeInvoice(encodedRequest)
+
+        console.log(decodedInvoice)
+
+        expect(decodedInvoice).not.toBe(null)
+        expect(decodedInvoice?.memo).toBe('mmmmm pizza')
+        expect(decodedInvoice?.paymentHash).toBe('f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61')
+    })
+})
+
+describe('P2 tests', () => {
+    test('should get bitcoin fee estimates', async () => {
+        const feeEstimates = await client.getBitcoinFeeEstimate()
+
+        console.log(feeEstimates)
+
+        expect(feeEstimates).not.toBe(null)
+    })
+
+    test('should send a keysend payment', async () => {
+        expect(1).toBe(1)
+    })
+
+    let testInvoice: string | null
+    const testPaymentAmount = 100 * 1000
+
+    test('should create a test mode invoice', async () => {
+        testInvoice = await client.createTestModeInvoice(
+            testPaymentAmount,
+            'mmmmm pizza',
+        )
+
+        console.log(testInvoice)
+
+        expect(testInvoice).not.toBe(null)
+    })
+
+    test('should create a test mode payment', async () => {
+        const testPayment = await client.createTestModePayment(testInvoice!, testPaymentAmount)
+
+        console.log(testPayment)
+
+        expect(testPayment).not.toBe(null)
+    })
+
+    test('should execute a raw graphql query', async () => {
+        const query = `
+          query {
+            getWallet {
+              id
+              status
+            }
+          }
+        `
+
+        const result = await client.executeRawQuery({
+            queryPayload: query,
+            constructObject: data => data?.getWallet,
+        })
+
+        console.log(result)
+
+        expect(result).not.toBe(null)
+    })
+})
