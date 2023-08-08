@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This enum identifies the unit of currency associated with a CurrencyAmount. **/
 export enum CurrencyUnit {
   /**
    * This is an enum value that represents values that could be added in the future.

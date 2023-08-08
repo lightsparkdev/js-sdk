@@ -365,12 +365,14 @@ class LightsparkClient {
    * @param amountMsats The amount of the invoice in milli-satoshis.
    * @param memo Optional memo to include in the invoice.
    * @param type The type of invoice to create. Defaults to [InvoiceType.STANDARD].
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 1 day.
    * @return The created invoice.
    */
   public async createInvoice(
     amountMsats: number,
     memo: string | undefined = undefined,
-    type: InvoiceType = InvoiceType.STANDARD
+    type: InvoiceType = InvoiceType.STANDARD,
+    expirySecs: number | undefined = undefined
   ) {
     this.requireValidAuth();
     return await this.executeRawQuery({
@@ -379,6 +381,7 @@ class LightsparkClient {
         amountMsats,
         memo,
         type,
+        expirySecs,
       },
       constructObject: (responseJson: any) => {
         return InvoiceDataFromJson(responseJson.create_invoice.invoice.data);

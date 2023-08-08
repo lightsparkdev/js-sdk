@@ -8,6 +8,8 @@ type CreateInvoiceInput = {
   memo?: string;
 
   invoiceType?: InvoiceType;
+
+  expirySecs?: number;
 };
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
@@ -18,6 +20,7 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
       ? InvoiceType[obj["create_invoice_input_invoice_type"]] ??
         InvoiceType.FUTURE_VALUE
       : null,
+    expirySecs: obj["create_invoice_input_expiry_secs"],
   } as CreateInvoiceInput;
 };
 

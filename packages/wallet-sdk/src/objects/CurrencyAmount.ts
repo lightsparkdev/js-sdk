@@ -2,7 +2,7 @@
 
 import CurrencyUnit from "./CurrencyUnit.js";
 
-/** Represents the value and unit for an amount of currency. **/
+/** This object represents the value and unit for an amount of currency. **/
 type CurrencyAmount = {
   /** The original numeric value for this CurrencyAmount. **/
   originalValue: number;

@@ -1,18 +1,19 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type Balances from "./Balances.js";
-import { BalancesFromJson } from "./Balances.js";
-import type Entity from "./Entity.js";
-import type TransactionStatus from "./TransactionStatus.js";
-import type TransactionType from "./TransactionType.js";
+import LightsparkClient from "../client.js";
+import Balances, { BalancesFromJson } from "./Balances.js";
+import Entity from "./Entity.js";
+import TransactionStatus from "./TransactionStatus.js";
+import TransactionType from "./TransactionType.js";
 import WalletStatus from "./WalletStatus.js";
-import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
-import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
-import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
+import WalletToPaymentRequestsConnection, {
+  WalletToPaymentRequestsConnectionFromJson,
+} from "./WalletToPaymentRequestsConnection.js";
+import WalletToTransactionsConnection, {
+  WalletToTransactionsConnectionFromJson,
+} from "./WalletToTransactionsConnection.js";
 
 class Wallet implements Entity {
   constructor(
