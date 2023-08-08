@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.15
+
+### Patch Changes
+
+- 565f0ab: lint:fix as part of SDK object generation
+
 ## 0.6.14
 
 ### Patch Changes
