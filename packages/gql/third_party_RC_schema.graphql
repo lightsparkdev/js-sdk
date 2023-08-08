@@ -2023,6 +2023,17 @@ type ReleaseChannelPerCommitmentSecretOutput {
   channel: Channel!
 }
 
+"""
+This is an enum of the potential sub-event types for Remote Signing webook events.
+"""
+enum RemoteSigningSubEventType {
+  ECDH
+  GET_PER_COMMITMENT_POINT
+  RELEASE_PER_COMMITMENT_SECRET
+  SIGN_INVOICE
+  DERIVE_KEY_AND_SIGN
+}
+
 input RequestWithdrawalInput {
   """The node from which you'd like to make the withdrawal."""
   node_id: ID!
