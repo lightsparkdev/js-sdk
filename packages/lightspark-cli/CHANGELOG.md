@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.6
+
+### Patch Changes
+
+- 88a8994: Fix version retrieval for global installs
+
 ## 0.0.5
 
 ### Patch Changes
