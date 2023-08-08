@@ -1,0 +1,12 @@
+{
+  "name": "lightspark-crypto",
+  "version": "0.1.0",
+  "description": "Lightspark Crypto library wasm",
+  "files": [
+    "lightspark_crypto_bg.wasm",
+    "lightspark_crypto.js",
+    "lightspark_crypto.d.ts"
+  ],
+  "main": "lightspark_crypto.js",
+  "types": "lightspark_crypto.d.ts"
+}
