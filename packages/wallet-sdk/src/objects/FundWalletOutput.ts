@@ -2,25 +2,20 @@
 
 import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
-type LightningFeeEstimateOutput = {
-  /** The estimated fees for the payment. **/
-  feeEstimate: CurrencyAmount;
+type FundWalletOutput = {
+  amount: CurrencyAmount;
 };
 
-export const LightningFeeEstimateOutputFromJson = (
-  obj: any
-): LightningFeeEstimateOutput => {
+export const FundWalletOutputFromJson = (obj: any): FundWalletOutput => {
   return {
-    feeEstimate: CurrencyAmountFromJson(
-      obj["lightning_fee_estimate_output_fee_estimate"]
-    ),
-  } as LightningFeeEstimateOutput;
+    amount: CurrencyAmountFromJson(obj["fund_wallet_output_amount"]),
+  } as FundWalletOutput;
 };
 
 export const FRAGMENT = `
-fragment LightningFeeEstimateOutputFragment on LightningFeeEstimateOutput {
+fragment FundWalletOutputFragment on FundWalletOutput {
     __typename
-    lightning_fee_estimate_output_fee_estimate: fee_estimate {
+    fund_wallet_output_amount: amount {
         __typename
         currency_amount_original_value: original_value
         currency_amount_original_unit: original_unit
@@ -30,4 +25,4 @@ fragment LightningFeeEstimateOutputFragment on LightningFeeEstimateOutput {
     }
 }`;
 
-export default LightningFeeEstimateOutput;
+export default FundWalletOutput;

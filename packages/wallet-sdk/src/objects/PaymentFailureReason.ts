@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum of the potential reasons why an OutgoingPayment sent from a Lightspark Node may have failed. **/
 export enum PaymentFailureReason {
   /**
    * This is an enum value that represents values that could be added in the future.

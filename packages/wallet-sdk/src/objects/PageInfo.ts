@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an object representing information about a page returned by the Lightspark API. For more information, please see the “Pagination” section of our API docs for more information about its usage. **/
 type PageInfo = {
   hasNextPage?: boolean;
 

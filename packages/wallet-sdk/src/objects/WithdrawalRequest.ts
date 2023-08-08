@@ -1,11 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import { Query } from "@lightsparkdev/core";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
 
+/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. **/
 type WithdrawalRequest = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque

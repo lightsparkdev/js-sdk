@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum identifying a particular Bitcoin Network. **/
 export enum BitcoinNetwork {
   /**
    * This is an enum value that represents values that could be added in the future.
