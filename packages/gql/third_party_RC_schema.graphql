@@ -2056,6 +2056,7 @@ enum RemoteSigningSubEventType {
   RELEASE_PER_COMMITMENT_SECRET
   SIGN_INVOICE
   DERIVE_KEY_AND_SIGN
+  RELEASE_PREIMAGE
 }
 
 input RequestWithdrawalInput {
