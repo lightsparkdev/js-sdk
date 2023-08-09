@@ -1,6 +1,7 @@
+// Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
+
 import type { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import { BitcoinNetwork } from "@lightsparkdev/lightspark-sdk";
-import type { OptionValues } from "commander";
 import fs from "fs";
 
 const BITCOIN_NETWORKS = [
@@ -19,7 +20,7 @@ export const assertValidBitcoinNetwork = (
 ): void => {
   if (!isBitcoinNetwork(bitcoinNetwork)) {
     throw new Error(
-      `Invalid bitcoin network. Valid networks: ${BITCOIN_NETWORKS}`
+      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS}`
     );
   }
 };
@@ -31,15 +32,11 @@ export const getPackageVersion = (): string => {
   return packageJson?.version;
 };
 
-export const getBitcoinNetworkOrDefault = (
-  options: OptionValues
+export const getBitcoinNetworkOrThrow = (
+  bitcoinNetwork: BitcoinNetwork
 ): BitcoinNetwork => {
-  if (options.bitcoinNetwork) {
-    assertValidBitcoinNetwork(options.bitcoinNetwork.toUpperCase());
-  }
-
-  return (options.bitcoinNetwork?.toUpperCase() ||
-    BitcoinNetwork.MAINNET) as BitcoinNetwork;
+  assertValidBitcoinNetwork(bitcoinNetwork.toUpperCase() as BitcoinNetwork);
+  return bitcoinNetwork;
 };
 
 export const getNodeId = async (

@@ -268,7 +268,7 @@ export enum BitcoinNetwork {
    * @deprecated Use REGTEST.
    */
   Signet = 'SIGNET',
-  /** A test version of the Bitcoin Blockchain, publically available. */
+  /** A test version of the Bitcoin Blockchain, publicly available. */
   Testnet = 'TESTNET'
 }
 
@@ -889,6 +889,8 @@ export type LightsparkNode = {
   alias?: Maybe<Scalars['String']>;
   /** The Bitcoin Network this node is deployed in. */
   bitcoin_network: BitcoinNetwork;
+  /** The details of the balance of this node on the Bitcoin Network. */
+  blockchain_balance?: Maybe<BlockchainBalance>;
   /** The channels that are connected to this node. */
   channels: LightsparkNodeToChannelsConnection;
   /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
@@ -907,6 +909,8 @@ export type LightsparkNode = {
   owner: LightsparkNodeOwner;
   /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
   public_key?: Maybe<Scalars['String']>;
+  /** The sum of the channel balances that are available to receive on this node. */
+  remote_balance?: Maybe<CurrencyAmount>;
   /** The current status of this node. */
   status?: Maybe<LightsparkNodeStatus>;
   /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
@@ -1030,6 +1034,8 @@ export type LightsparkNodeWithOskSparknode = Entity & LightsparkNode & Node & Sp
   alias?: Maybe<Scalars['String']>;
   /** The Bitcoin Network this node is deployed in. */
   bitcoin_network: BitcoinNetwork;
+  /** The details of the balance of this node on the Bitcoin Network. */
+  blockchain_balance?: Maybe<BlockchainBalance>;
   /** The channels that are connected to this node. */
   channels: LightsparkNodeToChannelsConnection;
   /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
@@ -1048,6 +1054,8 @@ export type LightsparkNodeWithOskSparknode = Entity & LightsparkNode & Node & Sp
   owner: LightsparkNodeOwner;
   /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
   public_key?: Maybe<Scalars['String']>;
+  /** The sum of the channel balances that are available to receive on this node. */
+  remote_balance?: Maybe<CurrencyAmount>;
   /** The current status of this node. */
   status?: Maybe<LightsparkNodeStatus>;
   /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
@@ -1081,6 +1089,8 @@ export type LightsparkNodeWithServerSigning = Entity & LightsparkNode & Node & S
   alias?: Maybe<Scalars['String']>;
   /** The Bitcoin Network this node is deployed in. */
   bitcoin_network: BitcoinNetwork;
+  /** The details of the balance of this node on the Bitcoin Network. */
+  blockchain_balance?: Maybe<BlockchainBalance>;
   /** The channels that are connected to this node. */
   channels: LightsparkNodeToChannelsConnection;
   /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
@@ -1099,6 +1109,8 @@ export type LightsparkNodeWithServerSigning = Entity & LightsparkNode & Node & S
   owner: LightsparkNodeOwner;
   /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
   public_key?: Maybe<Scalars['String']>;
+  /** The sum of the channel balances that are available to receive on this node. */
+  remote_balance?: Maybe<CurrencyAmount>;
   /** The current status of this node. */
   status?: Maybe<LightsparkNodeStatus>;
   /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
@@ -1751,6 +1763,8 @@ export type Sparknode = {
   alias?: Maybe<Scalars['String']>;
   /** The Bitcoin Network this node is deployed in. */
   bitcoin_network: BitcoinNetwork;
+  /** The details of the balance of this node on the Bitcoin Network. */
+  blockchain_balance?: Maybe<BlockchainBalance>;
   /** The channels that are connected to this node. */
   channels: LightsparkNodeToChannelsConnection;
   /** A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator. */
@@ -1769,6 +1783,8 @@ export type Sparknode = {
   owner: LightsparkNodeOwner;
   /** The public key of this node. It acts as a unique identifier of this node in the Lightning Network. */
   public_key?: Maybe<Scalars['String']>;
+  /** The sum of the channel balances that are available to receive on this node. */
+  remote_balance?: Maybe<CurrencyAmount>;
   /** The current status of this node. */
   status?: Maybe<LightsparkNodeStatus>;
   /** The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node. */
