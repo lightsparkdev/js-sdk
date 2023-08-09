@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports -- only allow in this file */
 import {
   Link as LinkBase,
   Navigate as NavigateBase,
@@ -10,6 +11,7 @@ import {
   type LinkProps as LinkPropsBase,
 } from "@lightsparkdev/ui/router";
 import type { RoutesType } from "src/routes";
+/* eslint-enable no-restricted-imports */
 
 export const replaceParams = replaceParamsBase<RoutesType>;
 export const Link = LinkBase<RoutesType>;

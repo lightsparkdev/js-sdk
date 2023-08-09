@@ -16,6 +16,11 @@ module.exports = {
             name: "react-router-dom",
           },
           {
+            importNames: ["Link", "Navigate", "useNavigate"],
+            message: "Please use typesafe imports from common/router instead.",
+            name: "@lightsparkdev/ui/router",
+          },
+          {
             importNames: ["default", "QRCodeSVG"],
             message:
               "Please use imports from @lightsparkdev/ui components instead.",
