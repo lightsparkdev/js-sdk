@@ -268,7 +268,7 @@ export enum BitcoinNetwork {
    * @deprecated Use REGTEST.
    */
   Signet = 'SIGNET',
-  /** A test version of the Bitcoin Blockchain, publically available. */
+  /** A test version of the Bitcoin Blockchain, publicly available. */
   Testnet = 'TESTNET'
 }
 
