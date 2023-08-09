@@ -1242,6 +1242,14 @@ interface LightsparkNode implements Node & Entity {
   The sum of the channel balances (online only) that are available to send on this node.
   """
   local_balance: CurrencyAmount
+
+  """
+  The sum of the channel balances that are available to receive on this node.
+  """
+  remote_balance: CurrencyAmount
+
+  """The details of the balance of this node on the Bitcoin Network."""
+  blockchain_balance: BlockchainBalance
 }
 
 """This is an object representing the owner of a LightsparkNode."""
@@ -1356,6 +1364,11 @@ type LightsparkNodeWithOSKLND implements LightsparkNode & Node & Entity {
   """
   local_balance: CurrencyAmount
 
+  """
+  The sum of the channel balances that are available to receive on this node.
+  """
+  remote_balance: CurrencyAmount
+
   """The details of the balance of this node on the Bitcoin Network."""
   blockchain_balance: BlockchainBalance
 
@@ -1363,11 +1376,6 @@ type LightsparkNodeWithOSKLND implements LightsparkNode & Node & Entity {
   The private key client is using to sign a GraphQL request which will be verified at LND.
   """
   encrypted_signing_private_key: Secret
-
-  """
-  The sum of the channel balances that are available to receive on this node.
-  """
-  remote_balance: CurrencyAmount
 }
 
 """This is a Sparknode with OSK."""
@@ -1439,6 +1447,14 @@ type LightsparkNodeWithOSKSparknode implements Sparknode & LightsparkNode & Node
   The sum of the channel balances (online only) that are available to send on this node.
   """
   local_balance: CurrencyAmount
+
+  """
+  The sum of the channel balances that are available to receive on this node.
+  """
+  remote_balance: CurrencyAmount
+
+  """The details of the balance of this node on the Bitcoin Network."""
+  blockchain_balance: BlockchainBalance
 }
 
 """This is a Sparknode with server remote signing."""
@@ -1510,6 +1526,14 @@ type LightsparkNodeWithServerSigning implements Sparknode & LightsparkNode & Nod
   The sum of the channel balances (online only) that are available to send on this node.
   """
   local_balance: CurrencyAmount
+
+  """
+  The sum of the channel balances that are available to receive on this node.
+  """
+  remote_balance: CurrencyAmount
+
+  """The details of the balance of this node on the Bitcoin Network."""
+  blockchain_balance: BlockchainBalance
 }
 
 """The `Long` scalar type represents a 64 bit integer."""
@@ -2307,6 +2331,14 @@ interface Sparknode implements LightsparkNode & Node & Entity {
   The sum of the channel balances (online only) that are available to send on this node.
   """
   local_balance: CurrencyAmount
+
+  """
+  The sum of the channel balances that are available to receive on this node.
+  """
+  remote_balance: CurrencyAmount
+
+  """The details of the balance of this node on the Bitcoin Network."""
+  blockchain_balance: BlockchainBalance
 }
 
 type Subscription {
