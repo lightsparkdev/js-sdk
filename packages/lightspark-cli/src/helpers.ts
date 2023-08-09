@@ -46,20 +46,19 @@ export const getNodeId = async (
   client: LightsparkClient,
   bitcoinNetwork: BitcoinNetwork
 ): Promise<string> => {
-  return "LightsparkNodeWithServerSigning:0189d6d6-5196-88df-0000-38e69582a04f";
-  // const account = await client.getCurrentAccount();
-  // if (!account) {
-  //   throw new Error("Failed to get current account");
-  // }
+  const account = await client.getCurrentAccount();
+  if (!account) {
+    throw new Error("Failed to get current account");
+  }
 
-  // const entities = (await account.getNodes(client)).entities;
-  // const entityForNetwork = entities.find(
-  //   (entity) => entity.bitcoinNetwork === bitcoinNetwork
-  // );
+  const entities = (await account.getNodes(client)).entities;
+  const entityForNetwork = entities.find(
+    (entity) => entity.bitcoinNetwork === bitcoinNetwork
+  );
 
-  // if (!entityForNetwork) {
-  //   throw new Error(`Failed to find node on ${bitcoinNetwork}`);
-  // }
+  if (!entityForNetwork) {
+    throw new Error(`Failed to find node on ${bitcoinNetwork}`);
+  }
 
-  // return entityForNetwork.id;
+  return entityForNetwork.id;
 };
