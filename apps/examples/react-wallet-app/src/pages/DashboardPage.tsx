@@ -1,15 +1,11 @@
 import styled from "@emotion/styled";
 import { b64encode, DefaultCrypto, KeyOrAlias } from "@lightsparkdev/core";
 import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
-import type {
-  WalletDashboard} from "@lightsparkdev/wallet-sdk";
-import {
-  KeyType,
-  WalletStatus,
-} from "@lightsparkdev/wallet-sdk";
+import type { WalletDashboard } from "@lightsparkdev/wallet-sdk";
+import { KeyType, WalletStatus } from "@lightsparkdev/wallet-sdk";
 import { useEffect, useState } from "react";
-import { useNavigate } from "src/common/router";
 import { Button } from "src/components/Button";
+import { useNavigate } from "src/components/router";
 import { Routes } from "src/routes";
 import RequireAuth from "../auth/RequireAuth";
 import Dashboard from "../components/Dashboard";
