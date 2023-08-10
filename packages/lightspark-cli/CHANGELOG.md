@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.7
+
+### Patch Changes
+
+- 5bf68c1: Fix parsing of webhook subevent type
+- 5bf68c1: Automatically find bitcoin network for provided api token
+- Updated dependencies [6cd80d4]
+  - @lightsparkdev/lightspark-sdk@0.4.9
+
 ## 0.0.6
 
 ### Patch Changes
