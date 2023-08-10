@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.8
+
+### Patch Changes
+
+- 451b106: Output hex-encoded seed in generate-node-keys command
+
 ## 0.0.7
 
 ### Patch Changes
