@@ -2319,6 +2319,7 @@ enum TransactionType {
 input UpdateChannelPerCommitmentPointInput {
   channel_id: ID!
   per_commitment_point: PublicKey!
+  per_commitment_point_index: Int!
 }
 
 type UpdateChannelPerCommitmentPointOutput {

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-cli",
-  "version": "0.0.8",
+  "version": "0.0.7",
   "description": "CLI for the Lightspark JS sdk",
   "main": "./dist/index.js",
   "bin": {
