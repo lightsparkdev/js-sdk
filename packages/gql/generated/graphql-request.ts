@@ -1163,6 +1163,8 @@ export type Mutation = {
   pay_invoice: PayInvoiceOutput;
   /** Release per commitment secret of a channel connecting to a local remote signing node. */
   release_channel_per_commitment_secret: ReleaseChannelPerCommitmentSecretOutput;
+  /** Release the payment preimage for an invoice. */
+  release_payment_preimage: ReleasePaymentPreimageOutput;
   /**
    * Withdraws funds from the account and sends it to the requested bitcoin address.
    *
@@ -1232,6 +1234,11 @@ export type MutationPay_InvoiceArgs = {
 
 export type MutationRelease_Channel_Per_Commitment_SecretArgs = {
   input: ReleaseChannelPerCommitmentSecretInput;
+};
+
+
+export type MutationRelease_Payment_PreimageArgs = {
+  input: ReleasePaymentPreimageInput;
 };
 
 
@@ -1587,11 +1594,24 @@ export type ReleaseChannelPerCommitmentSecretOutput = {
   channel: Channel;
 };
 
+export type ReleasePaymentPreimageInput = {
+  /** The invoice the preimage belongs to. */
+  invoice_id: Scalars['ID'];
+  /** The preimage to release. */
+  payment_preimage: Scalars['Hash32'];
+};
+
+export type ReleasePaymentPreimageOutput = {
+  __typename: 'ReleasePaymentPreimageOutput';
+  invoice: Invoice;
+};
+
 /** This is an enum of the potential sub-event types for Remote Signing webook events. */
 export enum RemoteSigningSubEventType {
   DeriveKeyAndSign = 'DERIVE_KEY_AND_SIGN',
   Ecdh = 'ECDH',
   GetPerCommitmentPoint = 'GET_PER_COMMITMENT_POINT',
+  ReleasePaymentPreimage = 'RELEASE_PAYMENT_PREIMAGE',
   ReleasePerCommitmentSecret = 'RELEASE_PER_COMMITMENT_SECRET',
   SignInvoice = 'SIGN_INVOICE'
 }
