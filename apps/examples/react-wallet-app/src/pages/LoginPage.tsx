@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import { useJwtAuth } from "@lightsparkdev/react-wallet";
 import { useEffect, useState } from "react";
-import { useNavigate } from "src/common/router";
 import { Button } from "src/components/Button";
+import { useNavigate } from "src/components/router";
 import { Routes } from "src/routes";
 
 const LoginPage = () => {

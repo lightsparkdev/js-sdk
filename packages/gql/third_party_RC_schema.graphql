@@ -609,6 +609,8 @@ input CreateInvoiceInput {
   amount_msats: Long!
   memo: String = null
   invoice_type: InvoiceType = null
+  payment_hash: String = null
+  preimage_nonce: String = null
 }
 
 type CreateInvoiceOutput {
@@ -1294,8 +1296,8 @@ type LightsparkNodeToChannelsConnection {
   entities: [Channel!]!
 }
 
-"""This is a Lightspark node with OSK on LND."""
-type LightsparkNodeWithOSKLND implements LightsparkNode & Node & Entity {
+"""This is a Lightspark node with OSK."""
+type LightsparkNodeWithOSK implements LightsparkNode & Node & Entity {
   """
   The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
   """
@@ -1373,92 +1375,13 @@ type LightsparkNodeWithOSKLND implements LightsparkNode & Node & Entity {
   blockchain_balance: BlockchainBalance
 
   """
-  The private key client is using to sign a GraphQL request which will be verified at LND.
+  The private key client is using to sign a GraphQL request which will be verified at server side.
   """
   encrypted_signing_private_key: Secret
 }
 
-"""This is a Sparknode with OSK."""
-type LightsparkNodeWithOSKSparknode implements Sparknode & LightsparkNode & Node & Entity {
-  """
-  The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
-  """
-  id: ID!
-
-  """The date and time when the entity was first created."""
-  created_at: DateTime!
-
-  """The date and time when the entity was last updated."""
-  updated_at: DateTime!
-
-  """
-  A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator.
-  """
-  alias: String
-
-  """The Bitcoin Network this node is deployed in."""
-  bitcoin_network: BitcoinNetwork!
-
-  """
-  A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator.
-  """
-  color: String
-
-  """
-  A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
-  """
-  conductivity: Int
-
-  """
-  The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node.
-  """
-  display_name: String!
-
-  """
-  The public key of this node. It acts as a unique identifier of this node in the Lightning Network.
-  """
-  public_key: String
-
-  """
-  The addresses that this node has announced for itself on the Lightning Network.
-  """
-  addresses(first: Int = null, types: [NodeAddressType!] = null): NodeToAddressesConnection!
-
-  """The owner of this LightsparkNode."""
-  owner: LightsparkNodeOwner!
-
-  """The channels that are connected to this node."""
-  channels(first: Int = null, statuses: [ChannelStatus!] = null): LightsparkNodeToChannelsConnection!
-
-  """The current status of this node."""
-  status: LightsparkNodeStatus
-
-  """
-  The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
-  """
-  total_balance: CurrencyAmount
-
-  """
-  The total sum of the channel balances (online and offline) on this node.
-  """
-  total_local_balance: CurrencyAmount
-
-  """
-  The sum of the channel balances (online only) that are available to send on this node.
-  """
-  local_balance: CurrencyAmount
-
-  """
-  The sum of the channel balances that are available to receive on this node.
-  """
-  remote_balance: CurrencyAmount
-
-  """The details of the balance of this node on the Bitcoin Network."""
-  blockchain_balance: BlockchainBalance
-}
-
-"""This is a Sparknode with server remote signing."""
-type LightsparkNodeWithServerSigning implements Sparknode & LightsparkNode & Node & Entity {
+"""This is a Lightspark node with remote signing."""
+type LightsparkNodeWithRemoteSigning implements LightsparkNode & Node & Entity {
   """
   The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
   """
@@ -2276,85 +2199,6 @@ enum SignablePayloadStatus {
 input Signature {
   id: ID!
   signature: String!
-}
-
-"""This is a Sparknode."""
-interface Sparknode implements LightsparkNode & Node & Entity {
-  """
-  The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque string.
-  """
-  id: ID!
-
-  """The date and time when the entity was first created."""
-  created_at: DateTime!
-
-  """The date and time when the entity was last updated."""
-  updated_at: DateTime!
-
-  """
-  A name that identifies the node. It has no importance in terms of operating the node, it is just a way to identify and search for commercial services or popular nodes. This alias can be changed at any time by the node operator.
-  """
-  alias: String
-
-  """The Bitcoin Network this node is deployed in."""
-  bitcoin_network: BitcoinNetwork!
-
-  """
-  A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is white. It has no importance in terms of operating the node, it is just a way to visually differentiate nodes. That color can be changed at any time by the node operator.
-  """
-  color: String
-
-  """
-  A summary metric used to capture how well positioned a node is to send, receive, or route transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
-  """
-  conductivity: Int
-
-  """
-  The name of this node in the network. It will be the most human-readable option possible, depending on the data available for this node.
-  """
-  display_name: String!
-
-  """
-  The public key of this node. It acts as a unique identifier of this node in the Lightning Network.
-  """
-  public_key: String
-
-  """
-  The addresses that this node has announced for itself on the Lightning Network.
-  """
-  addresses(first: Int = null, types: [NodeAddressType!] = null): NodeToAddressesConnection!
-
-  """The owner of this LightsparkNode."""
-  owner: LightsparkNodeOwner!
-
-  """The channels that are connected to this node."""
-  channels(first: Int = null, statuses: [ChannelStatus!] = null): LightsparkNodeToChannelsConnection!
-
-  """The current status of this node."""
-  status: LightsparkNodeStatus
-
-  """
-  The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this node.
-  """
-  total_balance: CurrencyAmount
-
-  """
-  The total sum of the channel balances (online and offline) on this node.
-  """
-  total_local_balance: CurrencyAmount
-
-  """
-  The sum of the channel balances (online only) that are available to send on this node.
-  """
-  local_balance: CurrencyAmount
-
-  """
-  The sum of the channel balances that are available to receive on this node.
-  """
-  remote_balance: CurrencyAmount
-
-  """The details of the balance of this node on the Bitcoin Network."""
-  blockchain_balance: BlockchainBalance
 }
 
 type Subscription {
