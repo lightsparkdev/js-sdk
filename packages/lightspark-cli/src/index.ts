@@ -440,10 +440,15 @@ const generateNodeKeys = async (
 
   console.log("Generating node keys...\n");
 
-  const lightsparkSigner = LightsparkSigner.new(Seed.from_mnemonic(mnemonic));
+  const seed = Seed.from_mnemonic(mnemonic);
+  const lightsparkSigner = LightsparkSigner.new(seed);
   const extendedPublicKey = lightsparkSigner.get_master_public_key();
 
+  const seedAsHex = seed.as_bytes().reduce((acc: string, byte: number) => {
+    return (acc += ("0" + byte.toString(16)).slice(-2));
+  }, "");
   console.log(`Seed phrase:\n${mnemonic.as_string()}\n`);
+  console.log(`Hex-encoded seed:\n${seedAsHex}\n`);
   console.log(`Extended public key:\n${extendedPublicKey}`);
 };
 
