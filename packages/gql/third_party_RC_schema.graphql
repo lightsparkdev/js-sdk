@@ -1589,6 +1589,9 @@ type Mutation {
   """
   release_channel_per_commitment_secret(input: ReleaseChannelPerCommitmentSecretInput!): ReleaseChannelPerCommitmentSecretOutput!
 
+  """Release the payment preimage for an invoice."""
+  release_payment_preimage(input: ReleasePaymentPreimageInput!): ReleasePaymentPreimageOutput!
+
   """
   Withdraws funds from the account and sends it to the requested bitcoin address.
   
@@ -2047,6 +2050,18 @@ type ReleaseChannelPerCommitmentSecretOutput {
   channel: Channel!
 }
 
+input ReleasePaymentPreimageInput {
+  """The invoice the preimage belongs to."""
+  invoice_id: ID!
+
+  """The preimage to release."""
+  payment_preimage: Hash32!
+}
+
+type ReleasePaymentPreimageOutput {
+  invoice: Invoice!
+}
+
 """
 This is an enum of the potential sub-event types for Remote Signing webook events.
 """
@@ -2056,7 +2071,7 @@ enum RemoteSigningSubEventType {
   RELEASE_PER_COMMITMENT_SECRET
   SIGN_INVOICE
   DERIVE_KEY_AND_SIGN
-  RELEASE_PREIMAGE
+  RELEASE_PAYMENT_PREIMAGE
 }
 
 input RequestWithdrawalInput {
