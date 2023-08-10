@@ -609,6 +609,8 @@ input CreateInvoiceInput {
   amount_msats: Long!
   memo: String = null
   invoice_type: InvoiceType = null
+  payment_hash: String = null
+  preimage_nonce: String = null
 }
 
 type CreateInvoiceOutput {

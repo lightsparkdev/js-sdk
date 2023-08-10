@@ -474,6 +474,8 @@ export type CreateInvoiceInput = {
   invoice_type?: InputMaybe<InvoiceType>;
   memo?: InputMaybe<Scalars['String']>;
   node_id: Scalars['ID'];
+  payment_hash?: InputMaybe<Scalars['String']>;
+  preimage_nonce?: InputMaybe<Scalars['String']>;
 };
 
 export type CreateInvoiceOutput = {
