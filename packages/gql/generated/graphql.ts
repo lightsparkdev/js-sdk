@@ -1823,7 +1823,7 @@ export enum TransactionType {
 export type UpdateChannelPerCommitmentPointInput = {
   channel_id: Scalars['ID'];
   per_commitment_point: Scalars['PublicKey'];
-  per_commitment_point_index: Scalars['Int'];
+  per_commitment_point_index: Scalars['Long'];
 };
 
 export type UpdateChannelPerCommitmentPointOutput = {
