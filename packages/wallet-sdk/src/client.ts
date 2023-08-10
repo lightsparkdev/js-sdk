@@ -648,7 +648,8 @@ class LightsparkClient {
       }
     );
     return CurrencyAmountFromJson(
-      response.lightning_fee_estimate_for_invoice.fee_estimate
+      response.lightning_fee_estimate_for_invoice
+        .lightning_fee_estimate_output_fee_estimate
     );
   }
 
@@ -672,7 +673,8 @@ class LightsparkClient {
       }
     );
     return CurrencyAmountFromJson(
-      response.lightning_fee_estimate_for_node.fee_estimate
+      response.lightning_fee_estimate_for_node
+        .lightning_fee_estimate_output_fee_estimate
     );
   }
 
