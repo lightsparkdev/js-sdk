@@ -194,7 +194,7 @@ export type AccountToPaymentRequestsConnection = Connection & {
   page_info: PageInfo;
 };
 
-export type AccountToTransactionsConnection = {
+export type AccountToTransactionsConnection = Connection & {
   __typename: 'AccountToTransactionsConnection';
   /** Average fee earned for the transactions in this connection, with the set of filters and constraints provided. */
   average_fee_earned?: Maybe<CurrencyAmount>;
