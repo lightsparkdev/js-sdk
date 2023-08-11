@@ -181,10 +181,10 @@ export type AccountToNodesConnection = {
   page_info: PageInfo;
 };
 
-export type AccountToPaymentRequestsConnection = {
+export type AccountToPaymentRequestsConnection = Connection & {
   __typename: 'AccountToPaymentRequestsConnection';
   /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). */
-  count?: Maybe<Scalars['Int']>;
+  count: Scalars['Int'];
   /** The payment requests for the current page of this connection. */
   entities: Array<PaymentRequest>;
   /** An object that holds pagination information about the objects in this connection. */
@@ -446,6 +446,13 @@ export type ChannelToTransactionsConnection = {
   total_amount_transacted?: Maybe<CurrencyAmount>;
   /** The total amount of fees for the transactions that transited through this channel, according to the filters and constraints of the connection. */
   total_fees?: Maybe<CurrencyAmount>;
+};
+
+export type Connection = {
+  /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). */
+  count: Scalars['Int'];
+  /** An object that holds pagination information about the objects in this connection. */
+  page_info: PageInfo;
 };
 
 export type CreateApiTokenInput = {
