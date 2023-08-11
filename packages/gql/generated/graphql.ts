@@ -18,6 +18,8 @@ export type Scalars = {
   Long: any;
   /** A Secp256k1 public key. */
   PublicKey: any;
+  /** An ECDSA signature. */
+  Signature: any;
 };
 
 /** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
@@ -736,6 +738,11 @@ export enum HtlcAttemptFailureCode {
   UnknownNextPeer = 'UNKNOWN_NEXT_PEER',
   UnreadableFailure = 'UNREADABLE_FAILURE'
 }
+
+export type IdAndSignature = {
+  id: Scalars['ID'];
+  signature: Scalars['Signature'];
+};
 
 /** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. */
 export type IncomingPayment = Entity & LightningTransaction & Transaction & {
@@ -1680,7 +1687,7 @@ export type SignInvoiceOutput = {
 };
 
 export type SignMessagesInput = {
-  signatures: Array<Signature>;
+  signatures: Array<IdAndSignature>;
 };
 
 export type SignMessagesOutput = {
@@ -1724,11 +1731,6 @@ export enum SignablePayloadStatus {
   Created = 'CREATED',
   Signed = 'SIGNED'
 }
-
-export type Signature = {
-  id: Scalars['ID'];
-  signature: Scalars['Hash32'];
-};
 
 export type Subscription = {
   __typename: 'Subscription';

@@ -974,6 +974,11 @@ enum HtlcAttemptFailureCode {
   UNREADABLE_FAILURE
 }
 
+input IdAndSignature {
+  id: ID!
+  signature: Signature!
+}
+
 """
 This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node.
 """
@@ -2150,7 +2155,7 @@ type SignInvoiceOutput {
 }
 
 input SignMessagesInput {
-  signatures: [Signature!]!
+  signatures: [IdAndSignature!]!
 }
 
 type SignMessagesOutput {
@@ -2208,10 +2213,8 @@ enum SignablePayloadStatus {
   SIGNED
 }
 
-input Signature {
-  id: ID!
-  signature: Hash32!
-}
+"""An ECDSA signature."""
+scalar Signature
 
 type Subscription {
   entity(id: ID!): Entity!
