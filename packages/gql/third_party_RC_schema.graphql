@@ -2146,7 +2146,7 @@ type SendPaymentOutput {
 
 input SignInvoiceInput {
   invoice_id: ID!
-  signature: String!
+  signature: Signature!
   recovery_id: Int!
 }
 

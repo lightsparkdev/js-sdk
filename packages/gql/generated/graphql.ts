@@ -1678,7 +1678,7 @@ export type SendPaymentOutput = {
 export type SignInvoiceInput = {
   invoice_id: Scalars['ID'];
   recovery_id: Scalars['Int'];
-  signature: Scalars['String'];
+  signature: Scalars['Signature'];
 };
 
 export type SignInvoiceOutput = {
