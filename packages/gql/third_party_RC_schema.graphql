@@ -16,7 +16,7 @@ type Account implements LightsparkNodeOwner & Entity {
   """
   The API tokens that can be used to authenticate this account when making API calls or using our SDKs. See the "Authentication" section of our API docs for more details on its usage.
   """
-  api_tokens(first: Int): AccountToApiTokensConnection!
+  api_tokens(first: Int = null, after: String = null): AccountToApiTokensConnection!
 
   """
   The details of the balance of the nodes owned by this account on the Bitcoin Network.
@@ -122,16 +122,16 @@ type Account implements LightsparkNodeOwner & Entity {
   ): AccountToWalletsConnection!
 }
 
-type AccountToApiTokensConnection {
-  """
-  An object that holds pagination information about the objects in this connection.
-  """
-  page_info: PageInfo!
-
+type AccountToApiTokensConnection implements Connection {
   """
   The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field).
   """
   count: Int!
+
+  """
+  An object that holds pagination information about the objects in this connection.
+  """
+  page_info: PageInfo!
 
   """The API tokens for the current page of this connection."""
   entities: [ApiToken!]!
