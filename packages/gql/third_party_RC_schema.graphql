@@ -2210,7 +2210,7 @@ enum SignablePayloadStatus {
 
 input Signature {
   id: ID!
-  signature: String!
+  signature: Hash32!
 }
 
 type Subscription {

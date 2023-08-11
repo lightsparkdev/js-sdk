@@ -1730,7 +1730,7 @@ export enum SignablePayloadStatus {
 
 export type Signature = {
   id: Scalars['ID'];
-  signature: Scalars['String'];
+  signature: Scalars['Hash32'];
 };
 
 export type Subscription = {
