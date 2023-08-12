@@ -195,7 +195,7 @@ class LightsparkClient {
    * @return The wallet that was deployed.
    */
   public async deployWallet() {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: DeployWallet,
       constructObject: (responseJson: any) => {
@@ -244,7 +244,7 @@ class LightsparkClient {
     signingPublicKey: string,
     signingPrivateKeyOrAlias: KeyOrAliasType
   ) {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     await this.loadWalletSigningKey(signingPrivateKeyOrAlias);
     return await this.executeRawQuery({
       queryPayload: InitializeWallet,
@@ -303,7 +303,7 @@ class LightsparkClient {
    * @return The wallet that was terminated.
    */
   public async terminateWallet() {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: TerminateWallet,
       constructObject: (responseJson: any) => {
@@ -325,7 +325,7 @@ class LightsparkClient {
     numTransactions: number = 20,
     numPaymentRequests: number = 20
   ) {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: WalletDashboardQuery,
       variables: {
@@ -374,7 +374,7 @@ class LightsparkClient {
     type: InvoiceType = InvoiceType.STANDARD,
     expirySecs: number | undefined = undefined
   ) {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: CreateInvoice,
       variables: {
@@ -415,7 +415,7 @@ class LightsparkClient {
     amountMsats: number | undefined = undefined,
     timoutSecs: number = 60
   ) {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     this.requireWalletUnlocked();
     const variables: any = {
       encoded_invoice: encodedInvoice,
@@ -545,7 +545,7 @@ class LightsparkClient {
     maxFeesMsats: number,
     timeoutSecs: number = 60
   ) {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     this.requireWalletUnlocked();
     const payment = await this.executeRawQuery({
       queryPayload: SendPaymentMutation,
@@ -639,7 +639,7 @@ class LightsparkClient {
     encodedPaymentRequest: string,
     amountMsats: number | undefined = undefined
   ): Promise<CurrencyAmount> {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     const response = await this.requester.makeRawRequest(
       LightningFeeEstimateForInvoice,
       {
@@ -664,7 +664,7 @@ class LightsparkClient {
     destinationNodePublicKey: string,
     amountMsats: number
   ): Promise<CurrencyAmount> {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     const response = await this.requester.makeRawRequest(
       LightningFeeEstimateForNode,
       {
@@ -699,7 +699,7 @@ class LightsparkClient {
    * @return The newly created L1 wallet address.
    */
   public async createBitcoinFundingAddress() {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: CreateBitcoinFundingAddress,
       constructObject: (responseJson: any) => {
@@ -713,7 +713,7 @@ class LightsparkClient {
    * @return The current wallet if one exists, null otherwise.
    */
   public async getCurrentWallet() {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: CurrentWalletQuery,
       constructObject: (responseJson: any) => {
@@ -735,7 +735,7 @@ class LightsparkClient {
     amountSats: number,
     bitcoinAddress: string
   ): Promise<WithdrawalRequest | null> {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     this.requireWalletUnlocked();
     return await this.executeRawQuery({
       queryPayload: RequestWithdrawalMutation,
@@ -765,7 +765,7 @@ class LightsparkClient {
     memo: string | undefined = undefined,
     invoiceType: InvoiceType = InvoiceType.STANDARD
   ): Promise<string | null> {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     return await this.executeRawQuery({
       queryPayload: CreateTestModeInvoice,
       variables: {
@@ -799,7 +799,7 @@ class LightsparkClient {
     encodedInvoice: string,
     amountMsats: number | undefined = undefined
   ): Promise<OutgoingPayment | null> {
-    this.requireValidAuth();
+    await this.requireValidAuth();
     this.requireWalletUnlocked();
     return await this.executeRawQuery({
       queryPayload: CreateTestModePayment,
