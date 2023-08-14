@@ -2,16 +2,26 @@ import { jest } from '@jest/globals'
 import { describe, expect, test } from '@jest/globals'
 import { b64encode, DefaultCrypto, KeyOrAlias} from '@lightsparkdev/core'
 
-import TransactionStatus from '../objects/TransactionStatus.js'
-import WalletStatus from '../objects/WalletStatus.js'
 import LightsparkClient from '../client.js'
-import KeyType from '../objects/KeyType.js'
 
-import { TESTS_TIMEOUT, TEST_USER_ID, TEST_INVOICE_AMOUNT } from './consts/index.js'
+import { type CreatedInvoiceData, type CreatedTestnetInvoiceData } from './types/index.js'
+import {
+    TESTS_TIMEOUT,
+    TEST_USER_ID,
+    TEST_INVOICE_AMOUNT
+} from './consts/index.js'
 import { FRAGMENT } from '../objects/InvoiceData.js'
-import { InvoiceType } from '../objects/index.js'
+import {
+    InvoiceType,
+    KeyType,
+    WalletStatus,
+    TransactionStatus,
+    getOutgoingPaymentQuery,
+    type OutgoingPayment,
+} from '../objects/index.js'
 import { getCredentialsFromEnvOrThrow, createDeployAndInitWallet } from './helpers/index.js'
-import { type CreatedInvoiceData } from './types/index.js'
+
+const ENCODED_REQUEST_FOR_TESTS = 'lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse'
 
 const client = new LightsparkClient()
 
@@ -23,11 +33,13 @@ const credentials = getCredentialsFromEnvOrThrow(`_${TEST_USER_ID}`)
 
 let createDeployAndInitWalletResponse: Awaited<ReturnType<typeof createDeployAndInitWallet>> | undefined = undefined
 
-const ENCODED_REQUEST_FOR_TESTS = 'lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse'
+let invoicePayment: OutgoingPayment
 
 describe('Sanity tests', () => {
 
     const invoiceData = {} as CreatedInvoiceData
+
+    const testInvoiceData = {} as CreatedTestnetInvoiceData
 
     jest.spyOn(authorizedClientWithLockedWallet, 'isAuthorized').mockResolvedValue(true)
 
@@ -68,19 +80,6 @@ describe('Sanity tests', () => {
         expect(invoiceData.AMP).not.toBe(null)
     }, TESTS_TIMEOUT)
 
-    // FIXME: FUTURE_VALUE' does not exist in 'InvoiceType'
-    test('should create a FUTURE_VALUE type invoice', async () => {
-        invoiceData.FUTURE_VALUE = await client.createInvoice(
-            TEST_INVOICE_AMOUNT,
-            'hi there',
-            InvoiceType.FUTURE_VALUE
-        )
-
-        //console.log('created FUTURE_VALUE Invoice:',  invoiceData.FUTURE_VALUE)
-
-        expect(invoiceData.FUTURE_VALUE).not.toBe(null)
-    }, TESTS_TIMEOUT)
-
     test('should create a STANDARD type invoice', async () => {
         invoiceData.STANDARD = await client.createInvoice(TEST_INVOICE_AMOUNT, 'hi there')
 
@@ -100,6 +99,30 @@ describe('Sanity tests', () => {
     test('should create an unauthorized invoice', async () => {
         await expect(
             unauthorizedClient.createInvoice(TEST_INVOICE_AMOUNT)
+        ).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should create a STANDARD test mode invoice', async () => {
+        testInvoiceData.STANDARD = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT)
+        expect(testInvoiceData.STANDARD).not.toBeNull()
+    })
+
+    test('should create a AMP test mode invoice', async () => {
+        testInvoiceData.AMP = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT, InvoiceType.AMP)
+        expect(testInvoiceData.STANDARD).not.toBeNull()
+    })
+
+    test('should create a empty memo test mode invoice', async () => {
+        const clearMemoTestInvoice = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT, InvoiceType.AMP)
+
+        console.log('created clear memo testnet Invoice:', clearMemoTestInvoice)
+
+        expect(invoiceData.STANDARD).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should create a empty memo test mode invoice with unauthorized account', async () => {
+        await expect(
+            unauthorizedClient.createTestModeInvoice(TEST_INVOICE_AMOUNT)
         ).rejects.toThrow('You must be logged in to perform this action.')
     })
 
@@ -149,16 +172,16 @@ describe('Sanity tests', () => {
             throw new Error('testnetInvoiceData is null')
         }
 
-        const payment = await client.payInvoiceAndAwaitResult(
-            invoiceData.STANDARD.encodedPaymentRequest,
+        invoicePayment = await client.payInvoiceAndAwaitResult(
+            invoiceData.AMP?.encodedPaymentRequest ?? '',
             1_000_000,
         )
 
-        console.log(payment, 'payment testnet invoice')
+        console.log(invoicePayment, 'payment testnet invoice')
 
-        console.log(`Testnet payment done with status= ${payment!.status}, ID = ${payment!.id}`)
+        console.log(`Testnet payment done with status= ${invoicePayment.status}, ID = ${invoicePayment.id}`)
 
-        expect(payment!.status).toBe(TransactionStatus.SUCCESS)
+        expect(invoicePayment.status).toBe(TransactionStatus.SUCCESS)
     }, TESTS_TIMEOUT)
 
     test('should create a deposit bitcoin address', async () => {
@@ -224,9 +247,14 @@ describe('P1 tests', () => {
         await expect(unauthorizedClient.getWalletDashboard()).rejects.toThrow('You must be logged in to perform this action.')
     })
 
-    test('should fetch an entity by ID', async () => {
-        expect(1).toBe(1)
+    test('should fetch an invoice payment by ID', async () => {
+        console.log(invoicePayment, 'should fetch an entity by ID invoice payment ')
+        const payment = await client.executeRawQuery(getOutgoingPaymentQuery(invoicePayment.id))
+
+        expect(payment).not.toBeNull()
+        expect(payment!.id).toBe(invoicePayment.id)
     })
+
 
     test('should terminate a wallet', async () => {
         await client.terminateWallet()
