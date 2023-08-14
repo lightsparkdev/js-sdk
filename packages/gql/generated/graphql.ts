@@ -148,6 +148,7 @@ export type AccountUptime_PercentageArgs = {
 
 /** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. */
 export type AccountWalletsArgs = {
+  after?: InputMaybe<Scalars['String']>;
   first?: InputMaybe<Scalars['Int']>;
 };
 
@@ -211,7 +212,7 @@ export type AccountToTransactionsConnection = Connection & {
   total_amount_transacted?: Maybe<CurrencyAmount>;
 };
 
-export type AccountToWalletsConnection = {
+export type AccountToWalletsConnection = Connection & {
   __typename: 'AccountToWalletsConnection';
   /** The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field). */
   count: Scalars['Int'];
