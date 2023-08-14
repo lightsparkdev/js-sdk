@@ -66,6 +66,9 @@ type Account implements LightsparkNodeOwner & Entity {
 
     """Filter the nodes by their ID."""
     node_ids: [ID!] = null
+
+    """The end_cursor in the last query used in pagination."""
+    after: String = null
   ): AccountToNodesConnection!
 
   """
@@ -148,16 +151,16 @@ type AccountToChannelsConnection {
 }
 
 """A connection between an account and the nodes it manages."""
-type AccountToNodesConnection {
-  """
-  An object that holds pagination information about the objects in this connection.
-  """
-  page_info: PageInfo!
-
+type AccountToNodesConnection implements Connection {
   """
   The total count of objects in this connection, using the current filters. It is different from the number of objects returned in the current page (in the `entities` field).
   """
   count: Int!
+
+  """
+  An object that holds pagination information about the objects in this connection.
+  """
+  page_info: PageInfo!
 
   """The nodes for the current page of this connection."""
   entities: [LightsparkNode!]!
