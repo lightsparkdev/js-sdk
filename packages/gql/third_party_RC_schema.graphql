@@ -67,7 +67,7 @@ type Account implements LightsparkNodeOwner & Entity {
     """Filter the nodes by their ID."""
     node_ids: [ID!] = null
 
-    """The end_cursor in the last query used in pagination."""
+    """The end_cursor in the last query for pagination."""
     after: String = null
   ): AccountToNodesConnection!
 
