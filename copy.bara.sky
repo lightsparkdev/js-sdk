@@ -75,6 +75,8 @@ This typically happens when new versions of the SDK are released and version upd
             "js/yarn.lock",
             # different README for private repo, see README-PUBLIC.md:
             "js/README.md",
+            # TODO: remove public gql package
+            "js/packages/gql/**",
         ],
     ),
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
