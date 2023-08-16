@@ -1,6 +1,6 @@
-import type InvoiceData from '../../objects/InvoiceData.js'
+import type InvoiceData from "../../objects/InvoiceData.js";
 import type InvoiceType from "../../objects/InvoiceType.js";
 
-export type CreatedInvoiceData = Record<InvoiceType, InvoiceData | null>
+export type CreatedInvoiceData = Record<InvoiceType, InvoiceData | null>;
 
-export type CreatedTestnetInvoiceData = Record<InvoiceType, string | null>
+export type CreatedTestnetInvoiceData = Record<InvoiceType, string | null>;
