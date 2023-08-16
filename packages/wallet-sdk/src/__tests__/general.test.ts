@@ -1,3 +1,10 @@
+/**
+ * To run test properly:
+ * 1. lightspark-wallet init-env
+ * 2. source ~/.lightsparkenv
+ * 3. setup LIGHTSPARK_JWT_PUB_KEY into app.lightspark.com account settings
+ */
+
 import { jest } from '@jest/globals'
 import { describe, expect, test } from '@jest/globals'
 import {b64encode, DefaultCrypto, KeyOrAlias, LightsparkException} from '@lightsparkdev/core'
@@ -7,7 +14,6 @@ import LightsparkClient from '../client.js'
 import { type CreatedInvoiceData, type CreatedTestnetInvoiceData } from './types/index.js'
 import {
     TESTS_TIMEOUT,
-    TEST_USER_ID,
     TEST_INVOICE_AMOUNT
 } from './consts/index.js'
 import { FRAGMENT } from '../objects/InvoiceData.js'
@@ -29,6 +35,11 @@ const unauthorizedClient = new LightsparkClient()
 
 const authorizedClientWithLockedWallet = new LightsparkClient()
 
+/**
+ * For every test `TEST_USER_ID` should be unique
+ */
+export const TEST_USER_ID = 'wed16_17_25__2023_08'
+
 const credentials = getCredentialsFromEnvOrThrow(`_${TEST_USER_ID}`)
 
 let clientDeployWalletResponse: Awaited<ReturnType<typeof deployWallet>> | undefined = undefined
@@ -49,7 +60,7 @@ describe('Sanity tests', () => {
             test: true,
         }, credentials)
 
-        expect(clientDeployWalletResponse.userId).not.toBe(null)
+        expect(clientDeployWalletResponse.userId).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should throw an error on deploying wallet twice', async () => {
@@ -93,19 +104,19 @@ describe('Sanity tests', () => {
     test('should create an AMP type invoice', async () => {
         invoiceData.AMP = await client.createInvoice(TEST_INVOICE_AMOUNT, 'hi there', InvoiceType.AMP)
 
-        expect(invoiceData.AMP).not.toBe(null)
+        expect(invoiceData.AMP).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should create a STANDARD type invoice', async () => {
         invoiceData.STANDARD = await client.createInvoice(TEST_INVOICE_AMOUNT, 'hi there')
 
-        expect(invoiceData.STANDARD).not.toBe(null)
+        expect(invoiceData.STANDARD).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should create a empty memo invoice', async () => {
         const clearMemoInvoice = await client.createInvoice(TEST_INVOICE_AMOUNT)
 
-        expect(clearMemoInvoice).not.toBe(null)
+        expect(clearMemoInvoice).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should throw an error on create an unauthorized invoice', async () => {
@@ -127,7 +138,7 @@ describe('Sanity tests', () => {
     test('should create a empty memo test mode invoice', async () => {
         const clearMemoTestInvoice = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT, InvoiceType.AMP)
 
-        expect(clearMemoTestInvoice).not.toBe(null)
+        expect(clearMemoTestInvoice).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should throw an error on create a empty memo test mode invoice with unauthorized account', async () => {
@@ -200,7 +211,7 @@ describe('Sanity tests', () => {
 describe('P1 tests', () => {
     test('should generate a key', async () => {
         // TODO: refactor
-        const keypair = await DefaultCrypto.generateSigningKeyPair();
+        const keypair = await DefaultCrypto.generateSigningKeyPair()
 
         const serializedKeypair = {
             privateKey: b64encode(
@@ -218,7 +229,7 @@ describe('P1 tests', () => {
     test('should fetch the current wallet', async () => {
         const wallet = await client.getCurrentWallet()
 
-        expect(wallet).not.toBe(null)
+        expect(wallet).not.toBeNull()
     }, TESTS_TIMEOUT)
 
     test('should throw an error on fetch the current wallet from unauthorized user', async () => {
@@ -263,7 +274,7 @@ describe('P1 tests', () => {
     test('should decode an invoice', async () => {
         const decodedInvoice = await client.decodeInvoice(ENCODED_REQUEST_FOR_TESTS)
 
-        expect(decodedInvoice).not.toBe(null)
+        expect(decodedInvoice).not.toBeNull()
         expect(decodedInvoice?.memo).toBe('mmmmm pizza')
         expect(decodedInvoice?.paymentHash).toBe('f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61')
     }, TESTS_TIMEOUT)
@@ -295,10 +306,10 @@ describe('P2 tests', () => {
                 encoded_payment_request: ENCODED_REQUEST_FOR_TESTS,
             },
             constructObject: data => data?.decoded_payment_request,
-        });
+        })
 
-        expect(result).not.toBe(null);
-    }, TESTS_TIMEOUT);
+        expect(result).not.toBeNull()
+    }, TESTS_TIMEOUT)
 
     test('should get an estimated gas price', async () => {
         const fee = await client.getBitcoinFeeEstimate()
