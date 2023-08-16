@@ -1,25 +1,21 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+import { gql } from "@apollo/client";
 import styled from "@emotion/styled";
-import { currencyAmountFragment } from "@lightsparkdev/gql/fragments";
-import {
-  CurrencyUnit,
-  type CurrencyAmount as GQLCurrencyAmountType,
-} from "@lightsparkdev/gql/generated/graphql";
 import { Icon } from "@lightsparkdev/ui/icons";
 import type {
   CurrencyAmountArg,
   CurrencyMap,
 } from "@lightsparkdev/ui/utils/currency";
 import {
+  CurrencyUnit,
   formatCurrencyStr,
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/ui/utils/currency";
-import { CurrencyUnit as SDKCurrencyUnitType } from "@lightsparkdev/wallet-sdk";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
-  displayUnit?: CurrencyUnit | SDKCurrencyUnitType;
+  displayUnit?: CurrencyUnit;
   shortNumber?: boolean;
   showUnits?: boolean;
   ml?: number;
@@ -27,30 +23,9 @@ type CurrencyAmountProps = {
   showSubSatDigits?: boolean;
 };
 
-function normalizeUnit(displayUnit: CurrencyUnit | SDKCurrencyUnitType) {
-  switch (displayUnit) {
-    case SDKCurrencyUnitType.MILLISATOSHI:
-      return CurrencyUnit.Millisatoshi;
-    case SDKCurrencyUnitType.SATOSHI:
-      return CurrencyUnit.Satoshi;
-    case SDKCurrencyUnitType.MILLIBITCOIN:
-      return CurrencyUnit.Millibitcoin;
-    case SDKCurrencyUnitType.BITCOIN:
-      return CurrencyUnit.Bitcoin;
-    case SDKCurrencyUnitType.MICROBITCOIN:
-      return CurrencyUnit.Microbitcoin;
-    case SDKCurrencyUnitType.USD:
-      return CurrencyUnit.Usd;
-    case SDKCurrencyUnitType.NANOBITCOIN:
-      return CurrencyUnit.Nanobitcoin;
-    default:
-      return CurrencyUnit.Satoshi;
-  }
-}
-
 export function CurrencyAmount({
   amount,
-  displayUnit = CurrencyUnit.Satoshi,
+  displayUnit = CurrencyUnit.SATOSHI,
   shortNumber = false,
   showUnits = false,
   includeEstimatedIndicator = false,
@@ -59,7 +34,7 @@ export function CurrencyAmount({
   showSubSatDigits = false,
   ml = 0,
 }: CurrencyAmountProps) {
-  const unit = normalizeUnit(displayUnit);
+  const unit = displayUnit;
 
   const amountMap = isCurrencyMap(amount) ? amount : mapCurrencyAmount(amount);
   const value = amountMap[unit] as number;
@@ -70,13 +45,13 @@ export function CurrencyAmount({
   let formattedNumber = defaultFormattedNumber;
   if (shortNumber) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: unit },
+      { value: Number(value), unit },
       1,
       true
     );
   } else if (showSubSatDigits) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: CurrencyUnit.Satoshi },
+      { value: Number(value), unit: CurrencyUnit.SATOSHI },
       3
     );
   }
@@ -96,9 +71,9 @@ export function CurrencyAmount({
 
 export const CurrencyIcon = ({ unit }: { unit: CurrencyUnit }) => {
   switch (unit) {
-    case CurrencyUnit.Bitcoin:
+    case CurrencyUnit.BITCOIN:
       return <Icon name="BitcoinB" width={8} verticalAlign={-2} mr={2} />;
-    case CurrencyUnit.Satoshi:
+    case CurrencyUnit.SATOSHI:
       return <Icon name="Satoshi" width={8} verticalAlign={-2} mr={2} />;
     default:
       return null;
@@ -108,15 +83,15 @@ export const CurrencyIcon = ({ unit }: { unit: CurrencyUnit }) => {
 const shorttext = (unit: CurrencyUnit, value: number) => {
   const pl = value !== 1;
   switch (unit) {
-    case CurrencyUnit.Bitcoin:
+    case CurrencyUnit.BITCOIN:
       return "BTC";
-    case CurrencyUnit.Millibitcoin:
+    case CurrencyUnit.MILLIBITCOIN:
       return "mBTC";
-    case CurrencyUnit.Microbitcoin:
+    case CurrencyUnit.MICROBITCOIN:
       return "μBTC";
-    case CurrencyUnit.Satoshi:
+    case CurrencyUnit.SATOSHI:
       return `sat${pl ? "s" : ""}`;
-    case CurrencyUnit.Millisatoshi:
+    case CurrencyUnit.MILLISATOSHI:
       return `msat${pl ? "s" : ""}`;
   }
   return unit;
@@ -130,15 +105,13 @@ const StyledCurrencyAmount = styled.span<{ ml: number }>`
 `;
 
 CurrencyAmount.fragments = {
-  amount: currencyAmountFragment,
+  amount: gql`
+    fragment CurrencyAmount_amount on CurrencyAmount {
+      original_value
+      original_unit
+      preferred_currency_unit
+      preferred_currency_value_rounded
+      preferred_currency_value_approx
+    }
+  `,
 };
-
-export type CurrencyAmountType = Omit<
-  GQLCurrencyAmountType,
-  | "__typename"
-  | "original_value"
-  | "original_unit"
-  | "preferred_currency_value_rounded"
-  | "preferred_currency_value_approx"
-  | "preferred_currency_unit"
->;

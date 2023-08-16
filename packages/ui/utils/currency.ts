@@ -1,34 +1,78 @@
-import { CurrencyUnit } from "@lightsparkdev/gql/generated/graphql";
-import type { CurrencyAmount as SDKCurrencyAmountType } from "@lightsparkdev/wallet-sdk";
 import { isNumber } from "lodash-es";
 import { getCurrentLocale } from "./getCurrentLocale";
 import { round } from "./numbers";
 
 export const defaultCurrencyCode = "USD";
 
+/** This enum identifies the unit of currency associated with a CurrencyAmount. **/
+export enum CurrencyUnit {
+  /**
+   * This is an enum value that represents values that could be added in the future.
+   * Clients should support unknown values as more of them could be added without notice.
+   */
+  FUTURE_VALUE = "FUTURE_VALUE",
+  /** Bitcoin is the cryptocurrency native to the Bitcoin network. It is used as the native medium for value transfer for the Lightning Network. **/
+  BITCOIN = "BITCOIN",
+  /** 0.00000001 (10e-8) Bitcoin or one hundred millionth of a Bitcoin. This is the unit most commonly used in Lightning transactions. **/
+  SATOSHI = "SATOSHI",
+  /** 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  MILLISATOSHI = "MILLISATOSHI",
+  /** United States Dollar. **/
+  USD = "USD",
+  /** 0.000000001 (10e-9) Bitcoin or a billionth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  NANOBITCOIN = "NANOBITCOIN",
+  /** 0.000001 (10e-6) Bitcoin or a millionth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  MICROBITCOIN = "MICROBITCOIN",
+  /** 0.001 (10e-3) Bitcoin or a thousandth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  MILLIBITCOIN = "MILLIBITCOIN",
+}
+
+/** This object represents the value and unit for an amount of currency. **/
+export type CurrencyAmountType = {
+  /** The original numeric value for this CurrencyAmount. **/
+  originalValue: number;
+  /** The original unit of currency for this CurrencyAmount. **/
+  originalUnit: CurrencyUnit;
+  /** The unit of user's preferred currency. **/
+  preferredCurrencyUnit: CurrencyUnit;
+  /**
+   * The rounded numeric value for this CurrencyAmount in the very base level of user's preferred
+   * currency. For example, for USD, the value will be in cents.
+   **/
+  preferredCurrencyValueRounded: number;
+  /**
+   * The approximate float value for this CurrencyAmount in the very base level of user's preferred
+   * currency. For example, for USD, the value will be in cents.
+   **/
+  preferredCurrencyValueApprox: number;
+};
+
 type CurrencyLocales = keyof typeof localeToCurrencyCodes;
+
 export type CurrencyMap = {
   sats: number;
   msats: number;
   btc: number;
-  [CurrencyUnit.Bitcoin]: number;
-  [CurrencyUnit.Satoshi]: number;
-  [CurrencyUnit.Millisatoshi]: number;
-  [CurrencyUnit.Microbitcoin]: number;
-  [CurrencyUnit.Millibitcoin]: number;
-  [CurrencyUnit.Nanobitcoin]: number;
-  [CurrencyUnit.Usd]: number;
+  [CurrencyUnit.BITCOIN]: number;
+  [CurrencyUnit.SATOSHI]: number;
+  [CurrencyUnit.MILLISATOSHI]: number;
+  [CurrencyUnit.MICROBITCOIN]: number;
+  [CurrencyUnit.MILLIBITCOIN]: number;
+  [CurrencyUnit.NANOBITCOIN]: number;
+  [CurrencyUnit.USD]: number;
+  [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
     sats: string;
     msats: string;
     btc: string;
-    [CurrencyUnit.Bitcoin]: string;
-    [CurrencyUnit.Satoshi]: string;
-    [CurrencyUnit.Millisatoshi]: string;
-    [CurrencyUnit.Millibitcoin]: string;
-    [CurrencyUnit.Microbitcoin]: string;
-    [CurrencyUnit.Nanobitcoin]: string;
-    [CurrencyUnit.Usd]: string;
+    [CurrencyUnit.BITCOIN]: string;
+    [CurrencyUnit.SATOSHI]: string;
+    [CurrencyUnit.MILLISATOSHI]: string;
+    [CurrencyUnit.MILLIBITCOIN]: string;
+    [CurrencyUnit.MICROBITCOIN]: string;
+    [CurrencyUnit.NANOBITCOIN]: string;
+    [CurrencyUnit.USD]: string;
+    [CurrencyUnit.FUTURE_VALUE]: string;
   };
   isZero: boolean;
   isLessThan: (other: CurrencyMap | CurrencyAmountObj | number) => boolean;
@@ -48,7 +92,7 @@ export type CurrencyAmountObj = {
 
 export type CurrencyAmountArg =
   | CurrencyAmountObj
-  | SDKCurrencyAmountType
+  | CurrencyAmountType
   | undefined
   | null;
 
@@ -58,9 +102,7 @@ export function isCurrencyAmountObj(arg: unknown): arg is CurrencyAmountObj {
   );
 }
 
-export function isSDKCurrencyAmountType(
-  arg: unknown
-): arg is SDKCurrencyAmountType {
+export function isCurrencyAmount(arg: unknown): arg is CurrencyAmountType {
   return (
     typeof arg === "object" &&
     arg !== null &&
@@ -362,14 +404,14 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   if (isCurrencyAmountObj(currencyAmountArg)) {
     value = asNumber(currencyAmountArg.value);
     unit = currencyAmountArg.unit;
-  } else if (isSDKCurrencyAmountType(currencyAmountArg)) {
+  } else if (isCurrencyAmount(currencyAmountArg)) {
     value = currencyAmountArg.originalValue;
     unit = currencyAmountArg.originalUnit;
   }
 
   return {
     value: asNumber(value),
-    unit: unit || CurrencyUnit.Satoshi,
+    unit: unit || CurrencyUnit.SATOSHI,
   };
 }
 
@@ -384,17 +426,17 @@ export function mapCurrencyAmount(
   let btc = value / 1e8;
   let usd = round(btc * centsPerBtc, 2);
 
-  if (unit === CurrencyUnit.Bitcoin) {
+  if (unit === CurrencyUnit.BITCOIN) {
     sats = value * 1e8;
     msats = value * 1e11;
     btc = value;
     usd = round(btc * centsPerBtc, 2);
-  } else if (unit === CurrencyUnit.Millisatoshi) {
+  } else if (unit === CurrencyUnit.MILLISATOSHI) {
     sats = value / 1000;
     msats = value;
     btc = value / 1e11;
     usd = round(btc * centsPerBtc, 2);
-  } else if (unit === CurrencyUnit.Usd) {
+  } else if (unit === CurrencyUnit.USD) {
     usd = value;
     btc = value / centsPerBtc;
     sats = btc * 1e8;
@@ -402,33 +444,35 @@ export function mapCurrencyAmount(
   }
 
   const mapWithCurrencyUnits = {
-    [CurrencyUnit.Bitcoin]: btc,
-    [CurrencyUnit.Satoshi]: sats,
-    [CurrencyUnit.Millisatoshi]: msats,
-    [CurrencyUnit.Usd]: usd,
-    [CurrencyUnit.Microbitcoin]: 0,
-    [CurrencyUnit.Millibitcoin]: 0,
-    [CurrencyUnit.Nanobitcoin]: 0,
+    [CurrencyUnit.BITCOIN]: btc,
+    [CurrencyUnit.SATOSHI]: sats,
+    [CurrencyUnit.MILLISATOSHI]: msats,
+    [CurrencyUnit.USD]: usd,
+    [CurrencyUnit.MICROBITCOIN]: 0,
+    [CurrencyUnit.MILLIBITCOIN]: 0,
+    [CurrencyUnit.NANOBITCOIN]: 0,
+    [CurrencyUnit.FUTURE_VALUE]: 0,
     formatted: {
-      [CurrencyUnit.Bitcoin]: formatCurrencyStr({
+      [CurrencyUnit.BITCOIN]: formatCurrencyStr({
         value: btc,
-        unit: CurrencyUnit.Bitcoin,
+        unit: CurrencyUnit.BITCOIN,
       }),
-      [CurrencyUnit.Satoshi]: formatCurrencyStr({
+      [CurrencyUnit.SATOSHI]: formatCurrencyStr({
         value: sats,
-        unit: CurrencyUnit.Satoshi,
+        unit: CurrencyUnit.SATOSHI,
       }),
-      [CurrencyUnit.Millisatoshi]: formatCurrencyStr({
+      [CurrencyUnit.MILLISATOSHI]: formatCurrencyStr({
         value: msats,
-        unit: CurrencyUnit.Millisatoshi,
+        unit: CurrencyUnit.MILLISATOSHI,
       }),
-      [CurrencyUnit.Microbitcoin]: "0",
-      [CurrencyUnit.Millibitcoin]: "0",
-      [CurrencyUnit.Nanobitcoin]: "0",
-      [CurrencyUnit.Usd]: formatCurrencyStr({
+      [CurrencyUnit.MICROBITCOIN]: "0",
+      [CurrencyUnit.MILLIBITCOIN]: "0",
+      [CurrencyUnit.NANOBITCOIN]: "0",
+      [CurrencyUnit.USD]: formatCurrencyStr({
         value: usd,
-        unit: CurrencyUnit.Usd,
+        unit: CurrencyUnit.USD,
       }),
+      [CurrencyUnit.FUTURE_VALUE]: "0",
     },
   };
 
@@ -467,9 +511,9 @@ export function mapCurrencyAmount(
     },
     formatted: {
       ...mapWithCurrencyUnits.formatted,
-      btc: mapWithCurrencyUnits.formatted[CurrencyUnit.Bitcoin],
-      sats: mapWithCurrencyUnits.formatted[CurrencyUnit.Satoshi],
-      msats: mapWithCurrencyUnits.formatted[CurrencyUnit.Millisatoshi],
+      btc: mapWithCurrencyUnits.formatted[CurrencyUnit.BITCOIN],
+      sats: mapWithCurrencyUnits.formatted[CurrencyUnit.SATOSHI],
+      msats: mapWithCurrencyUnits.formatted[CurrencyUnit.MILLISATOSHI],
     },
     type: "CurrencyMap" as const,
   };
@@ -486,13 +530,13 @@ export const isCurrencyMap = (
 
 export const abbrCurrencyUnit = (unit: CurrencyUnit) => {
   switch (unit) {
-    case CurrencyUnit.Bitcoin:
+    case CurrencyUnit.BITCOIN:
       return "BTC";
-    case CurrencyUnit.Satoshi:
+    case CurrencyUnit.SATOSHI:
       return "SAT";
-    case CurrencyUnit.Millisatoshi:
+    case CurrencyUnit.MILLISATOSHI:
       return "MSAT";
-    case CurrencyUnit.Usd:
+    case CurrencyUnit.USD:
       return "USD";
   }
   return "Unsupported CurrencyUnit";
@@ -510,7 +554,7 @@ export function formatCurrencyStr(
   const { unit } = currencyAmount;
 
   /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
-  if (unit === CurrencyUnit.Usd) {
+  if (unit === CurrencyUnit.USD) {
     num = num / 100;
   }
 
@@ -525,30 +569,30 @@ export function formatCurrencyStr(
   // Symbol handled by toLocaleString for USD. These rely on the LightsparkIcons font
   const symbol = !showBtcSymbol
     ? ""
-    : unit === CurrencyUnit.Bitcoin
+    : unit === CurrencyUnit.BITCOIN
     ? ""
-    : unit === CurrencyUnit.Satoshi
+    : unit === CurrencyUnit.SATOSHI
     ? ""
     : "";
 
   const currentLocale = getCurrentLocale();
 
   switch (unit) {
-    case CurrencyUnit.Bitcoin:
+    case CurrencyUnit.BITCOIN:
       return `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(4),
         ...options,
       })}`;
-    case CurrencyUnit.Millisatoshi:
-    case CurrencyUnit.Satoshi:
+    case CurrencyUnit.MILLISATOSHI:
+    case CurrencyUnit.SATOSHI:
     default:
       return `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0),
         ...options,
       })}`;
-    case CurrencyUnit.Usd:
+    case CurrencyUnit.USD:
       return num.toLocaleString(currentLocale, {
         style: "currency",
         currency: defaultCurrencyCode,
