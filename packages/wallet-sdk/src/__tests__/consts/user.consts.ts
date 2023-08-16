@@ -1,1 +1,1 @@
-export const TEST_USER_ID = 'asndbkhavgsd'
+export const TEST_USER_ID = 'mnasnf576bjhhocakasd1112as'

@@ -5,9 +5,6 @@ const DEFAULT_BASE_URL = 'api.lightspark.com'
 export const getCredentialsFromEnvOrThrow = (
     walletEnvSuffix = ''
 ): CredentialsFromEnv => {
-    console.log(process.env)
-    console.log(process.env.LIGHTSPARK_ACCOUNT_ID)
-
     const accountId = process.env[`LIGHTSPARK_ACCOUNT_ID`]
     const jwtSigningPrivateKey = process.env[`LIGHTSPARK_JWT_PRIV_KEY`]
     const jwt = process.env[`LIGHTSPARK_JWT${walletEnvSuffix}`] ?? ''
@@ -21,6 +18,7 @@ export const getCredentialsFromEnvOrThrow = (
             `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT_PRIV_KEY.`
         )
     }
+
     return {
         accountId,
         jwt,

@@ -1,23 +1,22 @@
 import jwt from 'jsonwebtoken'
 import fs from 'fs'
 
-import { b64encode, DefaultCrypto, KeyOrAlias } from '@lightsparkdev/core'
+import { b64encode, DefaultCrypto } from '@lightsparkdev/core'
 import { type EnvCredentials } from '@lightsparkdev/wallet-cli/src/authHelpers.js'
 
 import type LightsparkClient from '../../client.js'
 import WalletStatus from '../../objects/WalletStatus.js'
-import KeyType from '../../objects/KeyType.js'
 
 import { InMemoryJwtStorage } from '../../../dist/index.js'
 import { LIGHTSPARK_ENV_PATH, MINUTES_IN_HOUR, MS_IN_MINUTE } from '../consts/index.js'
 import { sleep } from './time.helpers.js'
 import { type CredentialsForWalletJWTCreating, type OptionsForWalletJWTCreating, type SerializedKeyPair } from '../types/index.js'
 
-const WALLET_STATUS_TIMEOUT = 30_000
+const WALLET_STATUS_INTERVAL = 30_000
 
 const HOURS_BEFORE_EXPIRE = 5
 
-export const initWallet = async (client: LightsparkClient, walletStatus?: WalletStatus): Promise<SerializedKeyPair | undefined> => {
+export const genKeyForWallet = async (walletStatus?: WalletStatus): Promise<SerializedKeyPair | undefined> => {
     if(!walletStatus) throw new Error('Wallet status is undefined')
 
     if(walletStatus !== WalletStatus.DEPLOYED && walletStatus !== WalletStatus.READY) return
@@ -34,12 +33,6 @@ export const initWallet = async (client: LightsparkClient, walletStatus?: Wallet
     };
 
     console.log('serializedKeypair', serializedKeypair)
-
-    await client.initializeWalletAndAwaitReady(
-        KeyType.RSA_OAEP,
-        serializedKeypair.publicKey,
-        KeyOrAlias.key(serializedKeypair.privateKey)
-    )
 
     return serializedKeypair
 }
@@ -71,13 +64,13 @@ export const createWalletJwt = async (
     return { token, userId, test };
 };
 
-export const createDeployAndInitWallet = async (
+export const deployWallet = async (
     client: LightsparkClient,
     options: OptionsForWalletJWTCreating,
     credentials?: EnvCredentials
 ) => {
     if (!credentials) {
-        throw new Error("Credentials not found in environment.");
+        throw new Error("Credentials not found in environment.")
     }
 
     const { token, userId, test } = await createWalletJwt( {
@@ -92,21 +85,26 @@ export const createDeployAndInitWallet = async (
         new InMemoryJwtStorage()
     )
 
-    let walletStatus= loginOutput.wallet.status
+    let walletStatus = loginOutput.wallet.status
 
     if (loginOutput.wallet.status === WalletStatus.NOT_SETUP) {
-        walletStatus = await client.deployWalletAndAwaitDeployed();
+        walletStatus = await client.deployWalletAndAwaitDeployed()
     }
 
+    //
     while (walletStatus === WalletStatus.INITIALIZING || walletStatus === WalletStatus.DEPLOYING) {
-        await sleep(WALLET_STATUS_TIMEOUT)
+        await sleep(WALLET_STATUS_INTERVAL)
+
         const currentWallet = await client.getCurrentWallet()
+
         if(currentWallet) {
             walletStatus = currentWallet.status
         }
     }
 
-    const serializedKeypair = await initWallet(client, walletStatus)
+    console.log(walletStatus, 'wallet status before wallet initing')
+
+    const serializedKeypair = await genKeyForWallet(walletStatus)
 
     if (walletStatus !== WalletStatus.DEPLOYED && walletStatus !== WalletStatus.READY) {
         console.log(
@@ -114,23 +112,23 @@ export const createDeployAndInitWallet = async (
         )
     }
 
-    let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
+    let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`
 
     content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
     // process.env[`LIGHTSPARK_JWT_${userId}`] = token;
     if (serializedKeypair) {
-        content += `export LIGHTSPARK_WALLET_PRIV_KEY_${userId}="${serializedKeypair?.privateKey}"\n`;
-        content += `export LIGHTSPARK_WALLET_PUB_KEY_${userId}="${serializedKeypair?.publicKey}"\n`;
+        content += `export LIGHTSPARK_WALLET_PRIV_KEY_${userId}="${serializedKeypair?.privateKey}"\n`
+        content += `export LIGHTSPARK_WALLET_PUB_KEY_${userId}="${serializedKeypair?.publicKey}"\n`
 
         // process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${userId}`] =
         //     serializedKeypair.privateKey;
         // process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
         //     serializedKeypair.publicKey;
 
-        fs.appendFile(LIGHTSPARK_ENV_PATH, content, () => null);
+        fs.appendFile(LIGHTSPARK_ENV_PATH, content, () => null)
     }
 
-    console.log(content);
+    console.log(content)
 
     return {
         userId,

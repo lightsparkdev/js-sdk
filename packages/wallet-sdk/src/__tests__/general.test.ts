@@ -1,428 +1,308 @@
-// import {describe, expect, test} from '@jest/globals'
-// import {b64encode, DefaultCrypto, KeyOrAlias} from '@lightsparkdev/core'
-//
-// import LightsparkClient from '../client.js'
-//
-// import type InvoiceData from '../objects/InvoiceData.js'
-// import KeyType from '../objects/KeyType.js'
-// import TransactionStatus from '../objects/TransactionStatus.js'
-// import WalletStatus from '../objects/WalletStatus.js'
-//
-// import jwt from 'jsonwebtoken'
-// import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
-// import {confirm, input} from "@inquirer/prompts";
-// import {InMemoryJwtStorage} from "../../dist/index.js";
-// import fs from 'fs'
-// import {InvoiceType, WithdrawalRequestStatus} from "../objects/index.js";
-// import { FRAGMENT } from "../objects/InvoiceData.js";
-// import type FeeEstimate from "../objects/FeeEstimate.js";
-//
-// export function sleep(ms: number): Promise<void> {
-//     return new Promise(resolve => setTimeout(resolve, ms))
-// }
-//
-// // TODO: DELETE IF IT'S NOT USING
-// export const loadValueFromENVKey = (path: string, fromKey: string) => {
-//     const fileContents = fs.readFileSync(path, 'utf8');
-//     const lines = fileContents.split('\n');
-//     const foundLine = lines.find(line => line.startsWith(`export ${fromKey}`))
-//     return foundLine ? foundLine.split('"')[1] : ''
-// }
-//
-// export const getCredentialsFromEnvOrThrow = (
-//     walletEnvSuffix: string = ``
-// ): {
-//     accountId: string;
-//     jwt: string;
-//     pubKey?: string;
-//     privKey?: string;
-//     baseUrl: string;
-//     jwtSigningPrivateKey?: string;
-// } => {
-//     console.log(process.env)
-//     console.log(process.env.LIGHTSPARK_ACCOUNT_ID)
-//
-//     const accountId = process.env[`LIGHTSPARK_ACCOUNT_ID`];
-//     const jwtSigningPrivateKey = process.env[`LIGHTSPARK_JWT_PRIV_KEY`];
-//     const jwt = process.env[`LIGHTSPARK_JWT${walletEnvSuffix}`] ?? '';
-//     const pubKey = process.env[`LIGHTSPARK_WALLET_PUB_KEY${walletEnvSuffix}`];
-//     const privKey = process.env[`LIGHTSPARK_WALLET_PRIV_KEY${walletEnvSuffix}`];
-//     const baseUrl =
-//         process.env[`LIGHTSPARK_EXAMPLE_BASE_URL`] || `api.lightspark.com`;
-//     if (!accountId || !jwtSigningPrivateKey) {
-//         throw new Error(
-//             `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT_PRIV_KEY.`
-//         );
-//     }
-//     return {
-//         accountId,
-//         jwt,
-//         pubKey,
-//         privKey,
-//         baseUrl,
-//         jwtSigningPrivateKey,
-//     };
-// };
-//
-// const test_userId = 'abshdjb32bhbdjhasbh3'
-// const filePath = process.env.HOME + `/.lightsparkenv`
-//
-// const createWalletJwt = async (
-//     client: LightsparkClient,
-//     options: Record<string, any>,
-//     credentials?: EnvCredentials
-// ) => {
-//     const privateKey = credentials?.jwtSigningPrivateKey;
-//
-//     if (!privateKey) {
-//         throw new Error(
-//             "JWT signing private key not found in environment. Set LIGHTSPARK_JWT_PRIV_KEY."
-//         );
-//     }
-//
-//     let userId = options.userId;
-//     let test = options.test;
-//
-//     if (!options.userId) {
-//         userId = await input({
-//             message: "Enter a unique user ID for the wallet: ",
-//         });
-//         test = await confirm({ message: "Use test environment?" });
-//     }
-//
-//     const claims = {
-//         aud: "https://api.lightspark.com",
-//         // Any unique identifier for the user.
-//         sub: userId,
-//         // True to use the test environment, false to use production.
-//         test: options.test,
-//         iat: Math.floor(Date.now() / 1000),
-//         // Expiration time for the JWT is 30 days from now.
-//         exp: options.expireAt ?? Math.floor(Date.now() / 1000 + 60 * 5),
-//     };
-//
-//     if (options.extraProps) {
-//         const extraProps = JSON.parse(options.extraProps);
-//         Object.assign(claims, extraProps);
-//     }
-//
-//     const token = jwt.sign(claims, privateKey, { algorithm: "ES256" });
-//
-//     return { token, userId, test };
-// };
-//
-// const createDeployAndInitWallet = async (
-//     client: LightsparkClient,
-//     options: Record<string, any>,
-//     credentials?: EnvCredentials
-// ) => {
-//     if (!credentials) {
-//         throw new Error("Credentials not found in environment.");
-//     }
-//
-//     const { token, userId, test } = await createWalletJwt(
-//         client,
-//         options,
-//         credentials
-//     );
-//
-//     const loginOutput = await client.loginWithJWT(
-//         credentials.accountId,
-//         token,
-//         new InMemoryJwtStorage()
-//     );
-//
-//     let serializedKeypair: { privateKey: string; publicKey: string } | undefined =
-//         undefined
-//
-//     let walletStatus: WalletStatus | undefined = loginOutput.wallet.status
-//
-//     if (loginOutput.wallet.status === WalletStatus.NOT_SETUP) {
-//         walletStatus = await client.deployWalletAndAwaitDeployed();
-//     }
-//
-//     do {
-//         walletStatus = (await client.getCurrentWallet())?.status;
-//
-//         console.log('walletStatus', walletStatus)
-//
-//         if (walletStatus === WalletStatus.DEPLOYED || walletStatus === WalletStatus.READY) {
-//             const keypair = await DefaultCrypto.generateSigningKeyPair();
-//
-//             serializedKeypair = {
-//                 privateKey: b64encode(
-//                     await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
-//                 ),
-//                 publicKey: b64encode(
-//                     await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
-//                 ),
-//             };
-//
-//             console.log('serializedKeypair', serializedKeypair)
-//             await client.initializeWalletAndAwaitReady(
-//                 KeyType.RSA_OAEP,
-//                 serializedKeypair.publicKey,
-//                 KeyOrAlias.key(serializedKeypair.privateKey)
-//             );
-//         }
-//
-//         await sleep(30_000)
-//     } while (walletStatus === WalletStatus.INITIALIZING || walletStatus === WalletStatus.DEPLOYING)
-//
-//     if (walletStatus !== WalletStatus.DEPLOYED && walletStatus !== WalletStatus.READY) {
-//         console.log(
-//             `Not initializing because the wallet status is ${loginOutput.wallet.status}`
-//         );
-//     }
-//
-//     let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
-//
-//     content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
-//     // process.env[`LIGHTSPARK_JWT_${userId}`] = token;
-//     if (serializedKeypair) {
-//         content += `export LIGHTSPARK_WALLET_PRIV_KEY_${userId}="${serializedKeypair?.privateKey}"\n`;
-//         content += `export LIGHTSPARK_WALLET_PUB_KEY_${userId}="${serializedKeypair?.publicKey}"\n`;
-//
-//         // process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${userId}`] =
-//         //     serializedKeypair.privateKey;
-//         // process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
-//         //     serializedKeypair.publicKey;
-//
-//         fs.appendFile(filePath, content, () => null);
-//     }
-//
-//     console.log(content);
-//
-//     return {
-//         userId,
-//
-//         jwt: token,
-//         pubKey: serializedKeypair?.publicKey,
-//         privKey: serializedKeypair?.privateKey,
-//     }
-// };
-//
-// // Let's start by creating a client
-// const client = new LightsparkClient()
-//
-// const credentials = getCredentialsFromEnvOrThrow(`_${test_userId}`)
-//
-// let createDeployAndInitWalletResponse: Awaited<ReturnType<typeof createDeployAndInitWallet>> | undefined = undefined
-//
-// describe('Sanity tests', () => {
-//
-//     test('should deploy and init the wallet', async () => {
-//         createDeployAndInitWalletResponse = await createDeployAndInitWallet(client, {
-//             userId: test_userId,
-//             test: true,
-//         }, credentials)
-//
-//         expect(createDeployAndInitWalletResponse.userId).not.toBe(null)
-//     }, 900_000)
-//
-//     test('should unlock the wallet', async () => {
-//         await client.loadWalletSigningKey(
-//             KeyOrAlias.key(createDeployAndInitWalletResponse?.privKey ?? '')
-//         )
-//         expect(client.isWalletUnlocked()).toBe(true)
-//     }, 900_000)
-//
-//     let fee: FeeEstimate | null
-//     let invoiceData: InvoiceData | null
-//     const invoiceAmount = 50 * 1000
-//
-//     test('should create an invoice', async () => {
-//         invoiceData = await client.createInvoice(invoiceAmount, 'hi there', InvoiceType.AMP)
-//
-//         console.log('created Invoice:', invoiceData)
-//
-//         expect(invoiceData).not.toBe(null)
-//     }, 900_000)
-//
-//     test('shoud get an estimated gas price', async () => {
-//         fee = await client.getBitcoinFeeEstimate()
-//
-//         console.log(fee)
-//
-//         expect(fee).not.toBeNull()
-//     })
-//
-//     test('should pay an invoice', async () => {
-//         if (!invoiceData?.encodedPaymentRequest)
-//             throw new Error('invoiceData is null')
-//
-//         // const invoiceFee = await client.getLightningFeeEstimateForInvoice(
-//         //     invoiceData?.encodedPaymentRequest,
-//         // )
-//         // console.log('estimated fee from invoice: ', invoiceFee)
-//         // const payment = await client.createTestModePayment(
-//         //     invoiceData?.encodedPaymentRequest,
-//         //     invoiceFee!.originalValue * 1000
-//         // )
-//
-//         const payment = await client.createTestModePayment(
-//                 invoiceData?.encodedPaymentRequest,
-//         )
-//
-//         console.log(payment, 'payment invoice')
-//
-//         console.log(`Payment done with status= ${payment!.status}, ID = ${payment!.id}`)
-//
-//         expect(payment!.status).toBe(TransactionStatus.SUCCESS)
-//     })
-//
-//     let bitcoinAddress: string | null
-//
-//     test('should create a deposit bitcoin address', async () => {
-//         bitcoinAddress = await client.createBitcoinFundingAddress()
-//         const dashboard = await client.getWalletDashboard()
-//         expect(bitcoinAddress).not.toBeNull()
-//     })
-//
-//     test('should withdraw', async () => {
-//         const withdrawalRequest = await client.requestWithdrawal(
-//             50_000,
-//             'bcrt1q3xfwwx8lwuemslej3qedfyf8fqpz6pjhjl4pze',
-//         )
-//
-//         console.log(withdrawalRequest, bitcoinAddress)
-//
-//         expect(withdrawalRequest?.status).toBe(WithdrawalRequestStatus.SUCCESSFUL)
-//     })
-// })
-//
-// describe('P1 tests', () => {
-//     test('should generate a key', async () => {
-//         const keypair = await DefaultCrypto.generateSigningKeyPair();
-//
-//         const serializedKeypair = {
-//             privateKey: b64encode(
-//                 await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
-//             ),
-//             publicKey: b64encode(
-//                 await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
-//             ),
-//         };
-//
-//         console.log(serializedKeypair)
-//
-//         expect(serializedKeypair.privateKey).not.toBe(null)
-//         expect(serializedKeypair.publicKey).not.toBe(null)
-//     })
-//
-//     test('should fetch the current wallet', async () => {
-//         const wallet = await client.getCurrentWallet()
-//
-//         console.log(wallet)
-//
-//         expect(wallet).not.toBe(null)
-//     })
-//
-//     test('should list current payment requests', async () => {
-//         const dashboard = await client.getWalletDashboard()
-//
-//         console.log(dashboard?.paymentRequests)
-//
-//         expect(dashboard?.paymentRequests).not.toBe(null)
-//     })
-//
-//     test('should list recent transactions', async () => {
-//         const dashboard = await client.getWalletDashboard()
-//
-//         console.log(dashboard?.recentTransactions)
-//
-//         expect(dashboard?.recentTransactions).not.toBe(null)
-//     })
-//
-//     test('should fetch an entity by ID', async () => {
-//         expect(1).toBe(1)
-//     })
-//
-//     test('should terminate a wallet', async () => {
-//         await client.terminateWallet()
-//
-//         console.log('terminateeeeeee')
-//
-//         const wallet = await client.getCurrentWallet()
-//
-//         console.log(wallet)
-//
-//         expect(wallet?.status).toBe(WalletStatus.TERMINATING)
-//     })
-//
-//     test('should decode an invoice', async () => {
-//         const encodedRequest = `lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse`
-//
-//         const decodedInvoice = await client.decodeInvoice(encodedRequest)
-//
-//         console.log(decodedInvoice)
-//
-//         expect(decodedInvoice).not.toBe(null)
-//         expect(decodedInvoice?.memo).toBe('mmmmm pizza')
-//         expect(decodedInvoice?.paymentHash).toBe('f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61')
-//     })
-// })
-//
-// describe('P2 tests', () => {
-//     test('should send a keysend payment', async () => {
-//         expect(1).toBe(1)
-//     })
-//
-//     let testInvoice: string | null
-//     const testPaymentAmount = 10 * 1000
-//
-//     test('should create a test mode invoice', async () => {
-//         testInvoice = await client.createTestModeInvoice(
-//             testPaymentAmount,
-//             'hi there',
-//             InvoiceType.AMP
-//         )
-//
-//         console.log(testInvoice, testInvoice)
-//
-//         expect(testInvoice).not.toBe(null)
-//     }, 900_000)
-//
-//     test('should create a test mode payment', async () => {
-//         const testPayment = await client.createTestModePayment(testInvoice!)
-//
-//         console.log(testPayment)
-//
-//         expect(testPayment).not.toBe(null)
-//     })
-//
-//     test('should execute a raw graphql query', async () => {
-//         const query = `
-//               query DecodeInvoice($encoded_payment_request: String!) {
-//                 decoded_payment_request(encoded_payment_request: $encoded_payment_request) {
-//                   __typename
-//                   ... on InvoiceData {
-//                     ...InvoiceDataFragment
-//                   }
-//                 }
-//               }
-//
-//             ${FRAGMENT}
-//         `;
-//
-//         const result = await client.executeRawQuery({
-//             queryPayload: query,
-//             variables: {
-//                 encoded_payment_request: 'lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse',
-//             },
-//             constructObject: data => data?.encoded_payment_request,
-//         });
-//
-//         console.log(result);
-//
-//         expect(result).not.toBe(null);
-//     });
-// })
+import { jest } from '@jest/globals'
+import { describe, expect, test } from '@jest/globals'
+import {b64encode, DefaultCrypto, KeyOrAlias, LightsparkException} from '@lightsparkdev/core'
 
-import {test} from "@jest/globals";
+import LightsparkClient from '../client.js'
+
+import { type CreatedInvoiceData, type CreatedTestnetInvoiceData } from './types/index.js'
+import {
+    TESTS_TIMEOUT,
+    TEST_USER_ID,
+    TEST_INVOICE_AMOUNT
+} from './consts/index.js'
+import { FRAGMENT } from '../objects/InvoiceData.js'
+import {
+    InvoiceType,
+    KeyType,
+    WalletStatus,
+    TransactionStatus,
+    getOutgoingPaymentQuery,
+    type OutgoingPayment,
+} from '../objects/index.js'
+import { getCredentialsFromEnvOrThrow, deployWallet } from './helpers/index.js'
+
+const ENCODED_REQUEST_FOR_TESTS = 'lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse'
+
+const client = new LightsparkClient()
+
+const unauthorizedClient = new LightsparkClient()
+
+const authorizedClientWithLockedWallet = new LightsparkClient()
+
+const credentials = getCredentialsFromEnvOrThrow(`_${TEST_USER_ID}`)
+
+let clientDeployWalletResponse: Awaited<ReturnType<typeof deployWallet>> | undefined = undefined
+
+let invoicePayment: OutgoingPayment
 
 describe('Sanity tests', () => {
-    test('sanity check', () => {
+
+    const invoiceData = {} as CreatedInvoiceData
+
+    const testInvoiceData = {} as CreatedTestnetInvoiceData
+
+    jest.spyOn(authorizedClientWithLockedWallet, 'isAuthorized').mockResolvedValue(true)
+
+    test('should deploy wallet', async () => {
+        clientDeployWalletResponse = await deployWallet(client, {
+            userId: TEST_USER_ID,
+            test: true,
+        }, credentials)
+
+        expect(clientDeployWalletResponse.userId).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on deploying wallet twice', async () => {
+        await expect(client.deployWalletAndAwaitDeployed()).rejects.toThrow(LightsparkException)
+    }, TESTS_TIMEOUT)
+
+    test('should init the wallet', async () => {
+        const walletStatus = await client.initializeWalletAndAwaitReady(
+            KeyType.RSA_OAEP,
+            clientDeployWalletResponse?.pubKey ?? '',
+            KeyOrAlias.key( clientDeployWalletResponse?.privKey ?? '')
+        )
+
+        expect(walletStatus).toBe(WalletStatus.READY)
+    }, TESTS_TIMEOUT)
+
+    test('should return an error on trying to init wallet', async () => {
+        await expect(client.initializeWalletAndAwaitReady(
+            KeyType.RSA_OAEP,
+            clientDeployWalletResponse?.pubKey ?? '',
+            KeyOrAlias.key( clientDeployWalletResponse?.privKey ?? '')
+        )).rejects.toThrow(LightsparkException)
+    }, TESTS_TIMEOUT)
+
+    test('should return an error on trying to init wallet from unauthorized account', async () => {
+        await expect(unauthorizedClient.initializeWalletAndAwaitReady(
+            KeyType.RSA_OAEP,
+            clientDeployWalletResponse?.pubKey ?? '',
+            KeyOrAlias.key( clientDeployWalletResponse?.privKey ?? '')
+        )).rejects.toThrow('You must be logged in to perform this action.')
+    }, TESTS_TIMEOUT)
+
+    test('should unlock the wallet', async () => {
+        await client.loadWalletSigningKey(
+            KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? '')
+        )
+
+        expect(client.isWalletUnlocked()).toBe(true)
+    }, TESTS_TIMEOUT)
+
+    test('should create an AMP type invoice', async () => {
+        invoiceData.AMP = await client.createInvoice(TEST_INVOICE_AMOUNT, 'hi there', InvoiceType.AMP)
+
+        expect(invoiceData.AMP).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should create a STANDARD type invoice', async () => {
+        invoiceData.STANDARD = await client.createInvoice(TEST_INVOICE_AMOUNT, 'hi there')
+
+        expect(invoiceData.STANDARD).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should create a empty memo invoice', async () => {
+        const clearMemoInvoice = await client.createInvoice(TEST_INVOICE_AMOUNT)
+
+        expect(clearMemoInvoice).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on create an unauthorized invoice', async () => {
+        await expect(
+            unauthorizedClient.createInvoice(TEST_INVOICE_AMOUNT)
+        ).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should create a STANDARD test mode invoice', async () => {
+        testInvoiceData.STANDARD = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT)
+        expect(testInvoiceData.STANDARD).not.toBeNull()
+    })
+
+    test('should create a AMP test mode invoice', async () => {
+        testInvoiceData.AMP = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT, InvoiceType.AMP)
+        expect(testInvoiceData.STANDARD).not.toBeNull()
+    })
+
+    test('should create a empty memo test mode invoice', async () => {
+        const clearMemoTestInvoice = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT, InvoiceType.AMP)
+
+        expect(clearMemoTestInvoice).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on create a empty memo test mode invoice with unauthorized account', async () => {
+        await expect(
+            unauthorizedClient.createTestModeInvoice(TEST_INVOICE_AMOUNT)
+        ).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should deposit testnet funds to account', async () => {
+        if (!invoiceData.AMP?.encodedPaymentRequest)
+            throw new Error('invoiceData is null')
+
+        const payment = await client.createTestModePayment(
+            invoiceData.AMP?.encodedPaymentRequest,
+        )
+
+        expect(payment?.status).toBe(TransactionStatus.PENDING)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on deposit testnet funds to the account from unauthorized client', async () => {
+        if (!invoiceData.AMP?.encodedPaymentRequest)
+            throw new Error('invoiceData is null')
+
+        await expect(
+            unauthorizedClient.createTestModePayment(invoiceData.AMP?.encodedPaymentRequest, TEST_INVOICE_AMOUNT)
+        ).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should deposit testnet funds to account with locked wallet', async () => {
+        if (!invoiceData.AMP?.encodedPaymentRequest)
+            throw new Error('invoiceData is null')
+
+        await expect(
+            authorizedClientWithLockedWallet.createTestModePayment(invoiceData.AMP?.encodedPaymentRequest, TEST_INVOICE_AMOUNT)
+        ).rejects.toThrow('You must unlock the wallet before performing this action.')
+    })
+
+    // FIXME
+    test('should pay a testnet invoice', async () => {
+        if (!testInvoiceData.STANDARD) {
+            throw new Error('testnetInvoiceData is null')
+        }
+
+        // FIXME: FAILED TX
+        invoicePayment = await client.payInvoiceAndAwaitResult(
+            testInvoiceData.STANDARD ?? '',
+            1_000_000,
+        )
+
+        console.log(invoicePayment, 'payment testnet invoice')
+
+        console.log(`Testnet payment done with status= ${invoicePayment.status}, ID = ${invoicePayment.id}`)
+
+        expect(invoicePayment.status).toBe(TransactionStatus.SUCCESS)
+    }, TESTS_TIMEOUT)
+
+    test('should create a deposit bitcoin address', async () => {
+        const bitcoinAddress = await client.createBitcoinFundingAddress()
+
+        expect(bitcoinAddress).not.toBeNull()
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on create a deposit bitcoin address with unauthorized user', async () => {
+        await expect(
+            unauthorizedClient.createBitcoinFundingAddress()
+        ).rejects.toThrow('You must be logged in to perform this action.')
+    })
+})
+
+describe('P1 tests', () => {
+    test('should generate a key', async () => {
+        // TODO: refactor
+        const keypair = await DefaultCrypto.generateSigningKeyPair();
+
+        const serializedKeypair = {
+            privateKey: b64encode(
+                await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
+            ),
+            publicKey: b64encode(
+                await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
+            ),
+        };
+
+        expect(serializedKeypair.privateKey).not.toBeNull()
+        expect(serializedKeypair.publicKey).not.toBeNull()
+    }, TESTS_TIMEOUT)
+
+    test('should fetch the current wallet', async () => {
+        const wallet = await client.getCurrentWallet()
+
+        expect(wallet).not.toBe(null)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on fetch the current wallet from unauthorized user', async () => {
+        await expect(unauthorizedClient.getCurrentWallet()).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should list current payment requests', async () => {
+        const dashboard = await client.getWalletDashboard()
+
+        expect(dashboard?.paymentRequests).not.toBeNull()
+    }, TESTS_TIMEOUT)
+
+    test('should list recent transactions', async () => {
+        const dashboard = await client.getWalletDashboard()
+
+        expect(dashboard?.recentTransactions).not.toBeNull()
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on load walled dashboard from unauthorized wallet', async () => {
+        await expect(unauthorizedClient.getWalletDashboard()).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should fetch an invoice payment by ID', async () => {
+        const payment = await client.executeRawQuery(getOutgoingPaymentQuery(invoicePayment.id))
+
+        expect(payment).not.toBeNull()
+        expect(payment?.id).toBe(invoicePayment.id)
+    })
+
+
+    test('should terminate a wallet', async () => {
+        await client.terminateWallet()
+        const wallet = await client.getCurrentWallet()
+
+        expect(wallet?.status).toBe(WalletStatus.TERMINATING)
+    }, TESTS_TIMEOUT)
+
+    test('should throw an error on terminate unauthorized wallet', async () => {
+        await expect(unauthorizedClient.terminateWallet()).rejects.toThrow('You must be logged in to perform this action.')
+    })
+
+    test('should decode an invoice', async () => {
+        const decodedInvoice = await client.decodeInvoice(ENCODED_REQUEST_FOR_TESTS)
+
+        expect(decodedInvoice).not.toBe(null)
+        expect(decodedInvoice?.memo).toBe('mmmmm pizza')
+        expect(decodedInvoice?.paymentHash).toBe('f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61')
+    }, TESTS_TIMEOUT)
+})
+
+describe('P2 tests', () => {
+    test('should send a keysend payment', async () => {
         expect(1).toBe(1)
     })
+
+    test('should execute a raw graphql query', async () => {
+        // TODO: import from objects/fragments
+        const query = `
+              query DecodeInvoice($encoded_payment_request: String!) {
+                decoded_payment_request(encoded_payment_request: $encoded_payment_request) {
+                  __typename
+                  ... on InvoiceData {
+                    ...InvoiceDataFragment
+                  }
+                }
+              }
+
+            ${FRAGMENT}
+        `;
+
+        const result = await client.executeRawQuery({
+            queryPayload: query,
+            variables: {
+                encoded_payment_request: ENCODED_REQUEST_FOR_TESTS,
+            },
+            constructObject: data => data?.decoded_payment_request,
+        });
+
+        expect(result).not.toBe(null);
+    }, TESTS_TIMEOUT);
+
+    test('should get an estimated gas price', async () => {
+        const fee = await client.getBitcoinFeeEstimate()
+
+        expect(fee).not.toBeNull()
+    }, TESTS_TIMEOUT)
 })
