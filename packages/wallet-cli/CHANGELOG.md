@@ -1,5 +1,27 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [6cd80d4]
+  - @lightsparkdev/wallet-sdk@0.6.16
+
+## 0.0.23
+
+### Patch Changes
+
+- 565f0ab: Fix tsconfigs for CLIs to ensure builds output to dist
+- Updated dependencies [565f0ab]
+  - @lightsparkdev/wallet-sdk@0.6.15
+
+## 0.0.22
+
+### Patch Changes
+
+- Updated dependencies [cf11549]
+  - @lightsparkdev/wallet-sdk@0.6.14
+
 ## 0.0.21
 
 ### Patch Changes

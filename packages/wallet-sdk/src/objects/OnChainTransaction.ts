@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
-import { LightsparkException } from "@lightsparkdev/core";
+import { LightsparkException, type Query } from "@lightsparkdev/core";
 import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
 import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
@@ -12,7 +11,7 @@ import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 import type Withdrawal from "./Withdrawal.js";
 
-/** Transaction happened on Bitcoin blockchain. **/
+/** This object represents an L1 transaction that occurred on the Bitcoin Network. You can retrieve this object to receive information about a specific on-chain transaction made on the Lightning Network associated with your Lightspark Node. **/
 type OnChainTransaction = Transaction &
   Entity & {
     /**

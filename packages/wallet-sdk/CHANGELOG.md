@@ -1,5 +1,23 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.16
+
+### Patch Changes
+
+- 6cd80d4: Fix an issue with json deserialization for lightning fee estimates
+
+## 0.6.15
+
+### Patch Changes
+
+- 565f0ab: lint:fix as part of SDK object generation
+
+## 0.6.14
+
+### Patch Changes
+
+- cf11549: Add ability to set the invoice expiration in createInvoice.
+
 ## 0.6.13
 
 ### Patch Changes

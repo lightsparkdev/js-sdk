@@ -181,9 +181,10 @@ jobs:
             const hasChangesetStr = `If additional changes have been made that require different versions for any package simply [add another changeset](${commitChangesetLink})`;
             const changesetStr = `There ${changesetSingle ? "is" : "are"} ${changesetCount || "no"} existing changeset${changesetSingle ? '' : 's'} for this branch. ${changesetCount > 0 ? hasChangesetStr : noChangesetStr}. Any packages that depend on the planned releases will be updated and released automatically in a separate PR.`;
             const packageReleasesStr = changeset.releases.map(x => `| ${x.name} | ${x.type} |`).join("\n");
+            const changelogGuidanceStr = `Each changeset corresponds to an update in the CHANGELOG for the packages listed in the changeset. Therefore, you should add a changeset for each noteable package change that this PR contains. For example, if a PR adds two features - one feature for packages A and B and one feature for package C - you should add two changesets. One changeset for packages A and B and one changeset for package C, with a description of each feature. The feature description will end up being the CHANGELOG entry for the packages in the changeset.`;
             const releasesStr = `${changeset.releases.length ? `The following releases are planned based on the existing changesets:\n\n| Planned releases | Update |\n\| - | - |\n${packageReleasesStr}` : "No releases planned."}`;
 
-            const commentBody = `${changedPackagesStr}\n\n${changesetStr}\n\n${releasesStr}\n\nLast updated by commit ${lastCommit}`;
+            const commentBody = `${changedPackagesStr}\n\n${changesetStr}\n\n${changelogGuidanceStr}\n\n${releasesStr}\n\nLast updated by commit ${lastCommit}`;
             if (!comment) {
               github.rest.issues.createComment({
                 owner,

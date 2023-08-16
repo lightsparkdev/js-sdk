@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum of the potential states that a payment request on the Lightning Network can take. **/
 export enum PaymentRequestStatus {
   /**
    * This is an enum value that represents values that could be added in the future.

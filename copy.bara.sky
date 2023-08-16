@@ -24,11 +24,15 @@ core.workflow(
             # different README for private repo, see README-PUBLIC.md:
             "js/README.md",
             # changesets and releases are created and managed from the public repo only so we don't want to overwrite them:
-            "js/.changeset/*.md"
+            "js/.changeset/*.md",
+            # TODO: remove public gql package
+            "js/packages/gql/**",
         ],
     ),
     # GH actions, yarn.lock, and changesets are managed separately in each repo.
-    destination_files=glob(["**"], exclude=[".github/**", "yarn.lock", ".changeset/*.md"]),
+    destination_files=glob(
+        ["**"], exclude=[".github/**", "yarn.lock", ".changeset/*.md"]
+    ),
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations=[
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
@@ -70,7 +74,9 @@ This typically happens when new versions of the SDK are released and version upd
             # dependencies and lock file are different between public and private repos:
             "js/yarn.lock",
             # different README for private repo, see README-PUBLIC.md:
-            "js/README.md"
+            "js/README.md",
+            # TODO: remove public gql package
+            "js/packages/gql/**",
         ],
     ),
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),

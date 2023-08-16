@@ -22,7 +22,8 @@ const main = async (program: Command) => {
   const invoice = await client.createInvoice(
     options.amount * 1000,
     options.memo,
-    options.amp ? InvoiceType.AMP : InvoiceType.STANDARD
+    options.amp ? InvoiceType.AMP : InvoiceType.STANDARD,
+    options.expirySec
   );
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
 };
@@ -43,6 +44,12 @@ const main = async (program: Command) => {
       "The amount of the invoice in sats.",
       parseInt,
       0
+    )
+    .option(
+      "-e, --expiry-sec <number>",
+      "The expiration duration in seconds.",
+      parseInt,
+      undefined
     )
     .option("--amp", "Flag to use AMP invoices.", false)
     .parse(process.argv);

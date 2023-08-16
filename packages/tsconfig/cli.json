@@ -21,7 +21,6 @@
     "lib": ["ESNext"],
     "module": "Node16",
     "target": "ESNext",
-    "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

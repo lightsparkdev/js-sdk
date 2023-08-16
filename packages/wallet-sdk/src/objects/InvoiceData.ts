@@ -7,7 +7,7 @@ import type GraphNode from "./GraphNode.js";
 import { GraphNodeFromJson } from "./GraphNode.js";
 import type PaymentRequestData from "./PaymentRequestData.js";
 
-/** This object represents the BOLT #11 invoice protocol for Lightning Payments. See https://github.com/lightning/bolts/blob/master/11-payment-encoding.md. **/
+/** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. **/
 type InvoiceData = PaymentRequestData & {
   encodedPaymentRequest: string;
 

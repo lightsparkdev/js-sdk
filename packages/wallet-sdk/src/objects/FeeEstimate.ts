@@ -3,6 +3,7 @@
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
+/** This object represents the estimated L1 transaction fees for the Bitcoin network. Fee estimates are separated by potential confirmation speeds for settlement. **/
 type FeeEstimate = {
   feeFast: CurrencyAmount;
 

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -84,7 +84,6 @@
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
-    "@lightsparkdev/gql": "0.0.2",
     "@lightsparkdev/tsconfig": "0.0.0",
     "@types/crypto-js": "^4.1.1",
     "@types/jest": "^29.5.2",

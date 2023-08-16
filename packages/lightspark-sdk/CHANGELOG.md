@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.9
+
+### Patch Changes
+
+- 6cd80d4: Fix an issue with json deserialization for lightning fee estimates
+
 ## 0.4.8
 
 ### Patch Changes

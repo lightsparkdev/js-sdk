@@ -6,7 +6,7 @@ import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import { GraphNodeFromJson } from "./GraphNode.js";
 import type InvoiceData from "./InvoiceData.js";
 
-/** The interface of a payment request on the Lightning Network (a.k.a. Lightning Invoice). **/
+/** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. **/
 type PaymentRequestData = {
   encodedPaymentRequest: string;
 

@@ -21,10 +21,6 @@ import {
   Requester,
   StubAuthProvider,
 } from "@lightsparkdev/core";
-import {
-  type OutgoingPayment as GQLOutgoingPayment,
-  type Subscription as GQLSubscription,
-} from "@lightsparkdev/gql/generated/graphql.js";
 import { createHash } from "crypto";
 import packageJson from "../package.json";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
@@ -200,15 +196,16 @@ class LightsparkClient {
   public listenToTransactions(
     nodeIds: string[]
   ): Observable<TransactionUpdate | undefined> {
-    const response = this.requester.subscribe<
-      Pick<GQLSubscription, "transactions">
-    >(TransactionSubscription, {
-      nodeIds,
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = this.requester.subscribe<{ transactions: any }>(
+      TransactionSubscription,
+      {
+        nodeIds,
+      }
+    );
     return response.map(
       (response) =>
-        response &&
-        response.data.transactions &&
+        response?.data?.transactions &&
         TransactionUpdateFromJson(response.data.transactions)
     );
   }
@@ -500,7 +497,8 @@ class LightsparkClient {
       }
     );
     return CurrencyAmountFromJson(
-      response.lightning_fee_estimate_for_invoice.fee_estimate
+      response.lightning_fee_estimate_for_invoice
+        .lightning_fee_estimate_output_fee_estimate
     );
   }
 
@@ -526,7 +524,8 @@ class LightsparkClient {
       }
     );
     return CurrencyAmountFromJson(
-      response.lightning_fee_estimate_for_node.fee_estimate
+      response.lightning_fee_estimate_for_node
+        .lightning_fee_estimate_output_fee_estimate
     );
   }
 
@@ -872,7 +871,7 @@ class LightsparkClient {
       },
       constructObject: (responseJson: {
         create_test_mode_payment: {
-          payment: GQLOutgoingPayment;
+          payment: any; // eslint-disable-line @typescript-eslint/no-explicit-any
         } | null;
       }) => {
         return OutgoingPaymentFromJson(
