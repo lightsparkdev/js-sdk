@@ -57,6 +57,40 @@ export const genKeyForWallet = async (
   return serializedKeypair;
 };
 
+export const getClaimsByType = (type: 'regtest' | 'testnet' | 'mainnet', opts: {
+  userId: string,
+  isTest: boolean,
+}) => ({
+  regtest: {
+    aud: "https://api.lightspark.com",
+    sub: opts.userId,
+    test: true,
+    iat: Math.floor(Date.now() / MS_IN_MINUTE),
+    exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+    ),
+  },
+  testnet: {
+    aud: "https://api.lightspark.com",
+    sub: opts.userId,
+    test: false,
+    iat: Math.floor(Date.now() / MS_IN_MINUTE),
+    exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
+    ),
+    bitcoin_network: 'testnet',
+  },
+  mainnet: {
+    aud: "https://api.lightspark.com",
+    sub: opts.userId,
+    test: false,
+    iat: Math.floor(Date.now() / MS_IN_MINUTE),
+    exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+    ),
+  }
+}[type])
+
 export const createWalletJwt = async (
   createCredentials: CredentialsForWalletJWTCreating
 ) => {

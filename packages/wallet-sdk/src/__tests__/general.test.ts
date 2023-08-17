@@ -55,6 +55,8 @@ let clientDeployWalletResponse:
 
 let invoicePayment: Record<InvoiceType, OutgoingPayment>;
 
+// TODO: split tests: a lot of tests can be shared, creating and paying invoices should be splitted for REGTEST, TESTNET and MAINNET
+
 describe("Sanity tests", () => {
     const invoiceData = {} as CreatedInvoiceData;
 
@@ -104,7 +106,7 @@ describe("Sanity tests", () => {
     );
 
     test(
-        "should return an error on trying to init wallet twice",
+        "should throw an error on trying to init wallet twice",
         async () => {
             await expect(
                 client.initializeWalletAndAwaitReady(
@@ -118,7 +120,7 @@ describe("Sanity tests", () => {
     );
 
     test(
-        "should return an error on trying to init wallet from unauthorized account",
+        "should throw an error on trying to init wallet from unauthorized account",
         async () => {
             await expect(
                 unauthorizedClient.initializeWalletAndAwaitReady(
@@ -156,21 +158,24 @@ describe("Sanity tests", () => {
     test(
         "should deposit wallet account",
         async () => {
-            const invoice = await client.createTestModeInvoice(TEST_INVOICE_AMOUNT);
+            const invoice = await client.createInvoice(TEST_INVOICE_AMOUNT);
 
-            expect(invoice).not.toBeNull();
+            // TODO: add payment result awaiting
+            const payment = await client.createTestModePayment(invoice!.encodedPaymentRequest)
+
+            expect(payment?.status).toBe(TransactionStatus.SUCCESS);
         },
         TESTS_TIMEOUT
     );
 
     test("should throw an error on deposit testnet funds to the account from unauthorized client", async () => {
         await expect(
-            client.createTestModeInvoice(TEST_INVOICE_AMOUNT)
+            unauthorizedClient.createTestModeInvoice(TEST_INVOICE_AMOUNT)
         ).rejects.toThrowError();
     });
 
     test("should throw an error on deposit testnet funds to account with locked wallet", async () => {
-        await expect(client.createTestModeInvoice(TEST_INVOICE_AMOUNT)).rejects.toThrowError();
+        await expect(authorizedClientWithLockedWallet.createTestModeInvoice(TEST_INVOICE_AMOUNT)).rejects.toThrowError();
     });
 
     test(
@@ -228,7 +233,7 @@ describe("Sanity tests", () => {
 
             const _invoicePayment = await client.createTestModePayment(
                 invoiceData.STANDARD.encodedPaymentRequest,
-                1_000_000
+                TEST_INVOICE_AMOUNT
             );
 
             if (!_invoicePayment) throw new TypeError("invoicePayment is null");
@@ -258,7 +263,7 @@ describe("Sanity tests", () => {
 
             const _invoicePayment = await client.createTestModePayment(
                 invoiceData.AMP.encodedPaymentRequest,
-                1_000_000
+                TEST_INVOICE_AMOUNT
             );
 
             if (!_invoicePayment) throw new TypeError("invoicePayment is null");
@@ -309,6 +314,8 @@ describe("P1 tests", () => {
         "should fetch the current wallet",
         async () => {
             const wallet = await client.getCurrentWallet();
+
+            console.log('wallet?.id', wallet?.id)
 
             expect(wallet).not.toBeNull();
         },
