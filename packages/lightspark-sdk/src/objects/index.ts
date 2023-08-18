@@ -21,6 +21,7 @@ export {
 } from "./ChannelOpeningTransaction.js";
 export { default as ChannelStatus } from "./ChannelStatus.js";
 export { default as ChannelToTransactionsConnection } from "./ChannelToTransactionsConnection.js";
+export { default as Connection } from "./Connection.js";
 export { default as CreateApiTokenInput } from "./CreateApiTokenInput.js";
 export { default as CreateApiTokenOutput } from "./CreateApiTokenOutput.js";
 export { default as CreateInvoiceInput } from "./CreateInvoiceInput.js";
@@ -32,6 +33,7 @@ export { default as CreateTestModeInvoiceInput } from "./CreateTestModeInvoiceIn
 export { default as CreateTestModeInvoiceOutput } from "./CreateTestModeInvoiceOutput.js";
 export { default as CreateTestModePaymentInput } from "./CreateTestModePaymentInput.js";
 export { default as CreateTestModePaymentoutput } from "./CreateTestModePaymentoutput.js";
+export { default as CryptoSanctionsScreeningProvider } from "./CryptoSanctionsScreeningProvider.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
 export { default as DeleteApiTokenInput } from "./DeleteApiTokenInput.js";
@@ -96,11 +98,14 @@ export { default as Permission } from "./Permission.js";
 export { default as RequestWithdrawalInput } from "./RequestWithdrawalInput.js";
 export { default as RequestWithdrawalOutput } from "./RequestWithdrawalOutput.js";
 export { default as RichText } from "./RichText.js";
+export { default as RiskRating } from "./RiskRating.js";
 export {
   default as RoutingTransaction,
   getRoutingTransactionQuery,
 } from "./RoutingTransaction.js";
 export { default as RoutingTransactionFailureReason } from "./RoutingTransactionFailureReason.js";
+export { default as ScreenBitcoinAddressesInput } from "./ScreenBitcoinAddressesInput.js";
+export { default as ScreenBitcoinAddressesOutput } from "./ScreenBitcoinAddressesOutput.js";
 export { default as Secret } from "./Secret.js";
 export { default as SendPaymentInput } from "./SendPaymentInput.js";
 export { default as SendPaymentOutput } from "./SendPaymentOutput.js";
@@ -112,6 +117,8 @@ export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
 export { default as Wallet } from "./Wallet.js";
 export { default as WalletStatus } from "./WalletStatus.js";
+export { default as WalletToPaymentRequestsConnection } from "./WalletToPaymentRequestsConnection.js";
+export { default as WalletToTransactionsConnection } from "./WalletToTransactionsConnection.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";

@@ -2,7 +2,7 @@
 
 import NodeAddressType from "./NodeAddressType.js";
 
-/** An object that represents the address of a node on the Lightning Network. **/
+/** This object represents the address of a node on the Lightning Network. **/
 type NodeAddress = {
   /** The string representation of the address. **/
   address: string;

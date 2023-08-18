@@ -1,24 +1,25 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
+import LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import type BlockchainBalance from "./BlockchainBalance.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import type ChannelStatus from "./ChannelStatus.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import BlockchainBalance, {
+  BlockchainBalanceFromJson,
+} from "./BlockchainBalance.js";
+import ChannelStatus from "./ChannelStatus.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
-import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
-import type Node from "./Node.js";
-import type NodeAddressType from "./NodeAddressType.js";
-import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
-import type Secret from "./Secret.js";
-import { SecretFromJson } from "./Secret.js";
+import LightsparkNodeToChannelsConnection, {
+  LightsparkNodeToChannelsConnectionFromJson,
+} from "./LightsparkNodeToChannelsConnection.js";
+import Node from "./Node.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
+import Secret, { SecretFromJson } from "./Secret.js";
 
 /** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. **/
 class LightsparkNode implements Node {
@@ -81,15 +82,17 @@ query FetchNodeToAddressesConnection($entity_id: ID!, $first: Int, $types: [Node
   public async getChannels(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    statuses: ChannelStatus[] | undefined = undefined
+    statuses: ChannelStatus[] | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<LightsparkNodeToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $statuses: [ChannelStatus!]) {
+query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $statuses: [ChannelStatus!], $after: String) {
     entity(id: $entity_id) {
         ... on LightsparkNode {
-            channels(, first: $first, statuses: $statuses) {
+            channels(, first: $first, statuses: $statuses, after: $after) {
                 __typename
+                lightspark_node_to_channels_connection_count: count
                 lightspark_node_to_channels_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -97,7 +100,6 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                lightspark_node_to_channels_connection_count: count
                 lightspark_node_to_channels_connection_entities: entities {
                     __typename
                     channel_id: id
@@ -197,7 +199,12 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
     }
 }
 `,
-      variables: { entity_id: this.id, first: first, statuses: statuses },
+      variables: {
+        entity_id: this.id,
+        first: first,
+        statuses: statuses,
+        after: after,
+      },
       constructObject: (json) => {
         const connection = json["entity"]["channels"];
         return LightsparkNodeToChannelsConnectionFromJson(connection);

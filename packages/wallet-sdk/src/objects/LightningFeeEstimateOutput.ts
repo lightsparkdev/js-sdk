@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 type LightningFeeEstimateOutput = {
   /** The estimated fees for the payment. **/

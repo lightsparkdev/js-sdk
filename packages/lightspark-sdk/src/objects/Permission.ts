@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum of the potential permissions that a Lightspark user can have in regards to account management. **/
 export enum Permission {
   /**
    * This is an enum value that represents values that could be added in the future.
