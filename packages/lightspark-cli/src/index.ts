@@ -18,7 +18,10 @@ import {
   Seed,
 } from "../lightspark_crypto/lightspark_crypto.js";
 import type { EnvCredentials } from "./authHelpers.js";
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+import {
+  getCredentialsFromEnvOrThrow,
+  RequiredCredentials,
+} from "./authHelpers.js";
 import {
   getBitcoinNetworkOrThrow,
   getNodeId,
@@ -80,12 +83,12 @@ const initEnv = async (options: OptionValues) => {
     // Do nothing
   }
 
-  let content = `export LIGHTSPARK_API_TOKEN_CLIENT_ID="${clientId}"\n`;
-  content += `export LIGHTSPARK_API_TOKEN_CLIENT_SECRET="${clientSecret}"\n`;
+  let content = `export ${RequiredCredentials.ClientId}="${clientId}"\n`;
+  content += `export ${RequiredCredentials.ClientSecret}="${clientSecret}"\n`;
   let baseUrl: string | undefined;
   if (options.env === "dev") {
     baseUrl = "api.dev.dev.sparkinfra.net";
-    content += `export LIGHTSPARK_EXAMPLE_BASE_URL="${baseUrl}"\n`;
+    content += `export LIGHTSPARK_BASE_URL="${baseUrl}"\n`;
   }
 
   const client = new LightsparkClient(
@@ -116,7 +119,7 @@ const initEnv = async (options: OptionValues) => {
     });
   }
 
-  content += `export BITCOIN_NETWORK="${tokenBitcoinNetwork}"`;
+  content += `export ${RequiredCredentials.BitcoinNetwork}="${tokenBitcoinNetwork}"`;
 
   await fs.writeFile(filePath, content);
 
