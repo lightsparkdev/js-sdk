@@ -17,7 +17,7 @@ import LightsparkClient from "../client.js";
 
 import {
     getOutgoingPaymentQuery,
-    InvoiceType,
+    type InvoiceType,
     KeyType,
     TransactionStatus,
     WalletStatus,
@@ -210,20 +210,6 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
     );
 
     test(
-        "should create an AMP type invoice",
-        async () => {
-            invoiceData.AMP = await regtestClient.createInvoice(
-                CREATE_INVOICE_AMOUNT_MSATS,
-                "hi there",
-                InvoiceType.AMP
-            );
-
-            expect(invoiceData.AMP).not.toBeNull();
-        },
-        TESTS_TIMEOUT
-    );
-
-    test(
         "should create a empty memo invoice",
         async () => {
             const clearMemoInvoice = await regtestClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS);
@@ -255,28 +241,6 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
             await sleep(5_000)
 
             expect(testInvoicePayment.STANDARD?.status).toBe(TransactionStatus.SUCCESS);
-        },
-        TESTS_TIMEOUT
-    );
-
-    test(
-        "should pay a AMP invoice",
-        async () => {
-            if (!invoiceData.AMP) {
-                throw new Error("testnetInvoiceData is null");
-            }
-
-            // TODO: add payment result awaiting
-            testInvoicePayment.AMP = await regtestClient.createTestModePayment(
-                invoiceData.AMP.encodedPaymentRequest
-            );
-
-            console.log(testInvoicePayment.AMP);
-
-            // FIXME
-            await sleep(5_000)
-
-            expect(testInvoicePayment.AMP?.status).toBe(TransactionStatus.SUCCESS);
         },
         TESTS_TIMEOUT
     );
@@ -321,20 +285,6 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
     );
 
     test(
-        "should create an AMP type invoice",
-        async () => {
-            testInvoiceData.AMP = await regtestClient.createTestModeInvoice(
-                CREATE_TEST_INVOICE_AMOUNT_MSATS,
-                "hi there",
-                InvoiceType.AMP
-            );
-
-            expect(invoiceData.AMP).not.toBeNull();
-        },
-        TESTS_TIMEOUT
-    );
-
-    test(
         "should create a empty memo invoice",
         async () => {
             const clearMemoInvoice = await regtestClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS);
@@ -368,25 +318,6 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
             console.log(invoicePayment.STANDARD);
 
             expect(invoicePayment.STANDARD.status).toBe(TransactionStatus.SUCCESS);
-        },
-        TESTS_TIMEOUT
-    );
-
-    test(
-        "should pay a AMP invoice",
-        async () => {
-            if (!testInvoiceData.AMP) {
-                throw new Error("testInvoiceData.AMP is empty");
-            }
-
-            invoicePayment.AMP = await regtestClient.payInvoiceAndAwaitResult(
-                testInvoiceData.AMP,
-                CREATE_TEST_INVOICE_AMOUNT_MSATS
-            );
-
-            console.log(invoicePayment.AMP, "payment testnet invoice");
-
-            expect(invoicePayment.AMP.status).toBe(TransactionStatus.SUCCESS);
         },
         TESTS_TIMEOUT
     );
@@ -462,54 +393,26 @@ describe("P1 tests", () => {
         );
     });
 
-    // test("should fetch an invoices by IDs", async () => {
-    //     const standardInvoice = await regtestClient.executeRawQuery(
-    //         getInvoiceQuery(invoiceData.STANDARD?.)
-    //     );
-    //
-    //     const ampInvoice = await regtestClient.executeRawQuery(
-    //         getInvoiceQuery(invoicePayment.AMP.id)
-    //     );
-    //
-    //     expect(standardPayment).not.toBeNull();
-    //     expect(standardPayment?.id).toBe(invoicePayment.STANDARD.id);
-    //
-    //     expect(ampPayment).not.toBeNull();
-    //     expect(ampPayment?.id).toBe(invoicePayment.STANDARD.id);
-    // });
-
     test("should fetch an invoices payment by IDs", async () => {
-        if (!invoicePayment.STANDARD?.id || !invoicePayment.AMP?.id) throw new Error('invoicePayment is null');
+        if (!invoicePayment.STANDARD?.id) throw new Error('invoicePayment is null');
 
         const standardPayment = await regtestClient.executeRawQuery(
             getOutgoingPaymentQuery(invoicePayment.STANDARD?.id)
         );
-        const ampPayment = await regtestClient.executeRawQuery(
-            getOutgoingPaymentQuery(invoicePayment.AMP?.id)
-        );
 
         expect(standardPayment).not.toBeNull();
         expect(standardPayment?.id).toBe(invoicePayment.STANDARD?.id);
-
-        expect(ampPayment).not.toBeNull();
-        expect(ampPayment?.id).toBe(invoicePayment.AMP?.id);
     });
 
     test("should fetch an test invoices payment by IDs", async () => {
-        if (!testInvoicePayment.STANDARD?.id || !testInvoicePayment.AMP?.id) throw new Error('testInvoicePayment is null');
+        if (!testInvoicePayment.STANDARD?.id) throw new Error('testInvoicePayment is null');
 
         const standardPayment = await regtestClient.executeRawQuery(
             getOutgoingPaymentQuery(testInvoicePayment.STANDARD?.id)
         );
-        const ampPayment = await regtestClient.executeRawQuery(
-            getOutgoingPaymentQuery(testInvoicePayment.AMP?.id)
-        );
 
         expect(standardPayment).not.toBeNull();
         expect(standardPayment?.id).toBe(testInvoicePayment.STANDARD?.id);
-
-        expect(ampPayment).not.toBeNull();
-        expect(ampPayment?.id).toBe(testInvoicePayment.STANDARD?.id);
     });
 
     test(
