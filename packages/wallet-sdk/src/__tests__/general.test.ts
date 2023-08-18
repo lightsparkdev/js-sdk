@@ -1,8 +1,8 @@
 /**
  * To run test properly:
  * 1. lightspark-wallet init-env
- * 2. source ~/.lightsparkenv
- * 3. setup LIGHTSPARK_JWT_PUB_KEY into app.lightspark.com account settings
+ * 2. setup LIGHTSPARK_JWT_PUB_KEY into app.lightspark.com account settings
+ * 3. yarn workspace @lightsparkdev/wallet-sdk test
  */
 
 import { describe, expect, jest, test } from "@jest/globals";
@@ -25,27 +25,28 @@ import {
 } from "../objects/index.js";
 import { FRAGMENT } from "../objects/InvoiceData.js";
 import { TESTS_TIMEOUT } from "./consts/index.js";
-import { deployWallet, getCredentialsFromEnvOrThrow } from "./helpers/index.js";
+import {deployWallet, getCredentialsFromEnvOrThrow, sleep} from "./helpers/index.js";
 import {
     type CreatedInvoiceData,
-    type CreatedTestnetInvoiceData,
 } from "./types/index.js";
 
 const ENCODED_REQUEST_FOR_TESTS =
     "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse";
 
-const client = new LightsparkClient();
+const regtestClient = new LightsparkClient();
+// const testnetClient = new LightsparkClient();
+// const mainnetClient =  new LightsparkClient();
 let bitcoinAddress: string | null = '';
 
 const unauthorizedClient = new LightsparkClient();
-
 const authorizedClientWithLockedWallet = new LightsparkClient();
 
 /**
  * For every test `TEST_USER_ID` should be unique
  */
 export const TEST_USER_ID = `test_user_${new Date().getTime()}`;
-export const TEST_INVOICE_AMOUNT = 1200 * 1000; //mSats
+export const CREATE_INVOICE_AMOUNT_MSATS = 100_000 * 1000;
+export const CREATE_TEST_INVOICE_AMOUNT_MSATS = 1000 * 1000;
 
 const credentials = getCredentialsFromEnvOrThrow(`_${TEST_USER_ID}`);
 
@@ -53,13 +54,13 @@ let clientDeployWalletResponse:
     | Awaited<ReturnType<typeof deployWallet>>
     | undefined = undefined;
 
-let invoicePayment: Record<InvoiceType, OutgoingPayment>;
+const invoiceData = {} as CreatedInvoiceData;
+const testInvoiceData = {} as Record<InvoiceType, string | null>;
 
-// TODO: split tests: a lot of tests can be shared, creating and paying invoices should be splitted for REGTEST, TESTNET and MAINNET
+const invoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
+const testInvoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
 
 describe("Sanity tests", () => {
-    const invoiceData = {} as CreatedInvoiceData;
-
     jest
         .spyOn(authorizedClientWithLockedWallet, "isAuthorized")
         .mockResolvedValue(true);
@@ -68,7 +69,7 @@ describe("Sanity tests", () => {
         "should deploy wallet",
         async () => {
             clientDeployWalletResponse = await deployWallet(
-                client,
+                regtestClient,
                 {
                     userId: TEST_USER_ID,
                     test: true,
@@ -84,7 +85,7 @@ describe("Sanity tests", () => {
     test(
         "should throw an error on deploying wallet twice",
         async () => {
-            await expect(client.deployWalletAndAwaitDeployed()).rejects.toThrow(
+            await expect(regtestClient.deployWalletAndAwaitDeployed()).rejects.toThrow(
                 LightsparkException
             );
         },
@@ -94,7 +95,7 @@ describe("Sanity tests", () => {
     test(
         "should init the wallet",
         async () => {
-            const walletStatus = await client.initializeWalletAndAwaitReady(
+            const walletStatus = await regtestClient.initializeWalletAndAwaitReady(
                 KeyType.RSA_OAEP,
                 clientDeployWalletResponse?.pubKey ?? "",
                 KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? "")
@@ -109,7 +110,7 @@ describe("Sanity tests", () => {
         "should throw an error on trying to init wallet twice",
         async () => {
             await expect(
-                client.initializeWalletAndAwaitReady(
+                regtestClient.initializeWalletAndAwaitReady(
                     KeyType.RSA_OAEP,
                     clientDeployWalletResponse?.pubKey ?? "",
                     KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? "")
@@ -136,11 +137,11 @@ describe("Sanity tests", () => {
     test(
         "should unlock the wallet",
         async () => {
-            await client.loadWalletSigningKey(
+            await regtestClient.loadWalletSigningKey(
                 KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? "")
             );
 
-            expect(client.isWalletUnlocked()).toBe(true);
+            expect(regtestClient.isWalletUnlocked()).toBe(true);
         },
         TESTS_TIMEOUT
     );
@@ -148,20 +149,38 @@ describe("Sanity tests", () => {
     test(
         "should create a bitcoin funding address",
         async () => {
-            bitcoinAddress = await client.createBitcoinFundingAddress();
+            bitcoinAddress = await regtestClient.createBitcoinFundingAddress();
 
             expect(bitcoinAddress).not.toBeNull();
         },
         TESTS_TIMEOUT
     );
 
+    test("should throw an error on create a deposit bitcoin address with unauthorized user", async () => {
+        await expect(
+            unauthorizedClient.createBitcoinFundingAddress()
+        ).rejects.toThrow("You must be logged in to perform this action.");
+    });
+
+    test("should throw an error on create a deposit bitcoin address with locked user", async () => {
+        await expect(
+            authorizedClientWithLockedWallet.createBitcoinFundingAddress()
+        ).rejects.toThrow("Request CreateBitcoinFundingAddress failed. Unauthorized");
+    });
+});
+
+describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)", () => {
     test(
         "should deposit wallet account",
         async () => {
-            const invoice = await client.createInvoice(TEST_INVOICE_AMOUNT);
+            const invoice = await regtestClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS);
+
+            if (!invoice) throw new TypeError('invoice is null');
 
             // TODO: add payment result awaiting
-            const payment = await client.createTestModePayment(invoice!.encodedPaymentRequest)
+            const payment = await regtestClient.createTestModePayment(invoice.encodedPaymentRequest);
+
+            await sleep(5_000)
 
             expect(payment?.status).toBe(TransactionStatus.SUCCESS);
         },
@@ -170,19 +189,32 @@ describe("Sanity tests", () => {
 
     test("should throw an error on deposit testnet funds to the account from unauthorized client", async () => {
         await expect(
-            unauthorizedClient.createTestModeInvoice(TEST_INVOICE_AMOUNT)
+            unauthorizedClient.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
         ).rejects.toThrowError();
     });
 
     test("should throw an error on deposit testnet funds to account with locked wallet", async () => {
-        await expect(authorizedClientWithLockedWallet.createTestModeInvoice(TEST_INVOICE_AMOUNT)).rejects.toThrowError();
+        await expect(authorizedClientWithLockedWallet.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
     });
+
+    test(
+        "should create a STANDARD type invoice",
+        async () => {
+            invoiceData.STANDARD = await regtestClient.createInvoice(
+                CREATE_INVOICE_AMOUNT_MSATS,
+                "hi there"
+            );
+
+            expect(invoiceData.STANDARD).not.toBeNull();
+        },
+        TESTS_TIMEOUT
+    );
 
     test(
         "should create an AMP type invoice",
         async () => {
-            invoiceData.AMP = await client.createInvoice(
-                TEST_INVOICE_AMOUNT,
+            invoiceData.AMP = await regtestClient.createInvoice(
+                CREATE_INVOICE_AMOUNT_MSATS,
                 "hi there",
                 InvoiceType.AMP
             );
@@ -193,10 +225,94 @@ describe("Sanity tests", () => {
     );
 
     test(
+        "should create a empty memo invoice",
+        async () => {
+            const clearMemoInvoice = await regtestClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS);
+
+            expect(clearMemoInvoice).not.toBeNull();
+        },
+        TESTS_TIMEOUT
+    );
+
+    test("should throw an error on create an unauthorized invoice", async () => {
+        expect(unauthorizedClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
+    });
+
+    test(
+        "should pay a STANDARD invoice",
+        async () => {
+            if (!invoiceData.STANDARD) {
+                throw new Error("testnetInvoiceData is null");
+            }
+
+            // TODO: add payment result awaiting
+            testInvoicePayment.STANDARD = await regtestClient.createTestModePayment(
+                invoiceData.STANDARD.encodedPaymentRequest
+            );
+
+            console.log(testInvoicePayment.STANDARD);
+
+            // FIXME
+            await sleep(5_000)
+
+            expect(testInvoicePayment.STANDARD?.status).toBe(TransactionStatus.SUCCESS);
+        },
+        TESTS_TIMEOUT
+    );
+
+    test(
+        "should pay a AMP invoice",
+        async () => {
+            if (!invoiceData.AMP) {
+                throw new Error("testnetInvoiceData is null");
+            }
+
+            // TODO: add payment result awaiting
+            testInvoicePayment.AMP = await regtestClient.createTestModePayment(
+                invoiceData.AMP.encodedPaymentRequest
+            );
+
+            console.log(testInvoicePayment.AMP);
+
+            // FIXME
+            await sleep(5_000)
+
+            expect(testInvoicePayment.AMP?.status).toBe(TransactionStatus.SUCCESS);
+        },
+        TESTS_TIMEOUT
+    );
+});
+
+describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", () => {
+    test(
+        "should deposit wallet account",
+        async () => {
+            const invoice = await regtestClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS);
+
+            if (!invoice) throw new TypeError('invoice is null');
+
+            const payment = await regtestClient.payInvoiceAndAwaitResult(invoice, CREATE_TEST_INVOICE_AMOUNT_MSATS);
+
+            expect(payment?.status).toBe(TransactionStatus.SUCCESS);
+        },
+        TESTS_TIMEOUT
+    );
+
+    test("should throw an error on deposit testnet funds to the account from unauthorized client", async () => {
+        await expect(
+            unauthorizedClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
+        ).rejects.toThrowError();
+    });
+
+    test("should throw an error on deposit testnet funds to account with locked wallet", async () => {
+        await expect(authorizedClientWithLockedWallet.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
+    });
+
+    test(
         "should create a STANDARD type invoice",
         async () => {
-            invoiceData.STANDARD = await client.createInvoice(
-                TEST_INVOICE_AMOUNT,
+            testInvoiceData.STANDARD = await regtestClient.createTestModeInvoice(
+                CREATE_TEST_INVOICE_AMOUNT_MSATS,
                 "hi there"
             );
 
@@ -206,9 +322,23 @@ describe("Sanity tests", () => {
     );
 
     test(
+        "should create an AMP type invoice",
+        async () => {
+            testInvoiceData.AMP = await regtestClient.createTestModeInvoice(
+                CREATE_TEST_INVOICE_AMOUNT_MSATS,
+                "hi there",
+                InvoiceType.AMP
+            );
+
+            expect(invoiceData.AMP).not.toBeNull();
+        },
+        TESTS_TIMEOUT
+    );
+
+    test(
         "should create a empty memo invoice",
         async () => {
-            const clearMemoInvoice = await client.createInvoice(TEST_INVOICE_AMOUNT);
+            const clearMemoInvoice = await regtestClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS);
 
             expect(clearMemoInvoice).not.toBeNull();
         },
@@ -217,7 +347,7 @@ describe("Sanity tests", () => {
 
     test("should throw an error on create an unauthorized invoice", async () => {
         await expect(
-            unauthorizedClient.createInvoice(TEST_INVOICE_AMOUNT)
+            unauthorizedClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
         ).rejects.toThrow("You must be logged in to perform this action.");
     });
 
@@ -227,66 +357,45 @@ describe("Sanity tests", () => {
     test(
         "should pay a STANDARD invoice",
         async () => {
-            if (!invoiceData.STANDARD) {
-                throw new Error("testnetInvoiceData is null");
+            if (!testInvoiceData.STANDARD) {
+                throw new Error("testInvoiceData.STANDARD is empty");
             }
 
-            const _invoicePayment = await client.createTestModePayment(
-                invoiceData.STANDARD.encodedPaymentRequest,
-                TEST_INVOICE_AMOUNT
+            invoicePayment.STANDARD = await regtestClient.payInvoiceAndAwaitResult(
+                testInvoiceData.STANDARD,
+                CREATE_TEST_INVOICE_AMOUNT_MSATS
             );
 
-            if (!_invoicePayment) throw new TypeError("invoicePayment is null");
-
-            invoicePayment.STANDARD = _invoicePayment;
-
-            console.log(invoicePayment, "payment testnet invoice");
-
-            console.log(
-                `Testnet payment done with status= ${invoicePayment.STANDARD.status}, ID = ${invoicePayment.STANDARD.id}`
-            );
+            console.log(invoicePayment.STANDARD);
 
             expect(invoicePayment.STANDARD.status).toBe(TransactionStatus.SUCCESS);
         },
         TESTS_TIMEOUT
     );
 
-    /**
-     * As we're in REGTEST mode, we can pay invoice only by createTestModePayment
-     */
     test(
         "should pay a AMP invoice",
         async () => {
-            if (!invoiceData.AMP) {
-                throw new Error("testnetInvoiceData is null");
+            if (!testInvoiceData.AMP) {
+                throw new Error("testInvoiceData.AMP is empty");
             }
 
-            const _invoicePayment = await client.createTestModePayment(
-                invoiceData.AMP.encodedPaymentRequest,
-                TEST_INVOICE_AMOUNT
+            invoicePayment.AMP = await regtestClient.payInvoiceAndAwaitResult(
+                testInvoiceData.AMP,
+                CREATE_TEST_INVOICE_AMOUNT_MSATS
             );
 
-            if (!_invoicePayment) throw new TypeError("invoicePayment is null");
-
-            invoicePayment.AMP = _invoicePayment;
-
-            console.log(invoicePayment, "payment testnet invoice");
-
-            console.log(
-                `Testnet payment done with status= ${invoicePayment.AMP.status}, ID = ${invoicePayment.AMP.id}`
-            );
+            console.log(invoicePayment.AMP, "payment testnet invoice");
 
             expect(invoicePayment.AMP.status).toBe(TransactionStatus.SUCCESS);
         },
         TESTS_TIMEOUT
     );
-
-    test("should throw an error on create a deposit bitcoin address with unauthorized user", async () => {
-        await expect(
-            unauthorizedClient.createBitcoinFundingAddress()
-        ).rejects.toThrow("You must be logged in to perform this action.");
-    });
 });
+
+// describe("Invoices tests for TESTNET", () => {});
+
+// describe("Invoices tests for MAINNET", () => {});
 
 describe("P1 tests", () => {
     test(
@@ -313,7 +422,7 @@ describe("P1 tests", () => {
     test(
         "should fetch the current wallet",
         async () => {
-            const wallet = await client.getCurrentWallet();
+            const wallet = await regtestClient.getCurrentWallet();
 
             console.log('wallet?.id', wallet?.id)
 
@@ -331,7 +440,7 @@ describe("P1 tests", () => {
     test(
         "should list current payment requests",
         async () => {
-            const dashboard = await client.getWalletDashboard();
+            const dashboard = await regtestClient.getWalletDashboard();
 
             expect(dashboard?.paymentRequests).not.toBeNull();
         },
@@ -341,7 +450,7 @@ describe("P1 tests", () => {
     test(
         "should list recent transactions",
         async () => {
-            const dashboard = await client.getWalletDashboard();
+            const dashboard = await regtestClient.getWalletDashboard();
 
             expect(dashboard?.recentTransactions).not.toBeNull();
         },
@@ -354,25 +463,60 @@ describe("P1 tests", () => {
         );
     });
 
+    // test("should fetch an invoices by IDs", async () => {
+    //     const standardInvoice = await regtestClient.executeRawQuery(
+    //         getInvoiceQuery(invoiceData.STANDARD?.)
+    //     );
+    //
+    //     const ampInvoice = await regtestClient.executeRawQuery(
+    //         getInvoiceQuery(invoicePayment.AMP.id)
+    //     );
+    //
+    //     expect(standardPayment).not.toBeNull();
+    //     expect(standardPayment?.id).toBe(invoicePayment.STANDARD.id);
+    //
+    //     expect(ampPayment).not.toBeNull();
+    //     expect(ampPayment?.id).toBe(invoicePayment.STANDARD.id);
+    // });
+
     test("should fetch an invoices payment by IDs", async () => {
-        const standardPayment = await client.executeRawQuery(
-            getOutgoingPaymentQuery(invoicePayment.STANDARD.id)
+        if (!invoicePayment.STANDARD?.id || !invoicePayment.AMP?.id) throw new Error('invoicePayment is null');
+
+        const standardPayment = await regtestClient.executeRawQuery(
+            getOutgoingPaymentQuery(invoicePayment.STANDARD?.id)
         );
-        const ampPayment = await client.executeRawQuery(
-            getOutgoingPaymentQuery(invoicePayment.AMP.id)
+        const ampPayment = await regtestClient.executeRawQuery(
+            getOutgoingPaymentQuery(invoicePayment.AMP?.id)
         );
 
         expect(standardPayment).not.toBeNull();
-        expect(standardPayment?.id).toBe(invoicePayment.STANDARD.id);
+        expect(standardPayment?.id).toBe(invoicePayment.STANDARD?.id);
 
         expect(ampPayment).not.toBeNull();
-        expect(ampPayment?.id).toBe(invoicePayment.STANDARD.id);
+        expect(ampPayment?.id).toBe(invoicePayment.AMP?.id);
+    });
+
+    test("should fetch an test invoices payment by IDs", async () => {
+        if (!testInvoicePayment.STANDARD?.id || !testInvoicePayment.AMP?.id) throw new Error('testInvoicePayment is null');
+
+        const standardPayment = await regtestClient.executeRawQuery(
+            getOutgoingPaymentQuery(testInvoicePayment.STANDARD?.id)
+        );
+        const ampPayment = await regtestClient.executeRawQuery(
+            getOutgoingPaymentQuery(testInvoicePayment.AMP?.id)
+        );
+
+        expect(standardPayment).not.toBeNull();
+        expect(standardPayment?.id).toBe(testInvoicePayment.STANDARD?.id);
+
+        expect(ampPayment).not.toBeNull();
+        expect(ampPayment?.id).toBe(testInvoicePayment.STANDARD?.id);
     });
 
     test(
         "should decode an invoice",
         async () => {
-            const decodedInvoice = await client.decodeInvoice(
+            const decodedInvoice = await regtestClient.decodeInvoice(
                 ENCODED_REQUEST_FOR_TESTS
             );
 
@@ -387,8 +531,6 @@ describe("P1 tests", () => {
 });
 
 describe("P2 tests", () => {
-    const testInvoiceData = {} as CreatedTestnetInvoiceData;
-
     test("should send a keysend payment", async () => {
         expect(1).toBe(1);
     });
@@ -410,7 +552,7 @@ describe("P2 tests", () => {
             ${FRAGMENT}
         `;
 
-            const result = await client.executeRawQuery({
+            const result = await regtestClient.executeRawQuery({
                 queryPayload: query,
                 variables: {
                     encoded_payment_request: ENCODED_REQUEST_FOR_TESTS,
@@ -426,54 +568,20 @@ describe("P2 tests", () => {
     test(
         "should get an estimated gas price",
         async () => {
-            const fee = await client.getBitcoinFeeEstimate();
+            const fee = await regtestClient.getBitcoinFeeEstimate();
 
             expect(fee).not.toBeNull();
         },
         TESTS_TIMEOUT
     );
 
-    test("should create a STANDARD test mode invoice", async () => {
-        testInvoiceData.STANDARD = await client.createTestModeInvoice(
-            TEST_INVOICE_AMOUNT
-        );
-        expect(testInvoiceData.STANDARD).not.toBeNull();
-    });
-
-    test("should create a AMP test mode invoice", async () => {
-        testInvoiceData.AMP = await client.createTestModeInvoice(
-            TEST_INVOICE_AMOUNT,
-            InvoiceType.AMP
-        );
-        expect(testInvoiceData.STANDARD).not.toBeNull();
-    });
-
-    test(
-        "should create a empty memo test mode invoice",
-        async () => {
-            const clearMemoTestInvoice = await client.createTestModeInvoice(
-                TEST_INVOICE_AMOUNT,
-                InvoiceType.AMP
-            );
-
-            expect(clearMemoTestInvoice).not.toBeNull();
-        },
-        TESTS_TIMEOUT
-    );
-
-    test("should throw an error on create a empty memo test mode invoice with unauthorized account", async () => {
-        await expect(
-            unauthorizedClient.createTestModeInvoice(TEST_INVOICE_AMOUNT)
-        ).rejects.toThrow("You must be logged in to perform this action.");
-    });
-
     test(
         "should terminate a wallet",
         async () => {
-            await client.terminateWallet();
-            const wallet = await client.getCurrentWallet();
+            await regtestClient.terminateWallet();
+            const wallet = await regtestClient.getCurrentWallet();
 
-            expect(wallet?.status).toBe(WalletStatus.TERMINATING);
+            expect(wallet?.status).toBe(WalletStatus.TERMINATED);
         },
         TESTS_TIMEOUT
     );
