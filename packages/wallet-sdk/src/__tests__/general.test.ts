@@ -34,12 +34,11 @@ const ENCODED_REQUEST_FOR_TESTS =
     "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse";
 
 const regtestClient = new LightsparkClient();
+const unauthorizedRegtestClient = new LightsparkClient();
+const authorizedRegtestClientWithLockedWallet = new LightsparkClient();
 // const testnetClient = new LightsparkClient();
 // const mainnetClient =  new LightsparkClient();
 let bitcoinAddress: string | null = '';
-
-const unauthorizedClient = new LightsparkClient();
-const authorizedClientWithLockedWallet = new LightsparkClient();
 
 /**
  * For every test `TEST_USER_ID` should be unique
@@ -62,7 +61,7 @@ const testInvoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
 
 describe("Sanity tests", () => {
     jest
-        .spyOn(authorizedClientWithLockedWallet, "isAuthorized")
+        .spyOn(authorizedRegtestClientWithLockedWallet, "isAuthorized")
         .mockResolvedValue(true);
 
     test(
@@ -124,7 +123,7 @@ describe("Sanity tests", () => {
         "should throw an error on trying to init wallet from unauthorized account",
         async () => {
             await expect(
-                unauthorizedClient.initializeWalletAndAwaitReady(
+                unauthorizedRegtestClient.initializeWalletAndAwaitReady(
                     KeyType.RSA_OAEP,
                     clientDeployWalletResponse?.pubKey ?? "",
                     KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? "")
@@ -158,13 +157,13 @@ describe("Sanity tests", () => {
 
     test("should throw an error on create a deposit bitcoin address with unauthorized user", async () => {
         await expect(
-            unauthorizedClient.createBitcoinFundingAddress()
+            unauthorizedRegtestClient.createBitcoinFundingAddress()
         ).rejects.toThrow("You must be logged in to perform this action.");
     });
 
     test("should throw an error on create a deposit bitcoin address with locked user", async () => {
         await expect(
-            authorizedClientWithLockedWallet.createBitcoinFundingAddress()
+            authorizedRegtestClientWithLockedWallet.createBitcoinFundingAddress()
         ).rejects.toThrow("Request CreateBitcoinFundingAddress failed. Unauthorized");
     });
 });
@@ -189,12 +188,12 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
 
     test("should throw an error on deposit testnet funds to the account from unauthorized client", async () => {
         await expect(
-            unauthorizedClient.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
+            unauthorizedRegtestClient.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
         ).rejects.toThrowError();
     });
 
     test("should throw an error on deposit testnet funds to account with locked wallet", async () => {
-        await expect(authorizedClientWithLockedWallet.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
+        await expect(authorizedRegtestClientWithLockedWallet.createInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
     });
 
     test(
@@ -235,7 +234,7 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
     );
 
     test("should throw an error on create an unauthorized invoice", async () => {
-        expect(unauthorizedClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
+        expect(unauthorizedRegtestClient.createInvoice(CREATE_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
     });
 
     test(
@@ -300,12 +299,12 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
 
     test("should throw an error on deposit testnet funds to the account from unauthorized client", async () => {
         await expect(
-            unauthorizedClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
+            unauthorizedRegtestClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
         ).rejects.toThrowError();
     });
 
     test("should throw an error on deposit testnet funds to account with locked wallet", async () => {
-        await expect(authorizedClientWithLockedWallet.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
+        await expect(authorizedRegtestClientWithLockedWallet.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)).rejects.toThrowError();
     });
 
     test(
@@ -347,7 +346,7 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
 
     test("should throw an error on create an unauthorized invoice", async () => {
         await expect(
-            unauthorizedClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
+            unauthorizedRegtestClient.createTestModeInvoice(CREATE_TEST_INVOICE_AMOUNT_MSATS)
         ).rejects.toThrow("You must be logged in to perform this action.");
     });
 
@@ -432,7 +431,7 @@ describe("P1 tests", () => {
     );
 
     test("should throw an error on fetch the current wallet from unauthorized user", async () => {
-        await expect(unauthorizedClient.getCurrentWallet()).rejects.toThrow(
+        await expect(unauthorizedRegtestClient.getCurrentWallet()).rejects.toThrow(
             "You must be logged in to perform this action."
         );
     });
@@ -458,7 +457,7 @@ describe("P1 tests", () => {
     );
 
     test("should throw an error on load walled dashboard from unauthorized wallet", async () => {
-        await expect(unauthorizedClient.getWalletDashboard()).rejects.toThrow(
+        await expect(unauthorizedRegtestClient.getWalletDashboard()).rejects.toThrow(
             "You must be logged in to perform this action."
         );
     });
@@ -587,7 +586,7 @@ describe("P2 tests", () => {
     );
 
     test("should throw an error on terminate unauthorized wallet", async () => {
-        await expect(unauthorizedClient.terminateWallet()).rejects.toThrow(
+        await expect(unauthorizedRegtestClient.terminateWallet()).rejects.toThrow(
             "You must be logged in to perform this action."
         );
     });
