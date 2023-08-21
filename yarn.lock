@@ -4144,7 +4144,7 @@ __metadata:
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     jose: ^4.14.4
-    jsonwebtoken: ^9.0.0
+    jsonwebtoken: ^9.0.1
     nodemon: ^2.0.22
     prettier: 2.8.7
     prettier-plugin-organize-imports: ^3.2.2
@@ -4433,7 +4433,7 @@ __metadata:
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     jose: ^4.14.4
-    jsonwebtoken: ^9.0.0
+    jsonwebtoken: ^9.0.1
     nodemon: ^2.0.22
     prettier: 2.8.7
     prettier-plugin-organize-imports: ^3.2.2
@@ -15665,7 +15665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^9.0.0, jsonwebtoken@npm:^9.0.1":
+"jsonwebtoken@npm:^9.0.1":
   version: 9.0.1
   resolution: "jsonwebtoken@npm:9.0.1"
   dependencies:
