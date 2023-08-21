@@ -11,7 +11,7 @@ type CreateTestModeInvoiceInputWallet = {
 };
 
 export const CreateTestModeInvoiceInputWalletFromJson = (
-  obj: any,
+  obj: any
 ): CreateTestModeInvoiceInputWallet => {
   return {
     amountMsats: obj["create_test_mode_invoice_input_wallet_amount_msats"],

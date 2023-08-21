@@ -34,16 +34,16 @@ const main = async (
   action: (
     client: LightsparkClient,
     options: OptionValues,
-    credentials: EnvCredentials,
-  ) => Promise<unknown>,
+    credentials: EnvCredentials
+  ) => Promise<unknown>
 ) => {
   const credentials = getCredentialsFromEnvOrThrow();
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(
       credentials.apiTokenClientId,
-      credentials.apiTokenClientSecret,
+      credentials.apiTokenClientSecret
     ),
-    credentials.baseUrl,
+    credentials.baseUrl
   );
   await action(client, options, credentials);
 };
@@ -93,7 +93,7 @@ const initEnv = async (options: OptionValues) => {
 
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(clientId, clientSecret),
-    baseUrl,
+    baseUrl
   );
 
   let tokenBitcoinNetwork;
@@ -110,7 +110,7 @@ const initEnv = async (options: OptionValues) => {
 
   if (!tokenBitcoinNetwork) {
     console.log(
-      "Could not find any nodes on the account with the provided API token client ID and secret for any bitcoin network.",
+      "Could not find any nodes on the account with the provided API token client ID and secret for any bitcoin network."
     );
     tokenBitcoinNetwork = await input({
       message:
@@ -130,7 +130,7 @@ const initEnv = async (options: OptionValues) => {
 const createInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
   const nodeId = await getNodeId(client, bitcoinNetwork);
@@ -159,13 +159,13 @@ const createInvoice = async (
   console.log(
     "Creating an invoice with options: ",
     JSON.stringify({ amount, memo, amp }, null, 2),
-    "\n",
+    "\n"
   );
   const encodedInvoice = await client.createInvoice(
     nodeId,
     Number(amount) * 1000,
     memo,
-    amp ? InvoiceType.AMP : InvoiceType.STANDARD,
+    amp ? InvoiceType.AMP : InvoiceType.STANDARD
   );
   if (!encodedInvoice) {
     throw new Error("Failed to create invoice");
@@ -176,19 +176,19 @@ const createInvoice = async (
 
 const createTestModeInvoice = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
 
   console.log(
     "Creating a test-mode invoice with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const encodedInvoice = await client.createTestModeInvoice(
     nodeId,
     options.amount * 1000,
-    options.memo,
+    options.memo
   );
   if (!encodedInvoice) {
     throw new Error("Failed to create invoice");
@@ -199,12 +199,12 @@ const createTestModeInvoice = async (
 
 const transactions = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   console.log(
     "Fetching transactions with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const account = await client.getCurrentAccount();
   if (!account) {
@@ -213,7 +213,7 @@ const transactions = async (
   const transactionList = await account.getTransactions(client, options.count);
   console.log(
     "Transactions:",
-    JSON.stringify(transactionList?.entities, null, 2),
+    JSON.stringify(transactionList?.entities, null, 2)
   );
 };
 
@@ -221,7 +221,7 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
   console.log(
     "Fetching payment requests with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const account = await client.getCurrentAccount();
   if (!account) {
@@ -229,16 +229,16 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
   }
   const paymentRequests = await account.getPaymentRequests(
     client,
-    options.count,
+    options.count
   );
   console.log(
     "paymentRequests:",
-    JSON.stringify(paymentRequests?.entities, null, 2),
+    JSON.stringify(paymentRequests?.entities, null, 2)
   );
 };
 
 const balances = async (
-  client: LightsparkClient /* options: OptionValues */,
+  client: LightsparkClient /* options: OptionValues */
 ) => {
   console.log("Fetching account balances...\n");
   const account = await client.getCurrentAccount();
@@ -249,12 +249,12 @@ const balances = async (
   const remoteBalance = await account.getRemoteBalance(client);
   console.log(
     "Balances:",
-    JSON.stringify({ localBalance, remoteBalance }, null, 2),
+    JSON.stringify({ localBalance, remoteBalance }, null, 2)
   );
 };
 
 const l1FeeEstimate = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Fetching bitcoin L1 fee estimate...\n");
@@ -265,7 +265,7 @@ const l1FeeEstimate = async (
 const accountDashboard = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
 
@@ -277,7 +277,7 @@ const accountDashboard = async (
 const singleNodeDashboard = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
   const nodeId = await getNodeId(client, bitcoinNetwork);
@@ -288,7 +288,7 @@ const singleNodeDashboard = async (
 };
 
 const currentAccount = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Fetching current account...\n");
@@ -298,7 +298,7 @@ const currentAccount = async (
 
 const decodeInvoice = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
@@ -315,7 +315,7 @@ const decodeInvoice = async (
 const createNodeWalletAddress = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
   const nodeId = await getNodeId(client, bitcoinNetwork);
@@ -328,7 +328,7 @@ const createNodeWalletAddress = async (
 const payInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
   const nodeId = await getNodeId(client, bitcoinNetwork);
@@ -354,7 +354,7 @@ const payInvoice = async (
   console.log(
     "Paying invoice with options: ",
     JSON.stringify({ ...options, invoice: encodedInvoice }, null, 2),
-    "\n",
+    "\n"
   );
 
   await client.unlockNode(nodeId, nodePassword);
@@ -363,7 +363,7 @@ const payInvoice = async (
     encodedInvoice,
     1_000_000,
     60, // Default
-    options.amount === -1 ? undefined : options.amount * 1000,
+    options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
@@ -371,7 +371,7 @@ const payInvoice = async (
 const createTestModePayment = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials?: EnvCredentials,
+  credentials?: EnvCredentials
 ) => {
   const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
 
@@ -393,7 +393,7 @@ const createTestModePayment = async (
   const payment = await client.createTestModePayment(
     nodeId,
     encodedInvoice,
-    options.amount === -1 ? undefined : options.amount * 1000,
+    options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
@@ -401,7 +401,7 @@ const createTestModePayment = async (
 const getNodeChannels = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
+  credentials: EnvCredentials
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
 
@@ -417,7 +417,7 @@ const getNodeChannels = async (
 
 const generateNodeKeys = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   let mnemonic: Mnemonic;
   let seedPhrase = options.seedPhrase;
@@ -470,18 +470,18 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
-      undefined,
+      undefined
     )
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
       safeParseInt,
-      0,
+      0
     )
     .option("--amp", "Flag to use AMP invoices.", false)
     .action((options) => {
       main(options, createInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -490,17 +490,17 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
-      undefined,
+      undefined
     )
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
       safeParseInt,
-      0,
+      0
     )
     .action((options) => {
       main(options, createTestModeInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -510,11 +510,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       "-n, --count  <number>",
       "Max number of transactions to fetch.",
       safeParseInt,
-      25,
+      25
     )
     .action((options) => {
       main(options, transactions).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -524,11 +524,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       "-n, --count  <number>",
       "Max number of invoices to fetch.",
       safeParseInt,
-      25,
+      25
     )
     .action((options) => {
       main(options, invoices).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -537,7 +537,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .action((options) => {
       main(options, decodeInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -545,7 +545,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get balances for your account")
     .action((options) => {
       main(options, balances).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -553,7 +553,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get bitcoin L1 fee estimate")
     .action((options) => {
       main(options, l1FeeEstimate).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -561,7 +561,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get account dashboard")
     .action((options) => {
       main(options, accountDashboard).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -569,7 +569,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get a single node's dashboard")
     .action((options) => {
       main(options, singleNodeDashboard).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -577,7 +577,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get current account")
     .action((options) => {
       main(options, currentAccount).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -585,7 +585,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Create a bitcoin funding address for your account.")
     .action((options) => {
       main(options, createNodeWalletAddress).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -596,28 +596,28 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       "-a, --amount <number>",
       "The amount to pay in sats.",
       safeParseInt,
-      -1,
+      -1
     )
     .action((options) => {
       main(options, payInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   const createTestModePaymentCmd = new Command("create-test-mode-payment")
     .description(
-      "In test mode, simulates a payment from another node to an invoice.",
+      "In test mode, simulates a payment from another node to an invoice."
     )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option(
       "-a, --amount <number>",
       "The amount to pay in sats.",
       safeParseInt,
-      -1,
+      -1
     )
     .action((options) => {
       main(options, createTestModePayment).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -625,7 +625,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Gets node channels.")
     .action((options) => {
       main(options, getNodeChannels).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -633,11 +633,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Generates keys needed for your Lightspark node.")
     .option(
       "-s --seed-phrase <value>",
-      "The seed phrase used to generate the keys need for your Lightspark node.",
+      "The seed phrase used to generate the keys need for your Lightspark node."
     )
     .action((options) => {
       main(options, generateNodeKeys).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -648,13 +648,13 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option("-e --env <value>", "The environment to use (prod or dev).", "prod")
     .action((options) => {
       initEnv(options).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   new Command("lightspark")
     .description(
-      "Lightspark API CLI. Start by running init-env to set up your environment.",
+      "Lightspark API CLI. Start by running init-env to set up your environment."
     )
     .version(getPackageVersion())
     .addCommand(createInvoiceCmd)

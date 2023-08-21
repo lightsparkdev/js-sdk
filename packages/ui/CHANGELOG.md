@@ -1,11 +1,5 @@
 # @lightsparkdev/ui
 
-## 0.0.7
-
-### Patch Changes
-
-- 4ffd9a1: Upgrade prettier, fix lint configs, move ls-react-native-crypto-app to examples
-
 ## 0.0.6
 
 ### Patch Changes

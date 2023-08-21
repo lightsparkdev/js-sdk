@@ -160,8 +160,8 @@ export const StyledInputSubtext = styled.div<{
   font-size: ${({ visible }) => (visible ? "12px" : "0px")};
   opacity: ${({ visible }) => (visible ? "1" : "0")};
   overflow: hidden;
-  transition:
-    font-size ${inputSubtextSeconds}s cubic-bezier(0.25, 0.87, 0.56, 1.23),
+  transition: font-size ${inputSubtextSeconds}s
+      cubic-bezier(0.25, 0.87, 0.56, 1.23),
     opacity ${inputSubtextSeconds * 0.8}s cubic-bezier(0.25, 0.87, 0.56, 1.23),
     margin ${inputSubtextSeconds}s cubic-bezier(0.25, 0.87, 0.56, 1.23);
   color: ${({ hasError, theme }) => (hasError ? theme.danger : theme.text)};

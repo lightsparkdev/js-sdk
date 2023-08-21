@@ -7,7 +7,7 @@ type CreateTestModePaymentoutput = {
 };
 
 export const CreateTestModePaymentoutputFromJson = (
-  obj: any,
+  obj: any
 ): CreateTestModePaymentoutput => {
   return {
     paymentId: obj["create_test_mode_paymentoutput_payment"].id,

@@ -12,7 +12,7 @@ type CreateTestModePaymentInputWallet = {
 };
 
 export const CreateTestModePaymentInputWalletFromJson = (
-  obj: any,
+  obj: any
 ): CreateTestModePaymentInputWallet => {
   return {
     encodedInvoice:

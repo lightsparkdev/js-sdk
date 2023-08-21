@@ -1,12 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { LightsparkException } from "@lightsparkdev/core";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
 import { PaymentRequestFromJson } from "./PaymentRequest.js";
 import { TransactionFromJson } from "./Transaction.js";
-import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
 type Connection = {
   /**
@@ -27,10 +26,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["wallet_to_payment_requests_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["wallet_to_payment_requests_connection_page_info"],
+        obj["wallet_to_payment_requests_connection_page_info"]
       ),
       entities: obj["wallet_to_payment_requests_connection_entities"].map((e) =>
-        PaymentRequestFromJson(e),
+        PaymentRequestFromJson(e)
       ),
       typename: "WalletToPaymentRequestsConnection",
     } as WalletToPaymentRequestsConnection;
@@ -39,17 +38,17 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["wallet_to_transactions_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["wallet_to_transactions_connection_page_info"],
+        obj["wallet_to_transactions_connection_page_info"]
       ),
       entities: obj["wallet_to_transactions_connection_entities"].map((e) =>
-        TransactionFromJson(e),
+        TransactionFromJson(e)
       ),
       typename: "WalletToTransactionsConnection",
     } as WalletToTransactionsConnection;
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`
   );
 };
 

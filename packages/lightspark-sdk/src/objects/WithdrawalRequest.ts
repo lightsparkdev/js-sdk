@@ -1,17 +1,18 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import LightsparkClient from "../client.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import WithdrawalMode from "./WithdrawalMode.js";
 import WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
-import type WithdrawalRequestToChannelClosingTransactionsConnection from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
-import { WithdrawalRequestToChannelClosingTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
-import type WithdrawalRequestToChannelOpeningTransactionsConnection from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
-import { WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
+import WithdrawalRequestToChannelClosingTransactionsConnection, {
+  WithdrawalRequestToChannelClosingTransactionsConnectionFromJson,
+} from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
+import WithdrawalRequestToChannelOpeningTransactionsConnection, {
+  WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson,
+} from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 
 /** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. **/
 class WithdrawalRequest implements Entity {
@@ -26,14 +27,14 @@ class WithdrawalRequest implements Entity {
     public readonly typename: string,
     public readonly estimatedAmount?: CurrencyAmount,
     public readonly completedAt?: string,
-    public readonly withdrawalId?: string,
+    public readonly withdrawalId?: string
   ) {
     autoBind(this);
   }
 
   public async getChannelClosingTransactions(
     client: LightsparkClient,
-    first: number | undefined = undefined,
+    first: number | undefined = undefined
   ): Promise<WithdrawalRequestToChannelClosingTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -91,7 +92,7 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
       constructObject: (json) => {
         const connection = json["entity"]["channel_closing_transactions"];
         return WithdrawalRequestToChannelClosingTransactionsConnectionFromJson(
-          connection,
+          connection
         );
       },
     }))!;
@@ -99,7 +100,7 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
 
   public async getChannelOpeningTransactions(
     client: LightsparkClient,
-    first: number | undefined = undefined,
+    first: number | undefined = undefined
   ): Promise<WithdrawalRequestToChannelOpeningTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -157,7 +158,7 @@ query FetchWithdrawalRequestToChannelOpeningTransactionsConnection($entity_id: I
       constructObject: (json) => {
         const connection = json["entity"]["channel_opening_transactions"];
         return WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson(
-          connection,
+          connection
         );
       },
     }))!;
@@ -198,7 +199,7 @@ export const WithdrawalRequestFromJson = (obj: any): WithdrawalRequest => {
       ? CurrencyAmountFromJson(obj["withdrawal_request_estimated_amount"])
       : undefined,
     obj["withdrawal_request_completed_at"],
-    obj["withdrawal_request_withdrawal"]?.id ?? undefined,
+    obj["withdrawal_request_withdrawal"]?.id ?? undefined
   );
 };
 

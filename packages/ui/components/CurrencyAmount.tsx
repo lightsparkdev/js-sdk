@@ -47,12 +47,12 @@ export function CurrencyAmount({
     formattedNumber = formatCurrencyStr(
       { value: Number(value), unit },
       1,
-      true,
+      true
     );
   } else if (showSubSatDigits) {
     formattedNumber = formatCurrencyStr(
       { value: Number(value), unit: CurrencyUnit.SATOSHI },
-      3,
+      3
     );
   }
 
@@ -100,9 +100,7 @@ const shorttext = (unit: CurrencyUnit, value: number) => {
 const StyledCurrencyAmount = styled.span<{ ml: number }>`
   color: inherit !important;
   white-space: nowrap;
-  font-feature-settings:
-    "tnum" on,
-    "lnum" on;
+  font-feature-settings: "tnum" on, "lnum" on;
   margin-left: ${({ ml }) => ml}px;
 `;
 

@@ -1,17 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type ChannelFees from "./ChannelFees.js";
-import { ChannelFeesFromJson } from "./ChannelFees.js";
+import LightsparkClient from "../client.js";
+import ChannelFees, { ChannelFeesFromJson } from "./ChannelFees.js";
 import ChannelStatus from "./ChannelStatus.js";
-import type ChannelToTransactionsConnection from "./ChannelToTransactionsConnection.js";
-import { ChannelToTransactionsConnectionFromJson } from "./ChannelToTransactionsConnection.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type TransactionType from "./TransactionType.js";
+import ChannelToTransactionsConnection, {
+  ChannelToTransactionsConnectionFromJson,
+} from "./ChannelToTransactionsConnection.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import TransactionType from "./TransactionType.js";
 
 /** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. **/
 class Channel implements Entity {
@@ -34,7 +33,7 @@ class Channel implements Entity {
     public readonly commitFee?: CurrencyAmount,
     public readonly fees?: ChannelFees,
     public readonly remoteNodeId?: string,
-    public readonly shortChannelId?: string,
+    public readonly shortChannelId?: string
   ) {
     autoBind(this);
   }
@@ -42,7 +41,7 @@ class Channel implements Entity {
   public async getUptimePercentage(
     client: LightsparkClient,
     afterDate: string | undefined = undefined,
-    beforeDate: string | undefined = undefined,
+    beforeDate: string | undefined = undefined
   ): Promise<number> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -70,7 +69,7 @@ query FetchChannelUptimePercentage($entity_id: ID!, $after_date: DateTime, $befo
     client: LightsparkClient,
     types: TransactionType[] | undefined = undefined,
     afterDate: string | undefined = undefined,
-    beforeDate: string | undefined = undefined,
+    beforeDate: string | undefined = undefined
   ): Promise<ChannelToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -181,7 +180,7 @@ export const ChannelFromJson = (obj: any): Channel => {
       ? ChannelFeesFromJson(obj["channel_fees"])
       : undefined,
     obj["channel_remote_node"]?.id ?? undefined,
-    obj["channel_short_channel_id"],
+    obj["channel_short_channel_id"]
   );
 };
 

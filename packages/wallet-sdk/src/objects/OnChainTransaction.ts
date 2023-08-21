@@ -1,15 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
-import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Deposit from "./Deposit.js";
-import type Entity from "./Entity.js";
-import type Transaction from "./Transaction.js";
+import { LightsparkException, Query } from "@lightsparkdev/core";
+import ChannelClosingTransaction from "./ChannelClosingTransaction.js";
+import ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Deposit from "./Deposit.js";
+import Entity from "./Entity.js";
+import Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
-import type Withdrawal from "./Withdrawal.js";
+import Withdrawal from "./Withdrawal.js";
 
 /** This object represents an L1 transaction that occurred on the Bitcoin Network. You can retrieve this object to receive information about a specific on-chain transaction made on the Lightning Network associated with your Lightspark Node. **/
 type OnChainTransaction = Transaction &
@@ -155,7 +154,7 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface OnChainTransaction corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface OnChainTransaction corresponding to the typename=${obj["__typename"]}`
   );
 };
 
@@ -281,7 +280,7 @@ fragment OnChainTransactionFragment on OnChainTransaction {
 }`;
 
 export const getOnChainTransactionQuery = (
-  id: string,
+  id: string
 ): Query<OnChainTransaction> => {
   return {
     queryPayload: `

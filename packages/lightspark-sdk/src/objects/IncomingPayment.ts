@@ -1,14 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
-import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
-import type LightningTransaction from "./LightningTransaction.js";
+import LightsparkClient from "../client.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
+import IncomingPaymentToAttemptsConnection, {
+  IncomingPaymentToAttemptsConnectionFromJson,
+} from "./IncomingPaymentToAttemptsConnection.js";
+import LightningTransaction from "./LightningTransaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
@@ -24,7 +24,7 @@ class IncomingPayment implements LightningTransaction {
     public readonly resolvedAt?: string,
     public readonly transactionHash?: string,
     public readonly originId?: string,
-    public readonly paymentRequestId?: string,
+    public readonly paymentRequestId?: string
   ) {
     autoBind(this);
   }
@@ -33,7 +33,7 @@ class IncomingPayment implements LightningTransaction {
     client: LightsparkClient,
     first: number | undefined = undefined,
     statuses: IncomingPaymentAttemptStatus[] | undefined = undefined,
-    after: string | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<IncomingPaymentToAttemptsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -119,7 +119,7 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     obj["incoming_payment_resolved_at"],
     obj["incoming_payment_transaction_hash"],
     obj["incoming_payment_origin"]?.id ?? undefined,
-    obj["incoming_payment_payment_request"]?.id ?? undefined,
+    obj["incoming_payment_payment_request"]?.id ?? undefined
   );
 };
 

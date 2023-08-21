@@ -92,9 +92,7 @@ type StyledHeadingType = ReturnType<typeof styled.h2<StyledHeadingProps>>;
 /* Needs to be string at top of styles to avoid warnings: */
 const firstChildStyles = firstChild(`margin-top: 0;`);
 
-export const headings: {
-  [K in HeadingType]: StyledHeadingType;
-} = {
+export const headings: { [K in HeadingType]: StyledHeadingType } = {
   h1: styled.h1<StyledHeadingProps>`
     ${(props) => baseHeading(props)}
     ${firstChildStyles}

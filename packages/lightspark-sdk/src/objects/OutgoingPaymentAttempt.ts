@@ -1,15 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import LightsparkClient from "../client.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
 import HtlcAttemptFailureCode from "./HtlcAttemptFailureCode.js";
 import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
-import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
-import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
+import OutgoingPaymentAttemptToHopsConnection, {
+  OutgoingPaymentAttemptToHopsConnectionFromJson,
+} from "./OutgoingPaymentAttemptToHopsConnection.js";
 
 /** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. **/
 class OutgoingPaymentAttempt implements Entity {
@@ -24,7 +24,7 @@ class OutgoingPaymentAttempt implements Entity {
     public readonly failureSourceIndex?: number,
     public readonly resolvedAt?: string,
     public readonly amount?: CurrencyAmount,
-    public readonly fees?: CurrencyAmount,
+    public readonly fees?: CurrencyAmount
   ) {
     autoBind(this);
   }
@@ -32,7 +32,7 @@ class OutgoingPaymentAttempt implements Entity {
   public async getHops(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    after: string | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<OutgoingPaymentAttemptToHopsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -91,7 +91,7 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int, 
   }
 
   static getOutgoingPaymentAttemptQuery(
-    id: string,
+    id: string
   ): Query<OutgoingPaymentAttempt> {
     return {
       queryPayload: `
@@ -113,7 +113,7 @@ ${FRAGMENT}
 }
 
 export const OutgoingPaymentAttemptFromJson = (
-  obj: any,
+  obj: any
 ): OutgoingPaymentAttempt => {
   return new OutgoingPaymentAttempt(
     obj["outgoing_payment_attempt_id"],
@@ -134,7 +134,7 @@ export const OutgoingPaymentAttemptFromJson = (
       : undefined,
     !!obj["outgoing_payment_attempt_fees"]
       ? CurrencyAmountFromJson(obj["outgoing_payment_attempt_fees"])
-      : undefined,
+      : undefined
   );
 };
 

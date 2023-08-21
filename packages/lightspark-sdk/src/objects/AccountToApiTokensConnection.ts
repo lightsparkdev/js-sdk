@@ -1,10 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type ApiToken from "./ApiToken.js";
-import { ApiTokenFromJson } from "./ApiToken.js";
-import type Connection from "./Connection.js";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
+import Connection from "./Connection.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
 
 type AccountToApiTokensConnection = Connection & {
   /**
@@ -24,15 +22,15 @@ type AccountToApiTokensConnection = Connection & {
 };
 
 export const AccountToApiTokensConnectionFromJson = (
-  obj: any,
+  obj: any
 ): AccountToApiTokensConnection => {
   return {
     count: obj["account_to_api_tokens_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["account_to_api_tokens_connection_page_info"],
+      obj["account_to_api_tokens_connection_page_info"]
     ),
     entities: obj["account_to_api_tokens_connection_entities"].map((e) =>
-      ApiTokenFromJson(e),
+      ApiTokenFromJson(e)
     ),
     typename: "AccountToApiTokensConnection",
   } as AccountToApiTokensConnection;

@@ -1,12 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type Connection from "./Connection.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
-import type Transaction from "./Transaction.js";
-import { TransactionFromJson } from "./Transaction.js";
+import Connection from "./Connection.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import Transaction, { TransactionFromJson } from "./Transaction.js";
 
 type AccountToTransactionsConnection = Connection & {
   /**
@@ -44,34 +41,34 @@ type AccountToTransactionsConnection = Connection & {
 };
 
 export const AccountToTransactionsConnectionFromJson = (
-  obj: any,
+  obj: any
 ): AccountToTransactionsConnection => {
   return {
     count: obj["account_to_transactions_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["account_to_transactions_connection_page_info"],
+      obj["account_to_transactions_connection_page_info"]
     ),
     entities: obj["account_to_transactions_connection_entities"].map((e) =>
-      TransactionFromJson(e),
+      TransactionFromJson(e)
     ),
     typename: "AccountToTransactionsConnection",
     profitLoss: !!obj["account_to_transactions_connection_profit_loss"]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_profit_loss"],
+          obj["account_to_transactions_connection_profit_loss"]
         )
       : undefined,
     averageFeeEarned: !!obj[
       "account_to_transactions_connection_average_fee_earned"
     ]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_average_fee_earned"],
+          obj["account_to_transactions_connection_average_fee_earned"]
         )
       : undefined,
     totalAmountTransacted: !!obj[
       "account_to_transactions_connection_total_amount_transacted"
     ]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_total_amount_transacted"],
+          obj["account_to_transactions_connection_total_amount_transacted"]
         )
       : undefined,
   } as AccountToTransactionsConnection;

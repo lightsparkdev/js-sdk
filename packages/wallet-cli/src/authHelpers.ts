@@ -23,7 +23,7 @@ export enum RequiredWalletCredentials {
 
 export const getCredentialsFromEnvOrThrow = (
   walletEnvSuffix: string = ``,
-  requireJwt: boolean = true,
+  requireJwt: boolean = true
 ): EnvCredentials => {
   const env =
     dotenv.config({
@@ -31,13 +31,13 @@ export const getCredentialsFromEnvOrThrow = (
     }).parsed || {};
 
   const missingCredentials = Object.values(RequiredCredentials).filter(
-    (cred) => !env[cred],
+    (cred) => !env[cred]
   );
   if (missingCredentials.length) {
     throw new Error(
       `Missing credentials. Please set ${missingCredentials.join(
-        ", ",
-      )} environment variables or run \`lightspark-wallet init-env\`.`,
+        ", "
+      )} environment variables or run \`lightspark-wallet init-env\`.`
     );
   }
 
@@ -46,7 +46,7 @@ export const getCredentialsFromEnvOrThrow = (
 
   if (requireJwt) {
     const missingWalletCredentials = Object.values(
-      RequiredWalletCredentials,
+      RequiredWalletCredentials
     ).filter((cred) => !env[getWalletEnvVariable(cred, walletEnvSuffix)]);
 
     if (missingWalletCredentials.length) {
@@ -54,8 +54,8 @@ export const getCredentialsFromEnvOrThrow = (
         `Missing wallet credentials. Please set ${missingWalletCredentials
           .map((cred) => getWalletEnvVariable(cred, walletEnvSuffix))
           .join(
-            ", ",
-          )} environment variables or run \`lightspark-wallet create-and-init-wallet\` to setup a new wallet.`,
+            ", "
+          )} environment variables or run \`lightspark-wallet create-and-init-wallet\` to setup a new wallet.`
       );
     }
   }
@@ -67,14 +67,14 @@ export const getCredentialsFromEnvOrThrow = (
     env[
       getWalletEnvVariable(
         RequiredWalletCredentials.WalletPublicKey,
-        walletEnvSuffix,
+        walletEnvSuffix
       )
     ];
   const privKey =
     env[
       getWalletEnvVariable(
         RequiredWalletCredentials.WalletPrivateKey,
-        walletEnvSuffix,
+        walletEnvSuffix
       )
     ];
   const baseUrl = env[`LIGHTSPARK_WALLET_BASE_URL`] || `api.lightspark.com`;
@@ -90,7 +90,7 @@ export const getCredentialsFromEnvOrThrow = (
 
 const getWalletEnvVariable = (
   walletEnvKey: string,
-  walletEnvSuffix: string,
+  walletEnvSuffix: string
 ) => {
   return `${walletEnvKey}${walletEnvSuffix}`;
 };

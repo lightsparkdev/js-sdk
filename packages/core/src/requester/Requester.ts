@@ -33,7 +33,7 @@ class Requester {
     private readonly sdkUserAgent: string,
     private readonly authProvider: AuthProvider = new StubAuthProvider(),
     private readonly baseUrl: string = DEFAULT_BASE_URL,
-    private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
   ) {
     let websocketImpl;
     if (typeof WebSocket === "undefined" && typeof window === "undefined") {
@@ -58,14 +58,14 @@ class Requester {
       query.queryPayload,
       query.variables || {},
       query.signingNodeId,
-      !!query.skipAuth,
+      !!query.skipAuth
     );
     return query.constructObject(data);
   }
 
   public subscribe<T>(
     queryPayload: string,
-    variables: { [key: string]: unknown } = {},
+    variables: { [key: string]: unknown } = {}
   ) {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
@@ -76,7 +76,7 @@ class Requester {
     if (operationType == "mutation") {
       throw new LightsparkException(
         "InvalidQuery",
-        "Mutation queries should call makeRawRequest instead",
+        "Mutation queries should call makeRawRequest instead"
       );
     }
     // Undefined variables need to be null instead.
@@ -97,7 +97,7 @@ class Requester {
         next: (data) => observer.next(data as { data: T }),
         error: (err) => observer.error(err),
         complete: () => observer.complete(),
-      }),
+      })
     );
   }
 
@@ -105,7 +105,7 @@ class Requester {
     queryPayload: string,
     variables: { [key: string]: unknown } = {},
     signingNodeId: string | undefined = undefined,
-    skipAuth: boolean = false,
+    skipAuth: boolean = false
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<any | null> {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
@@ -117,7 +117,7 @@ class Requester {
     if (operationType == "subscription") {
       throw new LightsparkException(
         "InvalidQuery",
-        "Subscription queries should call subscribe instead",
+        "Subscription queries should call subscribe instead"
       );
     }
     // Undefined variables need to be null instead.
@@ -147,7 +147,7 @@ class Requester {
     bodyData = await this.addSigningDataIfNeeded(
       bodyData,
       headers,
-      signingNodeId,
+      signingNodeId
     );
 
     let urlWithProtocol = this.baseUrl;
@@ -165,7 +165,7 @@ class Requester {
     if (!response.ok) {
       throw new LightsparkException(
         "RequestFailed",
-        `Request ${operation} failed. ${response.statusText}`,
+        `Request ${operation} failed. ${response.statusText}`
       );
     }
     const responseJson = await response.json();
@@ -173,7 +173,7 @@ class Requester {
     if (!data) {
       throw new LightsparkException(
         "RequestFailed",
-        `Request ${operation} failed. ${JSON.stringify(responseJson.errors)}`,
+        `Request ${operation} failed. ${JSON.stringify(responseJson.errors)}`
       );
     }
     return data;
@@ -192,7 +192,7 @@ class Requester {
   private async addSigningDataIfNeeded(
     queryPayload: { query: string; variables: unknown; operationName: string },
     headers: { [key: string]: string },
-    signingNodeId: string | undefined,
+    signingNodeId: string | undefined
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<any> {
     if (!signingNodeId) {
@@ -217,7 +217,7 @@ class Requester {
     const key = await this.nodeKeyCache.getKey(signingNodeId);
     if (!key) {
       throw new LightsparkSigningException(
-        "Missing node of encrypted_signing_private_key",
+        "Missing node of encrypted_signing_private_key"
       );
     }
 
@@ -226,7 +226,7 @@ class Requester {
       TextEncoderImpl = (await import("text-encoding")).TextEncoder;
     }
     const encodedPayload = new TextEncoderImpl().encode(
-      JSON.stringify(payload),
+      JSON.stringify(payload)
     );
     const signedPayload = await this.cryptoImpl.sign(key, encodedPayload);
     const encodedSignedPayload = b64encode(signedPayload);

@@ -1,7 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
-import type Entity from "./Entity.js";
+import { Query } from "@lightsparkdev/core";
+import Entity from "./Entity.js";
 import Permission from "./Permission.js";
 
 /** This is an object representing a Lightspark API token, that can be used to authenticate this account when making API calls or using our SDKs. See the “Authentication” section of our API docs for more details on its usage. **/

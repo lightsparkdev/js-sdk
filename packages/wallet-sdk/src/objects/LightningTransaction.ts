@@ -1,15 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type IncomingPayment from "./IncomingPayment.js";
-import type OutgoingPayment from "./OutgoingPayment.js";
+import { LightsparkException, Query } from "@lightsparkdev/core";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import IncomingPayment from "./IncomingPayment.js";
+import OutgoingPayment from "./OutgoingPayment.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
 import { RichTextFromJson } from "./RichText.js";
-import type Transaction from "./Transaction.js";
+import Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This is an object representing a transaction made over the Lightning Network. You can retrieve this object to receive information about a specific transaction made over Lightning for a Lightspark node. **/
@@ -44,7 +43,7 @@ type LightningTransaction = Transaction &
   };
 
 export const LightningTransactionFromJson = (
-  obj: any,
+  obj: any
 ): LightningTransaction => {
   if (obj["__typename"] == "IncomingPayment") {
     return {
@@ -79,7 +78,7 @@ export const LightningTransactionFromJson = (
         : undefined,
       paymentRequestData: !!obj["outgoing_payment_payment_request_data"]
         ? PaymentRequestDataFromJson(
-            obj["outgoing_payment_payment_request_data"],
+            obj["outgoing_payment_payment_request_data"]
           )
         : undefined,
       failureReason: !!obj["outgoing_payment_failure_reason"]
@@ -93,7 +92,7 @@ export const LightningTransactionFromJson = (
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`
   );
 };
 
@@ -185,7 +184,7 @@ fragment LightningTransactionFragment on LightningTransaction {
 }`;
 
 export const getLightningTransactionQuery = (
-  id: string,
+  id: string
 ): Query<LightningTransaction> => {
   return {
     queryPayload: `

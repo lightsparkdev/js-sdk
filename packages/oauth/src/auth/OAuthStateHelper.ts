@@ -75,11 +75,9 @@ class OAuthStateHelper {
     private readonly clientId: string,
     clientSecret: string,
     baseAuthUrl: string = authDomainForEnvironment(
-      ServerEnvironment.PRODUCTION,
+      ServerEnvironment.PRODUCTION
     ),
-    baseTokenUrl: string = apiDomainForEnvironment(
-      ServerEnvironment.PRODUCTION,
-    ),
+    baseTokenUrl: string = apiDomainForEnvironment(ServerEnvironment.PRODUCTION)
   ) {
     this.configuration = new AuthorizationServiceConfiguration({
       authorization_endpoint: `https://${baseAuthUrl}/oauth/authorize`,
@@ -120,12 +118,12 @@ class OAuthStateHelper {
         state: undefined,
       },
       undefined,
-      true,
+      true
     );
 
     this.authorizationHandler.performAuthorizationRequest(
       this.configuration,
-      request,
+      request
     );
   }
 
@@ -138,7 +136,7 @@ class OAuthStateHelper {
       if (!this.redirectUri) {
         this.pendingTokenRequest = undefined;
         throw new LightsparkAuthException(
-          "Redirect URI must be set before making a token request.",
+          "Redirect URI must be set before making a token request."
         );
       }
       if (this.tokenResponse) {
@@ -211,7 +209,7 @@ class OAuthStateHelper {
       new RevokeTokenRequest({
         token: this.tokenResponse?.refreshToken ?? "",
         client_id: this.clientId,
-      }),
+      })
     );
     this.authRequest = undefined;
     this.authResponse = undefined;
@@ -226,7 +224,7 @@ class OAuthStateHelper {
    * @throws LightsparkAuthException if there is no valid authorization.
    */
   public doWithFreshAccessToken(
-    action: (accessToken: string, idToken: string | undefined) => void,
+    action: (accessToken: string, idToken: string | undefined) => void
   ) {
     if (this.tokenResponse && !this.needsTokenRefresh()) {
       action(this.tokenResponse.accessToken, this.tokenResponse.idToken);
@@ -235,7 +233,7 @@ class OAuthStateHelper {
 
     if (!this.authResponse) {
       throw new LightsparkAuthException(
-        "No valid authorization. Please login first.",
+        "No valid authorization. Please login first."
       );
     }
 
@@ -255,7 +253,7 @@ class OAuthStateHelper {
 
     if (!this.authResponse) {
       throw new LightsparkAuthException(
-        "No valid authorization. Please login first.",
+        "No valid authorization. Please login first."
       );
     }
 

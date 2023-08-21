@@ -1,20 +1,20 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type Balances from "./Balances.js";
-import { BalancesFromJson } from "./Balances.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
-import type TransactionStatus from "./TransactionStatus.js";
-import type TransactionType from "./TransactionType.js";
+import LightsparkClient from "../client.js";
+import Balances, { BalancesFromJson } from "./Balances.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import TransactionStatus from "./TransactionStatus.js";
+import TransactionType from "./TransactionType.js";
 import WalletStatus from "./WalletStatus.js";
-import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
-import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
-import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
+import WalletToPaymentRequestsConnection, {
+  WalletToPaymentRequestsConnectionFromJson,
+} from "./WalletToPaymentRequestsConnection.js";
+import WalletToTransactionsConnection, {
+  WalletToTransactionsConnectionFromJson,
+} from "./WalletToTransactionsConnection.js";
 
 /** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. **/
 class Wallet implements LightsparkNodeOwner {
@@ -26,7 +26,7 @@ class Wallet implements LightsparkNodeOwner {
     public readonly status: WalletStatus,
     public readonly typename: string,
     public readonly lastLoginAt?: string,
-    public readonly balances?: Balances,
+    public readonly balances?: Balances
   ) {
     autoBind(this);
   }
@@ -38,7 +38,7 @@ class Wallet implements LightsparkNodeOwner {
     createdAfterDate: string | undefined = undefined,
     createdBeforeDate: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
-    types: TransactionType[] | undefined = undefined,
+    types: TransactionType[] | undefined = undefined
   ): Promise<WalletToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -453,7 +453,7 @@ query FetchWalletToTransactionsConnection($entity_id: ID!, $first: Int, $after: 
     first: number | undefined = undefined,
     after: string | undefined = undefined,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined,
+    createdBeforeDate: string | undefined = undefined
   ): Promise<WalletToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -650,7 +650,7 @@ query FetchWalletToPaymentRequestsConnection($entity_id: ID!, $first: Int, $afte
   public async getTotalAmountReceived(
     client: LightsparkClient,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined,
+    createdBeforeDate: string | undefined = undefined
   ): Promise<CurrencyAmount> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -684,7 +684,7 @@ query FetchWalletTotalAmountReceived($entity_id: ID!, $created_after_date: DateT
   public async getTotalAmountSent(
     client: LightsparkClient,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined,
+    createdBeforeDate: string | undefined = undefined
   ): Promise<CurrencyAmount> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -745,7 +745,7 @@ export const WalletFromJson = (obj: any): Wallet => {
     obj["wallet_last_login_at"],
     !!obj["wallet_balances"]
       ? BalancesFromJson(obj["wallet_balances"])
-      : undefined,
+      : undefined
   );
 };
 

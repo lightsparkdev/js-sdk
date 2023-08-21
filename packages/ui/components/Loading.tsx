@@ -29,10 +29,7 @@ export function Loading({
 
 Loading.defaultProps = defaultProps;
 
-export const LoadingWrapper = styled.div<{
-  center: boolean;
-  ml: number;
-}>`
+export const LoadingWrapper = styled.div<{ center: boolean; ml: number }>`
   flex-grow: 1;
   display: flex;
   align-items: center;

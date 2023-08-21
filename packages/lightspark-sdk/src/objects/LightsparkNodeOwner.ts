@@ -1,9 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
+import { LightsparkException, Query } from "@lightsparkdev/core";
 import Account from "./Account.js";
 import { BalancesFromJson } from "./Balances.js";
-import type Entity from "./Entity.js";
+import Entity from "./Entity.js";
 import Wallet from "./Wallet.js";
 import WalletStatus from "./WalletStatus.js";
 
@@ -32,7 +32,7 @@ export const LightsparkNodeOwnerFromJson = (obj: any): LightsparkNodeOwner => {
       obj["account_created_at"],
       obj["account_updated_at"],
       "Account",
-      obj["account_name"],
+      obj["account_name"]
     );
   }
   if (obj["__typename"] == "Wallet") {
@@ -46,12 +46,12 @@ export const LightsparkNodeOwnerFromJson = (obj: any): LightsparkNodeOwner => {
       obj["wallet_last_login_at"],
       !!obj["wallet_balances"]
         ? BalancesFromJson(obj["wallet_balances"])
-        : undefined,
+        : undefined
     );
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface LightsparkNodeOwner corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface LightsparkNodeOwner corresponding to the typename=${obj["__typename"]}`
   );
 };
 
@@ -104,7 +104,7 @@ fragment LightsparkNodeOwnerFragment on LightsparkNodeOwner {
 }`;
 
 export const getLightsparkNodeOwnerQuery = (
-  id: string,
+  id: string
 ): Query<LightsparkNodeOwner> => {
   return {
     queryPayload: `

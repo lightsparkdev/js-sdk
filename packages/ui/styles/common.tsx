@@ -42,8 +42,7 @@ export const standardContentInset = css`
 `;
 
 export const standardCardShadow = css`
-  box-shadow:
-    0px 4px 10px 0px rgba(0, 0, 0, 0.08),
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.08),
     0px 8px 24px 0px rgba(0, 0, 0, 0.04);
 `;
 
@@ -118,7 +117,7 @@ export const overlaySurface = ({ theme }: ThemeProp) => css`
   border: 0.5px solid ${themeOr(theme.c1Neutral, theme.c3Neutral)({ theme })};
   ${themeOr(
     "box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1);",
-    "",
+    ""
   )({ theme })}
 `;
 

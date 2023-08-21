@@ -5,7 +5,7 @@ type CreateTestModeInvoiceOutput = {
 };
 
 export const CreateTestModeInvoiceOutputFromJson = (
-  obj: any,
+  obj: any
 ): CreateTestModeInvoiceOutput => {
   return {
     encodedPaymentRequest:

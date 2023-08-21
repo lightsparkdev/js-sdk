@@ -1,19 +1,20 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
+import { LightsparkException, Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
+import LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import Entity from "./Entity.js";
 import GraphNode from "./GraphNode.js";
 import LightsparkNode from "./LightsparkNode.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import type NodeAddressType from "./NodeAddressType.js";
-import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
 import { SecretFromJson } from "./Secret.js";
 
 /** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. **/
@@ -28,7 +29,7 @@ class Node implements Entity {
     public readonly alias?: string,
     public readonly color?: string,
     public readonly conductivity?: number,
-    public readonly publicKey?: string,
+    public readonly publicKey?: string
   ) {
     autoBind(this);
   }
@@ -36,7 +37,7 @@ class Node implements Entity {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined,
+    types: NodeAddressType[] | undefined = undefined
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -96,7 +97,7 @@ export const NodeFromJson = (obj: any): Node => {
       obj["graph_node_alias"],
       obj["graph_node_color"],
       obj["graph_node_conductivity"],
-      obj["graph_node_public_key"],
+      obj["graph_node_public_key"]
     );
   }
   if (obj["__typename"] == "LightsparkNode") {
@@ -139,12 +140,12 @@ export const NodeFromJson = (obj: any): Node => {
       !!obj["lightspark_node_status"]
         ? LightsparkNodeStatus[obj["lightspark_node_status"]] ??
           LightsparkNodeStatus.FUTURE_VALUE
-        : null,
+        : null
     );
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface Node corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface Node corresponding to the typename=${obj["__typename"]}`
   );
 };
 

@@ -25,20 +25,20 @@ export const getCredentialsFromEnvOrThrow = (): EnvCredentials => {
     }).parsed || {};
 
   const missingTestCredentials = Object.values(RequiredCredentials).filter(
-    (cred) => !env[cred],
+    (cred) => !env[cred]
   );
   if (missingTestCredentials.length) {
     throw new Error(
       `Missing test credentials. Please set ${missingTestCredentials.join(
-        ", ",
-      )} environment variables.`,
+        ", "
+      )} environment variables.`
     );
   }
 
   const apiTokenClientId = env[RequiredCredentials.ClientId]!;
   const apiTokenClientSecret = env[RequiredCredentials.ClientSecret]!;
   const bitcoinNetwork = getBitcoinNetworkOrThrow(
-    env[RequiredCredentials.BitcoinNetwork]! as BitcoinNetwork,
+    env[RequiredCredentials.BitcoinNetwork]! as BitcoinNetwork
   );
   const testNodePassword = "1234!@#$";
   const baseUrl = env["LIGHTSPARK_BASE_URL"] || "api.lightspark.com";

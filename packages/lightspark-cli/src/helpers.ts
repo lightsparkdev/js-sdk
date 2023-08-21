@@ -16,24 +16,24 @@ export const isBitcoinNetwork = (bitcoinNetwork: BitcoinNetwork) => {
 };
 
 export const assertValidBitcoinNetwork = (
-  bitcoinNetwork: BitcoinNetwork,
+  bitcoinNetwork: BitcoinNetwork
 ): void => {
   if (!isBitcoinNetwork(bitcoinNetwork)) {
     throw new Error(
-      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS}`,
+      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS}`
     );
   }
 };
 
 export const getPackageVersion = (): string => {
   const packageJson = JSON.parse(
-    fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+    fs.readFileSync(new URL("../package.json", import.meta.url), "utf8")
   );
   return packageJson?.version;
 };
 
 export const getBitcoinNetworkOrThrow = (
-  bitcoinNetwork: BitcoinNetwork,
+  bitcoinNetwork: BitcoinNetwork
 ): BitcoinNetwork => {
   assertValidBitcoinNetwork(bitcoinNetwork.toUpperCase() as BitcoinNetwork);
   return bitcoinNetwork;
@@ -41,7 +41,7 @@ export const getBitcoinNetworkOrThrow = (
 
 export const getNodeId = async (
   client: LightsparkClient,
-  bitcoinNetwork: BitcoinNetwork,
+  bitcoinNetwork: BitcoinNetwork
 ): Promise<string> => {
   const account = await client.getCurrentAccount();
   if (!account) {
@@ -50,7 +50,7 @@ export const getNodeId = async (
 
   const entities = (await account.getNodes(client)).entities;
   const entityForNetwork = entities.find(
-    (entity) => entity.bitcoinNetwork === bitcoinNetwork,
+    (entity) => entity.bitcoinNetwork === bitcoinNetwork
   );
 
   if (!entityForNetwork) {

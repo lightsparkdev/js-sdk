@@ -101,7 +101,7 @@ const CONVERSION_MAP = {
 
 export const convertCurrencyAmount = (
   from: CurrencyAmount,
-  toUnit: CurrencyUnit,
+  toUnit: CurrencyUnit
 ): CurrencyAmount => {
   if (
     from.originalUnit === CurrencyUnit.FUTURE_VALUE ||
@@ -116,7 +116,7 @@ export const convertCurrencyAmount = (
   if (!conversionFn) {
     throw new LightsparkException(
       "CurrencyError",
-      `Cannot convert from ${from.originalUnit} to ${toUnit}`,
+      `Cannot convert from ${from.originalUnit} to ${toUnit}`
     );
   }
   return {

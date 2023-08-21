@@ -12,7 +12,7 @@ type LightningFeeEstimateForNodeInput = {
 };
 
 export const LightningFeeEstimateForNodeInputFromJson = (
-  obj: any,
+  obj: any
 ): LightningFeeEstimateForNodeInput => {
   return {
     nodeId: obj["lightning_fee_estimate_for_node_input_node_id"],

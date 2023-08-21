@@ -16,7 +16,7 @@ const Base64 = {
 
       if (charCode > 0xff) {
         throw new Error(
-          "'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.",
+          "'btoa' failed: The string to be encoded contains characters outside of the Latin1 range."
         );
       }
 
@@ -32,7 +32,7 @@ const Base64 = {
 
     if (str.length % 4 === 1) {
       throw new Error(
-        "'atob' failed: The string to be decoded is not correctly encoded.",
+        "'atob' failed: The string to be decoded is not correctly encoded."
       );
     }
     for (
@@ -59,6 +59,6 @@ export const urlsafe_b64decode = (encoded: string): Uint8Array => {
 
 export const b64encode = (data: ArrayBuffer): string => {
   return Base64.btoa(
-    String.fromCharCode.apply(null, Array.from(new Uint8Array(data))),
+    String.fromCharCode.apply(null, Array.from(new Uint8Array(data)))
   );
 };

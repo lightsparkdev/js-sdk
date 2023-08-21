@@ -1,9 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import { ChannelClosingTransactionFromJson } from "./ChannelClosingTransaction.js";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import ChannelClosingTransaction, {
+  ChannelClosingTransactionFromJson,
+} from "./ChannelClosingTransaction.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
 
 type WithdrawalRequestToChannelClosingTransactionsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/
@@ -20,13 +20,13 @@ type WithdrawalRequestToChannelClosingTransactionsConnection = {
 };
 
 export const WithdrawalRequestToChannelClosingTransactionsConnectionFromJson = (
-  obj: any,
+  obj: any
 ): WithdrawalRequestToChannelClosingTransactionsConnection => {
   return {
     pageInfo: PageInfoFromJson(
       obj[
         "withdrawal_request_to_channel_closing_transactions_connection_page_info"
-      ],
+      ]
     ),
     count:
       obj[

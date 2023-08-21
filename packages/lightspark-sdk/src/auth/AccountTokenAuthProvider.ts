@@ -9,16 +9,16 @@ class AccountTokenAuthProvider implements AuthProvider {
 
   constructor(
     private readonly apiTokenClientId: string,
-    private readonly apiTokenClientSecret: string,
+    private readonly apiTokenClientSecret: string
   ) {
     this.utf8AuthBytes = new TextEncoder().encode(
-      `${apiTokenClientId}:${apiTokenClientSecret}`,
+      `${apiTokenClientId}:${apiTokenClientSecret}`
     );
     autoBind(this);
   }
 
   async addWsConnectionParams(
-    params: Record<string, string>,
+    params: Record<string, string>
   ): Promise<Record<string, string>> {
     return Object.assign({}, params, {
       client_id: this.apiTokenClientId,
@@ -27,7 +27,7 @@ class AccountTokenAuthProvider implements AuthProvider {
   }
 
   async addAuthHeaders(
-    headers: Record<string, string>,
+    headers: Record<string, string>
   ): Promise<Record<string, string>> {
     return Object.assign({}, headers, {
       authorization: `Basic ${b64encode(this.utf8AuthBytes)}`,

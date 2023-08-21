@@ -1,30 +1,29 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { LightsparkException } from "@lightsparkdev/core";
-import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
-import type AccountToNodesConnection from "./AccountToNodesConnection.js";
-import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
-import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
-import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
+import AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
+import AccountToNodesConnection from "./AccountToNodesConnection.js";
+import AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
+import AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
+import AccountToWalletsConnection from "./AccountToWalletsConnection.js";
 import { ApiTokenFromJson } from "./ApiToken.js";
 import { ChannelFromJson } from "./Channel.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import { HopFromJson } from "./Hop.js";
 import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
-import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
+import IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
 import { LightsparkNodeFromJson } from "./LightsparkNode.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
+import LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
-import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
-import type OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
+import OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
 import { PaymentRequestFromJson } from "./PaymentRequest.js";
 import { TransactionFromJson } from "./Transaction.js";
 import { WalletFromJson } from "./Wallet.js";
-import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
 type Connection = {
   /**
@@ -45,10 +44,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["account_to_api_tokens_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["account_to_api_tokens_connection_page_info"],
+        obj["account_to_api_tokens_connection_page_info"]
       ),
       entities: obj["account_to_api_tokens_connection_entities"].map((e) =>
-        ApiTokenFromJson(e),
+        ApiTokenFromJson(e)
       ),
       typename: "AccountToApiTokensConnection",
     } as AccountToApiTokensConnection;
@@ -58,7 +57,7 @@ export const ConnectionFromJson = (obj: any): Connection => {
       count: obj["account_to_nodes_connection_count"],
       pageInfo: PageInfoFromJson(obj["account_to_nodes_connection_page_info"]),
       entities: obj["account_to_nodes_connection_entities"].map((e) =>
-        LightsparkNodeFromJson(e),
+        LightsparkNodeFromJson(e)
       ),
       typename: "AccountToNodesConnection",
       purpose: !!obj["account_to_nodes_connection_purpose"]
@@ -71,10 +70,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["account_to_payment_requests_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["account_to_payment_requests_connection_page_info"],
+        obj["account_to_payment_requests_connection_page_info"]
       ),
       entities: obj["account_to_payment_requests_connection_entities"].map(
-        (e) => PaymentRequestFromJson(e),
+        (e) => PaymentRequestFromJson(e)
       ),
       typename: "AccountToPaymentRequestsConnection",
     } as AccountToPaymentRequestsConnection;
@@ -83,29 +82,29 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["account_to_transactions_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["account_to_transactions_connection_page_info"],
+        obj["account_to_transactions_connection_page_info"]
       ),
       entities: obj["account_to_transactions_connection_entities"].map((e) =>
-        TransactionFromJson(e),
+        TransactionFromJson(e)
       ),
       typename: "AccountToTransactionsConnection",
       profitLoss: !!obj["account_to_transactions_connection_profit_loss"]
         ? CurrencyAmountFromJson(
-            obj["account_to_transactions_connection_profit_loss"],
+            obj["account_to_transactions_connection_profit_loss"]
           )
         : undefined,
       averageFeeEarned: !!obj[
         "account_to_transactions_connection_average_fee_earned"
       ]
         ? CurrencyAmountFromJson(
-            obj["account_to_transactions_connection_average_fee_earned"],
+            obj["account_to_transactions_connection_average_fee_earned"]
           )
         : undefined,
       totalAmountTransacted: !!obj[
         "account_to_transactions_connection_total_amount_transacted"
       ]
         ? CurrencyAmountFromJson(
-            obj["account_to_transactions_connection_total_amount_transacted"],
+            obj["account_to_transactions_connection_total_amount_transacted"]
           )
         : undefined,
     } as AccountToTransactionsConnection;
@@ -114,10 +113,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["account_to_wallets_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["account_to_wallets_connection_page_info"],
+        obj["account_to_wallets_connection_page_info"]
       ),
       entities: obj["account_to_wallets_connection_entities"].map((e) =>
-        WalletFromJson(e),
+        WalletFromJson(e)
       ),
       typename: "AccountToWalletsConnection",
     } as AccountToWalletsConnection;
@@ -126,10 +125,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["incoming_payment_to_attempts_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["incoming_payment_to_attempts_connection_page_info"],
+        obj["incoming_payment_to_attempts_connection_page_info"]
       ),
       entities: obj["incoming_payment_to_attempts_connection_entities"].map(
-        (e) => IncomingPaymentAttemptFromJson(e),
+        (e) => IncomingPaymentAttemptFromJson(e)
       ),
       typename: "IncomingPaymentToAttemptsConnection",
     } as IncomingPaymentToAttemptsConnection;
@@ -138,10 +137,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["lightspark_node_to_channels_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["lightspark_node_to_channels_connection_page_info"],
+        obj["lightspark_node_to_channels_connection_page_info"]
       ),
       entities: obj["lightspark_node_to_channels_connection_entities"].map(
-        (e) => ChannelFromJson(e),
+        (e) => ChannelFromJson(e)
       ),
       typename: "LightsparkNodeToChannelsConnection",
     } as LightsparkNodeToChannelsConnection;
@@ -150,10 +149,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["outgoing_payment_attempt_to_hops_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["outgoing_payment_attempt_to_hops_connection_page_info"],
+        obj["outgoing_payment_attempt_to_hops_connection_page_info"]
       ),
       entities: obj["outgoing_payment_attempt_to_hops_connection_entities"].map(
-        (e) => HopFromJson(e),
+        (e) => HopFromJson(e)
       ),
       typename: "OutgoingPaymentAttemptToHopsConnection",
     } as OutgoingPaymentAttemptToHopsConnection;
@@ -162,10 +161,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["outgoing_payment_to_attempts_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["outgoing_payment_to_attempts_connection_page_info"],
+        obj["outgoing_payment_to_attempts_connection_page_info"]
       ),
       entities: obj["outgoing_payment_to_attempts_connection_entities"].map(
-        (e) => OutgoingPaymentAttemptFromJson(e),
+        (e) => OutgoingPaymentAttemptFromJson(e)
       ),
       typename: "OutgoingPaymentToAttemptsConnection",
     } as OutgoingPaymentToAttemptsConnection;
@@ -174,10 +173,10 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["wallet_to_payment_requests_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["wallet_to_payment_requests_connection_page_info"],
+        obj["wallet_to_payment_requests_connection_page_info"]
       ),
       entities: obj["wallet_to_payment_requests_connection_entities"].map((e) =>
-        PaymentRequestFromJson(e),
+        PaymentRequestFromJson(e)
       ),
       typename: "WalletToPaymentRequestsConnection",
     } as WalletToPaymentRequestsConnection;
@@ -186,17 +185,17 @@ export const ConnectionFromJson = (obj: any): Connection => {
     return {
       count: obj["wallet_to_transactions_connection_count"],
       pageInfo: PageInfoFromJson(
-        obj["wallet_to_transactions_connection_page_info"],
+        obj["wallet_to_transactions_connection_page_info"]
       ),
       entities: obj["wallet_to_transactions_connection_entities"].map((e) =>
-        TransactionFromJson(e),
+        TransactionFromJson(e)
       ),
       typename: "WalletToTransactionsConnection",
     } as WalletToTransactionsConnection;
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`,
+    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`
   );
 };
 

@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type ApiToken from "./ApiToken.js";
-import { ApiTokenFromJson } from "./ApiToken.js";
+import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
 
 type CreateApiTokenOutput = {
   /** The API Token that has been created. **/
@@ -16,7 +15,7 @@ type CreateApiTokenOutput = {
 };
 
 export const CreateApiTokenOutputFromJson = (
-  obj: any,
+  obj: any
 ): CreateApiTokenOutput => {
   return {
     apiToken: ApiTokenFromJson(obj["create_api_token_output_api_token"]),

@@ -4,7 +4,7 @@ import { rootFontSizePx } from "./common";
 
 export function pxToRems<T extends boolean>(
   rems: number,
-  asNum: T = false as T,
+  asNum: T = false as T
 ): T extends true ? number : string {
   const value = (rems / rootFontSizePx).toFixed(6);
   return (asNum ? Number(value) : `${value}rem`) as T extends true
@@ -14,7 +14,7 @@ export function pxToRems<T extends boolean>(
 
 export function remsToPx<T extends boolean>(
   rems: number,
-  asNum: T = false as T,
+  asNum: T = false as T
 ): T extends true ? number : string {
   const value = (rootFontSizePx * rems).toFixed(6);
   return (asNum ? Number(value) : `${value}px`) as T extends true

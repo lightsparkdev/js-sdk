@@ -1,10 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type Connection from "./Connection.js";
-import type OutgoingPaymentAttempt from "./OutgoingPaymentAttempt.js";
-import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
-import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import Connection from "./Connection.js";
+import OutgoingPaymentAttempt, {
+  OutgoingPaymentAttemptFromJson,
+} from "./OutgoingPaymentAttempt.js";
+import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
 
 /** The connection from outgoing payment to all attempts. **/
 type OutgoingPaymentToAttemptsConnection = Connection & {
@@ -25,15 +25,15 @@ type OutgoingPaymentToAttemptsConnection = Connection & {
 };
 
 export const OutgoingPaymentToAttemptsConnectionFromJson = (
-  obj: any,
+  obj: any
 ): OutgoingPaymentToAttemptsConnection => {
   return {
     count: obj["outgoing_payment_to_attempts_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["outgoing_payment_to_attempts_connection_page_info"],
+      obj["outgoing_payment_to_attempts_connection_page_info"]
     ),
     entities: obj["outgoing_payment_to_attempts_connection_entities"].map((e) =>
-      OutgoingPaymentAttemptFromJson(e),
+      OutgoingPaymentAttemptFromJson(e)
     ),
     typename: "OutgoingPaymentToAttemptsConnection",
   } as OutgoingPaymentToAttemptsConnection;

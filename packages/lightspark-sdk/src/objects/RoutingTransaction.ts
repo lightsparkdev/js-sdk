@@ -1,14 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type LightningTransaction from "./LightningTransaction.js";
-import type RichText from "./RichText.js";
-import { RichTextFromJson } from "./RichText.js";
+import { Query } from "@lightsparkdev/core";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import LightningTransaction from "./LightningTransaction.js";
+import RichText, { RichTextFromJson } from "./RichText.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
-import type Transaction from "./Transaction.js";
+import Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a transaction that was forwarded through a Lightspark node on the Lightning Network, i.e., a routed transaction. You can retrieve this object to receive information about any transaction routed through your Lightspark Node. **/
@@ -130,7 +128,7 @@ fragment RoutingTransactionFragment on RoutingTransaction {
 }`;
 
 export const getRoutingTransactionQuery = (
-  id: string,
+  id: string
 ): Query<RoutingTransaction> => {
   return {
     queryPayload: `

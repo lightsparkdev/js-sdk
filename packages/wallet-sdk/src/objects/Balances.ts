@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 /** This is an object representing the balance associated with your Lightspark account. You can retrieve this object to see your balance, which can be broken down into several different categorizations. **/
 type Balances = {
@@ -33,10 +32,10 @@ export const BalancesFromJson = (obj: any): Balances => {
   return {
     ownedBalance: CurrencyAmountFromJson(obj["balances_owned_balance"]),
     availableToSendBalance: CurrencyAmountFromJson(
-      obj["balances_available_to_send_balance"],
+      obj["balances_available_to_send_balance"]
     ),
     availableToWithdrawBalance: CurrencyAmountFromJson(
-      obj["balances_available_to_withdraw_balance"],
+      obj["balances_available_to_withdraw_balance"]
     ),
   } as Balances;
 };

@@ -1,20 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.6.18
-
-### Patch Changes
-
-- 4ffd9a1: Upgrade prettier, fix lint configs, move ls-react-native-crypto-app to examples
-- Updated dependencies [4ffd9a1]
-  - @lightsparkdev/core@0.3.11
-
-## 0.6.17
-
-### Patch Changes
-
-- 32efe27: Expose wallet transactions and invoices in the 3P schema
-- 32efe27: Add dotenv to parse env file
-
 ## 0.6.16
 
 ### Patch Changes

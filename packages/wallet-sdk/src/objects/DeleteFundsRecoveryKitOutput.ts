@@ -5,7 +5,7 @@ type DeleteFundsRecoveryKitOutput = {
 };
 
 export const DeleteFundsRecoveryKitOutputFromJson = (
-  obj: any,
+  obj: any
 ): DeleteFundsRecoveryKitOutput => {
   return {
     walletId: obj["delete_funds_recovery_kit_output_wallet"].id,

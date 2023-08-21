@@ -15,7 +15,7 @@ type CreateTestModePaymentInput = {
 };
 
 export const CreateTestModePaymentInputFromJson = (
-  obj: any,
+  obj: any
 ): CreateTestModePaymentInput => {
   return {
     localNodeId: obj["create_test_mode_payment_input_local_node_id"],

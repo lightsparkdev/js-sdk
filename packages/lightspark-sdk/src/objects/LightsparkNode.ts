@@ -1,24 +1,25 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
+import LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import type BlockchainBalance from "./BlockchainBalance.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import type ChannelStatus from "./ChannelStatus.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import BlockchainBalance, {
+  BlockchainBalanceFromJson,
+} from "./BlockchainBalance.js";
+import ChannelStatus from "./ChannelStatus.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
-import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
-import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
-import type Node from "./Node.js";
-import type NodeAddressType from "./NodeAddressType.js";
-import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
-import type Secret from "./Secret.js";
-import { SecretFromJson } from "./Secret.js";
+import LightsparkNodeToChannelsConnection, {
+  LightsparkNodeToChannelsConnectionFromJson,
+} from "./LightsparkNodeToChannelsConnection.js";
+import Node from "./Node.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
+import Secret, { SecretFromJson } from "./Secret.js";
 
 /** This is a node that is managed by Lightspark and is managed within the current connected account. It contains many details about the node configuration, state, and metadata. **/
 class LightsparkNode implements Node {
@@ -42,7 +43,7 @@ class LightsparkNode implements Node {
     public readonly localBalance?: CurrencyAmount,
     public readonly purpose?: LightsparkNodePurpose,
     public readonly remoteBalance?: CurrencyAmount,
-    public readonly status?: LightsparkNodeStatus,
+    public readonly status?: LightsparkNodeStatus
   ) {
     autoBind(this);
   }
@@ -50,7 +51,7 @@ class LightsparkNode implements Node {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined,
+    types: NodeAddressType[] | undefined = undefined
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -82,7 +83,7 @@ query FetchNodeToAddressesConnection($entity_id: ID!, $first: Int, $types: [Node
     client: LightsparkClient,
     first: number | undefined = undefined,
     statuses: ChannelStatus[] | undefined = undefined,
-    after: string | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<LightsparkNodeToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -270,7 +271,7 @@ export const LightsparkNodeFromJson = (obj: any): LightsparkNode => {
     !!obj["lightspark_node_status"]
       ? LightsparkNodeStatus[obj["lightspark_node_status"]] ??
         LightsparkNodeStatus.FUTURE_VALUE
-      : null,
+      : null
   );
 };
 

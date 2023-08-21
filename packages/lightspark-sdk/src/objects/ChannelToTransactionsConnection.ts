@@ -1,7 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
 type ChannelToTransactionsConnection = {
   /**
@@ -30,25 +29,25 @@ type ChannelToTransactionsConnection = {
 };
 
 export const ChannelToTransactionsConnectionFromJson = (
-  obj: any,
+  obj: any
 ): ChannelToTransactionsConnection => {
   return {
     count: obj["channel_to_transactions_connection_count"],
     averageFee: !!obj["channel_to_transactions_connection_average_fee"]
       ? CurrencyAmountFromJson(
-          obj["channel_to_transactions_connection_average_fee"],
+          obj["channel_to_transactions_connection_average_fee"]
         )
       : undefined,
     totalAmountTransacted: !!obj[
       "channel_to_transactions_connection_total_amount_transacted"
     ]
       ? CurrencyAmountFromJson(
-          obj["channel_to_transactions_connection_total_amount_transacted"],
+          obj["channel_to_transactions_connection_total_amount_transacted"]
         )
       : undefined,
     totalFees: !!obj["channel_to_transactions_connection_total_fees"]
       ? CurrencyAmountFromJson(
-          obj["channel_to_transactions_connection_total_fees"],
+          obj["channel_to_transactions_connection_total_fees"]
         )
       : undefined,
   } as ChannelToTransactionsConnection;

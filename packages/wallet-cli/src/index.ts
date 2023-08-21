@@ -32,20 +32,20 @@ const main = async (
   action: (
     client: LightsparkClient,
     options: OptionValues,
-    credentials?: EnvCredentials,
+    credentials?: EnvCredentials
   ) => Promise<unknown>,
-  skipLogin = false,
+  skipLogin = false
 ) => {
   const credentials = getCredentialsFromEnvOrThrow(
     options.walletUserId ? `_${options.walletUserId}` : "",
-    !skipLogin,
+    !skipLogin
   );
   const client = new LightsparkClient(undefined, credentials.baseUrl);
   if (!skipLogin) {
     await client.loginWithJWT(
       credentials.accountId,
       credentials.jwt,
-      new InMemoryJwtStorage(),
+      new InMemoryJwtStorage()
     );
   }
   await action(client, options, credentials);
@@ -78,8 +78,9 @@ const initEnv = async (options: OptionValues) => {
     }
 
     if (!jwtPrivateSigningKey) {
-      const { publicKey, privateKey } =
-        await jose.generateKeyPair<KeyObject>("ES256");
+      const { publicKey, privateKey } = await jose.generateKeyPair<KeyObject>(
+        "ES256"
+      );
       jwtPublicSigningKey = publicKey.export({
         type: "spki",
         format: "pem",
@@ -127,23 +128,23 @@ const initEnv = async (options: OptionValues) => {
 
   console.log("Wrote environment variables to " + filePath);
   console.log(
-    "You can now run `lightspark-wallet` to interact with your wallet",
+    "You can now run `lightspark-wallet` to interact with your wallet"
   );
 };
 
 const createInvoice = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   console.log(
     "Creating an invoice with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const invoice = await client.createInvoice(
     options.amount * 1000,
     options.memo,
-    options.amp ? InvoiceType.AMP : InvoiceType.STANDARD,
+    options.amp ? InvoiceType.AMP : InvoiceType.STANDARD
   );
   if (!invoice) {
     throw new Error("Failed to create invoice");
@@ -154,16 +155,16 @@ const createInvoice = async (
 
 const createTestModeInvoice = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   console.log(
     "Creating a test-mode invoice with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const invoice = await client.createTestModeInvoice(
     options.amount * 1000,
-    options.memo,
+    options.memo
   );
   if (!invoice) {
     throw new Error("Failed to create invoice");
@@ -174,12 +175,12 @@ const createTestModeInvoice = async (
 
 const transactions = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   console.log(
     "Fetching transactions with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const wallet = await client.getCurrentWallet();
   if (!wallet) {
@@ -188,7 +189,7 @@ const transactions = async (
   const transactionList = await wallet.getTransactions(client, options.count);
   console.log(
     "Transactions:",
-    JSON.stringify(transactionList?.entities, null, 2),
+    JSON.stringify(transactionList?.entities, null, 2)
   );
 };
 
@@ -196,7 +197,7 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
   console.log(
     "Fetching payment requests with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const wallet = await client.getCurrentWallet();
   if (!wallet) {
@@ -204,16 +205,16 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
   }
   const paymentRequests = await wallet.getPaymentRequests(
     client,
-    options.count,
+    options.count
   );
   console.log(
     "paymentRequests:",
-    JSON.stringify(paymentRequests?.entities, null, 2),
+    JSON.stringify(paymentRequests?.entities, null, 2)
   );
 };
 
 const balances = async (
-  client: LightsparkClient /* options: OptionValues */,
+  client: LightsparkClient /* options: OptionValues */
 ) => {
   console.log("Fetching wallet balances...\n");
   const wallet = await client.getCurrentWallet();
@@ -225,7 +226,7 @@ const balances = async (
 };
 
 const l1FeeEstimate = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Fetching bitcoin L1 fee estimate...\n");
@@ -234,7 +235,7 @@ const l1FeeEstimate = async (
 };
 
 const walletDashboard = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Fetching wallet dashboard...\n");
@@ -243,7 +244,7 @@ const walletDashboard = async (
 };
 
 const currentWallet = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Fetching current wallet...\n");
@@ -253,7 +254,7 @@ const currentWallet = async (
 
 const terminateWallet = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   if (!options.force) {
     const shouldTerminate = await input({
@@ -279,7 +280,7 @@ const terminateWallet = async (
 
 const decodeInvoice = async (
   client: LightsparkClient,
-  options: OptionValues,
+  options: OptionValues
 ) => {
   console.log("Decoding invoice...\n");
   const decodedInvoice = await client.decodeInvoice(options.invoice);
@@ -287,7 +288,7 @@ const decodeInvoice = async (
 };
 
 const createBitcoinFundingAddress = async (
-  client: LightsparkClient,
+  client: LightsparkClient
   /* options: OptionValues */
 ) => {
   console.log("Creating bitcoin funding address...\n");
@@ -298,24 +299,24 @@ const createBitcoinFundingAddress = async (
 const payInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials?: EnvCredentials,
+  credentials?: EnvCredentials
 ) => {
   console.log(
     "Paying invoice with options: ",
     JSON.stringify(options, null, 2),
-    "\n",
+    "\n"
   );
   const privateKey = credentials?.privKey;
   if (!privateKey) {
     throw new Error(
-      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY.",
+      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
     );
   }
   await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
   const payment = await client.payInvoice(
     options.invoice,
     1000_000,
-    options.amount === -1 ? undefined : options.amount * 1000,
+    options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
@@ -323,19 +324,19 @@ const payInvoice = async (
 const createTestModePayment = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials?: EnvCredentials,
+  credentials?: EnvCredentials
 ) => {
   console.log("Paying invoice...\n");
   const privateKey = credentials?.privKey;
   if (!privateKey) {
     throw new Error(
-      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY.",
+      "Private key not found in environment. Set LIGHTSPARK_WALLET_PRIV_KEY."
     );
   }
   await client.loadWalletSigningKey(KeyOrAlias.key(privateKey));
   const payment = await client.createTestModePayment(
     options.invoice,
-    options.amount === -1 ? undefined : options.amount * 1000,
+    options.amount === -1 ? undefined : options.amount * 1000
   );
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
@@ -343,13 +344,13 @@ const createTestModePayment = async (
 const createWalletJwt = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials?: EnvCredentials,
+  credentials?: EnvCredentials
 ) => {
   console.log("Creating wallet JWT...\n");
   const privateKey = credentials?.jwtSigningPrivateKey;
   if (!privateKey) {
     throw new Error(
-      "JWT signing private key not found in environment. Set LIGHTSPARK_JWT_PRIV_KEY.",
+      "JWT signing private key not found in environment. Set LIGHTSPARK_JWT_PRIV_KEY."
     );
   }
   let userId = options.userId;
@@ -384,7 +385,7 @@ const createWalletJwt = async (
 const createDeployAndInitWallet = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials?: EnvCredentials,
+  credentials?: EnvCredentials
 ) => {
   if (!credentials) {
     throw new Error("Credentials not found in environment.");
@@ -392,13 +393,13 @@ const createDeployAndInitWallet = async (
   const { token, userId, test } = await createWalletJwt(
     client,
     options,
-    credentials,
+    credentials
   );
   console.log("Creating wallet...\n");
   const loginOutput = await client.loginWithJWT(
     credentials.accountId,
     token,
-    new InMemoryJwtStorage(),
+    new InMemoryJwtStorage()
   );
   console.log("Wallet:", JSON.stringify(loginOutput.wallet, null, 2));
   let serializedKeypair: { privateKey: string; publicKey: string } | undefined =
@@ -409,7 +410,7 @@ const createDeployAndInitWallet = async (
     deployedResultStatus = await client.deployWalletAndAwaitDeployed();
     console.log(
       "Deployed wallet:",
-      JSON.stringify(deployedResultStatus, null, 2),
+      JSON.stringify(deployedResultStatus, null, 2)
     );
   }
   if (deployedResultStatus === WalletStatus.DEPLOYED) {
@@ -417,10 +418,10 @@ const createDeployAndInitWallet = async (
     const keypair = await DefaultCrypto.generateSigningKeyPair();
     serializedKeypair = {
       privateKey: b64encode(
-        await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8"),
+        await DefaultCrypto.serializeSigningKey(keypair.privateKey, "pkcs8")
       ),
       publicKey: b64encode(
-        await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki"),
+        await DefaultCrypto.serializeSigningKey(keypair.publicKey, "spki")
       ),
     };
     console.log("Keypair:", JSON.stringify(serializedKeypair, null, 2));
@@ -428,20 +429,20 @@ const createDeployAndInitWallet = async (
     const initializedWallet = await client.initializeWalletAndAwaitReady(
       KeyType.RSA_OAEP,
       serializedKeypair.publicKey,
-      KeyOrAlias.key(serializedKeypair.privateKey),
+      KeyOrAlias.key(serializedKeypair.privateKey)
     );
     console.log(
       "Initialized wallet:",
-      JSON.stringify(initializedWallet, null, 2),
+      JSON.stringify(initializedWallet, null, 2)
     );
   } else {
     console.log(
-      `Not initializing because the wallet status is ${loginOutput.wallet.status}`,
+      `Not initializing because the wallet status is ${loginOutput.wallet.status}`
     );
   }
 
   console.log(
-    "\n\nExport these env vars to use this wallet. Appending to ~/.lightsparkenv:\n",
+    "\n\nExport these env vars to use this wallet. Appending to ~/.lightsparkenv:\n"
   );
   let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
   content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
@@ -476,23 +477,23 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
-      undefined,
+      undefined
     )
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
       safeParseInt,
-      0,
+      0
     )
     .option("--amp", "Flag to use AMP invoices.", false)
     .action((options) => {
       main(options, createInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -501,22 +502,22 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option(
       "-m, --memo  <value>",
       "Add a memo describing the invoice.",
-      undefined,
+      undefined
     )
     .option(
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
       safeParseInt,
-      0,
+      0
     )
     .action((options) => {
       main(options, createTestModeInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -525,17 +526,17 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option(
       "-n, --count  <number>",
       "Max number of transactions to fetch.",
       safeParseInt,
-      25,
+      25
     )
     .action((options) => {
       main(options, transactions).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -544,17 +545,17 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option(
       "-n, --count  <number>",
       "Max number of invoices to fetch.",
       safeParseInt,
-      25,
+      25
     )
     .action((options) => {
       main(options, invoices).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -563,7 +564,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .action((options) => {
       main(options, decodeInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -572,11 +573,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .action((options) => {
       main(options, balances).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -584,7 +585,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description("Get bitcoin L1 fee estimate")
     .action((options) => {
       main(options, l1FeeEstimate).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -593,11 +594,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .action((options) => {
       main(options, walletDashboard).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -606,11 +607,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .action((options) => {
       main(options, currentWallet).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -619,11 +620,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .action((options) => {
       main(options, createBitcoinFundingAddress).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -632,40 +633,40 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option(
       "-a, --amount <number>",
       "The amount to pay in sats.",
       safeParseInt,
-      -1,
+      -1
     )
     .action((options) => {
       main(options, payInvoice).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   const createTestModePaymentCmd = new Command("create-test-mode-payment")
     .description(
-      "In test mode, simulates a payment from another node to an invoice.",
+      "In test mode, simulates a payment from another node to an invoice."
     )
     .option(
       "-u --wallet-user-id <value>",
       "An optional user wallet ID that was passed as the sub when creating the jwt via this CLI.",
-      undefined,
+      undefined
     )
     .option("-i, --invoice  <value>", "The encoded payment request.")
     .option(
       "-a, --amount <number>",
       "The amount to pay in sats.",
       safeParseInt,
-      -1,
+      -1
     )
     .action((options) => {
       main(options, createTestModePayment).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -676,38 +677,38 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       "-e, --expire-at <number>",
       "The jwt expiration time in seconds since epoch. Defaults to 30 days from now.",
       safeParseInt,
-      Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000),
+      Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet jwt in test mode.", false)
     .option(
       "-p, --extra-props  <value>",
-      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\'',
+      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\''
     )
     .action((options) => {
       main(options, createWalletJwt, true).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   const createDeployAndInitWalletCmd = new Command("create-and-init-wallet")
     .description(
-      "Create, deploy, and initialize a new wallet. Will print out all relevant keys, etc.",
+      "Create, deploy, and initialize a new wallet. Will print out all relevant keys, etc."
     )
     .option("-u, --user-id  <value>", "The user ID for the wallet.")
     .option(
       "-e, --expire-at <number>",
       "The jwt expiration time in seconds since epoch. Defaults to 30 days from now.",
       safeParseInt,
-      Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000),
+      Math.floor((Date.now() + 1000 * 60 * 60 * 24 * 30) / 1000)
     )
     .option("-t --test", "Flag to create this wallet in test mode.", false)
     .option(
       "-p, --extra-props  <value>",
-      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\'',
+      'Extra JWT claim properties to add in json. For example: \'{"foo": "bar"}\''
     )
     .action((options) => {
       main(options, createDeployAndInitWallet, true).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -717,11 +718,11 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-f --force",
       "Flag to force terminate the wallet without a confirmation.",
-      false,
+      false
     )
     .action((options) => {
       main(options, terminateWallet, true).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
@@ -732,23 +733,23 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .option(
       "-k --jwt-signing-key <value>",
       "Your JWT-signing private key (optional).",
-      undefined,
+      undefined
     )
     .option("-j --jwt <value>", "A default wallet jwt (optional).", undefined)
     .option(
       "-w --wallet-private-key <value>",
       "Your default wallet signing private key (optional).",
-      undefined,
+      undefined
     )
     .action((options) => {
       initEnv(options).catch((err) =>
-        console.error("Oh no, something went wrong.\n", err),
+        console.error("Oh no, something went wrong.\n", err)
       );
     });
 
   new Command("lightspark-wallet")
     .description(
-      "Lightspark Wallet CLI. Start by running init-env to set up your environment.",
+      "Lightspark Wallet CLI. Start by running init-env to set up your environment."
     )
     .version(getPackageVersion())
     .addCommand(createInvoiceCmd)

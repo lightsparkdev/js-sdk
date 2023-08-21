@@ -1,11 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Node from "./Node.js";
-import { NodeFromJson } from "./Node.js";
-import type PaymentRequestData from "./PaymentRequestData.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Node, { NodeFromJson } from "./Node.js";
+import PaymentRequestData from "./PaymentRequestData.js";
 
 /** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. **/
 type InvoiceData = PaymentRequestData & {

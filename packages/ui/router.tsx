@@ -40,14 +40,14 @@ export type LinkProps<RoutesType extends string> = {
 
 export function replaceParams<RoutesType extends string>(
   to: LinkProps<RoutesType>["to"],
-  params: LinkProps<RoutesType>["params"],
+  params: LinkProps<RoutesType>["params"]
 ): LinkProps<RoutesType>["to"] {
   if (params) {
     let toWithParams = to;
     Object.entries(omit(params, "query")).forEach(([key, value]) => {
       if (typeof value !== "string") {
         throw new Error(
-          `Only 'query' may be an object. Route params must be a string, but '${key}' is not.`,
+          `Only 'query' may be an object. Route params must be a string, but '${key}' is not.`
         );
       }
       toWithParams = toWithParams.replace(`:${key}`, value) as RoutesType;
@@ -112,7 +112,7 @@ export function useNavigate<RoutesType extends string>() {
     (
       // number eg -1 can be passed to navigate back
       to: LinkProps<RoutesType>["to"] | number,
-      params?: LinkProps<RoutesType>["params"],
+      params?: LinkProps<RoutesType>["params"]
     ) => {
       if (typeof to === "string") {
         to = replaceParams<RoutesType>(to, params);
@@ -121,12 +121,12 @@ export function useNavigate<RoutesType extends string>() {
       }
       return navigate(to);
     },
-    [navigate],
+    [navigate]
   );
 }
 
 export function useMatchRoutes<RoutesType extends string>(
-  routes: RoutesType[],
+  routes: RoutesType[]
 ): boolean {
   const location = useLocation();
   const doesMatch = routes.some((route) => matchPath(route, location.pathname));
@@ -134,17 +134,17 @@ export function useMatchRoutes<RoutesType extends string>(
 }
 
 export function useFindMatchingRoute<RoutesType extends string>(
-  routes: RoutesType[],
+  routes: RoutesType[]
 ): RoutesType | undefined {
   const location = useLocation();
   const matchingRoute = routes.find((route) =>
-    matchPath(route, location.pathname),
+    matchPath(route, location.pathname)
   );
   return matchingRoute;
 }
 
 export function useMatchRoute<RoutesType extends string>(
-  route: RoutesType,
+  route: RoutesType
 ): PathMatch<string> | null {
   const location = useLocation();
   return matchPath(route, location.pathname);

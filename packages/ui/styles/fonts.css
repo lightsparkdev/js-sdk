@@ -1,8 +1,7 @@
 @font-face {
   font-family: "LightsparkIcons";
   src: url("fonts/LightsparkIcons/LightsparkIcons.eot?hxu0p1");
-  src:
-    url("fonts/LightsparkIcons/LightsparkIcons.eot?hxu0p1#iefix")
+  src: url("fonts/LightsparkIcons/LightsparkIcons.eot?hxu0p1#iefix")
       format("embedded-opentype"),
     url("fonts/LightsparkIcons/LightsparkIcons.ttf?hxu0p1") format("truetype"),
     url("fonts/LightsparkIcons/LightsparkIcons.woff?hxu0p1") format("woff"),

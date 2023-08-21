@@ -2,7 +2,6 @@
 logs
 *.log
 stats.json
-test.logs
 
 # Runtime data
 pids
@@ -33,10 +32,8 @@ node_modules/*
 # Eclipse projects
 .project
 .pydevproject
+.vscode
 .settings
-
-.vscode/*
-!.vscode/settings.json
 
 #Webstorm Editor
 .idea
@@ -115,6 +112,3 @@ example/vendor/
 
 # Temporary files created by Metro for react-native projects
 .metro-health-check*
-
-# Leave for public repo:
-*.code-workspace

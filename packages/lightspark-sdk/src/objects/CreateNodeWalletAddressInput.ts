@@ -5,7 +5,7 @@ type CreateNodeWalletAddressInput = {
 };
 
 export const CreateNodeWalletAddressInputFromJson = (
-  obj: any,
+  obj: any
 ): CreateNodeWalletAddressInput => {
   return {
     nodeId: obj["create_node_wallet_address_input_node_id"],
