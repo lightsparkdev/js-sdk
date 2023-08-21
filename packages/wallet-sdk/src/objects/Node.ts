@@ -1,14 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
+import { LightsparkException, Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
+import LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import type Entity from "./Entity.js";
+import Entity from "./Entity.js";
 import GraphNode from "./GraphNode.js";
-import type NodeAddressType from "./NodeAddressType.js";
-import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
-import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
+import NodeAddressType from "./NodeAddressType.js";
+import NodeToAddressesConnection, {
+  NodeToAddressesConnectionFromJson,
+} from "./NodeToAddressesConnection.js";
 
 /** This object is an interface representing a Lightning Node on the Lightning Network, and could either be a Lightspark node or a node managed by a third party. **/
 class Node implements Entity {

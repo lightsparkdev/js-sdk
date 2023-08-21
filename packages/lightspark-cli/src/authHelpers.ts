@@ -12,17 +12,20 @@ export type EnvCredentials = {
   baseUrl: string;
 };
 
-enum RequiredTestCredentials {
+export enum RequiredCredentials {
   ClientId = "LIGHTSPARK_API_TOKEN_CLIENT_ID",
   ClientSecret = "LIGHTSPARK_API_TOKEN_CLIENT_SECRET",
   BitcoinNetwork = "BITCOIN_NETWORK",
 }
 
 export const getCredentialsFromEnvOrThrow = (): EnvCredentials => {
-  dotenv.config({ path: process.env.HOME + "/.lightsparkapienv" });
+  const env =
+    dotenv.config({
+      path: process.env.HOME + "/.lightsparkapienv",
+    }).parsed || {};
 
-  const missingTestCredentials = Object.values(RequiredTestCredentials).filter(
-    (cred) => !process.env[cred]
+  const missingTestCredentials = Object.values(RequiredCredentials).filter(
+    (cred) => !env[cred]
   );
   if (missingTestCredentials.length) {
     throw new Error(
@@ -32,15 +35,13 @@ export const getCredentialsFromEnvOrThrow = (): EnvCredentials => {
     );
   }
 
-  const apiTokenClientId = process.env[RequiredTestCredentials.ClientId]!;
-  const apiTokenClientSecret =
-    process.env[RequiredTestCredentials.ClientSecret]!;
+  const apiTokenClientId = env[RequiredCredentials.ClientId]!;
+  const apiTokenClientSecret = env[RequiredCredentials.ClientSecret]!;
   const bitcoinNetwork = getBitcoinNetworkOrThrow(
-    process.env[RequiredTestCredentials.BitcoinNetwork]! as BitcoinNetwork
+    env[RequiredCredentials.BitcoinNetwork]! as BitcoinNetwork
   );
   const testNodePassword = "1234!@#$";
-  const baseUrl =
-    process.env["LIGHTSPARK_EXAMPLE_BASE_URL"] || "api.lightspark.com";
+  const baseUrl = env["LIGHTSPARK_BASE_URL"] || "api.lightspark.com";
   return {
     apiTokenClientId,
     apiTokenClientSecret,

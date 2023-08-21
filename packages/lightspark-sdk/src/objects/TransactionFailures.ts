@@ -3,6 +3,7 @@
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
 
+/** This object represents payment failures associated with your Lightspark Node. **/
 type TransactionFailures = {
   paymentFailures?: PaymentFailureReason[];
 

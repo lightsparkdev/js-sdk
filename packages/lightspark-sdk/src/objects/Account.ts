@@ -1,30 +1,37 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
-import { AccountToApiTokensConnectionFromJson } from "./AccountToApiTokensConnection.js";
-import type AccountToChannelsConnection from "./AccountToChannelsConnection.js";
-import { AccountToChannelsConnectionFromJson } from "./AccountToChannelsConnection.js";
-import type AccountToNodesConnection from "./AccountToNodesConnection.js";
-import { AccountToNodesConnectionFromJson } from "./AccountToNodesConnection.js";
-import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
-import { AccountToPaymentRequestsConnectionFromJson } from "./AccountToPaymentRequestsConnection.js";
-import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
-import { AccountToTransactionsConnectionFromJson } from "./AccountToTransactionsConnection.js";
-import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
-import { AccountToWalletsConnectionFromJson } from "./AccountToWalletsConnection.js";
-import type BitcoinNetwork from "./BitcoinNetwork.js";
-import type BlockchainBalance from "./BlockchainBalance.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
-import type TransactionFailures from "./TransactionFailures.js";
-import type TransactionStatus from "./TransactionStatus.js";
-import type TransactionType from "./TransactionType.js";
+import LightsparkClient from "../client.js";
+import AccountToApiTokensConnection, {
+  AccountToApiTokensConnectionFromJson,
+} from "./AccountToApiTokensConnection.js";
+import AccountToChannelsConnection, {
+  AccountToChannelsConnectionFromJson,
+} from "./AccountToChannelsConnection.js";
+import AccountToNodesConnection, {
+  AccountToNodesConnectionFromJson,
+} from "./AccountToNodesConnection.js";
+import AccountToPaymentRequestsConnection, {
+  AccountToPaymentRequestsConnectionFromJson,
+} from "./AccountToPaymentRequestsConnection.js";
+import AccountToTransactionsConnection, {
+  AccountToTransactionsConnectionFromJson,
+} from "./AccountToTransactionsConnection.js";
+import AccountToWalletsConnection, {
+  AccountToWalletsConnectionFromJson,
+} from "./AccountToWalletsConnection.js";
+import BitcoinNetwork from "./BitcoinNetwork.js";
+import BlockchainBalance, {
+  BlockchainBalanceFromJson,
+} from "./BlockchainBalance.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import TransactionFailures from "./TransactionFailures.js";
+import TransactionStatus from "./TransactionStatus.js";
+import TransactionType from "./TransactionType.js";
 
+/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. **/
 class Account implements LightsparkNodeOwner {
   constructor(
     public readonly id: string,
@@ -38,15 +45,17 @@ class Account implements LightsparkNodeOwner {
 
   public async getApiTokens(
     client: LightsparkClient,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<AccountToApiTokensConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToApiTokensConnection($first: Int) {
+query FetchAccountToApiTokensConnection($first: Int, $after: String) {
     current_account {
         ... on Account {
-            api_tokens(, first: $first) {
+            api_tokens(, first: $first, after: $after) {
                 __typename
+                account_to_api_tokens_connection_count: count
                 account_to_api_tokens_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -54,7 +63,6 @@ query FetchAccountToApiTokensConnection($first: Int) {
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                account_to_api_tokens_connection_count: count
                 account_to_api_tokens_connection_entities: entities {
                     __typename
                     api_token_id: id
@@ -69,7 +77,7 @@ query FetchAccountToApiTokensConnection($first: Int) {
     }
 }
 `,
-      variables: { first: first },
+      variables: { first: first, after: after },
       constructObject: (json) => {
         const connection = json["current_account"]["api_tokens"];
         return AccountToApiTokensConnectionFromJson(connection);
@@ -207,15 +215,17 @@ query FetchAccountLocalBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids: 
     client: LightsparkClient,
     first: number | undefined = undefined,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<AccountToNodesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetwork!], $node_ids: [ID!]) {
+query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetwork!], $node_ids: [ID!], $after: String) {
     current_account {
         ... on Account {
-            nodes(, first: $first, bitcoin_networks: $bitcoin_networks, node_ids: $node_ids) {
+            nodes(, first: $first, bitcoin_networks: $bitcoin_networks, node_ids: $node_ids, after: $after) {
                 __typename
+                account_to_nodes_connection_count: count
                 account_to_nodes_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -223,7 +233,6 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                account_to_nodes_connection_count: count
                 account_to_nodes_connection_purpose: purpose
                 account_to_nodes_connection_entities: entities {
                     __typename
@@ -342,6 +351,7 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
         first: first,
         bitcoin_networks: bitcoinNetworks,
         node_ids: nodeIds,
+        after: after,
       },
       constructObject: (json) => {
         const connection = json["current_account"]["nodes"];
@@ -558,6 +568,14 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
         ... on Account {
             transactions(, first: $first, after: $after, types: $types, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id, statuses: $statuses, exclude_failures: $exclude_failures) {
                 __typename
+                account_to_transactions_connection_count: count
+                account_to_transactions_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
                 account_to_transactions_connection_profit_loss: profit_loss {
                     __typename
                     currency_amount_original_value: original_value
@@ -574,7 +592,6 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                     currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                     currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                 }
-                account_to_transactions_connection_count: count
                 account_to_transactions_connection_total_amount_transacted: total_amount_transacted {
                     __typename
                     currency_amount_original_value: original_value
@@ -955,13 +972,6 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                         }
                     }
                 }
-                account_to_transactions_connection_page_info: page_info {
-                    __typename
-                    page_info_has_next_page: has_next_page
-                    page_info_has_previous_page: has_previous_page
-                    page_info_start_cursor: start_cursor
-                    page_info_end_cursor: end_cursor
-                }
             }
         }
     }
@@ -1002,6 +1012,13 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
             payment_requests(, first: $first, after: $after, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id) {
                 __typename
                 account_to_payment_requests_connection_count: count
+                account_to_payment_requests_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
                 account_to_payment_requests_connection_entities: entities {
                     __typename
                     ... on Invoice {
@@ -1160,13 +1177,6 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                         }
                     }
                 }
-                account_to_payment_requests_connection_page_info: page_info {
-                    __typename
-                    page_info_has_next_page: has_next_page
-                    page_info_has_previous_page: has_previous_page
-                    page_info_start_cursor: start_cursor
-                    page_info_end_cursor: end_cursor
-                }
             }
         }
     }
@@ -1189,15 +1199,18 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
 
   public async getWallets(
     client: LightsparkClient,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
+    after: string | undefined = undefined,
+    thirdPartyIds: string[] | undefined = undefined
   ): Promise<AccountToWalletsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToWalletsConnection($first: Int) {
+query FetchAccountToWalletsConnection($first: Int, $after: String, $third_party_ids: [String!]) {
     current_account {
         ... on Account {
-            wallets(, first: $first) {
+            wallets(, first: $first, after: $after, third_party_ids: $third_party_ids) {
                 __typename
+                account_to_wallets_connection_count: count
                 account_to_wallets_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -1205,7 +1218,6 @@ query FetchAccountToWalletsConnection($first: Int) {
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                account_to_wallets_connection_count: count
                 account_to_wallets_connection_entities: entities {
                     __typename
                     wallet_id: id
@@ -1247,7 +1259,7 @@ query FetchAccountToWalletsConnection($first: Int) {
     }
 }
 `,
-      variables: { first: first },
+      variables: { first: first, after: after, third_party_ids: thirdPartyIds },
       constructObject: (json) => {
         const connection = json["current_account"]["wallets"];
         return AccountToWalletsConnectionFromJson(connection);

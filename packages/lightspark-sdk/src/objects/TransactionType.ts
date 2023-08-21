@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum of the potential types of transactions that can be associated with your Lightspark Node. **/
 export enum TransactionType {
   /**
    * This is an enum value that represents values that could be added in the future.

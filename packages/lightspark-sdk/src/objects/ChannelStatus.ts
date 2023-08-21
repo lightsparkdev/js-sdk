@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/** This is an enum representing the status of a channel on the Lightning Network. **/
 export enum ChannelStatus {
   /**
    * This is an enum value that represents values that could be added in the future.

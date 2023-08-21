@@ -1,19 +1,18 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type ChannelFees from "./ChannelFees.js";
-import { ChannelFeesFromJson } from "./ChannelFees.js";
+import LightsparkClient from "../client.js";
+import ChannelFees, { ChannelFeesFromJson } from "./ChannelFees.js";
 import ChannelStatus from "./ChannelStatus.js";
-import type ChannelToTransactionsConnection from "./ChannelToTransactionsConnection.js";
-import { ChannelToTransactionsConnectionFromJson } from "./ChannelToTransactionsConnection.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type TransactionType from "./TransactionType.js";
+import ChannelToTransactionsConnection, {
+  ChannelToTransactionsConnectionFromJson,
+} from "./ChannelToTransactionsConnection.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import Entity from "./Entity.js";
+import TransactionType from "./TransactionType.js";
 
-/** An object that represents a payment channel between two nodes in the Lightning Network. **/
+/** This is an object representing a channel on the Lightning Network. You can retrieve this object to get detailed information on a specific Lightning Network channel. **/
 class Channel implements Entity {
   constructor(
     public readonly id: string,

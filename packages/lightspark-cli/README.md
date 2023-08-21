@@ -22,7 +22,7 @@ You can also directly pass these on the command line:
 lightspark init-env -c <your client ID here> -s <your client secret here>
 ```
 
-Once you've run init-env, it will create a `.lightsparkapienv` file in your home directory with your API token's client ID and client secret. You can add `source ~/.lightsparkapienv` to your `.bashrc`, `.zshrc`, `.zprofile`, etc. to make sure the environment variables are always available.
+Once you've run init-env, it will create a `.lightsparkapienv` file in your home directory with your API token's client ID and client secret.
 
 There are lots of commands! Check out `lightspark --help` for more usage info.
 

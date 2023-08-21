@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type FundsRecoveryKit from "./FundsRecoveryKit.js";
+import FundsRecoveryKit from "./FundsRecoveryKit.js";
 
 type AmazonS3FundsRecoveryKit = FundsRecoveryKit & {
   /** The bitcoin address where the funds should be sent if the recovery kit is used. **/

@@ -18,7 +18,12 @@ import * as jose from "jose";
 import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
 import type { EnvCredentials } from "./authHelpers.js";
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
+import {
+  getCredentialsFromEnvOrThrow,
+  RequiredCredentials,
+  RequiredWalletCredentials,
+} from "./authHelpers.js";
+import { getPackageVersion } from "./helpers.js";
 
 const jwt = jsonwebtoken["default"] as unknown as typeof jsonwebtoken;
 
@@ -105,27 +110,23 @@ const initEnv = async (options: OptionValues) => {
     // Do nothing
   }
 
-  let content = `export LIGHTSPARK_ACCOUNT_ID="${accountId}"\n`;
-  content += `export LIGHTSPARK_JWT_PRIV_KEY="${jwtPrivateSigningKey}"\n`;
+  let content = `export ${RequiredCredentials.AccountId}="${accountId}"\n`;
+  content += `export ${RequiredCredentials.JwtPrivateKey}="${jwtPrivateSigningKey}"\n`;
   if (jwtPublicSigningKey) {
     content += `export LIGHTSPARK_JWT_PUB_KEY="${jwtPublicSigningKey}"\n`;
   }
   if (options.walletPrivateKey) {
-    content += `export LIGHTSPARK_WALLET_PRIV_KEY="${options.walletPrivateKey}"\n`;
+    content += `export ${RequiredWalletCredentials.WalletPrivateKey}="${options.walletPrivateKey}"\n`;
   }
   if (options.jwt) {
-    content += `export LIGHTSPARK_JWT="${options.jwt}"\n`;
+    content += `export ${RequiredWalletCredentials.Jwt}="${options.jwt}"\n`;
   }
   if (options.env === "dev") {
-    content += `export LIGHTSPARK_EXAMPLE_BASE_URL="api.dev.dev.sparkinfra.net"\n`;
+    content += `export LIGHTSPARK_WALLET_BASE_URL="api.dev.dev.sparkinfra.net"\n`;
   }
   await fs.writeFile(filePath, content);
 
   console.log("Wrote environment variables to " + filePath);
-  console.log("Run `source " + filePath + "` to load them into your shell");
-  console.log(
-    "To add them to your shell permanently, add the above line to your shell's startup script"
-  );
   console.log(
     "You can now run `lightspark-wallet` to interact with your wallet"
   );
@@ -750,7 +751,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .description(
       "Lightspark Wallet CLI. Start by running init-env to set up your environment."
     )
-    .version("1.0.0")
+    .version(getPackageVersion())
     .addCommand(createInvoiceCmd)
     .addCommand(createTestModeInvoiceCmd)
     .addCommand(recentTxCmd)

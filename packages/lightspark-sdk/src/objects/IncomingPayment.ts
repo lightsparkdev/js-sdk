@@ -1,17 +1,17 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
-import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
-import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
-import type LightningTransaction from "./LightningTransaction.js";
+import LightsparkClient from "../client.js";
+import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
+import IncomingPaymentToAttemptsConnection, {
+  IncomingPaymentToAttemptsConnectionFromJson,
+} from "./IncomingPaymentToAttemptsConnection.js";
+import LightningTransaction from "./LightningTransaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** A transaction that was sent to a Lightspark node on the Lightning Network. **/
+/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
 class IncomingPayment implements LightningTransaction {
   constructor(
     public readonly id: string,
@@ -32,16 +32,24 @@ class IncomingPayment implements LightningTransaction {
   public async getAttempts(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    statuses: IncomingPaymentAttemptStatus[] | undefined = undefined
+    statuses: IncomingPaymentAttemptStatus[] | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<IncomingPaymentToAttemptsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $statuses: [IncomingPaymentAttemptStatus!]) {
+query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $statuses: [IncomingPaymentAttemptStatus!], $after: String) {
     entity(id: $entity_id) {
         ... on IncomingPayment {
-            attempts(, first: $first, statuses: $statuses) {
+            attempts(, first: $first, statuses: $statuses, after: $after) {
                 __typename
                 incoming_payment_to_attempts_connection_count: count
+                incoming_payment_to_attempts_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
                 incoming_payment_to_attempts_connection_entities: entities {
                     __typename
                     incoming_payment_attempt_id: id
@@ -66,7 +74,12 @@ query FetchIncomingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $st
     }
 }
 `,
-      variables: { entity_id: this.id, first: first, statuses: statuses },
+      variables: {
+        entity_id: this.id,
+        first: first,
+        statuses: statuses,
+        after: after,
+      },
       constructObject: (json) => {
         const connection = json["entity"]["attempts"];
         return IncomingPaymentToAttemptsConnectionFromJson(connection);

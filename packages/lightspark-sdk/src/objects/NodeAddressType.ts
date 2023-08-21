@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-/** An enum that enumerates all possible types of addresses of a node on the Lightning Network. **/
+/** This is an enum of the potential types of addresses that a node on the Lightning Network can have. **/
 export enum NodeAddressType {
   /**
    * This is an enum value that represents values that could be added in the future.

@@ -1,7 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type FundsRecoveryKit from "./FundsRecoveryKit.js";
-import { FundsRecoveryKitFromJson } from "./FundsRecoveryKit.js";
+import FundsRecoveryKit, {
+  FundsRecoveryKitFromJson,
+} from "./FundsRecoveryKit.js";
 
 type UpdateFundsRecoveryKitOutput = {
   walletId: string;
