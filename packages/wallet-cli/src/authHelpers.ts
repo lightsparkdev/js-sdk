@@ -1,5 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 import dotenv from "dotenv";
+import { LIGHTSPARK_ENV_PATH } from "./constants.js";
 
 export type EnvCredentials = {
   accountId: string;
@@ -27,7 +28,7 @@ export const getCredentialsFromEnvOrThrow = (
 ): EnvCredentials => {
   const env =
     dotenv.config({
-      path: process.env.HOME + "/.lightsparkenv",
+      path: LIGHTSPARK_ENV_PATH,
     }).parsed || {};
 
   const missingCredentials = Object.values(RequiredCredentials).filter(

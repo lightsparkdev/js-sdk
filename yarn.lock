@@ -4086,6 +4086,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lightsparkdev/cli@workspace:packages/cli":
+  version: 0.0.0-use.local
+  resolution: "@lightsparkdev/cli@workspace:packages/cli"
+  dependencies:
+    "@types/node": ^20.2.5
+  languageName: unknown
+  linkType: soft
+
 "@lightsparkdev/core@0.3.10, @lightsparkdev/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/core@workspace:packages/core"

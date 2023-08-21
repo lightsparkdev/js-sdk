@@ -23,6 +23,7 @@ import {
   RequiredCredentials,
   RequiredWalletCredentials,
 } from "./authHelpers.js";
+import { LIGHTSPARK_ENV_PATH } from "./constants.js";
 import { getPackageVersion } from "./helpers.js";
 
 const jwt = jsonwebtoken["default"] as unknown as typeof jsonwebtoken;
@@ -92,8 +93,8 @@ const initEnv = async (options: OptionValues) => {
     }
   }
 
-  const filePath = process.env.HOME + "/.lightsparkenv";
-  const backupFilePath = process.env.HOME + "/.lightsparkenv-backup";
+  const filePath = LIGHTSPARK_ENV_PATH;
+  const backupFilePath = `${LIGHTSPARK_ENV_PATH}-backup`;
   try {
     await fs.stat(filePath);
     const shouldBackup = await input({
@@ -442,7 +443,7 @@ const createDeployAndInitWallet = async (
   }
 
   console.log(
-    "\n\nExport these env vars to use this wallet. Appending to ~/.lightsparkenv:\n"
+    `\n\nExport these env vars to use this wallet. Appending to ${LIGHTSPARK_ENV_PATH}\n`
   );
   let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
   content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
@@ -458,7 +459,7 @@ const createDeployAndInitWallet = async (
   }
 
   console.log(content);
-  const filePath = process.env.HOME + "/.lightsparkenv";
+  const filePath = LIGHTSPARK_ENV_PATH;
   await fs.appendFile(filePath, content);
 };
 

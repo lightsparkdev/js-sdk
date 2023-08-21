@@ -1,20 +1,21 @@
 import fs from "fs";
 import jwt from "jsonwebtoken";
 
-import {b64encode, DefaultCrypto} from "@lightsparkdev/core";
-import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
+import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
+import { type EnvCredentials } from "@lightsparkdev/wallet-cli/src/authHelpers.js";
 
 import type LightsparkClient from "../../client.js";
 import WalletStatus from "../../objects/WalletStatus.js";
 
-import {InMemoryJwtStorage} from "../../../dist/index.js";
-import {LIGHTSPARK_ENV_PATH, MINUTES_IN_HOUR, MS_IN_MINUTE,} from "../consts/index.js";
+import { LIGHTSPARK_ENV_PATH } from "@lightsparkdev/wallet-cli/src/constants.js";
+import { InMemoryJwtStorage } from "../../../dist/index.js";
+import { MINUTES_IN_HOUR, MS_IN_MINUTE } from "../consts/index.js";
 import {
   type CredentialsForWalletJWTCreating,
   type OptionsForWalletJWTCreating,
   type SerializedKeyPair,
 } from "../types/index.js";
-import {sleep} from "./time.helpers.js";
+import { sleep } from "./time.helpers.js";
 
 const WALLET_STATUS_INTERVAL = 30_000;
 
@@ -35,53 +36,57 @@ export const genKeyForWallet = async (
 
   return {
     privateKey: b64encode(
-        await DefaultCrypto.serializeSigningKey(
-            generatedKeypair.privateKey,
-            "pkcs8"
-        )
+      await DefaultCrypto.serializeSigningKey(
+        generatedKeypair.privateKey,
+        "pkcs8"
+      )
     ),
     publicKey: b64encode(
-        await DefaultCrypto.serializeSigningKey(
-            generatedKeypair.publicKey,
-            "spki"
-        )
+      await DefaultCrypto.serializeSigningKey(
+        generatedKeypair.publicKey,
+        "spki"
+      )
     ),
   };
 };
 
-export const getClaimsByType = (type: 'regtest' | 'testnet' | 'mainnet', opts: {
-  userId: string,
-  isTest: boolean,
-}) => ({
-  regtest: {
-    aud: "https://api.lightspark.com",
-    sub: opts.userId,
-    test: true,
-    iat: Math.floor(Date.now() / MS_IN_MINUTE),
-    exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
-    ),
-  },
-  testnet: {
-    aud: "https://api.lightspark.com",
-    sub: opts.userId,
-    test: false,
-    iat: Math.floor(Date.now() / MS_IN_MINUTE),
-    exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
-    ),
-    bitcoin_network: 'testnet',
-  },
-  mainnet: {
-    aud: "https://api.lightspark.com",
-    sub: opts.userId,
-    test: false,
-    iat: Math.floor(Date.now() / MS_IN_MINUTE),
-    exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
-    ),
+export const getClaimsByType = (
+  type: "regtest" | "testnet" | "mainnet",
+  opts: {
+    userId: string;
+    isTest: boolean;
   }
-}[type])
+) =>
+  ({
+    regtest: {
+      aud: "https://api.lightspark.com",
+      sub: opts.userId,
+      test: true,
+      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+      ),
+    },
+    testnet: {
+      aud: "https://api.lightspark.com",
+      sub: opts.userId,
+      test: false,
+      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+      ),
+      bitcoin_network: "testnet",
+    },
+    mainnet: {
+      aud: "https://api.lightspark.com",
+      sub: opts.userId,
+      test: false,
+      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      exp: Math.floor(
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+      ),
+    },
+  }[type]);
 
 export const createWalletJwt = async (
   createCredentials: CredentialsForWalletJWTCreating
