@@ -1,24 +1,20 @@
 import fs from "fs";
 import jwt from "jsonwebtoken";
 
-import { b64encode, DefaultCrypto } from "@lightsparkdev/core";
-import { type EnvCredentials } from "@lightsparkdev/wallet-cli/src/authHelpers.js";
+import {b64encode, DefaultCrypto} from "@lightsparkdev/core";
+import {type EnvCredentials} from "@lightsparkdev/wallet-cli/src/authHelpers.js";
 
 import type LightsparkClient from "../../client.js";
 import WalletStatus from "../../objects/WalletStatus.js";
 
-import { InMemoryJwtStorage } from "../../../dist/index.js";
-import {
-  LIGHTSPARK_ENV_PATH,
-  MINUTES_IN_HOUR,
-  MS_IN_MINUTE,
-} from "../consts/index.js";
+import {InMemoryJwtStorage} from "../../../dist/index.js";
+import {LIGHTSPARK_ENV_PATH, MINUTES_IN_HOUR, MS_IN_MINUTE,} from "../consts/index.js";
 import {
   type CredentialsForWalletJWTCreating,
   type OptionsForWalletJWTCreating,
   type SerializedKeyPair,
 } from "../types/index.js";
-import { sleep } from "./time.helpers.js";
+import {sleep} from "./time.helpers.js";
 
 const WALLET_STATUS_INTERVAL = 30_000;
 
@@ -37,24 +33,20 @@ export const genKeyForWallet = async (
 
   const generatedKeypair = await DefaultCrypto.generateSigningKeyPair();
 
-  const serializedKeypair = {
+  return {
     privateKey: b64encode(
-      await DefaultCrypto.serializeSigningKey(
-        generatedKeypair.privateKey,
-        "pkcs8"
-      )
+        await DefaultCrypto.serializeSigningKey(
+            generatedKeypair.privateKey,
+            "pkcs8"
+        )
     ),
     publicKey: b64encode(
-      await DefaultCrypto.serializeSigningKey(
-        generatedKeypair.publicKey,
-        "spki"
-      )
+        await DefaultCrypto.serializeSigningKey(
+            generatedKeypair.publicKey,
+            "spki"
+        )
     ),
   };
-
-  console.log("serializedKeypair", serializedKeypair);
-
-  return serializedKeypair;
 };
 
 export const getClaimsByType = (type: 'regtest' | 'testnet' | 'mainnet', opts: {
@@ -147,7 +139,6 @@ export const deployWallet = async (
     walletStatus = await client.deployWalletAndAwaitDeployed();
   }
 
-  //
   while (
     walletStatus === WalletStatus.INITIALIZING ||
     walletStatus === WalletStatus.DEPLOYING
@@ -161,36 +152,26 @@ export const deployWallet = async (
     }
   }
 
-  console.log(walletStatus, "wallet status before wallet initing");
-
   const serializedKeypair = await genKeyForWallet(walletStatus);
 
   if (
     walletStatus !== WalletStatus.DEPLOYED &&
     walletStatus !== WalletStatus.READY
   ) {
-    console.log(
-      `Not initializing because the wallet status is ${loginOutput.wallet.status}`
+    console.error(
+      `Not initialized because the wallet status is ${loginOutput.wallet.status}`
     );
   }
 
   let content = `\n# Wallet for user ${userId}:\n# accountID: ${credentials.accountId}\n# test: ${test}\n`;
 
   content += `export LIGHTSPARK_JWT_${userId}="${token}"\n`;
-  // process.env[`LIGHTSPARK_JWT_${userId}`] = token;
   if (serializedKeypair) {
     content += `export LIGHTSPARK_WALLET_PRIV_KEY_${userId}="${serializedKeypair?.privateKey}"\n`;
     content += `export LIGHTSPARK_WALLET_PUB_KEY_${userId}="${serializedKeypair?.publicKey}"\n`;
 
-    // process.env[`LIGHTSPARK_WALLET_PRIV_KEY_${userId}`] =
-    //     serializedKeypair.privateKey;
-    // process.env[`LIGHTSPARK_WALLET_PUB_KEY_${userId}`] =
-    //     serializedKeypair.publicKey;
-
     fs.appendFile(LIGHTSPARK_ENV_PATH, content, () => null);
   }
-
-  console.log(content);
 
   return {
     userId,
