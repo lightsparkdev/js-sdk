@@ -36,8 +36,6 @@ const ENCODED_REQUEST_FOR_TESTS =
 const regtestClient = new LightsparkClient();
 const unauthorizedRegtestClient = new LightsparkClient();
 const authorizedRegtestClientWithLockedWallet = new LightsparkClient();
-// const testnetClient = new LightsparkClient();
-// const mainnetClient =  new LightsparkClient();
 let bitcoinAddress: string | null = '';
 
 /**
@@ -304,10 +302,6 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
         TESTS_TIMEOUT
     );
 });
-
-// describe("Invoices tests for TESTNET", () => {});
-
-// describe("Invoices tests for MAINNET", () => {});
 
 describe("P1 tests", () => {
     test(
