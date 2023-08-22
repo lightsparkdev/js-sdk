@@ -14,7 +14,7 @@ type AmazonS3FundsRecoveryKit = FundsRecoveryKit & {
 };
 
 export const AmazonS3FundsRecoveryKitFromJson = (
-  obj: any
+  obj: any,
 ): AmazonS3FundsRecoveryKit => {
   return {
     bitcoinWalletAddress:

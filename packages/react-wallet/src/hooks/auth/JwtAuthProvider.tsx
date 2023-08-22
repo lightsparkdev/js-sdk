@@ -18,8 +18,8 @@ function JwtAuthProvider({
 }) {
   const [authProvider] = useState<CustomJwtAuthProvider>(
     new CustomJwtAuthProvider(
-      useLocalStorage ? new LocalStorageJwtStorage() : new InMemoryJwtStorage()
-    )
+      useLocalStorage ? new LocalStorageJwtStorage() : new InMemoryJwtStorage(),
+    ),
   );
   const clientProvider = useLightsparkClient();
 

@@ -7,7 +7,7 @@ type UpdateFundsRecoveryKitInput = {
 };
 
 export const UpdateFundsRecoveryKitInputFromJson = (
-  obj: any
+  obj: any,
 ): UpdateFundsRecoveryKitInput => {
   return {
     s3BucketUrl: obj["update_funds_recovery_kit_input_s3_bucket_url"],

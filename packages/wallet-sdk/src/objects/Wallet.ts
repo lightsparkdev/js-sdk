@@ -22,7 +22,7 @@ class Wallet implements Entity {
     public readonly updatedAt: string,
     public readonly status: WalletStatus,
     public readonly typename: string,
-    public readonly balances?: Balances
+    public readonly balances?: Balances,
   ) {
     autoBind(this);
   }
@@ -34,7 +34,7 @@ class Wallet implements Entity {
     createdAfterDate: string | undefined = undefined,
     createdBeforeDate: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
-    types: TransactionType[] | undefined = undefined
+    types: TransactionType[] | undefined = undefined,
   ): Promise<WalletToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -277,7 +277,7 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
     first: number | undefined = undefined,
     after: string | undefined = undefined,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined
+    createdBeforeDate: string | undefined = undefined,
   ): Promise<WalletToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -387,7 +387,7 @@ export const WalletFromJson = (obj: any): Wallet => {
     "Wallet",
     !!obj["wallet_balances"]
       ? BalancesFromJson(obj["wallet_balances"])
-      : undefined
+      : undefined,
   );
 };
 

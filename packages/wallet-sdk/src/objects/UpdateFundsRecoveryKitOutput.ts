@@ -11,12 +11,12 @@ type UpdateFundsRecoveryKitOutput = {
 };
 
 export const UpdateFundsRecoveryKitOutputFromJson = (
-  obj: any
+  obj: any,
 ): UpdateFundsRecoveryKitOutput => {
   return {
     walletId: obj["update_funds_recovery_kit_output_wallet"].id,
     fundsRecoveryKit: FundsRecoveryKitFromJson(
-      obj["update_funds_recovery_kit_output_funds_recovery_kit"]
+      obj["update_funds_recovery_kit_output_funds_recovery_kit"],
     ),
   } as UpdateFundsRecoveryKitOutput;
 };

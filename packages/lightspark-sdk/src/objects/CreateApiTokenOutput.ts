@@ -15,7 +15,7 @@ type CreateApiTokenOutput = {
 };
 
 export const CreateApiTokenOutputFromJson = (
-  obj: any
+  obj: any,
 ): CreateApiTokenOutput => {
   return {
     apiToken: ApiTokenFromJson(obj["create_api_token_output_api_token"]),

@@ -7,11 +7,11 @@ type InitializeWalletInput = {
 };
 
 export const InitializeWalletInputFromJson = (
-  obj: any
+  obj: any,
 ): InitializeWalletInput => {
   return {
     signingPublicKey: KeyInputFromJson(
-      obj["initialize_wallet_input_signing_public_key"]
+      obj["initialize_wallet_input_signing_public_key"],
     ),
   } as InitializeWalletInput;
 };

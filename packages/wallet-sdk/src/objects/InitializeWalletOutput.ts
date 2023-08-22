@@ -7,7 +7,7 @@ type InitializeWalletOutput = {
 };
 
 export const InitializeWalletOutputFromJson = (
-  obj: any
+  obj: any,
 ): InitializeWalletOutput => {
   return {
     wallet: WalletFromJson(obj["initialize_wallet_output_wallet"]),

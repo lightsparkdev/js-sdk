@@ -13,7 +13,7 @@ type TransactionFailures = {
 export const TransactionFailuresFromJson = (obj: any): TransactionFailures => {
   return {
     paymentFailures: obj["transaction_failures_payment_failures"]?.map(
-      (e) => PaymentFailureReason[e]
+      (e) => PaymentFailureReason[e],
     ),
     routingTransactionFailures: obj[
       "transaction_failures_routing_transaction_failures"

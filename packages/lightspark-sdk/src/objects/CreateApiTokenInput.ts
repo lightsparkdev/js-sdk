@@ -14,7 +14,7 @@ export const CreateApiTokenInputFromJson = (obj: any): CreateApiTokenInput => {
   return {
     name: obj["create_api_token_input_name"],
     permissions: obj["create_api_token_input_permissions"].map(
-      (e) => Permission[e]
+      (e) => Permission[e],
     ),
   } as CreateApiTokenInput;
 };

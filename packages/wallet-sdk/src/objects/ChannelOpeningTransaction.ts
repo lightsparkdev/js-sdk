@@ -64,7 +64,7 @@ type ChannelOpeningTransaction = OnChainTransaction &
   };
 
 export const ChannelOpeningTransactionFromJson = (
-  obj: any
+  obj: any,
 ): ChannelOpeningTransaction => {
   return {
     id: obj["channel_opening_transaction_id"],
@@ -120,7 +120,7 @@ fragment ChannelOpeningTransactionFragment on ChannelOpeningTransaction {
 }`;
 
 export const getChannelOpeningTransactionQuery = (
-  id: string
+  id: string,
 ): Query<ChannelOpeningTransaction> => {
   return {
     queryPayload: `

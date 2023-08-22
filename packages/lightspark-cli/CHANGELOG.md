@@ -1,5 +1,22 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.10
+
+### Patch Changes
+
+- 4ffd9a1: Upgrade prettier, fix lint configs, move ls-react-native-crypto-app to examples
+- Updated dependencies [4ffd9a1]
+  - @lightsparkdev/lightspark-sdk@0.4.11
+  - @lightsparkdev/core@0.3.11
+
+## 0.0.9
+
+### Patch Changes
+
+- 32efe27: Add dotenv to parse env file
+- Updated dependencies [32efe27]
+  - @lightsparkdev/lightspark-sdk@0.4.10
+
 ## 0.0.8
 
 ### Patch Changes

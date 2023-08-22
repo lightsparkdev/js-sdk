@@ -22,7 +22,7 @@ export const FundsRecoveryKitFromJson = (obj: any): FundsRecoveryKit => {
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface FundsRecoveryKit corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface FundsRecoveryKit corresponding to the typename=${obj["__typename"]}`,
   );
 };
 

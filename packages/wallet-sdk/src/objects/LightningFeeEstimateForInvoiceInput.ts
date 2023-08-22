@@ -12,7 +12,7 @@ type LightningFeeEstimateForInvoiceInput = {
 };
 
 export const LightningFeeEstimateForInvoiceInputFromJson = (
-  obj: any
+  obj: any,
 ): LightningFeeEstimateForInvoiceInput => {
   return {
     encodedPaymentRequest:

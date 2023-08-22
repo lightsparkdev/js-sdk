@@ -1,5 +1,23 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.26
+
+### Patch Changes
+
+- 4ffd9a1: Upgrade prettier, fix lint configs, move ls-react-native-crypto-app to examples
+- Updated dependencies [4ffd9a1]
+  - @lightsparkdev/wallet-sdk@0.6.18
+  - @lightsparkdev/core@0.3.11
+
+## 0.0.25
+
+### Patch Changes
+
+- 32efe27: Add dotenv to parse env file
+- Updated dependencies [32efe27]
+- Updated dependencies [32efe27]
+  - @lightsparkdev/wallet-sdk@0.6.17
+
 ## 0.0.24
 
 ### Patch Changes

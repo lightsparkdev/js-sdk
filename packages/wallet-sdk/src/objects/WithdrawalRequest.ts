@@ -94,7 +94,7 @@ fragment WithdrawalRequestFragment on WithdrawalRequest {
 }`;
 
 export const getWithdrawalRequestQuery = (
-  id: string
+  id: string,
 ): Query<WithdrawalRequest> => {
   return {
     queryPayload: `

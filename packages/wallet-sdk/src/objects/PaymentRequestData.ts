@@ -34,7 +34,7 @@ export const PaymentRequestDataFromJson = (obj: any): PaymentRequestData => {
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj["__typename"]}`,
   );
 };
 

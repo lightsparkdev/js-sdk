@@ -143,7 +143,7 @@ export const TransactionFromJson = (obj: any): Transaction => {
         : undefined,
       paymentRequestData: !!obj["outgoing_payment_payment_request_data"]
         ? PaymentRequestDataFromJson(
-            obj["outgoing_payment_payment_request_data"]
+            obj["outgoing_payment_payment_request_data"],
           )
         : undefined,
       failureReason: !!obj["outgoing_payment_failure_reason"]
@@ -178,7 +178,7 @@ export const TransactionFromJson = (obj: any): Transaction => {
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface Transaction corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface Transaction corresponding to the typename=${obj["__typename"]}`,
   );
 };
 

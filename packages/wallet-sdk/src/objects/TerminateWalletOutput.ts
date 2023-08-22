@@ -7,7 +7,7 @@ type TerminateWalletOutput = {
 };
 
 export const TerminateWalletOutputFromJson = (
-  obj: any
+  obj: any,
 ): TerminateWalletOutput => {
   return {
     wallet: WalletFromJson(obj["terminate_wallet_output_wallet"]),

@@ -110,7 +110,7 @@ class LightsparkClient {
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     private readonly serverUrl: string = "api.lightspark.com",
-    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
@@ -119,7 +119,7 @@ class LightsparkClient {
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       serverUrl,
-      this.cryptoImpl
+      this.cryptoImpl,
     );
 
     autoBind(this);
@@ -138,7 +138,7 @@ class LightsparkClient {
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       this.serverUrl,
-      this.cryptoImpl
+      this.cryptoImpl,
     );
     this.authProvider = authProvider;
   }
@@ -155,7 +155,7 @@ class LightsparkClient {
    */
   public async getCurrentAccount(): Promise<Maybe<Account>> {
     return await this.requester.executeQuery<Account>(
-      Account.getAccountQuery()
+      Account.getAccountQuery(),
     );
   }
 
@@ -172,7 +172,7 @@ class LightsparkClient {
     nodeId: string,
     numTransactions: number = 20,
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
-    afterDate: Maybe<string> = undefined
+    afterDate: Maybe<string> = undefined,
   ): Promise<Transaction[]> {
     const response = await this.requester.makeRawRequest(TransactionsForNode, {
       nodeId,
@@ -182,7 +182,7 @@ class LightsparkClient {
     });
     return (
       response.current_account?.recent_transactions.entities.map(
-        (transaction) => TransactionFromJson(transaction)
+        (transaction) => TransactionFromJson(transaction),
       ) ?? []
     );
   }
@@ -194,19 +194,19 @@ class LightsparkClient {
    * @returns A zen-observable that emits transaction updates for the given node IDs.
    */
   public listenToTransactions(
-    nodeIds: string[]
+    nodeIds: string[],
   ): Observable<TransactionUpdate | undefined> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = this.requester.subscribe<{ transactions: any }>(
       TransactionSubscription,
       {
         nodeIds,
-      }
+      },
     );
     return response.map(
       (response) =>
         response?.data?.transactions &&
-        TransactionUpdateFromJson(response.data.transactions)
+        TransactionUpdateFromJson(response.data.transactions),
     );
   }
 
@@ -221,7 +221,7 @@ class LightsparkClient {
    */
   public async getAccountDashboard(
     nodeIds: string[] | undefined = undefined,
-    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
   ): Promise<AccountDashboard> {
     const response = await this.requester.makeRawRequest(MultiNodeDashboard, {
       nodeIds: nodeIds,
@@ -240,7 +240,7 @@ class LightsparkClient {
         1. You are requesting MAINNET nodes, but you have no MAINNET nodes yet. In this case, request BitcoinNetwork.REGTEST instead.
         2. You are specifying specific node IDs, but those IDs don't exist or are not on the bitcoid network you requested.
         3. The api token or authentication mechanism you are using is not authorized to access the nodes you requested. If you're using
-           an API token, make sure it has the correct permissions for the desired network (only test tokens have access to REGTEST nodes).`
+           an API token, make sure it has the correct permissions for the desired network (only test tokens have access to REGTEST nodes).`,
       );
     }
     const account = response.current_account;
@@ -281,17 +281,17 @@ class LightsparkClient {
             requiredReserve:
               account.blockchain_balance.required_reserve &&
               CurrencyAmountFromJson(
-                account.blockchain_balance.required_reserve
+                account.blockchain_balance.required_reserve,
               ),
             availableBalance:
               account.blockchain_balance.available_balance &&
               CurrencyAmountFromJson(
-                account.blockchain_balance.available_balance
+                account.blockchain_balance.available_balance,
               ),
             unconfirmedBalance:
               account.blockchain_balance.unconfirmed_balance &&
               CurrencyAmountFromJson(
-                account.blockchain_balance.unconfirmed_balance
+                account.blockchain_balance.unconfirmed_balance,
               ),
           }
         : null,
@@ -316,7 +316,7 @@ class LightsparkClient {
   public async getSingleNodeDashboard(
     nodeId: string,
     bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
-    transactionsAfterDate: Maybe<string> = undefined
+    transactionsAfterDate: Maybe<string> = undefined,
   ): Promise<SingleNodeDashboard> {
     const response = await this.requester.makeRawRequest(
       SingleNodeDashboardQuery,
@@ -325,7 +325,7 @@ class LightsparkClient {
         network: bitcoinNetwork,
         numTransactions: 20,
         transactionsAfterDate,
-      }
+      },
     );
     if (!response.current_account) {
       throw new LightsparkAuthException("No current account");
@@ -338,7 +338,7 @@ class LightsparkClient {
     ) {
       throw new LightsparkException(
         "InvalidOrMissingNode",
-        "No nodes found for node dashboard"
+        "No nodes found for node dashboard",
       );
     }
     const node = account.dashboard_overview_nodes.entities[0];
@@ -365,16 +365,16 @@ class LightsparkClient {
       remoteBalance: currencyAmountOrUndefined(node.remote_balance),
       blockchainBalance: node.blockchain_balance && {
         availableBalance: currencyAmountOrUndefined(
-          node.blockchain_balance.available_balance
+          node.blockchain_balance.available_balance,
         ),
         confirmedBalance: currencyAmountOrUndefined(
-          node.blockchain_balance.confirmed_balance
+          node.blockchain_balance.confirmed_balance,
         ),
         unconfirmedBalance: currencyAmountOrUndefined(
-          node.blockchain_balance.unconfirmed_balance
+          node.blockchain_balance.unconfirmed_balance,
         ),
         totalBalance: currencyAmountOrUndefined(
-          node.blockchain_balance.total_balance
+          node.blockchain_balance.total_balance,
         ),
       },
       recentTransactions:
@@ -401,7 +401,7 @@ class LightsparkClient {
     nodeId: string,
     amountMsats: number,
     memo: string,
-    type: InvoiceType | undefined = undefined
+    type: InvoiceType | undefined = undefined,
   ): Promise<string | undefined> {
     const response = await this.requester.makeRawRequest(CreateInvoice, {
       node_id: nodeId,
@@ -429,7 +429,7 @@ class LightsparkClient {
   public async createLnurlInvoice(
     nodeId: string,
     amountMsats: number,
-    metadata: string
+    metadata: string,
   ): Promise<Invoice | undefined> {
     const response = await this.requester.makeRawRequest(CreateLnurlInvoice, {
       node_id: nodeId,
@@ -463,13 +463,13 @@ class LightsparkClient {
    * @returns A fee estimate for the given bitcoin network including a minimum fee rate, and a max-speed fee rate.
    */
   public async getBitcoinFeeEstimate(
-    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
   ): Promise<FeeEstimate> {
     const response = await this.requester.makeRawRequest(
       BitcoinFeeEstimateQuery,
       {
         bitcoin_network: bitcoinNetwork,
-      }
+      },
     );
     return FeeEstimateFromJson(response.bitcoin_fee_estimate);
   }
@@ -486,7 +486,7 @@ class LightsparkClient {
   public async getLightningFeeEstimateForInvoice(
     nodeId: string,
     encodedPaymentRequest: string,
-    amountMsats: number | undefined = undefined
+    amountMsats: number | undefined = undefined,
   ): Promise<CurrencyAmount> {
     const response = await this.requester.makeRawRequest(
       LightningFeeEstimateForInvoice,
@@ -494,11 +494,11 @@ class LightsparkClient {
         node_id: nodeId,
         encoded_payment_request: encodedPaymentRequest,
         amount_msats: amountMsats,
-      }
+      },
     );
     return CurrencyAmountFromJson(
       response.lightning_fee_estimate_for_invoice
-        .lightning_fee_estimate_output_fee_estimate
+        .lightning_fee_estimate_output_fee_estimate,
     );
   }
 
@@ -513,7 +513,7 @@ class LightsparkClient {
   public async getLightningFeeEstimateForNode(
     nodeId: string,
     destinationNodePublicKey: string,
-    amountMsats: number
+    amountMsats: number,
   ): Promise<CurrencyAmount> {
     const response = await this.requester.makeRawRequest(
       LightningFeeEstimateForNode,
@@ -521,11 +521,11 @@ class LightsparkClient {
         node_id: nodeId,
         destination_node_public_key: destinationNodePublicKey,
         amount_msats: amountMsats,
-      }
+      },
     );
     return CurrencyAmountFromJson(
       response.lightning_fee_estimate_for_node
-        .lightning_fee_estimate_output_fee_estimate
+        .lightning_fee_estimate_output_fee_estimate,
     );
   }
 
@@ -547,12 +547,12 @@ class LightsparkClient {
       await this.cryptoImpl.decryptSecretWithNodePassword(
         encryptedKey.cipher,
         encryptedKey.encrypted_value,
-        password
+        password,
       );
 
     if (!signingPrivateKey) {
       throw new LightsparkSigningException(
-        "Unable to decrypt signing key with provided password. Please try again."
+        "Unable to decrypt signing key with provided password. Please try again.",
       );
     }
 
@@ -567,17 +567,17 @@ class LightsparkClient {
 
     await this.nodeKeyCache.loadKey(
       nodeId,
-      KeyOrAlias.key(signingPrivateKeyPEM)
+      KeyOrAlias.key(signingPrivateKeyPEM),
     );
     return true;
   }
 
   private async recoverNodeSigningKey(
-    nodeId: string
+    nodeId: string,
   ): Promise<Maybe<{ encrypted_value: string; cipher: string }>> {
     const response = await this.requester.makeRawRequest(
       RecoverNodeSigningKey,
-      { nodeId }
+      { nodeId },
     );
     const nodeEntity = response.entity;
     if (nodeEntity?.__typename === "LightsparkNode") {
@@ -594,7 +594,7 @@ class LightsparkClient {
    */
   public async loadNodeKey(
     nodeId: string,
-    signingPrivateKeyOrAlias: KeyOrAliasType
+    signingPrivateKeyOrAlias: KeyOrAliasType,
   ) {
     await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyOrAlias);
   }
@@ -620,7 +620,7 @@ class LightsparkClient {
     encodedInvoice: string,
     maximumFeesMsats: number,
     timeoutSecs: number = 60,
-    amountMsats: number | undefined = undefined
+    amountMsats: number | undefined = undefined,
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
@@ -637,12 +637,13 @@ class LightsparkClient {
     const response = await this.requester.makeRawRequest(
       PayInvoice,
       variables,
-      payerNodeId
+      payerNodeId,
     );
     if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
       throw new LightsparkException(
         "PaymentError",
-        response.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text
+        response.pay_invoice?.payment.outgoing_payment_failure_message
+          .rich_text_text,
       );
     }
     return (
@@ -668,7 +669,7 @@ class LightsparkClient {
     destinationPublicKey: string,
     timeoutSecs: number = 60,
     amountMsats: number,
-    maximumFeesMsats: number
+    maximumFeesMsats: number,
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
@@ -682,12 +683,13 @@ class LightsparkClient {
         amount_msats: amountMsats,
         maximum_fees_msats: maximumFeesMsats,
       },
-      payerNodeId
+      payerNodeId,
     );
     if (response.send_payment?.payment.outgoing_payment_failure_message) {
       throw new LightsparkException(
         "PaymentError",
-        response.send_payment?.payment.outgoing_payment_failure_message.rich_text_text
+        response.send_payment?.payment.outgoing_payment_failure_message
+          .rich_text_text,
       );
     }
     return (
@@ -705,7 +707,7 @@ class LightsparkClient {
   public async createNodeWalletAddress(nodeId: string): Promise<string> {
     const response = await this.requester.makeRawRequest(
       CreateNodeWalletAddress,
-      { node_id: nodeId }
+      { node_id: nodeId },
     );
     return response.create_node_wallet_address.wallet_address;
   }
@@ -727,7 +729,7 @@ class LightsparkClient {
     nodeId: string,
     amountSats: number,
     bitcoinAddress: string,
-    mode: WithdrawalMode
+    mode: WithdrawalMode,
   ): Promise<WithdrawalRequest> {
     const response = await this.requester.makeRawRequest(
       RequestWithdrawal,
@@ -737,7 +739,7 @@ class LightsparkClient {
         bitcoin_address: bitcoinAddress,
         withdrawal_mode: mode,
       },
-      nodeId
+      nodeId,
     );
     return WithdrawalRequestFromJson(response.request_withdrawal.request);
   }
@@ -753,7 +755,7 @@ class LightsparkClient {
    */
   public async fundNode(
     nodeId: string,
-    amountSats: number | undefined = undefined
+    amountSats: number | undefined = undefined,
   ): Promise<CurrencyAmount> {
     const response = await this.requester.makeRawRequest(FundNode, {
       node_id: nodeId,
@@ -775,7 +777,7 @@ class LightsparkClient {
   public async createApiToken(
     name: string,
     transact: boolean = true,
-    testMode: boolean = true
+    testMode: boolean = true,
   ): Promise<CreateApiTokenOutput> {
     let permissions: Permission[];
     if (transact && testMode) {
@@ -820,7 +822,7 @@ class LightsparkClient {
     localNodeId: string,
     amountMsats: number,
     memo: string | undefined = undefined,
-    invoiceType: InvoiceType = InvoiceType.STANDARD
+    invoiceType: InvoiceType = InvoiceType.STANDARD,
   ): Promise<string | null> {
     return await this.executeRawQuery({
       queryPayload: CreateTestModeInvoice,
@@ -840,7 +842,7 @@ class LightsparkClient {
         if (!encodedPaymentRequest) {
           throw new LightsparkException(
             "CreateTestModeInvoiceError",
-            "Unable to create test mode invoice"
+            "Unable to create test mode invoice",
           );
         }
         return encodedPaymentRequest;
@@ -860,7 +862,7 @@ class LightsparkClient {
   public async createTestModePayment(
     localNodeId: string,
     encodedInvoice: string,
-    amountMsats: number | undefined = undefined
+    amountMsats: number | undefined = undefined,
   ): Promise<OutgoingPayment | null> {
     return await this.executeRawQuery({
       queryPayload: CreateTestModePayment,
@@ -875,7 +877,7 @@ class LightsparkClient {
         } | null;
       }) => {
         return OutgoingPaymentFromJson(
-          responseJson.create_test_mode_payment?.payment
+          responseJson.create_test_mode_payment?.payment,
         );
       },
     });

@@ -40,7 +40,7 @@ type CurrentBreakpointReturnType<T> = T extends string
 
 // https://bit.ly/3vb3jJR
 type CurrentBreakpointType = <T extends string | undefined = undefined>(
-  assertBp?: T
+  assertBp?: T,
 ) => CurrentBreakpointReturnType<T>;
 
 export const bp = {
@@ -51,15 +51,15 @@ export const bp = {
   [BreakpointRanges.minSmMaxLg]: breakpointFn(
     `(min-width:${breakpoints.sm + 1}px) and (max-width:${
       breakpoints.lg - 1
-    }px)`
+    }px)`,
   ),
   [BreakpointRanges.minSmMaxMd]: breakpointFn(
     `(min-width:${breakpoints.sm + 1}px) and (max-width:${
       breakpoints.md - 1
-    }px)`
+    }px)`,
   ),
   [BreakpointRanges.minMdMaxLg]: breakpointFn(
-    `(min-width:${breakpoints.md}px) and (max-width:${breakpoints.lg - 1}px)`
+    `(min-width:${breakpoints.md}px) and (max-width:${breakpoints.lg - 1}px)`,
   ),
   [BreakpointRanges.maxLg]: breakpointFn(`(max-width:${breakpoints.lg - 1}px)`),
   [BreakpointRanges.maxMd]: breakpointFn(`(max-width:${breakpoints.md - 1}px)`),
@@ -74,7 +74,7 @@ export const bp = {
     if (assertBp) {
       return inRange(
         currentBp,
-        assertBp as string
+        assertBp as string,
       ) as CurrentBreakpointReturnType<T>;
     }
     return currentBp as CurrentBreakpointReturnType<T>;
@@ -84,7 +84,7 @@ export const bp = {
     smVal: Sm,
     minSmMaxMdVal: MinSm,
     minMdMaxLgVal: MinMd,
-    lgVal: Lg
+    lgVal: Lg,
   ) => {
     const currentBp = bp.current();
     if (currentBp === BreakpointRanges.sm) {
