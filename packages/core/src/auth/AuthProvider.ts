@@ -7,6 +7,6 @@ export default interface AuthProvider {
   addAuthHeaders(headers: Headers): Promise<Headers>;
   isAuthorized(): Promise<boolean>;
   addWsConnectionParams(
-    params: WsConnectionParams
+    params: WsConnectionParams,
   ): Promise<WsConnectionParams>;
 }

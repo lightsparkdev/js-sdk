@@ -102,7 +102,7 @@ class LightsparkClient {
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     private readonly serverUrl: string = "api.lightspark.com",
-    private readonly cryptoImpl: CryptoInterface = DefaultCrypto
+    private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
@@ -111,7 +111,7 @@ class LightsparkClient {
       `js-wallet-sdk/${sdkVersion}`,
       authProvider,
       serverUrl,
-      this.cryptoImpl
+      this.cryptoImpl,
     );
 
     autoBind(this);
@@ -130,7 +130,7 @@ class LightsparkClient {
       `js-wallet-sdk/${sdkVersion}`,
       authProvider,
       this.serverUrl,
-      this.cryptoImpl
+      this.cryptoImpl,
     );
     this.authProvider = authProvider;
   }
@@ -157,7 +157,7 @@ class LightsparkClient {
   public async loginWithJWT(
     accountId: string,
     jwt: string,
-    storage: JwtStorage
+    storage: JwtStorage,
   ) {
     const response = await this.executeRawQuery({
       queryPayload: LoginWithJWT,
@@ -173,7 +173,7 @@ class LightsparkClient {
 
     if (!response) {
       throw new LightsparkAuthException(
-        "Login failed. Please check your credentials and try again."
+        "Login failed. Please check your credentials and try again.",
       );
     }
 
@@ -242,7 +242,7 @@ class LightsparkClient {
   public async initializeWallet(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKeyOrAlias: KeyOrAliasType
+    signingPrivateKeyOrAlias: KeyOrAliasType,
   ) {
     await this.requireValidAuth();
     await this.loadWalletSigningKey(signingPrivateKeyOrAlias);
@@ -277,12 +277,12 @@ class LightsparkClient {
   public async initializeWalletAndAwaitReady(
     keyType: KeyType,
     signingPublicKey: string,
-    signingPrivateKeyOrAlias: KeyOrAliasType
+    signingPrivateKeyOrAlias: KeyOrAliasType,
   ) {
     const wallet = await this.initializeWallet(
       keyType,
       signingPublicKey,
-      signingPrivateKeyOrAlias
+      signingPrivateKeyOrAlias,
     );
     if (
       wallet?.status === WalletStatus.READY ||
@@ -292,7 +292,7 @@ class LightsparkClient {
     }
     return await this.waitForWalletStatus(
       [WalletStatus.READY, WalletStatus.FAILED],
-      300
+      300,
     );
   }
 
@@ -323,7 +323,7 @@ class LightsparkClient {
    */
   public async getWalletDashboard(
     numTransactions: number = 20,
-    numPaymentRequests: number = 20
+    numPaymentRequests: number = 20,
   ) {
     await this.requireValidAuth();
     return await this.executeRawQuery({
@@ -345,12 +345,12 @@ class LightsparkClient {
           recentTransactions:
             currentWallet.recent_transactions &&
             WalletToTransactionsConnectionFromJson(
-              currentWallet.recent_transactions
+              currentWallet.recent_transactions,
             ),
           paymentRequests:
             currentWallet.payment_requests &&
             WalletToPaymentRequestsConnectionFromJson(
-              currentWallet.payment_requests
+              currentWallet.payment_requests,
             ),
         };
       },
@@ -372,7 +372,7 @@ class LightsparkClient {
     amountMsats: number,
     memo: string | undefined = undefined,
     type: InvoiceType = InvoiceType.STANDARD,
-    expirySecs: number | undefined = undefined
+    expirySecs: number | undefined = undefined,
   ) {
     await this.requireValidAuth();
     return await this.executeRawQuery({
@@ -413,7 +413,7 @@ class LightsparkClient {
     encodedInvoice: string,
     maxFeesMsats: number,
     amountMsats: number | undefined = undefined,
-    timoutSecs: number = 60
+    timoutSecs: number = 60,
   ) {
     await this.requireValidAuth();
     this.requireWalletUnlocked();
@@ -436,7 +436,7 @@ class LightsparkClient {
     if (!payment) {
       throw new LightsparkException(
         "PaymentNullError",
-        "Unknown error paying invoice"
+        "Unknown error paying invoice",
       );
     }
     return payment;
@@ -460,20 +460,20 @@ class LightsparkClient {
     encodedInvoice: string,
     maxFeesMsats: number,
     amountMsats: number | undefined = undefined,
-    timoutSecs: number = 60
+    timoutSecs: number = 60,
   ) {
     const payment = await this.payInvoice(
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
-      timoutSecs
+      timoutSecs,
     );
     return await this.awaitPaymentResult(payment, timoutSecs);
   }
 
   private awaitPaymentResult(
     payment: OutgoingPayment,
-    timeoutSecs: number = 60
+    timeoutSecs: number = 60,
   ): Promise<OutgoingPayment> {
     let timeout: NodeJS.Timeout;
     let subscription: Subscription;
@@ -499,8 +499,8 @@ class LightsparkClient {
           reject(
             new LightsparkException(
               "PaymentStatusAwaitError",
-              "Payment status subscription completed without receiving a completed status update."
-            )
+              "Payment status subscription completed without receiving a completed status update.",
+            ),
           );
         },
       });
@@ -510,9 +510,9 @@ class LightsparkClient {
           new LightsparkException(
             "PaymentStatusAwaitError",
             `Timed out waiting for payment status to be one of ${completionStatuses.join(
-              ", "
-            )}.`
-          )
+              ", ",
+            )}.`,
+          ),
         );
       }, timeoutSecs * 1000);
     });
@@ -543,7 +543,7 @@ class LightsparkClient {
     destinationNodePublicKey: string,
     amountMsats: number,
     maxFeesMsats: number,
-    timeoutSecs: number = 60
+    timeoutSecs: number = 60,
   ) {
     await this.requireValidAuth();
     this.requireWalletUnlocked();
@@ -563,7 +563,7 @@ class LightsparkClient {
     if (!payment) {
       throw new LightsparkException(
         "PaymentNullError",
-        "Unknown error sending payment"
+        "Unknown error sending payment",
       );
     }
     return payment;
@@ -585,13 +585,13 @@ class LightsparkClient {
     destinationNodePublicKey: string,
     amountMsats: number,
     maxFeesMsats: number,
-    timeoutSecs: number = 60
+    timeoutSecs: number = 60,
   ) {
     const payment = await this.sendPayment(
       destinationNodePublicKey,
       amountMsats,
       maxFeesMsats,
-      timeoutSecs
+      timeoutSecs,
     );
     return await this.awaitPaymentResult(payment, timeoutSecs);
   }
@@ -622,7 +622,7 @@ class LightsparkClient {
    */
   public async getBitcoinFeeEstimate(): Promise<FeeEstimate> {
     const response = await this.requester.makeRawRequest(
-      BitcoinFeeEstimateQuery
+      BitcoinFeeEstimateQuery,
     );
     return FeeEstimateFromJson(response.bitcoin_fee_estimate);
   }
@@ -637,7 +637,7 @@ class LightsparkClient {
    */
   public async getLightningFeeEstimateForInvoice(
     encodedPaymentRequest: string,
-    amountMsats: number | undefined = undefined
+    amountMsats: number | undefined = undefined,
   ): Promise<CurrencyAmount> {
     await this.requireValidAuth();
     const response = await this.requester.makeRawRequest(
@@ -645,11 +645,11 @@ class LightsparkClient {
       {
         encoded_payment_request: encodedPaymentRequest,
         amount_msats: amountMsats,
-      }
+      },
     );
     return CurrencyAmountFromJson(
       response.lightning_fee_estimate_for_invoice
-        .lightning_fee_estimate_output_fee_estimate
+        .lightning_fee_estimate_output_fee_estimate,
     );
   }
 
@@ -662,7 +662,7 @@ class LightsparkClient {
    */
   public async getLightningFeeEstimateForNode(
     destinationNodePublicKey: string,
-    amountMsats: number
+    amountMsats: number,
   ): Promise<CurrencyAmount> {
     await this.requireValidAuth();
     const response = await this.requester.makeRawRequest(
@@ -670,11 +670,11 @@ class LightsparkClient {
       {
         destination_node_public_key: destinationNodePublicKey,
         amount_msats: amountMsats,
-      }
+      },
     );
     return CurrencyAmountFromJson(
       response.lightning_fee_estimate_for_node
-        .lightning_fee_estimate_output_fee_estimate
+        .lightning_fee_estimate_output_fee_estimate,
     );
   }
 
@@ -733,7 +733,7 @@ class LightsparkClient {
    */
   public async requestWithdrawal(
     amountSats: number,
-    bitcoinAddress: string
+    bitcoinAddress: string,
   ): Promise<WithdrawalRequest | null> {
     await this.requireValidAuth();
     this.requireWalletUnlocked();
@@ -745,7 +745,7 @@ class LightsparkClient {
       },
       constructObject: (responseJson: any) => {
         return WithdrawalRequestFromJson(
-          responseJson.request_withdrawal.request
+          responseJson.request_withdrawal.request,
         );
       },
       signingNodeId: WALLET_NODE_ID_KEY,
@@ -763,7 +763,7 @@ class LightsparkClient {
   public async createTestModeInvoice(
     amountMsats: number,
     memo: string | undefined = undefined,
-    invoiceType: InvoiceType = InvoiceType.STANDARD
+    invoiceType: InvoiceType = InvoiceType.STANDARD,
   ): Promise<string | null> {
     await this.requireValidAuth();
     return await this.executeRawQuery({
@@ -779,7 +779,7 @@ class LightsparkClient {
         if (!encodedPaymentRequest) {
           throw new LightsparkException(
             "CreateTestModeInvoiceError",
-            "Unable to create test mode invoice"
+            "Unable to create test mode invoice",
           );
         }
         return encodedPaymentRequest as string;
@@ -797,7 +797,7 @@ class LightsparkClient {
    */
   public async createTestModePayment(
     encodedInvoice: string,
-    amountMsats: number | undefined = undefined
+    amountMsats: number | undefined = undefined,
   ): Promise<OutgoingPayment | null> {
     await this.requireValidAuth();
     this.requireWalletUnlocked();
@@ -809,7 +809,7 @@ class LightsparkClient {
       },
       constructObject: (responseJson: any) => {
         return OutgoingPaymentFromJson(
-          responseJson.create_test_mode_payment?.payment
+          responseJson.create_test_mode_payment?.payment,
         );
       },
       signingNodeId: WALLET_NODE_ID_KEY,
@@ -826,7 +826,7 @@ class LightsparkClient {
   private async requireValidAuth() {
     if (!(await this.isAuthorized())) {
       throw new LightsparkAuthException(
-        "You must be logged in to perform this action."
+        "You must be logged in to perform this action.",
       );
     }
   }
@@ -834,14 +834,14 @@ class LightsparkClient {
   private requireWalletUnlocked() {
     if (!this.isWalletUnlocked()) {
       throw new LightsparkAuthException(
-        "You must unlock the wallet before performing this action."
+        "You must unlock the wallet before performing this action.",
       );
     }
   }
 
   private waitForWalletStatus(
     statuses: WalletStatus[],
-    timeoutSecs: number = 60
+    timeoutSecs: number = 60,
   ): Promise<WalletStatus> {
     let timeout: NodeJS.Timeout;
     let subscription: Subscription;
@@ -859,8 +859,8 @@ class LightsparkClient {
           reject(
             new LightsparkException(
               "WalletStatusAwaitError",
-              "Wallet status subscription completed without receiving a status update."
-            )
+              "Wallet status subscription completed without receiving a status update.",
+            ),
           );
         },
       });
@@ -870,9 +870,9 @@ class LightsparkClient {
           new LightsparkException(
             "WalletStatusAwaitError",
             `Timed out waiting for wallet status to be one of ${statuses.join(
-              ", "
-            )}.`
-          )
+              ", ",
+            )}.`,
+          ),
         );
       }, timeoutSecs * 1000);
     });
@@ -893,7 +893,7 @@ class LightsparkClient {
         current_wallet {
           status
         }
-      }`
+      }`,
       )
       .map((responseJson: any) => {
         return (
@@ -904,7 +904,7 @@ class LightsparkClient {
   }
 
   private listenToPaymentStatus(
-    paymentId: string
+    paymentId: string,
   ): Observable<OutgoingPayment> {
     return this.requester
       .subscribe(
@@ -915,7 +915,7 @@ class LightsparkClient {
         }
       }
       ${OutgoingPaymentFragment}
-      `
+      `,
       )
       .map((responseJson: any) => {
         return OutgoingPaymentFromJson(responseJson.data.entity);

@@ -13,7 +13,7 @@ type CreateTestModeInvoiceInput = {
 };
 
 export const CreateTestModeInvoiceInputFromJson = (
-  obj: any
+  obj: any,
 ): CreateTestModeInvoiceInput => {
   return {
     localNodeId: obj["create_test_mode_invoice_input_local_node_id"],

@@ -1,19 +1,18 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Balances, { BalancesFromJson } from "./Balances.js";
-import Entity from "./Entity.js";
-import TransactionStatus from "./TransactionStatus.js";
-import TransactionType from "./TransactionType.js";
+import type LightsparkClient from "../client.js";
+import type Balances from "./Balances.js";
+import { BalancesFromJson } from "./Balances.js";
+import type Entity from "./Entity.js";
+import type TransactionStatus from "./TransactionStatus.js";
+import type TransactionType from "./TransactionType.js";
 import WalletStatus from "./WalletStatus.js";
-import WalletToPaymentRequestsConnection, {
-  WalletToPaymentRequestsConnectionFromJson,
-} from "./WalletToPaymentRequestsConnection.js";
-import WalletToTransactionsConnection, {
-  WalletToTransactionsConnectionFromJson,
-} from "./WalletToTransactionsConnection.js";
+import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
+import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
 
 class Wallet implements Entity {
   constructor(
@@ -22,7 +21,7 @@ class Wallet implements Entity {
     public readonly updatedAt: string,
     public readonly status: WalletStatus,
     public readonly typename: string,
-    public readonly balances?: Balances
+    public readonly balances?: Balances,
   ) {
     autoBind(this);
   }
@@ -34,7 +33,7 @@ class Wallet implements Entity {
     createdAfterDate: string | undefined = undefined,
     createdBeforeDate: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
-    types: TransactionType[] | undefined = undefined
+    types: TransactionType[] | undefined = undefined,
   ): Promise<WalletToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -277,7 +276,7 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
     first: number | undefined = undefined,
     after: string | undefined = undefined,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined
+    createdBeforeDate: string | undefined = undefined,
   ): Promise<WalletToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -387,7 +386,7 @@ export const WalletFromJson = (obj: any): Wallet => {
     "Wallet",
     !!obj["wallet_balances"]
       ? BalancesFromJson(obj["wallet_balances"])
-      : undefined
+      : undefined,
   );
 };
 

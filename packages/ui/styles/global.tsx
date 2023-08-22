@@ -61,10 +61,10 @@ export function GlobalStyles() {
     body {
       ${bp.sm(`&:before { content: "${BreakpointRanges.sm}"; }`)}
       ${bp.minSmMaxMd(
-        `&:before { content: "${BreakpointRanges.minSmMaxMd}"; }`
+        `&:before { content: "${BreakpointRanges.minSmMaxMd}"; }`,
       )}
       ${bp.minMdMaxLg(
-        `&:before { content: "${BreakpointRanges.minMdMaxLg}"; }`
+        `&:before { content: "${BreakpointRanges.minMdMaxLg}"; }`,
       )}
       ${bp.lg(`&:before { content: "${BreakpointRanges.lg}"; }`)}
     }

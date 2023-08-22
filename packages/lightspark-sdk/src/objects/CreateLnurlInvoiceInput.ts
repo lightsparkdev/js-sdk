@@ -22,7 +22,7 @@ type CreateLnurlInvoiceInput = {
 };
 
 export const CreateLnurlInvoiceInputFromJson = (
-  obj: any
+  obj: any,
 ): CreateLnurlInvoiceInput => {
   return {
     nodeId: obj["create_lnurl_invoice_input_node_id"],

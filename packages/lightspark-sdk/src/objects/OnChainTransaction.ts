@@ -159,7 +159,7 @@ export const OnChainTransactionFromJson = (obj: any): OnChainTransaction => {
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface OnChainTransaction corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface OnChainTransaction corresponding to the typename=${obj["__typename"]}`,
   );
 };
 
@@ -297,7 +297,7 @@ fragment OnChainTransactionFragment on OnChainTransaction {
 }`;
 
 export const getOnChainTransactionQuery = (
-  id: string
+  id: string,
 ): Query<OnChainTransaction> => {
   return {
     queryPayload: `

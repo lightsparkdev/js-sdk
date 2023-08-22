@@ -7,7 +7,7 @@ export function linearInterpolate(
   fromRangeStart: number,
   fromRangeEnd: number,
   toRangeStart: number,
-  toRangeEnd: number
+  toRangeEnd: number,
 ) {
   const fromRangeMax = fromRangeEnd - fromRangeStart;
   const fromRangeVal = value - fromRangeStart;
@@ -16,7 +16,7 @@ export function linearInterpolate(
   return clamp(
     val,
     Math.min(toRangeStart, toRangeEnd),
-    Math.max(toRangeStart, toRangeEnd)
+    Math.max(toRangeStart, toRangeEnd),
   );
 }
 

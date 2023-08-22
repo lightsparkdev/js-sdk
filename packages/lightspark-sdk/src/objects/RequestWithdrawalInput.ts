@@ -20,7 +20,7 @@ type RequestWithdrawalInput = {
 };
 
 export const RequestWithdrawalInputFromJson = (
-  obj: any
+  obj: any,
 ): RequestWithdrawalInput => {
   return {
     nodeId: obj["request_withdrawal_input_node_id"],

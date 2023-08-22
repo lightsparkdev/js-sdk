@@ -21,7 +21,7 @@ class GraphNode implements Node {
     public readonly alias?: string,
     public readonly color?: string,
     public readonly conductivity?: number,
-    public readonly publicKey?: string
+    public readonly publicKey?: string,
   ) {
     autoBind(this);
   }
@@ -29,7 +29,7 @@ class GraphNode implements Node {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined
+    types: NodeAddressType[] | undefined = undefined,
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -88,7 +88,7 @@ export const GraphNodeFromJson = (obj: any): GraphNode => {
     obj["graph_node_alias"],
     obj["graph_node_color"],
     obj["graph_node_conductivity"],
-    obj["graph_node_public_key"]
+    obj["graph_node_public_key"],
   );
 };
 

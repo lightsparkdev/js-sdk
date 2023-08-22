@@ -4,7 +4,7 @@ enum ServerEnvironment {
 }
 
 export const apiDomainForEnvironment = (
-  environment: ServerEnvironment
+  environment: ServerEnvironment,
 ): string => {
   switch (environment) {
     case ServerEnvironment.DEV:

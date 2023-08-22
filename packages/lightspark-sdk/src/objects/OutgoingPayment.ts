@@ -31,7 +31,7 @@ class OutgoingPayment implements LightningTransaction {
     public readonly fees?: CurrencyAmount,
     public readonly paymentRequestData?: PaymentRequestData,
     public readonly failureReason?: PaymentFailureReason,
-    public readonly failureMessage?: RichText
+    public readonly failureMessage?: RichText,
   ) {
     autoBind(this);
   }
@@ -39,7 +39,7 @@ class OutgoingPayment implements LightningTransaction {
   public async getAttempts(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<OutgoingPaymentToAttemptsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -142,7 +142,7 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
       : null,
     !!obj["outgoing_payment_failure_message"]
       ? RichTextFromJson(obj["outgoing_payment_failure_message"])
-      : undefined
+      : undefined,
   );
 };
 

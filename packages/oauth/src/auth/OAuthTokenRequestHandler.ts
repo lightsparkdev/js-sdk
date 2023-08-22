@@ -21,20 +21,20 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
     private readonly clientId: string,
     private readonly clientSecret: string,
     public readonly requestor: Requestor = new FetchRequestor(),
-    public readonly utils: QueryStringUtils = new BasicQueryStringUtils()
+    public readonly utils: QueryStringUtils = new BasicQueryStringUtils(),
   ) {
     super(requestor, utils);
   }
 
   private isValidTokenResponse(
-    response: TokenResponseJson | TokenErrorJson
+    response: TokenResponseJson | TokenErrorJson,
   ): response is TokenResponseJson {
     return (response as TokenErrorJson).error === undefined;
   }
 
   public async performTokenRequest(
     configuration: AuthorizationServiceConfiguration,
-    request: TokenRequest
+    request: TokenRequest,
   ): Promise<TokenResponse> {
     const headers: Record<string, string> = {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -47,7 +47,7 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
       TextEncoderImpl = (await import("text-encoding")).TextEncoder;
     }
     const credentialsBytes = new TextEncoderImpl().encode(
-      encodedClientId + ":" + encodedClientSecret
+      encodedClientId + ":" + encodedClientSecret,
     );
     headers["Authorization"] = `Basic ${b64encode(credentialsBytes)}`;
 
@@ -66,7 +66,7 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
         return new TokenResponse(response);
       } else {
         return Promise.reject<TokenResponse>(
-          new AppAuthError(response.error, new TokenError(response))
+          new AppAuthError(response.error, new TokenError(response)),
         );
       }
     });

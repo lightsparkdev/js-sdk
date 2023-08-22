@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import NodeAddress, { NodeAddressFromJson } from "./NodeAddress.js";
+import type NodeAddress from "./NodeAddress.js";
+import { NodeAddressFromJson } from "./NodeAddress.js";
 
 /** A connection between a node and the addresses it has announced for itself on Lightning Network. **/
 type NodeToAddressesConnection = {
@@ -15,12 +16,12 @@ type NodeToAddressesConnection = {
 };
 
 export const NodeToAddressesConnectionFromJson = (
-  obj: any
+  obj: any,
 ): NodeToAddressesConnection => {
   return {
     count: obj["node_to_addresses_connection_count"],
     entities: obj["node_to_addresses_connection_entities"].map((e) =>
-      NodeAddressFromJson(e)
+      NodeAddressFromJson(e),
     ),
   } as NodeToAddressesConnection;
 };

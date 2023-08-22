@@ -16,12 +16,12 @@ type NodeToAddressesConnection = {
 };
 
 export const NodeToAddressesConnectionFromJson = (
-  obj: any
+  obj: any,
 ): NodeToAddressesConnection => {
   return {
     count: obj["node_to_addresses_connection_count"],
     entities: obj["node_to_addresses_connection_entities"].map((e) =>
-      NodeAddressFromJson(e)
+      NodeAddressFromJson(e),
     ),
   } as NodeToAddressesConnection;
 };

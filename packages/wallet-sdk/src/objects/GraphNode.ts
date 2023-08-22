@@ -1,14 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
+import type LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import Node from "./Node.js";
-import NodeAddressType from "./NodeAddressType.js";
-import NodeToAddressesConnection, {
-  NodeToAddressesConnectionFromJson,
-} from "./NodeToAddressesConnection.js";
+import type Node from "./Node.js";
+import type NodeAddressType from "./NodeAddressType.js";
+import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
+import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
 
 /** This object represents a node that exists on the Lightning Network, including nodes not managed by Lightspark. You can retrieve this object to get publicly available information about any node on the Lightning Network. **/
 class GraphNode implements Node {
@@ -22,7 +21,7 @@ class GraphNode implements Node {
     public readonly alias?: string,
     public readonly color?: string,
     public readonly conductivity?: number,
-    public readonly publicKey?: string
+    public readonly publicKey?: string,
   ) {
     autoBind(this);
   }
@@ -30,7 +29,7 @@ class GraphNode implements Node {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined
+    types: NodeAddressType[] | undefined = undefined,
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -89,7 +88,7 @@ export const GraphNodeFromJson = (obj: any): GraphNode => {
     obj["graph_node_alias"],
     obj["graph_node_color"],
     obj["graph_node_conductivity"],
-    obj["graph_node_public_key"]
+    obj["graph_node_public_key"],
   );
 };
 
