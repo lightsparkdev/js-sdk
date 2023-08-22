@@ -9,7 +9,7 @@
     "build-no-cache": "yarn build --force",
     "build-storybook": "turbo run build-storybook",
     "build": "turbo run build",
-    "checks": "yarn workspace @lightsparkdev/lightspark-sdk format --log-level debug",
+    "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
     "deps:check": "manypkg check",
