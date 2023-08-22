@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.18
+
+### Patch Changes
+
+- 4ffd9a1: Upgrade prettier, fix lint configs, move ls-react-native-crypto-app to examples
+- Updated dependencies [4ffd9a1]
+  - @lightsparkdev/core@0.3.11
+
 ## 0.6.17
 
 ### Patch Changes
