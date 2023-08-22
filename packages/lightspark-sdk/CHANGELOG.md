@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 0.4.10
+
+### Patch Changes
+
+- 32efe27: Expose wallet transactions and invoices in the 3P schema
+
 ## 0.4.9
 
 ### Patch Changes
