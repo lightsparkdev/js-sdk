@@ -33,10 +33,10 @@ export const BalancesFromJson = (obj: any): Balances => {
   return {
     ownedBalance: CurrencyAmountFromJson(obj["balances_owned_balance"]),
     availableToSendBalance: CurrencyAmountFromJson(
-      obj["balances_available_to_send_balance"]
+      obj["balances_available_to_send_balance"],
     ),
     availableToWithdrawBalance: CurrencyAmountFromJson(
-      obj["balances_available_to_withdraw_balance"]
+      obj["balances_available_to_withdraw_balance"],
     ),
   } as Balances;
 };

@@ -20,13 +20,13 @@ type WithdrawalRequestToChannelOpeningTransactionsConnection = {
 };
 
 export const WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): WithdrawalRequestToChannelOpeningTransactionsConnection => {
   return {
     pageInfo: PageInfoFromJson(
       obj[
         "withdrawal_request_to_channel_opening_transactions_connection_page_info"
-      ]
+      ],
     ),
     count:
       obj[

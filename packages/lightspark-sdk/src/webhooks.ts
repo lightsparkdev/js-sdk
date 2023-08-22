@@ -14,7 +14,7 @@ export interface WebhookEvent {
 export const verifyAndParseWebhook = (
   data: Uint8Array,
   hexdigest: string,
-  webhook_secret: string
+  webhook_secret: string,
 ): Promise<WebhookEvent> => {
   const sig = createHmac("sha256", webhook_secret).update(data).digest("hex");
 

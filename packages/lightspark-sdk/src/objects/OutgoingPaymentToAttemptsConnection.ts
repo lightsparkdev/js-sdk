@@ -25,15 +25,15 @@ type OutgoingPaymentToAttemptsConnection = Connection & {
 };
 
 export const OutgoingPaymentToAttemptsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): OutgoingPaymentToAttemptsConnection => {
   return {
     count: obj["outgoing_payment_to_attempts_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["outgoing_payment_to_attempts_connection_page_info"]
+      obj["outgoing_payment_to_attempts_connection_page_info"],
     ),
     entities: obj["outgoing_payment_to_attempts_connection_entities"].map((e) =>
-      OutgoingPaymentAttemptFromJson(e)
+      OutgoingPaymentAttemptFromJson(e),
     ),
     typename: "OutgoingPaymentToAttemptsConnection",
   } as OutgoingPaymentToAttemptsConnection;

@@ -26,7 +26,7 @@ class Wallet implements LightsparkNodeOwner {
     public readonly status: WalletStatus,
     public readonly typename: string,
     public readonly lastLoginAt?: string,
-    public readonly balances?: Balances
+    public readonly balances?: Balances,
   ) {
     autoBind(this);
   }
@@ -38,7 +38,7 @@ class Wallet implements LightsparkNodeOwner {
     createdAfterDate: string | undefined = undefined,
     createdBeforeDate: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
-    types: TransactionType[] | undefined = undefined
+    types: TransactionType[] | undefined = undefined,
   ): Promise<WalletToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -453,7 +453,7 @@ query FetchWalletToTransactionsConnection($entity_id: ID!, $first: Int, $after: 
     first: number | undefined = undefined,
     after: string | undefined = undefined,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined
+    createdBeforeDate: string | undefined = undefined,
   ): Promise<WalletToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -650,7 +650,7 @@ query FetchWalletToPaymentRequestsConnection($entity_id: ID!, $first: Int, $afte
   public async getTotalAmountReceived(
     client: LightsparkClient,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined
+    createdBeforeDate: string | undefined = undefined,
   ): Promise<CurrencyAmount> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -684,7 +684,7 @@ query FetchWalletTotalAmountReceived($entity_id: ID!, $created_after_date: DateT
   public async getTotalAmountSent(
     client: LightsparkClient,
     createdAfterDate: string | undefined = undefined,
-    createdBeforeDate: string | undefined = undefined
+    createdBeforeDate: string | undefined = undefined,
   ): Promise<CurrencyAmount> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -745,7 +745,7 @@ export const WalletFromJson = (obj: any): Wallet => {
     obj["wallet_last_login_at"],
     !!obj["wallet_balances"]
       ? BalancesFromJson(obj["wallet_balances"])
-      : undefined
+      : undefined,
   );
 };
 

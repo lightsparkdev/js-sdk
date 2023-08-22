@@ -130,7 +130,7 @@ fragment RoutingTransactionFragment on RoutingTransaction {
 }`;
 
 export const getRoutingTransactionQuery = (
-  id: string
+  id: string,
 ): Query<RoutingTransaction> => {
   return {
     queryPayload: `

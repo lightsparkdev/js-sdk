@@ -28,7 +28,7 @@ class Node implements Entity {
     public readonly alias?: string,
     public readonly color?: string,
     public readonly conductivity?: number,
-    public readonly publicKey?: string
+    public readonly publicKey?: string,
   ) {
     autoBind(this);
   }
@@ -36,7 +36,7 @@ class Node implements Entity {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined
+    types: NodeAddressType[] | undefined = undefined,
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -96,7 +96,7 @@ export const NodeFromJson = (obj: any): Node => {
       obj["graph_node_alias"],
       obj["graph_node_color"],
       obj["graph_node_conductivity"],
-      obj["graph_node_public_key"]
+      obj["graph_node_public_key"],
     );
   }
   if (obj["__typename"] == "LightsparkNode") {
@@ -139,12 +139,12 @@ export const NodeFromJson = (obj: any): Node => {
       !!obj["lightspark_node_status"]
         ? LightsparkNodeStatus[obj["lightspark_node_status"]] ??
           LightsparkNodeStatus.FUTURE_VALUE
-        : null
+        : null,
     );
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface Node corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface Node corresponding to the typename=${obj["__typename"]}`,
   );
 };
 

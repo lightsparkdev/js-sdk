@@ -24,7 +24,7 @@ class OutgoingPaymentAttempt implements Entity {
     public readonly failureSourceIndex?: number,
     public readonly resolvedAt?: string,
     public readonly amount?: CurrencyAmount,
-    public readonly fees?: CurrencyAmount
+    public readonly fees?: CurrencyAmount,
   ) {
     autoBind(this);
   }
@@ -32,7 +32,7 @@ class OutgoingPaymentAttempt implements Entity {
   public async getHops(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<OutgoingPaymentAttemptToHopsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -91,7 +91,7 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int, 
   }
 
   static getOutgoingPaymentAttemptQuery(
-    id: string
+    id: string,
   ): Query<OutgoingPaymentAttempt> {
     return {
       queryPayload: `
@@ -113,7 +113,7 @@ ${FRAGMENT}
 }
 
 export const OutgoingPaymentAttemptFromJson = (
-  obj: any
+  obj: any,
 ): OutgoingPaymentAttempt => {
   return new OutgoingPaymentAttempt(
     obj["outgoing_payment_attempt_id"],
@@ -134,7 +134,7 @@ export const OutgoingPaymentAttemptFromJson = (
       : undefined,
     !!obj["outgoing_payment_attempt_fees"]
       ? CurrencyAmountFromJson(obj["outgoing_payment_attempt_fees"])
-      : undefined
+      : undefined,
   );
 };
 

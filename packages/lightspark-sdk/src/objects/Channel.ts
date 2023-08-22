@@ -34,7 +34,7 @@ class Channel implements Entity {
     public readonly commitFee?: CurrencyAmount,
     public readonly fees?: ChannelFees,
     public readonly remoteNodeId?: string,
-    public readonly shortChannelId?: string
+    public readonly shortChannelId?: string,
   ) {
     autoBind(this);
   }
@@ -42,7 +42,7 @@ class Channel implements Entity {
   public async getUptimePercentage(
     client: LightsparkClient,
     afterDate: string | undefined = undefined,
-    beforeDate: string | undefined = undefined
+    beforeDate: string | undefined = undefined,
   ): Promise<number> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -70,7 +70,7 @@ query FetchChannelUptimePercentage($entity_id: ID!, $after_date: DateTime, $befo
     client: LightsparkClient,
     types: TransactionType[] | undefined = undefined,
     afterDate: string | undefined = undefined,
-    beforeDate: string | undefined = undefined
+    beforeDate: string | undefined = undefined,
   ): Promise<ChannelToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -181,7 +181,7 @@ export const ChannelFromJson = (obj: any): Channel => {
       ? ChannelFeesFromJson(obj["channel_fees"])
       : undefined,
     obj["channel_remote_node"]?.id ?? undefined,
-    obj["channel_short_channel_id"]
+    obj["channel_short_channel_id"],
   );
 };
 

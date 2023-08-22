@@ -5,7 +5,7 @@ type CreateBitcoinFundingAddressOutput = {
 };
 
 export const CreateBitcoinFundingAddressOutputFromJson = (
-  obj: any
+  obj: any,
 ): CreateBitcoinFundingAddressOutput => {
   return {
     bitcoinAddress:

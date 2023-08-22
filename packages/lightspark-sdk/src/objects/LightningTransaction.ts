@@ -46,7 +46,7 @@ type LightningTransaction = Transaction &
   };
 
 export const LightningTransactionFromJson = (
-  obj: any
+  obj: any,
 ): LightningTransaction => {
   if (obj["__typename"] == "IncomingPayment") {
     return new IncomingPayment(
@@ -61,7 +61,7 @@ export const LightningTransactionFromJson = (
       obj["incoming_payment_resolved_at"],
       obj["incoming_payment_transaction_hash"],
       obj["incoming_payment_origin"]?.id ?? undefined,
-      obj["incoming_payment_payment_request"]?.id ?? undefined
+      obj["incoming_payment_payment_request"]?.id ?? undefined,
     );
   }
   if (obj["__typename"] == "OutgoingPayment") {
@@ -82,7 +82,7 @@ export const LightningTransactionFromJson = (
         : undefined,
       !!obj["outgoing_payment_payment_request_data"]
         ? PaymentRequestDataFromJson(
-            obj["outgoing_payment_payment_request_data"]
+            obj["outgoing_payment_payment_request_data"],
           )
         : undefined,
       !!obj["outgoing_payment_failure_reason"]
@@ -91,7 +91,7 @@ export const LightningTransactionFromJson = (
         : null,
       !!obj["outgoing_payment_failure_message"]
         ? RichTextFromJson(obj["outgoing_payment_failure_message"])
-        : undefined
+        : undefined,
     );
   }
   if (obj["__typename"] == "RoutingTransaction") {
@@ -125,7 +125,7 @@ export const LightningTransactionFromJson = (
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`,
   );
 };
 
@@ -376,7 +376,7 @@ fragment LightningTransactionFragment on LightningTransaction {
 }`;
 
 export const getLightningTransactionQuery = (
-  id: string
+  id: string,
 ): Query<LightningTransaction> => {
   return {
     queryPayload: `

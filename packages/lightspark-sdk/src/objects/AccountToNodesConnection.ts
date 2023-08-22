@@ -33,13 +33,13 @@ type AccountToNodesConnection = Connection & {
 };
 
 export const AccountToNodesConnectionFromJson = (
-  obj: any
+  obj: any,
 ): AccountToNodesConnection => {
   return {
     count: obj["account_to_nodes_connection_count"],
     pageInfo: PageInfoFromJson(obj["account_to_nodes_connection_page_info"]),
     entities: obj["account_to_nodes_connection_entities"].map((e) =>
-      LightsparkNodeFromJson(e)
+      LightsparkNodeFromJson(e),
     ),
     typename: "AccountToNodesConnection",
     purpose: !!obj["account_to_nodes_connection_purpose"]

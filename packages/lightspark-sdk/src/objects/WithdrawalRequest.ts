@@ -26,14 +26,14 @@ class WithdrawalRequest implements Entity {
     public readonly typename: string,
     public readonly estimatedAmount?: CurrencyAmount,
     public readonly completedAt?: string,
-    public readonly withdrawalId?: string
+    public readonly withdrawalId?: string,
   ) {
     autoBind(this);
   }
 
   public async getChannelClosingTransactions(
     client: LightsparkClient,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
   ): Promise<WithdrawalRequestToChannelClosingTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -91,7 +91,7 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
       constructObject: (json) => {
         const connection = json["entity"]["channel_closing_transactions"];
         return WithdrawalRequestToChannelClosingTransactionsConnectionFromJson(
-          connection
+          connection,
         );
       },
     }))!;
@@ -99,7 +99,7 @@ query FetchWithdrawalRequestToChannelClosingTransactionsConnection($entity_id: I
 
   public async getChannelOpeningTransactions(
     client: LightsparkClient,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
   ): Promise<WithdrawalRequestToChannelOpeningTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -157,7 +157,7 @@ query FetchWithdrawalRequestToChannelOpeningTransactionsConnection($entity_id: I
       constructObject: (json) => {
         const connection = json["entity"]["channel_opening_transactions"];
         return WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson(
-          connection
+          connection,
         );
       },
     }))!;
@@ -198,7 +198,7 @@ export const WithdrawalRequestFromJson = (obj: any): WithdrawalRequest => {
       ? CurrencyAmountFromJson(obj["withdrawal_request_estimated_amount"])
       : undefined,
     obj["withdrawal_request_completed_at"],
-    obj["withdrawal_request_withdrawal"]?.id ?? undefined
+    obj["withdrawal_request_withdrawal"]?.id ?? undefined,
   );
 };
 

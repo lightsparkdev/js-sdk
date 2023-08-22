@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import FundsRecoveryKit from "./FundsRecoveryKit.js";
+import type FundsRecoveryKit from "./FundsRecoveryKit.js";
 
 type AmazonS3FundsRecoveryKit = FundsRecoveryKit & {
   /** The bitcoin address where the funds should be sent if the recovery kit is used. **/
@@ -14,7 +14,7 @@ type AmazonS3FundsRecoveryKit = FundsRecoveryKit & {
 };
 
 export const AmazonS3FundsRecoveryKitFromJson = (
-  obj: any
+  obj: any,
 ): AmazonS3FundsRecoveryKit => {
   return {
     bitcoinWalletAddress:

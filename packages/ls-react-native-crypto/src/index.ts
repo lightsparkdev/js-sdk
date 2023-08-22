@@ -75,10 +75,10 @@ export async function generateSigningKeyPair(): Promise<ExportedKeys> {
  * @returns {Promise<ExportedKeys>} A promise that resolves to an object containing the public and private keys.
  */
 export async function serializeSigningKey(
-  keyAlias: string
+  keyAlias: string,
 ): Promise<ExportedKeys> {
   return await LightsparkdevReactNativeCryptoModule.serializeSigningKey(
-    keyAlias
+    keyAlias,
   );
 }
 
@@ -96,10 +96,10 @@ export async function serializeSigningKey(
  *     messages.
  */
 export async function importPrivateSigningKey(
-  keyData: string
+  keyData: string,
 ): Promise<string> {
   return await LightsparkdevReactNativeCryptoModule.importPrivateSigningKey(
-    keyData
+    keyData,
   );
 }
 
@@ -149,11 +149,11 @@ export async function getSeed(mnemonic: Mnemonic): Promise<Seed> {
  */
 export async function derivePublicKey(
   seed: Seed,
-  derivationPath: string
+  derivationPath: string,
 ): Promise<string> {
   return await LightsparkdevReactNativeCryptoModule.derivePublicKey(
     seed,
-    derivationPath
+    derivationPath,
   );
 }
 
@@ -172,7 +172,7 @@ export async function deriveKeyAndSign(
   message: Uint8Array,
   derivationPath: string,
   addTweak?: Uint8Array,
-  multTweak?: Uint8Array
+  multTweak?: Uint8Array,
 ): Promise<Uint8Array> {
   const addTweakString = addTweak && b64encode(addTweak);
   const multTweakString = multTweak && b64encode(multTweak);
@@ -181,7 +181,7 @@ export async function deriveKeyAndSign(
     b64encode(message),
     derivationPath,
     addTweakString,
-    multTweakString
+    multTweakString,
   );
 }
 
@@ -196,12 +196,12 @@ export async function deriveKeyAndSign(
 export async function ecdh(
   seed: Seed,
   derivationPath: string,
-  publicKey: string
+  publicKey: string,
 ): Promise<Uint8Array> {
   const base64Result = await LightsparkdevReactNativeCryptoModule.ecdh(
     seed,
     derivationPath,
-    publicKey
+    publicKey,
   );
   return b64decode(base64Result);
 }

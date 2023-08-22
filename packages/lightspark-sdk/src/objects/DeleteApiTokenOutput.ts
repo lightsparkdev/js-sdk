@@ -5,7 +5,7 @@ type DeleteApiTokenOutput = {
 };
 
 export const DeleteApiTokenOutputFromJson = (
-  obj: any
+  obj: any,
 ): DeleteApiTokenOutput => {
   return {
     accountId: obj["delete_api_token_output_account"].id,

@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Connection from "./Connection.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import Transaction, { TransactionFromJson } from "./Transaction.js";
+import type Connection from "./Connection.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import type Transaction from "./Transaction.js";
+import { TransactionFromJson } from "./Transaction.js";
 
 type WalletToTransactionsConnection = Connection & {
   /**
@@ -22,15 +24,15 @@ type WalletToTransactionsConnection = Connection & {
 };
 
 export const WalletToTransactionsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): WalletToTransactionsConnection => {
   return {
     count: obj["wallet_to_transactions_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["wallet_to_transactions_connection_page_info"]
+      obj["wallet_to_transactions_connection_page_info"],
     ),
     entities: obj["wallet_to_transactions_connection_entities"].map((e) =>
-      TransactionFromJson(e)
+      TransactionFromJson(e),
     ),
     typename: "WalletToTransactionsConnection",
   } as WalletToTransactionsConnection;

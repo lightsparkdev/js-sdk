@@ -9,7 +9,7 @@ type ScreenBitcoinAddressesInput = {
 };
 
 export const ScreenBitcoinAddressesInputFromJson = (
-  obj: any
+  obj: any,
 ): ScreenBitcoinAddressesInput => {
   return {
     provider:

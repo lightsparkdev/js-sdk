@@ -387,7 +387,7 @@ function localeToCurrencyCode(locale: string): string {
 }
 
 export const currentLocaleCurrencyCode = localeToCurrencyCode(
-  getCurrentLocale() as CurrencyLocales
+  getCurrentLocale() as CurrencyLocales,
 );
 
 function asNumber(value: string | number | null | undefined) {
@@ -417,7 +417,7 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
 
 export function mapCurrencyAmount(
   currencyAmountArg: CurrencyAmountArg,
-  centsPerBtc: number = 0
+  centsPerBtc: number = 0,
 ): CurrencyMap {
   const { value, unit } = getCurrencyAmount(currencyAmountArg);
 
@@ -520,7 +520,7 @@ export function mapCurrencyAmount(
 }
 
 export const isCurrencyMap = (
-  currencyMap: unknown
+  currencyMap: unknown,
 ): currencyMap is CurrencyMap =>
   typeof currencyMap === "object" &&
   currencyMap !== null &&
@@ -547,7 +547,7 @@ export function formatCurrencyStr(
   maxFractionDigits?: number,
   compact?: boolean,
   showBtcSymbol = false,
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ) {
   const currencyAmount = getCurrencyAmount(amount);
   let { value: num } = currencyAmount;

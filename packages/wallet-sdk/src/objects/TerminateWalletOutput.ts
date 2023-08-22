@@ -1,13 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Wallet, { WalletFromJson } from "./Wallet.js";
+import type Wallet from "./Wallet.js";
+import { WalletFromJson } from "./Wallet.js";
 
 type TerminateWalletOutput = {
   wallet: Wallet;
 };
 
 export const TerminateWalletOutputFromJson = (
-  obj: any
+  obj: any,
 ): TerminateWalletOutput => {
   return {
     wallet: WalletFromJson(obj["terminate_wallet_output_wallet"]),

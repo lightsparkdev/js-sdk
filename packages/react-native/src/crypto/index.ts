@@ -6,7 +6,7 @@ import * as LsCrypto from "@lightsparkdev/ls-react-native-crypto";
 export async function decryptSecretWithNodePassword(/* cipher: string, encryptedSecret: string, nodePassword: string */): Promise<ArrayBuffer | null> {
   throw new LightsparkException(
     "NOT_IMPLEMENTED",
-    "Recovering the signing key is not yet supported in React Native."
+    "Recovering the signing key is not yet supported in React Native.",
   );
 }
 
@@ -21,13 +21,13 @@ export const generateSigningKeyPair = async (): Promise<GeneratedKeyPair> => {
 
 export const serializeSigningKey = async (
   key: CryptoKey | string,
-  format: "pkcs8" | "spki"
+  format: "pkcs8" | "spki",
 ): Promise<ArrayBuffer> => {
   const isPrivateKey = format === "pkcs8";
   if (typeof key !== "string") {
     throw new LightsparkException(
       "NOT_SUPPORTED",
-      "Cannot serialize a CryptoKey in React Native. Use the alias instead."
+      "Cannot serialize a CryptoKey in React Native. Use the alias instead.",
     );
   }
   const exportedKeys = await LsCrypto.serializeSigningKey(key);
@@ -43,12 +43,12 @@ export const getNonce = () => {
 
 export const sign = async (
   keyOrAlias: CryptoKey | string,
-  data: Uint8Array
+  data: Uint8Array,
 ): Promise<ArrayBuffer> => {
   if (typeof keyOrAlias !== "string") {
     throw new LightsparkException(
       "NOT_SUPPORTED",
-      "Cannot sign with a CryptoKey in React Native. Use the alias instead."
+      "Cannot sign with a CryptoKey in React Native. Use the alias instead.",
     );
   }
 
@@ -56,7 +56,7 @@ export const sign = async (
 };
 
 const importPrivateSigningKey = async (
-  keyData: Uint8Array
+  keyData: Uint8Array,
 ): Promise<CryptoKey | string> => {
   return LsCrypto.importPrivateSigningKey(b64encode(keyData));
 };

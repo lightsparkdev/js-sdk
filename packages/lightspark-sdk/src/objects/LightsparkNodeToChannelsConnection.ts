@@ -24,15 +24,15 @@ type LightsparkNodeToChannelsConnection = Connection & {
 };
 
 export const LightsparkNodeToChannelsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): LightsparkNodeToChannelsConnection => {
   return {
     count: obj["lightspark_node_to_channels_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["lightspark_node_to_channels_connection_page_info"]
+      obj["lightspark_node_to_channels_connection_page_info"],
     ),
     entities: obj["lightspark_node_to_channels_connection_entities"].map((e) =>
-      ChannelFromJson(e)
+      ChannelFromJson(e),
     ),
     typename: "LightsparkNodeToChannelsConnection",
   } as LightsparkNodeToChannelsConnection;
