@@ -42,7 +42,7 @@ class LightsparkNode implements Node {
     public readonly localBalance?: CurrencyAmount,
     public readonly purpose?: LightsparkNodePurpose,
     public readonly remoteBalance?: CurrencyAmount,
-    public readonly status?: LightsparkNodeStatus
+    public readonly status?: LightsparkNodeStatus,
   ) {
     autoBind(this);
   }
@@ -50,7 +50,7 @@ class LightsparkNode implements Node {
   public async getAddresses(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    types: NodeAddressType[] | undefined = undefined
+    types: NodeAddressType[] | undefined = undefined,
   ): Promise<NodeToAddressesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -82,7 +82,7 @@ query FetchNodeToAddressesConnection($entity_id: ID!, $first: Int, $types: [Node
     client: LightsparkClient,
     first: number | undefined = undefined,
     statuses: ChannelStatus[] | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<LightsparkNodeToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -270,7 +270,7 @@ export const LightsparkNodeFromJson = (obj: any): LightsparkNode => {
     !!obj["lightspark_node_status"]
       ? LightsparkNodeStatus[obj["lightspark_node_status"]] ??
         LightsparkNodeStatus.FUTURE_VALUE
-      : null
+      : null,
   );
 };
 

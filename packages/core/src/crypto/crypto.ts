@@ -14,21 +14,21 @@ export type CryptoInterface = {
   decryptSecretWithNodePassword: (
     cipher: string,
     encryptedSecret: string,
-    nodePassword: string
+    nodePassword: string,
   ) => Promise<ArrayBuffer | null>;
 
   generateSigningKeyPair: () => Promise<GeneratedKeyPair>;
 
   serializeSigningKey: (
     key: CryptoKey | string,
-    format: "pkcs8" | "spki"
+    format: "pkcs8" | "spki",
   ) => Promise<ArrayBuffer>;
 
   getNonce: () => Promise<number>;
 
   sign: (
     keyOrAlias: CryptoKey | string,
-    data: Uint8Array
+    data: Uint8Array,
   ) => Promise<ArrayBuffer>;
 
   importPrivateSigningKey: (keyData: Uint8Array) => Promise<CryptoKey | string>;
@@ -80,7 +80,7 @@ const deriveKey = async (
   salt: ArrayBuffer,
   iterations: number,
   algorithm: string,
-  bit_len: number
+  bit_len: number,
 ): Promise<[CryptoKey, ArrayBuffer]> => {
   const enc = new TextEncoder();
   const cryptoImpl = await getCrypto();
@@ -89,7 +89,7 @@ const deriveKey = async (
     enc.encode(password),
     "PBKDF2",
     false,
-    ["deriveBits", "deriveKey"]
+    ["deriveBits", "deriveKey"],
   );
 
   const derived = await cryptoImpl.subtle.deriveBits(
@@ -100,7 +100,7 @@ const deriveKey = async (
       hash: "SHA-256",
     },
     password_key,
-    bit_len
+    bit_len,
   );
 
   // Split the derived bytes into a 32 byte AES key and a 16 byte IV
@@ -109,7 +109,7 @@ const deriveKey = async (
     derived.slice(0, 32),
     { name: algorithm, length: 256 },
     false,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 
   const iv = derived.slice(32);
@@ -120,7 +120,7 @@ const deriveKey = async (
 const decrypt = async (
   header_json: string,
   ciphertext: string,
-  password: string
+  password: string,
 ): Promise<ArrayBuffer> => {
   let decoded = b64decode(ciphertext);
 
@@ -139,7 +139,7 @@ const decrypt = async (
   if (header.v < 0 || header.v > 4) {
     throw new LightsparkException(
       "DecryptionError",
-      "Unknown version ".concat(header.v)
+      "Unknown version ".concat(header.v),
     );
   }
 
@@ -158,12 +158,12 @@ const decrypt = async (
       salt,
       header.i,
       algorithm,
-      256
+      256,
     );
     return await cryptoImpl.subtle.decrypt(
       { name: algorithm, iv: nonce.buffer },
       key,
-      cipherText
+      cipherText,
     );
   } else {
     const salt = decoded.slice(0, salt_len);
@@ -173,12 +173,12 @@ const decrypt = async (
       salt,
       header.i,
       algorithm,
-      bit_len
+      bit_len,
     );
     return await cryptoImpl.subtle.decrypt(
       { name: algorithm, iv },
       key,
-      encrypted
+      encrypted,
     );
   }
 };
@@ -186,7 +186,7 @@ const decrypt = async (
 async function decryptSecretWithNodePassword(
   cipher: string,
   encryptedSecret: string,
-  nodePassword: string
+  nodePassword: string,
 ): Promise<ArrayBuffer | null> {
   let decryptedValue: ArrayBuffer | null = null;
   try {
@@ -209,18 +209,18 @@ const generateSigningKeyPair = async (): Promise<GeneratedKeyPair> => {
       hash: "SHA-256",
     },
     /*extractable*/ true,
-    /*keyUsages*/ ["sign", "verify"]
+    /*keyUsages*/ ["sign", "verify"],
   );
 };
 
 const serializeSigningKey = async (
   key: CryptoKey | string,
-  format: "pkcs8" | "spki"
+  format: "pkcs8" | "spki",
 ): Promise<ArrayBuffer> => {
   const cryptoImpl = await getCrypto();
   return await cryptoImpl.subtle.exportKey(
     /*format*/ format,
-    /*key*/ key as CryptoKey
+    /*key*/ key as CryptoKey,
   );
 };
 
@@ -231,11 +231,11 @@ const getNonce = async () => {
 
 const sign = async (
   keyOrAlias: CryptoKey | string,
-  data: Uint8Array
+  data: Uint8Array,
 ): Promise<ArrayBuffer> => {
   if (typeof keyOrAlias === "string") {
     throw new LightsparkSigningException(
-      "Key alias not supported for default crypto."
+      "Key alias not supported for default crypto.",
     );
   }
   const cryptoImpl = await getCrypto();
@@ -245,12 +245,12 @@ const sign = async (
       saltLength: 32,
     },
     keyOrAlias as CryptoKey,
-    data
+    data,
   );
 };
 
 const importPrivateSigningKey = async (
-  keyData: Uint8Array
+  keyData: Uint8Array,
 ): Promise<CryptoKey | string> => {
   const cryptoImpl = await getCrypto();
   return await cryptoImpl.subtle.importKey(
@@ -261,7 +261,7 @@ const importPrivateSigningKey = async (
       hash: "SHA-256",
     },
     /*extractable*/ true,
-    /*keyUsages*/ ["sign"]
+    /*keyUsages*/ ["sign"],
   );
 };
 

@@ -17,7 +17,7 @@ function LightsparkClientProvider({
   customCryptoImpl?: CryptoInterface;
 }) {
   const [client] = useState<LightsparkClient>(
-    new LightsparkClient(new StubAuthProvider(), serverUrl, customCryptoImpl)
+    new LightsparkClient(new StubAuthProvider(), serverUrl, customCryptoImpl),
   );
 
   const getClient = () => {

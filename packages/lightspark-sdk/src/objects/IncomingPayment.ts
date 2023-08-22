@@ -24,7 +24,7 @@ class IncomingPayment implements LightningTransaction {
     public readonly resolvedAt?: string,
     public readonly transactionHash?: string,
     public readonly originId?: string,
-    public readonly paymentRequestId?: string
+    public readonly paymentRequestId?: string,
   ) {
     autoBind(this);
   }
@@ -33,7 +33,7 @@ class IncomingPayment implements LightningTransaction {
     client: LightsparkClient,
     first: number | undefined = undefined,
     statuses: IncomingPaymentAttemptStatus[] | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<IncomingPaymentToAttemptsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -119,7 +119,7 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     obj["incoming_payment_resolved_at"],
     obj["incoming_payment_transaction_hash"],
     obj["incoming_payment_origin"]?.id ?? undefined,
-    obj["incoming_payment_payment_request"]?.id ?? undefined
+    obj["incoming_payment_payment_request"]?.id ?? undefined,
   );
 };
 

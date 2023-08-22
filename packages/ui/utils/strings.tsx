@@ -11,7 +11,7 @@ export const capitalize = (str: string): string => {
 
 export const makeEnumPretty = (
   enumValue: string,
-  capitalizeAllWords: boolean = true
+  capitalizeAllWords: boolean = true,
 ): string => {
   let formatted = enumValue.toLowerCase().split("_");
   if (capitalizeAllWords) {
@@ -27,7 +27,7 @@ export const makeEnumPretty = (
 export const elide = (
   s: Maybe<string>,
   first: number,
-  last?: number
+  last?: number,
 ): Maybe<string> => {
   if (s === undefined || s === null) return s;
   return s.substring(0, first) + "..." + s.substring(s.length - (last ?? 0));
@@ -36,7 +36,7 @@ export const elide = (
 export function removeChars(
   value: string,
   beginIndex: number,
-  endIndex?: number
+  endIndex?: number,
 ): string {
   return value.slice(0, beginIndex) + value.slice(endIndex || beginIndex + 1);
 }

@@ -8,7 +8,7 @@ class LightsparkException extends Error {
   constructor(
     code: string,
     message: string,
-    extraInfo?: Record<string, unknown>
+    extraInfo?: Record<string, unknown>,
   ) {
     super(message);
     this.code = code;

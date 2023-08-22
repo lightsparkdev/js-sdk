@@ -6,7 +6,7 @@ type RequestWithdrawalOutput = {
 };
 
 export const RequestWithdrawalOutputFromJson = (
-  obj: any
+  obj: any,
 ): RequestWithdrawalOutput => {
   return {
     requestId: obj["request_withdrawal_output_request"].id,

@@ -44,34 +44,34 @@ type AccountToTransactionsConnection = Connection & {
 };
 
 export const AccountToTransactionsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): AccountToTransactionsConnection => {
   return {
     count: obj["account_to_transactions_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["account_to_transactions_connection_page_info"]
+      obj["account_to_transactions_connection_page_info"],
     ),
     entities: obj["account_to_transactions_connection_entities"].map((e) =>
-      TransactionFromJson(e)
+      TransactionFromJson(e),
     ),
     typename: "AccountToTransactionsConnection",
     profitLoss: !!obj["account_to_transactions_connection_profit_loss"]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_profit_loss"]
+          obj["account_to_transactions_connection_profit_loss"],
         )
       : undefined,
     averageFeeEarned: !!obj[
       "account_to_transactions_connection_average_fee_earned"
     ]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_average_fee_earned"]
+          obj["account_to_transactions_connection_average_fee_earned"],
         )
       : undefined,
     totalAmountTransacted: !!obj[
       "account_to_transactions_connection_total_amount_transacted"
     ]
       ? CurrencyAmountFromJson(
-          obj["account_to_transactions_connection_total_amount_transacted"]
+          obj["account_to_transactions_connection_total_amount_transacted"],
         )
       : undefined,
   } as AccountToTransactionsConnection;

@@ -15,7 +15,7 @@ type LightningFeeEstimateForInvoiceInput = {
 };
 
 export const LightningFeeEstimateForInvoiceInputFromJson = (
-  obj: any
+  obj: any,
 ): LightningFeeEstimateForInvoiceInput => {
   return {
     nodeId: obj["lightning_fee_estimate_for_invoice_input_node_id"],

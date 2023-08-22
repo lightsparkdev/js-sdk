@@ -37,7 +37,7 @@ type IncomingPaymentAttempt = Entity & {
 };
 
 export const IncomingPaymentAttemptFromJson = (
-  obj: any
+  obj: any,
 ): IncomingPaymentAttempt => {
   return {
     id: obj["incoming_payment_attempt_id"],
@@ -75,7 +75,7 @@ fragment IncomingPaymentAttemptFragment on IncomingPaymentAttempt {
 }`;
 
 export const getIncomingPaymentAttemptQuery = (
-  id: string
+  id: string,
 ): Query<IncomingPaymentAttempt> => {
   return {
     queryPayload: `

@@ -15,7 +15,7 @@ describe("Webhooks", () => {
     const webhook = await verifyAndParseWebhook(
       Buffer.from(data, "utf-8"),
       hexdigest,
-      webhookSecret
+      webhookSecret,
     );
 
     expect(webhook.entity_id).toBe(entityId);

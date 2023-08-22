@@ -9,7 +9,7 @@ class OAuthProvider implements AuthProvider {
   }
 
   async addWsConnectionParams(
-    params: Record<string, string>
+    params: Record<string, string>,
   ): Promise<Record<string, string>> {
     try {
       const accessToken = await this.oauthHelper.getFreshAccessToken();
@@ -23,7 +23,7 @@ class OAuthProvider implements AuthProvider {
   }
 
   async addAuthHeaders(
-    headers: Record<string, string>
+    headers: Record<string, string>,
   ): Promise<Record<string, string>> {
     try {
       const accessToken = await this.oauthHelper.getFreshAccessToken();

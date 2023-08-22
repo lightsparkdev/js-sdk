@@ -32,7 +32,7 @@ class Account implements LightsparkNodeOwner {
     public readonly createdAt: string,
     public readonly updatedAt: string,
     public readonly typename: string,
-    public readonly name?: string
+    public readonly name?: string,
   ) {
     autoBind(this);
   }
@@ -40,7 +40,7 @@ class Account implements LightsparkNodeOwner {
   public async getApiTokens(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<AccountToApiTokensConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -82,7 +82,7 @@ query FetchAccountToApiTokensConnection($first: Int, $after: String) {
   public async getBlockchainBalance(
     client: LightsparkClient,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
   ): Promise<BlockchainBalance | null> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -155,7 +155,7 @@ query FetchAccountBlockchainBalance($bitcoin_networks: [BitcoinNetwork!], $node_
   public async getConductivity(
     client: LightsparkClient,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
   ): Promise<number> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -178,7 +178,7 @@ query FetchAccountConductivity($bitcoin_networks: [BitcoinNetwork!], $node_ids: 
   public async getLocalBalance(
     client: LightsparkClient,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
   ): Promise<CurrencyAmount | null> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -210,7 +210,7 @@ query FetchAccountLocalBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids: 
     first: number | undefined = undefined,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
     nodeIds: string[] | undefined = undefined,
-    after: string | undefined = undefined
+    after: string | undefined = undefined,
   ): Promise<AccountToNodesConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -357,7 +357,7 @@ query FetchAccountToNodesConnection($first: Int, $bitcoin_networks: [BitcoinNetw
   public async getRemoteBalance(
     client: LightsparkClient,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
   ): Promise<CurrencyAmount | null> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -389,7 +389,7 @@ query FetchAccountRemoteBalance($bitcoin_networks: [BitcoinNetwork!], $node_ids:
     afterDate: string | undefined = undefined,
     beforeDate: string | undefined = undefined,
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
-    nodeIds: string[] | undefined = undefined
+    nodeIds: string[] | undefined = undefined,
   ): Promise<number> {
     return await client.executeRawQuery({
       queryPayload: ` 
@@ -420,7 +420,7 @@ query FetchAccountUptimePercentage($after_date: DateTime, $before_date: DateTime
     lightningNodeId: string | undefined = undefined,
     afterDate: string | undefined = undefined,
     beforeDate: string | undefined = undefined,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
   ): Promise<AccountToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -553,7 +553,7 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
     bitcoinNetwork: BitcoinNetwork | undefined = undefined,
     lightningNodeId: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
-    excludeFailures: TransactionFailures | undefined = undefined
+    excludeFailures: TransactionFailures | undefined = undefined,
   ): Promise<AccountToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -996,7 +996,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
     afterDate: string | undefined = undefined,
     beforeDate: string | undefined = undefined,
     bitcoinNetwork: BitcoinNetwork | undefined = undefined,
-    lightningNodeId: string | undefined = undefined
+    lightningNodeId: string | undefined = undefined,
   ): Promise<AccountToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -1195,7 +1195,7 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
     client: LightsparkClient,
     first: number | undefined = undefined,
     after: string | undefined = undefined,
-    thirdPartyIds: string[] | undefined = undefined
+    thirdPartyIds: string[] | undefined = undefined,
   ): Promise<AccountToWalletsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
@@ -1286,7 +1286,7 @@ export const AccountFromJson = (obj: any): Account => {
     obj["account_created_at"],
     obj["account_updated_at"],
     "Account",
-    obj["account_name"]
+    obj["account_name"],
   );
 };
 

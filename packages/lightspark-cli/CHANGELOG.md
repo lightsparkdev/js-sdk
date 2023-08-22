@@ -1,13 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.9
-
-### Patch Changes
-
-- 32efe27: Add dotenv to parse env file
-- Updated dependencies [32efe27]
-  - @lightsparkdev/lightspark-sdk@0.4.10
-
 ## 0.0.8
 
 ### Patch Changes

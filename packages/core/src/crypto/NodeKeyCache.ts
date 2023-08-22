@@ -16,7 +16,7 @@ class NodeKeyCache {
 
   public async loadKey(
     id: string,
-    keyOrAlias: KeyOrAliasType
+    keyOrAlias: KeyOrAliasType,
   ): Promise<CryptoKey | string | null> {
     if (keyOrAlias.alias !== undefined) {
       this.idToKey.set(id, keyOrAlias.alias);

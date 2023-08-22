@@ -31,7 +31,7 @@ class LocalStorageJwtStorage implements JwtStorage {
       JSON.stringify({
         accessToken: tokenInfo.accessToken,
         validUntil: tokenInfo.validUntil.toISOString(),
-      })
+      }),
     );
   }
 

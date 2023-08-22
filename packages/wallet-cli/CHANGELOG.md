@@ -1,14 +1,5 @@
 # @lightsparkdev/wallet-cli
 
-## 0.0.25
-
-### Patch Changes
-
-- 32efe27: Add dotenv to parse env file
-- Updated dependencies [32efe27]
-- Updated dependencies [32efe27]
-  - @lightsparkdev/wallet-sdk@0.6.17
-
 ## 0.0.24
 
 ### Patch Changes

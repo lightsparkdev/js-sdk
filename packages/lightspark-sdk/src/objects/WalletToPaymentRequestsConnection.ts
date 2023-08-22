@@ -24,15 +24,15 @@ type WalletToPaymentRequestsConnection = Connection & {
 };
 
 export const WalletToPaymentRequestsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): WalletToPaymentRequestsConnection => {
   return {
     count: obj["wallet_to_payment_requests_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["wallet_to_payment_requests_connection_page_info"]
+      obj["wallet_to_payment_requests_connection_page_info"],
     ),
     entities: obj["wallet_to_payment_requests_connection_entities"].map((e) =>
-      PaymentRequestFromJson(e)
+      PaymentRequestFromJson(e),
     ),
     typename: "WalletToPaymentRequestsConnection",
   } as WalletToPaymentRequestsConnection;

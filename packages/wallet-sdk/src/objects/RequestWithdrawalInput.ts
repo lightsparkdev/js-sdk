@@ -12,7 +12,7 @@ type RequestWithdrawalInput = {
 };
 
 export const RequestWithdrawalInputFromJson = (
-  obj: any
+  obj: any,
 ): RequestWithdrawalInput => {
   return {
     bitcoinAddress: obj["request_withdrawal_input_bitcoin_address"],
