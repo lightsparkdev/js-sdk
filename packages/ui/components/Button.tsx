@@ -83,7 +83,12 @@ function getInnerBorderColor({
   blue,
 }: PrimaryProps) {
   if (primary || blue || backgroundColor) {
-    return getBackgroundColor({ backgroundColor, theme, primary, blue });
+    return getBackgroundColor({
+      backgroundColor,
+      theme,
+      primary,
+      blue,
+    });
   }
   return themeOr(colors.gray90, colors.gray20)({ theme });
 }
@@ -144,10 +149,21 @@ export function Button<RoutesType extends string>({
 
   const content: ReactNode = (
     <div
-      css={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      css={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
       {currentIcon}
-      <div css={{ textOverflow: "ellipsis", overflow: "hidden" }}>{text}</div>
+      <div
+        css={{
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+        }}
+      >
+        {text}
+      </div>
     </div>
   );
 

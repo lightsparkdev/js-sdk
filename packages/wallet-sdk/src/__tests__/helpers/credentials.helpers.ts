@@ -1,4 +1,7 @@
+import dotenv from "dotenv";
 import { type CredentialsFromEnv } from "../types/index.js";
+
+dotenv.populate(process.env, { path: process.env.HOME + "/.lightsparkenv" });
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
 
