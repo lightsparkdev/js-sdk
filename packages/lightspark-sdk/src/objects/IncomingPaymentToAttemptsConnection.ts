@@ -1,10 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Connection from "./Connection.js";
-import IncomingPaymentAttempt, {
-  IncomingPaymentAttemptFromJson,
-} from "./IncomingPaymentAttempt.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type Connection from "./Connection.js";
+import type IncomingPaymentAttempt from "./IncomingPaymentAttempt.js";
+import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 /** The connection from incoming payment to all attempts. **/
 type IncomingPaymentToAttemptsConnection = Connection & {

@@ -1,15 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import type LightsparkClient from "../client.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import HtlcAttemptFailureCode from "./HtlcAttemptFailureCode.js";
 import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
-import OutgoingPaymentAttemptToHopsConnection, {
-  OutgoingPaymentAttemptToHopsConnectionFromJson,
-} from "./OutgoingPaymentAttemptToHopsConnection.js";
+import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
+import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
 
 /** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. **/
 class OutgoingPaymentAttempt implements Entity {

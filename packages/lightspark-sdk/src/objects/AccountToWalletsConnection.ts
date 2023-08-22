@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Connection from "./Connection.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import Wallet, { WalletFromJson } from "./Wallet.js";
+import type Connection from "./Connection.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import type Wallet from "./Wallet.js";
+import { WalletFromJson } from "./Wallet.js";
 
 type AccountToWalletsConnection = Connection & {
   /**

@@ -1,18 +1,17 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import type LightsparkClient from "../client.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import WithdrawalMode from "./WithdrawalMode.js";
 import WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
-import WithdrawalRequestToChannelClosingTransactionsConnection, {
-  WithdrawalRequestToChannelClosingTransactionsConnectionFromJson,
-} from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
-import WithdrawalRequestToChannelOpeningTransactionsConnection, {
-  WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson,
-} from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
+import type WithdrawalRequestToChannelClosingTransactionsConnection from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
+import { WithdrawalRequestToChannelClosingTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
+import type WithdrawalRequestToChannelOpeningTransactionsConnection from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
+import { WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 
 /** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. **/
 class WithdrawalRequest implements Entity {
