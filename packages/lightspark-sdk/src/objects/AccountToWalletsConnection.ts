@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Connection from "./Connection.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
-import Wallet, { WalletFromJson } from "./Wallet.js";
+import type Connection from "./Connection.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import type Wallet from "./Wallet.js";
+import { WalletFromJson } from "./Wallet.js";
 
 type AccountToWalletsConnection = Connection & {
   /**
@@ -22,13 +24,13 @@ type AccountToWalletsConnection = Connection & {
 };
 
 export const AccountToWalletsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): AccountToWalletsConnection => {
   return {
     count: obj["account_to_wallets_connection_count"],
     pageInfo: PageInfoFromJson(obj["account_to_wallets_connection_page_info"]),
     entities: obj["account_to_wallets_connection_entities"].map((e) =>
-      WalletFromJson(e)
+      WalletFromJson(e),
     ),
     typename: "AccountToWalletsConnection",
   } as AccountToWalletsConnection;

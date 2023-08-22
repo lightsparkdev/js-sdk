@@ -21,7 +21,7 @@ const WALLET_STATUS_INTERVAL = 30_000;
 const HOURS_BEFORE_EXPIRE = 5;
 
 export const genKeyForWallet = async (
-  walletStatus?: WalletStatus
+  walletStatus?: WalletStatus,
 ): Promise<SerializedKeyPair | undefined> => {
   if (!walletStatus) throw new Error("Wallet status is undefined");
 
@@ -37,14 +37,14 @@ export const genKeyForWallet = async (
     privateKey: b64encode(
       await DefaultCrypto.serializeSigningKey(
         generatedKeypair.privateKey,
-        "pkcs8"
-      )
+        "pkcs8",
+      ),
     ),
     publicKey: b64encode(
       await DefaultCrypto.serializeSigningKey(
         generatedKeypair.publicKey,
-        "spki"
-      )
+        "spki",
+      ),
     ),
   };
 };
@@ -54,7 +54,7 @@ export const getClaimsByType = (
   opts: {
     userId: string;
     isTest: boolean;
-  }
+  },
 ) =>
   ({
     regtest: {
@@ -63,7 +63,7 @@ export const getClaimsByType = (
       test: true,
       iat: Math.floor(Date.now() / MS_IN_MINUTE),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
     },
     testnet: {
@@ -72,7 +72,7 @@ export const getClaimsByType = (
       test: false,
       iat: Math.floor(Date.now() / MS_IN_MINUTE),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
       bitcoin_network: "testnet",
     },
@@ -82,13 +82,13 @@ export const getClaimsByType = (
       test: false,
       iat: Math.floor(Date.now() / MS_IN_MINUTE),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
     },
-  }[type]);
+  })[type];
 
 export const createWalletJwt = async (
-  createCredentials: CredentialsForWalletJWTCreating
+  createCredentials: CredentialsForWalletJWTCreating,
 ) => {
   const { options, credentials } = createCredentials;
 
@@ -100,7 +100,7 @@ export const createWalletJwt = async (
 
   if (!privateKey) {
     throw new Error(
-      "JWT signing private key not found in environment. Set LIGHTSPARK_JWT_PRIV_KEY."
+      "JWT signing private key not found in environment. Set LIGHTSPARK_JWT_PRIV_KEY.",
     );
   }
 
@@ -110,7 +110,7 @@ export const createWalletJwt = async (
     test: options.test,
     iat: Math.floor(Date.now() / MS_IN_MINUTE),
     exp: Math.floor(
-      Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE
+      Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
     ),
   };
 
@@ -122,7 +122,7 @@ export const createWalletJwt = async (
 export const deployWallet = async (
   client: LightsparkClient,
   options: OptionsForWalletJWTCreating,
-  credentials?: EnvCredentials
+  credentials?: EnvCredentials,
 ) => {
   if (!credentials) {
     throw new Error("Credentials not found in environment.");
@@ -139,7 +139,7 @@ export const deployWallet = async (
   const loginOutput = await client.loginWithJWT(
     credentials.accountId,
     token,
-    new InMemoryJwtStorage()
+    new InMemoryJwtStorage(),
   );
 
   let walletStatus = loginOutput.wallet.status;
@@ -168,7 +168,7 @@ export const deployWallet = async (
     walletStatus !== WalletStatus.READY
   ) {
     console.error(
-      `Not initialized because the wallet status is ${loginOutput.wallet.status}`
+      `Not initialized because the wallet status is ${loginOutput.wallet.status}`,
     );
   }
 

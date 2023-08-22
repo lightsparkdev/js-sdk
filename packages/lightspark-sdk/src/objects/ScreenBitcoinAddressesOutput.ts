@@ -7,11 +7,11 @@ type ScreenBitcoinAddressesOutput = {
 };
 
 export const ScreenBitcoinAddressesOutputFromJson = (
-  obj: any
+  obj: any,
 ): ScreenBitcoinAddressesOutput => {
   return {
     ratings: obj["screen_bitcoin_addresses_output_ratings"].map(
-      (e) => RiskRating[e]
+      (e) => RiskRating[e],
     ),
   } as ScreenBitcoinAddressesOutput;
 };

@@ -1,16 +1,17 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, Query } from "@lightsparkdev/core";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import { LightsparkException, type Query } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import IncomingPayment from "./IncomingPayment.js";
 import OutgoingPayment from "./OutgoingPayment.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
 import { RichTextFromJson } from "./RichText.js";
-import RoutingTransaction from "./RoutingTransaction.js";
+import type RoutingTransaction from "./RoutingTransaction.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
-import Transaction from "./Transaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This is an object representing a transaction made over the Lightning Network. You can retrieve this object to receive information about a specific transaction made over Lightning for a Lightspark node. **/
@@ -45,7 +46,7 @@ type LightningTransaction = Transaction &
   };
 
 export const LightningTransactionFromJson = (
-  obj: any
+  obj: any,
 ): LightningTransaction => {
   if (obj["__typename"] == "IncomingPayment") {
     return new IncomingPayment(
@@ -60,7 +61,7 @@ export const LightningTransactionFromJson = (
       obj["incoming_payment_resolved_at"],
       obj["incoming_payment_transaction_hash"],
       obj["incoming_payment_origin"]?.id ?? undefined,
-      obj["incoming_payment_payment_request"]?.id ?? undefined
+      obj["incoming_payment_payment_request"]?.id ?? undefined,
     );
   }
   if (obj["__typename"] == "OutgoingPayment") {
@@ -81,7 +82,7 @@ export const LightningTransactionFromJson = (
         : undefined,
       !!obj["outgoing_payment_payment_request_data"]
         ? PaymentRequestDataFromJson(
-            obj["outgoing_payment_payment_request_data"]
+            obj["outgoing_payment_payment_request_data"],
           )
         : undefined,
       !!obj["outgoing_payment_failure_reason"]
@@ -90,7 +91,7 @@ export const LightningTransactionFromJson = (
         : null,
       !!obj["outgoing_payment_failure_message"]
         ? RichTextFromJson(obj["outgoing_payment_failure_message"])
-        : undefined
+        : undefined,
     );
   }
   if (obj["__typename"] == "RoutingTransaction") {
@@ -124,7 +125,7 @@ export const LightningTransactionFromJson = (
   }
   throw new LightsparkException(
     "DeserializationError",
-    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`
+    `Couldn't find a concrete type for interface LightningTransaction corresponding to the typename=${obj["__typename"]}`,
   );
 };
 
@@ -375,7 +376,7 @@ fragment LightningTransactionFragment on LightningTransaction {
 }`;
 
 export const getLightningTransactionQuery = (
-  id: string
+  id: string,
 ): Query<LightningTransaction> => {
   return {
     queryPayload: `

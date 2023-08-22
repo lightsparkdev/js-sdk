@@ -3,7 +3,7 @@
 import { LightsparkException } from "@lightsparkdev/core";
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import InvoiceData from "./InvoiceData.js";
+import type InvoiceData from "./InvoiceData.js";
 import { NodeFromJson } from "./Node.js";
 
 /** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. **/

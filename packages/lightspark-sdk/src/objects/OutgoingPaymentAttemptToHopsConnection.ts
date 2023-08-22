@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import Connection from "./Connection.js";
-import Hop, { HopFromJson } from "./Hop.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type Connection from "./Connection.js";
+import type Hop from "./Hop.js";
+import { HopFromJson } from "./Hop.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 /** The connection from an outgoing payment attempt to the list of sequential hops that define the path from sender node to recipient node. **/
 type OutgoingPaymentAttemptToHopsConnection = Connection & {
@@ -23,15 +25,15 @@ type OutgoingPaymentAttemptToHopsConnection = Connection & {
 };
 
 export const OutgoingPaymentAttemptToHopsConnectionFromJson = (
-  obj: any
+  obj: any,
 ): OutgoingPaymentAttemptToHopsConnection => {
   return {
     count: obj["outgoing_payment_attempt_to_hops_connection_count"],
     pageInfo: PageInfoFromJson(
-      obj["outgoing_payment_attempt_to_hops_connection_page_info"]
+      obj["outgoing_payment_attempt_to_hops_connection_page_info"],
     ),
     entities: obj["outgoing_payment_attempt_to_hops_connection_entities"].map(
-      (e) => HopFromJson(e)
+      (e) => HopFromJson(e),
     ),
     typename: "OutgoingPaymentAttemptToHopsConnection",
   } as OutgoingPaymentAttemptToHopsConnection;

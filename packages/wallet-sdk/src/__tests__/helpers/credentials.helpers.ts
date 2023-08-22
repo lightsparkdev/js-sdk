@@ -11,7 +11,7 @@ export const getCredentialsFromEnvOrThrow = (): CredentialsFromEnv => {
 
   if (!accountId || !jwtSigningPrivateKey) {
     throw new Error(
-      `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT_PRIV_KEY.`
+      `Missing test credentials. Please set LIGHTSPARK_ACCOUNT_ID and LIGHTSPARK_JWT_PRIV_KEY.`,
     );
   }
 
