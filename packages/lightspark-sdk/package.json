@@ -61,7 +61,7 @@
     "dev": "yarn build -- --watch",
     "docs": "typedoc src",
     "format:fix": "prettier src --write",
-    "format": "prettier src --check",
+    "format": "prettier -v && prettier src --check",
     "lint:fix": "eslint --fix .",
     "lint:fix:continue": "eslint --fix . || exit 0",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
