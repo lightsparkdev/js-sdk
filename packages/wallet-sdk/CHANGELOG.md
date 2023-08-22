@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.17
+
+### Patch Changes
+
+- 32efe27: Expose wallet transactions and invoices in the 3P schema
+- 32efe27: Add dotenv to parse env file
+
 ## 0.6.16
 
 ### Patch Changes
