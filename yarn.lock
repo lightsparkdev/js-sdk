@@ -4256,7 +4256,7 @@ __metadata:
     "@inquirer/prompts": ^1.1.3
     "@lightsparkdev/core": 0.3.10
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 0.4.9
+    "@lightsparkdev/lightspark-sdk": 0.4.10
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
@@ -4280,7 +4280,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@0.4.9, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@0.4.10, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
@@ -4391,10 +4391,10 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 0.3.10
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/react-wallet": 0.6.17
+    "@lightsparkdev/react-wallet": 0.6.18
     "@lightsparkdev/ui": "*"
     "@lightsparkdev/vite": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.6.16
+    "@lightsparkdev/wallet-sdk": 0.6.17
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.4.3
@@ -4416,14 +4416,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/react-wallet@0.6.17, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
+"@lightsparkdev/react-wallet@0.6.18, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/react-wallet@workspace:packages/react-wallet"
   dependencies:
     "@lightsparkdev/core": 0.3.10
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.6.16
+    "@lightsparkdev/wallet-sdk": 0.6.17
     "@types/react": ^18.2.12
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
@@ -4453,7 +4453,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 0.3.10
-    "@lightsparkdev/lightspark-sdk": 0.4.9
+    "@lightsparkdev/lightspark-sdk": 0.4.10
     "@lightsparkdev/tsconfig": "*"
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^7.0.0
@@ -4546,7 +4546,7 @@ __metadata:
     "@inquirer/prompts": ^1.1.3
     "@lightsparkdev/core": 0.3.10
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/wallet-sdk": 0.6.16
+    "@lightsparkdev/wallet-sdk": 0.6.17
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
     "@types/qrcode-terminal": ^0.12.0
@@ -4569,7 +4569,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/wallet-sdk@0.6.16, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
+"@lightsparkdev/wallet-sdk@0.6.17, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk"
   dependencies:
