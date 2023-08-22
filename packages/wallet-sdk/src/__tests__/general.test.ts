@@ -47,7 +47,7 @@ export const TEST_USER_ID = `test_user_${new Date().getTime()}`;
 export const CREATE_INVOICE_AMOUNT_MSATS = 100_000 * 1000;
 export const CREATE_TEST_INVOICE_AMOUNT_MSATS = 1000 * 1000;
 
-const credentials = getCredentialsFromEnvOrThrow(`_${TEST_USER_ID}`);
+const credentials = getCredentialsFromEnvOrThrow();
 
 let clientDeployWalletResponse:
   | Awaited<ReturnType<typeof deployWallet>>

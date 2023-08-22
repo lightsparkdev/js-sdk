@@ -2,6 +2,7 @@
 logs
 *.log
 stats.json
+test.logs
 
 # Runtime data
 pids
