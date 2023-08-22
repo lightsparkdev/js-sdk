@@ -1,18 +1,18 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import LightningTransaction from "./LightningTransaction.js";
-import OutgoingPaymentToAttemptsConnection, {
-  OutgoingPaymentToAttemptsConnectionFromJson,
-} from "./OutgoingPaymentToAttemptsConnection.js";
+import type LightsparkClient from "../client.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type LightningTransaction from "./LightningTransaction.js";
+import type OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
+import { OutgoingPaymentToAttemptsConnectionFromJson } from "./OutgoingPaymentToAttemptsConnection.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
-import PaymentRequestData, {
-  PaymentRequestDataFromJson,
-} from "./PaymentRequestData.js";
-import RichText, { RichTextFromJson } from "./RichText.js";
+import type PaymentRequestData from "./PaymentRequestData.js";
+import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
+import type RichText from "./RichText.js";
+import { RichTextFromJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. **/

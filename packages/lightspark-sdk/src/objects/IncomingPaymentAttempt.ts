@@ -1,8 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import Entity from "./Entity.js";
+import { type Query } from "@lightsparkdev/core";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
 
 /** This object represents any attempted payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific incoming payment attempt. **/

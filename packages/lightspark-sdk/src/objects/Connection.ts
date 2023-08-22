@@ -1,29 +1,30 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { LightsparkException } from "@lightsparkdev/core";
-import AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
-import AccountToNodesConnection from "./AccountToNodesConnection.js";
-import AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
-import AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
-import AccountToWalletsConnection from "./AccountToWalletsConnection.js";
+import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
+import type AccountToNodesConnection from "./AccountToNodesConnection.js";
+import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
+import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
+import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
 import { ApiTokenFromJson } from "./ApiToken.js";
 import { ChannelFromJson } from "./Channel.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import { HopFromJson } from "./Hop.js";
 import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
-import IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
+import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
 import { LightsparkNodeFromJson } from "./LightsparkNode.js";
 import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
-import LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
+import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
-import OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
-import OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
+import type OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 import { PaymentRequestFromJson } from "./PaymentRequest.js";
 import { TransactionFromJson } from "./Transaction.js";
 import { WalletFromJson } from "./Wallet.js";
-import WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
 type Connection = {
   /**

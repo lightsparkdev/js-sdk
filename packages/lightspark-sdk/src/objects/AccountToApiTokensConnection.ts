@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import ApiToken, { ApiTokenFromJson } from "./ApiToken.js";
-import Connection from "./Connection.js";
-import PageInfo, { PageInfoFromJson } from "./PageInfo.js";
+import type ApiToken from "./ApiToken.js";
+import { ApiTokenFromJson } from "./ApiToken.js";
+import type Connection from "./Connection.js";
+import type PageInfo from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 type AccountToApiTokensConnection = Connection & {
   /**

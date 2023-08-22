@@ -1,20 +1,20 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import LightsparkClient from "../client.js";
-import Balances, { BalancesFromJson } from "./Balances.js";
-import CurrencyAmount, { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import LightsparkNodeOwner from "./LightsparkNodeOwner.js";
-import TransactionStatus from "./TransactionStatus.js";
-import TransactionType from "./TransactionType.js";
+import type LightsparkClient from "../client.js";
+import type Balances from "./Balances.js";
+import { BalancesFromJson } from "./Balances.js";
+import type CurrencyAmount from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
+import type TransactionStatus from "./TransactionStatus.js";
+import type TransactionType from "./TransactionType.js";
 import WalletStatus from "./WalletStatus.js";
-import WalletToPaymentRequestsConnection, {
-  WalletToPaymentRequestsConnectionFromJson,
-} from "./WalletToPaymentRequestsConnection.js";
-import WalletToTransactionsConnection, {
-  WalletToTransactionsConnectionFromJson,
-} from "./WalletToTransactionsConnection.js";
+import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
+import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
+import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
 
 /** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. **/
 class Wallet implements LightsparkNodeOwner {
