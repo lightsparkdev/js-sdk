@@ -1,18 +1,19 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
-import type LightsparkClient from "../client.js";
-import type Balances from "./Balances.js";
-import { BalancesFromJson } from "./Balances.js";
-import type Entity from "./Entity.js";
-import type TransactionStatus from "./TransactionStatus.js";
-import type TransactionType from "./TransactionType.js";
+import LightsparkClient from "../client.js";
+import Balances, { BalancesFromJson } from "./Balances.js";
+import Entity from "./Entity.js";
+import TransactionStatus from "./TransactionStatus.js";
+import TransactionType from "./TransactionType.js";
 import WalletStatus from "./WalletStatus.js";
-import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
-import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
-import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
-import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
+import WalletToPaymentRequestsConnection, {
+  WalletToPaymentRequestsConnectionFromJson,
+} from "./WalletToPaymentRequestsConnection.js";
+import WalletToTransactionsConnection, {
+  WalletToTransactionsConnectionFromJson,
+} from "./WalletToTransactionsConnection.js";
 
 class Wallet implements Entity {
   constructor(
@@ -42,6 +43,7 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
         ... on Wallet {
             transactions(, first: $first, after: $after, created_after_date: $created_after_date, created_before_date: $created_before_date, statuses: $statuses, types: $types) {
                 __typename
+                wallet_to_transactions_connection_count: count
                 wallet_to_transactions_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -49,7 +51,6 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                wallet_to_transactions_connection_count: count
                 wallet_to_transactions_connection_entities: entities {
                     __typename
                     ... on ChannelClosingTransaction {
@@ -285,6 +286,7 @@ query FetchWalletToPaymentRequestsConnection($first: Int, $after: ID, $created_a
         ... on Wallet {
             payment_requests(, first: $first, after: $after, created_after_date: $created_after_date, created_before_date: $created_before_date) {
                 __typename
+                wallet_to_payment_requests_connection_count: count
                 wallet_to_payment_requests_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -292,7 +294,6 @@ query FetchWalletToPaymentRequestsConnection($first: Int, $after: ID, $created_a
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                wallet_to_payment_requests_connection_count: count
                 wallet_to_payment_requests_connection_entities: entities {
                     __typename
                     ... on Invoice {

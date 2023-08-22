@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
@@ -8,7 +8,7 @@ import type OnChainTransaction from "./OnChainTransaction.js";
 import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** The transaction on Bitcoin blockchain to open a channel on Lightning Network funded by the local Lightspark node. **/
+/** This is an object representing a transaction which opens a channel on the Lightning Network. This object occurs only for channels funded by the local Lightspark node. **/
 type ChannelOpeningTransaction = OnChainTransaction &
   Transaction &
   Entity & {

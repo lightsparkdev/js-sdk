@@ -13,7 +13,7 @@ export enum BitcoinNetwork {
   REGTEST = "REGTEST",
   /** A test version of the Bitcoin Blockchain, maintained by a centralized organization. Not in use at Lightspark. **/
   SIGNET = "SIGNET",
-  /** A test version of the Bitcoin Blockchain, publically available. **/
+  /** A test version of the Bitcoin Blockchain, publicly available. **/
   TESTNET = "TESTNET",
 }
 

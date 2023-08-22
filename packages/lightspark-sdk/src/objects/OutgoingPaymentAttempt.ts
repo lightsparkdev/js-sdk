@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
@@ -11,7 +11,7 @@ import OutgoingPaymentAttemptStatus from "./OutgoingPaymentAttemptStatus.js";
 import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
 import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
 
-/** An attempt for a payment over a route from sender node to recipient node. **/
+/** This object represents an attempted Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment attempt sent from your Lightspark Node on the Lightning Network, including any potential reasons the payment may have failed. **/
 class OutgoingPaymentAttempt implements Entity {
   constructor(
     public readonly id: string,
@@ -31,16 +31,24 @@ class OutgoingPaymentAttempt implements Entity {
 
   public async getHops(
     client: LightsparkClient,
-    first: number | undefined = undefined
+    first: number | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<OutgoingPaymentAttemptToHopsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) {
+query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int, $after: String) {
     entity(id: $entity_id) {
         ... on OutgoingPaymentAttempt {
-            hops(, first: $first) {
+            hops(, first: $first, after: $after) {
                 __typename
                 outgoing_payment_attempt_to_hops_connection_count: count
+                outgoing_payment_attempt_to_hops_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
                 outgoing_payment_attempt_to_hops_connection_entities: entities {
                     __typename
                     hop_id: id
@@ -74,7 +82,7 @@ query FetchOutgoingPaymentAttemptToHopsConnection($entity_id: ID!, $first: Int) 
     }
 }
 `,
-      variables: { entity_id: this.id, first: first },
+      variables: { entity_id: this.id, first: first, after: after },
       constructObject: (json) => {
         const connection = json["entity"]["hops"];
         return OutgoingPaymentAttemptToHopsConnectionFromJson(connection);

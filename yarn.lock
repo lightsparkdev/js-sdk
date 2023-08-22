@@ -4552,6 +4552,7 @@ __metadata:
     "@types/qrcode-terminal": ^0.12.0
     commander: ^11.0.0
     dayjs: ^1.11.7
+    dotenv: ^16.3.1
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     jose: ^4.14.4

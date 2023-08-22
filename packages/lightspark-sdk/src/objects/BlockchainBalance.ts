@@ -3,7 +3,7 @@
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
-/** This object provides a detailed breakdown of a `LightsparkNode`'s current balance on the Bitcoin Network. **/
+/** This is an object representing a detailed breakdown of the balance for a Lightspark Node. **/
 type BlockchainBalance = {
   /** The total wallet balance, including unconfirmed UTXOs. **/
   totalBalance?: CurrencyAmount;

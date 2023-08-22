@@ -3,6 +3,7 @@
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
+/** This represents the fee policies set for a channel on the Lightning Network. **/
 type ChannelFees = {
   baseFee?: CurrencyAmount;
 

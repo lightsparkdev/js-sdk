@@ -24,7 +24,7 @@ lightspark-wallet init-env -a <your account ID here> -k "-----BEGIN PRIVATE KEY-
 -----END PRIVATE KEY-----"
 ```
 
-Once you've run init-env, it will create a `.lightsparkenv` file in your home directory with your account ID and JWT signing key. You can add `source ~/.lightsparkenv` to your `.bashrc`, `.zshrc`, `.zprofile`, etc. to make sure the evironment variables are always available.
+Once you've run init-env, it will create a `.lightsparkenv` file in your home directory with your account ID and JWT signing key.
 
 There are lots of commands! Check out `lightspark-wallet --help` for more usage info.
 

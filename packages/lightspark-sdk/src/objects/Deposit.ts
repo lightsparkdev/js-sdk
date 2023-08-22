@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
@@ -8,7 +8,7 @@ import type OnChainTransaction from "./OnChainTransaction.js";
 import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** The transaction on Bitcoin blockchain to fund the Lightspark node's wallet. **/
+/** This object represents a Deposit made to a Lightspark node wallet. This operation occurs for any L1 funding transaction to the wallet. You can retrieve this object to receive detailed information about the deposit. **/
 type Deposit = OnChainTransaction &
   Transaction &
   Entity & {

@@ -1,13 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
-import { LightsparkException } from "@lightsparkdev/core";
+import { LightsparkException, type Query } from "@lightsparkdev/core";
 import Account from "./Account.js";
 import { BalancesFromJson } from "./Balances.js";
 import type Entity from "./Entity.js";
 import Wallet from "./Wallet.js";
 import WalletStatus from "./WalletStatus.js";
 
+/** This is an object representing the owner of a LightsparkNode. **/
 type LightsparkNodeOwner = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque

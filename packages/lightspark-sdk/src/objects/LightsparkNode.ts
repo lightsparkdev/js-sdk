@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
@@ -81,15 +81,17 @@ query FetchNodeToAddressesConnection($entity_id: ID!, $first: Int, $types: [Node
   public async getChannels(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    statuses: ChannelStatus[] | undefined = undefined
+    statuses: ChannelStatus[] | undefined = undefined,
+    after: string | undefined = undefined
   ): Promise<LightsparkNodeToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $statuses: [ChannelStatus!]) {
+query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $statuses: [ChannelStatus!], $after: String) {
     entity(id: $entity_id) {
         ... on LightsparkNode {
-            channels(, first: $first, statuses: $statuses) {
+            channels(, first: $first, statuses: $statuses, after: $after) {
                 __typename
+                lightspark_node_to_channels_connection_count: count
                 lightspark_node_to_channels_connection_page_info: page_info {
                     __typename
                     page_info_has_next_page: has_next_page
@@ -97,7 +99,6 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
                     page_info_start_cursor: start_cursor
                     page_info_end_cursor: end_cursor
                 }
-                lightspark_node_to_channels_connection_count: count
                 lightspark_node_to_channels_connection_entities: entities {
                     __typename
                     channel_id: id
@@ -197,7 +198,12 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
     }
 }
 `,
-      variables: { entity_id: this.id, first: first, statuses: statuses },
+      variables: {
+        entity_id: this.id,
+        first: first,
+        statuses: statuses,
+        after: after,
+      },
       constructObject: (json) => {
         const connection = json["entity"]["channels"];
         return LightsparkNodeToChannelsConnectionFromJson(connection);

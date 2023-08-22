@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { Query } from "@lightsparkdev/core";
+import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
@@ -8,7 +8,7 @@ import type OnChainTransaction from "./OnChainTransaction.js";
 import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** The transaction on the Bitcoin blockchain to withdraw funds from the Lightspark node to a Bitcoin wallet. **/
+/** This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any L1 withdrawal associated with your Lightspark Node or account. **/
 type Withdrawal = OnChainTransaction &
   Transaction &
   Entity & {

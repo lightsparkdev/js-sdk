@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-/** Enum that enumerates all the possible status of an incoming payment attempt. **/
+/** This is an enum that enumerates all potential statuses for an incoming payment attempt. **/
 export enum IncomingPaymentAttemptStatus {
   /**
    * This is an enum value that represents values that could be added in the future.
