@@ -48,7 +48,7 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.3.1",
     "jose": "^4.14.4",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.1",
     "qrcode-terminal": "^0.12.0"
   }
 }
