@@ -8,12 +8,12 @@ import type LightsparkClient from "../../client.js";
 import WalletStatus from "../../objects/WalletStatus.js";
 
 import { InMemoryJwtStorage } from "../../../dist/index.js";
-import { MINUTES_IN_HOUR, MS_IN_MINUTE } from "../consts/index.js";
+import { MINUTES_IN_HOUR, MS_IN_MINUTE } from "../constants.js";
 import {
   type CredentialsForWalletJWTCreating,
   type OptionsForWalletJWTCreating,
   type SerializedKeyPair,
-} from "../types/index.js";
+} from "../types.js";
 import { sleep } from "./time.helpers.js";
 
 const WALLET_STATUS_INTERVAL = 30_000;

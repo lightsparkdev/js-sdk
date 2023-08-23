@@ -69,7 +69,7 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "dotenv -e ~/.lightsparkenv -- node --experimental-vm-modules --trace-warnings ../../node_modules/jest/bin/jest.js",
+    "test": "node --experimental-vm-modules --trace-warnings ../../node_modules/jest/bin/jest.js",
     "types": "tsc"
   },
   "license": "Apache-2.0",

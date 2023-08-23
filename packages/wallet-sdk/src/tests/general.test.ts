@@ -24,20 +24,26 @@ import {
   type OutgoingPayment,
 } from "../objects/index.js";
 import { FRAGMENT } from "../objects/InvoiceData.js";
-import { TESTS_TIMEOUT } from "./consts/index.js";
+import { DEFAULT_BASE_URL, TESTS_TIMEOUT } from "./constants.js";
 import {
   deployWallet,
   getCredentialsFromEnvOrThrow,
   sleep,
 } from "./helpers/index.js";
-import { type CreatedInvoiceData } from "./types/index.js";
+import { type CreatedInvoiceData } from "./types.js";
 
 const ENCODED_REQUEST_FOR_TESTS =
   "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse";
 
-const regtestClient = new LightsparkClient();
-const unauthorizedRegtestClient = new LightsparkClient();
-const authorizedRegtestClientWithLockedWallet = new LightsparkClient();
+const regtestClient = new LightsparkClient(undefined, DEFAULT_BASE_URL);
+const unauthorizedRegtestClient = new LightsparkClient(
+  undefined,
+  DEFAULT_BASE_URL,
+);
+const authorizedRegtestClientWithLockedWallet = new LightsparkClient(
+  undefined,
+  DEFAULT_BASE_URL,
+);
 let bitcoinAddress: string | null = "";
 
 /**

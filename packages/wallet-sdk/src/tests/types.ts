@@ -1,5 +1,9 @@
 import { type EnvCredentials } from "@lightsparkdev/wallet-cli/src/authHelpers.js";
-import type LightsparkClient from "../../client.js";
+import {
+  type InvoiceData,
+  type InvoiceType,
+  type LightsparkClient,
+} from "../index.js";
 
 export type CredentialsFromEnv = {
   accountId: string;
@@ -24,3 +28,7 @@ export type OptionsForWalletJWTCreating = {
 export type SerializedKeyPair =
   | { privateKey: string; publicKey: string }
   | undefined;
+
+export type CreatedInvoiceData = Record<InvoiceType, InvoiceData | null>;
+
+export type CreatedTestnetInvoiceData = Record<InvoiceType, string | null>;
