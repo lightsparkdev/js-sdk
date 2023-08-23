@@ -88,6 +88,14 @@ jobs:
           restore-keys: |
             turbo-checks-${{ runner.os }}
 
+      - name: Setup Lightspark env file
+        environment: lightspark-dev-test-account-creds
+        run: |
+          echo 'export LIGHTSPARK_WALLET_BASE_URL="api.dev.dev.sparkinfra.net"' > ~/.lightsparkenv
+          echo 'export LIGHTSPARK_ACCOUNT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_ID }}"' >> ~/.lightsparkenv
+          echo 'export LIGHTSPARK_JWT_PRIV_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PRIV_KEY }}"' >> ~/.lightsparkenv
+          echo 'export LIGHTSPARK_JWT_PUB_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PUB_KEY }}"' >> ~/.lightsparkenv
+
       - run: "yarn checks"
 
       - name: "Notify failure on Slack"
