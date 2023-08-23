@@ -2,7 +2,7 @@
   "name": "@lightsparkdev/ls-react-native-crypto-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start --dev-client",
+    "start-tmp": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web"
