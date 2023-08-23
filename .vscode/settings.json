@@ -1,0 +1,10 @@
+{
+  "prettier.prettierPath": "./node_modules/prettier/index.cjs",
+  "eslint.workingDirectories": [
+    { "pattern": "./apps/*/" },
+    { "pattern": "./apps/examples/*/" },
+    { "pattern": "./apps/private/*/" },
+    { "pattern": "./packages/*/" },
+    { "pattern": "./packages/private/*/" }
+  ]
+}
