@@ -54,7 +54,9 @@ const Children = styled.span`
   margin-right: 4px;
 `;
 
-const Button = styled(UnstyledButton)<{ ml?: number | undefined }>`
+const Button = styled(UnstyledButton)<{
+  ml?: number | undefined;
+}>`
   background: rgba(0, 0, 0, 0);
   vertical-align: middle;
   ${({ ml }) => (ml ? `margin-left: ${ml}px` : "")};
