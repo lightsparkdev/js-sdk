@@ -32,8 +32,10 @@ node_modules/*
 # Eclipse projects
 .project
 .pydevproject
-.vscode
 .settings
+
+.vscode/*
+!.vscode/settings.json
 
 #Webstorm Editor
 .idea
