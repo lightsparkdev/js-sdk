@@ -59,6 +59,7 @@ jobs:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
     runs-on: "ubuntu-22.04"
+    environment: lightspark-dev-test-account-creds
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -89,7 +90,6 @@ jobs:
             turbo-checks-${{ runner.os }}
 
       - name: Setup Lightspark env file
-        environment: lightspark-dev-test-account-creds
         run: |
           echo 'export LIGHTSPARK_WALLET_BASE_URL="api.dev.dev.sparkinfra.net"' > ~/.lightsparkenv
           echo 'export LIGHTSPARK_ACCOUNT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_ID }}"' >> ~/.lightsparkenv
