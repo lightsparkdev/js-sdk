@@ -2,6 +2,7 @@
 logs
 *.log
 stats.json
+test.logs
 
 # Runtime data
 pids
@@ -114,3 +115,6 @@ example/vendor/
 
 # Temporary files created by Metro for react-native projects
 .metro-health-check*
+
+# Leave for public repo:
+*.code-workspace

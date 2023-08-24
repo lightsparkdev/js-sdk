@@ -34,6 +34,9 @@
       "persistent": true
     },
     "test": {},
+    "@lightsparkdev/wallet-sdk#test": {
+      "dependsOn": ["^build", "build"]
+    },
     "types": {},
     "types:watch": {
       "cache": false,
