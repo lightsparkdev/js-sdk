@@ -642,7 +642,8 @@ class LightsparkClient {
     if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
       throw new LightsparkException(
         "PaymentError",
-        response.pay_invoice?.payment.outgoing_payment_failure_message.rich_text_text,
+        response.pay_invoice?.payment.outgoing_payment_failure_message
+          .rich_text_text,
       );
     }
     return (
@@ -687,7 +688,8 @@ class LightsparkClient {
     if (response.send_payment?.payment.outgoing_payment_failure_message) {
       throw new LightsparkException(
         "PaymentError",
-        response.send_payment?.payment.outgoing_payment_failure_message.rich_text_text,
+        response.send_payment?.payment.outgoing_payment_failure_message
+          .rich_text_text,
       );
     }
     return (
