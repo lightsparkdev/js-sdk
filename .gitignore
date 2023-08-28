@@ -35,8 +35,8 @@ node_modules/*
 .pydevproject
 .settings
 
-.vscode/*
-!.vscode/settings.json
+.vscode/
+!/.vscode/settings.json
 
 #Webstorm Editor
 .idea
