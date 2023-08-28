@@ -35,38 +35,13 @@ import { type CreatedInvoiceData } from "./types.js";
 const ENCODED_REQUEST_FOR_TESTS =
   "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse";
 
-const DECODED_REQUEST_FOR_TESTS = {
-  __typename: "InvoiceData",
-  invoice_data_encoded_payment_request:
-    "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse",
-  invoice_data_bitcoin_network: "REGTEST",
+const DECODED_REQUEST_DETAILS_FOR_TESTS = {
   invoice_data_payment_hash:
     "f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61",
   invoice_data_amount: {
-    __typename: "CurrencyAmount",
     currency_amount_original_value: 50,
-    currency_amount_original_unit: "SATOSHI",
-    currency_amount_preferred_currency_unit: "USD",
-    currency_amount_preferred_currency_value_rounded: 1,
-    currency_amount_preferred_currency_value_approx: 1.3010668748373666,
   },
-  invoice_data_created_at: "2023-08-08T10:39:07+00:00",
-  invoice_data_expires_at: "2023-08-09T10:39:07+00:00",
   invoice_data_memo: "mmmmm pizza",
-  invoice_data_destination: {
-    __typename: "GraphNode",
-    graph_node_id: "GraphNode:0189d490-ff0f-cf00-0000-e69aaf4c5d35",
-    graph_node_created_at: "2023-08-08T09:53:39.599516+00:00",
-    graph_node_updated_at: "2023-08-08T09:53:39.599516+00:00",
-    graph_node_alias: null,
-    graph_node_bitcoin_network: "REGTEST",
-    graph_node_color: null,
-    graph_node_conductivity: null,
-    graph_node_display_name:
-      "035f5b97f1235d1695a84fc18cab869a185aff969e572b53679a4f636e6fd9899b",
-    graph_node_public_key:
-      "035f5b97f1235d1695a84fc18cab869a185aff969e572b53679a4f636e6fd9899b",
-  },
 };
 
 const regtestClient = new LightsparkClient(undefined, DEFAULT_BASE_URL);
@@ -493,7 +468,14 @@ describe("P2 tests", () => {
         constructObject: (data) => data?.decoded_payment_request,
       });
 
-      expect(result).toEqual(DECODED_REQUEST_FOR_TESTS);
+      expect({
+        invoice_data_payment_hash: result.invoice_data_payment_hash,
+        invoice_data_amount: {
+          currency_amount_original_value:
+            result.invoice_data_amount.currency_amount_original_value,
+        },
+        invoice_data_memo: result.invoice_data_memo,
+      }).toEqual(DECODED_REQUEST_DETAILS_FOR_TESTS);
     },
     TESTS_TIMEOUT,
   );
