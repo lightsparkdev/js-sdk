@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.27
+
+### Patch Changes
+
+- 4edc8fe: Return invoice instead of invoice data
+- Updated dependencies [4edc8fe]
+  - @lightsparkdev/wallet-sdk@0.6.19
+
 ## 0.0.26
 
 ### Patch Changes

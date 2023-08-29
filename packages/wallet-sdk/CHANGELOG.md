@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.19
+
+### Patch Changes
+
+- 4edc8fe: Return invoice instead of invoice data
+
 ## 0.6.18
 
 ### Patch Changes
