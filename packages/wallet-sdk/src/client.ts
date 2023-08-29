@@ -44,6 +44,7 @@ import { DeployWalletOutputFromJson } from "./objects/DeployWalletOutput.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import { InitializeWalletOutputFromJson } from "./objects/InitializeWalletOutput.js";
+import { InvoiceFromJson } from "./objects/Invoice.js";
 import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
 import type KeyType from "./objects/KeyType.js";
@@ -384,7 +385,7 @@ class LightsparkClient {
         expirySecs,
       },
       constructObject: (responseJson: any) => {
-        return InvoiceDataFromJson(responseJson.create_invoice.invoice.data);
+        return InvoiceFromJson(responseJson.create_invoice.invoice);
       },
     });
   }
