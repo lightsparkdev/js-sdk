@@ -35,6 +35,15 @@ import { type CreatedInvoiceData } from "./types.js";
 const ENCODED_REQUEST_FOR_TESTS =
   "lnbcrt500n1pjdyx6tpp57xttmwwfvp3amu8xcr2lc8rs7zm26utku9qqh7llxwr6cf5yn4ssdqjd4kk6mtdypcxj7n6vycqzpgxqyz5vqsp5mdp46gsf4r3e6dmy7gt5ezakmjqac0mrwzunn7wqnekaj2wr9jls9qyyssq2cx3pzm3484x388crrp64m92wt6yyqtuues2aq9fve0ynx3ln5x4846agck90fnp5ws2mp8jy4qtm9xvszhcvzl7hzw5kd99s44kklgpq0egse";
 
+const DECODED_REQUEST_DETAILS_FOR_TESTS = {
+  invoice_data_payment_hash:
+    "f196bdb9c96063ddf0e6c0d5fc1c70f0b6ad7176e1400bfbff3387ac26849d61",
+  invoice_data_amount: {
+    currency_amount_original_value: 50,
+  },
+  invoice_data_memo: "mmmmm pizza",
+};
+
 const regtestClient = new LightsparkClient(undefined, DEFAULT_BASE_URL);
 const unauthorizedRegtestClient = new LightsparkClient(
   undefined,
@@ -435,14 +444,9 @@ describe("P1 tests", () => {
 });
 
 describe("P2 tests", () => {
-  test("should send a keysend payment", async () => {
-    expect(1).toBe(1);
-  });
-
   test(
     "should execute a raw graphql query",
     async () => {
-      // TODO: import from objects/fragments
       const query = `
               query DecodeInvoice($encoded_payment_request: String!) {
                 decoded_payment_request(encoded_payment_request: $encoded_payment_request) {
@@ -464,7 +468,14 @@ describe("P2 tests", () => {
         constructObject: (data) => data?.decoded_payment_request,
       });
 
-      expect(result).not.toBeNull();
+      expect({
+        invoice_data_payment_hash: result.invoice_data_payment_hash,
+        invoice_data_amount: {
+          currency_amount_original_value:
+            result.invoice_data_amount.currency_amount_original_value,
+        },
+        invoice_data_memo: result.invoice_data_memo,
+      }).toEqual(DECODED_REQUEST_DETAILS_FOR_TESTS);
     },
     TESTS_TIMEOUT,
   );
