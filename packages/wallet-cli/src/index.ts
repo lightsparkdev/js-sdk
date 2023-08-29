@@ -149,7 +149,7 @@ const createInvoice = async (
     throw new Error("Failed to create invoice");
   }
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
-  qrcode.generate(invoice.encodedPaymentRequest, { small: true });
+  qrcode.generate(invoice.data.encodedPaymentRequest, { small: true });
 };
 
 const createTestModeInvoice = async (

@@ -182,7 +182,7 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
       if (!invoice) throw new TypeError("invoice is null");
 
       const payment = await regtestClient.createTestModePayment(
-        invoice.encodedPaymentRequest,
+        invoice.data.encodedPaymentRequest,
       );
 
       await sleep(5_000);
@@ -210,10 +210,14 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
   test(
     "should create a STANDARD type invoice",
     async () => {
-      invoiceData.STANDARD = await regtestClient.createInvoice(
+      const invoice = await regtestClient.createInvoice(
         CREATE_INVOICE_AMOUNT_MSATS,
         "hi there",
       );
+
+      if (!invoice) throw new TypeError("invoice is null");
+
+      invoiceData.STANDARD = invoice.data;
 
       expect(invoiceData.STANDARD).not.toBeNull();
     },
