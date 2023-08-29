@@ -1,15 +1,15 @@
 {
   "name": "@lightsparkdev/react-wallet-app",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": true,
   "dependencies": {
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "0.3.11",
-    "@lightsparkdev/react-wallet": "0.6.19",
+    "@lightsparkdev/react-wallet": "0.6.20",
     "@lightsparkdev/ui": "*",
-    "@lightsparkdev/wallet-sdk": "0.6.18",
+    "@lightsparkdev/wallet-sdk": "0.6.19",
     "react": "^18.2.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "6.11.2",
