@@ -5,7 +5,7 @@
     "paths": {
       "src/*": ["./*"]
     },
-    "types": ["node", "jest", "@testing-library/jest-dom", "vite/client"]
+    "types": ["node", "vite/client"]
   },
   "include": ["src/**/*", "../../../packages/ui/**/*"],
   "exclude": ["node_modules"]

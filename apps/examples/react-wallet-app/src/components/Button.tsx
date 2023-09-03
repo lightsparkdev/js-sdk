@@ -1,4 +1,4 @@
-/* eslint-disable-next-line no-restricted-imports -- only use with typesafe button routes */
+/* eslint-disable-next-line no-restricted-imports -- only use with typesafe routes */
 import { Button as ButtonBase } from "@lightsparkdev/ui/components";
 import { type RoutesType } from "../routes";
 

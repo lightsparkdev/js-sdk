@@ -3,7 +3,7 @@ const baseRestrictedImportPaths =
 
 module.exports = {
   extends: ["./react-lib/config"],
-  ignorePatterns: ["src/generated/graphql.tsx", "storybook-static"],
+  ignorePatterns: ["src/generated/", "storybook-static/"],
   rules: {
     "no-restricted-imports": [
       "error",
@@ -12,12 +12,14 @@ module.exports = {
           ...baseRestrictedImportPaths,
           {
             importNames: ["Link", "Navigate", "useNavigate"],
-            message: "Please use typesafe imports from common/router instead.",
+            message:
+              "Please use typesafe imports from components/router instead.",
             name: "react-router-dom",
           },
           {
             importNames: ["Link", "Navigate", "useNavigate"],
-            message: "Please use typesafe imports from common/router instead.",
+            message:
+              "Please use typesafe imports from components/router instead.",
             name: "@lightsparkdev/ui/router",
           },
           {
@@ -27,10 +29,26 @@ module.exports = {
             name: "qrcode.react",
           },
           {
-            importNames: ["Button", "ButtonProps"],
+            importNames: [
+              "Button",
+              "ButtonProps",
+              "ButtonRow",
+              "ButtonRowContainer",
+            ],
             message:
-              "Please do not import Button directly, use typesafe Button in common/Button instead.",
+              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
             name: "@lightsparkdev/ui/components",
+          },
+          {
+            importNames: [
+              "CardFormTextWithLink",
+              "Dropdown",
+              "Table",
+              "TableCell",
+            ],
+            message:
+              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
+            name: "@lightsparkdev/private-ui/src/components",
           },
           {
             importNames: ["useWhatChanged"],
