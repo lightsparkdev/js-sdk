@@ -22,7 +22,10 @@
     },
     "format": {},
     "format:fix": {},
-    "gql-codegen": {},
+    "gql-codegen": {
+      /* Always run codegen since it depends on files external to the workspace: */
+      "cache": false
+    },
     "lint": {},
     "lint:fix": {},
     "lint:watch": {
