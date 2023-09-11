@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.11
+
+### Patch Changes
+
+- c3c779f: Add generate-secp256k1-keypair command
+
 ## 0.0.10
 
 ### Patch Changes
