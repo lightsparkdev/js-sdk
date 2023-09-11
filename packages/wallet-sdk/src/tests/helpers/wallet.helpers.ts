@@ -8,7 +8,7 @@ import type LightsparkClient from "../../client.js";
 import WalletStatus from "../../objects/WalletStatus.js";
 
 import { InMemoryJwtStorage } from "../../../dist/index.js";
-import { MINUTES_IN_HOUR, MS_IN_MINUTE } from "../constants.js";
+import { MINUTES_IN_HOUR, MS_IN_SECOND } from "../constants.js";
 import {
   type CredentialsForWalletJWTCreating,
   type OptionsForWalletJWTCreating,
@@ -61,18 +61,18 @@ export const getClaimsByType = (
       aud: "https://api.lightspark.com",
       sub: opts.userId,
       test: true,
-      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      iat: Math.floor(Date.now() / MS_IN_SECOND),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
+        Date.now() / MS_IN_SECOND + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
     },
     testnet: {
       aud: "https://api.lightspark.com",
       sub: opts.userId,
       test: false,
-      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      iat: Math.floor(Date.now() / MS_IN_SECOND),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
+        Date.now() / MS_IN_SECOND + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
       bitcoin_network: "testnet",
     },
@@ -80,9 +80,9 @@ export const getClaimsByType = (
       aud: "https://api.lightspark.com",
       sub: opts.userId,
       test: false,
-      iat: Math.floor(Date.now() / MS_IN_MINUTE),
+      iat: Math.floor(Date.now() / MS_IN_SECOND),
       exp: Math.floor(
-        Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
+        Date.now() / MS_IN_SECOND + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
       ),
     },
   })[type];
@@ -108,9 +108,9 @@ export const createWalletJwt = async (
     aud: "https://api.lightspark.com",
     sub: userId,
     test: options.test,
-    iat: Math.floor(Date.now() / MS_IN_MINUTE),
+    iat: Math.floor(Date.now() / MS_IN_SECOND),
     exp: Math.floor(
-      Date.now() / MS_IN_MINUTE + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
+      Date.now() / MS_IN_SECOND + MINUTES_IN_HOUR * HOURS_BEFORE_EXPIRE,
     ),
   };
 

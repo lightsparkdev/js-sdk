@@ -3,6 +3,7 @@
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
     "module": "ESNext",
     "target": "es6"
   }

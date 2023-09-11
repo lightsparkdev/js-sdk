@@ -10,8 +10,10 @@ import {
 } from "@lightsparkdev/lightspark-sdk";
 import type { OptionValues } from "commander";
 import { Command, InvalidArgumentError } from "commander";
+import { randomBytes } from "crypto";
 import * as fs from "fs/promises";
 import qrcode from "qrcode-terminal";
+import secp256k1 from "secp256k1";
 import {
   LightsparkSigner,
   Mnemonic,
@@ -23,6 +25,7 @@ import {
   RequiredCredentials,
 } from "./authHelpers.js";
 import {
+  bytesToHex,
   getBitcoinNetworkOrThrow,
   getNodeId,
   getPackageVersion,
@@ -447,12 +450,25 @@ const generateNodeKeys = async (
   const lightsparkSigner = LightsparkSigner.new(seed);
   const extendedPublicKey = lightsparkSigner.get_master_public_key();
 
-  const seedAsHex = seed.as_bytes().reduce((acc: string, byte: number) => {
-    return (acc += ("0" + byte.toString(16)).slice(-2));
-  }, "");
+  const seedAsHex = bytesToHex(seed.as_bytes());
   console.log(`Seed phrase:\n${mnemonic.as_string()}\n`);
   console.log(`Hex-encoded seed:\n${seedAsHex}\n`);
   console.log(`Extended public key:\n${extendedPublicKey}`);
+};
+
+const generateSecp256k1Keypair = async () => {
+  let privateKey;
+  do {
+    privateKey = randomBytes(32);
+  } while (!secp256k1.privateKeyVerify(privateKey));
+
+  const publicKey = secp256k1.publicKeyCreate(privateKey);
+
+  const publicKeyAsHex = bytesToHex(publicKey);
+  const privateKeyAsHex = bytesToHex(privateKey);
+
+  console.log(`Hex-encoded public key: \n${publicKeyAsHex}\n`);
+  console.log(`Hex-encoded private key: \n${privateKeyAsHex}\n`);
 };
 
 const safeParseInt = (value: string /* dummyPrevious: any */) => {
@@ -641,6 +657,14 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       );
     });
 
+  const generateSecp256k1KeypairCmd = new Command("generate-secp256k1-keypair")
+    .description("Generates a secp256k1 keypair.")
+    .action((options) => {
+      main(options, generateSecp256k1Keypair).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err),
+      );
+    });
+
   const InitEnvCmd = new Command("init-env")
     .description("Initialize your environment with required variables.")
     .option("-c --client-id <value>", "Your client ID.")
@@ -672,6 +696,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .addCommand(createTestModePaymentCmd)
     .addCommand(getNodeChannelsCmd)
     .addCommand(generateNodeKeysCmd)
+    .addCommand(generateSecp256k1KeypairCmd)
     .addCommand(InitEnvCmd)
     .addHelpCommand()
     .parse(process.argv);

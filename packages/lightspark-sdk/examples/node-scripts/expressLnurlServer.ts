@@ -88,21 +88,21 @@ app.get("/api/lnurl/payreq/:uuid", async (req, res, next) => {
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(
       credentials.apiTokenClientId,
-      credentials.apiTokenClientSecret
+      credentials.apiTokenClientSecret,
     ),
-    credentials.baseUrl
+    credentials.baseUrl,
   );
 
-  const amountMsats = parseInt(req.query.amountMsats as string);
+  const amountMsats = parseInt(req.query.amount as string);
   if (!amountMsats) {
-    res.status(400).send(errorMessage("Missing amountMsats query parameter."));
+    res.status(400).send(errorMessage("Missing amount query parameter."));
     return;
   }
 
   const invoice = await client.createLnurlInvoice(
     LS_TEST_USER.nodeId,
     amountMsats,
-    generateMetadataForUser(LS_TEST_USER)
+    generateMetadataForUser(LS_TEST_USER),
   );
   if (!invoice) {
     return next(new Error("Invoice creation failed."));
