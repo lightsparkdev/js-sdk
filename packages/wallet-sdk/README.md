@@ -141,11 +141,11 @@ const signingWalletPrivateKey = keyPair.privateKey;
 
 const serializedPublicKeyBytes = await DefaultCrypto.serializeSigningKey(
   signingWalletPublicKey,
-  "spki"
+  "spki",
 );
 const serializedPrivateKeyBytes = await DefaultCrypto.serializeSigningKey(
   signingWalletPrivateKey,
-  "pkcs8"
+  "pkcs8",
 );
 // Store the keys somewhere safe.
 ```
@@ -158,7 +158,7 @@ Now that you've got keys, you can initialize the wallet! Just like when deployin
 let wallet = await client.initializeWallet(
   KeyType.RSA_OAEP,
   b64encode(serializedPublicKeyBytes),
-  b64encode(serializedPrivateKeyBytes)
+  b64encode(serializedPrivateKeyBytes),
 );
 while (
   wallet.status !== WalletStatus.READY &&
@@ -177,7 +177,7 @@ Alternatively, here's an example using the helper, `initializeWalletAndAwaitRead
 const walletSatus = await client.initializeWalletAndAwaitReady(
   KeyType.RSA_OAEP,
   signingWalletPublicKey,
-  signingWalletPrivateKey
+  signingWalletPrivateKey,
 );
 if (walletStatus === WalletStatus.READY) {
   // The wallet is initialized!
@@ -208,8 +208,10 @@ or pay an invoice:
 ```typescript
 const payment = await client.payInvoice(
   /* encodedInvoice */ invoiceData.encodedPaymentRequest,
-  /* maxFeesMsats */ 50_000
+  /* maxFeesMsats */ 50_000,
 );
 ```
 
 For more examples, check out the [examples/node-scripts](./examples/node-scripts/) directory.
+
+TODO
