@@ -47,7 +47,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18.17.0"
   },
   "browser": {
     "crypto": false

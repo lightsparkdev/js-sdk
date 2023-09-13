@@ -19,7 +19,7 @@
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
   "engines": {
-    "node": ">=14.16"
+    "node": ">=18.17.0"
   },
   "exports": {
     ".": {
