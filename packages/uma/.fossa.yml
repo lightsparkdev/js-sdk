@@ -1,0 +1,6 @@
+version: 3
+
+project:
+  id: lightspark/js-uma-sdk
+  name: js-uma-sdk
+  url: https://github.com/lightsparkdev/js-sdk
