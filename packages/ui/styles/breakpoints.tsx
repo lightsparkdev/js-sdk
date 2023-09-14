@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { debounce } from "lodash-es";
 import React, { Fragment, useLayoutEffect, useState } from "react";
 
 export enum Breakpoints {
@@ -156,6 +157,25 @@ export function useBreakpoints() {
   });
 
   return bp;
+}
+
+export function useScreenWidth() {
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+  useLayoutEffect(() => {
+    const handleResize = debounce(() => {
+      setScreenWidth(window.innerWidth);
+    }, 200);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("deviceorientation", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("deviceorientation", handleResize);
+    };
+  });
+
+  return screenWidth;
 }
 
 type DisplayBreakpointProps = {
