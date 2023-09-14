@@ -9,6 +9,8 @@ import type IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js
 import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
 import { IncomingPaymentToAttemptsConnectionFromJson } from "./IncomingPaymentToAttemptsConnection.js";
 import type LightningTransaction from "./LightningTransaction.js";
+import type PostTransactionData from "./PostTransactionData.js";
+import { PostTransactionDataFromJson } from "./PostTransactionData.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
@@ -23,8 +25,8 @@ class IncomingPayment implements LightningTransaction {
     public readonly typename: string,
     public readonly resolvedAt?: string,
     public readonly transactionHash?: string,
-    public readonly originId?: string,
     public readonly paymentRequestId?: string,
+    public readonly umaPostTransactionData?: PostTransactionData[],
   ) {
     autoBind(this);
   }
@@ -118,8 +120,10 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     "IncomingPayment",
     obj["incoming_payment_resolved_at"],
     obj["incoming_payment_transaction_hash"],
-    obj["incoming_payment_origin"]?.id ?? undefined,
     obj["incoming_payment_payment_request"]?.id ?? undefined,
+    obj["incoming_payment_uma_post_transaction_data"].map((e) =>
+      PostTransactionDataFromJson(e),
+    ),
   );
 };
 
@@ -140,14 +144,23 @@ fragment IncomingPaymentFragment on IncomingPayment {
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
     incoming_payment_transaction_hash: transaction_hash
-    incoming_payment_origin: origin {
-        id
-    }
     incoming_payment_destination: destination {
         id
     }
     incoming_payment_payment_request: payment_request {
         id
+    }
+    incoming_payment_uma_post_transaction_data: uma_post_transaction_data {
+        __typename
+        post_transaction_data_utxo: utxo
+        post_transaction_data_amount: amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
     }
 }`;
 

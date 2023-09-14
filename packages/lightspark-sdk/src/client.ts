@@ -251,7 +251,6 @@ class LightsparkClient {
         return {
           color: node.color,
           displayName: node.display_name,
-          purpose: node.purpose,
           id: node.id,
           publicKey: node.public_key,
           status: node.status,
@@ -354,7 +353,6 @@ class LightsparkClient {
     return {
       color: node.color,
       displayName: account.name,
-      purpose: node.purpose,
       id: node.id,
       publicKey: node.public_key,
       status: node.status,

@@ -15,10 +15,6 @@ type CreateLnurlInvoiceInput = {
 
   /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
   expirySecs?: number;
-
-  paymentHash?: string;
-
-  preimageNonce?: string;
 };
 
 export const CreateLnurlInvoiceInputFromJson = (
@@ -29,8 +25,6 @@ export const CreateLnurlInvoiceInputFromJson = (
     amountMsats: obj["create_lnurl_invoice_input_amount_msats"],
     metadataHash: obj["create_lnurl_invoice_input_metadata_hash"],
     expirySecs: obj["create_lnurl_invoice_input_expiry_secs"],
-    paymentHash: obj["create_lnurl_invoice_input_payment_hash"],
-    preimageNonce: obj["create_lnurl_invoice_input_preimage_nonce"],
   } as CreateLnurlInvoiceInput;
 };
 

@@ -21,6 +21,7 @@ export {
 } from "./ChannelOpeningTransaction.js";
 export { default as ChannelStatus } from "./ChannelStatus.js";
 export { default as ChannelToTransactionsConnection } from "./ChannelToTransactionsConnection.js";
+export { default as ComplianceProvider } from "./ComplianceProvider.js";
 export { default as Connection } from "./Connection.js";
 export { default as CreateApiTokenInput } from "./CreateApiTokenInput.js";
 export { default as CreateApiTokenOutput } from "./CreateApiTokenOutput.js";
@@ -33,9 +34,11 @@ export { default as CreateTestModeInvoiceInput } from "./CreateTestModeInvoiceIn
 export { default as CreateTestModeInvoiceOutput } from "./CreateTestModeInvoiceOutput.js";
 export { default as CreateTestModePaymentInput } from "./CreateTestModePaymentInput.js";
 export { default as CreateTestModePaymentoutput } from "./CreateTestModePaymentoutput.js";
-export { default as CryptoSanctionsScreeningProvider } from "./CryptoSanctionsScreeningProvider.js";
+export { default as CreateUmaInvoiceInput } from "./CreateUmaInvoiceInput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
+export { default as DeclineToSignMessagesInput } from "./DeclineToSignMessagesInput.js";
+export { default as DeclineToSignMessagesOutput } from "./DeclineToSignMessagesOutput.js";
 export { default as DeleteApiTokenInput } from "./DeleteApiTokenInput.js";
 export { default as DeleteApiTokenOutput } from "./DeleteApiTokenOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
@@ -46,6 +49,7 @@ export { default as FundNodeOutput } from "./FundNodeOutput.js";
 export { default as GraphNode } from "./GraphNode.js";
 export { default as Hop, getHopQuery } from "./Hop.js";
 export { default as HtlcAttemptFailureCode } from "./HtlcAttemptFailureCode.js";
+export { default as IdAndSignature } from "./IdAndSignature.js";
 export { default as IncomingPayment } from "./IncomingPayment.js";
 export {
   default as IncomingPaymentAttempt,
@@ -68,9 +72,10 @@ export {
   default as LightsparkNodeOwner,
   getLightsparkNodeOwnerQuery,
 } from "./LightsparkNodeOwner.js";
-export { default as LightsparkNodePurpose } from "./LightsparkNodePurpose.js";
 export { default as LightsparkNodeStatus } from "./LightsparkNodeStatus.js";
 export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeToChannelsConnection.js";
+export { default as LightsparkNodeWithOSK } from "./LightsparkNodeWithOSK.js";
+export { default as LightsparkNodeWithRemoteSigning } from "./LightsparkNodeWithRemoteSigning.js";
 export { default as Node } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";
@@ -83,10 +88,13 @@ export { default as OutgoingPayment } from "./OutgoingPayment.js";
 export { default as OutgoingPaymentAttempt } from "./OutgoingPaymentAttempt.js";
 export { default as OutgoingPaymentAttemptStatus } from "./OutgoingPaymentAttemptStatus.js";
 export { default as OutgoingPaymentAttemptToHopsConnection } from "./OutgoingPaymentAttemptToHopsConnection.js";
+export { default as OutgoingPaymentsForInvoiceQueryInput } from "./OutgoingPaymentsForInvoiceQueryInput.js";
+export { default as OutgoingPaymentsForInvoiceQueryOutput } from "./OutgoingPaymentsForInvoiceQueryOutput.js";
 export { default as OutgoingPaymentToAttemptsConnection } from "./OutgoingPaymentToAttemptsConnection.js";
 export { default as PageInfo } from "./PageInfo.js";
 export { default as PayInvoiceInput } from "./PayInvoiceInput.js";
 export { default as PayInvoiceOutput } from "./PayInvoiceOutput.js";
+export { default as PaymentDirection } from "./PaymentDirection.js";
 export { default as PaymentFailureReason } from "./PaymentFailureReason.js";
 export {
   default as PaymentRequest,
@@ -94,7 +102,16 @@ export {
 } from "./PaymentRequest.js";
 export { default as PaymentRequestData } from "./PaymentRequestData.js";
 export { default as PaymentRequestStatus } from "./PaymentRequestStatus.js";
+export { default as PayUmaInvoiceInput } from "./PayUmaInvoiceInput.js";
 export { default as Permission } from "./Permission.js";
+export { default as PostTransactionData } from "./PostTransactionData.js";
+export { default as RegisterPaymentInput } from "./RegisterPaymentInput.js";
+export { default as RegisterPaymentOutput } from "./RegisterPaymentOutput.js";
+export { default as ReleaseChannelPerCommitmentSecretInput } from "./ReleaseChannelPerCommitmentSecretInput.js";
+export { default as ReleaseChannelPerCommitmentSecretOutput } from "./ReleaseChannelPerCommitmentSecretOutput.js";
+export { default as ReleasePaymentPreimageInput } from "./ReleasePaymentPreimageInput.js";
+export { default as ReleasePaymentPreimageOutput } from "./ReleasePaymentPreimageOutput.js";
+export { default as RemoteSigningSubEventType } from "./RemoteSigningSubEventType.js";
 export { default as RequestWithdrawalInput } from "./RequestWithdrawalInput.js";
 export { default as RequestWithdrawalOutput } from "./RequestWithdrawalOutput.js";
 export { default as RichText } from "./RichText.js";
@@ -104,17 +121,33 @@ export {
   getRoutingTransactionQuery,
 } from "./RoutingTransaction.js";
 export { default as RoutingTransactionFailureReason } from "./RoutingTransactionFailureReason.js";
-export { default as ScreenBitcoinAddressesInput } from "./ScreenBitcoinAddressesInput.js";
-export { default as ScreenBitcoinAddressesOutput } from "./ScreenBitcoinAddressesOutput.js";
+export { default as ScreenNodeInput } from "./ScreenNodeInput.js";
+export { default as ScreenNodeOutput } from "./ScreenNodeOutput.js";
 export { default as Secret } from "./Secret.js";
 export { default as SendPaymentInput } from "./SendPaymentInput.js";
 export { default as SendPaymentOutput } from "./SendPaymentOutput.js";
+export { default as SetInvoicePaymentHashInput } from "./SetInvoicePaymentHashInput.js";
+export { default as SetInvoicePaymentHashOutput } from "./SetInvoicePaymentHashOutput.js";
+export { default as Signable, getSignableQuery } from "./Signable.js";
+export {
+  default as SignablePayload,
+  getSignablePayloadQuery,
+} from "./SignablePayload.js";
+export { default as SignablePayloadStatus } from "./SignablePayloadStatus.js";
+export { default as SignInvoiceInput } from "./SignInvoiceInput.js";
+export { default as SignInvoiceOutput } from "./SignInvoiceOutput.js";
+export { default as SignMessagesInput } from "./SignMessagesInput.js";
+export { default as SignMessagesOutput } from "./SignMessagesOutput.js";
 export { default as SingleNodeDashboard } from "./SingleNodeDashboard.js";
 export { default as Transaction, getTransactionQuery } from "./Transaction.js";
 export { default as TransactionFailures } from "./TransactionFailures.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
+export { default as UpdateChannelPerCommitmentPointInput } from "./UpdateChannelPerCommitmentPointInput.js";
+export { default as UpdateChannelPerCommitmentPointOutput } from "./UpdateChannelPerCommitmentPointOutput.js";
+export { default as UpdateNodeSharedSecretInput } from "./UpdateNodeSharedSecretInput.js";
+export { default as UpdateNodeSharedSecretOutput } from "./UpdateNodeSharedSecretOutput.js";
 export { default as Wallet } from "./Wallet.js";
 export { default as WalletStatus } from "./WalletStatus.js";
 export { default as WalletToPaymentRequestsConnection } from "./WalletToPaymentRequestsConnection.js";

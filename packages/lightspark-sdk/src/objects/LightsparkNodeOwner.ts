@@ -47,6 +47,7 @@ export const LightsparkNodeOwnerFromJson = (obj: any): LightsparkNodeOwner => {
       !!obj["wallet_balances"]
         ? BalancesFromJson(obj["wallet_balances"])
         : undefined,
+      obj["wallet_account"]?.id ?? undefined,
     );
   }
   throw new LightsparkException(
@@ -99,6 +100,9 @@ fragment LightsparkNodeOwnerFragment on LightsparkNodeOwner {
             }
         }
         wallet_third_party_identifier: third_party_identifier
+        wallet_account: account {
+            id
+        }
         wallet_status: status
     }
 }`;
