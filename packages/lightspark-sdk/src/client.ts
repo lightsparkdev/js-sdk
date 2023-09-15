@@ -895,6 +895,6 @@ class LightsparkClient {
   }
 }
 
-const LIGHTSPARK_SDK_ENDPOINT = "graphql/server/2023-04-04";
+const LIGHTSPARK_SDK_ENDPOINT = "graphql/server/2023-09-13";
 
 export default LightsparkClient;
