@@ -68,6 +68,8 @@ import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
+import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
+import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 
 const sdkVersion = packageJson.version;
 
@@ -393,6 +395,7 @@ class LightsparkClient {
    * @param type The type of invoice to create. Defaults to a normal payment invoice, but you can pass InvoiceType.AMP
    *     to create an [AMP invoice](https://docs.lightning.engineering/lightning-network-tools/lnd/amp), which can be
    *     paid multiple times.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
    * @returns An encoded payment request for the invoice, or undefined if the invoice could not be created.
    */
   public async createInvoice(
@@ -400,13 +403,18 @@ class LightsparkClient {
     amountMsats: number,
     memo: string,
     type: InvoiceType | undefined = undefined,
+    expirySecs: number | undefined = undefined,
   ): Promise<string | undefined> {
-    const response = await this.requester.makeRawRequest(CreateInvoice, {
+    const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
       memo,
       type,
-    });
+    };
+    if (expirySecs !== undefined) {
+      variables["expiry_secs"] = expirySecs;
+    }
+    const response = await this.requester.makeRawRequest(CreateInvoice, variables);
     return response.create_invoice?.invoice.data?.encoded_payment_request;
   }
 
@@ -422,19 +430,59 @@ class LightsparkClient {
    * @param metadata The LNURL metadata payload field in the initial payreq response. This wil be hashed and present in the
    *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
    *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
    * @returns An Invoice object representing the generated invoice.
    */
   public async createLnurlInvoice(
     nodeId: string,
     amountMsats: number,
     metadata: string,
+    expirySecs: number | undefined = undefined,
   ): Promise<Invoice | undefined> {
-    const response = await this.requester.makeRawRequest(CreateLnurlInvoice, {
+    const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
       metadata_hash: createHash("sha256").update(metadata).digest("hex"),
-    });
+    };
+    if (expirySecs !== undefined) {
+      variables["expiry_secs"] = expirySecs;
+    }
+    const response = await this.requester.makeRawRequest(CreateLnurlInvoice, variables);
     const invoiceJson = response.create_lnurl_invoice?.invoice;
+    if (!invoiceJson) {
+      return undefined;
+    }
+    return InvoiceFromJson(invoiceJson);
+  }
+
+  /**
+   * Creates a new invoice for the UMA protocol. The metadata is hashed and included in the invoice.
+   * This API generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment
+   * from another Lightning Node. This should only be used for generating invoices for UMA, with `createInvoice`
+   * preferred in the general case.
+   *
+   * @param nodeId The node ID for which to create an invoice.
+   * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
+   * @param metadata The LNURL metadata payload field in the initial payreq response. This wil be hashed and present in the
+   *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
+   *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 3600 (1 hour).
+   * @returns An Invoice object representing the generated invoice.
+   */
+  public async createUmaInvoice(
+    nodeId: string,
+    amountMsats: number,
+    metadata: string,
+    expirySecs: number | undefined = undefined,
+  ): Promise<Invoice | undefined> {
+    const variables = {
+      node_id: nodeId,
+      amount_msats: amountMsats,
+      metadata_hash: createHash("sha256").update(metadata).digest("hex"),
+      expiry_secs: (expirySecs !== undefined) ? expirySecs : 3600,
+    };
+    const response = await this.requester.makeRawRequest(CreateUmaInvoice, variables);
+    const invoiceJson = response.create_uma_invoice?.invoice;
     if (!invoiceJson) {
       return undefined;
     }
@@ -646,6 +694,58 @@ class LightsparkClient {
     }
     return (
       response.pay_invoice &&
+      OutgoingPaymentFromJson(response.pay_invoice.payment)
+    );
+  }
+
+  /**
+   * sends an UMA payment to a node on the Lightning Network, based on the invoice
+   * (as defined by the BOLT11 specification) that you provide.
+   * This should only be used for paying UMA invoices, with `payInvoice` preferred in the general case.
+   *
+   * @param payerNodeId The ID of the node that will pay the invoice.
+   * @param encodedInvoice The encoded invoice to pay.
+   * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
+   *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
+   * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
+   * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
+   *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
+   * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
+   */
+  public async payUmaInvoice(
+    payerNodeId: string,
+    encodedInvoice: string,
+    maximumFeesMsats: number,
+    timeoutSecs: number = 60,
+    amountMsats: number | undefined = undefined,
+  ): Promise<OutgoingPayment | undefined> {
+    if (!this.nodeKeyCache.hasKey(payerNodeId)) {
+      throw new LightsparkSigningException("Paying node is not unlocked");
+    }
+    const variables: Record<string, string | number> = {
+      node_id: payerNodeId,
+      encoded_invoice: encodedInvoice,
+      timeout_secs: timeoutSecs,
+      maximum_fees_msats: maximumFeesMsats,
+    };
+    if (amountMsats !== undefined) {
+      variables.amount_msats = amountMsats;
+    }
+    const response = await this.requester.makeRawRequest(
+      PayUmaInvoice,
+      variables,
+      payerNodeId,
+    );
+    if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
+      throw new LightsparkException(
+        "PaymentError",
+        response.pay_invoice?.payment.outgoing_payment_failure_message
+          .rich_text_text,
+      );
+    }
+    return (
+      response.pay_uma_invoice &&
       OutgoingPaymentFromJson(response.pay_invoice.payment)
     );
   }
