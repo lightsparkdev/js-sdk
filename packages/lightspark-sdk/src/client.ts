@@ -30,6 +30,7 @@ import { CreateLnurlInvoice } from "./graphql/CreateLnurlInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
+import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FundNode } from "./graphql/FundNode.js";
@@ -38,6 +39,7 @@ import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNo
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
+import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
@@ -68,8 +70,6 @@ import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
-import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
-import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 
 const sdkVersion = packageJson.version;
 
@@ -414,7 +414,10 @@ class LightsparkClient {
     if (expirySecs !== undefined) {
       variables["expiry_secs"] = expirySecs;
     }
-    const response = await this.requester.makeRawRequest(CreateInvoice, variables);
+    const response = await this.requester.makeRawRequest(
+      CreateInvoice,
+      variables,
+    );
     return response.create_invoice?.invoice.data?.encoded_payment_request;
   }
 
@@ -447,7 +450,10 @@ class LightsparkClient {
     if (expirySecs !== undefined) {
       variables["expiry_secs"] = expirySecs;
     }
-    const response = await this.requester.makeRawRequest(CreateLnurlInvoice, variables);
+    const response = await this.requester.makeRawRequest(
+      CreateLnurlInvoice,
+      variables,
+    );
     const invoiceJson = response.create_lnurl_invoice?.invoice;
     if (!invoiceJson) {
       return undefined;
@@ -479,9 +485,12 @@ class LightsparkClient {
       node_id: nodeId,
       amount_msats: amountMsats,
       metadata_hash: createHash("sha256").update(metadata).digest("hex"),
-      expiry_secs: (expirySecs !== undefined) ? expirySecs : 3600,
+      expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
     };
-    const response = await this.requester.makeRawRequest(CreateUmaInvoice, variables);
+    const response = await this.requester.makeRawRequest(
+      CreateUmaInvoice,
+      variables,
+    );
     const invoiceJson = response.create_uma_invoice?.invoice;
     if (!invoiceJson) {
       return undefined;
