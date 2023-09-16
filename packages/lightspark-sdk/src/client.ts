@@ -578,7 +578,7 @@ class LightsparkClient {
       { nodeId },
     );
     const nodeEntity = response.entity;
-    if (nodeEntity?.__typename === "LightsparkNode") {
+    if (nodeEntity?.__typename === "LightsparkNodeWithOSK") {
       return nodeEntity.encrypted_signing_private_key;
     }
     return null;

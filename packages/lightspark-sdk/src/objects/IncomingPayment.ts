@@ -121,7 +121,7 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     obj["incoming_payment_resolved_at"],
     obj["incoming_payment_transaction_hash"],
     obj["incoming_payment_payment_request"]?.id ?? undefined,
-    obj["incoming_payment_uma_post_transaction_data"].map((e) =>
+    obj["incoming_payment_uma_post_transaction_data"]?.map((e) =>
       PostTransactionDataFromJson(e),
     ),
   );

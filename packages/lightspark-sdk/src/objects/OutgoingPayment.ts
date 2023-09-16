@@ -146,7 +146,7 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
     !!obj["outgoing_payment_failure_message"]
       ? RichTextFromJson(obj["outgoing_payment_failure_message"])
       : undefined,
-    obj["outgoing_payment_uma_post_transaction_data"].map((e) =>
+    obj["outgoing_payment_uma_post_transaction_data"]?.map((e) =>
       PostTransactionDataFromJson(e),
     ),
   );
