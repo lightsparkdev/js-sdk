@@ -2,18 +2,40 @@
 /* eslint-disable */
 /**
 */
+export enum Network {
+  Bitcoin = 0,
+  Testnet = 1,
+  Regtest = 2,
+}
+/**
+*/
+export class InvoiceSignature {
+  free(): void;
+/**
+* @returns {Uint8Array}
+*/
+  get_signature(): Uint8Array;
+/**
+* @returns {number}
+*/
+  get_recovery_id(): number;
+}
+/**
+*/
 export class LightsparkSigner {
   free(): void;
 /**
 * @param {Seed} seed
+* @param {number} network
 * @returns {LightsparkSigner}
 */
-  static new(seed: Seed): LightsparkSigner;
+  static new(seed: Seed, network: number): LightsparkSigner;
 /**
 * @param {Uint8Array} seed
+* @param {number} network
 * @returns {LightsparkSigner}
 */
-  static from_bytes(seed: Uint8Array): LightsparkSigner;
+  static from_bytes(seed: Uint8Array, network: number): LightsparkSigner;
 /**
 * @returns {string}
 */
@@ -26,33 +48,58 @@ export class LightsparkSigner {
 /**
 * @param {Uint8Array} message
 * @param {string} derivation_path
+* @param {boolean} is_raw
 * @param {Uint8Array | undefined} add_tweak
 * @param {Uint8Array | undefined} mul_tweak
 * @returns {Uint8Array}
 */
-  derive_key_and_sign(message: Uint8Array, derivation_path: string, add_tweak?: Uint8Array, mul_tweak?: Uint8Array): Uint8Array;
+  derive_key_and_sign(message: Uint8Array, derivation_path: string, is_raw: boolean, add_tweak?: Uint8Array, mul_tweak?: Uint8Array): Uint8Array;
 /**
-* @param {string} public_key
+* @param {Uint8Array} public_key
 * @returns {Uint8Array}
 */
-  ecdh(public_key: string): Uint8Array;
+  ecdh(public_key: Uint8Array): Uint8Array;
+/**
+* @param {string} derivation_path
+* @param {bigint} per_commitment_point_idx
+* @returns {Uint8Array}
+*/
+  get_per_commitment_point(derivation_path: string, per_commitment_point_idx: bigint): Uint8Array;
+/**
+* @param {string} derivation_path
+* @param {bigint} per_commitment_point_idx
+* @returns {Uint8Array}
+*/
+  release_per_commitment_secret(derivation_path: string, per_commitment_point_idx: bigint): Uint8Array;
+/**
+* @returns {Uint8Array}
+*/
+  generate_preimage_nonce(): Uint8Array;
+/**
+* @param {Uint8Array} nonce
+* @returns {Uint8Array}
+*/
+  generate_preimage(nonce: Uint8Array): Uint8Array;
+/**
+* @param {Uint8Array} nonce
+* @returns {Uint8Array}
+*/
+  generate_preimage_hash(nonce: Uint8Array): Uint8Array;
+/**
+* @param {string} derivation_path
+* @returns {string}
+*/
+  derive_private_key(derivation_path: string): string;
 /**
 * @param {string} unsigned_invoice
-* @returns {Uint8Array}
+* @returns {InvoiceSignature}
 */
-  sign_invoice(unsigned_invoice: string): Uint8Array;
+  sign_invoice_wasm(unsigned_invoice: string): InvoiceSignature;
 /**
-* @param {bigint} channel
-* @param {bigint} per_commitment_point_idx
-* @returns {Uint8Array}
+* @param {Uint8Array} invoice_hash
+* @returns {InvoiceSignature}
 */
-  get_per_commitment_point(channel: bigint, per_commitment_point_idx: bigint): Uint8Array;
-/**
-* @param {bigint} channel
-* @param {bigint} per_commitment_point_idx
-* @returns {Uint8Array}
-*/
-  build_commitment_secret(channel: bigint, per_commitment_point_idx: bigint): Uint8Array;
+  sign_invoice_hash_wasm(invoice_hash: Uint8Array): InvoiceSignature;
 }
 /**
 */
@@ -61,7 +108,7 @@ export class Mnemonic {
 /**
 * @returns {Mnemonic}
 */
-  static new(): Mnemonic;
+  static random(): Mnemonic;
 /**
 * @param {Uint8Array} entropy
 * @returns {Mnemonic}

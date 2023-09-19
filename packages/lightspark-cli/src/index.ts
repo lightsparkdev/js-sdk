@@ -27,9 +27,13 @@ import {
 import {
   bytesToHex,
   getBitcoinNetworkOrThrow,
-  getNodeId,
+  getCryptoLibNetwork,
+  getNodeIds,
   getPackageVersion,
+  hexToBytes,
+  inputRemoteSigningSeedHex,
   isBitcoinNetwork,
+  selectNodeId,
 } from "./helpers.js";
 
 const main = async (
@@ -136,7 +140,9 @@ const createInvoice = async (
   credentials: EnvCredentials,
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeId = await getNodeId(client, bitcoinNetwork);
+  const nodeIds = await getNodeIds(client, bitcoinNetwork);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
 
   let { amount, memo, amp } = options;
   if (!amount) {
@@ -164,12 +170,14 @@ const createInvoice = async (
     JSON.stringify({ amount, memo, amp }, null, 2),
     "\n",
   );
+
   const encodedInvoice = await client.createInvoice(
-    nodeId,
+    selectedNodeId,
     Number(amount) * 1000,
     memo,
     amp ? InvoiceType.AMP : InvoiceType.STANDARD,
   );
+
   if (!encodedInvoice) {
     throw new Error("Failed to create invoice");
   }
@@ -181,7 +189,9 @@ const createTestModeInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
 ) => {
-  const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
+  const nodeIds = await getNodeIds(client, BitcoinNetwork.REGTEST);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
 
   console.log(
     "Creating a test-mode invoice with options: ",
@@ -189,7 +199,7 @@ const createTestModeInvoice = async (
     "\n",
   );
   const encodedInvoice = await client.createTestModeInvoice(
-    nodeId,
+    selectedNodeId,
     options.amount * 1000,
     options.memo,
   );
@@ -283,10 +293,15 @@ const singleNodeDashboard = async (
   credentials: EnvCredentials,
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeId = await getNodeId(client, bitcoinNetwork);
+  const nodeIds = await getNodeIds(client, bitcoinNetwork);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
 
   console.log(`Fetching single node dashboard in ${bitcoinNetwork}...\n`);
-  const dashboard = await client.getSingleNodeDashboard(nodeId, bitcoinNetwork);
+  const dashboard = await client.getSingleNodeDashboard(
+    selectedNodeId,
+    bitcoinNetwork,
+  );
   console.log("Dashboard:", JSON.stringify(dashboard, null, 2));
 };
 
@@ -321,10 +336,14 @@ const createNodeWalletAddress = async (
   credentials: EnvCredentials,
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeId = await getNodeId(client, bitcoinNetwork);
+  const nodeIds = await getNodeIds(client, bitcoinNetwork);
 
-  console.log(`Creating bitcoin funding address for node ${nodeId}...\n`);
-  const address = await client.createNodeWalletAddress(nodeId);
+  const selectedNodeId = await selectNodeId(nodeIds);
+
+  console.log(
+    `Creating bitcoin funding address for node ${selectedNodeId}...\n`,
+  );
+  const address = await client.createNodeWalletAddress(selectedNodeId);
   console.log("Address:", address);
 };
 
@@ -334,7 +353,9 @@ const payInvoice = async (
   credentials: EnvCredentials,
 ) => {
   const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeId = await getNodeId(client, bitcoinNetwork);
+  const nodeIds = await getNodeIds(client, bitcoinNetwork);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
 
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
@@ -344,25 +365,32 @@ const payInvoice = async (
     });
   }
 
-  let nodePassword = options.password;
-  if (bitcoinNetwork === BitcoinNetwork.REGTEST) {
-    nodePassword = nodePassword || credentials.testNodePassword;
-  } else if (!nodePassword) {
-    nodePassword = await password({
-      message: `What is the password for the node (${nodeId})?`,
-      mask: "*",
-    });
+  let loaderArgs;
+  if (selectedNodeId.startsWith("LightsparkNodeWithRemoteSigning")) {
+    const seedHex = await inputRemoteSigningSeedHex();
+    loaderArgs = { masterSeed: hexToBytes(seedHex), network: bitcoinNetwork };
+  } else {
+    let nodePassword = options.password;
+    if (bitcoinNetwork === BitcoinNetwork.REGTEST) {
+      nodePassword = nodePassword || credentials.testNodePassword;
+    } else if (!nodePassword) {
+      nodePassword = await password({
+        message: `What is the password for the node (${selectedNodeId})?`,
+        mask: "*",
+      });
+    }
+    loaderArgs = { password: nodePassword };
   }
 
+  await client.loadNodeSigningKey(selectedNodeId, loaderArgs);
+
   console.log(
-    "Paying invoice with options: ",
-    JSON.stringify({ ...options, invoice: encodedInvoice }, null, 2),
+    "Paying an invoice with options: ",
+    JSON.stringify({ ...options }, null, 2),
     "\n",
   );
-
-  await client.loadNodeSigningKey(nodeId, { password: nodePassword });
   const payment = await client.payInvoice(
-    nodeId,
+    selectedNodeId,
     encodedInvoice,
     1_000_000,
     60, // Default
@@ -376,7 +404,9 @@ const createTestModePayment = async (
   options: OptionValues,
   credentials?: EnvCredentials,
 ) => {
-  const nodeId = await getNodeId(client, BitcoinNetwork.REGTEST);
+  const nodeIds = await getNodeIds(client, BitcoinNetwork.REGTEST);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
 
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
@@ -386,15 +416,30 @@ const createTestModePayment = async (
     });
   }
 
-  console.log("Paying invoice...\n");
-  const nodePassword = credentials?.testNodePassword;
-  if (!nodePassword) {
-    throw new Error("Node password not found in environment.");
+  let loaderArgs;
+  if (selectedNodeId.startsWith("LightsparkNodeWithRemoteSigning")) {
+    const seedHex = await inputRemoteSigningSeedHex();
+    loaderArgs = {
+      masterSeed: hexToBytes(seedHex),
+      network: BitcoinNetwork.REGTEST,
+    };
+  } else {
+    const nodePassword = credentials?.testNodePassword;
+    if (!nodePassword) {
+      throw new Error("Node password not found in environment.");
+    }
+    loaderArgs = { password: nodePassword };
   }
 
-  await client.loadNodeSigningKey(nodeId, { password: nodePassword });
+  await client.loadNodeSigningKey(selectedNodeId, loaderArgs);
+
+  console.log(
+    "Paying an invoice with options: ",
+    JSON.stringify({ ...options }, null, 2),
+    "\n",
+  );
   const payment = await client.createTestModePayment(
-    nodeId,
+    selectedNodeId,
     encodedInvoice,
     options.amount === -1 ? undefined : options.amount * 1000,
   );
@@ -421,6 +466,7 @@ const getNodeChannels = async (
 const generateNodeKeys = async (
   client: LightsparkClient,
   options: OptionValues,
+  credentials: EnvCredentials,
 ) => {
   let mnemonic: Mnemonic;
   let seedPhrase = options.seedPhrase;
@@ -438,7 +484,7 @@ const generateNodeKeys = async (
       });
       mnemonic = Mnemonic.from_phrase(seedPhrase);
     } else {
-      mnemonic = Mnemonic.new();
+      mnemonic = Mnemonic.random();
     }
   } else {
     mnemonic = Mnemonic.from_phrase(seedPhrase);
@@ -447,7 +493,10 @@ const generateNodeKeys = async (
   console.log("Generating node keys...\n");
 
   const seed = Seed.from_mnemonic(mnemonic);
-  const lightsparkSigner = LightsparkSigner.new(seed);
+  const lightsparkSigner = LightsparkSigner.new(
+    seed,
+    getCryptoLibNetwork(credentials.bitcoinNetwork),
+  );
   const extendedPublicKey = lightsparkSigner.get_master_public_key();
 
   const seedAsHex = bytesToHex(seed.as_bytes());
