@@ -251,7 +251,7 @@ console.log("");
 // Let's send the payment.
 
 // First, we need to recover the signing key.
-await client.unlockNode(node2Id, credentials.node2Password!);
+await client.loadNodeSigningKey(node2Id, { password: credentials.node2Password! });
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment

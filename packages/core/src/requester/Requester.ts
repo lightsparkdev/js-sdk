@@ -228,9 +228,10 @@ class Requester {
     const encodedPayload = new TextEncoderImpl().encode(
       JSON.stringify(payload),
     );
-    const signedPayload = await this.cryptoImpl.sign(key, encodedPayload);
-    const encodedSignedPayload = b64encode(signedPayload);
 
+    const signedPayload = await key.sign(encodedPayload);
+
+    const encodedSignedPayload = b64encode(signedPayload);
     headers["X-Lightspark-Signing"] = JSON.stringify({
       v: "1",
       signature: encodedSignedPayload,

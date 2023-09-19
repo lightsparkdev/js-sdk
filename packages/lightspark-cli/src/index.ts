@@ -88,15 +88,15 @@ const initEnv = async (options: OptionValues) => {
 
   let content = `export ${RequiredCredentials.ClientId}="${clientId}"\n`;
   content += `export ${RequiredCredentials.ClientSecret}="${clientSecret}"\n`;
-  let baseUrl: string | undefined;
+  let baseApiUrl: string | undefined;
   if (options.env === "dev") {
-    baseUrl = "api.dev.dev.sparkinfra.net";
-    content += `export LIGHTSPARK_BASE_URL="${baseUrl}"\n`;
+    baseApiUrl = "api.dev.dev.sparkinfra.net";
+    content += `export LIGHTSPARK_BASE_URL="${baseApiUrl}" # API url for dev deployment environment\n`;
   }
 
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(clientId, clientSecret),
-    baseUrl,
+    baseApiUrl,
   );
 
   let tokenBitcoinNetwork;
@@ -360,7 +360,7 @@ const payInvoice = async (
     "\n",
   );
 
-  await client.unlockNode(nodeId, nodePassword);
+  await client.loadNodeSigningKey(nodeId, { password: nodePassword });
   const payment = await client.payInvoice(
     nodeId,
     encodedInvoice,
@@ -392,7 +392,7 @@ const createTestModePayment = async (
     throw new Error("Node password not found in environment.");
   }
 
-  await client.unlockNode(nodeId, nodePassword);
+  await client.loadNodeSigningKey(nodeId, { password: nodePassword });
   const payment = await client.createTestModePayment(
     nodeId,
     encodedInvoice,

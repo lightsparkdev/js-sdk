@@ -1,6 +1,6 @@
 module.exports = {
   extends: ["@lightsparkdev/eslint-config/base"],
-  ignorePatterns: ["jest.config.ts"],
+  ignorePatterns: ["jest.config.ts", "lightspark_crypto.js"],
   overrides: [
     {
       files: ["./src/objects/**/*.ts?(x)"],

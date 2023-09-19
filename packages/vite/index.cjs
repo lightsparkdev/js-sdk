@@ -59,6 +59,8 @@ module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
     resolve: {
       alias: {
         src: path.resolve(dirname, "./src"),
+        // We need createHash in core which is used by browser projects (see: https://github.com/huggingface/huggingface.js/issues/137)
+        crypto: 'crypto-browserify',
       },
     },
   });

@@ -9,16 +9,16 @@ import type {
   KeyOrAliasType,
   Maybe,
   Query,
+  SigningKey,
 } from "@lightsparkdev/core";
 import {
-  b64encode,
   DefaultCrypto,
-  KeyOrAlias,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
   NodeKeyCache,
   Requester,
+  SigningKeyType,
   StubAuthProvider,
 } from "@lightsparkdev/core";
 import { createHash } from "crypto";
@@ -40,12 +40,12 @@ import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
-import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
+import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -70,6 +70,7 @@ import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
+import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 
 const sdkVersion = packageJson.version;
 
@@ -99,6 +100,9 @@ const sdkVersion = packageJson.version;
 class LightsparkClient {
   private requester: Requester;
   private readonly nodeKeyCache: NodeKeyCache;
+  private readonly nodeKeyLoaderCache: NodeKeyLoaderCache;
+  private readonly LIGHTSPARK_SDK_ENDPOINT =
+    process.env.LIGHTSPARK_SDK_ENDPOINT || "graphql/server/2023-09-13";
 
   /**
    * Constructs a new LightsparkClient.
@@ -115,9 +119,13 @@ class LightsparkClient {
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
+    this.nodeKeyLoaderCache = new NodeKeyLoaderCache(
+      this.nodeKeyCache,
+      this.cryptoImpl,
+    );
     this.requester = new Requester(
       this.nodeKeyCache,
-      LIGHTSPARK_SDK_ENDPOINT,
+      this.LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       serverUrl,
@@ -125,6 +133,35 @@ class LightsparkClient {
     );
 
     autoBind(this);
+  }
+
+  /**
+   * Sets the key loader for a node. This unlocks client operations that require a private key.
+   * Passing in [NodeIdAndPasswordSigningKeyLoaderArgs] loads the RSA key for an OSK node.
+   * Passing in [MasterSeedSigningKeyLoaderArgs] loads the Secp256k1 key for a remote signing node.
+   *
+   * @param nodeId The ID of the node the key is for
+   * @param loader The loader for the key
+   */
+  public async loadNodeSigningKey(
+    nodeId: string,
+    loaderArgs: SigningKeyLoaderArgs,
+  ) {
+    this.nodeKeyLoaderCache.setLoader(nodeId, loaderArgs, this.requester);
+    const key = await this.getNodeSigningKey(nodeId);
+    return !!key;
+  }
+
+  /**
+   * Gets the signing key for a node. Must have previously called [loadNodeSigningKey].
+   *
+   * @param nodeId The ID of the node the key is for
+   * @returns The signing key for the node
+   */
+  public async getNodeSigningKey(
+    nodeId: string,
+  ): Promise<SigningKey | undefined> {
+    return await this.nodeKeyLoaderCache.getKeyWithLoader(nodeId);
   }
 
   /**
@@ -136,7 +173,7 @@ class LightsparkClient {
   public async setAuthProvider(authProvider: AuthProvider) {
     this.requester = new Requester(
       this.nodeKeyCache,
-      LIGHTSPARK_SDK_ENDPOINT,
+      this.LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       this.serverUrl,
@@ -585,63 +622,6 @@ class LightsparkClient {
   }
 
   /**
-   * Unlock the given node for sensitive operations like sending payments.
-   *
-   * @param nodeId The ID of the node to unlock.
-   * @param password The node password assigned at node creation.
-   * @returns True if the node was unlocked successfully, false otherwise.
-   */
-  public async unlockNode(nodeId: string, password: string): Promise<boolean> {
-    const encryptedKey = await this.recoverNodeSigningKey(nodeId);
-    if (!encryptedKey) {
-      console.warn("No encrypted key found for node " + nodeId);
-      return false;
-    }
-
-    const signingPrivateKey =
-      await this.cryptoImpl.decryptSecretWithNodePassword(
-        encryptedKey.cipher,
-        encryptedKey.encrypted_value,
-        password,
-      );
-
-    if (!signingPrivateKey) {
-      throw new LightsparkSigningException(
-        "Unable to decrypt signing key with provided password. Please try again.",
-      );
-    }
-
-    let signingPrivateKeyPEM = "";
-    if (new Uint8Array(signingPrivateKey)[0] === 48) {
-      // Support DER format - https://github.com/lightsparkdev/webdev/pull/1982
-      signingPrivateKeyPEM = b64encode(signingPrivateKey);
-    } else {
-      const dec = new TextDecoder();
-      signingPrivateKeyPEM = dec.decode(signingPrivateKey);
-    }
-
-    await this.nodeKeyCache.loadKey(
-      nodeId,
-      KeyOrAlias.key(signingPrivateKeyPEM),
-    );
-    return true;
-  }
-
-  private async recoverNodeSigningKey(
-    nodeId: string,
-  ): Promise<Maybe<{ encrypted_value: string; cipher: string }>> {
-    const response = await this.requester.makeRawRequest(
-      RecoverNodeSigningKey,
-      { nodeId },
-    );
-    const nodeEntity = response.entity;
-    if (nodeEntity?.__typename === "LightsparkNodeWithOSK") {
-      return nodeEntity.encrypted_signing_private_key;
-    }
-    return null;
-  }
-
-  /**
    * Directly unlocks a node with a signing private key or alias.
    *
    * @param nodeId The ID of the node to unlock.
@@ -651,7 +631,11 @@ class LightsparkClient {
     nodeId: string,
     signingPrivateKeyOrAlias: KeyOrAliasType,
   ) {
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyOrAlias);
+    await this.nodeKeyCache.loadKey(
+      nodeId,
+      signingPrivateKeyOrAlias,
+      SigningKeyType.RSASigningKey,
+    );
   }
 
   /**
@@ -1003,7 +987,5 @@ class LightsparkClient {
     return this.requester.executeQuery(query);
   }
 }
-
-const LIGHTSPARK_SDK_ENDPOINT = "graphql/server/2023-09-13";
 
 export default LightsparkClient;

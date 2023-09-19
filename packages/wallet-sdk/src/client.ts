@@ -12,6 +12,7 @@ import {
   LightsparkException,
   NodeKeyCache,
   Requester,
+  SigningKeyType,
   StubAuthProvider,
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
@@ -99,11 +100,13 @@ class LightsparkClient {
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
    *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
+   * @param signingKeyType The type of signing key used in the LightsparkClient. Different signing operations are used depending on the key type.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     private readonly serverUrl: string = "api.lightspark.com",
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
+    private readonly signingKeyType: SigningKeyType = SigningKeyType.RSASigningKey,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.requester = new Requester(
@@ -687,11 +690,15 @@ class LightsparkClient {
    * application outside of the SDK. It is the responsibility of the application to ensure that the key is valid and
    * that it is the correct key for the wallet. Otherwise signed requests will fail.
    *
-   * @param sigingKeyBytesOrAlias An object holding either the PEM encoded bytes of the wallet's private signing key or,
+   * @param signingKeyBytesOrAlias An object holding either the PEM encoded bytes of the wallet's private signing key or,
    *     in the case of ReactNative, the alias of the key in the mobile keychain.
    */
-  public loadWalletSigningKey(sigingKeyBytesOrAlias: KeyOrAliasType) {
-    return this.nodeKeyCache.loadKey(WALLET_NODE_ID_KEY, sigingKeyBytesOrAlias);
+  public loadWalletSigningKey(signingKeyBytesOrAlias: KeyOrAliasType) {
+    return this.nodeKeyCache.loadKey(
+      WALLET_NODE_ID_KEY,
+      signingKeyBytesOrAlias,
+      SigningKeyType.RSASigningKey,
+    );
   }
 
   /**
