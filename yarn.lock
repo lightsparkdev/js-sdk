@@ -4156,6 +4156,7 @@ __metadata:
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/crypto-js": ^4.1.1
+    "@types/secp256k1": ^4.0.3
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
     crypto: ^1.0.1
@@ -4168,6 +4169,7 @@ __metadata:
     jest: ^29.6.2
     prettier: 3.0.2
     prettier-plugin-organize-imports: ^3.2.2
+    secp256k1: ^5.0.0
     text-encoding: ^0.7.0
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
