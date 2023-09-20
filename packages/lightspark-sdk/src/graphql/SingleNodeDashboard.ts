@@ -24,7 +24,6 @@ query SingleNodeDashboard(
             entities {
                 color
                 display_name
-                purpose
                 id
                 addresses(first: 1) {
                     entities {

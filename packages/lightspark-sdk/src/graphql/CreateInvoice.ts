@@ -6,8 +6,9 @@ export const CreateInvoice = `
     $amount_msats: Long!
     $memo: String
     $type: InvoiceType = null
-    ) {
-    create_invoice(input: { node_id: $node_id, amount_msats: $amount_msats, memo: $memo, invoice_type: $type }) {
+    $expiry_secs: Int = null
+  ) {
+    create_invoice(input: { node_id: $node_id, amount_msats: $amount_msats, memo: $memo, invoice_type: $type, expiry_secs: $expiry_secs }) {
       invoice {
         data {
           encoded_payment_request

@@ -50,15 +50,6 @@ function takeObject(idx) {
     return ret;
 }
 
-let WASM_VECTOR_LEN = 0;
-
-function passArray8ToWasm0(arg, malloc) {
-    const ptr = malloc(arg.length * 1, 1) >>> 0;
-    getUint8Memory0().set(arg, ptr / 1);
-    WASM_VECTOR_LEN = arg.length;
-    return ptr;
-}
-
 let cachedInt32Memory0 = null;
 
 function getInt32Memory0() {
@@ -66,6 +57,15 @@ function getInt32Memory0() {
         cachedInt32Memory0 = new Int32Array(wasm.memory.buffer);
     }
     return cachedInt32Memory0;
+}
+
+let WASM_VECTOR_LEN = 0;
+
+function passArray8ToWasm0(arg, malloc) {
+    const ptr = malloc(arg.length * 1, 1) >>> 0;
+    getUint8Memory0().set(arg, ptr / 1);
+    WASM_VECTOR_LEN = arg.length;
+    return ptr;
 }
 
 let cachedTextEncoder = new TextEncoder('utf-8');
@@ -146,6 +146,57 @@ function handleError(f, args) {
 }
 /**
 */
+module.exports.Network = Object.freeze({ Bitcoin:0,"0":"Bitcoin",Testnet:1,"1":"Testnet",Regtest:2,"2":"Regtest", });
+/**
+*/
+class InvoiceSignature {
+
+    static __wrap(ptr) {
+        ptr = ptr >>> 0;
+        const obj = Object.create(InvoiceSignature.prototype);
+        obj.__wbg_ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_invoicesignature_free(ptr);
+    }
+    /**
+    * @returns {Uint8Array}
+    */
+    get_signature() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.invoicesignature_get_signature(retptr, this.__wbg_ptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var v1 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @returns {number}
+    */
+    get_recovery_id() {
+        const ret = wasm.invoicesignature_get_recovery_id(this.__wbg_ptr);
+        return ret;
+    }
+}
+module.exports.InvoiceSignature = InvoiceSignature;
+/**
+*/
 class LightsparkSigner {
 
     static __wrap(ptr) {
@@ -169,22 +220,46 @@ class LightsparkSigner {
     }
     /**
     * @param {Seed} seed
+    * @param {number} network
     * @returns {LightsparkSigner}
     */
-    static new(seed) {
-        _assertClass(seed, Seed);
-        const ret = wasm.lightsparksigner_new(seed.__wbg_ptr);
-        return LightsparkSigner.__wrap(ret);
+    static new(seed, network) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            _assertClass(seed, Seed);
+            wasm.lightsparksigner_new(retptr, seed.__wbg_ptr, network);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return LightsparkSigner.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
     }
     /**
     * @param {Uint8Array} seed
+    * @param {number} network
     * @returns {LightsparkSigner}
     */
-    static from_bytes(seed) {
-        const ptr0 = passArray8ToWasm0(seed, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.lightsparksigner_from_bytes(ptr0, len0);
-        return LightsparkSigner.__wrap(ret);
+    static from_bytes(seed, network) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passArray8ToWasm0(seed, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_from_bytes(retptr, ptr0, len0, network);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return LightsparkSigner.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
     }
     /**
     * @returns {string}
@@ -246,11 +321,12 @@ class LightsparkSigner {
     /**
     * @param {Uint8Array} message
     * @param {string} derivation_path
+    * @param {boolean} is_raw
     * @param {Uint8Array | undefined} add_tweak
     * @param {Uint8Array | undefined} mul_tweak
     * @returns {Uint8Array}
     */
-    derive_key_and_sign(message, derivation_path, add_tweak, mul_tweak) {
+    derive_key_and_sign(message, derivation_path, is_raw, add_tweak, mul_tweak) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
             const ptr0 = passArray8ToWasm0(message, wasm.__wbindgen_malloc);
@@ -261,7 +337,7 @@ class LightsparkSigner {
             var len2 = WASM_VECTOR_LEN;
             var ptr3 = isLikeNone(mul_tweak) ? 0 : passArray8ToWasm0(mul_tweak, wasm.__wbindgen_malloc);
             var len3 = WASM_VECTOR_LEN;
-            wasm.lightsparksigner_derive_key_and_sign(retptr, this.__wbg_ptr, ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3);
+            wasm.lightsparksigner_derive_key_and_sign(retptr, this.__wbg_ptr, ptr0, len0, ptr1, len1, is_raw, ptr2, len2, ptr3, len3);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var r2 = getInt32Memory0()[retptr / 4 + 2];
@@ -277,13 +353,13 @@ class LightsparkSigner {
         }
     }
     /**
-    * @param {string} public_key
+    * @param {Uint8Array} public_key
     * @returns {Uint8Array}
     */
     ecdh(public_key) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            const ptr0 = passStringToWasm0(public_key, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const ptr0 = passArray8ToWasm0(public_key, wasm.__wbindgen_malloc);
             const len0 = WASM_VECTOR_LEN;
             wasm.lightsparksigner_ecdh(retptr, this.__wbg_ptr, ptr0, len0);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
@@ -301,17 +377,23 @@ class LightsparkSigner {
         }
     }
     /**
-    * @param {string} unsigned_invoice
+    * @param {string} derivation_path
+    * @param {bigint} per_commitment_point_idx
     * @returns {Uint8Array}
     */
-    sign_invoice(unsigned_invoice) {
+    get_per_commitment_point(derivation_path, per_commitment_point_idx) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            const ptr0 = passStringToWasm0(unsigned_invoice, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const ptr0 = passStringToWasm0(derivation_path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
             const len0 = WASM_VECTOR_LEN;
-            wasm.lightsparksigner_sign_invoice(retptr, this.__wbg_ptr, ptr0, len0);
+            wasm.lightsparksigner_get_per_commitment_point(retptr, this.__wbg_ptr, ptr0, len0, per_commitment_point_idx);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            if (r3) {
+                throw takeObject(r2);
+            }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
             wasm.__wbindgen_free(r0, r1 * 1);
             return v2;
@@ -320,14 +402,37 @@ class LightsparkSigner {
         }
     }
     /**
-    * @param {bigint} channel
+    * @param {string} derivation_path
     * @param {bigint} per_commitment_point_idx
     * @returns {Uint8Array}
     */
-    get_per_commitment_point(channel, per_commitment_point_idx) {
+    release_per_commitment_secret(derivation_path, per_commitment_point_idx) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.lightsparksigner_get_per_commitment_point(retptr, this.__wbg_ptr, channel, per_commitment_point_idx);
+            const ptr0 = passStringToWasm0(derivation_path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_release_per_commitment_secret(retptr, this.__wbg_ptr, ptr0, len0, per_commitment_point_idx);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            if (r3) {
+                throw takeObject(r2);
+            }
+            var v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+            return v2;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @returns {Uint8Array}
+    */
+    generate_preimage_nonce() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.lightsparksigner_generate_preimage_nonce(retptr, this.__wbg_ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var v1 = getArrayU8FromWasm0(r0, r1).slice();
@@ -338,19 +443,121 @@ class LightsparkSigner {
         }
     }
     /**
-    * @param {bigint} channel
-    * @param {bigint} per_commitment_point_idx
+    * @param {Uint8Array} nonce
     * @returns {Uint8Array}
     */
-    build_commitment_secret(channel, per_commitment_point_idx) {
+    generate_preimage(nonce) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.lightsparksigner_build_commitment_secret(retptr, this.__wbg_ptr, channel, per_commitment_point_idx);
+            const ptr0 = passArray8ToWasm0(nonce, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_generate_preimage(retptr, this.__wbg_ptr, ptr0, len0);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
-            var v1 = getArrayU8FromWasm0(r0, r1).slice();
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            if (r3) {
+                throw takeObject(r2);
+            }
+            var v2 = getArrayU8FromWasm0(r0, r1).slice();
             wasm.__wbindgen_free(r0, r1 * 1);
-            return v1;
+            return v2;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {Uint8Array} nonce
+    * @returns {Uint8Array}
+    */
+    generate_preimage_hash(nonce) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passArray8ToWasm0(nonce, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_generate_preimage_hash(retptr, this.__wbg_ptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            if (r3) {
+                throw takeObject(r2);
+            }
+            var v2 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_free(r0, r1 * 1);
+            return v2;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {string} derivation_path
+    * @returns {string}
+    */
+    derive_private_key(derivation_path) {
+        let deferred3_0;
+        let deferred3_1;
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passStringToWasm0(derivation_path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_derive_private_key(retptr, this.__wbg_ptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            var ptr2 = r0;
+            var len2 = r1;
+            if (r3) {
+                ptr2 = 0; len2 = 0;
+                throw takeObject(r2);
+            }
+            deferred3_0 = ptr2;
+            deferred3_1 = len2;
+            return getStringFromWasm0(ptr2, len2);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+        }
+    }
+    /**
+    * @param {string} unsigned_invoice
+    * @returns {InvoiceSignature}
+    */
+    sign_invoice_wasm(unsigned_invoice) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passStringToWasm0(unsigned_invoice, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_sign_invoice_wasm(retptr, this.__wbg_ptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return InvoiceSignature.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+    * @param {Uint8Array} invoice_hash
+    * @returns {InvoiceSignature}
+    */
+    sign_invoice_hash_wasm(invoice_hash) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passArray8ToWasm0(invoice_hash, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_sign_invoice_hash_wasm(retptr, this.__wbg_ptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return InvoiceSignature.__wrap(r0);
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
         }
@@ -383,9 +590,20 @@ class Mnemonic {
     /**
     * @returns {Mnemonic}
     */
-    static new() {
-        const ret = wasm.mnemonic_new();
-        return Mnemonic.__wrap(ret);
+    static random() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.mnemonic_random(retptr);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            if (r2) {
+                throw takeObject(r1);
+            }
+            return Mnemonic.__wrap(r0);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
     }
     /**
     * @param {Uint8Array} entropy
@@ -498,7 +716,7 @@ class Seed {
     as_bytes() {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.seed_as_bytes(retptr, this.__wbg_ptr);
+            wasm.invoicesignature_get_signature(retptr, this.__wbg_ptr);
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var v1 = getArrayU8FromWasm0(r0, r1).slice();

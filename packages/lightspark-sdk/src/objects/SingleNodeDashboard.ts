@@ -1,6 +1,5 @@
 import type { Maybe } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import type LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import type LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import type NodeAddressType from "./NodeAddressType.js";
 import type Transaction from "./Transaction.js";
@@ -8,7 +7,6 @@ import type Transaction from "./Transaction.js";
 type SingleNodeDashboard = {
   id: string;
   displayName: string;
-  purpose: Maybe<LightsparkNodePurpose>;
   color: Maybe<string>;
   publicKey: Maybe<string>;
   status: Maybe<LightsparkNodeStatus>;

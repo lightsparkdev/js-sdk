@@ -9,16 +9,16 @@ import type {
   KeyOrAliasType,
   Maybe,
   Query,
+  SigningKey,
 } from "@lightsparkdev/core";
 import {
-  b64encode,
   DefaultCrypto,
-  KeyOrAlias,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
   NodeKeyCache,
   Requester,
+  SigningKeyType,
   StubAuthProvider,
 } from "@lightsparkdev/core";
 import { createHash } from "crypto";
@@ -30,6 +30,7 @@ import { CreateLnurlInvoice } from "./graphql/CreateLnurlInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
+import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FundNode } from "./graphql/FundNode.js";
@@ -38,12 +39,13 @@ import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNo
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
-import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
+import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
+import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -68,6 +70,7 @@ import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
+import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 
 const sdkVersion = packageJson.version;
 
@@ -97,6 +100,9 @@ const sdkVersion = packageJson.version;
 class LightsparkClient {
   private requester: Requester;
   private readonly nodeKeyCache: NodeKeyCache;
+  private readonly nodeKeyLoaderCache: NodeKeyLoaderCache;
+  private readonly LIGHTSPARK_SDK_ENDPOINT =
+    process.env.LIGHTSPARK_SDK_ENDPOINT || "graphql/server/2023-09-13";
 
   /**
    * Constructs a new LightsparkClient.
@@ -113,9 +119,13 @@ class LightsparkClient {
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
+    this.nodeKeyLoaderCache = new NodeKeyLoaderCache(
+      this.nodeKeyCache,
+      this.cryptoImpl,
+    );
     this.requester = new Requester(
       this.nodeKeyCache,
-      LIGHTSPARK_SDK_ENDPOINT,
+      this.LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       serverUrl,
@@ -123,6 +133,35 @@ class LightsparkClient {
     );
 
     autoBind(this);
+  }
+
+  /**
+   * Sets the key loader for a node. This unlocks client operations that require a private key.
+   * Passing in [NodeIdAndPasswordSigningKeyLoaderArgs] loads the RSA key for an OSK node.
+   * Passing in [MasterSeedSigningKeyLoaderArgs] loads the Secp256k1 key for a remote signing node.
+   *
+   * @param nodeId The ID of the node the key is for
+   * @param loader The loader for the key
+   */
+  public async loadNodeSigningKey(
+    nodeId: string,
+    loaderArgs: SigningKeyLoaderArgs,
+  ) {
+    this.nodeKeyLoaderCache.setLoader(nodeId, loaderArgs, this.requester);
+    const key = await this.getNodeSigningKey(nodeId);
+    return !!key;
+  }
+
+  /**
+   * Gets the signing key for a node. Must have previously called [loadNodeSigningKey].
+   *
+   * @param nodeId The ID of the node the key is for
+   * @returns The signing key for the node
+   */
+  public async getNodeSigningKey(
+    nodeId: string,
+  ): Promise<SigningKey | undefined> {
+    return await this.nodeKeyLoaderCache.getKeyWithLoader(nodeId);
   }
 
   /**
@@ -134,7 +173,7 @@ class LightsparkClient {
   public async setAuthProvider(authProvider: AuthProvider) {
     this.requester = new Requester(
       this.nodeKeyCache,
-      LIGHTSPARK_SDK_ENDPOINT,
+      this.LIGHTSPARK_SDK_ENDPOINT,
       `js-lightspark-sdk/${sdkVersion}`,
       authProvider,
       this.serverUrl,
@@ -251,7 +290,6 @@ class LightsparkClient {
         return {
           color: node.color,
           displayName: node.display_name,
-          purpose: node.purpose,
           id: node.id,
           publicKey: node.public_key,
           status: node.status,
@@ -354,7 +392,6 @@ class LightsparkClient {
     return {
       color: node.color,
       displayName: account.name,
-      purpose: node.purpose,
       id: node.id,
       publicKey: node.public_key,
       status: node.status,
@@ -395,6 +432,7 @@ class LightsparkClient {
    * @param type The type of invoice to create. Defaults to a normal payment invoice, but you can pass InvoiceType.AMP
    *     to create an [AMP invoice](https://docs.lightning.engineering/lightning-network-tools/lnd/amp), which can be
    *     paid multiple times.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
    * @returns An encoded payment request for the invoice, or undefined if the invoice could not be created.
    */
   public async createInvoice(
@@ -402,13 +440,21 @@ class LightsparkClient {
     amountMsats: number,
     memo: string,
     type: InvoiceType | undefined = undefined,
+    expirySecs: number | undefined = undefined,
   ): Promise<string | undefined> {
-    const response = await this.requester.makeRawRequest(CreateInvoice, {
+    const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
       memo,
       type,
-    });
+    };
+    if (expirySecs !== undefined) {
+      variables["expiry_secs"] = expirySecs;
+    }
+    const response = await this.requester.makeRawRequest(
+      CreateInvoice,
+      variables,
+    );
     return response.create_invoice?.invoice.data?.encoded_payment_request;
   }
 
@@ -424,19 +470,65 @@ class LightsparkClient {
    * @param metadata The LNURL metadata payload field in the initial payreq response. This wil be hashed and present in the
    *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
    *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
    * @returns An Invoice object representing the generated invoice.
    */
   public async createLnurlInvoice(
     nodeId: string,
     amountMsats: number,
     metadata: string,
+    expirySecs: number | undefined = undefined,
   ): Promise<Invoice | undefined> {
-    const response = await this.requester.makeRawRequest(CreateLnurlInvoice, {
+    const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
       metadata_hash: createHash("sha256").update(metadata).digest("hex"),
-    });
+    };
+    if (expirySecs !== undefined) {
+      variables["expiry_secs"] = expirySecs;
+    }
+    const response = await this.requester.makeRawRequest(
+      CreateLnurlInvoice,
+      variables,
+    );
     const invoiceJson = response.create_lnurl_invoice?.invoice;
+    if (!invoiceJson) {
+      return undefined;
+    }
+    return InvoiceFromJson(invoiceJson);
+  }
+
+  /**
+   * Creates a new invoice for the UMA protocol. The metadata is hashed and included in the invoice.
+   * This API generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment
+   * from another Lightning Node. This should only be used for generating invoices for UMA, with `createInvoice`
+   * preferred in the general case.
+   *
+   * @param nodeId The node ID for which to create an invoice.
+   * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
+   * @param metadata The LNURL metadata payload field in the initial payreq response. This wil be hashed and present in the
+   *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
+   *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 3600 (1 hour).
+   * @returns An Invoice object representing the generated invoice.
+   */
+  public async createUmaInvoice(
+    nodeId: string,
+    amountMsats: number,
+    metadata: string,
+    expirySecs: number | undefined = undefined,
+  ): Promise<Invoice | undefined> {
+    const variables = {
+      node_id: nodeId,
+      amount_msats: amountMsats,
+      metadata_hash: createHash("sha256").update(metadata).digest("hex"),
+      expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
+    };
+    const response = await this.requester.makeRawRequest(
+      CreateUmaInvoice,
+      variables,
+    );
+    const invoiceJson = response.create_uma_invoice?.invoice;
     if (!invoiceJson) {
       return undefined;
     }
@@ -530,63 +622,6 @@ class LightsparkClient {
   }
 
   /**
-   * Unlock the given node for sensitive operations like sending payments.
-   *
-   * @param nodeId The ID of the node to unlock.
-   * @param password The node password assigned at node creation.
-   * @returns True if the node was unlocked successfully, false otherwise.
-   */
-  public async unlockNode(nodeId: string, password: string): Promise<boolean> {
-    const encryptedKey = await this.recoverNodeSigningKey(nodeId);
-    if (!encryptedKey) {
-      console.warn("No encrypted key found for node " + nodeId);
-      return false;
-    }
-
-    const signingPrivateKey =
-      await this.cryptoImpl.decryptSecretWithNodePassword(
-        encryptedKey.cipher,
-        encryptedKey.encrypted_value,
-        password,
-      );
-
-    if (!signingPrivateKey) {
-      throw new LightsparkSigningException(
-        "Unable to decrypt signing key with provided password. Please try again.",
-      );
-    }
-
-    let signingPrivateKeyPEM = "";
-    if (new Uint8Array(signingPrivateKey)[0] === 48) {
-      // Support DER format - https://github.com/lightsparkdev/webdev/pull/1982
-      signingPrivateKeyPEM = b64encode(signingPrivateKey);
-    } else {
-      const dec = new TextDecoder();
-      signingPrivateKeyPEM = dec.decode(signingPrivateKey);
-    }
-
-    await this.nodeKeyCache.loadKey(
-      nodeId,
-      KeyOrAlias.key(signingPrivateKeyPEM),
-    );
-    return true;
-  }
-
-  private async recoverNodeSigningKey(
-    nodeId: string,
-  ): Promise<Maybe<{ encrypted_value: string; cipher: string }>> {
-    const response = await this.requester.makeRawRequest(
-      RecoverNodeSigningKey,
-      { nodeId },
-    );
-    const nodeEntity = response.entity;
-    if (nodeEntity?.__typename === "LightsparkNode") {
-      return nodeEntity.encrypted_signing_private_key;
-    }
-    return null;
-  }
-
-  /**
    * Directly unlocks a node with a signing private key or alias.
    *
    * @param nodeId The ID of the node to unlock.
@@ -596,7 +631,11 @@ class LightsparkClient {
     nodeId: string,
     signingPrivateKeyOrAlias: KeyOrAliasType,
   ) {
-    await this.nodeKeyCache.loadKey(nodeId, signingPrivateKeyOrAlias);
+    await this.nodeKeyCache.loadKey(
+      nodeId,
+      signingPrivateKeyOrAlias,
+      SigningKeyType.RSASigningKey,
+    );
   }
 
   /**
@@ -648,6 +687,58 @@ class LightsparkClient {
     }
     return (
       response.pay_invoice &&
+      OutgoingPaymentFromJson(response.pay_invoice.payment)
+    );
+  }
+
+  /**
+   * sends an UMA payment to a node on the Lightning Network, based on the invoice
+   * (as defined by the BOLT11 specification) that you provide.
+   * This should only be used for paying UMA invoices, with `payInvoice` preferred in the general case.
+   *
+   * @param payerNodeId The ID of the node that will pay the invoice.
+   * @param encodedInvoice The encoded invoice to pay.
+   * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
+   *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
+   * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
+   * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
+   *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
+   * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
+   */
+  public async payUmaInvoice(
+    payerNodeId: string,
+    encodedInvoice: string,
+    maximumFeesMsats: number,
+    timeoutSecs: number = 60,
+    amountMsats: number | undefined = undefined,
+  ): Promise<OutgoingPayment | undefined> {
+    if (!this.nodeKeyCache.hasKey(payerNodeId)) {
+      throw new LightsparkSigningException("Paying node is not unlocked");
+    }
+    const variables: Record<string, string | number> = {
+      node_id: payerNodeId,
+      encoded_invoice: encodedInvoice,
+      timeout_secs: timeoutSecs,
+      maximum_fees_msats: maximumFeesMsats,
+    };
+    if (amountMsats !== undefined) {
+      variables.amount_msats = amountMsats;
+    }
+    const response = await this.requester.makeRawRequest(
+      PayUmaInvoice,
+      variables,
+      payerNodeId,
+    );
+    if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
+      throw new LightsparkException(
+        "PaymentError",
+        response.pay_invoice?.payment.outgoing_payment_failure_message
+          .rich_text_text,
+      );
+    }
+    return (
+      response.pay_uma_invoice &&
       OutgoingPaymentFromJson(response.pay_invoice.payment)
     );
   }
@@ -896,7 +987,5 @@ class LightsparkClient {
     return this.requester.executeQuery(query);
   }
 }
-
-const LIGHTSPARK_SDK_ENDPOINT = "graphql/server/2023-04-04";
 
 export default LightsparkClient;

@@ -15,10 +15,6 @@ type CreateInvoiceInput = {
 
   /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
   expirySecs?: number;
-
-  paymentHash?: string;
-
-  preimageNonce?: string;
 };
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
@@ -31,8 +27,6 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
         InvoiceType.FUTURE_VALUE
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
-    paymentHash: obj["create_invoice_input_payment_hash"],
-    preimageNonce: obj["create_invoice_input_preimage_nonce"],
   } as CreateInvoiceInput;
 };
 

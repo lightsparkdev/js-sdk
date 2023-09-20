@@ -3,7 +3,6 @@
 import type { Maybe } from "@lightsparkdev/core";
 import type CurrencyAmount from "../objects/CurrencyAmount.js";
 import { FRAGMENT as CurrencyAmountFragment } from "../objects/CurrencyAmount.js";
-import type LightsparkNodePurpose from "../objects/LightsparkNodePurpose.js";
 import type LightsparkNodeStatus from "../objects/LightsparkNodeStatus.js";
 import type NodeAddressType from "../objects/NodeAddressType.js";
 
@@ -14,7 +13,6 @@ export type AccountDashboard = {
     id: string;
     color: Maybe<string>;
     displayName: string;
-    purpose: Maybe<LightsparkNodePurpose>;
     publicKey: Maybe<string>;
     status: Maybe<LightsparkNodeStatus>;
     addresses: {
@@ -57,7 +55,6 @@ export const MultiNodeDashboard = `
         entities {
           color
           display_name
-          purpose
           id
           addresses(first: 1) {
             entities {

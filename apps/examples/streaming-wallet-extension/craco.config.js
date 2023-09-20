@@ -35,6 +35,14 @@ module.exports = {
     configure: (webpackConfig, { env, paths }) => {
       return {
         ...webpackConfig,
+        resolve: {
+          extensions: [".js", ".jsx", ".ts", ".tsx"],
+          fallback: {
+            path: false,
+            fs: false,
+            util: false,
+          },
+        },
         entry: {
           main: [
             env === "development" &&

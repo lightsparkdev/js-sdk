@@ -49,7 +49,7 @@ const nodeID = <the node ID of a node to unlock>;
 const nodePassword = <the password used to unlock the node>;
 
 try {
-    await lightsparkClient.unlockNode(nodeID, nodePassword);
+    await lightsparkClient.loadNodeSigningKey(nodeID, { password: nodePassword });
 } catch (e) {
     console.error("Failed to unlock node", e);
 }

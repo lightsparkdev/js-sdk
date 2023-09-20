@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import {
   ChannelClosingTransaction,
   ChannelOpeningTransaction,
-  IncomingPayment,
   OutgoingPayment,
   RoutingTransaction,
   Transaction,
@@ -43,7 +42,7 @@ const getTransactionOtherNode = (transaction: Transaction): Maybe<string> => {
     case "OutgoingPayment":
       return (transaction as OutgoingPayment).destinationId;
     case "IncomingPayment":
-      return (transaction as IncomingPayment).originId;
+      return "Unknown";
     case "RoutingTransaction":
       return (transaction as RoutingTransaction).incomingChannelId;
     default:

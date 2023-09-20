@@ -13,7 +13,6 @@ import { HopFromJson } from "./Hop.js";
 import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
 import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
 import { LightsparkNodeFromJson } from "./LightsparkNode.js";
-import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
 import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
@@ -61,10 +60,6 @@ export const ConnectionFromJson = (obj: any): Connection => {
         LightsparkNodeFromJson(e),
       ),
       typename: "AccountToNodesConnection",
-      purpose: !!obj["account_to_nodes_connection_purpose"]
-        ? LightsparkNodePurpose[obj["account_to_nodes_connection_purpose"]] ??
-          LightsparkNodePurpose.FUTURE_VALUE
-        : null,
     } as AccountToNodesConnection;
   }
   if (obj["__typename"] == "AccountToPaymentRequestsConnection") {
@@ -227,7 +222,6 @@ fragment ConnectionFragment on Connection {
             page_info_start_cursor: start_cursor
             page_info_end_cursor: end_cursor
         }
-        account_to_nodes_connection_purpose: purpose
         account_to_nodes_connection_entities: entities {
             id
         }

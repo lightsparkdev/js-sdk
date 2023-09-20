@@ -3,7 +3,6 @@
 import type Connection from "./Connection.js";
 import type LightsparkNode from "./LightsparkNode.js";
 import { LightsparkNodeFromJson } from "./LightsparkNode.js";
-import LightsparkNodePurpose from "./LightsparkNodePurpose.js";
 import type PageInfo from "./PageInfo.js";
 import { PageInfoFromJson } from "./PageInfo.js";
 
@@ -23,13 +22,6 @@ type AccountToNodesConnection = Connection & {
 
   /** The typename of the object **/
   typename: string;
-
-  /**
-   * The main purpose for the selected set of nodes. It is automatically determined from the nodes that
-   * are selected in this connection and is used for optimization purposes, as well as to determine the
-   * variation of the UI that should be presented to the user.
-   **/
-  purpose?: LightsparkNodePurpose;
 };
 
 export const AccountToNodesConnectionFromJson = (
@@ -42,10 +34,6 @@ export const AccountToNodesConnectionFromJson = (
       LightsparkNodeFromJson(e),
     ),
     typename: "AccountToNodesConnection",
-    purpose: !!obj["account_to_nodes_connection_purpose"]
-      ? LightsparkNodePurpose[obj["account_to_nodes_connection_purpose"]] ??
-        LightsparkNodePurpose.FUTURE_VALUE
-      : null,
   } as AccountToNodesConnection;
 };
 
@@ -60,7 +48,6 @@ fragment AccountToNodesConnectionFragment on AccountToNodesConnection {
         page_info_start_cursor: start_cursor
         page_info_end_cursor: end_cursor
     }
-    account_to_nodes_connection_purpose: purpose
     account_to_nodes_connection_entities: entities {
         id
     }
