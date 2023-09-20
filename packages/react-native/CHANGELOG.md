@@ -1,12 +1,5 @@
 # @lightsparkdev/react-native
 
-## 0.2.14
-
-### Patch Changes
-
-- Updated dependencies [1f00a50]
-  - @lightsparkdev/core@1.0.0
-
 ## 0.2.13
 
 ### Patch Changes

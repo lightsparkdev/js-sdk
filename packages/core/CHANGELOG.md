@@ -1,12 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.0
-
-### Major Changes
-
-- 1f00a50: Change SigningKey hashing method depending on environment
-  BREAKING: NodeKeyCaches loadKey now requires signingKeyType as a parameter
-
 ## 0.3.11
 
 ### Patch Changes

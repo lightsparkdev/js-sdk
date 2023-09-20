@@ -1,13 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.6.20
-
-### Patch Changes
-
-- 1f00a50: Update to latest 3P API schema
-- Updated dependencies [1f00a50]
-  - @lightsparkdev/core@1.0.0
-
 ## 0.6.19
 
 ### Patch Changes
