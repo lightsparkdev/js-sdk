@@ -40,7 +40,8 @@ module.exports = {
           fallback: {
             path: false,
             fs: false,
-          }
+            util: false,
+          },
         },
         entry: {
           main: [
