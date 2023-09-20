@@ -4,6 +4,7 @@ import {
   type NodeKeyCache,
   type Requester,
   type SigningKey,
+  DefaultCrypto,
 } from "@lightsparkdev/core";
 import {
   isMasterSeedSigningKeyLoaderArgs,
@@ -78,10 +79,11 @@ export default class NodeKeyLoaderCache {
       return;
     }
 
-    return this.nodeKeyCache.loadKey(
+    const key = await this.nodeKeyCache.loadKey(
       id,
       { key: loaderResult.key },
       loaderResult.type,
     );
+    return key || undefined;
   }
 }
