@@ -1,6 +1,10 @@
-import { createHash } from "crypto";
 import secp256k1 from "secp256k1";
-import { hexToBytes, SigningKeyType, type CryptoInterface } from "../index.js";
+import {
+  createSha256Hash,
+  hexToBytes,
+  SigningKeyType,
+  type CryptoInterface,
+} from "../index.js";
 
 interface Alias {
   alias: string;
@@ -43,7 +47,7 @@ export class Secp256k1SigningKey extends SigningKey {
 
   async sign(data: Uint8Array) {
     const keyBytes = new Uint8Array(hexToBytes(this.privateKey));
-    const hash = createHash("sha256").update(data).digest();
+    const hash = await createSha256Hash(data);
     const signResult = secp256k1.ecdsaSign(hash, keyBytes);
     return signResult.signature;
   }
