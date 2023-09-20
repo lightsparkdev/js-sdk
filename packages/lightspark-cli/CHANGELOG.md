@@ -1,5 +1,18 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.12
+
+### Patch Changes
+
+- 1f00a50: Add remote signing support
+  - adds option to select node for operations that use a node
+  - updates wasm packed lightspark_crypto lib
+  - uses loadNodeSigningKey to unlock/provide credentials for both OSK and remote signing nodes
+- Updated dependencies [1f00a50]
+- Updated dependencies [1f00a50]
+  - @lightsparkdev/core@1.0.0
+  - @lightsparkdev/lightspark-sdk@1.0.0
+
 ## 0.0.11
 
 ### Patch Changes
