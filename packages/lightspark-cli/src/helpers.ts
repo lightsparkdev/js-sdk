@@ -6,39 +6,11 @@ import { BitcoinNetwork } from "@lightsparkdev/lightspark-sdk";
 import fs from "fs";
 import { Network } from "../lightspark_crypto/lightspark_crypto.js";
 
-const BITCOIN_NETWORKS = [
-  BitcoinNetwork.MAINNET,
-  BitcoinNetwork.TESTNET,
-  BitcoinNetwork.SIGNET,
-  BitcoinNetwork.REGTEST,
-];
-
-export const isBitcoinNetwork = (bitcoinNetwork: BitcoinNetwork) => {
-  return BITCOIN_NETWORKS.includes(bitcoinNetwork);
-};
-
-export const assertValidBitcoinNetwork = (
-  bitcoinNetwork: BitcoinNetwork,
-): void => {
-  if (!isBitcoinNetwork(bitcoinNetwork)) {
-    throw new Error(
-      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS}`,
-    );
-  }
-};
-
 export const getPackageVersion = (): string => {
   const packageJson = JSON.parse(
     fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"),
   );
   return packageJson?.version;
-};
-
-export const getBitcoinNetworkOrThrow = (
-  bitcoinNetwork: BitcoinNetwork,
-): BitcoinNetwork => {
-  assertValidBitcoinNetwork(bitcoinNetwork.toUpperCase() as BitcoinNetwork);
-  return bitcoinNetwork;
 };
 
 export const getNodeIds = async (

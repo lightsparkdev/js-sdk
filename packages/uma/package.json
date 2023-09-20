@@ -69,12 +69,13 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "yarn jest --version && node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "types": "tsc"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "@lightsparkdev/core": "1.0.0",
+    "@lightsparkdev/lightspark-sdk": "0.4.11",
     "@react-native-async-storage/async-storage": "^1.18.1",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
@@ -82,6 +83,7 @@
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
+    "secp256k1": "^5.0.0",
     "ws": "^8.12.1",
     "zen-observable-ts": "^1.1.0"
   },

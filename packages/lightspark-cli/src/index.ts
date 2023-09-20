@@ -5,9 +5,16 @@ import { input, password } from "@inquirer/prompts";
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
+  getBitcoinNetworkOrThrow,
   InvoiceType,
+  isBitcoinNetwork,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
+import {
+  getCredentialsFromEnvOrThrow,
+  RequiredCredentials,
+  type EnvCredentials,
+} from "@lightsparkdev/lightspark-sdk/env";
 import type { OptionValues } from "commander";
 import { Command, InvalidArgumentError } from "commander";
 import { randomBytes } from "crypto";
@@ -19,20 +26,13 @@ import {
   Mnemonic,
   Seed,
 } from "../lightspark_crypto/lightspark_crypto.js";
-import type { EnvCredentials } from "./authHelpers.js";
-import {
-  getCredentialsFromEnvOrThrow,
-  RequiredCredentials,
-} from "./authHelpers.js";
 import {
   bytesToHex,
-  getBitcoinNetworkOrThrow,
   getCryptoLibNetwork,
   getNodeIds,
   getPackageVersion,
   hexToBytes,
   inputRemoteSigningSeedHex,
-  isBitcoinNetwork,
   selectNodeId,
 } from "./helpers.js";
 
