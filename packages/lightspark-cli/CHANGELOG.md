@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.13
+
+### Patch Changes
+
+- 808c77a: Consolidate some imports to lightspark-sdk and core
+- Updated dependencies [808c77a]
+  - @lightsparkdev/lightspark-sdk@1.0.1
+  - @lightsparkdev/core@1.0.1
+
 ## 0.0.12
 
 ### Patch Changes
