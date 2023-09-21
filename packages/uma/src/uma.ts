@@ -1,10 +1,13 @@
+import { createSha256Hash } from "@lightsparkdev/core";
 import crypto from "crypto";
 import secp256k1 from "secp256k1";
 import {
   encodeToUrl,
   getSignableLnurlpRequestPayload,
   type LnurlpRequest,
+  type PubKeyResponse,
 } from "./protocol.js";
+import { type PublicKeyCache } from "./PublicKeyCache.js";
 import { isVersionSupported, UmaProtocolVersion } from "./version.js";
 
 export type ParsedLnurlpRequest = {
@@ -78,17 +81,51 @@ export function generateNonce() {
   return Number(crypto.getRandomValues(new Uint32Array(1)));
 }
 
-/*
-	GetSignedLnurlpRequestUrl Creates a signed uma request URL.
+/* fetchPublicKeyForVasp fetches the public key for another VASP.
 
-  Args:
+If the public key is not in the cache, it will be fetched from the VASP's domain.
+The public key will be cached for future use.
 
-	signingPrivateKey: the private key of the VASP that is sending the payment. This will be used to sign the request.
-	receiverAddress: the address of the receiver of the payment (i.e. $bob@vasp2).
-	senderVaspDomain: the domain of the VASP that is sending the payment. It will be used by the receiver to fetch the public keys of the sender.
-	isSubjectToTravelRule: whether the sending VASP is a financial institution that requires travel rule information.
-	umaVersionOverride: the version of the UMA protocol to use. If not specified, the latest version will be used.
-*/
+Args:
+vaspDomain: the domain of the VASP.
+cache: the PublicKeyCache cache to use. You can use the InMemoryPublicKeyCache struct, or implement your own persistent cache with any storage type. */
+export async function fetchPublicKeyForVasp(
+  vaspDomain: string,
+  cache: PublicKeyCache,
+): Promise<PubKeyResponse> {
+  const publicKey = cache.fetchPublicKeyForVasp(vaspDomain);
+  if (publicKey) {
+    return Promise.resolve(publicKey);
+  }
+
+  let scheme = "https://";
+  if (vaspDomain.startsWith("localhost:")) {
+    scheme = "http://";
+  }
+
+  const response = await fetch(
+    scheme + vaspDomain + "/.well-known/lnurlpubkey",
+  );
+  if (response.status != 200) {
+    if (response.status !== 200) {
+      return Promise.reject(new Error("invalid response from VASP"));
+    }
+  }
+  const pubKeyResponse = await response.json();
+  cache.addPublicKeyForVasp(vaspDomain, pubKeyResponse);
+  return pubKeyResponse;
+}
+
+/* getSignedLnurlpRequestUrl Creates a signed uma request URL.
+
+Args:
+
+signingPrivateKey: the private key of the VASP that is sending the payment. This will be used to sign the request.
+receiverAddress: the address of the receiver of the payment (i.e. $bob@vasp2).
+senderVaspDomain: the domain of the VASP that is sending the payment. It will be used by the receiver to fetch the public keys of the sender.
+isSubjectToTravelRule: whether the sending VASP is a financial institution that requires travel rule information.
+umaVersionOverride: the version of the UMA protocol to use. If not specified, the latest version will be used. */
+
 export async function getSignedLnurlpRequestUrl(
   signingPrivateKey: Uint8Array,
   receiverAddress: string,
@@ -121,16 +158,10 @@ function uint8ArrayToHexString(uint8Array: Uint8Array) {
     .join("");
 }
 
-function sha256(data: Uint8Array) {
-  const hash = crypto.createHash("sha256");
-  hash.update(data);
-  return hash.digest();
-}
-
 async function signPayload(payload: string, privateKeyBytes: Uint8Array) {
   const encoder = new TextEncoder();
   const encodedPayload = encoder.encode(payload);
-  const hashedPayload = sha256(encodedPayload);
+  const hashedPayload = await createSha256Hash(encodedPayload);
 
   const { signature } = secp256k1.ecdsaSign(hashedPayload, privateKeyBytes);
   return uint8ArrayToHexString(signature);
@@ -143,7 +174,7 @@ export async function verifyUmaLnurlpQuerySignature(
   const payload = getSignableLnurlpRequestPayload(query);
   const encoder = new TextEncoder();
   const encodedPayload = encoder.encode(payload);
-  const hashedPayload = sha256(encodedPayload);
+  const hashedPayload = await createSha256Hash(encodedPayload);
   return verifySignature(
     hashedPayload,
     query.signature,
@@ -152,7 +183,7 @@ export async function verifyUmaLnurlpQuerySignature(
 }
 
 function verifySignature(
-  hashedPayload: Buffer,
+  hashedPayload: Uint8Array,
   signature: string,
   otherVaspPubKey: Uint8Array,
 ) {
