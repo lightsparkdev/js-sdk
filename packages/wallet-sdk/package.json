@@ -69,7 +69,7 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test-skip": "yarn jest --version && node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "types": "tsc"
   },
   "license": "Apache-2.0",
