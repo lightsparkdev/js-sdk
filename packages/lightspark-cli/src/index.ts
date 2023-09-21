@@ -399,6 +399,58 @@ const payInvoice = async (
   console.log("Payment:", JSON.stringify(payment, null, 2));
 };
 
+const payUmaInvoice = async (
+  client: LightsparkClient,
+  options: OptionValues,
+  credentials: EnvCredentials,
+) => {
+  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
+  const nodeIds = await getNodeIds(client, bitcoinNetwork);
+
+  const selectedNodeId = await selectNodeId(nodeIds);
+
+  let encodedInvoice = options.invoice;
+  if (!encodedInvoice) {
+    encodedInvoice = await input({
+      message: "What is the encoded invoice?",
+      validate: (value) => value.length > 0,
+    });
+  }
+
+  let loaderArgs;
+  if (selectedNodeId.startsWith("LightsparkNodeWithRemoteSigning")) {
+    const seedHex = await inputRemoteSigningSeedHex();
+    loaderArgs = { masterSeed: hexToBytes(seedHex), network: bitcoinNetwork };
+  } else {
+    let nodePassword = options.password;
+    if (bitcoinNetwork === BitcoinNetwork.REGTEST) {
+      nodePassword = nodePassword || credentials.testNodePassword;
+    } else if (!nodePassword) {
+      nodePassword = await password({
+        message: `What is the password for the node (${selectedNodeId})?`,
+        mask: "*",
+      });
+    }
+    loaderArgs = { password: nodePassword };
+  }
+
+  await client.loadNodeSigningKey(selectedNodeId, loaderArgs);
+
+  console.log(
+    "Paying an invoice with options: ",
+    JSON.stringify({ ...options }, null, 2),
+    "\n",
+  );
+  const payment = await client.payUmaInvoice(
+    selectedNodeId,
+    encodedInvoice,
+    1_000_000,
+    60, // Default
+    options.amount === -1 ? undefined : options.amount * 1000,
+  );
+  console.log("Payment:", JSON.stringify(payment, null, 2));
+};
+
 const createTestModePayment = async (
   client: LightsparkClient,
   options: OptionValues,
@@ -669,6 +721,21 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       );
     });
 
+  const payUmaInvoiceCmd = new Command("pay-uma-invoice")
+    .description("Pay an UMA invoice from your account.")
+    .option("-i, --invoice  <value>", "The encoded payment request.")
+    .option(
+      "-a, --amount <number>",
+      "The amount to pay in sats.",
+      safeParseInt,
+      -1,
+    )
+    .action((options) => {
+      main(options, payUmaInvoice).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err),
+      );
+    });
+
   const createTestModePaymentCmd = new Command("create-test-mode-payment")
     .description(
       "In test mode, simulates a payment from another node to an invoice.",
@@ -742,6 +809,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .addCommand(decodeInvoiceCmd)
     .addCommand(createNodeWalletAddressCmd)
     .addCommand(payInvoiceCmd)
+    .addCommand(payUmaInvoiceCmd)
     .addCommand(createTestModePaymentCmd)
     .addCommand(getNodeChannelsCmd)
     .addCommand(generateNodeKeysCmd)
