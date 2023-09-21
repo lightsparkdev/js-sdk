@@ -2,10 +2,10 @@
 
 import {
   AccountTokenAuthProvider,
+  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
 import express, { Request } from "express";
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 ////////////////////////////////////////////////////////
 // MODIFY THESE VARIABLES BEFORE RUNNING THE EXAMPLE  //

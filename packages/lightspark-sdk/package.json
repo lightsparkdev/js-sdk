@@ -41,6 +41,16 @@
       "module": "./dist/objects/index.js",
       "require": "./dist/objects/index.cjs",
       "default": "./dist/objects/index.cjs"
+    },
+    "./env": {
+      "types": "./dist/env.d.ts",
+      "import": {
+        "types": "./dist/env.d.ts",
+        "default": "./dist/env.js"
+      },
+      "module": "./dist/env.js",
+      "require": "./dist/env.cjs",
+      "default": "./dist/env.cjs"
     }
   },
   "type": "module",
@@ -58,7 +68,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "yarn tsc && tsup",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "docs": "typedoc src",
@@ -80,6 +90,7 @@
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.7",
+    "dotenv": "^16.3.1",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
     "ws": "^8.12.1",

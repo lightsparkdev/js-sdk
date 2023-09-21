@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type { BitcoinNetwork } from "@lightsparkdev/lightspark-sdk";
+/* These utils are only needed in NodeJS contexts and so the file is exported separately
+   in the package to avoid eg unnecessary browser bundling */
 import dotenv from "dotenv";
 import { getBitcoinNetworkOrThrow } from "./helpers.js";
+import { type BitcoinNetwork } from "./objects/BitcoinNetwork.js";
 
 export type EnvCredentials = {
   apiTokenClientId: string;

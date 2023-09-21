@@ -1,4 +1,5 @@
 import {
+  DefaultCrypto,
   LightsparkSigningException,
   type CryptoInterface,
   type NodeKeyCache,
@@ -78,10 +79,11 @@ export default class NodeKeyLoaderCache {
       return;
     }
 
-    return this.nodeKeyCache.loadKey(
+    const key = await this.nodeKeyCache.loadKey(
       id,
       { key: loaderResult.key },
       loaderResult.type,
     );
+    return key || undefined;
   }
 }

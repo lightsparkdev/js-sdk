@@ -125,6 +125,10 @@ export type UtxoWithAmount = {
   amount: number;
 };
 
+export function dateToUnixSeconds(date: Date) {
+  return Math.floor(date.getTime() / 1000);
+}
+
 export function encodeToUrl(q: LnurlpRequest): URL {
   const receiverAddressParts = q.receiverAddress.split("@");
   if (receiverAddressParts.length !== 2) {
@@ -141,7 +145,7 @@ export function encodeToUrl(q: LnurlpRequest): URL {
   queryParams.set("vaspDomain", q.vaspDomain);
   queryParams.set("nonce", q.nonce);
   queryParams.set("isSubjectToTravelRule", q.isSubjectToTravelRule.toString());
-  queryParams.set("timestamp", q.timestamp.getTime().toString());
+  queryParams.set("timestamp", String(dateToUnixSeconds(q.timestamp)));
   queryParams.set("umaVersion", q.umaVersion);
   lnurlpUrl.search = queryParams.toString();
   return lnurlpUrl;
@@ -152,9 +156,11 @@ export function encodePayRequest(q: PayRequest) {
 }
 
 export function getSignableLnurlpRequestPayload(q: LnurlpRequest): string {
-  return [q.receiverAddress, q.nonce, q.timestamp.getTime().toString()].join(
-    "|",
-  );
+  return [
+    q.receiverAddress,
+    q.nonce,
+    String(dateToUnixSeconds(q.timestamp)),
+  ].join("|");
 }
 
 export function getSignableLnurlpResponsePayload(r: LnurlpResponse): string {

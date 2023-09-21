@@ -4,24 +4,23 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
+  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
 import { Command } from "commander";
-
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const main = async (program: Command) => {
   const credentials = getCredentialsFromEnvOrThrow();
   const client = new LightsparkClient(
     new AccountTokenAuthProvider(
       credentials.apiTokenClientId,
-      credentials.apiTokenClientSecret
+      credentials.apiTokenClientSecret,
     ),
-    credentials.baseUrl
+    credentials.baseUrl,
   );
   const account = await client.getCurrentAccount();
   const nodeId = (await account.getNodes(client)).entities.find(
-    (node) => node.bitcoinNetwork === BitcoinNetwork.REGTEST
+    (node) => node.bitcoinNetwork === BitcoinNetwork.REGTEST,
   )?.id;
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
@@ -32,13 +31,13 @@ const main = async (program: Command) => {
   const invoice = await client.createLnurlInvoice(
     nodeId,
     options.amount * 1000,
-    JSON.stringify(metadata)
+    JSON.stringify(metadata),
   );
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
   console.log("Simulating payment...");
   const outgoingPayment = await client.createTestModePayment(
     nodeId,
-    invoice.data.encodedPaymentRequest
+    invoice.data.encodedPaymentRequest,
   );
   console.log("Outgoing payment:", JSON.stringify(outgoingPayment, null, 2));
 };
@@ -53,7 +52,7 @@ const main = async (program: Command) => {
       "-a, --amount <number>",
       "The amount of the invoice in sats.",
       parseInt,
-      0
+      0,
     )
     .parse(process.argv);
 
@@ -63,7 +62,7 @@ const main = async (program: Command) => {
   } else {
     // tslint:disable-next-line
     main(program).catch((err) =>
-      console.error("Oh no, something went wrong.\n", err)
+      console.error("Oh no, something went wrong.\n", err),
     );
   }
 })();
