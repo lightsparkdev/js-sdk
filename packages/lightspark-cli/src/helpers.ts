@@ -1,10 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { input, rawlist } from "@inquirer/prompts";
+import { Network } from "@lightsparkdev/crypto-wasm";
 import type { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import { BitcoinNetwork } from "@lightsparkdev/lightspark-sdk";
 import fs from "fs";
-import { Network } from "../lightspark_crypto/lightspark_crypto.js";
 
 export const getPackageVersion = (): string => {
   const packageJson = JSON.parse(

@@ -53,8 +53,16 @@ module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
         },
       },
     },
+    /* see https://bit.ly/3EOx5ZM - workspace deps that need to be commonjs like @lightsparkdev/crypto-wasm
+       are not prebundled so imports don't work without additional overrides: */
+    optimizeDeps: {
+      include: ["@lightsparkdev/crypto-wasm"],
+    },
     build: {
       assetsDir: "static",
+      commonjsOptions: {
+        include: [/@lightsparkdev\/crypto-wasm/, /node_modules/],
+      },
     },
     resolve: {
       alias: {

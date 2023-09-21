@@ -880,7 +880,7 @@ module.exports.__wbindgen_memory = function() {
     return addHeapObject(ret);
 };
 
-const path = require('path').join(__dirname, 'lightspark_crypto_bg.wasm');
+const path = require('path').join(__dirname, 'crypto_bg.wasm');
 const bytes = require('fs').readFileSync(path);
 
 const wasmModule = new WebAssembly.Module(bytes);

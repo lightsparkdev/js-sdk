@@ -36,6 +36,11 @@ module.exports = {
       return {
         ...webpackConfig,
         resolve: {
+          /* we have commonjs workspace dependencies like lightspark-crypto. if the dependencies are
+             not in node_modules commonjs imports don't work. our deps are symlinked in node_modules
+             but by default this resolves the exact path (outside node_modules) unless we set symlinks: false
+             see https://webpack.js.org/configuration/resolve/#resolvesymlinks */
+          symlinks: false,
           extensions: [".js", ".jsx", ".ts", ".tsx"],
           fallback: {
             path: false,

@@ -1,5 +1,6 @@
 import {
   b64encode,
+  isBrowser,
   LightsparkSigningException,
   SigningKeyType,
   type CryptoInterface,
@@ -8,27 +9,8 @@ import {
 } from "@lightsparkdev/core";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
 import { BitcoinNetwork } from "./index.js";
-import {
-  LightsparkSigner,
-  Network,
-} from "./lightspark_crypto/lightspark_crypto.js";
 
 const SIGNING_KEY_PATH = "m/5";
-
-const getCryptoLibNetwork = (bitcoinNetwork: BitcoinNetwork): Network => {
-  switch (bitcoinNetwork) {
-    case BitcoinNetwork.MAINNET:
-      return Network.Bitcoin;
-    case BitcoinNetwork.TESTNET:
-      return Network.Testnet;
-    case BitcoinNetwork.REGTEST:
-      return Network.Regtest;
-    default:
-      throw new Error(
-        `Unsupported lightspark_crypto network ${bitcoinNetwork}.`,
-      );
-  }
-};
 
 /**
  * Args for creating a new SigningKeyLoader. Must be one of the sub types.
@@ -167,9 +149,35 @@ export class MasterSeedSigningKeyLoader implements SigningKeyLoader {
   }
 
   async loadSigningKey() {
+    if (isBrowser) {
+      throw new LightsparkSigningException(
+        "Browser environments not supported for master seed signing key loader.",
+      );
+    }
+
+    const { LightsparkSigner, Network } = await import(
+      "@lightsparkdev/crypto-wasm"
+    );
+
+    let cryptoLibNetwork;
+    switch (this.network) {
+      case BitcoinNetwork.MAINNET:
+        cryptoLibNetwork = Network.Bitcoin;
+        break;
+      case BitcoinNetwork.TESTNET:
+        cryptoLibNetwork = Network.Testnet;
+        break;
+      case BitcoinNetwork.REGTEST:
+        cryptoLibNetwork = Network.Regtest;
+        break;
+      default:
+        throw new Error(
+          `Unsupported lightspark_crypto network ${this.network}.`,
+        );
+    }
     const lightsparkSigner = LightsparkSigner.from_bytes(
       this.masterSeed,
-      getCryptoLibNetwork(this.network),
+      cryptoLibNetwork,
     );
     const privateKey = lightsparkSigner.derive_private_key(SIGNING_KEY_PATH);
     return { key: privateKey, type: SigningKeyType.Secp256k1SigningKey };

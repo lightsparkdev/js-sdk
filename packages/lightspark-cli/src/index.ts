@@ -2,6 +2,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { input, password } from "@inquirer/prompts";
+import { LightsparkSigner, Mnemonic, Seed } from "@lightsparkdev/crypto-wasm";
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
@@ -21,11 +22,6 @@ import { randomBytes } from "crypto";
 import * as fs from "fs/promises";
 import qrcode from "qrcode-terminal";
 import secp256k1 from "secp256k1";
-import {
-  LightsparkSigner,
-  Mnemonic,
-  Seed,
-} from "../lightspark_crypto/lightspark_crypto.js";
 import {
   bytesToHex,
   getCryptoLibNetwork,
