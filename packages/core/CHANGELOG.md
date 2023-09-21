@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.1
+
+### Patch Changes
+
+- 808c77a: Consolidate some imports to lightspark-sdk and core
+
 ## 1.0.0
 
 ### Major Changes
