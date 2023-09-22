@@ -6,6 +6,18 @@ import type { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import { BitcoinNetwork } from "@lightsparkdev/lightspark-sdk";
 import fs from "fs";
 
+const BITCOIN_NETWORKS = [
+  BitcoinNetwork.MAINNET,
+  BitcoinNetwork.TESTNET,
+  BitcoinNetwork.SIGNET,
+  BitcoinNetwork.REGTEST,
+];
+
+interface NodeInfo {
+  id: string;
+  bitcoinNetwork: BitcoinNetwork;
+}
+
 export const getPackageVersion = (): string => {
   const packageJson = JSON.parse(
     fs.readFileSync(new URL("../package.json", import.meta.url), "utf8"),
@@ -15,23 +27,28 @@ export const getPackageVersion = (): string => {
 
 export const getNodeIds = async (
   client: LightsparkClient,
-  bitcoinNetwork: BitcoinNetwork,
-): Promise<string[]> => {
+  bitcoinNetwork?: BitcoinNetwork,
+): Promise<NodeInfo[]> => {
   const account = await client.getCurrentAccount();
   if (!account) {
     throw new Error("Failed to get current account");
   }
 
-  const entities = (await account.getNodes(client)).entities;
-  const entitiesForNetwork = entities.filter(
-    (entity) => entity.bitcoinNetwork === bitcoinNetwork,
-  );
-
-  if (!entitiesForNetwork.length) {
-    throw new Error(`Failed to find any nodes on ${bitcoinNetwork}`);
+  let entities = (await account.getNodes(client)).entities;
+  if (bitcoinNetwork) {
+    entities = entities.filter(
+      (entity) => entity.bitcoinNetwork === bitcoinNetwork,
+    );
   }
 
-  return entitiesForNetwork.map((entity) => entity.id);
+  if (!entities.length) {
+    throw new Error(`Failed to find any nodes`);
+  }
+
+  return entities.map((entity) => ({
+    id: entity.id,
+    bitcoinNetwork: entity.bitcoinNetwork,
+  }));
 };
 
 export const bytesToHex = (bytes: Uint8Array): string => {
@@ -50,24 +67,36 @@ export const hexToBytes = (hex: string): Uint8Array => {
   return Uint8Array.from(bytes);
 };
 
-export const selectNodeId = async (nodeIds: string[]): Promise<string> => {
-  if (nodeIds.length === 1) {
-    return nodeIds[0];
+export const selectNodeId = async (
+  nodeInfos: NodeInfo[],
+): Promise<NodeInfo> => {
+  if (nodeInfos.length === 1) {
+    return nodeInfos[0];
   }
 
   console.log("Multiple nodes found.");
-  const selectedNodeId = await rawlist({
+  const selectedNode = await rawlist({
     message: "Select a node to use:",
-    choices: nodeIds.map((nodeId) => ({ value: nodeId })),
+    choices: nodeInfos.map(({ id, bitcoinNetwork }) => ({
+      name: `${id} (${bitcoinNetwork})`,
+      value: { id, bitcoinNetwork } as NodeInfo,
+    })),
   });
 
-  return selectedNodeId;
+  return selectedNode;
 };
 
 export const inputRemoteSigningSeedHex = async (): Promise<string> => {
   return await input({
     message: "Provide your hex-encoded, remote-signing seed:",
     validate: (value) => value.length > 0,
+  });
+};
+
+export const inputBitcoinNetwork = async (): Promise<BitcoinNetwork> => {
+  return await rawlist({
+    message: "Select a bitcoin network:",
+    choices: BITCOIN_NETWORKS.map((network) => ({ value: network })),
   });
 };
 

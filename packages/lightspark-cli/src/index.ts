@@ -28,6 +28,7 @@ import {
   getNodeIds,
   getPackageVersion,
   hexToBytes,
+  inputBitcoinNetwork,
   inputRemoteSigningSeedHex,
   selectNodeId,
 } from "./helpers.js";
@@ -113,11 +114,11 @@ const initEnv = async (options: OptionValues) => {
 
   if (!tokenBitcoinNetwork) {
     console.log(
-      "Could not find any nodes on the account with the provided API token client ID and secret for any bitcoin network.",
+      "Could not automatically set bitcoin network because nodes were not found with the provided API token client ID and secret.",
     );
     tokenBitcoinNetwork = await input({
       message:
-        "Please provide the bitcoin network associated with this API token (test -> REGTEST, prod -> MAINNET)?",
+        "Please manually provide the bitcoin network associated with this API token (test -> REGTEST, prod -> MAINNET)?",
       validate: (value) => isBitcoinNetwork(value as BitcoinNetwork),
     });
   }
@@ -133,12 +134,9 @@ const initEnv = async (options: OptionValues) => {
 const createInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
-  credentials: EnvCredentials,
 ) => {
-  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeIds = await getNodeIds(client, bitcoinNetwork);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId } = await selectNodeId(nodeIds);
 
   let { amount, memo, amp } = options;
   if (!amount) {
@@ -186,8 +184,7 @@ const createTestModeInvoice = async (
   options: OptionValues,
 ) => {
   const nodeIds = await getNodeIds(client, BitcoinNetwork.REGTEST);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+  const { id: selectedNodeId } = await selectNodeId(nodeIds);
 
   console.log(
     "Creating a test-mode invoice with options: ",
@@ -283,15 +280,9 @@ const accountDashboard = async (
   console.log("Dashboard:", JSON.stringify(dashboard, null, 2));
 };
 
-const singleNodeDashboard = async (
-  client: LightsparkClient,
-  options: OptionValues,
-  credentials: EnvCredentials,
-) => {
-  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeIds = await getNodeIds(client, bitcoinNetwork);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+const singleNodeDashboard = async (client: LightsparkClient) => {
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId, bitcoinNetwork } = await selectNodeId(nodeIds);
 
   console.log(`Fetching single node dashboard in ${bitcoinNetwork}...\n`);
   const dashboard = await client.getSingleNodeDashboard(
@@ -326,15 +317,9 @@ const decodeInvoice = async (
   console.log("Decoded invoice:", JSON.stringify(decodedInvoice, null, 2));
 };
 
-const createNodeWalletAddress = async (
-  client: LightsparkClient,
-  options: OptionValues,
-  credentials: EnvCredentials,
-) => {
-  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeIds = await getNodeIds(client, bitcoinNetwork);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+const createNodeWalletAddress = async (client: LightsparkClient) => {
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId } = await selectNodeId(nodeIds);
 
   console.log(
     `Creating bitcoin funding address for node ${selectedNodeId}...\n`,
@@ -348,10 +333,8 @@ const payInvoice = async (
   options: OptionValues,
   credentials: EnvCredentials,
 ) => {
-  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeIds = await getNodeIds(client, bitcoinNetwork);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId, bitcoinNetwork } = await selectNodeId(nodeIds);
 
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
@@ -453,8 +436,7 @@ const createTestModePayment = async (
   credentials?: EnvCredentials,
 ) => {
   const nodeIds = await getNodeIds(client, BitcoinNetwork.REGTEST);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+  const { id: selectedNodeId } = await selectNodeId(nodeIds);
 
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
@@ -511,11 +493,7 @@ const getNodeChannels = async (
   console.log("Got channels:", JSON.stringify(channels, null, 2));
 };
 
-const generateNodeKeys = async (
-  client: LightsparkClient,
-  options: OptionValues,
-  credentials: EnvCredentials,
-) => {
+const generateNodeKeys = async (options: OptionValues) => {
   let mnemonic: Mnemonic;
   let seedPhrase = options.seedPhrase;
   if (!seedPhrase) {
@@ -538,12 +516,14 @@ const generateNodeKeys = async (
     mnemonic = Mnemonic.from_phrase(seedPhrase);
   }
 
-  console.log("Generating node keys...\n");
+  const bitcoinNetwork = await inputBitcoinNetwork();
 
+  console.log("Generating node keys...\n");
   const seed = Seed.from_mnemonic(mnemonic);
+
   const lightsparkSigner = LightsparkSigner.new(
     seed,
-    getCryptoLibNetwork(credentials.bitcoinNetwork),
+    getCryptoLibNetwork(bitcoinNetwork),
   );
   const extendedPublicKey = lightsparkSigner.get_master_public_key();
 
@@ -764,7 +744,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       "The seed phrase used to generate the keys need for your Lightspark node.",
     )
     .action((options) => {
-      main(options, generateNodeKeys).catch((err) =>
+      generateNodeKeys(options).catch((err) =>
         console.error("Oh no, something went wrong.\n", err),
       );
     });
