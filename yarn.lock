@@ -4226,7 +4226,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.1
     "@lightsparkdev/crypto-wasm": 0.1.0
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.0.1
+    "@lightsparkdev/lightspark-sdk": 1.0.2
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
@@ -4252,7 +4252,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@1.0.1, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@1.0.2, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
@@ -4444,7 +4444,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.1
-    "@lightsparkdev/lightspark-sdk": 1.0.1
+    "@lightsparkdev/lightspark-sdk": 1.0.2
     "@lightsparkdev/tsconfig": "*"
     "@pmmmwh/react-refresh-webpack-plugin": ^0.5.3
     "@svgr/webpack": ^7.0.0
@@ -4528,7 +4528,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 1.0.1
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.0.1
+    "@lightsparkdev/lightspark-sdk": 1.0.2
     "@react-native-async-storage/async-storage": ^1.18.1
     "@types/crypto-js": ^4.1.1
     "@types/ws": ^8.5.4
