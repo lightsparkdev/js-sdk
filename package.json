@@ -23,8 +23,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "release": "turbo build && changeset publish",
-    "start:check": "turbo run build && turbo run start types:watch lint:watch --parallel --concurrency 64",
-    "start": "turbo run build && turbo run start --concurrency 64",
+    "start:check": "turbo run build && turbo run start types:watch lint:watch --parallel --concurrency 100",
+    "start": "turbo run build && turbo run start --concurrency 100",
     "test": "turbo run test",
     "types": "turbo run types"
   },
