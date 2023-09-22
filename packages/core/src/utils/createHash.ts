@@ -7,6 +7,7 @@ export const createSha256Hash = async (
     return new Uint8Array(await window.crypto.subtle.digest("SHA-256", data));
   } else {
     const { createHash } = await import("crypto");
-    return createHash("sha256").update(data).digest();
+    const buffer = createHash("sha256").update(data).digest();
+    return new Uint8Array(buffer);
   }
 };

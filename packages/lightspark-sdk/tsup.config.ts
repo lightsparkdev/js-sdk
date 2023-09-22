@@ -5,7 +5,4 @@ export default defineConfig({
   format: ["cjs", "esm"],
   dts: true,
   clean: true,
-  esbuildOptions(options) {
-    options.external = ["./src/lightspark_crypto/*"];
-  },
-});
+})
