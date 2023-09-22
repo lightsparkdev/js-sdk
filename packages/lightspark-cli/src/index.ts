@@ -383,10 +383,8 @@ const payUmaInvoice = async (
   options: OptionValues,
   credentials: EnvCredentials,
 ) => {
-  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
-  const nodeIds = await getNodeIds(client, bitcoinNetwork);
-
-  const selectedNodeId = await selectNodeId(nodeIds);
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId, bitcoinNetwork } = await selectNodeId(nodeIds);
 
   let encodedInvoice = options.invoice;
   if (!encodedInvoice) {
