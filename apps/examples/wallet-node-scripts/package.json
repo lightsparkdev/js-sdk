@@ -4,7 +4,7 @@
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"TODO\""
   },
   "type": "module",
   "author": "",
@@ -14,9 +14,9 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@lightsparkdev/core": "file:../../../core",
-    "@lightsparkdev/wallet-sdk": "file:../..",
-    "commander": "^10.0.0",
+    "@lightsparkdev/core": "1.0.1",
+    "@lightsparkdev/wallet-sdk": "0.6.21",
+    "commander": "^11.0.0",
     "dayjs": "^1.11.7"
   }
 }
