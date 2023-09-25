@@ -1,10 +1,10 @@
-import { type Invoice } from "@lightsparkdev/lightspark-sdk";
+import type { Invoice as InvoiceType } from "@lightsparkdev/lightspark-sdk";
 
-type CreateUmaInvoiceVariables = {
-  nodeId: string;
+type Invoice = InvoiceType;
+
+type CreateUmaInvoiceArgs = {
   amountMsats: number;
   metadataHash: string;
-  expirySecs?: number | undefined;
 };
 
 type UmaProvider = {
@@ -18,27 +18,37 @@ type UmaProvider = {
 
 type UmaClientArgs = {
   provider: UmaProvider;
+  receiverNodeId: string;
+  invoiceExpirySeconds?: number | undefined;
 };
 
 export class UmaClient {
   provider: UmaProvider;
+  receiverNodeId: string;
+  invoiceExpirySeconds: number | undefined;
 
-  constructor({ provider }: UmaClientArgs) {
+  constructor({
+    provider,
+    receiverNodeId, // the node ID of the receiver.
+    invoiceExpirySeconds, // the number of seconds until the invoice expires.
+  }: UmaClientArgs) {
     this.provider = provider;
+    this.receiverNodeId = receiverNodeId;
+    this.invoiceExpirySeconds = invoiceExpirySeconds;
   }
 
-  async createUmaInvoice({
-    nodeId,
-    amountMsats,
-    metadataHash,
-    expirySecs,
-  }: CreateUmaInvoiceVariables) {
+  async createUmaInvoice({ amountMsats, metadataHash }: CreateUmaInvoiceArgs) {
     const result = await this.provider.createUmaInvoice(
-      nodeId,
+      this.receiverNodeId,
       amountMsats,
       metadataHash,
-      expirySecs,
+      this.invoiceExpirySeconds,
     );
+
+    if (!result) {
+      throw new Error("Failed to create invoice");
+    }
+
     return result;
   }
 }

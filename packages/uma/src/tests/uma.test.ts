@@ -5,23 +5,36 @@ import {
 } from "@lightsparkdev/lightspark-sdk";
 import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 import { randomBytes } from "crypto";
+import { decrypt, PrivateKey } from "eciesjs";
 import secp256k1 from "secp256k1";
 import { UmaClient } from "../client.js";
-import { dateToUnixSeconds } from "../protocol.js";
+import { KycStatus } from "../KycStatus.js";
 import {
+  dateToUnixSeconds,
+  parseLnurlpResponse,
+  parsePayReqResponse,
+  parsePayRequest,
+  type LnurlpRequest,
+} from "../protocol.js";
+import {
+  getLnurlpResponse,
+  getPayReqResponse,
+  getPayRequest,
   getSignedLnurlpRequestUrl,
   getVaspDomainFromUmaAddress,
   isUmaLnurlpQuery,
   isValidUmaAddress,
   parseLnurlpRequest,
+  verifyPayReqSignature,
   verifyUmaLnurlpQuerySignature,
+  verifyUmaLnurlpResponseSignature,
 } from "../uma.js";
 import { UmaProtocolVersion } from "../version.js";
 
 const generateKeypair = async () => {
-  let privateKey: Buffer;
+  let privateKey: Uint8Array;
   do {
-    privateKey = randomBytes(32);
+    privateKey = new Uint8Array(randomBytes(32));
   } while (!secp256k1.privateKeyVerify(privateKey));
 
   const publicKey = secp256k1.publicKeyCreate(privateKey, false);
@@ -31,6 +44,28 @@ const generateKeypair = async () => {
     publicKey,
   };
 };
+
+function createMetadataForBob(): string {
+  const metadata = [
+    ["text/plain", "Pay to vasp2.com user $bob"],
+    ["text/identifier", "$bob@vasp2.com"],
+  ];
+
+  return JSON.stringify(metadata);
+}
+
+async function createLnurlpRequest(
+  senderSigningPrivateKey: Uint8Array,
+): Promise<LnurlpRequest> {
+  const queryUrl = await getSignedLnurlpRequestUrl({
+    signingPrivateKey: senderSigningPrivateKey,
+    receiverAddress: "$bob@vasp2.com",
+    senderVaspDomain: "vasp1.com",
+    isSubjectToTravelRule: true,
+  });
+  const query = parseLnurlpRequest(queryUrl);
+  return query;
+}
 
 describe("uma", () => {
   it("should construct the UMA client", () => {
@@ -44,6 +79,8 @@ describe("uma", () => {
     );
     const umaClient = new UmaClient({
       provider: lightsparkClient,
+      receiverNodeId: "1234",
+      invoiceExpirySeconds: 60,
     });
     expect(umaClient).toBeTruthy();
   });
@@ -166,13 +203,12 @@ describe("uma", () => {
 
   it("should sign and verify lnurlp request", async () => {
     const { privateKey, publicKey } = await generateKeypair();
-    const queryUrl = await getSignedLnurlpRequestUrl(
-      privateKey,
-      "$bob@vasp2.com",
-      "vasp1.com",
-      true,
-      undefined,
-    );
+    const queryUrl = await getSignedLnurlpRequestUrl({
+      signingPrivateKey: privateKey,
+      receiverAddress: "$bob@vasp2.com",
+      senderVaspDomain: "vasp1.com",
+      isSubjectToTravelRule: true,
+    });
 
     const query = parseLnurlpRequest(queryUrl);
     expect(query.umaVersion).toBe(UmaProtocolVersion);
@@ -183,13 +219,12 @@ describe("uma", () => {
   it("should throw for incorrect public key", async () => {
     const { privateKey } = await generateKeypair();
     const { publicKey: incorrectPublicKey } = await generateKeypair();
-    const queryUrl = await getSignedLnurlpRequestUrl(
-      privateKey,
-      "$bob@vasp2.com",
-      "vasp1.com",
-      true,
-      undefined,
-    );
+    const queryUrl = await getSignedLnurlpRequestUrl({
+      signingPrivateKey: privateKey,
+      receiverAddress: "$bob@vasp2.com",
+      senderVaspDomain: "vasp1.com",
+      isSubjectToTravelRule: true,
+    });
 
     const query = parseLnurlpRequest(queryUrl);
     expect(query.umaVersion).toBe(UmaProtocolVersion);
@@ -202,13 +237,12 @@ describe("uma", () => {
 
   it("should throw for invalid public key", async () => {
     const { privateKey, publicKey } = await generateKeypair();
-    const queryUrl = await getSignedLnurlpRequestUrl(
-      privateKey,
-      "$bob@vasp2.com",
-      "vasp1.com",
-      true,
-      undefined,
-    );
+    const queryUrl = await getSignedLnurlpRequestUrl({
+      signingPrivateKey: privateKey,
+      receiverAddress: "$bob@vasp2.com",
+      senderVaspDomain: "vasp1.com",
+      isSubjectToTravelRule: true,
+    });
 
     const query = parseLnurlpRequest(queryUrl);
     expect(query.umaVersion).toBe(UmaProtocolVersion);
@@ -222,5 +256,149 @@ describe("uma", () => {
       }
       expect(e.message).toMatch(/Public Key could not be parsed/);
     }
+  });
+
+  it("should sign and verify lnurlp response", async () => {
+    const { privateKey: senderSigningPrivateKey } = await generateKeypair();
+    const {
+      privateKey: receiverSigningPrivateKey,
+      publicKey: receiverSigningPublicKey,
+    } = await generateKeypair();
+    const request = await createLnurlpRequest(senderSigningPrivateKey);
+    const metadata = createMetadataForBob();
+    const response = await getLnurlpResponse({
+      request,
+      privateKeyBytes: receiverSigningPrivateKey,
+      requiresTravelRuleInfo: true,
+      callback: "https://vasp2.com/api/lnurl/payreq/$bob",
+      encodedMetadata: metadata,
+      minSendableSats: 1,
+      maxSendableSats: 10_000_000,
+      payerDataOptions: {
+        nameRequired: false,
+        emailRequired: false,
+        complianceRequired: true,
+      },
+      currencyOptions: [
+        {
+          code: "USD",
+          name: "US Dollar",
+          symbol: "$",
+          multiplier: 34_150,
+          minSendable: 1,
+          maxSendable: 10_000_000,
+        },
+      ],
+      receiverKycStatus: KycStatus.Verified,
+    });
+
+    const responseJson = JSON.stringify(response);
+    const parsedResponse = parseLnurlpResponse(responseJson);
+    const verified = verifyUmaLnurlpResponseSignature(
+      parsedResponse,
+      receiverSigningPublicKey,
+    );
+    expect(verified).toBeTruthy();
+  });
+
+  it("should handle a pay request response", async () => {
+    const { privateKey: senderSigningPrivateKey } = await generateKeypair();
+    const { publicKey: receiverEncryptionPublicKey } = await generateKeypair();
+
+    const trInfo = "some TR info for VASP2";
+    const payreq = await getPayRequest({
+      amount: 1000,
+      currencyCode: "USD",
+      payerIdentifier: "$alice@vasp1.com",
+      payerKycStatus: KycStatus.Verified,
+      receiverEncryptionPubKey: receiverEncryptionPublicKey,
+      sendingVaspPrivateKey: senderSigningPrivateKey,
+      trInfo: trInfo,
+      utxoCallback: "/api/lnurl/utxocallback?txid=1234",
+    });
+
+    const credentials = getCredentialsFromEnvOrThrow();
+    const lightsparkClient = new LightsparkClient(
+      new AccountTokenAuthProvider(
+        credentials.apiTokenClientId,
+        credentials.apiTokenClientSecret,
+      ),
+      credentials.baseUrl,
+    );
+    const umaClient = new UmaClient({
+      provider: lightsparkClient,
+      receiverNodeId:
+        "LightsparkNodeWithOSKLND:018a2384-f78d-f96b-0000-0618465e9389",
+      invoiceExpirySeconds: 60,
+    });
+
+    const metadata = createMetadataForBob();
+
+    const payreqResponse = await getPayReqResponse({
+      query: payreq,
+      invoiceCreator: umaClient,
+      metadata,
+      currencyCode: "USD",
+      conversionRate: 34_150,
+      receiverFeesMillisats: 100_000,
+      receiverChannelUtxos: ["abcdef12345"],
+      utxoCallback: "/api/lnurl/utxocallback?txid=1234",
+    });
+
+    const payreqResponseJson = JSON.stringify(payreqResponse);
+    const parsedPayreqResponse = parsePayReqResponse(payreqResponseJson);
+    expect(parsedPayreqResponse).toEqual(payreqResponse);
+  });
+
+  it("should create and parse a payreq", async () => {
+    const {
+      privateKey: senderSigningPrivateKey,
+      publicKey: senderSigningPublicKey,
+    } = await generateKeypair();
+    const {
+      privateKey: receiverEncryptionPrivateKey,
+      publicKey: receiverEncryptionPublicKey,
+    } = await generateKeypair();
+
+    const trInfo = "some TR info for VASP2";
+    const payreq = await getPayRequest({
+      receiverEncryptionPubKey: receiverEncryptionPublicKey,
+      sendingVaspPrivateKey: senderSigningPrivateKey,
+      currencyCode: "USD",
+      amount: 1000,
+      payerIdentifier: "$alice@vasp1.com",
+      trInfo,
+      payerKycStatus: KycStatus.Verified,
+      utxoCallback: "/api/lnurl/utxocallback?txid=1234",
+    });
+
+    const payreqJson = JSON.stringify(payreq);
+
+    const parsedPayreq = parsePayRequest(payreqJson);
+
+    const verified = await verifyPayReqSignature(
+      parsedPayreq,
+      senderSigningPublicKey,
+    );
+    expect(verified).toBe(true);
+
+    const encryptedTrInfo =
+      parsedPayreq.payerData.compliance.encryptedTravelRuleInfo;
+    if (!encryptedTrInfo) {
+      throw new Error("encryptedTrInfo is undefined");
+    }
+
+    const encryptedTrInfoBytes = Buffer.from(encryptedTrInfo, "hex");
+    const receiverEncryptionPrivKeyBuffer = Buffer.from(
+      receiverEncryptionPrivateKey,
+    );
+    const eciesReceiverPrivKey = new PrivateKey(
+      receiverEncryptionPrivKeyBuffer,
+    );
+    const decryptedTrInfo = decrypt(
+      eciesReceiverPrivKey.toHex(),
+      encryptedTrInfoBytes,
+    ).toString();
+    expect(decryptedTrInfo).toBe(trInfo);
   });
 });

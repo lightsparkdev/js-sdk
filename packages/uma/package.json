@@ -70,11 +70,13 @@
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.7",
+    "eciesjs": "^0.4.4",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
     "secp256k1": "^5.0.0",
     "ws": "^8.12.1",
-    "zen-observable-ts": "^1.1.0"
+    "zen-observable-ts": "^1.1.0",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
