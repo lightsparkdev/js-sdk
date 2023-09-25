@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"TODO\""
   },
