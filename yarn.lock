@@ -4538,6 +4538,7 @@ __metadata:
     dayjs: ^1.11.7
     dotenv: ^16.3.1
     dotenv-cli: ^7.3.0
+    eciesjs: ^0.4.4
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     graphql: ^16.6.0
@@ -4553,6 +4554,7 @@ __metadata:
     typescript: ^4.9.5
     ws: ^8.12.1
     zen-observable-ts: ^1.1.0
+    zod: ^3.22.2
   languageName: unknown
   linkType: soft
 
@@ -4734,6 +4736,29 @@ __metadata:
   dependencies:
     eslint-scope: 5.1.1
   checksum: f2e3b2d6a6e2d9f163ca22105910c9f850dc4897af0aea3ef0a5886b63d8e1ba6505b71c99cb78a3bba24a09557d601eb21c8dede3f3213753fcfef364eb0e57
+  languageName: node
+  linkType: hard
+
+"@noble/ciphers@npm:^0.1.4":
+  version: 0.1.4
+  resolution: "@noble/ciphers@npm:0.1.4"
+  checksum: a846f91dc876ea8cf01c20f04df2816926ad4e4d90169e6334de39b477ce13bf5e720f4df9f9898dd2a87643660ccc8a04aa466baf885c43860c270bcc7deced
+  languageName: node
+  linkType: hard
+
+"@noble/curves@npm:^1.1.0":
+  version: 1.2.0
+  resolution: "@noble/curves@npm:1.2.0"
+  dependencies:
+    "@noble/hashes": 1.3.2
+  checksum: bb798d7a66d8e43789e93bc3c2ddff91a1e19fdb79a99b86cd98f1e5eff0ee2024a2672902c2576ef3577b6f282f3b5c778bebd55761ddbb30e36bf275e83dd0
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:1.3.2":
+  version: 1.3.2
+  resolution: "@noble/hashes@npm:1.3.2"
+  checksum: fe23536b436539d13f90e4b9be843cc63b1b17666a07634a2b1259dded6f490be3d050249e6af98076ea8f2ea0d56f578773c2197f2aa0eeaa5fba5bc18ba474
   languageName: node
   linkType: hard
 
@@ -11078,6 +11103,16 @@ __metadata:
   dependencies:
     safe-buffer: ^5.0.1
   checksum: 207f9ab1c2669b8e65540bce29506134613dd5f122cccf1e6a560f4d63f2732d427d938f8481df175505aad94583bcb32c688737bb39a6df0625f903d6d93c03
+  languageName: node
+  linkType: hard
+
+"eciesjs@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "eciesjs@npm:0.4.4"
+  dependencies:
+    "@noble/ciphers": ^0.1.4
+    "@noble/curves": ^1.1.0
+  checksum: 8147d68c4805c2663ffa841cf37e8e6ea88270ac142009d18c6083f2524587a1c479ca58cdf26238f46fdad70ed8df920d82d108df94f6fd0b940ec526656f06
   languageName: node
   linkType: hard
 
@@ -26549,5 +26584,12 @@ __metadata:
   version: 0.8.15
   resolution: "zen-observable@npm:0.8.15"
   checksum: b7289084bc1fc74a559b7259faa23d3214b14b538a8843d2b001a35e27147833f4107590b1b44bf5bc7f6dfe6f488660d3a3725f268e09b3925b3476153b7821
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.2":
+  version: 3.22.2
+  resolution: "zod@npm:3.22.2"
+  checksum: 231e2180c8eabb56e88680d80baff5cf6cbe6d64df3c44c50ebe52f73081ecd0229b1c7215b9552537f537a36d9e36afac2737ddd86dc14e3519bdbc777e82b9
   languageName: node
   linkType: hard

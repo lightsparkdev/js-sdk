@@ -100,6 +100,7 @@ jobs:
           echo 'export LIGHTSPARK_API_TOKEN_CLIENT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_ID }}"' > ~/.lightsparkapienv
           echo 'export LIGHTSPARK_API_TOKEN_CLIENT_SECRET="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_SECRET }}"' >> ~/.lightsparkapienv
           echo 'export BITCOIN_NETWORK="REGTEST"' >> ~/.lightsparkapienv
+          echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
 
       - run: "yarn checks"
 
