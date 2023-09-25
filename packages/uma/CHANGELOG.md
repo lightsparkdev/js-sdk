@@ -1,5 +1,11 @@
 # @lightsparkdev/uma
 
+## 0.0.4
+
+### Patch Changes
+
+- be6cd89: [uma] Complete core SDK functions and tests
+
 ## 0.0.3
 
 ### Patch Changes
