@@ -3,6 +3,7 @@
 export * from "./auth/index.js";
 export * from "./crypto/index.js";
 export { default as LightsparkException } from "./LightsparkException.js";
+export { Logger } from "./Logger.js";
 export * from "./requester/index.js";
 export {
   apiDomainForEnvironment,

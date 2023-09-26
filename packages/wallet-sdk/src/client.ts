@@ -38,6 +38,7 @@ import SendPaymentMutation from "./graqhql/SendPayment.js";
 import TerminateWallet from "./graqhql/TerminateWallet.js";
 import WalletDashboardQuery from "./graqhql/WalletDashboard.js";
 import { TransactionStatus } from "./index.js";
+import { logger } from "./logger.js";
 import { BalancesFromJson } from "./objects/Balances.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
@@ -466,12 +467,19 @@ class LightsparkClient {
     amountMsats: number | undefined = undefined,
     timoutSecs: number = 60,
   ) {
+    logger.info(`payInvoiceAndAwaitResult params`, {
+      encodedInvoice,
+      maxFeesMsats,
+      amountMsats,
+      timoutSecs,
+    });
     const payment = await this.payInvoice(
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
       timoutSecs,
     );
+    logger.info(`payInvoiceAndAwaitResult payment`, payment);
     return await this.awaitPaymentResult(payment, timoutSecs);
   }
 
@@ -479,6 +487,7 @@ class LightsparkClient {
     payment: OutgoingPayment,
     timeoutSecs: number = 60,
   ): Promise<OutgoingPayment> {
+    logger.info(`awaitPaymentResult params`, { payment, timeoutSecs });
     let timeout: NodeJS.Timeout;
     let subscription: Subscription;
     const completionStatuses = [
@@ -486,20 +495,27 @@ class LightsparkClient {
       TransactionStatus.CANCELLED,
       TransactionStatus.SUCCESS,
     ];
+    logger.info(`awaitPaymentResult payment.status`, payment.status);
     if (completionStatuses.includes(payment.status)) {
       return Promise.resolve(payment);
     }
     const result: Promise<OutgoingPayment> = new Promise((resolve, reject) => {
       subscription = this.listenToPaymentStatus(payment.id).subscribe({
         next: (payment) => {
+          logger.info(`awaitPaymentResult subscribe.next`, {
+            payment,
+            paymentStatus: payment.status,
+          });
           if (completionStatuses.includes(payment.status)) {
             resolve(payment);
           }
         },
         error: (error) => {
+          logger.info(`awaitPaymentResult subscribe.error`, error);
           reject(error);
         },
         complete: () => {
+          logger.info(`awaitPaymentResult subscribe.complete`);
           reject(
             new LightsparkException(
               "PaymentStatusAwaitError",
@@ -510,6 +526,7 @@ class LightsparkClient {
       });
 
       timeout = setTimeout(() => {
+        logger.info(`awaitPaymentResult timeout`);
         reject(
           new LightsparkException(
             "PaymentStatusAwaitError",
@@ -522,6 +539,7 @@ class LightsparkClient {
     });
 
     result.finally(() => {
+      logger.info("awaitPaymentResult finally", { timeout, subscription });
       clearTimeout(timeout);
       subscription.unsubscribe();
     });
@@ -914,6 +932,7 @@ class LightsparkClient {
   private listenToPaymentStatus(
     paymentId: string,
   ): Observable<OutgoingPayment> {
+    logger.info(`listenToPaymentStatus params`, { paymentId });
     return this.requester
       .subscribe(
         `
@@ -926,7 +945,10 @@ class LightsparkClient {
       `,
       )
       .map((responseJson: any) => {
-        return OutgoingPaymentFromJson(responseJson.data.entity);
+        logger.info(`listenToPaymentStatus responseJson`, responseJson);
+        const payment = OutgoingPaymentFromJson(responseJson.data.entity);
+        logger.info(`listenToPaymentStatus payment`, payment);
+        return payment;
       });
   }
 
