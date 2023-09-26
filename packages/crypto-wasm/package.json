@@ -6,6 +6,9 @@
     "crypto.js",
     "crypto.d.ts"
   ],
+  "scripts": {
+    "build-tmp": "./sync.sh"
+  },
   "main": "crypto.js",
   "types": "crypto.d.ts"
 }
