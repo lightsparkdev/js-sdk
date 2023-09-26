@@ -26,8 +26,8 @@ arch -x86_64 /usr/local/bin/brew install llvm
 export PATH="/usr/local/opt/llvm/bin:$PATH" # add this to your shell profile too so it's sourced automatically
 ```
 
-### Running the script
+### Building for wasm
 
 ```
-sh sync.sh
+yarn build
 ```
