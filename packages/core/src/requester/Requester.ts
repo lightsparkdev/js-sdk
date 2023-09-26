@@ -16,6 +16,7 @@ import type { CryptoInterface } from "../crypto/crypto.js";
 import { DefaultCrypto, LightsparkSigningException } from "../crypto/crypto.js";
 import type NodeKeyCache from "../crypto/NodeKeyCache.js";
 import LightsparkException from "../LightsparkException.js";
+import { logger } from "../Logger.js";
 import { b64encode } from "../utils/base64.js";
 import { isNode } from "../utils/environment.js";
 
@@ -67,6 +68,7 @@ class Requester {
     queryPayload: string,
     variables: { [key: string]: unknown } = {},
   ) {
+    logger.info(`Requester.subscribe params`, queryPayload, variables);
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
@@ -92,13 +94,15 @@ class Requester {
       operationName: operation,
     };
 
-    return new Observable<{ data: T }>((observer) =>
-      this.wsClient.subscribe(bodyData, {
+    logger.info(`Requester.subscribe bodyData`, bodyData);
+    return new Observable<{ data: T }>((observer) => {
+      logger.info(`Requester.subscribe observer`, observer);
+      return this.wsClient.subscribe(bodyData, {
         next: (data) => observer.next(data as { data: T }),
         error: (err) => observer.error(err),
         complete: () => observer.complete(),
-      }),
-    );
+      });
+    });
   }
 
   public async makeRawRequest(
