@@ -1,12 +1,20 @@
 import { isBrowser } from "./index.js";
 
+type GetLoggingEnabled = (() => Promise<boolean> | boolean) | undefined;
+
 export class Logger {
   context: string;
   loggingEnabled = false;
 
-  constructor(loggerContext: string) {
+  constructor(loggerContext: string, getLoggingEnabled?: GetLoggingEnabled) {
     this.context = loggerContext;
-    if (isBrowser) {
+    this.updateLoggingEnabled(getLoggingEnabled);
+  }
+
+  async updateLoggingEnabled(getLoggingEnabled: GetLoggingEnabled) {
+    if (getLoggingEnabled) {
+      this.loggingEnabled = await getLoggingEnabled();
+    } else if (isBrowser) {
       try {
         this.loggingEnabled =
           localStorage.getItem("lightspark-logging-enabled") === "1";
