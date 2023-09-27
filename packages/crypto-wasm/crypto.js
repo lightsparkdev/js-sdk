@@ -149,6 +149,9 @@ function handleError(f, args) {
 module.exports.Network = Object.freeze({ Bitcoin:0,"0":"Bitcoin",Testnet:1,"1":"Testnet",Regtest:2,"2":"Regtest", });
 /**
 */
+module.exports.RemoteSigningError = Object.freeze({ WebhookParsingError:0,"0":"WebhookParsingError",WebhookSignatureError:1,"1":"WebhookSignatureError",SignerCreationError:2,"2":"SignerCreationError",RemoteSigningHandlerError:3,"3":"RemoteSigningHandlerError", });
+/**
+*/
 class InvoiceSignature {
 
     static __wrap(ptr) {
@@ -521,6 +524,36 @@ class LightsparkSigner {
         }
     }
     /**
+    * @param {string} derivation_path
+    * @returns {string}
+    */
+    derive_public_key_hex(derivation_path) {
+        let deferred3_0;
+        let deferred3_1;
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passStringToWasm0(derivation_path, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            wasm.lightsparksigner_derive_public_key_hex(retptr, this.__wbg_ptr, ptr0, len0);
+            var r0 = getInt32Memory0()[retptr / 4 + 0];
+            var r1 = getInt32Memory0()[retptr / 4 + 1];
+            var r2 = getInt32Memory0()[retptr / 4 + 2];
+            var r3 = getInt32Memory0()[retptr / 4 + 3];
+            var ptr2 = r0;
+            var len2 = r1;
+            if (r3) {
+                ptr2 = 0; len2 = 0;
+                throw takeObject(r2);
+            }
+            deferred3_0 = ptr2;
+            deferred3_1 = len2;
+            return getStringFromWasm0(ptr2, len2);
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+            wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
+        }
+    }
+    /**
     * @param {string} unsigned_invoice
     * @returns {InvoiceSignature}
     */
@@ -734,18 +767,6 @@ module.exports.__wbindgen_error_new = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_getRandomValues_37fa2ca9e4e07fab = function() { return handleError(function (arg0, arg1) {
-    getObject(arg0).getRandomValues(getObject(arg1));
-}, arguments) };
-
-module.exports.__wbindgen_object_drop_ref = function(arg0) {
-    takeObject(arg0);
-};
-
-module.exports.__wbg_randomFillSync_dc1e9a60c158336d = function() { return handleError(function (arg0, arg1) {
-    getObject(arg0).randomFillSync(takeObject(arg1));
-}, arguments) };
-
 module.exports.__wbg_crypto_c48a774b022d20ac = function(arg0) {
     const ret = getObject(arg0).crypto;
     return addHeapObject(ret);
@@ -777,6 +798,10 @@ module.exports.__wbindgen_is_string = function(arg0) {
     return ret;
 };
 
+module.exports.__wbindgen_object_drop_ref = function(arg0) {
+    takeObject(arg0);
+};
+
 module.exports.__wbg_msCrypto_bcb970640f50a1e8 = function(arg0) {
     const ret = getObject(arg0).msCrypto;
     return addHeapObject(ret);
@@ -796,6 +821,14 @@ module.exports.__wbindgen_string_new = function(arg0, arg1) {
     const ret = getStringFromWasm0(arg0, arg1);
     return addHeapObject(ret);
 };
+
+module.exports.__wbg_getRandomValues_37fa2ca9e4e07fab = function() { return handleError(function (arg0, arg1) {
+    getObject(arg0).getRandomValues(getObject(arg1));
+}, arguments) };
+
+module.exports.__wbg_randomFillSync_dc1e9a60c158336d = function() { return handleError(function (arg0, arg1) {
+    getObject(arg0).randomFillSync(takeObject(arg1));
+}, arguments) };
 
 module.exports.__wbg_newnoargs_581967eacc0e2604 = function(arg0, arg1) {
     const ret = new Function(getStringFromWasm0(arg0, arg1));

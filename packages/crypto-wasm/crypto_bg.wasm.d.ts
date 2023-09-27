@@ -25,6 +25,7 @@ export function lightsparksigner_generate_preimage_nonce(a: number, b: number): 
 export function lightsparksigner_generate_preimage(a: number, b: number, c: number, d: number): void;
 export function lightsparksigner_generate_preimage_hash(a: number, b: number, c: number, d: number): void;
 export function lightsparksigner_derive_private_key(a: number, b: number, c: number, d: number): void;
+export function lightsparksigner_derive_public_key_hex(a: number, b: number, c: number, d: number): void;
 export function lightsparksigner_sign_invoice_wasm(a: number, b: number, c: number, d: number): void;
 export function lightsparksigner_sign_invoice_hash_wasm(a: number, b: number, c: number, d: number): void;
 export function seed_as_bytes(a: number, b: number): void;

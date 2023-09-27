@@ -9,6 +9,14 @@ export enum Network {
 }
 /**
 */
+export enum RemoteSigningError {
+  WebhookParsingError = 0,
+  WebhookSignatureError = 1,
+  SignerCreationError = 2,
+  RemoteSigningHandlerError = 3,
+}
+/**
+*/
 export class InvoiceSignature {
   free(): void;
 /**
@@ -90,6 +98,11 @@ export class LightsparkSigner {
 * @returns {string}
 */
   derive_private_key(derivation_path: string): string;
+/**
+* @param {string} derivation_path
+* @returns {string}
+*/
+  derive_public_key_hex(derivation_path: string): string;
 /**
 * @param {string} unsigned_invoice
 * @returns {InvoiceSignature}
