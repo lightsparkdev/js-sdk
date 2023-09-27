@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.22
+
+### Patch Changes
+
+- 0e8767b: Add Logger for browser console and some debugging logs
+- Updated dependencies [0e8767b]
+  - @lightsparkdev/core@1.0.2
+
 ## 0.6.21
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.2
+
+### Patch Changes
+
+- 0e8767b: Add Logger for browser console and some debugging logs
+
 ## 1.0.1
 
 ### Patch Changes
