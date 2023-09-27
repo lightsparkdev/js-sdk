@@ -34,7 +34,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "yarn tsc && tsup src/index.ts --format cjs,esm --dts",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "format:fix": "prettier src --write",

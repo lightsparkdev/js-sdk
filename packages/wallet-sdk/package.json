@@ -58,7 +58,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "tsup --entry src/index.ts --entry src/objects/index.ts --format cjs,esm --dts",
+    "build": "yarn tsc && tsup --entry src/index.ts --entry src/objects/index.ts --format cjs,esm --dts",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "docs": "typedoc --media docs-media src",
