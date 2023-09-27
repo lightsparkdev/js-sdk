@@ -8,12 +8,15 @@ export class Logger {
     this.context = loggerContext;
     if (isBrowser) {
       try {
-        this.loggingEnabled = Boolean(
-          localStorage.getItem("lightspark-logging-enabled"),
-        );
+        this.loggingEnabled =
+          localStorage.getItem("lightspark-logging-enabled") === "1";
       } catch (e) {
         /* ignore */
       }
+    }
+
+    if (this.loggingEnabled) {
+      console.log(`[${this.context}] Logging enabled`);
     }
   }
 
