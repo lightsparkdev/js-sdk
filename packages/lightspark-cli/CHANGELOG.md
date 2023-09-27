@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies [e451948]
+  - @lightsparkdev/core@1.0.3
+  - @lightsparkdev/lightspark-sdk@1.0.4
+
 ## 0.0.15
 
 ### Patch Changes

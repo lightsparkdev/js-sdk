@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.23
+
+### Patch Changes
+
+- e451948: Use AsyncStorage in wallet-sdk to check for SDK logging enabled, for ReactNative support
+- Updated dependencies [e451948]
+  - @lightsparkdev/core@1.0.3
+
 ## 0.6.22
 
 ### Patch Changes
