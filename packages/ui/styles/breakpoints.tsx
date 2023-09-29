@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { debounce } from "lodash-es";
 import React, { Fragment, useLayoutEffect, useState } from "react";
@@ -68,9 +69,13 @@ export const bp = {
   [BreakpointRanges.minMd]: breakpointFn(`(min-width:${breakpoints.md + 1}px)`),
 
   current: function <T>(assertBp?: T) {
-    const currentBp = window
-      .getComputedStyle(document.body, ":before")
-      .content.replace(/"/g, "");
+    const currentBp =
+      /* window is undefined in first server side render for Next apps: */
+      typeof window === "undefined"
+        ? BreakpointRanges.sm
+        : window
+            .getComputedStyle(document.body, ":before")
+            .content.replace(/"/g, "");
 
     if (assertBp) {
       return inRange(

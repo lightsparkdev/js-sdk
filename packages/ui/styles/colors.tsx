@@ -40,6 +40,7 @@ export const colors = {
   blue43: "#145BC6",
   blue22: "#0E2E60",
   blue58: "#28BFFF",
+  blue95: "#EBEEF2",
   // yellow
   primary,
   warning: primary,
@@ -300,10 +301,10 @@ export function useThemeBg() {
   const theme = useTheme();
   const bp = useBreakpoints();
   const isSm = bp.current(Breakpoints.sm);
-  if (isLight(theme)) {
-    return isSm ? theme.smBg : theme.bg;
+  if (isDark(theme)) {
+    return darkGradient;
   }
-  return darkGradient;
+  return isSm ? theme.smBg : theme.bg;
 }
 
 export type ThemeProp = {

@@ -32,15 +32,8 @@ type IconProps = {
   mr?: number;
   ml?: number;
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
-  color?: string;
+  color?: string | undefined;
   tutorialStep?: number;
-};
-
-const defaultProps = {
-  verticalAlign: "middle" as const,
-  mr: 0,
-  ml: 0,
-  color: undefined,
 };
 
 export function Icon({
@@ -48,10 +41,10 @@ export function Icon({
   name,
   width,
   tutorialStep,
-  mr = defaultProps.mr,
-  ml = defaultProps.ml,
-  verticalAlign = defaultProps.verticalAlign,
-  color = defaultProps.color,
+  mr = 0,
+  ml = 0,
+  verticalAlign = "middle",
+  color = undefined,
 }: IconProps) {
   const [, setLoading] = useState(false);
 
@@ -90,8 +83,6 @@ export function Icon({
     </IconContainer>
   );
 }
-
-Icon.defaultProps = defaultProps;
 
 type IconContainerProps = {
   w: number;

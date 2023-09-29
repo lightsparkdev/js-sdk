@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -16,20 +17,21 @@ type ButtonSize = (typeof ButtonSizes)[number];
 export type ButtonProps<RoutesType extends string> = {
   backgroundColor?: string;
   color?: string;
-  text: string;
-  disabled?: boolean;
+  text?: string;
+  disabled?: boolean | undefined;
   to?: RoutesType | undefined;
   hash?: string;
   href?: string;
   toParams?: RouteParams | undefined;
-  primary?: boolean;
+  primary?: boolean | undefined;
+  ghost?: boolean | undefined;
   size?: ButtonSize;
   icon?: string;
-  loading?: boolean;
+  loading?: boolean | undefined;
   onClick?: (() => void) | undefined;
   mt?: number;
   ml?: number;
-  fullWidth?: boolean;
+  fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   blue?: boolean;
   newTab?: boolean;
@@ -42,6 +44,16 @@ type PrimaryProps = {
   primary: boolean;
   theme: Theme;
   blue: boolean;
+};
+
+type PaddingProps = {
+  size: ButtonSize;
+  iconWidth?: number;
+  text?: string | undefined;
+};
+
+type BorderProps = {
+  ghost?: boolean;
 };
 
 function getTextColor({ color, theme, primary, blue }: PrimaryProps) {
@@ -76,6 +88,24 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
+function getPadding({ iconWidth, size, text }: PaddingProps) {
+  const paddingForText = text ? 6 : 0;
+  return size === "lg"
+    ? `14px ${hPaddingPx}px 14px ${
+        hPaddingPx + (iconWidth ? iconWidth + paddingForText : 0)
+      }px`
+    : size === "md"
+    ? "9px 18px"
+    : "6px 16px";
+}
+
+function getBorder({ ghost }: BorderProps) {
+  if (ghost) {
+    return "none";
+  }
+  return "1px solid";
+}
+
 function getInnerBorderColor({
   backgroundColor,
   theme,
@@ -93,25 +123,11 @@ function getInnerBorderColor({
   return themeOr(colors.gray90, colors.gray20)({ theme });
 }
 
-const defaultProps = {
-  primary: false,
-  icon: null,
-  loading: false,
-  size: "lg" as const,
-  disabled: false,
-  fullWidth: false,
-  type: "button" as const,
-  blue: false,
-  mt: 0,
-  ml: 0,
-  newTab: false,
-  zIndex: undefined,
-};
-
 export function Button<RoutesType extends string>({
   backgroundColor,
   color,
-  primary = defaultProps.primary,
+  primary = false,
+  ghost = false,
   text,
   to,
   hash,
@@ -119,16 +135,16 @@ export function Button<RoutesType extends string>({
   toParams,
   onClick,
   icon,
-  loading = defaultProps.loading,
-  fullWidth = defaultProps.fullWidth,
-  disabled = defaultProps.disabled,
-  size = defaultProps.size,
-  mt = defaultProps.mt,
-  ml = defaultProps.ml,
-  type = defaultProps.type,
-  blue = defaultProps.blue,
-  newTab = defaultProps.newTab,
-  zIndex = defaultProps.zIndex,
+  loading = false,
+  fullWidth = false,
+  disabled = false,
+  size = "lg",
+  mt = 0,
+  ml = 0,
+  type = "button",
+  blue = false,
+  newTab = false,
+  zIndex = undefined,
 }: ButtonProps<RoutesType>) {
   const iconMarginRight = 6;
   const iconSize = size === "lg" ? 16 : 12;
@@ -174,6 +190,7 @@ export function Button<RoutesType extends string>({
     size,
     onClick,
     primary,
+    ghost,
     fullWidth,
     blue,
     iconWidth: currentIcon ? iconSize + iconMarginRight : 0,
@@ -184,6 +201,7 @@ export function Button<RoutesType extends string>({
       marginLeft: ml ? `${ml}px` : undefined,
     },
     newTab,
+    text,
     zIndex,
   };
 
@@ -204,12 +222,11 @@ export function Button<RoutesType extends string>({
   );
 }
 
-Button.defaultProps = defaultProps;
-
 type StyledButtonProps = {
   backgroundColor?: string | undefined;
   color?: string | undefined;
   primary: boolean;
+  ghost: boolean;
   size: ButtonSize;
   disabled: boolean;
   fullWidth: boolean;
@@ -217,6 +234,7 @@ type StyledButtonProps = {
   blue: boolean;
   iconWidth: number;
   newTab: boolean;
+  text?: string | undefined;
   zIndex?: number | undefined;
 };
 
@@ -226,12 +244,14 @@ const buttonStyle = ({
   backgroundColor,
   theme,
   primary,
+  ghost,
   disabled,
   isLoading,
   size,
   fullWidth,
   iconWidth,
   blue,
+  text,
   zIndex,
 }: StyledButtonProps & { theme: Theme }) => css`
   display: inline-flex;
@@ -261,7 +281,7 @@ const buttonStyle = ({
       primary,
       blue,
     })};
-    border: 1px solid;
+    border: ${getBorder({ ghost })};
     border-color: ${getInnerBorderColor({
       backgroundColor,
       theme,
@@ -269,13 +289,7 @@ const buttonStyle = ({
       blue,
     })};
     border-radius: 32px;
-    padding: ${size === "lg"
-      ? `14px ${hPaddingPx}px 14px ${
-          hPaddingPx + (iconWidth ? iconWidth + 6 : 0)
-        }px`
-      : size === "md"
-      ? "9px 18px"
-      : "6px 16px"};
+    padding: ${getPadding({ size, iconWidth, text })};
     color: ${getTextColor({ color, theme, primary, blue })};
   }
 `;
