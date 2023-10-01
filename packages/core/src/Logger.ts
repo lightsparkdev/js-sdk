@@ -1,4 +1,4 @@
-import { isBrowser } from "./index.js";
+import { isBrowser, isTest } from "./utils/environment.js";
 
 type GetLoggingEnabled = (() => Promise<boolean> | boolean) | undefined;
 
@@ -14,6 +14,8 @@ export class Logger {
   async updateLoggingEnabled(getLoggingEnabled: GetLoggingEnabled) {
     if (getLoggingEnabled) {
       this.loggingEnabled = await getLoggingEnabled();
+    } else if (isTest) {
+      this.loggingEnabled = true;
     } else if (isBrowser) {
       try {
         this.loggingEnabled =

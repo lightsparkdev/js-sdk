@@ -15,6 +15,7 @@ import {
 
 import LightsparkClient from "../client.js";
 
+import { logger } from "../logger.js";
 import {
   getOutgoingPaymentQuery,
   KeyType,
@@ -25,11 +26,7 @@ import {
 } from "../objects/index.js";
 import { FRAGMENT } from "../objects/InvoiceData.js";
 import { DEFAULT_BASE_URL, TESTS_TIMEOUT } from "./constants.js";
-import {
-  deployWallet,
-  getCredentialsFromEnvOrThrow,
-  sleep,
-} from "./helpers/index.js";
+import { deployWallet, getCredentialsFromEnvOrThrow } from "./helpers/index.js";
 import { type CreatedInvoiceData } from "./types.js";
 
 const ENCODED_REQUEST_FOR_TESTS =
@@ -55,6 +52,25 @@ const authorizedRegtestClientWithLockedWallet = new LightsparkClient(
 );
 let bitcoinAddress: string | null = "";
 
+const generalSuiteName = "general";
+const p1SuiteName = "P1";
+const p2SuiteName = "P2";
+
+function log(msg: string, ...args: unknown[]) {
+  logger.info(
+    `${expect
+      .getState()
+      .currentTestName?.replace(
+        new RegExp(
+          `^(${generalSuiteName}|${p1SuiteName}|${p2SuiteName})\\s`,
+          "g",
+        ),
+        "",
+      )}: ${msg}`,
+    ...args,
+  );
+}
+
 /**
  * For every test `TEST_USER_ID` should be unique
  */
@@ -74,7 +90,7 @@ const testInvoiceData = {} as Record<InvoiceType, string | null>;
 const invoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
 const testInvoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
 
-describe("Sanity tests", () => {
+describe(generalSuiteName, () => {
   jest
     .spyOn(authorizedRegtestClientWithLockedWallet, "isAuthorized")
     .mockResolvedValue(true);
@@ -90,7 +106,10 @@ describe("Sanity tests", () => {
         },
         credentials,
       );
-
+      log("wallet", {
+        userId: clientDeployWalletResponse.userId,
+        walletId: clientDeployWalletResponse.walletId,
+      });
       expect(clientDeployWalletResponse.userId).not.toBeNull();
     },
     TESTS_TIMEOUT,
@@ -114,7 +133,7 @@ describe("Sanity tests", () => {
         clientDeployWalletResponse?.pubKey ?? "",
         KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? ""),
       );
-
+      log("walletStatus", walletStatus);
       expect(walletStatus).toBe(WalletStatus.READY);
     },
     TESTS_TIMEOUT,
@@ -150,7 +169,7 @@ describe("Sanity tests", () => {
     "should create a bitcoin funding address",
     async () => {
       bitcoinAddress = await regtestClient.createBitcoinFundingAddress();
-
+      log("bitcoinAddress", bitcoinAddress);
       expect(bitcoinAddress).not.toBeNull();
     },
     TESTS_TIMEOUT,
@@ -171,7 +190,7 @@ describe("Sanity tests", () => {
   });
 });
 
-describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)", () => {
+describe("REGTEST createInvoice with createTestModePayment", () => {
   test(
     "should deposit test funds to wallet",
     async () => {
@@ -179,13 +198,15 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
         CREATE_INVOICE_AMOUNT_MSATS,
       );
 
+      log("invoice.id", invoice?.id);
+
       if (!invoice) throw new TypeError("invoice is null");
 
       const payment = await regtestClient.createTestModePayment(
         invoice.data.encodedPaymentRequest,
       );
 
-      await sleep(5_000);
+      log("payment.id", payment?.id);
 
       // FIXME: add payment result awaiting and change expecting status to SUCCESS
       expect(payment?.status).toBe(TransactionStatus.PENDING);
@@ -215,6 +236,8 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
         "hi there",
       );
 
+      log("invoice.id", invoice?.id);
+
       if (!invoice) throw new TypeError("invoice is null");
 
       invoiceData.STANDARD = invoice.data;
@@ -230,6 +253,8 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
       const clearMemoInvoice = await regtestClient.createInvoice(
         CREATE_INVOICE_AMOUNT_MSATS,
       );
+
+      log("invoice.id", clearMemoInvoice?.id);
 
       expect(clearMemoInvoice).not.toBeNull();
     },
@@ -253,8 +278,7 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
         invoiceData.STANDARD.encodedPaymentRequest,
       );
 
-      // FIXME
-      await sleep(5_000);
+      log("payment.id", testInvoicePayment.STANDARD?.id);
 
       // FIXME: add payment result awaiting and change expecting status to SUCCESS
       expect(testInvoicePayment.STANDARD?.status).toBe(
@@ -265,7 +289,7 @@ describe("Invoices tests for REGTEST (createInvoice with createTestModePayment)"
   );
 });
 
-describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", () => {
+describe("REGTEST createTestModeInvoice with payInvoice", () => {
   test(
     "should deposit test funds to wallet",
     async () => {
@@ -279,6 +303,8 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
         invoice,
         CREATE_TEST_INVOICE_AMOUNT_MSATS,
       );
+      log("payment.id", payment?.id);
+      log("payment.status", payment?.status);
 
       expect(payment?.status).toBe(TransactionStatus.SUCCESS);
     },
@@ -348,6 +374,10 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
         testInvoiceData.STANDARD,
         CREATE_TEST_INVOICE_AMOUNT_MSATS,
       );
+      log("payment result", {
+        id: invoicePayment.STANDARD?.id,
+        status: invoicePayment.STANDARD?.status,
+      });
 
       expect(invoicePayment.STANDARD.status).toBe(TransactionStatus.SUCCESS);
     },
@@ -355,7 +385,7 @@ describe("Invoices tests for REGTEST (createTestModeInvoice with payInvoice)", (
   );
 });
 
-describe("P1 tests", () => {
+describe(p1SuiteName, () => {
   test(
     "should generate a key",
     async () => {
@@ -381,7 +411,7 @@ describe("P1 tests", () => {
     "should fetch the current wallet",
     async () => {
       const wallet = await regtestClient.getCurrentWallet();
-
+      log("wallet", { id: wallet?.id, status: wallet?.status });
       expect(wallet).not.toBeNull();
     },
     TESTS_TIMEOUT,
@@ -447,7 +477,7 @@ describe("P1 tests", () => {
   );
 });
 
-describe("P2 tests", () => {
+describe(p2SuiteName, () => {
   test(
     "should execute a raw graphql query",
     async () => {
@@ -488,7 +518,7 @@ describe("P2 tests", () => {
     "should get an estimated gas price",
     async () => {
       const fee = await regtestClient.getBitcoinFeeEstimate();
-
+      log("fee", fee);
       expect(fee).not.toBeNull();
     },
     TESTS_TIMEOUT,
@@ -499,7 +529,10 @@ describe("P2 tests", () => {
     async () => {
       await regtestClient.terminateWallet();
       const wallet = await regtestClient.getCurrentWallet();
-
+      log("wallet", {
+        status: wallet?.status,
+        id: wallet?.id,
+      });
       expect(wallet?.status).toBe(WalletStatus.TERMINATED);
     },
     TESTS_TIMEOUT,

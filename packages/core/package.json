@@ -48,6 +48,7 @@
   ],
   "scripts": {
     "build": "yarn tsc && tsup src/index.ts --format cjs,esm --dts",
+    "build:watch": "yarn build --watch",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "format:fix": "prettier src --write",

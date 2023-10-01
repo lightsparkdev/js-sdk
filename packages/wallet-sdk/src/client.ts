@@ -465,29 +465,35 @@ class LightsparkClient {
     encodedInvoice: string,
     maxFeesMsats: number,
     amountMsats: number | undefined = undefined,
-    timoutSecs: number = 60,
+    timeoutSecs: number = 60,
   ) {
     logger.info(`payInvoiceAndAwaitResult params`, {
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
-      timoutSecs,
+      timeoutSecs,
     });
     const payment = await this.payInvoice(
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
-      timoutSecs,
+      timeoutSecs,
     );
-    logger.info(`payInvoiceAndAwaitResult payment`, payment);
-    return await this.awaitPaymentResult(payment, timoutSecs);
+    logger.info(`payInvoiceAndAwaitResult payment`, {
+      paymentId: payment.id,
+      paymentStatus: payment.status,
+    });
+    return await this.awaitPaymentResult(payment, timeoutSecs);
   }
 
   private awaitPaymentResult(
     payment: OutgoingPayment,
     timeoutSecs: number = 60,
   ): Promise<OutgoingPayment> {
-    logger.info(`awaitPaymentResult params`, { payment, timeoutSecs });
+    logger.info(`awaitPaymentResult payment`, {
+      paymentId: payment.id,
+      paymentStatus: payment.status,
+    });
     let timeout: NodeJS.Timeout;
     let subscription: Subscription;
     const completionStatuses = [
@@ -503,7 +509,7 @@ class LightsparkClient {
       subscription = this.listenToPaymentStatus(payment.id).subscribe({
         next: (payment) => {
           logger.info(`awaitPaymentResult subscribe.next`, {
-            payment,
+            paymentId: payment.id,
             paymentStatus: payment.status,
           });
           if (completionStatuses.includes(payment.status)) {
@@ -539,7 +545,7 @@ class LightsparkClient {
     });
 
     result.finally(() => {
-      logger.info("awaitPaymentResult finally", { timeout, subscription });
+      logger.info("awaitPaymentResult finally timeout");
       clearTimeout(timeout);
       subscription.unsubscribe();
     });
@@ -947,7 +953,10 @@ class LightsparkClient {
       .map((responseJson: any) => {
         logger.info(`listenToPaymentStatus responseJson`, responseJson);
         const payment = OutgoingPaymentFromJson(responseJson.data.entity);
-        logger.info(`listenToPaymentStatus payment`, payment);
+        logger.info(`listenToPaymentStatus payment`, {
+          paymentId: payment.id,
+          paymentStatus: payment.status,
+        });
         return payment;
       });
   }

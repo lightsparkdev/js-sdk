@@ -148,17 +148,22 @@ export const deployWallet = async (
     walletStatus = await client.deployWalletAndAwaitDeployed();
   }
 
+  let currentWallet = await client.getCurrentWallet();
   while (
     walletStatus === WalletStatus.INITIALIZING ||
     walletStatus === WalletStatus.DEPLOYING
   ) {
     await sleep(WALLET_STATUS_INTERVAL);
 
-    const currentWallet = await client.getCurrentWallet();
+    currentWallet = await client.getCurrentWallet();
 
     if (currentWallet) {
       walletStatus = currentWallet.status;
     }
+  }
+
+  if (!currentWallet) {
+    throw new Error("currentWallet is null");
   }
 
   const serializedKeypair = await genKeyForWallet(walletStatus);
@@ -191,7 +196,7 @@ export const deployWallet = async (
 
   return {
     userId,
-
+    walletId: currentWallet.id,
     jwt: token,
     pubKey: serializedKeypair?.publicKey,
     privKey: serializedKeypair?.privateKey,

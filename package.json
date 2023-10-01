@@ -9,6 +9,7 @@
     "build-no-cache": "yarn build --force",
     "build-storybook": "turbo run build-storybook",
     "build": "turbo run build",
+    "build:watch": "turbo run build:watch",
     "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
@@ -23,8 +24,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "release": "turbo build && changeset publish",
-    "start:check": "turbo run build && turbo run start types:watch lint:watch --parallel --concurrency 100",
-    "start": "turbo run build && turbo run start --concurrency 100",
+    "start:check": "turbo run build && turbo run build:watch start types:watch lint:watch --parallel --concurrency 100",
+    "start": "turbo run build && turbo run build:watch start --concurrency 100",
     "test": "turbo run test",
     "types": "turbo run types"
   },
