@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/streaming-wallet-extension",
-  "version": "1.0.27",
+  "version": "1.0.28",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.21.4",
@@ -8,8 +8,8 @@
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@lightsparkdev/core": "1.0.3",
-    "@lightsparkdev/lightspark-sdk": "1.0.4",
+    "@lightsparkdev/core": "1.0.4",
+    "@lightsparkdev/lightspark-sdk": "1.0.5",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^8.1.0",
     "babel-loader": "^9.1.2",
