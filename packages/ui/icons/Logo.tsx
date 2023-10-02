@@ -1,5 +1,5 @@
-// Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { ReactComponent as LogoSvg } from "@lightsparkdev/ui/images/Logo.svg";
+// Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
+import LogoSvg from "@lightsparkdev/ui/images/Logo.svg";
 
 function Logo() {
   return <LogoSvg />;

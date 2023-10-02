@@ -5,6 +5,12 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**"]
     },
+    "build:watch": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "build/**"],
+      "cache": false,
+      "persistent": true
+    },
     "build-storybook": {
       "outputs": ["storybook-static/**"]
     },

@@ -30,7 +30,7 @@ module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
         },
       }),
       svgr({
-        svgrOptions: {},
+        exportAsDefault: true,
       }),
     ],
     server: {

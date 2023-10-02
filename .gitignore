@@ -118,3 +118,6 @@ example/vendor/
 
 # Leave for public repo:
 *.code-workspace
+
+# Prevent people from unintentionally committing package-lock - yarn.lock is the correct lock file
+package-lock.json

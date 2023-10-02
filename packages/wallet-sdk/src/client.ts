@@ -11,6 +11,7 @@ import {
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
+  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
@@ -465,31 +466,36 @@ class LightsparkClient {
     encodedInvoice: string,
     maxFeesMsats: number,
     amountMsats: number | undefined = undefined,
-    timoutSecs: number = 60,
+    timeoutSecs: number = 60,
   ) {
     logger.info(`payInvoiceAndAwaitResult params`, {
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
-      timoutSecs,
+      timeoutSecs,
     });
     const payment = await this.payInvoice(
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
-      timoutSecs,
+      timeoutSecs,
     );
-    logger.info(`payInvoiceAndAwaitResult payment`, payment);
-    return await this.awaitPaymentResult(payment, timoutSecs);
+    logger.info(`payInvoiceAndAwaitResult payment`, {
+      paymentId: payment.id,
+      paymentStatus: payment.status,
+    });
+    const paymentResult = await this.awaitPaymentResult(payment, timeoutSecs);
+    return paymentResult;
   }
 
-  private awaitPaymentResult(
+  private async awaitPaymentResult(
     payment: OutgoingPayment,
     timeoutSecs: number = 60,
   ): Promise<OutgoingPayment> {
-    logger.info(`awaitPaymentResult params`, { payment, timeoutSecs });
-    let timeout: NodeJS.Timeout;
-    let subscription: Subscription;
+    logger.info(`awaitPaymentResult payment`, {
+      paymentId: payment.id,
+      paymentStatus: payment.status,
+    });
     const completionStatuses = [
       TransactionStatus.FAILED,
       TransactionStatus.CANCELLED,
@@ -499,52 +505,54 @@ class LightsparkClient {
     if (completionStatuses.includes(payment.status)) {
       return Promise.resolve(payment);
     }
-    const result: Promise<OutgoingPayment> = new Promise((resolve, reject) => {
-      subscription = this.listenToPaymentStatus(payment.id).subscribe({
-        next: (payment) => {
-          logger.info(`awaitPaymentResult subscribe.next`, {
-            payment,
-            paymentStatus: payment.status,
+
+    const timeoutError = new LightsparkException(
+      "PaymentStatusAwaitError",
+      `Timed out waiting for payment status to be one of ${completionStatuses.join(
+        ", ",
+      )}.`,
+    );
+
+    const pollIntervalMs = 500;
+    const ignoreErrors = false;
+    let paymentResult: OutgoingPayment;
+    try {
+      paymentResult = await pollUntil(
+        () => {
+          return this.executeRawQuery({
+            queryPayload: `
+              query PaymentStatusQuery {
+                entity(id: "${payment.id}") {
+                  ...OutgoingPaymentFragment
+                }
+              }
+              ${OutgoingPaymentFragment}
+            `,
+            constructObject: (responseJson: any) => {
+              return OutgoingPaymentFromJson(responseJson.entity);
+            },
           });
-          if (completionStatuses.includes(payment.status)) {
-            resolve(payment);
+        },
+        (current, response) => {
+          logger.info(`pollUntil current`, current);
+          if (current && completionStatuses.includes(current.status)) {
+            return {
+              stopPolling: true,
+              value: current,
+            };
           }
+          return response;
         },
-        error: (error) => {
-          logger.info(`awaitPaymentResult subscribe.error`, error);
-          reject(error);
-        },
-        complete: () => {
-          logger.info(`awaitPaymentResult subscribe.complete`);
-          reject(
-            new LightsparkException(
-              "PaymentStatusAwaitError",
-              "Payment status subscription completed without receiving a completed status update.",
-            ),
-          );
-        },
-      });
+        pollIntervalMs,
+        (timeoutSecs * 1000) / pollIntervalMs,
+        ignoreErrors,
+        () => timeoutError,
+      );
+    } catch (error) {
+      throw error;
+    }
 
-      timeout = setTimeout(() => {
-        logger.info(`awaitPaymentResult timeout`);
-        reject(
-          new LightsparkException(
-            "PaymentStatusAwaitError",
-            `Timed out waiting for payment status to be one of ${completionStatuses.join(
-              ", ",
-            )}.`,
-          ),
-        );
-      }, timeoutSecs * 1000);
-    });
-
-    result.finally(() => {
-      logger.info("awaitPaymentResult finally", { timeout, subscription });
-      clearTimeout(timeout);
-      subscription.unsubscribe();
-    });
-
-    return result;
+    return paymentResult;
   }
 
   /**
@@ -926,29 +934,6 @@ class LightsparkClient {
           WalletStatus[responseJson.data.current_wallet.status] ??
           WalletStatus.FUTURE_VALUE
         );
-      });
-  }
-
-  private listenToPaymentStatus(
-    paymentId: string,
-  ): Observable<OutgoingPayment> {
-    logger.info(`listenToPaymentStatus params`, { paymentId });
-    return this.requester
-      .subscribe(
-        `
-      subscription PaymentStatusSubscription {
-        entity(id: "${paymentId}") {
-          ...OutgoingPaymentFragment
-        }
-      }
-      ${OutgoingPaymentFragment}
-      `,
-      )
-      .map((responseJson: any) => {
-        logger.info(`listenToPaymentStatus responseJson`, responseJson);
-        const payment = OutgoingPaymentFromJson(responseJson.data.entity);
-        logger.info(`listenToPaymentStatus payment`, payment);
-        return payment;
       });
   }
 

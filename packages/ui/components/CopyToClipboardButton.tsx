@@ -1,7 +1,9 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
+/** @jsxImportSource @emotion/react */
 import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
-import { Icon, UnstyledButton } from "@lightsparkdev/ui/components";
+import { Icon } from "@lightsparkdev/ui/components";
+import { UnstyledButton } from "@lightsparkdev/ui/components/UnstyledButton";
 import { StyledTooltip } from "@lightsparkdev/ui/styles/common";
 import { nanoid } from "nanoid";
 import React, { useState } from "react";

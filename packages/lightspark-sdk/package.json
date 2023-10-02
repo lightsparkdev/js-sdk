@@ -69,6 +69,7 @@
   ],
   "scripts": {
     "build": "yarn tsc && tsup",
+    "build:watch": "yarn build --watch",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "docs": "typedoc src",

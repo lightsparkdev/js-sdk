@@ -1,10 +1,6 @@
 import secp256k1 from "secp256k1";
-import {
-  createSha256Hash,
-  hexToBytes,
-  SigningKeyType,
-  type CryptoInterface,
-} from "../index.js";
+import { SigningKeyType, type CryptoInterface } from "../index.js";
+import { createSha256Hash, hexToBytes } from "../utils/index.js";
 
 interface Alias {
   alias: string;

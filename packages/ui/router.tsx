@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 /* eslint-disable no-restricted-imports */
 import type { Theme } from "@emotion/react";
 import type { Interpolation } from "@emotion/styled";

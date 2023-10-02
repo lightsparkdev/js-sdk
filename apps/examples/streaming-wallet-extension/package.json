@@ -11,7 +11,7 @@
     "@lightsparkdev/core": "1.0.3",
     "@lightsparkdev/lightspark-sdk": "1.0.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
-    "@svgr/webpack": "^7.0.0",
+    "@svgr/webpack": "^8.1.0",
     "babel-loader": "^9.1.2",
     "babel-plugin-named-asset-import": "^0.3.8",
     "babel-preset-react-app": "^10.0.1",
