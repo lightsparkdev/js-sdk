@@ -1,5 +1,15 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.6.24
+
+### Patch Changes
+
+- 545fe1f: Switch listenToPaymentStatus to polling. Closes LIG-3588
+- 545fe1f: Always enable logging in test environments
+- Updated dependencies [545fe1f]
+- Updated dependencies [545fe1f]
+  - @lightsparkdev/core@1.0.4
+
 ## 0.6.23
 
 ### Patch Changes

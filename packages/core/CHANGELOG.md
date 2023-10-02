@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.0.4
+
+### Patch Changes
+
+- 545fe1f: Switch listenToPaymentStatus to polling. Closes LIG-3588
+- 545fe1f: Always enable logging in test environments
+
 ## 1.0.3
 
 ### Patch Changes
