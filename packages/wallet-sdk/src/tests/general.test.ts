@@ -411,7 +411,7 @@ describe(p1SuiteName, () => {
     "should fetch the current wallet",
     async () => {
       const wallet = await regtestClient.getCurrentWallet();
-      log("wallet", { id: wallet?.id, status: wallet?.status });
+      log("wallet", { walletId: wallet?.id, walletStatus: wallet?.status });
       expect(wallet).not.toBeNull();
     },
     TESTS_TIMEOUT,

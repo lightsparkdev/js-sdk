@@ -33,6 +33,19 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.js"
+      },
+      "module": "./dist/utils/index.js",
+      "require": {
+        "types": "./dist/utils/index.d.ts",
+        "default": "./dist/utils/index.cjs"
+      },
+      "default": "./dist/utils/index.cjs"
     }
   },
   "engines": {
@@ -47,7 +60,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "yarn tsc && tsup src/index.ts --format cjs,esm --dts",
+    "build": "yarn tsc && tsup",
     "build:watch": "yarn build --watch",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
