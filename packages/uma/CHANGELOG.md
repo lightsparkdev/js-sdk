@@ -1,5 +1,13 @@
 # @lightsparkdev/uma
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [ca58c08]
+  - @lightsparkdev/lightspark-sdk@1.0.6
+  - @lightsparkdev/core@1.0.5
+
 ## 0.0.7
 
 ### Patch Changes
