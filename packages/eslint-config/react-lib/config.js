@@ -1,7 +1,7 @@
 const constants = require("./constants");
 
 module.exports = {
-  extends: ["../base", "../cra", "react-app/jest"],
+  extends: ["../base", "../cra", "../cra-jest"],
 
   rules: {
     /* LS Rules */

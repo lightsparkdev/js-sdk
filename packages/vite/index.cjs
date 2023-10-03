@@ -10,7 +10,12 @@ const currentCommit = childProcess
   .trim()
   .substr(0, 8);
 
-module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
+module.exports.buildConfig = ({
+  port = 3000,
+  base = "/",
+  dirname,
+  rollupOptions,
+}) =>
   defineConfig({
     base,
     define: {
@@ -59,6 +64,7 @@ module.exports.buildConfig = ({ port = 3000, base = "/", dirname }) =>
       include: ["@lightsparkdev/crypto-wasm"],
     },
     build: {
+      rollupOptions,
       assetsDir: "static",
       commonjsOptions: {
         include: [/@lightsparkdev\/crypto-wasm/, /node_modules/],

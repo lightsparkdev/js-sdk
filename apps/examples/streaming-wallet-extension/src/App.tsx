@@ -30,6 +30,7 @@ enum Screen {
   Balance,
   Transactions,
   Login,
+  NotContentScriptError,
 }
 
 const DEMO_VIDEO_ID = "ls_demo";
@@ -47,6 +48,11 @@ function App() {
   const [demoStreamingDuration, setDemoStreamingDuration] = React.useState(0);
 
   React.useEffect(() => {
+    if (!chrome.storage) {
+      setScreen(Screen.NotContentScriptError);
+      return;
+    }
+
     chrome.storage.local
       .get(["accountNodeDashboard"])
       .then(async (cachedBalance) => {
@@ -162,32 +168,37 @@ function App() {
       });
   }, [lightsparkClient, credentials]);
 
-  const body = !lightsparkClient ? (
-    <></>
-  ) : screen === Screen.Balance ? (
-    <BalanceScreen
-      balance={balance}
-      transactions={joinedTransactions}
-      streamingDuration={demoStreamingDuration}
-      isStreaming={isStreaming}
-    />
-  ) : screen === Screen.Transactions ? (
-    <TransactionsScreen transactions={joinedTransactions} />
-  ) : (
-    <LoginScreen
-      lightsparkClient={lightsparkClient}
-      onCreatedAccount={async (credentials) => {
-        lightsparkClient?.setAuthProvider(
-          new AccountTokenAuthProvider(
-            credentials.clientId,
-            credentials.clientSecret
-          )
-        );
-        await new AccountStorage().saveAccountCredentials(credentials);
-        setCredentials(credentials);
-      }}
-    />
-  );
+  const body =
+    screen === Screen.NotContentScriptError ? (
+      <div>
+        This page must be loaded inside of a Chrome extension content script.
+      </div>
+    ) : !lightsparkClient ? (
+      <></>
+    ) : screen === Screen.Balance ? (
+      <BalanceScreen
+        balance={balance}
+        transactions={joinedTransactions}
+        streamingDuration={demoStreamingDuration}
+        isStreaming={isStreaming}
+      />
+    ) : screen === Screen.Transactions ? (
+      <TransactionsScreen transactions={joinedTransactions} />
+    ) : (
+      <LoginScreen
+        lightsparkClient={lightsparkClient}
+        onCreatedAccount={async (credentials) => {
+          lightsparkClient?.setAuthProvider(
+            new AccountTokenAuthProvider(
+              credentials.clientId,
+              credentials.clientSecret
+            )
+          );
+          await new AccountStorage().saveAccountCredentials(credentials);
+          setCredentials(credentials);
+        }}
+      />
+    );
   return (
     <div className="app-wrapper">
       {Header(screen, setScreen)}

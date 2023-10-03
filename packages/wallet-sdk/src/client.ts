@@ -877,7 +877,7 @@ class LightsparkClient {
     statuses: WalletStatus[],
     timeoutSecs: number = 60,
   ): Promise<WalletStatus> {
-    let timeout: NodeJS.Timeout;
+    let timeout: ReturnType<typeof setTimeout>;
     let subscription: Subscription;
     const result: Promise<WalletStatus> = new Promise((resolve, reject) => {
       subscription = this.listenToWalletStatus().subscribe({

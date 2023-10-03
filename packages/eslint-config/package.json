@@ -3,10 +3,14 @@
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
+    "confusing-browser-globals": "^1.0.11",
     "eslint": "^8.3.0",
+    "eslint-config-next": "13.4.19",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-config-react-app": "^7.0.1",
     "eslint-config-universe": "^12.0.0",
+    "eslint-plugin-flowtype": "^8.0.3",
+    "eslint-plugin-jest": "^27.4.2",
+    "eslint-plugin-testing-library": "^6.0.2",
     "eslint-webpack-plugin": "^4.0.0"
   },
   "dependencies": {

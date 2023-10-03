@@ -1,4 +1,3 @@
-import { createHmac } from "crypto";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
 export const WEBHOOKS_SIGNATURE_HEADER = "lightspark-signature";
@@ -11,11 +10,13 @@ export interface WebhookEvent {
   wallet_id?: string;
 }
 
-export const verifyAndParseWebhook = (
+export const verifyAndParseWebhook = async (
   data: Uint8Array,
   hexdigest: string,
   webhook_secret: string,
 ): Promise<WebhookEvent> => {
+  /* dynamic import to avoid bundling crypto in browser */
+  const { createHmac } = await import("crypto");
   const sig = createHmac("sha256", webhook_secret).update(data).digest("hex");
 
   if (sig.toLowerCase() !== hexdigest.toLowerCase()) {
