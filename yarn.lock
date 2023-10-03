@@ -3660,24 +3660,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/core@npm:1.0.4":
-  version: 1.0.4
-  resolution: "@lightsparkdev/core@npm:1.0.4"
-  dependencies:
-    auto-bind: ^5.0.1
-    crypto: ^1.0.1
-    crypto-browserify: ^3.12.0
-    dayjs: ^1.11.7
-    graphql: ^16.6.0
-    graphql-ws: ^5.11.3
-    secp256k1: ^5.0.0
-    text-encoding: ^0.7.0
-    ws: ^8.12.1
-    zen-observable-ts: ^1.1.0
-  checksum: 9d6b846d94e62c66212b624c245eeee2d06ce4e438977ec2cddbb4721f287f9fd16428e8f2b707e72f55f348365c7dbe179b2ea317a4b8633c83dc91634d120e
-  languageName: node
-  linkType: hard
-
 "@lightsparkdev/crypto-wasm@0.1.1, @lightsparkdev/crypto-wasm@workspace:packages/crypto-wasm":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/crypto-wasm@workspace:packages/crypto-wasm"
@@ -3775,25 +3757,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@lightsparkdev/lightspark-sdk@npm:1.0.5"
-  dependencies:
-    "@lightsparkdev/core": 1.0.4
-    "@lightsparkdev/crypto-wasm": 0.1.1
-    auto-bind: ^5.0.1
-    crypto: ^1.0.1
-    crypto-browserify: ^3.12.0
-    dayjs: ^1.11.7
-    dotenv: ^16.3.1
-    graphql: ^16.6.0
-    graphql-ws: ^5.11.3
-    ws: ^8.12.1
-    zen-observable-ts: ^1.1.0
-  checksum: f287e17440c471f0bfa84df8e40d34c129515b235e03e5204666cba4d9bb71a7f9fe98897019734a3b310081a37f3e2461e9156f3a8043a634365a45e8309b5b
-  languageName: node
-  linkType: hard
-
 "@lightsparkdev/ls-react-native-crypto-app@workspace:apps/examples/ls-react-native-crypto-app":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ls-react-native-crypto-app@workspace:apps/examples/ls-react-native-crypto-app"
@@ -3848,7 +3811,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.0.5
+    "@lightsparkdev/lightspark-sdk": 1.0.6
     "@lightsparkdev/oauth": "*"
     "@lightsparkdev/tsconfig": "*"
     "@lightsparkdev/ui": "*"
