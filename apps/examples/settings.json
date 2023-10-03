@@ -1,0 +1,11 @@
+{
+  "reactWalletApp": {
+    "port": 3100
+  },
+  "streamingWalletExtension": {
+    "port": 3101
+  },
+  "oauthApp": {
+    "port": 3102
+  }
+}

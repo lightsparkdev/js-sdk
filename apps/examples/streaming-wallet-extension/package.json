@@ -12,8 +12,6 @@
     "uuid": "^9.0.0"
   },
   "scripts": {
-    "start-tmp": "PORT=3006 BROWSER=none craco start",
-    "build-tmp": "INLINE_RUNTIME_CHUNK=false craco build",
     "build": "yarn tsc && vite build",
     "clean": "rm -rf .turbo && rm -rf dist",
     "package": "rm -f streaming-extension.zip && yarn build && zip -r streaming-extension.zip dist",

@@ -1,7 +1,8 @@
 import { buildConfig } from "@lightsparkdev/vite";
+import settings from "../settings.json";
 
 export default buildConfig({
-  port: 3003,
+  port: settings.streamingWalletExtension.port,
   dirname: __dirname,
   rollupOptions: {
     input: {
