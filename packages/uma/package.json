@@ -66,7 +66,6 @@
   "dependencies": {
     "@lightsparkdev/core": "1.0.5",
     "@lightsparkdev/lightspark-sdk": "1.0.6",
-    "@react-native-async-storage/async-storage": "^1.18.1",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",

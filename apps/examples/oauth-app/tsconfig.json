@@ -1,0 +1,12 @@
+{
+  "extends": "@lightsparkdev/tsconfig/react-app.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "src/*": ["./*"]
+    },
+    "types": ["node", "vite/client"]
+  },
+  "include": ["src/**/*", "../../../packages/ui/**/*"],
+  "exclude": ["node_modules"]
+}

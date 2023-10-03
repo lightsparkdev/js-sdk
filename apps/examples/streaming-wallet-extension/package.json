@@ -3,6 +3,7 @@
   "version": "1.0.29",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.0.5",
     "@lightsparkdev/lightspark-sdk": "1.0.6",
@@ -12,8 +13,6 @@
     "uuid": "^9.0.0"
   },
   "scripts": {
-    "start-tmp": "PORT=3006 BROWSER=none craco start",
-    "build-tmp": "INLINE_RUNTIME_CHUNK=false craco build",
     "build": "yarn tsc && vite build",
     "clean": "rm -rf .turbo && rm -rf dist",
     "package": "rm -f streaming-extension.zip && yarn build && zip -r streaming-extension.zip dist",

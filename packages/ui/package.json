@@ -25,6 +25,7 @@
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
     "react": "^18.2.0",
+    "react-dom": "^18.1.0",
     "react-tooltip": "^5.10.1"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@lightsparkdev/tsconfig": "0.0.0",
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
+    "graphql": "^16.6.0",
     "madge": "^6.1.0",
     "prettier": "3.0.2",
     "prettier-plugin-organize-imports": "^3.2.2",
