@@ -164,6 +164,7 @@ jobs:
     needs: ["checks", "build"]
     permissions:
       contents: write
+      pull-requests: write
     if: "success() && github.event_name == 'push'"
     runs-on: ubuntu-latest
     environment: npm
