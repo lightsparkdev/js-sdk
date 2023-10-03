@@ -1353,7 +1353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-react-jsx@npm:^7.0.0, @babel/plugin-transform-react-jsx@npm:^7.12.17":
+"@babel/plugin-transform-react-jsx@npm:^7.0.0, @babel/plugin-transform-react-jsx@npm:^7.12.17, @babel/plugin-transform-react-jsx@npm:^7.22.15":
   version: 7.22.15
   resolution: "@babel/plugin-transform-react-jsx@npm:7.22.15"
   dependencies:
@@ -3670,7 +3670,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/eslint-config@workspace:packages/eslint-config"
   dependencies:
+    "@babel/core": ^7.21.4
+    "@babel/plugin-syntax-flow": ^7.22.5
+    "@babel/plugin-transform-react-jsx": ^7.22.15
     "@typescript-eslint/eslint-plugin": ^6.2.0
+    "@typescript-eslint/parser": ^6.7.4
     confusing-browser-globals: ^1.0.11
     eslint: ^8.3.0
     eslint-config-next: 13.4.19
@@ -3680,6 +3684,7 @@ __metadata:
     eslint-plugin-jest: ^27.4.2
     eslint-plugin-testing-library: ^6.0.2
     eslint-webpack-plugin: ^4.0.0
+    webpack: 5.88.2
   languageName: unknown
   linkType: soft
 
@@ -3727,6 +3732,7 @@ __metadata:
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/crypto-js": ^4.1.1
     "@types/jest": ^29.5.3
+    "@types/node": ^20.2.5
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
     crypto: ^1.0.1
@@ -3797,7 +3803,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/oauth@workspace:packages/oauth":
+"@lightsparkdev/oauth-app@workspace:apps/examples/oauth-app":
+  version: 0.0.0-use.local
+  resolution: "@lightsparkdev/oauth-app@workspace:apps/examples/oauth-app"
+  dependencies:
+    "@emotion/css": ^11.11.0
+    "@emotion/react": ^11.11.0
+    "@emotion/styled": ^11.11.0
+    "@lightsparkdev/eslint-config": "*"
+    "@lightsparkdev/lightspark-sdk": 1.0.5
+    "@lightsparkdev/oauth": 0.1.24
+    "@lightsparkdev/tsconfig": "*"
+    "@lightsparkdev/ui": "*"
+    "@types/jest": ^29.5.3
+    "@types/node": ^20.2.5
+    "@types/react": ^18.2.12
+    "@types/react-dom": ^18.0.0
+    "@vitejs/plugin-react": ^4.0.1
+    eslint: ^8.3.0
+    eslint-watch: ^8.0.0
+    qrcode.react: ^3.1.0
+    react: ^18.2.0
+    react-dom: ^18.1.0
+    react-router-dom: 6.11.2
+    tsc-absolute: ^1.0.1
+    typescript: ^4.9.5
+    vite: ^4.3.9
+    web-vitals: ^3.3.0
+  languageName: unknown
+  linkType: soft
+
+"@lightsparkdev/oauth@0.1.24, @lightsparkdev/oauth@workspace:packages/oauth":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/oauth@workspace:packages/oauth"
   dependencies:
@@ -3903,6 +3939,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/streaming-wallet-extension@workspace:apps/examples/streaming-wallet-extension"
   dependencies:
+    "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.4
     "@lightsparkdev/lightspark-sdk": 1.0.5
@@ -3947,12 +3984,14 @@ __metadata:
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     gql: ^1.1.2
+    graphql: ^16.6.0
     lodash-es: ^4.17.21
     madge: ^6.1.0
     nanoid: ^4.0.0
     prettier: 3.0.2
     prettier-plugin-organize-imports: ^3.2.2
     react: ^18.2.0
+    react-dom: ^18.1.0
     react-tooltip: ^5.10.1
     typescript: ^4.9.5
   languageName: unknown
@@ -3965,7 +4004,6 @@ __metadata:
     "@lightsparkdev/core": 1.0.4
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/lightspark-sdk": 1.0.5
-    "@react-native-async-storage/async-storage": ^1.18.1
     "@types/crypto-js": ^4.1.1
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
@@ -3998,6 +4036,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/vite@workspace:packages/vite"
   dependencies:
+    vite: ^4.3.9
     vite-plugin-svgr: ^3.2.0
   languageName: unknown
   linkType: soft
@@ -4038,6 +4077,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 1.0.4
     "@lightsparkdev/wallet-sdk": 0.6.24
+    "@types/node": ^20.2.5
     commander: ^11.0.0
     dayjs: ^1.11.7
     ts-node: ^10.9.1
@@ -4068,6 +4108,8 @@ __metadata:
     jsonwebtoken: ^9.0.1
     prettier: 3.0.2
     prettier-plugin-organize-imports: ^3.2.2
+    react: ^18.2.0
+    react-native: 0.71.8
     ts-jest: ^29.1.1
     tsup: ^6.7.0
     typedoc: ^0.24.7
@@ -5504,7 +5546,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.4.2 || ^6.0.0":
+"@typescript-eslint/parser@npm:^5.4.2 || ^6.0.0, @typescript-eslint/parser@npm:^6.7.4":
   version: 6.7.4
   resolution: "@typescript-eslint/parser@npm:6.7.4"
   dependencies:
@@ -17771,6 +17813,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"qrcode.react@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "qrcode.react@npm:3.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 94a2942ecf83f461d869adb20305ae663c6d1abe93ef2c72442b07d756ce70cf6deb6fd588dc5b382b48c6991cfde1dfd5ac9b814c1461e71d5edb2d945e67fc
+  languageName: node
+  linkType: hard
+
 "qs@npm:6.11.0":
   version: 6.11.0
   resolution: "qs@npm:6.11.0"
@@ -21670,7 +21721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:^5.64.4":
+"webpack@npm:5.88.2, webpack@npm:^5.64.4":
   version: 5.88.2
   resolution: "webpack@npm:5.88.2"
   dependencies:

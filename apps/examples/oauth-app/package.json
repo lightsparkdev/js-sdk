@@ -8,7 +8,6 @@
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/lightspark-sdk": "1.0.5",
     "@lightsparkdev/oauth": "0.1.24",
-    "@lightsparkdev/private-ui": "*",
     "@lightsparkdev/ui": "*",
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
