@@ -1,13 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.0.6
-
-### Patch Changes
-
-- ca58c08: Update createSha256Hash with option to return as hex string and accept string data
-- Updated dependencies [ca58c08]
-  - @lightsparkdev/core@1.0.5
-
 ## 1.0.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/uma",
-  "version": "0.0.8",
+  "version": "0.0.7",
   "description": "UMA SDK for JavaScript",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -64,8 +64,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "1.0.5",
-    "@lightsparkdev/lightspark-sdk": "1.0.6",
+    "@lightsparkdev/core": "1.0.4",
+    "@lightsparkdev/lightspark-sdk": "1.0.5",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
