@@ -13,7 +13,8 @@ jobs:
   create-release-pr:
     name: Create or update release PR
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Save branch name output
         shell: bash

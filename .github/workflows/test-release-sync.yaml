@@ -162,6 +162,8 @@ jobs:
   release:
     name: Release
     needs: ["checks", "build"]
+    permissions:
+      contents: write
     if: "success() && github.event_name == 'push'"
     runs-on: ubuntu-latest
     environment: npm
@@ -261,6 +263,8 @@ jobs:
     if: "github.event_name == 'push'"
     runs-on: ubuntu-latest
     environment: npm
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
