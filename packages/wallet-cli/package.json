@@ -20,6 +20,7 @@
     "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",
     "start:windows": "nodemon --watch 'src/**/*.ts' --exec \"npx ts-node\" src/index.ts",
     "types": "tsc",
+    "test": "./test.sh",
     "types:watch": "tsc-absolute --watch"
   },
   "type": "module",

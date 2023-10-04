@@ -1,6 +1,15 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {Uint8Array} webhook_data
+* @param {string} webhook_signature
+* @param {string} webhook_secret
+* @param {Uint8Array} master_seed_bytes
+* @param {any} validation
+* @returns {RemoteSigningResponseWasm}
+*/
+export function wasm_handle_remote_signing_webhook_event(webhook_data: Uint8Array, webhook_signature: string, webhook_secret: string, master_seed_bytes: Uint8Array, validation: any): RemoteSigningResponseWasm;
+/**
 */
 export enum Network {
   Bitcoin = 0,
@@ -136,6 +145,17 @@ export class Mnemonic {
 * @returns {string}
 */
   as_string(): string;
+}
+/**
+*/
+export class RemoteSigningResponseWasm {
+  free(): void;
+/**
+*/
+  query: string;
+/**
+*/
+  variables: string;
 }
 /**
 */
