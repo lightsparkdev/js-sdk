@@ -107,7 +107,8 @@ class LightsparkClient {
   /**
    * Constructs a new LightsparkClient.
    *
-   * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
+   * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider.
+   * For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
@@ -473,31 +474,31 @@ class LightsparkClient {
    * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
    * @returns An Invoice object representing the generated invoice.
    */
-  public async createLnurlInvoice(
-    nodeId: string,
-    amountMsats: number,
-    metadata: string,
-    expirySecs: number | undefined = undefined,
-  ): Promise<Invoice | undefined> {
-    const metadataHash = await createSha256Hash(metadata, true);
-    const variables = {
-      node_id: nodeId,
-      amount_msats: amountMsats,
-      metadata_hash: metadataHash,
-    };
-    if (expirySecs !== undefined) {
-      variables["expiry_secs"] = expirySecs;
-    }
-    const response = await this.requester.makeRawRequest(
-      CreateLnurlInvoice,
-      variables,
-    );
-    const invoiceJson = response.create_lnurl_invoice?.invoice;
-    if (!invoiceJson) {
-      return undefined;
-    }
-    return InvoiceFromJson(invoiceJson);
-  }
+  // public async createLnurlInvoice(
+  //   nodeId: string,
+  //   amountMsats: number,
+  //   metadata: string,
+  //   expirySecs: number | undefined = undefined,
+  // ): Promise<Invoice | undefined> {
+  //   const metadataHash = await createSha256Hash(metadata, true);
+  //   const variables = {
+  //     node_id: nodeId,
+  //     amount_msats: amountMsats,
+  //     metadata_hash: metadataHash,
+  //   };
+  //   if (expirySecs !== undefined) {
+  //     variables["expiry_secs"] = expirySecs;
+  //   }
+  //   const response = await this.requester.makeRawRequest(
+  //     CreateLnurlInvoice,
+  //     variables,
+  //   );
+  //   const invoiceJson = response.create_lnurl_invoice?.invoice;
+  //   if (!invoiceJson) {
+  //     return undefined;
+  //   }
+  //   return InvoiceFromJson(invoiceJson);
+  // }
 
   /**
    * Creates a new invoice for the UMA protocol. The metadata is hashed and included in the invoice.
@@ -513,29 +514,29 @@ class LightsparkClient {
    * @param expirySecs The number of seconds until the invoice expires. Defaults to 3600 (1 hour).
    * @returns An Invoice object representing the generated invoice.
    */
-  public async createUmaInvoice(
-    nodeId: string,
-    amountMsats: number,
-    metadata: string,
-    expirySecs: number | undefined = undefined,
-  ): Promise<Invoice | undefined> {
-    const metadataHash = await createSha256Hash(metadata, true);
-    const variables = {
-      node_id: nodeId,
-      amount_msats: amountMsats,
-      metadata_hash: metadataHash,
-      expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
-    };
-    const response = await this.requester.makeRawRequest(
-      CreateUmaInvoice,
-      variables,
-    );
-    const invoiceJson = response.create_uma_invoice?.invoice;
-    if (!invoiceJson) {
-      return undefined;
-    }
-    return InvoiceFromJson(invoiceJson);
-  }
+  // public async createUmaInvoice(
+  //   nodeId: string,
+  //   amountMsats: number,
+  //   metadata: string,
+  //   expirySecs: number | undefined = undefined,
+  // ): Promise<Invoice | undefined> {
+  //   const metadataHash = await createSha256Hash(metadata, true);
+  //   const variables = {
+  //     node_id: nodeId,
+  //     amount_msats: amountMsats,
+  //     metadata_hash: metadataHash,
+  //     expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
+  //   };
+  //   const response = await this.requester.makeRawRequest(
+  //     CreateUmaInvoice,
+  //     variables,
+  //   );
+  //   const invoiceJson = response.create_uma_invoice?.invoice;
+  //   if (!invoiceJson) {
+  //     return undefined;
+  //   }
+  //   return InvoiceFromJson(invoiceJson);
+  // }
 
   /**
    * Decodes an encoded lightning invoice string.

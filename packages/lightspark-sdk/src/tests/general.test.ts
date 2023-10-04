@@ -30,15 +30,22 @@ const DECODED_REQUEST_DETAILS_FOR_TESTS = {
     invoice_data_memo: "mmmmm pizza",
 };
 
-const TEST_API_TOKEN_ID = '018af9da9a804f89000044fae9826c1b'
-const TEST_API_TOKEN = 'ARkLPSlrlHmfecshFyAJGOko3lpdWwFPWsDikWe7R5Y'
+const TEST_TOKEN_TO_SEND = '018afaa2f44a4f890000a8b9b26bbe19'
+const PROD_NODE_ID_TO_SEND = '018afaa310494f8900005c728dae5d65'
+const TEST_API_TOKEN_TO_SEND = 'C3ZyMoPCDTCATExBkqybvxEZkqrys9vVoVKmidOn01s'
+const PROD_API_TOKEN_TO_SEND = 'XG6hoMwKZd4E2VHDQM26WXvCBqp_mlXyCEQyeK8rUaM'
 
-const PROD_IP_TOKEN_ID = '018af9db01944f89000048e564c32e97'
-const PROD_API_TOKEN = 'REdquq4r30ScPdK2HqI6SzRq-cn0QTE5WOj07AmO4o4'
+/** TODO: PUT YOUR ID's TO THIS CONSTS */
+const TEST_TOKEN_ID = ''
+const TEST_API_TOKEN = ''
 
-/** FIXME: CAN I SEE AN EXAMPLE OF `LightsparkClient` CREATION AND INITING? AND MORE INFO ABOUT NODE_ID? */
-const regtestClient = new LightsparkClient(new AccountTokenAuthProvider(TEST_API_TOKEN_ID, TEST_API_TOKEN))
-const prodClient = new LightsparkClient(new AccountTokenAuthProvider(PROD_IP_TOKEN_ID, PROD_API_TOKEN))
+const PROD_TOKEN_ID = ''
+const PROD_API_TOKEN = ''
+
+/** TODO: REWRITE FOR CORRECT INITIALIZATION */
+const regtestClient =
+    new LightsparkClient(new AccountTokenAuthProvider(TEST_TOKEN_ID, TEST_API_TOKEN))
+const prodClient = new LightsparkClient(new AccountTokenAuthProvider(PROD_TOKEN_ID, PROD_API_TOKEN))
 const unauthorizedRegtestClient = new LightsparkClient()
 
 let testInvoice: string | null
@@ -46,8 +53,10 @@ let testInvoice: string | null
 let normalPaymentInvoice: string | undefined
 
 describe("P0 tests", () => {
+
+    /** FIXME: "Something went wrong." ERROR */
     test('Should create a normal payment invoice', async () => {
-        normalPaymentInvoice = await regtestClient.createInvoice('', PAY_AMOUNT, 'hi there!')
+        normalPaymentInvoice = await prodClient.createInvoice(PROD_NODE_ID_TO_SEND, PAY_AMOUNT, 'hi there!')
         expect(normalPaymentInvoice).toBeDefined()
     })
 
