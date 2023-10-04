@@ -19,6 +19,7 @@
     "local": "sudo npm i -g && lightspark",
     "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",
     "start:windows": "nodemon --watch 'src/**/*.ts' --exec \"npx ts-node\" src/index.ts",
+    "test": "./test.sh",
     "types": "tsc",
     "types:watch": "tsc-absolute --watch"
   },
