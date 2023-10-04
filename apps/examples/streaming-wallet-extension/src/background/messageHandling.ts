@@ -61,7 +61,7 @@ const getWalletStatus = async (lightsparkClient: LightsparkClient) => {
   return "funded";
 };
 
-let pendingPause: NodeJS.Timeout | undefined;
+let pendingPause: ReturnType<typeof setTimeout> | undefined;
 
 export const onMessageReceived = (
   message: any,

@@ -1,0 +1,12 @@
+/* More on this approach to allow ts linting outside src https://bit.ly/455nI2L */
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "**/.*.js" // eg .eslintrc.js
+  ],
+  "exclude": ["node_modules", "src"]
+}

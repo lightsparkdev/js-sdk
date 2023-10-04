@@ -12,13 +12,16 @@ import {
   Navigate as RNavigate,
   useLocation,
   useNavigate as useRNavigate,
+  type NavigateOptions,
 } from "react-router-dom";
 /* eslint-enable no-restricted-imports */
 import { colors } from "@lightsparkdev/ui/styles/colors";
 
-export type QueryParams = {
-  [key: string]: string;
-};
+export type QueryParams =
+  | {
+      [key: string]: string;
+    }
+  | string;
 
 type RouteParam = string;
 export type RouteParams = {
@@ -54,9 +57,12 @@ export function replaceParams<RoutesType extends string>(
       toWithParams = toWithParams.replace(`:${key}`, value) as RoutesType;
     });
     if (params.query) {
-      const query = Object.entries(params.query)
-        .map(([key, value]) => `${key}${value ? `=${value}` : ""}`)
-        .join("&");
+      let query = params.query;
+      if (typeof params.query !== "string") {
+        query = Object.entries(params.query)
+          .map(([key, value]) => `${key}${value ? `=${value}` : ""}`)
+          .join("&");
+      }
       toWithParams = `${toWithParams}?${query}` as RoutesType;
     }
     to = toWithParams;
@@ -97,14 +103,19 @@ export function Link<RoutesType extends string>({
 type NavigateProps<RoutesType extends string> = Omit<
   LinkProps<RoutesType>,
   "children"
->;
+> & {
+  state?: unknown;
+  replace?: boolean;
+};
 
 export function Navigate<RoutesType extends string>({
   to,
   params,
+  state,
+  replace = false,
 }: NavigateProps<RoutesType>) {
   to = replaceParams(to, params);
-  return <RNavigate to={to} />;
+  return <RNavigate to={to} state={state} replace={replace} />;
 }
 
 export function useNavigate<RoutesType extends string>() {
@@ -114,6 +125,7 @@ export function useNavigate<RoutesType extends string>() {
       // number eg -1 can be passed to navigate back
       to: LinkProps<RoutesType>["to"] | number,
       params?: LinkProps<RoutesType>["params"],
+      options?: NavigateOptions,
     ) => {
       if (typeof to === "string") {
         to = replaceParams<RoutesType>(to, params);

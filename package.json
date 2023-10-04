@@ -25,8 +25,8 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "release": "turbo build && changeset publish",
-    "start:check": "turbo run build && turbo run build:watch start types:watch lint:watch --parallel --concurrency 100",
-    "start": "turbo run build && turbo run build:watch start --concurrency 100",
+    "start:check": "turbo run build && turbo run build:watch start types:watch lint:watch --parallel --concurrency 200",
+    "start": "turbo run build && turbo run build:watch start --concurrency 200",
     "test": "turbo run test",
     "types": "turbo run types"
   },

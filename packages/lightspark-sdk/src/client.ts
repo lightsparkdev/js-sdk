@@ -12,6 +12,7 @@ import type {
   SigningKey,
 } from "@lightsparkdev/core";
 import {
+  createSha256Hash,
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
@@ -21,7 +22,6 @@ import {
   SigningKeyType,
   StubAuthProvider,
 } from "@lightsparkdev/core";
-import { createHash } from "crypto";
 import packageJson from "../package.json";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
@@ -479,10 +479,11 @@ class LightsparkClient {
     metadata: string,
     expirySecs: number | undefined = undefined,
   ): Promise<Invoice | undefined> {
+    const metadataHash = await createSha256Hash(metadata, true);
     const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
-      metadata_hash: createHash("sha256").update(metadata).digest("hex"),
+      metadata_hash: metadataHash,
     };
     if (expirySecs !== undefined) {
       variables["expiry_secs"] = expirySecs;
@@ -518,10 +519,11 @@ class LightsparkClient {
     metadata: string,
     expirySecs: number | undefined = undefined,
   ): Promise<Invoice | undefined> {
+    const metadataHash = await createSha256Hash(metadata, true);
     const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
-      metadata_hash: createHash("sha256").update(metadata).digest("hex"),
+      metadata_hash: metadataHash,
       expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
     };
     const response = await this.requester.makeRawRequest(

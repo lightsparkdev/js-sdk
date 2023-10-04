@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -80,13 +80,13 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "jest --no-cache --runInBand --bail",
+    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "1.0.4",
+    "@lightsparkdev/core": "1.0.5",
     "@lightsparkdev/crypto-wasm": "0.1.1",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
@@ -103,6 +103,7 @@
     "@lightsparkdev/tsconfig": "0.0.0",
     "@types/crypto-js": "^4.1.1",
     "@types/jest": "^29.5.3",
+    "@types/node": "^20.2.5",
     "@types/ws": "^8.5.4",
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
