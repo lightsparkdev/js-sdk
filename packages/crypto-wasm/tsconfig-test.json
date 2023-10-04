@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "types": ["jest", "node"],
+    "esModuleInterop": true,
+    "moduleResolution": "node16"
+  },
+  "include": ["test/**/*"],
+  "exclude": ["node_modules"]
+}

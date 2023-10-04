@@ -29,6 +29,12 @@ export function lightsparksigner_derive_public_key_hex(a: number, b: number, c: 
 export function lightsparksigner_sign_invoice_wasm(a: number, b: number, c: number, d: number): void;
 export function lightsparksigner_sign_invoice_hash_wasm(a: number, b: number, c: number, d: number): void;
 export function seed_as_bytes(a: number, b: number): void;
+export function __wbg_remotesigningresponsewasm_free(a: number): void;
+export function remotesigningresponsewasm_query(a: number, b: number): void;
+export function remotesigningresponsewasm_variables(a: number, b: number): void;
+export function remotesigningresponsewasm_set_query(a: number, b: number, c: number): void;
+export function remotesigningresponsewasm_set_variables(a: number, b: number, c: number): void;
+export function wasm_handle_remote_signing_webhook_event(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number): void;
 export function rustsecp256k1_v0_8_1_context_create(a: number): number;
 export function rustsecp256k1_v0_8_1_context_destroy(a: number): void;
 export function rustsecp256k1_v0_8_1_default_illegal_callback_fn(a: number, b: number): void;
