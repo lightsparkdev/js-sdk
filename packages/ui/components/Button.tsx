@@ -44,12 +44,14 @@ type PrimaryProps = {
   primary: boolean;
   theme: Theme;
   blue: boolean;
+  ghost?: boolean | undefined;
 };
 
 type PaddingProps = {
   size: ButtonSize;
   iconWidth?: number;
   text?: string | undefined;
+  ghost?: boolean | undefined;
 };
 
 type BorderProps = {
@@ -75,7 +77,11 @@ function getBackgroundColor({
   theme,
   primary,
   blue,
+  ghost,
 }: PrimaryProps) {
+  if (ghost) {
+    return "none";
+  }
   if (backgroundColor) {
     return backgroundColor;
   }
@@ -88,7 +94,11 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
-function getPadding({ iconWidth, size, text }: PaddingProps) {
+function getPadding({ iconWidth, size, text, ghost }: PaddingProps) {
+  if (ghost) {
+    return "0";
+  }
+
   const paddingForText = text ? 6 : 0;
   return size === "lg"
     ? `14px ${hPaddingPx}px 14px ${
@@ -151,13 +161,13 @@ export function Button<RoutesType extends string>({
   let currentIcon = null;
   if (loading) {
     currentIcon = (
-      <ButtonIcon>
+      <ButtonIcon ghost={ghost}>
         <Loading size={iconSize} center={false} />
       </ButtonIcon>
     );
   } else if (icon) {
     currentIcon = (
-      <ButtonIcon>
+      <ButtonIcon ghost={ghost}>
         <Icon name={icon} width={iconSize} />
       </ButtonIcon>
     );
@@ -280,6 +290,7 @@ const buttonStyle = ({
       theme,
       primary,
       blue,
+      ghost,
     })};
     border: ${getBorder({ ghost })};
     border-color: ${getInnerBorderColor({
@@ -289,14 +300,18 @@ const buttonStyle = ({
       blue,
     })};
     border-radius: 32px;
-    padding: ${getPadding({ size, iconWidth, text })};
+    padding: ${getPadding({ size, iconWidth, text, ghost })};
     color: ${getTextColor({ color, theme, primary, blue })};
   }
 `;
 
-const ButtonIcon = styled.div`
+interface ButtonIconProps {
+  ghost?: boolean | undefined;
+}
+
+const ButtonIcon = styled.div<ButtonIconProps>`
   position: absolute;
-  left: ${hPaddingPx}px;
+  ${(props) => (props.ghost ? "" : `left: ${hPaddingPx}px;`)}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`
