@@ -1,3 +1,5 @@
+import { wasm_handle_remote_signing_webhook_event } from "@lightsparkdev/crypto-wasm";
+import type LightsparkClient from "./client.js";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
 export const WEBHOOKS_SIGNATURE_HEADER = "lightspark-signature";
@@ -43,3 +45,43 @@ const parseWebhook = async (data: Uint8Array): Promise<WebhookEvent> => {
     wallet_id: event.wallet_id,
   };
 };
+
+type Validator = {
+  shouldSign: (event: WebhookEvent) => boolean;
+};
+
+export class RemoteSigningWebhookHandler {
+  client: LightsparkClient;
+  #masterSeed: Uint8Array;
+  validator: Validator;
+
+  constructor(
+    client: LightsparkClient,
+    masterSeed: Uint8Array,
+    validator: Validator,
+  ) {
+    this.client = client;
+    this.#masterSeed = masterSeed;
+    this.validator = validator;
+  }
+
+  handleWebhookRequest(
+    data: Uint8Array,
+    hexdigest: string,
+    webhookSecret: string,
+  ) {
+    const response = wasm_handle_remote_signing_webhook_event(
+      data,
+      hexdigest,
+      webhookSecret,
+      this.#masterSeed,
+      this.validator,
+    );
+    const variables = JSON.parse(response.variables);
+    this.client.executeRawQuery({
+      queryPayload: response.query,
+      variables,
+      constructObject: (rawData: unknown) => rawData,
+    });
+  }
+}
