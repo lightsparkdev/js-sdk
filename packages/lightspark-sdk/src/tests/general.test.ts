@@ -6,6 +6,7 @@ import LightsparkClient from "../client.js";
 import {InvoiceType, TransactionStatus, WithdrawalRequestStatus,} from "../objects/index.js";
 import {FRAGMENT} from "../objects/InvoiceData.js";
 import WithdrawalMode from "../objects/WithdrawalMode.js";
+import { AccountTokenAuthProvider } from '../auth/index.js'
 
 const TESTS_TIMEOUT = 500 //ms
 
@@ -29,8 +30,15 @@ const DECODED_REQUEST_DETAILS_FOR_TESTS = {
     invoice_data_memo: "mmmmm pizza",
 };
 
+const TEST_API_TOKEN_ID = '018af9da9a804f89000044fae9826c1b'
+const TEST_API_TOKEN = 'ARkLPSlrlHmfecshFyAJGOko3lpdWwFPWsDikWe7R5Y'
+
+const PROD_IP_TOKEN_ID = '018af9db01944f89000048e564c32e97'
+const PROD_API_TOKEN = 'REdquq4r30ScPdK2HqI6SzRq-cn0QTE5WOj07AmO4o4'
+
 /** FIXME: CAN I SEE AN EXAMPLE OF `LightsparkClient` CREATION AND INITING? AND MORE INFO ABOUT NODE_ID? */
-const regtestClient = new LightsparkClient()
+const regtestClient = new LightsparkClient(new AccountTokenAuthProvider(TEST_API_TOKEN_ID, TEST_API_TOKEN))
+const prodClient = new LightsparkClient(new AccountTokenAuthProvider(PROD_IP_TOKEN_ID, PROD_API_TOKEN))
 const unauthorizedRegtestClient = new LightsparkClient()
 
 let testInvoice: string | null
