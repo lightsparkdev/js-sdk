@@ -1,0 +1,23 @@
+{
+  // Most ts-node options can be specified here using their programmatic names.
+  "ts-node": {
+    "files": true,
+    "experimentalResolver": true,
+    "esm": true,
+    "compilerOptions": {
+      "strict": false
+    }
+  },
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "nodenext",
+    "target": "esnext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

@@ -47,7 +47,7 @@ const parseWebhook = async (data: Uint8Array): Promise<WebhookEvent> => {
 };
 
 type Validator = {
-  shouldSign: (event: WebhookEvent) => boolean;
+  should_sign: (event: WebhookEvent) => boolean;
 };
 
 export class RemoteSigningWebhookHandler {
@@ -67,12 +67,12 @@ export class RemoteSigningWebhookHandler {
 
   handleWebhookRequest(
     data: Uint8Array,
-    hexdigest: string,
+    webhookSignature: string,
     webhookSecret: string,
   ) {
     const response = wasm_handle_remote_signing_webhook_event(
       data,
-      hexdigest,
+      webhookSignature,
       webhookSecret,
       this.#masterSeed,
       this.validator,

@@ -8,7 +8,7 @@ describe("crypto", () => {
     const dataBytes = hexToBytes(dataHex);
     const sig =
       "a64c69f1266bc1dc1322c3f40eba7ba2d536c714774a4fc04f0938609482f5d9";
-    const sec = "39kyJO140v7fYkwHnR7jz8Y3UphqVeNYQk44Xx049ws";
+    const webhookSecret = "39kyJO140v7fYkwHnR7jz8Y3UphqVeNYQk44Xx049ws";
     const seed =
       "1a6deac8f74fb2e332677e3f4833b5e962f80d153fb368b8ee322a9caca4113d56cccd88f1c6a74e152669d8cd373fee2f27e3645d80de27640177a8c71395f8";
     const seedBytes = hexToBytes(seed);
@@ -18,7 +18,7 @@ describe("crypto", () => {
     const res = wasm_handle_remote_signing_webhook_event(
       dataBytes,
       sig,
-      sec,
+      webhookSecret,
       seedBytes,
       validator
     );
