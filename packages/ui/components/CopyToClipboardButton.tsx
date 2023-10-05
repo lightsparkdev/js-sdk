@@ -17,6 +17,7 @@ type Props = {
   ml?: number;
   place?: "top" | "bottom" | "left" | "right";
   icon?: string;
+  id?: string;
 };
 
 // This is a button that copies the specified value to the clipboard.
@@ -24,7 +25,7 @@ const CopyToClipboardButton = (props: Props) => {
   const originalTooltipContent = props.tooltipContent || "Click to copy";
   const icon = props.icon || "Copy";
   // unique id needed when there are multiple instances:
-  const id = `copy-node-name-${nanoid()}`;
+  const id = `copy-node-name-${props.id ?? nanoid()}`;
   const [tooltipContent, setTooltipContent] = useState(originalTooltipContent);
 
   return (

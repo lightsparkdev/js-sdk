@@ -42,12 +42,8 @@
       "cache": false,
       "persistent": true
     },
-    "test": {},
-    "@lightsparkdev/wallet-sdk#test": {
-      "dependsOn": ["^build", "build"]
-    },
-    "@lightsparkdev/uma#test": {
-      "dependsOn": ["^build", "build"]
+    "test": {
+      "dependsOn": ["^build"]
     },
     "types": {},
     "types:watch": {

@@ -22,6 +22,14 @@ const neutral = {
   white: "#FFFFFF",
 };
 
+const uma = {
+  blue: "#0068C9",
+  blue50: "#C0C9D6",
+  blue80: "#DCE2EA",
+  blue90: "#EBEEF2",
+  blue95: "#F2F5F7",
+};
+
 export const darkGradient =
   "#1d1d1d linear-gradient(180deg, #090909 63.08%, #1d1d1d 100.52%)";
 
@@ -34,6 +42,7 @@ const primary = "#FFF14E";
 
 export const colors = {
   ...neutral,
+  uma,
   // green
   success: "#17C27C",
   // blue
