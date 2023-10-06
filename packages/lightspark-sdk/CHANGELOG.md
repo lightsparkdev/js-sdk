@@ -1,13 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.0.7
-
-### Patch Changes
-
-- e156e3e: Remote signing webhooks handler and generate latest wasm
-- Updated dependencies [e156e3e]
-  - @lightsparkdev/crypto-wasm@0.1.2
-
 ## 1.0.6
 
 ### Patch Changes

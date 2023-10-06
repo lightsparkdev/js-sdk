@@ -1,11 +1,5 @@
 # @lightsparkdev/wallet-cli
 
-## 0.0.34
-
-### Patch Changes
-
-- e156e3e: Remote signing webhooks handler and generate latest wasm
-
 ## 0.0.33
 
 ### Patch Changes

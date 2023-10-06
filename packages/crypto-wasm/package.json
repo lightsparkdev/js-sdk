@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/crypto-wasm",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "type": "module",
   "files": [
     "crypto_bg.wasm",
