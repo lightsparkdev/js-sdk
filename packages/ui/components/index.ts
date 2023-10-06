@@ -1,8 +1,4 @@
 export {
-  TextIconAligner,
-  type TextIconAlignerProps,
-} from "@lightsparkdev/ui/components/TextIconAligner";
-export {
   Button,
   ButtonSelector,
   StyledButton,
