@@ -68,7 +68,7 @@ const IconContainer = styled.div<{ isOpen?: boolean | undefined }>`
 const CollapsingContainer = styled.div<{ isOpen?: boolean | undefined }>`
   ${(props) =>
     props.isOpen
-      ? `max-height: 100%; animation-name: fadeIn;`
+      ? `max-height: 100vh; animation-name: fadeIn;`
       : `max-height: 0; animation-name: fadeOut;`}
   overflow: hidden;
   transition: max-height 0.25s ease-in-out;
