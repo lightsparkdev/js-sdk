@@ -28,6 +28,7 @@ const uma = {
   blue80: "#DCE2EA",
   blue90: "#EBEEF2",
   blue95: "#F2F5F7",
+  stroke: "#C0C9D6",
 };
 
 export const darkGradient =
