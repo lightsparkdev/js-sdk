@@ -1,5 +1,13 @@
 # @lightsparkdev/react-native
 
+## 0.2.20
+
+### Patch Changes
+
+- 59bdae3: Unpin react-native dep
+- Updated dependencies [59bdae3]
+  - @lightsparkdev/ls-react-native-crypto@0.2.9
+
 ## 0.2.19
 
 ### Patch Changes
