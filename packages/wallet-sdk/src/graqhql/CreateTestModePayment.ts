@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { FRAGMENT as OutgoingPaymentFragment } from "../objects/OutgoingPayment.js";
+import { FRAGMENT as IncomingPaymentFragment } from "../objects/IncomingPayment.js";
 
 const CreateTestModePayment = `
 mutation CreateTestModePayment(
@@ -11,13 +11,13 @@ mutation CreateTestModePayment(
       encoded_invoice: $encoded_invoice
       amount_msats: $amount_msats
   }) {
-      payment {
-          ...OutgoingPaymentFragment
+      incoming_payment {
+          ...IncomingPaymentFragment
       }
   }
 }
 
-${OutgoingPaymentFragment}
+${IncomingPaymentFragment}
 `;
 
 export default CreateTestModePayment;
