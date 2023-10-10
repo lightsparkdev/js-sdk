@@ -53,7 +53,7 @@ export const textInputStyle = ({
 
   position: relative;
   z-index: ${z.textInput};
-  font-family: "Montserrat";
+  font-family: ${theme.fontFamily};
   padding: ${textInputPaddingPx - (hasError ? 1 : 0)}px;
   ${paddingLeftPx
     ? `padding-left: ${paddingLeftPx - (hasError ? 1 : 0)}px;`

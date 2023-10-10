@@ -80,6 +80,7 @@ interface BaseTheme {
   c8Neutral: string;
   c9Neutral: string;
   danger: string;
+  fontFamily: string;
   hcNeutral: string;
   hcNeutralFromBg: (hex: string) => string;
   info: string;
@@ -148,6 +149,7 @@ const lightBaseTheme: BaseTheme = {
   c8Neutral: neutral.gray20,
   c9Neutral: neutral.gray10,
   danger: colors.danger,
+  fontFamily: "Montserrat",
   hcNeutral: colors.black,
   hcNeutralFromBg: (bgHex) =>
     hcNeutralFromBg(bgHex, colors.black, colors.white),
@@ -180,6 +182,7 @@ const darkBaseTheme: BaseTheme = {
   c8Neutral: neutral.gray80,
   c9Neutral: neutral.gray90,
   danger: colors.danger,
+  fontFamily: "Montserrat",
   hcNeutral: colors.white,
   hcNeutralFromBg: (bgHex) =>
     hcNeutralFromBg(bgHex, colors.white, colors.black),
@@ -224,6 +227,10 @@ const darkTheme = extend(darkBaseTheme, {
     text: neutral.white,
   }),
 });
+
+export const themeWithFont = (theme: Theme, fontFamily: string) => {
+  return extendBase(theme, { fontFamily });
+};
 
 export const themes: {
   light: LightsparkTheme;
