@@ -3781,7 +3781,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ls-react-native-crypto@0.2.8, @lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto":
+"@lightsparkdev/ls-react-native-crypto@0.2.9, @lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ls-react-native-crypto@workspace:packages/ls-react-native-crypto"
   dependencies:
@@ -3866,7 +3866,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": 1.0.5
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/ls-react-native-crypto": 0.2.8
+    "@lightsparkdev/ls-react-native-crypto": 0.2.9
     "@lightsparkdev/tsconfig": 0.0.0
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
@@ -3891,10 +3891,10 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.5
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/react-wallet": 0.6.27
+    "@lightsparkdev/react-wallet": 0.6.28
     "@lightsparkdev/ui": "*"
     "@lightsparkdev/vite": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.7.0
+    "@lightsparkdev/wallet-sdk": 0.7.1
     "@types/lodash-es": ^4.17.6
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -3912,14 +3912,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/react-wallet@0.6.27, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
+"@lightsparkdev/react-wallet@0.6.28, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/react-wallet@workspace:packages/react-wallet"
   dependencies:
     "@lightsparkdev/core": 1.0.5
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.7.0
+    "@lightsparkdev/wallet-sdk": 0.7.1
     "@types/react": ^18.2.12
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
@@ -4072,7 +4072,7 @@ __metadata:
     "@inquirer/prompts": ^1.1.3
     "@lightsparkdev/core": 1.0.5
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/wallet-sdk": 0.7.0
+    "@lightsparkdev/wallet-sdk": 0.7.1
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
     "@types/qrcode-terminal": ^0.12.0
@@ -4100,7 +4100,7 @@ __metadata:
   resolution: "@lightsparkdev/wallet-node-scripts@workspace:apps/examples/wallet-node-scripts"
   dependencies:
     "@lightsparkdev/core": 1.0.5
-    "@lightsparkdev/wallet-sdk": 0.7.0
+    "@lightsparkdev/wallet-sdk": 0.7.1
     "@types/node": ^20.2.5
     commander: ^11.0.0
     dayjs: ^1.11.7
@@ -4109,7 +4109,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/wallet-sdk@0.7.0, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
+"@lightsparkdev/wallet-sdk@0.7.1, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk"
   dependencies:
