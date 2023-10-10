@@ -52,6 +52,11 @@ module.exports.buildConfig = ({
           changeOrigin: true,
           ws: true,
         },
+        "/umame/graphql": {
+          target: "http://127.0.0.1:5000",
+          changeOrigin: true,
+          ws: true,
+        },
         "/clientlogs": {
           target: "http://127.0.0.1:5000",
           changeOrigin: true,

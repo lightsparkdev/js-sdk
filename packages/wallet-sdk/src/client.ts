@@ -38,7 +38,6 @@ import RequestWithdrawalMutation from "./graqhql/RequestWithdrawal.js";
 import SendPaymentMutation from "./graqhql/SendPayment.js";
 import TerminateWallet from "./graqhql/TerminateWallet.js";
 import WalletDashboardQuery from "./graqhql/WalletDashboard.js";
-import { TransactionStatus } from "./index.js";
 import { logger } from "./logger.js";
 import { BalancesFromJson } from "./objects/Balances.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
@@ -46,6 +45,8 @@ import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
 import { DeployWalletOutputFromJson } from "./objects/DeployWalletOutput.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
+import type IncomingPayment from "./objects/IncomingPayment.js";
+import { IncomingPaymentFromJson } from "./objects/IncomingPayment.js";
 import { InitializeWalletOutputFromJson } from "./objects/InitializeWalletOutput.js";
 import { InvoiceFromJson } from "./objects/Invoice.js";
 import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
@@ -58,6 +59,7 @@ import {
   OutgoingPaymentFromJson,
 } from "./objects/OutgoingPayment.js";
 import { TerminateWalletOutputFromJson } from "./objects/TerminateWalletOutput.js";
+import TransactionStatus from "./objects/TransactionStatus.js";
 import { WalletFromJson } from "./objects/Wallet.js";
 import type WalletDashboard from "./objects/WalletDashboard.js";
 import WalletStatus from "./objects/WalletStatus.js";
@@ -832,7 +834,7 @@ class LightsparkClient {
   public async createTestModePayment(
     encodedInvoice: string,
     amountMsats: number | undefined = undefined,
-  ): Promise<OutgoingPayment | null> {
+  ): Promise<IncomingPayment | null> {
     await this.requireValidAuth();
     this.requireWalletUnlocked();
     return await this.executeRawQuery({
@@ -842,8 +844,8 @@ class LightsparkClient {
         amount_msats: amountMsats,
       },
       constructObject: (responseJson: any) => {
-        return OutgoingPaymentFromJson(
-          responseJson.create_test_mode_payment?.payment,
+        return IncomingPaymentFromJson(
+          responseJson.create_test_mode_payment?.incoming_payment,
         );
       },
       signingNodeId: WALLET_NODE_ID_KEY,

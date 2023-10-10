@@ -54,6 +54,8 @@ import type CurrencyAmount from "./objects/CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
+import type IncomingPayment from "./objects/IncomingPayment.js";
+import { IncomingPaymentFromJson } from "./objects/IncomingPayment.js";
 import type Invoice from "./objects/Invoice.js";
 import { InvoiceFromJson } from "./objects/Invoice.js";
 import type InvoiceData from "./objects/InvoiceData.js";
@@ -956,7 +958,7 @@ class LightsparkClient {
     localNodeId: string,
     encodedInvoice: string,
     amountMsats: number | undefined = undefined,
-  ): Promise<OutgoingPayment | null> {
+  ): Promise<IncomingPayment | null> {
     return await this.executeRawQuery({
       queryPayload: CreateTestModePayment,
       variables: {
@@ -966,11 +968,11 @@ class LightsparkClient {
       },
       constructObject: (responseJson: {
         create_test_mode_payment: {
-          payment: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+          incoming_payment: any; // eslint-disable-line @typescript-eslint/no-explicit-any
         } | null;
       }) => {
-        return OutgoingPaymentFromJson(
-          responseJson.create_test_mode_payment?.payment,
+        return IncomingPaymentFromJson(
+          responseJson.create_test_mode_payment?.incoming_payment,
         );
       },
     });
