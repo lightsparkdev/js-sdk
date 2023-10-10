@@ -1,11 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.7.1
-
-### Patch Changes
-
-- 59bdae3: Unpin react-native dep
-
 ## 0.7.0
 
 ### Minor Changes
