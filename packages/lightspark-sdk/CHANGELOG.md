@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.0
+
+### Minor Changes
+
+- c4926df: Change createTestModePayment to return an IncomingPayment
+
 ## 1.0.7
 
 ### Patch Changes

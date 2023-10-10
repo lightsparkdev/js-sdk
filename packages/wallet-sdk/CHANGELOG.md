@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.7.0
+
+### Minor Changes
+
+- c4926df: Change createTestModePayment to return an IncomingPayment
+
 ## 0.6.25
 
 ### Patch Changes
