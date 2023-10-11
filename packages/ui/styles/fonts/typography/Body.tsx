@@ -15,13 +15,13 @@ export const Body = ({
   size = TokenSize.Medium,
 }: Props) => {
   return (
-    <BodyStyles app={app} size={size}>
+    <StyledBody app={app} size={size}>
       {children}
-    </BodyStyles>
+    </StyledBody>
   );
 };
 
-const BodyStyles = styled.p<Props>`
+export const StyledBody = styled.p<Props>`
   ${({ theme, app, size }) => {
     return app && size
       ? getTypographyString(theme.typography[app].Body[size])

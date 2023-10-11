@@ -29,8 +29,6 @@ export const Headline = ({
   app = App.Lightspark,
   size = TokenSize.Medium,
   heading = "h1",
-  pt = 0,
-  mt = 0,
 }: Props) => {
   if (!color) {
     if (app === App.UmaDocs) {
@@ -38,27 +36,27 @@ export const Headline = ({
     }
   }
   return (
-    <HeadlineStyles
+    <StyledHeadline
       as={heading}
       id={`${toKebabCase(children as string)}`}
       app={app}
       size={size}
-      pt={pt}
-      mt={mt}
       color={color}
     >
       {children}
-    </HeadlineStyles>
+    </StyledHeadline>
   );
 };
 
-const HeadlineStyles = styled.span<Props>`
+const StyledHeadline = styled.span<Props>`
   ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${(props) => (props.mt === undefined ? "" : `margin-top: ${props.mt}px;`)}
-  ${(props) => (props.pt === undefined ? "" : `padding-top: ${props.pt}px;`)}
   ${({ theme, app, size }) => {
     return app && size
       ? getTypographyString(theme.typography[app].Headline[size])
       : "";
   }}
 `;
+
+export function headlineSelector(heading: Heading) {
+  return `${heading}${StyledHeadline}`;
+}
