@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.38
+
+### Patch Changes
+
+- 3f3a8cc: Fix build emit
+
 ## 0.0.37
 
 ### Patch Changes

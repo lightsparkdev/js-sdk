@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.21
+
+### Patch Changes
+
+- 3f3a8cc: Fix build emit
+
 ## 0.0.20
 
 ### Patch Changes
