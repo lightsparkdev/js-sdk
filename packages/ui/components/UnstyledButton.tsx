@@ -4,7 +4,7 @@ import { standardFocusOutline } from "@lightsparkdev/ui/styles/common";
 
 export const UnstyledButton = styled.button`
   ${standardFocusOutline}
-  font-family: ${({ theme }) => theme.fontFamily};
+  font-family: ${({ theme }) => theme.typography.fontFamilies.main};
   appearance: none;
   background: transparent;
   border: none;
