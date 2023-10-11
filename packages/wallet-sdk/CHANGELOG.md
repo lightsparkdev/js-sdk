@@ -1,11 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.7.2
-
-### Patch Changes
-
-- cda3cfb: Remove react-native as dep for now
-
 ## 0.7.1
 
 ### Patch Changes
