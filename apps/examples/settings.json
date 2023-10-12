@@ -10,5 +10,8 @@
   },
   "remoteSigningServer": {
     "port": 3103
+  },
+  "umaVasp": {
+    "port": 3104
   }
 }

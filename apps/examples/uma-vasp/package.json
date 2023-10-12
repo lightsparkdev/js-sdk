@@ -1,0 +1,29 @@
+{
+  "name": "@lightsparkdev/uma-vasp",
+  "version": "0.0.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "nodemon --watch 'src/*.ts' --exec 'ts-node' src/startServer.ts",
+    "test:start": "./test.sh start",
+    "test": "./test.sh test"
+  },
+  "dependencies": {
+    "@lightsparkdev/core": "1.0.5",
+    "@lightsparkdev/lightspark-sdk": "1.1.0",
+    "@uma-sdk/core": "^0.0.6",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@lightsparkdev/tsconfig": "*",
+    "@types/supertest": "^2.0.14",
+    "jest": "^29.6.2",
+    "nodemon": "^2.0.22",
+    "prettier": "3.0.2",
+    "prettier-plugin-organize-imports": "^3.2.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
