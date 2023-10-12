@@ -24,12 +24,14 @@ const neutral = {
 };
 
 const uma = {
+  background: "#F9F9F9",
   black: "#16171A",
   blue: "#0068C9",
   blue50: "#C0C9D6",
   blue80: "#DCE2EA",
   blue90: "#EBEEF2",
   blue95: "#F2F5F7",
+  secondary: "#686A72",
   stroke: "#C0C9D6",
 };
 
@@ -110,11 +112,11 @@ declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}
 }
 
-function extend(obj: BaseTheme, rest: LightsparkSurfaces) {
+function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
   return {
     ...obj,
     ...rest,
-  };
+  } as LightsparkTheme;
 }
 
 function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
@@ -230,6 +232,11 @@ const darkTheme = extend(darkBaseTheme, {
   }),
 });
 
+const umaLightTheme = extend(lightTheme, {
+  bg: uma.background,
+  smBg: uma.background,
+});
+
 /**
  * Allows setting typography in cases where a custom font is needed.
  * Setting custom fonts should only be necessary for next fonts.
@@ -244,9 +251,15 @@ export const themeWithTypography = (
 export const themes: {
   light: LightsparkTheme;
   dark: LightsparkTheme;
+  uma: {
+    light: LightsparkTheme;
+  };
 } = {
   light: lightTheme,
   dark: darkTheme,
+  uma: {
+    light: umaLightTheme,
+  },
 };
 
 export const isDark = (theme: Theme) => theme.type === Themes.Dark;
