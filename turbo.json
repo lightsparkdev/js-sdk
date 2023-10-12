@@ -45,6 +45,9 @@
     "test": {
       "dependsOn": ["^build"]
     },
+    "test:integration": {
+      "dependsOn": ["^build"]
+    },
     "types": {},
     "types:watch": {
       "cache": false,

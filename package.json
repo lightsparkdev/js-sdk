@@ -28,6 +28,7 @@
     "start:check": "turbo run build && turbo run build:watch start types:watch lint:watch --parallel --concurrency 200",
     "start": "turbo run build && turbo run build:watch start --concurrency 200",
     "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
     "types": "turbo run types"
   },
   "workspaces": [
@@ -41,7 +42,7 @@
     "@changesets/cli": "^2.26.1",
     "@manypkg/cli": "^0.21.0",
     "ts-prune": "^0.10.3",
-    "turbo": "v1.10.1",
+    "turbo": "1.10.15",
     "unimported": "^1.29.2"
   },
   "packageManager": "yarn@3.6.0"
