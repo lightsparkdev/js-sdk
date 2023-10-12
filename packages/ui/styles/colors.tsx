@@ -2,6 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints";
+import { getTypography } from "./fonts/typographyTokens";
 
 const neutral = {
   black: "#000000",
@@ -23,11 +24,14 @@ const neutral = {
 };
 
 const uma = {
+  background: "#F9F9F9",
+  black: "#16171A",
   blue: "#0068C9",
   blue50: "#C0C9D6",
   blue80: "#DCE2EA",
   blue90: "#EBEEF2",
   blue95: "#F2F5F7",
+  secondary: "#686A72",
   stroke: "#C0C9D6",
 };
 
@@ -80,7 +84,6 @@ interface BaseTheme {
   c8Neutral: string;
   c9Neutral: string;
   danger: string;
-  fontFamily: string;
   hcNeutral: string;
   hcNeutralFromBg: (hex: string) => string;
   info: string;
@@ -92,6 +95,7 @@ interface BaseTheme {
   primary: string;
   success: string;
   text: string;
+  typography: ReturnType<typeof getTypography>;
   vlcNeutral: string;
   warning: string;
 }
@@ -108,11 +112,11 @@ declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}
 }
 
-function extend(obj: BaseTheme, rest: LightsparkSurfaces) {
+function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
   return {
     ...obj,
     ...rest,
-  };
+  } as LightsparkTheme;
 }
 
 function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
@@ -149,7 +153,6 @@ const lightBaseTheme: BaseTheme = {
   c8Neutral: neutral.gray20,
   c9Neutral: neutral.gray10,
   danger: colors.danger,
-  fontFamily: "Montserrat",
   hcNeutral: colors.black,
   hcNeutralFromBg: (bgHex) =>
     hcNeutralFromBg(bgHex, colors.black, colors.white),
@@ -162,6 +165,7 @@ const lightBaseTheme: BaseTheme = {
   primary: colors.primary,
   success: colors.success,
   text: colors.black,
+  typography: getTypography(),
   vlcNeutral: neutral.gray95,
   warning: colors.warning,
 };
@@ -182,7 +186,6 @@ const darkBaseTheme: BaseTheme = {
   c8Neutral: neutral.gray80,
   c9Neutral: neutral.gray90,
   danger: colors.danger,
-  fontFamily: "Montserrat",
   hcNeutral: colors.white,
   hcNeutralFromBg: (bgHex) =>
     hcNeutralFromBg(bgHex, colors.white, colors.black),
@@ -195,6 +198,7 @@ const darkBaseTheme: BaseTheme = {
   primary: colors.primary,
   success: colors.success,
   text: colors.white,
+  typography: getTypography(),
   vlcNeutral: neutral.gray20,
   warning: colors.warning,
 };
@@ -228,16 +232,34 @@ const darkTheme = extend(darkBaseTheme, {
   }),
 });
 
-export const themeWithFont = (theme: Theme, fontFamily: string) => {
-  return extendBase(theme, { fontFamily });
+const umaLightTheme = extend(lightTheme, {
+  bg: uma.background,
+  smBg: uma.background,
+});
+
+/**
+ * Allows setting typography in cases where a custom font is needed.
+ * Setting custom fonts should only be necessary for next fonts.
+ */
+export const themeWithTypography = (
+  theme: Theme,
+  typography: ReturnType<typeof getTypography>,
+) => {
+  return extendBase(theme, { typography });
 };
 
 export const themes: {
   light: LightsparkTheme;
   dark: LightsparkTheme;
+  uma: {
+    light: LightsparkTheme;
+  };
 } = {
   light: lightTheme,
   dark: darkTheme,
+  uma: {
+    light: umaLightTheme,
+  },
 };
 
 export const isDark = (theme: Theme) => theme.type === Themes.Dark;
