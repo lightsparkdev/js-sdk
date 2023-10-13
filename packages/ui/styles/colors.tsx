@@ -33,6 +33,7 @@ const uma = {
   blue95: "#F2F5F7",
   secondary: "#686A72",
   stroke: "#C0C9D6",
+  fill: "#EBEEF2",
 };
 
 export const darkGradient =
@@ -235,6 +236,14 @@ const darkTheme = extend(darkBaseTheme, {
 const umaLightTheme = extend(lightTheme, {
   bg: uma.background,
   smBg: uma.background,
+  content: extendBase(lightBaseTheme, {
+    bg: uma.background,
+    smBg: uma.background,
+    text: uma.black,
+  }),
+  controls: extendBase(lightBaseTheme, {
+    text: uma.background,
+  }),
 });
 
 /**

@@ -85,9 +85,9 @@ interface Token {
 }
 
 export enum TokenSize {
-  Large,
-  Medium,
-  Small,
+  Large = "Large",
+  Medium = "Medium",
+  Small = "Small",
 }
 
 export enum App {
@@ -216,7 +216,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
       Body: {
         [TokenSize.Large]: {
           "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
+          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
           "line-height": `${LINE_HEIGHTS.sm}`,
           "font-size": `${FONT_SIZE.md}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
