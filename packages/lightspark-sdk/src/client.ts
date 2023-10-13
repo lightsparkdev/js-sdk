@@ -39,6 +39,7 @@ import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNo
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
+import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
@@ -63,6 +64,7 @@ import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
 import type OutgoingPayment from "./objects/OutgoingPayment.js";
 import { OutgoingPaymentFromJson } from "./objects/OutgoingPayment.js";
+import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
@@ -224,6 +226,37 @@ class LightsparkClient {
     return (
       response.current_account?.recent_transactions.entities.map(
         (transaction) => TransactionFromJson(transaction),
+      ) ?? []
+    );
+  }
+
+  /**
+   * Retrieves the most recent payment requests for a given node.
+   *
+   * @param nodeId The node ID for which to read transactions
+   * @param numTransactions The maximum number of transactions to read. Defaults to 20.
+   * @param bitcoinNetwork The bitcoin network on which to read transactions. Defaults to MAINNET.
+   * @param afterDate Filters transactions to those after the given date. Defaults to undefined (no limit).
+   * @returns An array of payment requests for the given node ID.
+   */
+  public async getRecentPaymentRequests(
+    nodeId: string,
+    numTransactions: number = 20,
+    bitcoinNetwork: BitcoinNetwork = BitcoinNetwork.MAINNET,
+    afterDate: Maybe<string> = undefined,
+  ): Promise<Transaction[]> {
+    const response = await this.requester.makeRawRequest(
+      PaymentRequestsForNode,
+      {
+        nodeId,
+        numTransactions,
+        network: bitcoinNetwork,
+        afterDate,
+      },
+    );
+    return (
+      response.current_account?.recent_payment_requests.entities.map(
+        (paymentRequest) => PaymentRequestFromJson(paymentRequest),
       ) ?? []
     );
   }
