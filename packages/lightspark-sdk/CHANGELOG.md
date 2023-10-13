@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.1
+
+### Patch Changes
+
+- e6da1d8: Add getRecentPaymentRequests
+
 ## 1.1.0
 
 ### Minor Changes
