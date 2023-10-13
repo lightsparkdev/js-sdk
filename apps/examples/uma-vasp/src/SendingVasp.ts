@@ -1,11 +1,13 @@
+import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
+import * as uma from "@uma-sdk/core";
 import { Express, Request, Response } from "express";
 import UmaConfig from "./UmaConfig.js";
-import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 
 export default class SendingVasp {
   constructor(
     private readonly config: UmaConfig,
     private readonly lightsparkClient: LightsparkClient,
+    private readonly pubKeyCache: uma.PublicKeyCache,
     app: Express,
   ) {
     app.get("/api/umalookup/:receiver", this.handleClientUmaLookup.bind(this));

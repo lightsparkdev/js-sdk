@@ -8,6 +8,7 @@ import { errorMessage } from "./errors.js";
 import ReceivingVasp from "./ReceivingVasp.js";
 import SendingVasp from "./SendingVasp.js";
 import UmaConfig from "./UmaConfig.js";
+import { PublicKeyCache } from "@uma-sdk/core";
 
 export const app = express();
 const config = UmaConfig.fromEnvironment();
@@ -39,5 +40,6 @@ const lightsparkClient = new LightsparkClient(
   config.clientBaseURL,
 );
 
-const sendingVasp = new SendingVasp(config, lightsparkClient, app);
-const receivingVasp = new ReceivingVasp(config, lightsparkClient, app);
+const pubKeyCache = new PublicKeyCache();
+const sendingVasp = new SendingVasp(config, lightsparkClient, pubKeyCache, app);
+const receivingVasp = new ReceivingVasp(config, lightsparkClient, pubKeyCache, app);
