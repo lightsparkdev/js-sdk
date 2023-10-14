@@ -1,9 +1,17 @@
-import { hexToBytes } from "@lightsparkdev/core";
-import { InvoiceData, LightsparkClient } from "@lightsparkdev/lightspark-sdk";
+import { convertCurrencyAmount, hexToBytes } from "@lightsparkdev/core";
+import {
+  CurrencyUnit,
+  InvoiceData,
+  LightsparkClient,
+  OutgoingPayment,
+  TransactionStatus,
+} from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
 import { Express, Request, Response } from "express";
 import settings from "../../settings.json" assert { type: "json" };
-import SendingVaspRequestCache from "./SendingVaspRequestCache.js";
+import SendingVaspRequestCache, {
+  SendingVaspPayReqData,
+} from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
 
 export default class SendingVasp {
@@ -253,8 +261,52 @@ export default class SendingVasp {
 
   private async handleClientSendPayment(req: Request, res: Response) {
     const callbackUuid = req.params.callbackUuid;
-    // const payment = await this.sendPayment(callbackUuid);
-    res.send("ok");
+    if (!callbackUuid) {
+      res.status(400).send("Missing callbackUuid");
+      return;
+    }
+
+    const payReqData = this.requestCache.getPayReqData(callbackUuid);
+    if (!payReqData) {
+      res.status(400).send("callbackUuid not found");
+      return;
+    }
+
+    if (new Date(payReqData.invoiceData.expiresAt) < new Date()) {
+      res.status(400).send("Invoice expired");
+      return;
+    }
+
+    if (payReqData.invoiceData.amount.originalValue <= 0) {
+      res
+        .status(400)
+        .send("Invoice amount invalid. Uma requires positive amounts.");
+      return;
+    }
+
+    let payment: OutgoingPayment;
+    try {
+      const paymentResult = await this.lightsparkClient.payUmaInvoice(
+        this.config.nodeID,
+        payReqData.encodedInvoice,
+        /* maxeesMsats */ 1_000_000,
+      );
+      if (!paymentResult) {
+        throw new Error("Payment request failed.");
+      }
+      payment = await this.waitForPaymentCompletion(paymentResult);
+    } catch (e) {
+      console.error("Error paying invoice.", e);
+      res.status(500).send("Error paying invoice.");
+      return;
+    }
+
+    await this.sendPostTransactionCallback(payment, payReqData);
+
+    res.send({
+      paymentId: payment.id,
+      didSucceed: payment.status === TransactionStatus.SUCCESS,
+    });
   }
 
   /**
@@ -276,5 +328,59 @@ export default class SendingVasp {
     const host = req.hostname;
     const path = `/api/uma/utxoCallback?txId=${txId}`;
     return `${protocol}://${host}${path}`;
+  }
+
+  private async waitForPaymentCompletion(
+    paymentResult: OutgoingPayment,
+    retryNum = 0,
+  ): Promise<OutgoingPayment> {
+    if (paymentResult.status === TransactionStatus.SUCCESS) {
+      return paymentResult;
+    }
+
+    const payment = await this.lightsparkClient.executeRawQuery(
+      OutgoingPayment.getOutgoingPaymentQuery(paymentResult.id),
+    );
+    if (!payment) {
+      throw new Error("Payment not found.");
+    }
+
+    if (payment.status !== TransactionStatus.PENDING) {
+      return payment;
+    }
+
+    const maxRetries = 40;
+    if (retryNum >= maxRetries) {
+      throw new Error("Payment timed out.");
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    return this.waitForPaymentCompletion(payment);
+  }
+
+  private async sendPostTransactionCallback(
+    payment: OutgoingPayment,
+    payReqData: SendingVaspPayReqData,
+  ) {
+    const utxos =
+      payment.umaPostTransactionData?.map((d) => {
+        d.utxo, convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI);
+      }) ?? [];
+    try {
+      const postTxResponse = await fetch(payReqData.utxoCallback, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ utxos }),
+      });
+      if (!postTxResponse.ok) {
+        console.error(
+          `Error sending post transaction callback. ${postTxResponse.status}`,
+        );
+      }
+    } catch (e) {
+      console.error("Error sending post transaction callback.", e);
+    }
   }
 }

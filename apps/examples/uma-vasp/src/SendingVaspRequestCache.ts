@@ -74,8 +74,8 @@ interface SendingVaspInitialRequestData {
 /**
  * This is the data that we cache for the payreq request.
  */
-interface SendingVaspPayReqData {
-  encodedInvoice: String;
+export interface SendingVaspPayReqData {
+  encodedInvoice: string;
   utxoCallback: string;
   invoiceData: InvoiceData;
 }
