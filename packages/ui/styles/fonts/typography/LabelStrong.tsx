@@ -24,10 +24,12 @@ export const LabelStrong = ({
 };
 
 export const StyledLabelStrong = styled.label<Props>`
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app]["Label Strong"][size])
-      : "";
-  }}
+  * {
+    ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
+    ${({ theme, app, size }) => {
+      return app && size
+        ? getTypographyString(theme.typography[app]["Label Strong"][size])
+        : "";
+    }}
+  }
 `;
