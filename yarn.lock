@@ -3700,7 +3700,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.5
     "@lightsparkdev/crypto-wasm": 0.1.2
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.1.1
+    "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
@@ -3726,7 +3726,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@1.1.1, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@1.1.2, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
@@ -3815,7 +3815,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.1.1
+    "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/oauth": "*"
     "@lightsparkdev/tsconfig": "*"
     "@lightsparkdev/ui": "*"
@@ -3944,7 +3944,7 @@ __metadata:
   resolution: "@lightsparkdev/remote-signing-server@workspace:apps/examples/remote-signing-server"
   dependencies:
     "@lightsparkdev/core": 1.0.5
-    "@lightsparkdev/lightspark-sdk": 1.1.1
+    "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
     express: ^4.18.2
@@ -3966,7 +3966,7 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.5
-    "@lightsparkdev/lightspark-sdk": 1.1.1
+    "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/tsconfig": "*"
     "@lightsparkdev/vite": "*"
     "@types/chrome": ^0.0.227
@@ -4026,7 +4026,7 @@ __metadata:
   resolution: "@lightsparkdev/uma-vasp@workspace:apps/examples/uma-vasp"
   dependencies:
     "@lightsparkdev/core": 1.0.5
-    "@lightsparkdev/lightspark-sdk": 1.1.1
+    "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
     "@uma-sdk/core": ^0.0.6
