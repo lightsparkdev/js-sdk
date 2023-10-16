@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.23
+
+### Patch Changes
+
+- Updated dependencies [fd769cb]
+  - @lightsparkdev/lightspark-sdk@1.1.2
+
 ## 0.0.22
 
 ### Patch Changes
