@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/cli.json",
+  "extends": "@lightsparkdev/tsconfig/ts-node-app.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src"

@@ -40,7 +40,7 @@ export function GlobalStyles() {
     }
 
     body {
-      font-family: "Montserrat", sans-serif;
+      font-family: ${theme.typography.fontFamilies.main}, sans-serif;
       font-weight: 500;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;

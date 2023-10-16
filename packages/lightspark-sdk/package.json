@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -80,14 +80,16 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test-cmd": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test": "yarn test-cmd src/tests/*.test.ts",
+    "test:integration": "yarn test-cmd src/tests/integration/*.test.ts",
     "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },
   "license": "Apache-2.0",
   "dependencies": {
     "@lightsparkdev/core": "1.0.5",
-    "@lightsparkdev/crypto-wasm": "0.1.1",
+    "@lightsparkdev/crypto-wasm": "0.1.2",
     "auto-bind": "^5.0.1",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",

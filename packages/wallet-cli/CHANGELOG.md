@@ -1,5 +1,38 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.38
+
+### Patch Changes
+
+- 3f3a8cc: Fix build emit
+
+## 0.0.37
+
+### Patch Changes
+
+- Updated dependencies [cda3cfb]
+  - @lightsparkdev/wallet-sdk@0.7.2
+
+## 0.0.36
+
+### Patch Changes
+
+- Updated dependencies [59bdae3]
+  - @lightsparkdev/wallet-sdk@0.7.1
+
+## 0.0.35
+
+### Patch Changes
+
+- Updated dependencies [c4926df]
+  - @lightsparkdev/wallet-sdk@0.7.0
+
+## 0.0.34
+
+### Patch Changes
+
+- e156e3e: Remote signing webhooks handler and generate latest wasm
+
 ## 0.0.33
 
 ### Patch Changes

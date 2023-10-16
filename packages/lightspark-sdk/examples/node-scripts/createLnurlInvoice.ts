@@ -35,11 +35,11 @@ const main = async (program: Command) => {
   );
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
   console.log("Simulating payment...");
-  const outgoingPayment = await client.createTestModePayment(
+  const incomingPayment = await client.createTestModePayment(
     nodeId,
     invoice.data.encodedPaymentRequest,
   );
-  console.log("Outgoing payment:", JSON.stringify(outgoingPayment, null, 2));
+  console.log("Incoming payment:", JSON.stringify(incomingPayment, null, 2));
 };
 
 (() => {

@@ -1,5 +1,28 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.21
+
+### Patch Changes
+
+- 3f3a8cc: Fix build emit
+
+## 0.0.20
+
+### Patch Changes
+
+- Updated dependencies [c4926df]
+  - @lightsparkdev/lightspark-sdk@1.1.0
+
+## 0.0.19
+
+### Patch Changes
+
+- e156e3e: Remote signing webhooks handler and generate latest wasm
+- e156e3e: Fix import
+- Updated dependencies [e156e3e]
+  - @lightsparkdev/lightspark-sdk@1.0.7
+  - @lightsparkdev/crypto-wasm@0.1.2
+
 ## 0.0.18
 
 ### Patch Changes

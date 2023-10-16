@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/ls-react-native-crypto",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A thin react native library for crypto operations required by the Lightspark SDKs.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -49,7 +49,7 @@
     "prettier": "3.0.2",
     "prettier-plugin-organize-imports": "^3.2.2",
     "react": "^18.2.0",
-    "react-native": "0.71.8",
+    "react-native": "^0.71.8",
     "tsc-absolute": "^1.0.1",
     "typescript": "^4.9.5"
   },

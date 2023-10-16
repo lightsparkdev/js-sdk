@@ -7,5 +7,8 @@
   },
   "oauthApp": {
     "port": 3102
+  },
+  "remoteSigningServer": {
+    "port": 3103
   }
 }

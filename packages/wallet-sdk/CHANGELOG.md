@@ -1,5 +1,23 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.7.2
+
+### Patch Changes
+
+- cda3cfb: Remove react-native as dep for now
+
+## 0.7.1
+
+### Patch Changes
+
+- 59bdae3: Unpin react-native dep
+
+## 0.7.0
+
+### Minor Changes
+
+- c4926df: Change createTestModePayment to return an IncomingPayment
+
 ## 0.6.25
 
 ### Patch Changes

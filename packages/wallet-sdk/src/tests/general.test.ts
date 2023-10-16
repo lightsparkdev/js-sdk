@@ -128,6 +128,7 @@ describe(generalSuiteName, () => {
   test(
     "should init the wallet",
     async () => {
+      expect(clientDeployWalletResponse).not.toBeUndefined();
       const walletStatus = await regtestClient.initializeWalletAndAwaitReady(
         KeyType.RSA_OAEP,
         clientDeployWalletResponse?.pubKey ?? "",
@@ -142,6 +143,7 @@ describe(generalSuiteName, () => {
   test(
     "should throw an error on trying to init wallet from unauthorized account",
     async () => {
+      expect(clientDeployWalletResponse).not.toBeUndefined();
       await expect(
         unauthorizedRegtestClient.initializeWalletAndAwaitReady(
           KeyType.RSA_OAEP,
@@ -156,6 +158,7 @@ describe(generalSuiteName, () => {
   test(
     "should unlock the wallet",
     async () => {
+      expect(clientDeployWalletResponse).not.toBeUndefined();
       await regtestClient.loadWalletSigningKey(
         KeyOrAlias.key(clientDeployWalletResponse?.privKey ?? ""),
       );
