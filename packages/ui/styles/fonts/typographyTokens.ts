@@ -251,7 +251,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
       Label: {
         [TokenSize.Large]: {
           "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
+          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
           "line-height": `${LINE_HEIGHTS.xs}`,
           "font-size": `${FONT_SIZE.sm}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
@@ -262,7 +262,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
         },
         [TokenSize.Medium]: {
           "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
+          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
           "line-height": `${LINE_HEIGHTS["2xs"]}`,
           "font-size": `${FONT_SIZE.xs}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
@@ -273,7 +273,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
         },
         [TokenSize.Small]: {
           "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
+          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
           "line-height": `${LINE_HEIGHTS["2xs"]}`,
           "font-size": `${FONT_SIZE["2xs"]}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
