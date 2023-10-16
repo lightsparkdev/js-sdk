@@ -7,7 +7,7 @@ export const FundNode = `
         $node_id: ID!,
         $amountSats: Long
     ) {
-        fund_node(input: { node_id: $node_id, amount_sats: $amountMsats }) {
+        fund_node(input: { node_id: $node_id, amount_sats: $amountSats }) {
             amount {
                 ...CurrencyAmountFragment
             }
