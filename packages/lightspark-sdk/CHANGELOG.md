@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.2
+
+### Patch Changes
+
+- fd769cb: Fix fundNode variable reference
+
 ## 1.1.1
 
 ### Patch Changes
