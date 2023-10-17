@@ -108,7 +108,7 @@ function getPadding({ iconWidth, size, text, ghost, iconSide }: PaddingProps) {
     : size === "md"
     ? 18
     : 16;
-  const paddingForIcon = iconWidth ? iconWidth : 0;
+  const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
   }px ${paddingY}px ${paddingX + (iconSide === "left" ? paddingForIcon : 0)}px`;
@@ -335,7 +335,7 @@ interface ButtonIconProps {
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
-  position: absolute;
+  ${(props) => (props.ghost ? "" : "position: absolute;")}
   ${(props) =>
     `${props.iconSide}: ${props.ghost && props.text ? 0 : hPaddingPx}px;`}
 `;
