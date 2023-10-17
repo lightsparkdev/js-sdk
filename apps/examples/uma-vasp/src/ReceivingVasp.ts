@@ -53,7 +53,7 @@ export default class ReceivingVasp {
     let umaQuery: uma.LnurlpRequest;
     try {
       umaQuery = uma.parseLnurlpRequest(
-        new URL(req.url, `${req.protocol}://${req.hostname}`),
+        new URL(req.url, `${req.protocol}://${req.headers.host}`),
       );
     } catch (e) {
       if (e instanceof uma.UnsupportedVersionError) {
@@ -74,6 +74,7 @@ export default class ReceivingVasp {
         vaspDomain: umaQuery.vaspDomain,
       });
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to fetch public key.", { cause: e }));
     }
 
@@ -119,6 +120,7 @@ export default class ReceivingVasp {
       res.send(response);
       return "ok";
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to generate UMA response.", { cause: e }));
     }
   }
@@ -195,6 +197,7 @@ export default class ReceivingVasp {
       res.send(response);
       return "ok";
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to generate UMA response.", { cause: e }));
     }
   }
@@ -234,7 +237,7 @@ export default class ReceivingVasp {
 
   private getLnurlpCallback(req: Request): string {
     const protocol = req.protocol;
-    const fullUrl = new URL(req.url, `${protocol}://${req.hostname}`);
+    const fullUrl = new URL(req.url, `${protocol}://${req.headers.host}`);
     const port = fullUrl.port;
     const portString = port === "80" || port === "443" ? "" : `:${port}`;
     const path = `/api/uma/payreq/${this.config.userID}`;

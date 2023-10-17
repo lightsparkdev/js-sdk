@@ -15,6 +15,27 @@ const config = UmaConfig.fromEnvironment();
 
 app.use(bodyParser.text({ type: "*/*" })); // Middleware to parse raw body
 
+const lightsparkClient = new LightsparkClient(
+  new AccountTokenAuthProvider(config.apiClientID, config.apiClientSecret),
+  config.clientBaseURL,
+);
+
+const pubKeyCache = new InMemoryPublicKeyCache();
+const sendingVasp = new SendingVasp(config, lightsparkClient, pubKeyCache, app);
+const receivingVasp = new ReceivingVasp(
+  config,
+  lightsparkClient,
+  pubKeyCache,
+  app,
+);
+
+app.get("/.well-known/lnurlpubkey", (req, res) => {
+  res.send({
+    signingPubKey: config.umaSigningPubKeyHex,
+    encryptionPubKey: config.umaEncryptionPubKeyHex,
+  });
+});
+
 // Default 404 handler.
 app.use(function (req, res, next) {
   res.status(404);
@@ -34,17 +55,3 @@ app.use((err, req, res, next) => {
 
   res.status(500).send(errorMessage(`Something broke! ${err.message}`));
 });
-
-const lightsparkClient = new LightsparkClient(
-  new AccountTokenAuthProvider(config.apiClientID, config.apiClientSecret),
-  config.clientBaseURL,
-);
-
-const pubKeyCache = new InMemoryPublicKeyCache();
-const sendingVasp = new SendingVasp(config, lightsparkClient, pubKeyCache, app);
-const receivingVasp = new ReceivingVasp(
-  config,
-  lightsparkClient,
-  pubKeyCache,
-  app,
-);

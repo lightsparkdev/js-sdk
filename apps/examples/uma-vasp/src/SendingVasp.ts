@@ -46,6 +46,7 @@ export default class SendingVasp {
 
     const [receiverId, receivingVaspDomain] = receiver.split("@");
     if (!receiverId || !receivingVaspDomain) {
+      console.error(`Invalid receiver: ${receiver}`);
       res.status(400).send("Invalid receiver");
       return;
     }
@@ -54,8 +55,10 @@ export default class SendingVasp {
       isSubjectToTravelRule: true,
       receiverAddress: receiver,
       signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: req.hostname, // TODO: Might need to include the port here.
+      senderVaspDomain: hostNameWithPort(req),
     });
+
+    console.log(`Making lnurlp request: ${lnrulpRequestUrl}`);
 
     let response: globalThis.Response;
     try {
@@ -140,7 +143,7 @@ export default class SendingVasp {
       isSubjectToTravelRule: true,
       receiverAddress: receiver,
       signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: request.hostname, // TODO: Might need to include the port here.
+      senderVaspDomain: hostNameWithPort(request),
       umaVersionOverride: newSupportedVersion,
     });
     return fetch(retryRequest);
@@ -415,3 +418,10 @@ export default class SendingVasp {
     }
   }
 }
+
+const hostNameWithPort = (req: Request) => {
+  const fullUrl = new URL(req.url, `${req.protocol}://${req.headers.host}`);
+  const port = fullUrl.port;
+  const portString = port === "80" || port === "443" ? "" : `:${port}`;
+  return `${req.hostname}${portString}`;
+};
