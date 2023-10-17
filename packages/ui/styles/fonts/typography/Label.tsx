@@ -10,34 +10,25 @@ interface Props {
   color?: string | undefined;
 }
 
-export const LabelStrong = ({
+export const Label = ({
   children,
   color,
   app = App.Lightspark,
   size = TokenSize.Medium,
 }: Props) => {
   return (
-    <StyledLabelStrong app={app} size={size} color={color}>
+    <StyledLabel app={app} size={size} color={color}>
       {children}
-    </StyledLabelStrong>
+    </StyledLabel>
   );
 };
 
-export const StyledLabelStrong = styled.label<Props>`
+export const StyledLabel = styled.label<Props>`
   ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
   ${({ theme, app, size }) => {
     return app && size
-      ? getTypographyString(theme.typography[app]["Label Strong"][size])
+      ? getTypographyString(theme.typography[app].Label[size])
       : "";
   }}
   cursor: inherit;
-
-  * {
-    ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-    ${({ theme, app, size }) => {
-      return app && size
-        ? getTypographyString(theme.typography[app]["Label Strong"][size])
-        : "";
-    }}
-  }
 `;

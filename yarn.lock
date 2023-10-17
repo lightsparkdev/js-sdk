@@ -4029,7 +4029,7 @@ __metadata:
     "@lightsparkdev/lightspark-sdk": 1.1.2
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
-    "@uma-sdk/core": ^0.0.6
+    "@uma-sdk/core": ^0.1.1
     express: ^4.18.2
     jest: ^29.6.2
     nodemon: ^2.0.22
@@ -5776,23 +5776,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uma-sdk/core@npm:^0.0.6":
-  version: 0.0.6
-  resolution: "@uma-sdk/core@npm:0.0.6"
+"@uma-sdk/core@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@uma-sdk/core@npm:0.1.1"
   dependencies:
-    "@react-native-async-storage/async-storage": ^1.18.1
-    auto-bind: ^5.0.1
     crypto: ^1.0.1
-    crypto-browserify: ^3.12.0
-    dayjs: ^1.11.7
     eciesjs: ^0.4.4
-    graphql: ^16.6.0
-    graphql-ws: ^5.11.3
     secp256k1: ^5.0.0
-    ws: ^8.12.1
-    zen-observable-ts: ^1.1.0
     zod: ^3.22.2
-  checksum: 759067665332d2402ca74eeb675f685c8090e4026876fbbb9bf2e7d24db2e896d978a26f028a574f249643c3c0bccdabc1888a3db349df8ab62fa4208c86c14c
+  checksum: 5cf7af64f820b4c6c0f8ff13d5c0478ed919840b5abb10471924ac5bdf5e25ff43b5e751875cf857264690b2d4417a439677ffc9a67175d35587a51ebc070680
   languageName: node
   linkType: hard
 
