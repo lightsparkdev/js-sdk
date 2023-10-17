@@ -1,10 +1,15 @@
 "use client";
 import styled from "@emotion/styled";
+import { getTypographyString, TokenSize, type App } from "../typographyTokens";
 import { StyledBody } from "./Body";
 import { displaySelector } from "./Display";
 import { headlineSelector } from "./Headline";
 
-export const Article = styled.article`
+interface Props {
+  app: App;
+}
+
+export const Article = styled.article<Props>`
   ${displaySelector("h1")} {
     margin: 0;
   }
@@ -45,12 +50,35 @@ export const Article = styled.article`
   }
 
   ${StyledBody} {
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 
   img {
     margin-top: 16px;
     margin-bottom: 16px;
+  }
+
+  a {
+    ${({ theme, app }) =>
+      getTypographyString(
+        theme.typography[app]["Label Strong"][TokenSize.Large],
+      )}
+  }
+
+  ul,
+  ol {
+    :not(li ul, li ol) {
+      padding-left: 16px;
+    }
+    margin-top: 8px;
+  }
+
+  li {
+    ${({ theme, app }) =>
+      getTypographyString(theme.typography[app].Body[TokenSize.Medium])}
+    :not(:last-child) {
+      margin-bottom: 4px;
+    }
   }
 `;
