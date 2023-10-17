@@ -2,13 +2,9 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { Icon } from ".";
 
-interface TextStyles {
-  bold?: boolean;
-}
 type CollapsibleProps = {
   children: React.ReactNode;
   className?: string;
-  textStyles?: TextStyles;
   text?: string;
   open?: boolean | undefined;
   handleToggle?: (open: boolean) => void | undefined;
@@ -19,7 +15,6 @@ type CollapsibleProps = {
 export function Collapsible({
   children,
   className,
-  textStyles,
   text,
   open,
   handleToggle,
@@ -42,9 +37,9 @@ export function Collapsible({
   const iconName = hamburger ? (isOpen ? "Close" : "StackedLines") : "Down";
 
   return (
-    <Container className={className}>
+    <StyledCollapsible className={className}>
       <Button onClick={handleClick}>
-        <Text textStyles={textStyles}>{text}</Text>
+        {text ? text : <div></div>}
         <IconContainer isOpen={isOpen} hamburger={hamburger}>
           <Icon width={14} name={iconName} />
         </IconContainer>
@@ -52,11 +47,11 @@ export function Collapsible({
       <CollapsingContainer isOpen={isOpen} full={full}>
         {children}
       </CollapsingContainer>
-    </Container>
+    </StyledCollapsible>
   );
 }
 
-const Container = styled.div`
+export const StyledCollapsible = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -70,16 +65,7 @@ const Button = styled.button`
   border: none;
   cursor: pointer;
   border-radius: 8px;
-  font-weight: 500;
-  height: 32px;
   padding: 0;
-`;
-
-const Text = styled.span<{ textStyles?: TextStyles | undefined }>`
-  ${(props) => (props.textStyles?.bold ? "font-weight: 700;" : "")}
-  font-size: 16px;
-  line-height: 24px;
-  text-align: left;
 `;
 
 const IconContainer = styled.div<{
@@ -94,7 +80,7 @@ const IconContainer = styled.div<{
       ? `transform: rotate(0deg);`
       : `transform: rotate(-90deg);`;
   }}
-  transition: transform 0.25s ease-in-out;
+  transition: transform 0.25s ease-out;
   width: 20px;
 `;
 
@@ -105,13 +91,15 @@ const CollapsingContainer = styled.div<{
   ${(props) =>
     props.isOpen
       ? `max-height: 100vh; animation-name: fadeIn;`
-      : `max-height: 0; animation-name: fadeOut;`}
+      : `max-height: 0; animation-name: fadeOut; display: none;`}
   ${(props) => (props.full ? `height: 100vh;` : "")}
   overflow: hidden;
-  transition: max-height 0.25s ease-in-out;
+  transition: max-height 0.25s ease-out;
   opacity: 0;
   animation-duration: 0.4s;
   animation-fill-mode: forwards;
+  padding: 4px 0 4px 16px;
+  gap: 4px;
 
   @keyframes fadeIn {
     from {

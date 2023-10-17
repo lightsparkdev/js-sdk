@@ -11,8 +11,6 @@ interface Props {
   app?: App;
   size?: TokenSize;
   heading?: Heading;
-  pt?: number;
-  mt?: number;
   color?: string | undefined;
 }
 

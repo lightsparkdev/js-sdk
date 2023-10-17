@@ -14,6 +14,8 @@ import { UnstyledButton } from "./UnstyledButton";
 const ButtonSizes = ["sm", "md", "lg"] as const;
 type ButtonSize = (typeof ButtonSizes)[number];
 
+type IconSide = "left" | "right";
+
 export type ButtonProps<RoutesType extends string> = {
   backgroundColor?: string;
   color?: string;
@@ -27,6 +29,7 @@ export type ButtonProps<RoutesType extends string> = {
   ghost?: boolean | undefined;
   size?: ButtonSize;
   icon?: string;
+  iconSide?: IconSide;
   loading?: boolean | undefined;
   onClick?: (() => void) | undefined;
   mt?: number;
@@ -49,6 +52,7 @@ type PrimaryProps = {
 
 type PaddingProps = {
   size: ButtonSize;
+  iconSide?: IconSide | undefined;
   iconWidth?: number;
   text?: string | undefined;
   ghost?: boolean | undefined;
@@ -94,19 +98,19 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
-function getPadding({ iconWidth, size, text, ghost }: PaddingProps) {
-  if (ghost) {
-    return "0";
-  }
-
-  const paddingForText = text ? 6 : 0;
-  return size === "lg"
-    ? `14px ${hPaddingPx}px 14px ${
-        hPaddingPx + (iconWidth ? iconWidth + paddingForText : 0)
-      }px`
+function getPadding({ iconWidth, size, text, ghost, iconSide }: PaddingProps) {
+  const paddingY = ghost ? 0 : size === "lg" ? 14 : size === "md" ? 9 : 6;
+  const paddingX = ghost
+    ? 0
+    : size === "lg"
+    ? hPaddingPx
     : size === "md"
-    ? "9px 18px"
-    : "6px 16px";
+    ? 18
+    : 16;
+  const paddingForIcon = iconWidth ? iconWidth : 0;
+  return `${paddingY}px ${
+    paddingX + (iconSide === "right" ? paddingForIcon : 0)
+  }px ${paddingY}px ${paddingX + (iconSide === "left" ? paddingForIcon : 0)}px`;
 }
 
 function getBorder({ ghost }: BorderProps) {
@@ -145,6 +149,7 @@ export function Button<RoutesType extends string>({
   toParams,
   onClick,
   icon,
+  iconSide = "left",
   loading = false,
   fullWidth = false,
   disabled = false,
@@ -161,13 +166,13 @@ export function Button<RoutesType extends string>({
   let currentIcon = null;
   if (loading) {
     currentIcon = (
-      <ButtonIcon ghost={ghost}>
+      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text}>
         <Loading size={iconSize} center={false} />
       </ButtonIcon>
     );
   } else if (icon) {
     currentIcon = (
-      <ButtonIcon ghost={ghost}>
+      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text}>
         <Icon name={icon} width={iconSize} />
       </ButtonIcon>
     );
@@ -181,7 +186,7 @@ export function Button<RoutesType extends string>({
         justifyContent: "center",
       }}
     >
-      {currentIcon}
+      {iconSide === "left" && currentIcon}
       <div
         css={{
           textOverflow: "ellipsis",
@@ -190,6 +195,7 @@ export function Button<RoutesType extends string>({
       >
         {text}
       </div>
+      {iconSide === "right" && currentIcon}
     </div>
   );
 
@@ -203,6 +209,7 @@ export function Button<RoutesType extends string>({
     ghost,
     fullWidth,
     blue,
+    iconSide,
     iconWidth: currentIcon ? iconSize + iconMarginRight : 0,
     isLoading: loading,
     disabled: disabled || loading,
@@ -246,6 +253,7 @@ type StyledButtonProps = {
   newTab: boolean;
   text?: string | undefined;
   zIndex?: number | undefined;
+  iconSide?: IconSide | undefined;
 };
 
 const hPaddingPx = 24;
@@ -263,6 +271,7 @@ const buttonStyle = ({
   blue,
   text,
   zIndex,
+  iconSide,
 }: StyledButtonProps & { theme: Theme }) => css`
   display: inline-flex;
   opacity: ${disabled && !isLoading ? 0.2 : 1};
@@ -279,7 +288,7 @@ const buttonStyle = ({
     outline: ${getFocusOutline({ theme })};
   }
 
-  ${fullWidth && "width: 100%;"}
+  width: ${fullWidth ? "100%" : "fit-content"};
 
   & > * {
     width: 100%;
@@ -300,18 +309,21 @@ const buttonStyle = ({
       blue,
     })};
     border-radius: 32px;
-    padding: ${getPadding({ size, iconWidth, text, ghost })};
+    padding: ${getPadding({ size, iconWidth, text, ghost, iconSide })};
     color: ${getTextColor({ color, theme, primary, blue })};
   }
 `;
 
 interface ButtonIconProps {
   ghost?: boolean | undefined;
+  iconSide?: IconSide | undefined;
+  text?: string | undefined;
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
   position: absolute;
-  ${(props) => (props.ghost ? "" : `left: ${hPaddingPx}px;`)}
+  ${(props) =>
+    `${props.iconSide}: ${props.ghost && props.text ? 0 : hPaddingPx}px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`

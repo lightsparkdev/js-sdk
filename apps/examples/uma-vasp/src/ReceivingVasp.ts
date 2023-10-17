@@ -45,7 +45,6 @@ export default class ReceivingVasp {
         tag: "payRequest",
       });
     }
-    // const lookup = await this.lookup(receiver);
     res.send("ok");
   }
 
