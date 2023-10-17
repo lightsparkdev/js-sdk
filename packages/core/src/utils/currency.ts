@@ -3,6 +3,8 @@
 import LightsparkException from "../LightsparkException.js";
 import { round } from "./numbers.js";
 
+export const defaultCurrencyCode = "USD";
+
 /** Represents the value and unit for an amount of currency. **/
 type CurrencyAmount = {
   /** The original numeric value for this CurrencyAmount. **/
