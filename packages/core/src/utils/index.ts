@@ -6,6 +6,7 @@ export * from "./currency.js";
 export * from "./environment.js";
 export * from "./errors.js";
 export * from "./hex.js";
+export * from "./numbers.js";
 export * from "./pollUntil.js";
 export * from "./sleep.js";
 export * from "./types.js";

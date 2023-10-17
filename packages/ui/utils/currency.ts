@@ -1,6 +1,6 @@
+import { round } from "@lightsparkdev/core";
 import { isNumber } from "lodash-es";
 import { getCurrentLocale } from "./getCurrentLocale";
-import { round } from "./numbers";
 
 export const defaultCurrencyCode = "USD";
 
