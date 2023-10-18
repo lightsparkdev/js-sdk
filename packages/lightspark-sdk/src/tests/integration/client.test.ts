@@ -153,7 +153,7 @@ describe("lightspark-sdk client", () => {
     }
 
     const payment = await lightsparkClient.payInvoice(nodeId, invoice, 60);
-    console.log("payment.id", payment?.id);
+    log("payment.id", payment?.id);
 
     const transaction = (await pollUntil(
       () => {
