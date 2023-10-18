@@ -49,7 +49,6 @@ export default class ReceivingVasp {
   }
 
   private async handleUmaLnurlp(req: Request, res: Response, next: any) {
-    const uuid = req.params.uuid;
     let umaQuery: uma.LnurlpRequest;
     try {
       umaQuery = uma.parseLnurlpRequest(
