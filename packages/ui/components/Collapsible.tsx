@@ -88,11 +88,11 @@ const CollapsingContainer = styled.div<{
   isOpen?: boolean | undefined;
   full?: boolean | undefined;
 }>`
-  overflow: hidden;
+  overflow: scroll;
   opacity: 0;
   animation-duration: 0.4s;
   animation-fill-mode: forwards;
-  padding: 4px 0 4px 16px;
+  margin: 4px 0 4px 16px;
   gap: 4px;
   display: flex;
   flex-direction: column;
