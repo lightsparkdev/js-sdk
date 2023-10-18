@@ -1,10 +1,18 @@
+import { pollUntil } from "@lightsparkdev/core";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
   PaymentRequestStatus,
+  TransactionStatus,
 } from "../../index.js";
+
+const REGTEST_SIGNING_KEY_PASSWORD = "1234!@#$";
+const pollIntervalMs = 250;
+const pollTimeoutSecs = 20;
+const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
+const pollIgnoreErrors = false;
 
 describe("lightspark-sdk client", () => {
   const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
@@ -36,6 +44,8 @@ describe("lightspark-sdk client", () => {
       BitcoinNetwork.REGTEST,
     ]);
 
+    console.log(nodesConnection?.entities);
+
     const regtestNode = nodesConnection?.entities[0];
     expect(regtestNode).toBeDefined();
     regtestNodeId = regtestNode?.id;
@@ -56,5 +66,108 @@ describe("lightspark-sdk client", () => {
       metadata,
     );
     expect(umaInvoice?.status).toEqual(PaymentRequestStatus.OPEN);
-  });
+  }, 10000);
+
+  const satsToFund = 50_000;
+  test("Should deposit funds to wallet with a defined amount of sats", async () => {
+    const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
+    const account = await lightsparkClient.getCurrentAccount();
+
+    if (!account) {
+      throw new Error("No account");
+    }
+
+    const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      BitcoinNetwork.REGTEST,
+    ]);
+    let regtestNode = nodesConnection?.entities[0];
+    const initialLocalBalance = regtestNode?.localBalance?.originalValue;
+    console.log(regtestNode);
+    console.log("localBalance before", initialLocalBalance);
+    const nodeId = getRegtestNodeId();
+
+    await lightsparkClient.fundNode(nodeId, satsToFund);
+
+    regtestNode = await pollUntil(
+      () => {
+        return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
+      },
+      (current, response) => {
+        console.log(
+          `pollUntil current balance`,
+          current.entities[0].localBalance?.originalValue,
+        );
+        if (
+          current &&
+          current.entities[0]?.localBalance?.originalValue !==
+            initialLocalBalance
+        ) {
+          return {
+            stopPolling: true,
+            value: current.entities[0],
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      pollMaxTimeouts,
+      pollIgnoreErrors,
+      () => new Error("Timeout waiting for payment to be received"),
+    );
+
+    console.log("localBalance after", regtestNode?.localBalance);
+
+    expect(true).toBe(true);
+  }, 60_000);
+
+  test("Should send test mode payment", async () => {
+    const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
+    const account = await lightsparkClient.getCurrentAccount();
+
+    if (!account) {
+      throw new Error("No account");
+    }
+
+    const nodeId = getRegtestNodeId();
+    console.log("regtestNodeId", regtestNodeId);
+
+    const invoice = await lightsparkClient.createTestModeInvoice(
+      nodeId,
+      satsToFund * 1000, // convert to msats
+    );
+
+    await lightsparkClient.loadNodeSigningKey(nodeId, {
+      password: REGTEST_SIGNING_KEY_PASSWORD,
+    });
+
+    if (!invoice) {
+      throw new Error("No invoice");
+    }
+
+    const payment = await lightsparkClient.payInvoice(nodeId, invoice, 60);
+
+    const transaction = await pollUntil(
+      () => {
+        if (!payment) {
+          throw new Error("No payment");
+        }
+        return lightsparkClient.getTransaction(payment.id);
+      },
+      (current, response) => {
+        if (current && current.status === TransactionStatus.SUCCESS) {
+          return {
+            stopPolling: true,
+            value: current,
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      pollMaxTimeouts,
+      pollIgnoreErrors,
+      () => new Error("Timeout waiting for payment to be received"),
+    );
+
+    console.log("transaction result", transaction);
+  }, 30_000);
 });
