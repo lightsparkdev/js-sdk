@@ -1,5 +1,13 @@
 # @lightsparkdev/core
 
+## 1.0.6
+
+### Patch Changes
+
+- ffcedbe: [core] Move number utils to core
+- d9f6d5b: [core] Move remaining currency utils and add tests
+- baeb7a1: [core] localeToCurrencySymbol and tests
+
 ## 1.0.5
 
 ### Patch Changes
