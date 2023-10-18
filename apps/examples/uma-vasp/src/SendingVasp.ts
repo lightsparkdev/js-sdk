@@ -323,7 +323,7 @@ export default class SendingVasp {
       const paymentResult = await this.lightsparkClient.payUmaInvoice(
         this.config.nodeID,
         payReqData.encodedInvoice,
-        /* maxeesMsats */ 1_000_000,
+        /* maxFeesMsats */ 1_000_000,
       );
       if (!paymentResult) {
         throw new Error("Payment request failed.");
@@ -396,9 +396,13 @@ export default class SendingVasp {
     payment: OutgoingPayment,
     payReqData: SendingVaspPayReqData,
   ) {
-    const utxos =
+    const utxos: uma.UtxoWithAmount[] =
       payment.umaPostTransactionData?.map((d) => {
-        d.utxo, convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI);
+        return {
+          utxo: d.utxo,
+          amount: convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI)
+            .preferredCurrencyValueRounded,
+        };
       }) ?? [];
     try {
       const postTxResponse = await fetch(payReqData.utxoCallback, {
