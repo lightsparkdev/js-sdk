@@ -1,5 +1,15 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.3
+
+### Patch Changes
+
+- baeb7a1: [lightspark-sdk] Fix improper fundNode var ref and add tests
+- Updated dependencies [ffcedbe]
+- Updated dependencies [d9f6d5b]
+- Updated dependencies [baeb7a1]
+  - @lightsparkdev/core@1.0.6
+
 ## 1.1.2
 
 ### Patch Changes
