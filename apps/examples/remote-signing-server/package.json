@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/remote-signing-server",
-  "version": "0.0.5",
+  "version": "0.0.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,8 +9,8 @@
     "test": "./test.sh test"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.0.6",
-    "@lightsparkdev/lightspark-sdk": "1.1.3",
+    "@lightsparkdev/core": "1.0.5",
+    "@lightsparkdev/lightspark-sdk": "1.1.2",
     "express": "^4.18.2"
   },
   "devDependencies": {

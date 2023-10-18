@@ -5,6 +5,7 @@ import {
   CurrencyUnit,
   localeToCurrencySymbol,
   mapCurrencyAmount,
+  separateCurrencyStrParts,
 } from "../currency.js";
 
 describe("convertCurrencyAmountValue", () => {
@@ -171,7 +172,7 @@ describe("mapCurrencyAmount", () => {
   });
 });
 
-describe("getCurrencySymbol", () => {
+describe("localeToCurrencySymbol", () => {
   it("should return the expected currency symbol", () => {
     expect(localeToCurrencySymbol("en-US")).toBe("$");
     expect(localeToCurrencySymbol("en-GB")).toBe("£");
@@ -186,5 +187,70 @@ describe("getCurrencySymbol", () => {
     expect(localeToCurrencySymbol("es-CO")).toBe("$");
     expect(localeToCurrencySymbol("pt-BR")).toBe("R$");
     expect(localeToCurrencySymbol("es-AR")).toBe("$");
+  });
+});
+
+describe("separateCurrencyStrParts", () => {
+  const usdFormatted = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(5);
+  expect(separateCurrencyStrParts(usdFormatted)).toEqual({
+    amount: "5.00",
+    symbol: "$",
+  });
+
+  const gbpFormatted = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+  }).format(5);
+  expect(separateCurrencyStrParts(gbpFormatted)).toEqual({
+    amount: "5.00",
+    symbol: "£",
+  });
+
+  const eurFormatted = new Intl.NumberFormat("en-IE", {
+    style: "currency",
+    currency: "EUR",
+  }).format(5);
+  expect(separateCurrencyStrParts(eurFormatted)).toEqual({
+    amount: "5.00",
+    symbol: "€",
+  });
+
+  const inrFormatted = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+  }).format(5);
+  expect(separateCurrencyStrParts(inrFormatted)).toEqual({
+    amount: "5.00",
+    symbol: "₹",
+  });
+
+  const brlFormatted = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(5);
+  expect(separateCurrencyStrParts(brlFormatted)).toEqual({
+    amount: "5,00",
+    symbol: "R$",
+  });
+
+  const arsFormatted = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  }).format(5);
+  expect(separateCurrencyStrParts(arsFormatted)).toEqual({
+    amount: "5,00",
+    symbol: "$",
+  });
+
+  const mxnFormatted = new Intl.NumberFormat("es-MX", {
+    style: "currency",
+    currency: "MXN",
+  }).format(5);
+  expect(separateCurrencyStrParts(mxnFormatted)).toEqual({
+    amount: "5.00",
+    symbol: "$",
   });
 });

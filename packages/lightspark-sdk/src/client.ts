@@ -68,10 +68,7 @@ import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
-import {
-  getTransactionQuery,
-  TransactionFromJson,
-} from "./objects/Transaction.js";
+import { TransactionFromJson } from "./objects/Transaction.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
@@ -230,12 +227,6 @@ class LightsparkClient {
       response.current_account?.recent_transactions.entities.map(
         (transaction) => TransactionFromJson(transaction),
       ) ?? []
-    );
-  }
-
-  public getTransaction(transactionId: string): Promise<Maybe<Transaction>> {
-    return this.requester.executeQuery<Transaction>(
-      getTransactionQuery(transactionId),
     );
   }
 

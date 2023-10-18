@@ -455,6 +455,13 @@ export function formatCurrencyStr(
   }
 }
 
+export function separateCurrencyStrParts(currencyStr: string) {
+  // split the currency string into the symbol and the amount
+  const symbol = currencyStr.replace(/[0-9\s\u00a0.,]/g, "");
+  const amount = currencyStr.replace(/[^\d.,-]/g, "");
+  return { symbol, amount };
+}
+
 export function localeToCurrencySymbol(locale: string) {
   const currencyCode = localeToCurrencyCode(locale);
   const formatted = new Intl.NumberFormat(locale, {
@@ -466,6 +473,6 @@ export function localeToCurrencySymbol(locale: string) {
   }).format(0);
 
   // Remove numeric and non-breaking space characters to extract the currency symbol
-  const symbol = formatted.replace(/[0-9\s\u00a0]/g, "");
+  const { symbol } = separateCurrencyStrParts(formatted);
   return symbol;
 }
