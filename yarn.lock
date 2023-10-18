@@ -3636,6 +3636,7 @@ __metadata:
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/crypto-js": ^4.1.1
+    "@types/jest": ^29.5.3
     "@types/secp256k1": ^4.0.3
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
