@@ -58,7 +58,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v * 1_000_000_000,
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100_000_000,
     [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      round(v / centsPerBtc, 2),
+      round(v * centsPerBtc, 2),
   },
   [CurrencyUnit.MICROBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => round(v / 1_000_000),
