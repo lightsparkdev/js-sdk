@@ -1,17 +1,14 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import { gql } from "@apollo/client";
 import styled from "@emotion/styled";
-import { Icon } from "@lightsparkdev/ui/icons";
-import type {
-  CurrencyAmountArg,
-  CurrencyMap,
-} from "@lightsparkdev/ui/utils/currency";
+import type { CurrencyAmountArg, CurrencyMap } from "@lightsparkdev/core";
 import {
   CurrencyUnit,
   formatCurrencyStr,
   isCurrencyMap,
   mapCurrencyAmount,
-} from "@lightsparkdev/ui/utils/currency";
+} from "@lightsparkdev/core";
+import { Icon } from "@lightsparkdev/ui/icons";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;

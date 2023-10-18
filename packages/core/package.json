@@ -70,7 +70,7 @@
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
     "postversion": "yarn build",
-    "test": "echo \"TODO\"",
+    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail src/**/tests/**/*.test.ts",
     "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },
@@ -91,6 +91,7 @@
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.0",
     "@types/crypto-js": "^4.1.1",
+    "@types/jest": "^29.5.3",
     "@types/secp256k1": "^4.0.3",
     "@types/ws": "^8.5.4",
     "eslint": "^8.3.0",
