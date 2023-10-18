@@ -6,13 +6,29 @@ import {
   BitcoinNetwork,
   PaymentRequestStatus,
   TransactionStatus,
+  type Transaction,
 } from "../../index.js";
+import { logger } from "../../logger.js";
 
 const REGTEST_SIGNING_KEY_PASSWORD = "1234!@#$";
 const pollIntervalMs = 250;
 const pollTimeoutSecs = 20;
 const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
 const pollIgnoreErrors = false;
+
+const suiteName = "lightspark-sdk client";
+
+function log(msg: string, ...args: unknown[]) {
+  logger.info(
+    `${expect
+      .getState()
+      .currentTestName?.replace(
+        new RegExp(`^(${suiteName})\\s`, "g"),
+        "",
+      )}: ${msg}`,
+    ...args,
+  );
+}
 
 describe("lightspark-sdk client", () => {
   const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
@@ -31,12 +47,12 @@ describe("lightspark-sdk client", () => {
     return regtestNodeId as string;
   }
 
-  it("should get env vars and construct the client successfully", async () => {
+  it("Should get env vars and construct the client successfully", async () => {
     const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
     expect(lightsparkClient).toBeDefined();
   });
 
-  it("should successfully get the current account regtest node", async () => {
+  it("Should successfully get the current account regtest node", async () => {
     const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
 
     const account = await lightsparkClient.getCurrentAccount();
@@ -44,14 +60,13 @@ describe("lightspark-sdk client", () => {
       BitcoinNetwork.REGTEST,
     ]);
 
-    console.log(nodesConnection?.entities);
-
     const regtestNode = nodesConnection?.entities[0];
     expect(regtestNode).toBeDefined();
+    log("regtestNodeId", regtestNode?.id);
     regtestNodeId = regtestNode?.id;
   });
 
-  it("should successfully create an uma invoice", async () => {
+  it("Should successfully create an uma invoice", async () => {
     const nodeId = getRegtestNodeId();
     const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
 
@@ -82,8 +97,6 @@ describe("lightspark-sdk client", () => {
     ]);
     let regtestNode = nodesConnection?.entities[0];
     const initialLocalBalance = regtestNode?.localBalance?.originalValue;
-    console.log(regtestNode);
-    console.log("localBalance before", initialLocalBalance);
     const nodeId = getRegtestNodeId();
 
     await lightsparkClient.fundNode(nodeId, satsToFund);
@@ -93,10 +106,6 @@ describe("lightspark-sdk client", () => {
         return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
       },
       (current, response) => {
-        console.log(
-          `pollUntil current balance`,
-          current.entities[0].localBalance?.originalValue,
-        );
         if (
           current &&
           current.entities[0]?.localBalance?.originalValue !==
@@ -115,10 +124,10 @@ describe("lightspark-sdk client", () => {
       () => new Error("Timeout waiting for payment to be received"),
     );
 
-    console.log("localBalance after", regtestNode?.localBalance);
-
-    expect(true).toBe(true);
-  }, 60_000);
+    expect(
+      regtestNode.localBalance?.originalValue !== initialLocalBalance,
+    ).toBe(true);
+  }, 120_000);
 
   test("Should send test mode payment", async () => {
     const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
@@ -129,7 +138,6 @@ describe("lightspark-sdk client", () => {
     }
 
     const nodeId = getRegtestNodeId();
-    console.log("regtestNodeId", regtestNodeId);
 
     const invoice = await lightsparkClient.createTestModeInvoice(
       nodeId,
@@ -145,8 +153,9 @@ describe("lightspark-sdk client", () => {
     }
 
     const payment = await lightsparkClient.payInvoice(nodeId, invoice, 60);
+    console.log("payment.id", payment?.id);
 
-    const transaction = await pollUntil(
+    const transaction = (await pollUntil(
       () => {
         if (!payment) {
           throw new Error("No payment");
@@ -166,8 +175,8 @@ describe("lightspark-sdk client", () => {
       pollMaxTimeouts,
       pollIgnoreErrors,
       () => new Error("Timeout waiting for payment to be received"),
-    );
+    )) as Transaction;
 
-    console.log("transaction result", transaction);
+    expect(transaction.status).toEqual(TransactionStatus.SUCCESS);
   }, 30_000);
 });
