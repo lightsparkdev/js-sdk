@@ -21,16 +21,4 @@ yarn
 
 This will install the proper version of yarn and all dependencies for the Lightspark js-sdk workspaces.
 
-Then to build dependencies and run a specific example - get the package.json name of the example and run this from the repo root:
-
-```
-yarn start --filter=@lightsparkdev/remote-signing-server
-```
-
-Or to build all packages and run all examples simply do:
-
-```
-yarn start
-```
-
 Please see the README files in the [examples directory](./apps/examples) for instructions on running the examples. Please note that some packages such as @lightspark/ui are for building the examples only and not necessary for your implementation of our [published SDK packages](https://www.npmjs.com/search?q=%40lightsparkdev).

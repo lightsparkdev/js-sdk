@@ -3,6 +3,7 @@
 import {
   convertCurrencyAmountValue,
   CurrencyUnit,
+  localeToCurrencySymbol,
   mapCurrencyAmount,
 } from "../currency.js";
 
@@ -167,5 +168,23 @@ describe("mapCurrencyAmount", () => {
     expect(currencyMap.isLessThan(smallerCurrencyMap)).toBe(false);
     expect(smallerCurrencyMap.isGreaterThan(currencyMap)).toBe(false);
     expect(smallerCurrencyMap.isLessThan(currencyMap)).toBe(true);
+  });
+});
+
+describe("getCurrencySymbol", () => {
+  it("should return the expected currency symbol", () => {
+    expect(localeToCurrencySymbol("en-US")).toBe("$");
+    expect(localeToCurrencySymbol("en-GB")).toBe("£");
+    expect(localeToCurrencySymbol("en-CA")).toBe("$");
+    expect(localeToCurrencySymbol("en-AU")).toBe("$");
+    expect(localeToCurrencySymbol("en-IN")).toBe("₹");
+    expect(localeToCurrencySymbol("en-IE")).toBe("€");
+    expect(localeToCurrencySymbol("en-DE")).toBe("€");
+    expect(localeToCurrencySymbol("en-FR")).toBe("€");
+    expect(localeToCurrencySymbol("en-IT")).toBe("€");
+    expect(localeToCurrencySymbol("es-MX")).toBe("$");
+    expect(localeToCurrencySymbol("es-CO")).toBe("$");
+    expect(localeToCurrencySymbol("pt-BR")).toBe("R$");
+    expect(localeToCurrencySymbol("es-AR")).toBe("$");
   });
 });

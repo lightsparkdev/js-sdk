@@ -2,6 +2,7 @@
 
 import LightsparkException from "../LightsparkException.js";
 import { getCurrentLocale } from "./locale.js";
+import { localeToCurrencyCode } from "./localeToCurrencyCodes.js";
 import { isNumber, round } from "./numbers.js";
 
 export const defaultCurrencyCode = "USD";
@@ -452,4 +453,19 @@ export function formatCurrencyStr(
         ...options,
       });
   }
+}
+
+export function localeToCurrencySymbol(locale: string) {
+  const currencyCode = localeToCurrencyCode(locale);
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currencyCode,
+    useGrouping: false, // to avoid thousands separators
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(0);
+
+  // Remove numeric and non-breaking space characters to extract the currency symbol
+  const symbol = formatted.replace(/[0-9\s\u00a0]/g, "");
+  return symbol;
 }
