@@ -51,18 +51,18 @@ export default class SendingVasp {
       return;
     }
 
-    const lnrulpRequestUrl = await uma.getSignedLnurlpRequestUrl({
+    const lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
       isSubjectToTravelRule: true,
       receiverAddress: receiver,
       signingPrivateKey: this.config.umaSigningPrivKey(),
       senderVaspDomain: hostNameWithPort(req),
     });
 
-    console.log(`Making lnurlp request: ${lnrulpRequestUrl}`);
+    console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
 
     let response: globalThis.Response;
     try {
-      response = await fetch(lnrulpRequestUrl);
+      response = await fetch(lnurlpRequestUrl);
     } catch (e) {
       res.status(424).send("Error fetching Lnurlp request.");
       return;
