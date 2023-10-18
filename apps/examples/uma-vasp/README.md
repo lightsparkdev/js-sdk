@@ -25,6 +25,10 @@ LIGHTSPARK_API_TOKEN_CLIENT_ID=<api token id> \
 LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<api token secret> \
 LIGHTSPARK_UMA_NODE_ID=<your node ID> \
 LIGHTSPARK_UMA_RECEIVER_USER=\$bob \
+LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<encryption public key hex> \
+LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<encryption private key hex> \
+LIGHTSPARK_UMA_SIGNING_PUBKEY=<signing public key hex> \
+LIGHTSPARK_UMA_SIGNING_PRIVKEY=<signing private key hex> \
 yarn start
 ```
 

@@ -1,5 +1,6 @@
 "use client";
 import styled from "@emotion/styled";
+import { colors } from "../../colors";
 import { getTypographyString, TokenSize, type App } from "../typographyTokens";
 import { StyledBody } from "./Body";
 import { displaySelector } from "./Display";
@@ -80,5 +81,13 @@ export const Article = styled.article<Props>`
     :not(:last-child) {
       margin-bottom: 4px;
     }
+  }
+
+  code:not([class|="language"]) {
+    ${({ theme, app }) =>
+      getTypographyString(theme.typography[app].Code[TokenSize.Medium])}
+    background: ${colors.uma.blue90};
+    padding: 4px 6px;
+    border-radius: 4px;
   }
 `;

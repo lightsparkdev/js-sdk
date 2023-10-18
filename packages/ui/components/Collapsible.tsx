@@ -38,12 +38,12 @@ export function Collapsible({
 
   return (
     <StyledCollapsible className={className}>
-      <Button onClick={handleClick}>
+      <StyledCollapsibleButton onClick={handleClick}>
         {text ? text : <div></div>}
         <IconContainer isOpen={isOpen} hamburger={hamburger}>
           <Icon width={14} name={iconName} />
         </IconContainer>
-      </Button>
+      </StyledCollapsibleButton>
       <CollapsingContainer isOpen={isOpen} full={full}>
         {children}
       </CollapsingContainer>
@@ -56,7 +56,7 @@ export const StyledCollapsible = styled.div`
   flex-direction: column;
 `;
 
-const Button = styled.button`
+export const StyledCollapsibleButton = styled.button`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -88,11 +88,11 @@ const CollapsingContainer = styled.div<{
   isOpen?: boolean | undefined;
   full?: boolean | undefined;
 }>`
-  overflow: hidden;
+  overflow: scroll;
   opacity: 0;
   animation-duration: 0.4s;
   animation-fill-mode: forwards;
-  padding: 4px 0 4px 16px;
+  margin: 4px 0 4px 16px;
   gap: 4px;
   display: flex;
   flex-direction: column;

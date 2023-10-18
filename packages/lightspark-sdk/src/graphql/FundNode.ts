@@ -5,9 +5,9 @@ import { FRAGMENT as CurrencyAmountFragment } from "../objects/CurrencyAmount.js
 export const FundNode = `
     mutation FundNode(
         $node_id: ID!,
-        $amountSats: Long
+        $amount_sats: Long
     ) {
-        fund_node(input: { node_id: $node_id, amount_sats: $amountSats }) {
+        fund_node(input: { node_id: $node_id, amount_sats: $amount_sats }) {
             amount {
                 ...CurrencyAmountFragment
             }
