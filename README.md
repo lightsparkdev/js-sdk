@@ -27,7 +27,7 @@ Then to build dependencies and run a specific example - get the package.json nam
 yarn start --filter=@lightsparkdev/remote-signing-server
 ```
 
-Or to build all dependencies and run all examples simply do:
+Or to build all packages and run all examples simply do:
 
 ```
 yarn start
