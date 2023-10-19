@@ -6,7 +6,6 @@ import {
   BitcoinNetwork,
   PaymentRequestStatus,
   TransactionStatus,
-  type Transaction,
 } from "../../index.js";
 import { logger } from "../../logger.js";
 
@@ -155,27 +154,14 @@ describe("lightspark-sdk client", () => {
     const payment = await lightsparkClient.payInvoice(nodeId, invoice, 60);
     log("payment.id", payment?.id);
 
-    const transaction = (await pollUntil(
-      () => {
-        if (!payment) {
-          throw new Error("No payment");
-        }
-        return lightsparkClient.getTransaction(payment.id);
-      },
-      (current, response) => {
-        if (current && current.status === TransactionStatus.SUCCESS) {
-          return {
-            stopPolling: true,
-            value: current,
-          };
-        }
-        return response;
-      },
-      pollIntervalMs,
-      pollMaxTimeouts,
-      pollIgnoreErrors,
-      () => new Error("Timeout waiting for payment to be received"),
-    )) as Transaction;
+    if (!payment) {
+      throw new Error("No payment");
+    }
+
+    const transaction = await lightsparkClient.waitForTransactionComplete(
+      payment.id,
+      pollTimeoutSecs,
+    );
 
     expect(transaction.status).toEqual(TransactionStatus.SUCCESS);
   }, 30_000);
