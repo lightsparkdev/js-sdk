@@ -6,14 +6,15 @@ import { getCredentialsFromEnvOrThrow } from '../env.js'
 import { DecodeInvoice } from '../graphql/DecodeInvoice.js'
 import {
     ENCODED_REGTEST_REQUEST_FOR_TESTS,
+    DECODED_REQUEST_DETAILS_FOR_TESTS,
     REGTEST_SIGNING_KEY_PASSWORD,
-    TESTS_TIMEOUT,
-    MAX_FEE,
-    PAY_AMOUNT,
+    TRANSACTION_WAIT_TIME,
     PAGINATION_STEP,
     INVOICE_EXPIRY,
+    TESTS_TIMEOUT,
+    PAY_AMOUNT,
     DAY_IN_MS,
-    DECODED_REQUEST_DETAILS_FOR_TESTS,
+    MAX_FEE,
 } from './const/index.js'
 import {
     AccountTokenAuthProvider,
@@ -23,12 +24,12 @@ import {
     TransactionStatus
 } from '../index.js'
 
+const unauthorizedRegtestClient = new LightsparkClient()
+
 const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
     getCredentialsFromEnvOrThrow()
 
 let regtestClient: LightsparkClient
-
-const unauthorizedRegtestClient = new LightsparkClient()
 
 let paymentInvoice: string | undefined
 
@@ -58,14 +59,14 @@ describe('Initialization tests', () => {
         ])
 
         if(!nodesConnection?.entities) {
-            throw new TypeError("No connections in account")
+            throw new TypeError('No connections in account')
         }
 
         const [regtestNode] = nodesConnection?.entities
         regtestNodeId = regtestNode?.id
 
         if(!regtestNode.id) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         await regtestClient.loadNodeSigningKey(
@@ -80,7 +81,7 @@ describe('P0 tests', () => {
 
     test('Should create a normal payment invoice', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         paymentInvoice = await regtestClient.createInvoice(
@@ -93,7 +94,7 @@ describe('P0 tests', () => {
 
     test('Should create a AMP type invoice', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         const AmpPaymentInvoice =
@@ -108,7 +109,7 @@ describe('P0 tests', () => {
 
     test('Should create a invoice with custom expiration', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         const AmpPaymentInvoiceWithExpiration =
@@ -124,7 +125,7 @@ describe('P0 tests', () => {
 
     test('Should create an any payment amount invoice', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         const AnyPaymentAmountInvoice =
@@ -140,7 +141,7 @@ describe('P0 tests', () => {
 
     test('should throw an error on create an unauthorized invoice', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
         await expect(
             unauthorizedRegtestClient.createInvoice(
@@ -153,7 +154,7 @@ describe('P0 tests', () => {
 
     test('Should pay an invoice', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
         invoicePayment = await regtestClient.payInvoice(
             regtestNodeId,
@@ -165,26 +166,9 @@ describe('P0 tests', () => {
         expect(invoicePayment).toBeDefined()
     })
 
-    test('Should pay an invoice from unauthorized wallet and throw an error', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
-        }
-
-        if(!paymentInvoice) {
-            throw new TypeError("Invoice wasn't created")
-        }
-
-        await expect(
-            unauthorizedRegtestClient.payInvoice(
-                regtestNodeId,
-                paymentInvoice,
-                MAX_FEE,
-            )).rejects.toThrowError()
-    })
-
     test('Should deposit funds to wallet with a clear sats amount', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         const fundingResult = await regtestClient.fundNode(regtestNodeId)
@@ -193,16 +177,27 @@ describe('P0 tests', () => {
 
     test('Should deposit funds to wallet with a defined amount of sats', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
-        const fundingResult = await regtestClient.fundNode(regtestNodeId, 1_000_000)
-        expect(fundingResult.originalValue).toBe(1_000_000)
+        const fundingResult = await regtestClient.fundNode(regtestNodeId, PAY_AMOUNT)
+        expect(fundingResult.originalValue).toBe(PAY_AMOUNT)
     })
+
+    // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
+    // test('Should deposit funds to wallet with a defined amount of sats', async () => {
+    //     if(!regtestNodeId) {
+    //         throw new TypeError('No regtest nodes in account')
+    //     }
+    //
+    //     const fundingResult = await regtestClient.requestWithdrawal(regtestNodeId, PAY_AMOUNT, '', WithdrawalMode.WALLET_THEN_CHANNELS)
+    //     const transaction = await regtestClient.waitForTransactionComplete(fundingResult.id, TRANSACTION_WAIT_TIME)
+    //     expect(transaction.status).toBe(TransactionStatus.SUCCESS)
+    // }, TRANSACTION_WAIT_TIME)
 
     test('Should open just-in-time channel from inbound payment', async () => {
         if(!regtestNodeId) {
-            throw new TypeError("No regtest nodes in account")
+            throw new TypeError('No regtest nodes in account')
         }
 
         const testInvoice = await regtestClient.createInvoice(
@@ -212,15 +207,19 @@ describe('P0 tests', () => {
         )
 
         if(!testInvoice) {
-            throw new TypeError("Test invoice wasn't created")
+            throw new TypeError('Test invoice wasn\'t created')
         }
 
         const payment = await regtestClient.createTestModePayment(
             regtestNodeId,
             testInvoice
         )
-        expect(payment?.status).toBe(TransactionStatus.PENDING)
-    })
+        if(!payment) {
+            throw new TypeError('Test mode payment wasn\'t created')
+        }
+        const transaction = await regtestClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+        expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
+    }, TESTS_TIMEOUT)
 })
 
 describe('P1 tests', () => {
@@ -254,10 +253,9 @@ describe('P1 tests', () => {
     )
 
     test(
-        'should fetch the current account',
+        'should fetch the current account from unauthorized client',
         async () => {
-            const wallet = await regtestClient.getCurrentAccount()
-            expect(wallet?.id).toBeDefined()
+            await expect(unauthorizedRegtestClient.getCurrentAccount()).rejects.toThrowError()
         },
         TESTS_TIMEOUT,
     )
@@ -266,7 +264,7 @@ describe('P1 tests', () => {
         'should listen current payment requests',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             const requests = await regtestClient.getRecentPaymentRequests(
@@ -283,7 +281,7 @@ describe('P1 tests', () => {
         'should listen current payment requests after some date',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             const requestsAfterDate = day(Date.now() - DAY_IN_MS).format()
@@ -299,10 +297,26 @@ describe('P1 tests', () => {
     )
 
     test(
+        'should listen current payment requests from unauthorized client',
+        async () => {
+            if(!regtestNodeId) {
+                throw new TypeError('No regtest nodes in account')
+            }
+
+            await expect(unauthorizedRegtestClient.getRecentPaymentRequests(
+                regtestNodeId,
+                PAGINATION_STEP,
+                BitcoinNetwork.REGTEST,
+            )).rejects.toThrowError()
+        },
+        TESTS_TIMEOUT,
+    )
+
+    test(
         'should list recent transactions',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             const transactions = await regtestClient.getRecentTransactions(
@@ -318,7 +332,6 @@ describe('P1 tests', () => {
     test('should fetch an invoices payment by IDs', async () => {
         if (!invoicePayment?.id) throw new TypeError('invoicePayment is null')
 
-        // TODO: IDK IS IT RIGHT
         const payment = OutgoingPayment.getOutgoingPaymentQuery(invoicePayment?.id)
 
         expect(payment.queryPayload).not.toBeNull()
@@ -344,7 +357,7 @@ describe('P1 tests', () => {
         'should create STANDARD a test mode invoice',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             testModeInvoices.withMemo = await regtestClient.createTestModeInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
@@ -357,7 +370,7 @@ describe('P1 tests', () => {
         'should create an AMP a test mode invoice',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             const testInvoice = await regtestClient.createTestModeInvoice(regtestNodeId, 0, '', InvoiceType.AMP)
@@ -370,7 +383,7 @@ describe('P1 tests', () => {
         'should create a clear memo test mode invoice',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             testModeInvoices.withoutMemo = await regtestClient.createTestModeInvoice(regtestNodeId, 0)
@@ -383,11 +396,11 @@ describe('P1 tests', () => {
         'should pay a test mode invoice',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             if(!testModeInvoices.withoutMemo) {
-                throw new TypeError("Test mode invoice wasn't created")
+                throw new TypeError('Test mode invoice wasn\'t created')
             }
 
             const invoicePayment = await regtestClient.payInvoice(
@@ -406,17 +419,21 @@ describe('P1 tests', () => {
         'should create a test mode payment',
         async () => {
             if(!regtestNodeId) {
-                throw new TypeError("No regtest nodes in account")
+                throw new TypeError('No regtest nodes in account')
             }
 
             const invoiceForTestPayment = await regtestClient.createInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
 
             if(!invoiceForTestPayment) {
-                throw new TypeError("Invoice for test payment wasn't created")
+                throw new TypeError('Invoice for test payment wasn\'t created')
             }
 
             const payment = await regtestClient.createTestModePayment(regtestNodeId, invoiceForTestPayment)
-            expect(payment?.status).not.toBe(TransactionStatus.FAILED)
+            if(!payment) {
+                throw new TypeError('Test mode payment wasn\'t created')
+            }
+            const transaction = await regtestClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+            expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
         },
         TESTS_TIMEOUT,
     )
@@ -436,7 +453,7 @@ describe('P2 tests', () => {
     // FIXME: THIS ACTION WORKS ONLY IN MAINNET
     // test('should send a keysend payment', async () => {
     //     if(!regtestNodeId) {
-    //         throw new TypeError("No regtest nodes in account")
+    //         throw new TypeError('No regtest nodes in account')
     //     }
     //
     //     const payment = await regtestClient.sendPayment(regtestNodeId, '018afbd7e2fd4f890000ac5e051e3488', TESTS_TIMEOUT, PAY_AMOUNT, MAX_FEE)
