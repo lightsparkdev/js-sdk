@@ -18,6 +18,7 @@ import {
   LightsparkException,
   LightsparkSigningException,
   NodeKeyCache,
+  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
@@ -46,6 +47,7 @@ import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
+import { TransactionStatus } from "./index.js";
 import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
@@ -68,7 +70,10 @@ import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
-import { TransactionFromJson } from "./objects/Transaction.js";
+import {
+  getTransactionQuery,
+  TransactionFromJson,
+} from "./objects/Transaction.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
@@ -228,6 +233,12 @@ class LightsparkClient {
       response.current_account?.recent_transactions.entities.map(
         (transaction) => TransactionFromJson(transaction),
       ) ?? []
+    );
+  }
+
+  public getTransaction(transactionId: string): Promise<Maybe<Transaction>> {
+    return this.requester.executeQuery<Transaction>(
+      getTransactionQuery(transactionId),
     );
   }
 
@@ -779,6 +790,53 @@ class LightsparkClient {
       response.pay_uma_invoice &&
       OutgoingPaymentFromJson(response.pay_invoice.payment)
     );
+  }
+
+  /**
+   * Waits for a transaction to have a completed status, and returns the transaction.
+   *
+   * @param transactionId The ID of the transaction to wait for
+   * @param pollTimeoutSecs The timeout in seconds that we will wait before throwing an exception
+   */
+  public async waitForTransactionComplete(
+    transactionId: string,
+    pollTimeoutSecs = 60,
+  ) {
+    const pollIntervalMs = 250;
+    const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
+    const pollIgnoreErrors = false;
+
+    const transaction = (await pollUntil(
+      () => {
+        return this.getTransaction(transactionId);
+      },
+      (current, response) => {
+        if (
+          current &&
+          [
+            TransactionStatus.SUCCESS,
+            TransactionStatus.CANCELLED,
+            TransactionStatus.FAILED,
+          ].includes(current.status)
+        ) {
+          return {
+            stopPolling: true,
+            value: current,
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      pollMaxTimeouts,
+      pollIgnoreErrors,
+      () =>
+        new LightsparkException(
+          "Timeout",
+          "Timeout waiting for transaction to complete.",
+        ),
+    )) as Transaction;
+
+    return transaction;
   }
 
   /**

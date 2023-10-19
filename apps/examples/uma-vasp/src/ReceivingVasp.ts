@@ -49,14 +49,20 @@ export default class ReceivingVasp {
   }
 
   private async handleUmaLnurlp(req: Request, res: Response, next: any) {
-    const uuid = req.params.uuid;
     let umaQuery: uma.LnurlpRequest;
-    // TODO: Handle versioning.
     try {
       umaQuery = uma.parseLnurlpRequest(
-        new URL(req.url, `${req.protocol}://${req.hostname}`),
+        new URL(req.url, `${req.protocol}://${req.headers.host}`),
       );
     } catch (e) {
+      if (e instanceof uma.UnsupportedVersionError) {
+        // For unsupported versions, return a 412 "Precondition Failed" as per the spec.
+        res.status(412).send({
+          supportedMajorVersions: e.supportedMajorVersions,
+          unsupportedVersion: e.unsupportedVersion,
+        });
+        return;
+      }
       return next(new Error("Invalid UMA query.", { cause: e }));
     }
 
@@ -67,6 +73,7 @@ export default class ReceivingVasp {
         vaspDomain: umaQuery.vaspDomain,
       });
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to fetch public key.", { cause: e }));
     }
 
@@ -93,9 +100,10 @@ export default class ReceivingVasp {
         privateKeyBytes: this.config.umaSigningPrivKey(),
         receiverKycStatus: uma.KycStatus.Verified,
         payerDataOptions: {
-          nameRequired: false,
-          emailRequired: false,
-          complianceRequired: true,
+          identifier: { mandatory: true },
+          name: { mandatory: false },
+          email: { mandatory: false },
+          compliance: { mandatory: true },
         },
         currencyOptions: [
           {
@@ -111,6 +119,7 @@ export default class ReceivingVasp {
       res.send(response);
       return "ok";
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to generate UMA response.", { cause: e }));
     }
   }
@@ -159,18 +168,24 @@ export default class ReceivingVasp {
     // In a real implementation, this would be the txId for your own internal
     // tracking in post-transaction hooks.
     const txId = "1234";
-    const umaClient = new uma.UmaClient({
-      provider: this.lightsparkClient,
-      receiverNodeId: this.config.nodeID,
-      invoiceExpirySeconds: expirationTimeSec,
-    });
+    const umaInvoiceCreator = {
+      createUmaInvoice: async (amountMsats: number, metadata: string) => {
+        const invoice = await this.lightsparkClient.createUmaInvoice(
+          this.config.nodeID,
+          amountMsats,
+          metadata,
+          expirationTimeSec,
+        );
+        return invoice?.data.encodedPaymentRequest;
+      },
+    };
 
     let response: uma.PayReqResponse;
     try {
       response = await uma.getPayReqResponse({
         conversionRate: exchangeRate,
         currencyCode: "USD",
-        invoiceCreator: umaClient,
+        invoiceCreator: umaInvoiceCreator,
         metadata: this.getEncodedMetadata(),
         query: payreq,
         receiverChannelUtxos: [],
@@ -181,6 +196,7 @@ export default class ReceivingVasp {
       res.send(response);
       return "ok";
     } catch (e) {
+      console.error(e);
       return next(new Error("Failed to generate UMA response.", { cause: e }));
     }
   }
@@ -220,7 +236,7 @@ export default class ReceivingVasp {
 
   private getLnurlpCallback(req: Request): string {
     const protocol = req.protocol;
-    const fullUrl = new URL(req.url, `${protocol}://${req.hostname}`);
+    const fullUrl = new URL(req.url, `${protocol}://${req.headers.host}`);
     const port = fullUrl.port;
     const portString = port === "80" || port === "443" ? "" : `:${port}`;
     const path = `/api/uma/payreq/${this.config.userID}`;

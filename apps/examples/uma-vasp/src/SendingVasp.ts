@@ -46,26 +46,40 @@ export default class SendingVasp {
 
     const [receiverId, receivingVaspDomain] = receiver.split("@");
     if (!receiverId || !receivingVaspDomain) {
+      console.error(`Invalid receiver: ${receiver}`);
       res.status(400).send("Invalid receiver");
       return;
     }
 
-    const lnrulpRequestUrl = await uma.getSignedLnurlpRequestUrl({
+    const lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
       isSubjectToTravelRule: true,
       receiverAddress: receiver,
       signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: req.hostname, // TODO: Might need to include the port here.
+      senderVaspDomain: hostNameWithPort(req),
     });
+
+    console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
 
     let response: globalThis.Response;
     try {
-      response = await fetch(lnrulpRequestUrl);
+      response = await fetch(lnurlpRequestUrl);
     } catch (e) {
       res.status(424).send("Error fetching Lnurlp request.");
       return;
     }
 
-    // TODO: Handle versioning via the 412 response.
+    if (response.status === 412) {
+      try {
+        response = await this.retryForUnsupportedVersion(
+          response,
+          receiver,
+          req,
+        );
+      } catch (e) {
+        res.status(424).send("Error fetching Lnurlp request.");
+        return;
+      }
+    }
 
     if (!response.ok) {
       res.status(424).send(`Error fetching Lnurlp request. ${response.status}`);
@@ -115,6 +129,26 @@ export default class SendingVasp {
     });
   }
 
+  private async retryForUnsupportedVersion(
+    response: globalThis.Response,
+    receiver: string,
+    request: Request,
+  ) {
+    const responseJson = await response.json();
+    const supportedMajorVersions = responseJson.supportedMajorVersions;
+    const newSupportedVersion = uma.selectHighestSupportedVersion(
+      supportedMajorVersions,
+    );
+    const retryRequest = await uma.getSignedLnurlpRequestUrl({
+      isSubjectToTravelRule: true,
+      receiverAddress: receiver,
+      signingPrivateKey: this.config.umaSigningPrivKey(),
+      senderVaspDomain: hostNameWithPort(request),
+      umaVersionOverride: newSupportedVersion,
+    });
+    return fetch(retryRequest);
+  }
+
   private async handleClientUmaPayreq(req: Request, res: Response) {
     const callbackUuid = req.params.callbackUuid;
     if (!callbackUuid) {
@@ -160,7 +194,7 @@ export default class SendingVasp {
     if (!pubKeys) return;
 
     const payerProfile = this.getPayerProfile(
-      initialRequestData.lnurlpResponse.requiredPayerData,
+      initialRequestData.lnurlpResponse.payerData,
     );
     const trInfo =
       '["message": "Here is some fake travel rule info. It is up to you to actually implement this if needed."]';
@@ -289,7 +323,7 @@ export default class SendingVasp {
       const paymentResult = await this.lightsparkClient.payUmaInvoice(
         this.config.nodeID,
         payReqData.encodedInvoice,
-        /* maxeesMsats */ 1_000_000,
+        /* maxFeesMsats */ 1_000_000,
       );
       if (!paymentResult) {
         throw new Error("Payment request failed.");
@@ -316,8 +350,8 @@ export default class SendingVasp {
   private getPayerProfile(requiredPayerData: uma.PayerDataOptions) {
     const port = process.env.PORT || settings.umaVasp.port;
     return {
-      name: requiredPayerData.nameRequired ? "Alice FakeName" : undefined,
-      email: requiredPayerData.emailRequired ? "alice@vasp1.com" : undefined,
+      name: requiredPayerData.name.mandatory ? "Alice FakeName" : undefined,
+      email: requiredPayerData.email.mandatory ? "alice@vasp1.com" : undefined,
       // Note: This is making an assumption that this is running on localhost. We should make it configurable.
       identifier: `$alice@localhost:${port}`,
     };
@@ -362,9 +396,13 @@ export default class SendingVasp {
     payment: OutgoingPayment,
     payReqData: SendingVaspPayReqData,
   ) {
-    const utxos =
+    const utxos: uma.UtxoWithAmount[] =
       payment.umaPostTransactionData?.map((d) => {
-        d.utxo, convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI);
+        return {
+          utxo: d.utxo,
+          amount: convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI)
+            .preferredCurrencyValueRounded,
+        };
       }) ?? [];
     try {
       const postTxResponse = await fetch(payReqData.utxoCallback, {
@@ -384,3 +422,10 @@ export default class SendingVasp {
     }
   }
 }
+
+const hostNameWithPort = (req: Request) => {
+  const fullUrl = new URL(req.url, `${req.protocol}://${req.headers.host}`);
+  const port = fullUrl.port;
+  const portString = port === "80" || port === "443" ? "" : `:${port}`;
+  return `${req.hostname}${portString}`;
+};

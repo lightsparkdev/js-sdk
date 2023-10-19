@@ -19,6 +19,7 @@ type IconSide = "left" | "right";
 export type ButtonProps<RoutesType extends string> = {
   backgroundColor?: string;
   color?: string;
+  hoverColor?: string;
   text?: string;
   disabled?: boolean | undefined;
   to?: RoutesType | undefined;
@@ -107,7 +108,7 @@ function getPadding({ iconWidth, size, text, ghost, iconSide }: PaddingProps) {
     : size === "md"
     ? 18
     : 16;
-  const paddingForIcon = iconWidth ? iconWidth : 0;
+  const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
   }px ${paddingY}px ${paddingX + (iconSide === "left" ? paddingForIcon : 0)}px`;
@@ -140,6 +141,7 @@ function getInnerBorderColor({
 export function Button<RoutesType extends string>({
   backgroundColor,
   color,
+  hoverColor,
   primary = false,
   ghost = false,
   text,
@@ -202,6 +204,7 @@ export function Button<RoutesType extends string>({
   const commonProps = {
     backgroundColor,
     color,
+    hoverColor,
     type,
     size,
     onClick,
@@ -242,6 +245,7 @@ export function Button<RoutesType extends string>({
 type StyledButtonProps = {
   backgroundColor?: string | undefined;
   color?: string | undefined;
+  hoverColor?: string | undefined;
   primary: boolean;
   ghost: boolean;
   size: ButtonSize;
@@ -260,6 +264,7 @@ const hPaddingPx = 24;
 const buttonStyle = ({
   color,
   backgroundColor,
+  hoverColor,
   theme,
   primary,
   ghost,
@@ -311,6 +316,15 @@ const buttonStyle = ({
     border-radius: 32px;
     padding: ${getPadding({ size, iconWidth, text, ghost, iconSide })};
     color: ${getTextColor({ color, theme, primary, blue })};
+    transition:
+      background-color 0.2s ease-out,
+      border-color 0.2s ease-out;
+
+    &:hover {
+      ${hoverColor && ghost
+        ? ""
+        : `background-color: ${hoverColor}; border-color: ${hoverColor};`}
+    }
   }
 `;
 
@@ -321,7 +335,7 @@ interface ButtonIconProps {
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
-  position: absolute;
+  ${(props) => (props.ghost ? "" : "position: absolute;")}
   ${(props) =>
     `${props.iconSide}: ${props.ghost && props.text ? 0 : hPaddingPx}px;`}
 `;

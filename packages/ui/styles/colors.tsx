@@ -31,8 +31,10 @@ const uma = {
   blue80: "#DCE2EA",
   blue90: "#EBEEF2",
   blue95: "#F2F5F7",
+  grey300: "#DEDFE4",
   secondary: "#686A72",
   stroke: "#C0C9D6",
+  strokeProminent: "#9BA7B9",
   fill: "#EBEEF2",
 };
 
