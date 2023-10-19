@@ -6,12 +6,12 @@
  */
 
 
-import LightsparkClient from '../client.js'
+import LightsparkClient from '../../client.js'
 import day from 'dayjs'
 import { describe, expect, test } from '@jest/globals'
 import { b64encode, DefaultCrypto } from '@lightsparkdev/core'
-import { getCredentialsFromEnvOrThrow } from '../env.js'
-import { DecodeInvoice } from '../graphql/DecodeInvoice.js'
+import { getCredentialsFromEnvOrThrow } from '../../env.js'
+import { DecodeInvoice } from '../../graphql/DecodeInvoice.js'
 import {
     ENCODED_REGTEST_REQUEST_FOR_TESTS,
     DECODED_REQUEST_DETAILS_FOR_TESTS,
@@ -30,14 +30,14 @@ import {
     InvoiceType,
     OutgoingPayment,
     TransactionStatus
-} from '../index.js'
+} from '../../index.js'
 
-const unauthorizedRegtestClient = new LightsparkClient()
+const unauthorizedLightsparkClient = new LightsparkClient()
 
 const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
     getCredentialsFromEnvOrThrow()
 
-let regtestClient: LightsparkClient
+let lightsparkClient: LightsparkClient
 
 let paymentInvoice: string | undefined
 
@@ -50,19 +50,27 @@ const testModeInvoices: Record<string, string | null> = {
     withoutMemo: null
 }
 
+const getRegtestNodeId = () => {
+    expect(regtestNodeId).toBeDefined();
+    if (!regtestNodeId) {
+        throw new TypeError('No regtest nodes in account')
+    }
+    return regtestNodeId
+}
+
 describe('Initialization tests', () => {
     test('should get env vars and construct the client successfully', async () => {
         const accountAuthProvider = new AccountTokenAuthProvider(
             apiTokenClientId,
             apiTokenClientSecret,
         )
-        regtestClient = new LightsparkClient(accountAuthProvider, baseUrl)
-        expect(regtestClient).toBeDefined()
+        lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl)
+        expect(lightsparkClient).toBeDefined()
     })
 
     test('should successfully get the current account regtest node', async () => {
-        const account = await regtestClient.getCurrentAccount()
-        const nodesConnection = await account?.getNodes(regtestClient, 1, [
+        const account = await lightsparkClient.getCurrentAccount()
+        const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
             BitcoinNetwork.REGTEST,
         ])
 
@@ -73,12 +81,8 @@ describe('Initialization tests', () => {
         const [regtestNode] = nodesConnection?.entities
         regtestNodeId = regtestNode?.id
 
-        if(!regtestNode.id) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
-        await regtestClient.loadNodeSigningKey(
-            regtestNodeId,
+        await lightsparkClient.loadNodeSigningKey(
+            getRegtestNodeId(),
             { password: REGTEST_SIGNING_KEY_PASSWORD }
         )
         expect(regtestNode).toBeDefined()
@@ -88,12 +92,8 @@ describe('Initialization tests', () => {
 describe('P0 tests', () => {
 
     test('Should create a normal payment invoice', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
-        paymentInvoice = await regtestClient.createInvoice(
-            regtestNodeId,
+        paymentInvoice = await lightsparkClient.createInvoice(
+            getRegtestNodeId(),
             PAY_AMOUNT,
             'hi there!'
         )
@@ -101,13 +101,9 @@ describe('P0 tests', () => {
     })
 
     test('Should create a AMP type invoice', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
         const AmpPaymentInvoice =
-            await regtestClient.createInvoice(
-                regtestNodeId,
+            await lightsparkClient.createInvoice(
+                getRegtestNodeId(),
                 PAY_AMOUNT,
                 'hi there!',
                 InvoiceType.AMP
@@ -116,13 +112,9 @@ describe('P0 tests', () => {
     })
 
     test('Should create a invoice with custom expiration', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
         const AmpPaymentInvoiceWithExpiration =
-            await regtestClient.createInvoice(
-                regtestNodeId,
+            await lightsparkClient.createInvoice(
+                getRegtestNodeId(),
                 PAY_AMOUNT,
                 'hi there!',
                 InvoiceType.STANDARD,
@@ -132,13 +124,9 @@ describe('P0 tests', () => {
     })
 
     test('Should create an any payment amount invoice', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
         const AnyPaymentAmountInvoice =
-            await regtestClient.createInvoice(
-                regtestNodeId,
+            await lightsparkClient.createInvoice(
+                getRegtestNodeId(),
                 PAY_AMOUNT,
                 'hi there!',
                 InvoiceType.STANDARD,
@@ -148,12 +136,9 @@ describe('P0 tests', () => {
     })
 
     test('should throw an error on create an unauthorized invoice', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
         await expect(
-            unauthorizedRegtestClient.createInvoice(
-                regtestNodeId,
+            unauthorizedLightsparkClient.createInvoice(
+                getRegtestNodeId(),
                 0,
                 'hi there!'
             ),
@@ -161,11 +146,8 @@ describe('P0 tests', () => {
     })
 
     test('Should pay an invoice', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-        invoicePayment = await regtestClient.payInvoice(
-            regtestNodeId,
+        invoicePayment = await lightsparkClient.payInvoice(
+            getRegtestNodeId(),
             ENCODED_REGTEST_REQUEST_FOR_TESTS,
             MAX_FEE,
             TESTS_TIMEOUT,
@@ -175,40 +157,25 @@ describe('P0 tests', () => {
     })
 
     test('Should deposit funds to wallet with a clear sats amount', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
-        const fundingResult = await regtestClient.fundNode(regtestNodeId)
+        const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId())
         expect(fundingResult.originalValue).toBe(10_000_000)
     })
 
     test('Should deposit funds to wallet with a defined amount of sats', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
-        const fundingResult = await regtestClient.fundNode(regtestNodeId, PAY_AMOUNT)
+        const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId(), PAY_AMOUNT)
         expect(fundingResult.originalValue).toBe(PAY_AMOUNT)
     })
 
     // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
     // test('Should deposit funds to wallet with a defined amount of sats', async () => {
-    //     if(!regtestNodeId) {
-    //         throw new TypeError('No regtest nodes in account')
-    //     }
-    //
-    //     const fundingResult = await regtestClient.requestWithdrawal(regtestNodeId, PAY_AMOUNT, '', WithdrawalMode.WALLET_THEN_CHANNELS)
-    //     const transaction = await regtestClient.waitForTransactionComplete(fundingResult.id, TRANSACTION_WAIT_TIME)
+    //     const fundingResult = await lightsparkClient.requestWithdrawal(getRegtestNodeId(), PAY_AMOUNT, '', WithdrawalMode.WALLET_THEN_CHANNELS)
+    //     const transaction = await lightsparkClient.waitForTransactionComplete(fundingResult.id, TRANSACTION_WAIT_TIME)
     //     expect(transaction.status).toBe(TransactionStatus.SUCCESS)
     // }, TRANSACTION_WAIT_TIME)
 
     test('Should open just-in-time channel from inbound payment', async () => {
-        if(!regtestNodeId) {
-            throw new TypeError('No regtest nodes in account')
-        }
-
-        const testInvoice = await regtestClient.createInvoice(
+        const regtestNodeId = getRegtestNodeId()
+        const testInvoice = await lightsparkClient.createInvoice(
             regtestNodeId,
             PAY_AMOUNT,
             'hi there!'
@@ -218,14 +185,14 @@ describe('P0 tests', () => {
             throw new TypeError('Test invoice wasn\'t created')
         }
 
-        const payment = await regtestClient.createTestModePayment(
+        const payment = await lightsparkClient.createTestModePayment(
             regtestNodeId,
             testInvoice
         )
         if(!payment) {
             throw new TypeError('Test mode payment wasn\'t created')
         }
-        const transaction = await regtestClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+        const transaction = await lightsparkClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
         expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
     }, TESTS_TIMEOUT)
 })
@@ -254,7 +221,7 @@ describe('P1 tests', () => {
     test(
         'should fetch the current account',
         async () => {
-            const wallet = await regtestClient.getCurrentAccount()
+            const wallet = await lightsparkClient.getCurrentAccount()
             expect(wallet?.id).toBeDefined()
         },
         TESTS_TIMEOUT,
@@ -263,7 +230,7 @@ describe('P1 tests', () => {
     test(
         'should fetch the current account from unauthorized client',
         async () => {
-            await expect(unauthorizedRegtestClient.getCurrentAccount()).rejects.toThrowError()
+            await expect(unauthorizedLightsparkClient.getCurrentAccount()).rejects.toThrowError()
         },
         TESTS_TIMEOUT,
     )
@@ -271,12 +238,8 @@ describe('P1 tests', () => {
     test(
         'should listen current payment requests',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            const requests = await regtestClient.getRecentPaymentRequests(
-                regtestNodeId,
+            const requests = await lightsparkClient.getRecentPaymentRequests(
+                getRegtestNodeId(),
                 PAGINATION_STEP,
                 BitcoinNetwork.REGTEST,
             )
@@ -288,13 +251,9 @@ describe('P1 tests', () => {
     test(
         'should listen current payment requests after some date',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
             const requestsAfterDate = day(Date.now() - DAY_IN_MS).format()
-            const requests = await regtestClient.getRecentPaymentRequests(
-                regtestNodeId,
+            const requests = await lightsparkClient.getRecentPaymentRequests(
+                getRegtestNodeId(),
                 PAGINATION_STEP,
                 BitcoinNetwork.REGTEST,
                 requestsAfterDate
@@ -307,12 +266,8 @@ describe('P1 tests', () => {
     test(
         'should listen current payment requests from unauthorized client',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            await expect(unauthorizedRegtestClient.getRecentPaymentRequests(
-                regtestNodeId,
+            await expect(unauthorizedLightsparkClient.getRecentPaymentRequests(
+                getRegtestNodeId(),
                 PAGINATION_STEP,
                 BitcoinNetwork.REGTEST,
             )).rejects.toThrowError()
@@ -323,12 +278,8 @@ describe('P1 tests', () => {
     test(
         'should list recent transactions',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            const transactions = await regtestClient.getRecentTransactions(
-                regtestNodeId,
+            const transactions = await lightsparkClient.getRecentTransactions(
+                getRegtestNodeId(),
                 undefined,
                 BitcoinNetwork.REGTEST
             )
@@ -348,7 +299,7 @@ describe('P1 tests', () => {
     test(
         'should decode an invoice',
         async () => {
-            const decodedInvoice = await regtestClient.decodeInvoice(
+            const decodedInvoice = await lightsparkClient.decodeInvoice(
                 ENCODED_REGTEST_REQUEST_FOR_TESTS,
             )
 
@@ -364,11 +315,7 @@ describe('P1 tests', () => {
     test(
         'should create STANDARD a test mode invoice',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            testModeInvoices.withMemo = await regtestClient.createTestModeInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
+            testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), PAY_AMOUNT, 'hi there!')
             expect(testModeInvoices.withMemo).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -377,11 +324,7 @@ describe('P1 tests', () => {
     test(
         'should create an AMP a test mode invoice',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            const testInvoice = await regtestClient.createTestModeInvoice(regtestNodeId, 0, '', InvoiceType.AMP)
+            const testInvoice = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), 0, '', InvoiceType.AMP)
             expect(testInvoice).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -390,11 +333,7 @@ describe('P1 tests', () => {
     test(
         'should create a clear memo test mode invoice',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
-            testModeInvoices.withoutMemo = await regtestClient.createTestModeInvoice(regtestNodeId, 0)
+            testModeInvoices.withoutMemo = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), 0)
             expect(testModeInvoices.withoutMemo).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -403,16 +342,12 @@ describe('P1 tests', () => {
     test(
         'should pay a test mode invoice',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
-
             if(!testModeInvoices.withoutMemo) {
                 throw new TypeError('Test mode invoice wasn\'t created')
             }
 
-            const invoicePayment = await regtestClient.payInvoice(
-                regtestNodeId,
+            const invoicePayment = await lightsparkClient.payInvoice(
+                getRegtestNodeId(),
                 testModeInvoices.withoutMemo,
                 MAX_FEE,
                 TESTS_TIMEOUT,
@@ -426,21 +361,19 @@ describe('P1 tests', () => {
     test(
         'should create a test mode payment',
         async () => {
-            if(!regtestNodeId) {
-                throw new TypeError('No regtest nodes in account')
-            }
+            const regtestNodeId = getRegtestNodeId()
 
-            const invoiceForTestPayment = await regtestClient.createInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
+            const invoiceForTestPayment = await lightsparkClient.createInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
 
             if(!invoiceForTestPayment) {
                 throw new TypeError('Invoice for test payment wasn\'t created')
             }
 
-            const payment = await regtestClient.createTestModePayment(regtestNodeId, invoiceForTestPayment)
+            const payment = await lightsparkClient.createTestModePayment(regtestNodeId, invoiceForTestPayment)
             if(!payment) {
                 throw new TypeError('Test mode payment wasn\'t created')
             }
-            const transaction = await regtestClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+            const transaction = await lightsparkClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
             expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
         },
         TESTS_TIMEOUT,
@@ -452,7 +385,7 @@ describe('P2 tests', () => {
     test(
         'should get a bitcoin fee estimate',
         async () => {
-            const fee = await regtestClient.getBitcoinFeeEstimate()
+            const fee = await lightsparkClient.getBitcoinFeeEstimate()
             expect(fee).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -460,18 +393,14 @@ describe('P2 tests', () => {
 
     // FIXME: THIS ACTION WORKS ONLY IN MAINNET
     // test('should send a keysend payment', async () => {
-    //     if(!regtestNodeId) {
-    //         throw new TypeError('No regtest nodes in account')
-    //     }
-    //
-    //     const payment = await regtestClient.sendPayment(regtestNodeId, '018afbd7e2fd4f890000ac5e051e3488', TESTS_TIMEOUT, PAY_AMOUNT, MAX_FEE)
+    //     const payment = await lightsparkClient.sendPayment(getRegtestNodeId(), '018afbd7e2fd4f890000ac5e051e3488', TESTS_TIMEOUT, PAY_AMOUNT, MAX_FEE)
     //     expect(payment?.status).not.toBe(TransactionStatus.FAILED)
     // })
 
     test(
         'should execute a raw graphql query',
         async () => {
-            const result = await regtestClient.executeRawQuery({
+            const result = await lightsparkClient.executeRawQuery({
                 queryPayload: DecodeInvoice,
                 variables: {
                     encoded_payment_request: ENCODED_REGTEST_REQUEST_FOR_TESTS,
