@@ -89,6 +89,7 @@ export const LightningTransactionFromJson = (
       failureMessage: !!obj["outgoing_payment_failure_message"]
         ? RichTextFromJson(obj["outgoing_payment_failure_message"])
         : undefined,
+      paymentPreimage: obj["outgoing_payment_payment_preimage"],
     } as OutgoingPayment;
   }
   throw new LightsparkException(
@@ -181,6 +182,7 @@ fragment LightningTransactionFragment on LightningTransaction {
             __typename
             rich_text_text: text
         }
+        outgoing_payment_payment_preimage: payment_preimage
     }
 }`;
 

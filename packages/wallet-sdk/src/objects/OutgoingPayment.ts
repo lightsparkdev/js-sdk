@@ -55,6 +55,9 @@ type OutgoingPayment = LightningTransaction &
 
     /** If applicable, user-facing error message describing why the payment failed. **/
     failureMessage?: RichText;
+
+    /** The preimage of the payment. **/
+    paymentPreimage?: string;
   };
 
 export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
@@ -82,6 +85,7 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
     failureMessage: !!obj["outgoing_payment_failure_message"]
       ? RichTextFromJson(obj["outgoing_payment_failure_message"])
       : undefined,
+    paymentPreimage: obj["outgoing_payment_payment_preimage"],
   } as OutgoingPayment;
 };
 
@@ -147,6 +151,7 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
         __typename
         rich_text_text: text
     }
+    outgoing_payment_payment_preimage: payment_preimage
 }`;
 
 export const getOutgoingPaymentQuery = (id: string): Query<OutgoingPayment> => {

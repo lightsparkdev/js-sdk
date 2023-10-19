@@ -19,6 +19,7 @@ export {
   default as ChannelOpeningTransaction,
   getChannelOpeningTransactionQuery,
 } from "./ChannelOpeningTransaction.js";
+export { default as ChannelSnapshot } from "./ChannelSnapshot.js";
 export { default as ChannelStatus } from "./ChannelStatus.js";
 export { default as ChannelToTransactionsConnection } from "./ChannelToTransactionsConnection.js";
 export { default as ComplianceProvider } from "./ComplianceProvider.js";

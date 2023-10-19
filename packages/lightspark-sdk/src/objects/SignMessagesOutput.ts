@@ -4,6 +4,7 @@ import type SignablePayload from "./SignablePayload.js";
 import { SignablePayloadFromJson } from "./SignablePayload.js";
 
 type SignMessagesOutput = {
+  /** The list of signed payloads. **/
   signedPayloads: SignablePayload[];
 };
 

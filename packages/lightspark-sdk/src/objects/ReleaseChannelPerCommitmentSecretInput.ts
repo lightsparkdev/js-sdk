@@ -1,10 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 type ReleaseChannelPerCommitmentSecretInput = {
+  /** The unique identifier of the channel. **/
   channelId: string;
 
+  /** The per-commitment secret to be released. **/
   perCommitmentSecret: string;
 
+  /** The index associated with the per-commitment secret. **/
   perCommitmentIndex: number;
 };
 

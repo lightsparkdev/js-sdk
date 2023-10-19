@@ -4,6 +4,7 @@ import type IdAndSignature from "./IdAndSignature.js";
 import { IdAndSignatureFromJson } from "./IdAndSignature.js";
 
 type SignMessagesInput = {
+  /** The list of the message ids and signatures. **/
   signatures: IdAndSignature[];
 };
 

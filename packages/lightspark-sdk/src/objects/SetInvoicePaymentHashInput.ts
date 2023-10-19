@@ -7,8 +7,11 @@ type SetInvoicePaymentHashInput = {
   /** The 32-byte hash of the payment preimage. **/
   paymentHash: string;
 
-  /** The 32-byte nonce used to generate the invoice preimage. **/
-  preimageNonce: string;
+  /**
+   * The 32-byte nonce used to generate the invoice preimage if applicable. It will later be included in
+   * RELEASE_PAYMENT_PREIMAGE webhook to help recover the raw preimage.
+   **/
+  preimageNonce?: string;
 };
 
 export const SetInvoicePaymentHashInputFromJson = (
