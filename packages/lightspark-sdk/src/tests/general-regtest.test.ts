@@ -1,3 +1,11 @@
+/**
+ * To run test properly:
+ * 1. Create LIGHTSPARK_API_TOKEN_CLIENT_ID and LIGHTSPARK_API_TOKEN_CLIENT_SECRET in https://app.lightspark.com/api-config
+ * 2. lightspark-wallet init-env
+ * 3. yarn workspace @lightsparkdev/wallet-sdk test
+ */
+
+
 import LightsparkClient from '../client.js'
 import day from 'dayjs'
 import { describe, expect, test } from '@jest/globals'
