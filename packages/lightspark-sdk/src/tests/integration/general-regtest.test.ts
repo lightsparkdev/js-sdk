@@ -5,7 +5,6 @@
  * 3. yarn workspace @lightsparkdev/wallet-sdk test
  */
 
-
 import LightsparkClient from '../../client.js'
 import day from 'dayjs'
 import { describe, expect, test } from '@jest/globals'
@@ -51,7 +50,7 @@ const testModeInvoices: Record<string, string | null> = {
 }
 
 const getRegtestNodeId = () => {
-    expect(regtestNodeId).toBeDefined();
+    expect(regtestNodeId).toBeDefined()
     if (!regtestNodeId) {
         throw new TypeError('No regtest nodes in account')
     }
@@ -70,9 +69,11 @@ describe('Initialization tests', () => {
 
     test('should successfully get the current account regtest node', async () => {
         const account = await lightsparkClient.getCurrentAccount()
-        const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
-            BitcoinNetwork.REGTEST,
-        ])
+        const nodesConnection = await account?.getNodes(
+            lightsparkClient,
+            1,
+            [BitcoinNetwork.REGTEST,]
+        )
 
         if(!nodesConnection?.entities) {
             throw new TypeError('No connections in account')
@@ -157,12 +158,14 @@ describe('P0 tests', () => {
     })
 
     test('Should deposit funds to wallet with a clear sats amount', async () => {
-        const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId())
+        const fundingResult =
+            await lightsparkClient.fundNode(getRegtestNodeId())
         expect(fundingResult.originalValue).toBe(10_000_000)
     })
 
     test('Should deposit funds to wallet with a defined amount of sats', async () => {
-        const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId(), PAY_AMOUNT)
+        const fundingResult =
+            await lightsparkClient.fundNode(getRegtestNodeId(), PAY_AMOUNT)
         expect(fundingResult.originalValue).toBe(PAY_AMOUNT)
     })
 
@@ -192,7 +195,10 @@ describe('P0 tests', () => {
         if(!payment) {
             throw new TypeError('Test mode payment wasn\'t created')
         }
-        const transaction = await lightsparkClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+        const transaction = await lightsparkClient.waitForTransactionComplete(
+            payment.id,
+            TRANSACTION_WAIT_TIME
+        )
         expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
     }, TESTS_TIMEOUT)
 })
@@ -201,7 +207,8 @@ describe('P1 tests', () => {
     test(
         'should generate a key',
         async () => {
-            const { privateKey, publicKey,  } = await DefaultCrypto.generateSigningKeyPair()
+            const { privateKey, publicKey,  } =
+                await DefaultCrypto.generateSigningKeyPair()
 
             const serializedKeypair = {
                 privateKey: b64encode(
@@ -315,7 +322,11 @@ describe('P1 tests', () => {
     test(
         'should create STANDARD a test mode invoice',
         async () => {
-            testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), PAY_AMOUNT, 'hi there!')
+            testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(
+                getRegtestNodeId(),
+                PAY_AMOUNT,
+                'hi there!'
+            )
             expect(testModeInvoices.withMemo).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -324,7 +335,12 @@ describe('P1 tests', () => {
     test(
         'should create an AMP a test mode invoice',
         async () => {
-            const testInvoice = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), 0, '', InvoiceType.AMP)
+            const testInvoice = await lightsparkClient.createTestModeInvoice(
+                getRegtestNodeId(),
+                0,
+                '',
+                InvoiceType.AMP
+            )
             expect(testInvoice).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -333,7 +349,10 @@ describe('P1 tests', () => {
     test(
         'should create a clear memo test mode invoice',
         async () => {
-            testModeInvoices.withoutMemo = await lightsparkClient.createTestModeInvoice(getRegtestNodeId(), 0)
+            testModeInvoices.withoutMemo = await lightsparkClient.createTestModeInvoice(
+                getRegtestNodeId(),
+                0
+            )
             expect(testModeInvoices.withoutMemo).not.toBeNull()
         },
         TESTS_TIMEOUT,
@@ -363,17 +382,30 @@ describe('P1 tests', () => {
         async () => {
             const regtestNodeId = getRegtestNodeId()
 
-            const invoiceForTestPayment = await lightsparkClient.createInvoice(regtestNodeId, PAY_AMOUNT, 'hi there!')
+            const invoiceForTestPayment = await lightsparkClient.createInvoice(
+                regtestNodeId,
+                PAY_AMOUNT,
+                'hi there!'
+            )
 
             if(!invoiceForTestPayment) {
                 throw new TypeError('Invoice for test payment wasn\'t created')
             }
 
-            const payment = await lightsparkClient.createTestModePayment(regtestNodeId, invoiceForTestPayment)
+            const payment = await lightsparkClient.createTestModePayment(
+                regtestNodeId,
+                invoiceForTestPayment
+            )
+
             if(!payment) {
                 throw new TypeError('Test mode payment wasn\'t created')
             }
-            const transaction = await lightsparkClient.waitForTransactionComplete(payment.id, TRANSACTION_WAIT_TIME)
+
+            const transaction = await lightsparkClient.waitForTransactionComplete(
+                payment.id,
+                TRANSACTION_WAIT_TIME
+            )
+
             expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
         },
         TESTS_TIMEOUT,
@@ -393,7 +425,13 @@ describe('P2 tests', () => {
 
     // FIXME: THIS ACTION WORKS ONLY IN MAINNET
     // test('should send a keysend payment', async () => {
-    //     const payment = await lightsparkClient.sendPayment(getRegtestNodeId(), '018afbd7e2fd4f890000ac5e051e3488', TESTS_TIMEOUT, PAY_AMOUNT, MAX_FEE)
+    //     const payment = await lightsparkClient.sendPayment(
+    //         getRegtestNodeId(),
+    //         '018afbd7e2fd4f890000ac5e051e3488',
+    //         TESTS_TIMEOUT,
+    //         PAY_AMOUNT,
+    //         MAX_FEE
+    //     )
     //     expect(payment?.status).not.toBe(TransactionStatus.FAILED)
     // })
 
