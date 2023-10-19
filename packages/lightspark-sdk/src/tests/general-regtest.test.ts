@@ -181,17 +181,24 @@ describe('P0 tests', () => {
                 MAX_FEE,
             )).rejects.toThrowError()
     })
-    // FIXME: Request FundNode failed. [{"message":"Variable '$amountMsats' is not defined by operation 'FundNode'.","locations":[{"line":6,"column":60},{"line":2,"column":5}]},{"message":"Variable '$amountSats' is never used in operation 'FundNode'.","locations":[{"line":4,"column":9}]}]
-    // test('Should deposit funds to wallet with a clear sats amount', async () => {
-    //     const fundingResult = await regtestClient.fundNode(regtestNodeId ?? '')
-    //     expect(true).toBe(true)
-    // })
-    //
-    // FIXME: Request FundNode failed. [{"message":"Variable '$amountMsats' is not defined by operation 'FundNode'.","locations":[{"line":6,"column":60},{"line":2,"column":5}]},{"message":"Variable '$amountSats' is never used in operation 'FundNode'.","locations":[{"line":4,"column":9}]}]
-    // test('Should deposit funds to wallet with a defined amount of sats', async () => {
-    //     const fundingResult = await regtestClient.fundNode(regtestNodeId ?? '', 100000)
-    //     expect(true).toBe(true)
-    // })
+
+    test('Should deposit funds to wallet with a clear sats amount', async () => {
+        if(!regtestNodeId) {
+            throw new TypeError("No regtest nodes in account")
+        }
+
+        const fundingResult = await regtestClient.fundNode(regtestNodeId)
+        expect(fundingResult.originalValue).toBe(10_000_000)
+    })
+
+    test('Should deposit funds to wallet with a defined amount of sats', async () => {
+        if(!regtestNodeId) {
+            throw new TypeError("No regtest nodes in account")
+        }
+
+        const fundingResult = await regtestClient.fundNode(regtestNodeId, 1_000_000)
+        expect(fundingResult.originalValue).toBe(1_000_000)
+    })
 
     test('Should open just-in-time channel from inbound payment', async () => {
         if(!regtestNodeId) {
@@ -426,7 +433,7 @@ describe('P2 tests', () => {
         TESTS_TIMEOUT,
     )
 
-    // FIXME: MAYBE IT'S FOR MAINNET
+    // FIXME: THIS ACTION WORKS ONLY IN MAINNET
     // test('should send a keysend payment', async () => {
     //     if(!regtestNodeId) {
     //         throw new TypeError("No regtest nodes in account")
