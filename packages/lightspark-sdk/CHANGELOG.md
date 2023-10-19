@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.4
+
+### Patch Changes
+
+- 1372f3a: Move transaction polling into new client method
+- Updated dependencies [24782f5]
+  - @lightsparkdev/core@1.0.7
+
 ## 1.1.3
 
 ### Patch Changes

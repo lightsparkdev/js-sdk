@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.7
+
+### Patch Changes
+
+- 24782f5: separateCurrencyStrParts and tests
+
 ## 1.0.6
 
 ### Patch Changes
