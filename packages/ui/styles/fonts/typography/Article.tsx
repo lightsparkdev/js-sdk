@@ -65,6 +65,7 @@ export const Article = styled.article<Props>`
       getTypographyString(
         theme.typography[app]["Label Strong"][TokenSize.Large],
       )}
+    color: ${colors.uma.blue};
   }
 
   ul,
@@ -87,7 +88,21 @@ export const Article = styled.article<Props>`
     ${({ theme, app }) =>
       getTypographyString(theme.typography[app].Code[TokenSize.Medium])}
     background: ${colors.uma.blue90};
-    padding: 4px 6px;
+    padding: 2px 6px;
+    margin: 2px;
     border-radius: 4px;
+  }
+
+  pre[class|="language"] {
+    border-radius: 8px;
+    width: 100%;
+    padding: 16px 24px;
+  }
+
+  // Must match specificity of prismjs to get proper line height!
+  pre[class|="language"],
+  code[class|="language"] {
+    ${({ theme, app }) =>
+      getTypographyString(theme.typography[app].Code[TokenSize.Small])}
   }
 `;

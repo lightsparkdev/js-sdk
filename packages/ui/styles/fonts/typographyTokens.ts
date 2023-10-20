@@ -379,7 +379,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
         [TokenSize.Small]: {
           "font-family": `${fontFamilies.code}`,
           "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS.sm}`,
+          "line-height": `${LINE_HEIGHTS.xs}`,
           "font-size": `${FONT_SIZE.xs}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
           "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
@@ -414,7 +414,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
         [TokenSize.Small]: {
           "font-family": `${fontFamilies.code}`,
           "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS.sm}`,
+          "line-height": `${LINE_HEIGHTS.xs}`,
           "font-size": `${FONT_SIZE.xs}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
           "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
@@ -696,7 +696,7 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
         [TokenSize.Small]: {
           "font-family": `${fontFamilies.code}`,
           "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS.sm}`,
+          "line-height": `${LINE_HEIGHTS.xs}`,
           "font-size": `${FONT_SIZE.xs}`,
           "letter-spacing": `${LETTER_SPACING.normal}`,
           "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
