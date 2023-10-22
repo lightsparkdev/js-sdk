@@ -60,6 +60,10 @@ export const Article = styled.article<Props>`
     margin-bottom: 16px;
   }
 
+  strong {
+    font-weight: 700;
+  }
+
   a {
     ${({ theme, app }) =>
       getTypographyString(
