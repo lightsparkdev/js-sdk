@@ -64,6 +64,7 @@ export default class SendingVasp {
     try {
       response = await fetch(lnurlpRequestUrl);
     } catch (e) {
+      console.error("Error fetching Lnurlp request.", e);
       res.status(424).send("Error fetching Lnurlp request.");
       return;
     }
@@ -76,6 +77,7 @@ export default class SendingVasp {
           req,
         );
       } catch (e) {
+        console.error("Error fetching Lnurlp request.", e);
         res.status(424).send("Error fetching Lnurlp request.");
         return;
       }
