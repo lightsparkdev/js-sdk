@@ -75,10 +75,9 @@ export const Article = styled.article<Props>`
 
   ul,
   ol {
-    :not(li ul, li ol) {
-      padding-left: 16px;
-    }
+    padding-left: 24px;
     margin-top: 8px;
+    margin-bottom: 8px;
     *:not(a) {
       color: ${colors.uma.black};
     }

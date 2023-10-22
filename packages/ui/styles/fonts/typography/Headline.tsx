@@ -65,7 +65,7 @@ const StyledHeadline = styled.span<Props>`
       : "";
   }}
 
-  a {
+  && a {
     ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
     ${({ theme, app, size }) => {
       return app && size

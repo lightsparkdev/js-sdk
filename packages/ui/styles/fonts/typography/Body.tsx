@@ -29,7 +29,11 @@ export const Body = ({
   );
 };
 
+/**
+ * Images rendered by the markdown renderer are wrapped in a paragraph tag, so we need to use a span and set it display: block to mimic a paragraph element.
+ */
 export const StyledBody = styled.span<Props>`
+  display: block;
   ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
   ${({ theme, app, size }) => {
     return app && size
