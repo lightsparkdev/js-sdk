@@ -96,6 +96,7 @@ interface BaseTheme {
   onPrimaryText: string;
   onSuccessText: string;
   primary: string;
+  secondary: string;
   success: string;
   text: string;
   typography: ReturnType<typeof getTypography>;
@@ -166,6 +167,7 @@ const lightBaseTheme: BaseTheme = {
   onPrimaryText: colors.black,
   onSuccessText: colors.white,
   primary: colors.primary,
+  secondary: colors.secondary,
   success: colors.success,
   text: colors.black,
   typography: getTypography(),
@@ -199,6 +201,7 @@ const darkBaseTheme: BaseTheme = {
   onPrimaryText: colors.black,
   onSuccessText: colors.white,
   primary: colors.primary,
+  secondary: colors.secondary,
   success: colors.success,
   text: colors.white,
   typography: getTypography(),
@@ -242,6 +245,7 @@ const umaLightTheme = extend(lightTheme, {
     bg: uma.background,
     smBg: uma.background,
     text: uma.black,
+    secondary: uma.secondary,
   }),
   controls: extendBase(lightBaseTheme, {
     text: uma.background,

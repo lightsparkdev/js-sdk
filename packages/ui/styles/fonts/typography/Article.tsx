@@ -97,6 +97,7 @@ export const Article = styled.article<Props>`
     border-radius: 8px;
     width: 100%;
     padding: 16px 24px;
+    margin: 0;
   }
 
   // Must match specificity of prismjs to get proper line height!

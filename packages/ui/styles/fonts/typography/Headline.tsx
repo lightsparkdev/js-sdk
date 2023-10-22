@@ -6,13 +6,29 @@ import { App, getTypographyString, TokenSize } from "../typographyTokens";
 
 type Heading = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
-interface Props {
+export interface Props {
   children: React.ReactNode;
   app?: App;
   size?: TokenSize;
   heading?: Heading;
   color?: string | undefined;
 }
+
+export const getHeadlineText = (element: React.ReactElement): string => {
+  if (typeof element === "string") {
+    return element;
+  }
+
+  if (Array.isArray(element)) {
+    return getHeadlineText(element[0]);
+  }
+
+  if (element.props?.children !== undefined) {
+    return getHeadlineText(element.props.children);
+  }
+
+  throw new Error("Could not find text in Headline element: " + element);
+};
 
 const toKebabCase = (str: string) => {
   return str
@@ -33,14 +49,9 @@ export const Headline = ({
       color = colors.uma.black;
     }
   }
+  const id = toKebabCase(getHeadlineText(children as React.ReactElement));
   return (
-    <StyledHeadline
-      as={heading}
-      id={`${toKebabCase(children as string)}`}
-      app={app}
-      size={size}
-      color={color}
-    >
+    <StyledHeadline as={heading} id={id} app={app} size={size} color={color}>
       {children}
     </StyledHeadline>
   );
@@ -53,6 +64,15 @@ const StyledHeadline = styled.span<Props>`
       ? getTypographyString(theme.typography[app].Headline[size])
       : "";
   }}
+
+  a {
+    ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
+    ${({ theme, app, size }) => {
+      return app && size
+        ? getTypographyString(theme.typography[app].Headline[size])
+        : "";
+    }}
+  }
 `;
 
 export function headlineSelector(heading: Heading) {
