@@ -10,6 +10,7 @@ interface Props {
   app: App;
 }
 
+// TODO: any colors should be retrieved from theme colors
 export const Article = styled.article<Props>`
   ${displaySelector("h1")} {
     margin: 0;
@@ -78,6 +79,9 @@ export const Article = styled.article<Props>`
       padding-left: 16px;
     }
     margin-top: 8px;
+    *:not(a) {
+      color: ${colors.uma.black};
+    }
   }
 
   li {
