@@ -161,7 +161,14 @@ class Requester {
     ) {
       urlWithProtocol = `https://${urlWithProtocol}`;
     }
-    const response = await fetch(`${urlWithProtocol}/${this.schemaEndpoint}`, {
+
+    const url = `${urlWithProtocol}/${this.schemaEndpoint}`;
+
+    logger.info(`Requester.makeRawRequest`, {
+      url,
+      variables,
+    });
+    const response = await fetch(url, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(bodyData),
