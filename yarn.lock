@@ -3640,7 +3640,6 @@ __metadata:
     "@types/secp256k1": ^4.0.3
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
-    crypto: ^1.0.1
     crypto-browserify: ^3.12.0
     dayjs: ^1.11.7
     eslint: ^8.3.0
@@ -3740,7 +3739,6 @@ __metadata:
     "@types/node": ^20.2.5
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
-    crypto: ^1.0.1
     crypto-browserify: ^3.12.0
     dayjs: ^1.11.7
     dotenv: ^16.3.1
@@ -4106,7 +4104,6 @@ __metadata:
     "@types/crypto-js": ^4.1.1
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
-    crypto: ^1.0.1
     crypto-browserify: ^3.12.0
     dayjs: ^1.11.7
     dotenv: ^16.3.1
