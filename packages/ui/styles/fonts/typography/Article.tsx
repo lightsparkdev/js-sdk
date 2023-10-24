@@ -4,7 +4,7 @@ import { colors } from "../../colors";
 import { getTypographyString, TokenSize, type App } from "../typographyTokens";
 import { StyledBody } from "./Body";
 import { displaySelector } from "./Display";
-import { headlineSelector } from "./Headline";
+import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./Headline";
 
 interface Props {
   app: App;
@@ -65,7 +65,7 @@ export const Article = styled.article<Props>`
     font-weight: 700;
   }
 
-  a {
+  *:not(${ALL_HEADLINE_SELECTORS}) > a {
     ${({ theme, app }) =>
       getTypographyString(
         theme.typography[app]["Label Strong"][TokenSize.Large],

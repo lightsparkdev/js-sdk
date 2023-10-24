@@ -4,7 +4,8 @@ import styled from "@emotion/styled";
 import { colors } from "../../colors";
 import { App, getTypographyString, TokenSize } from "../typographyTokens";
 
-type Heading = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+type Heading = (typeof HEADINGS)[number];
 
 export interface Props {
   children: React.ReactNode;
@@ -65,7 +66,7 @@ const StyledHeadline = styled.span<Props>`
       : "";
   }}
 
-  && a {
+  * {
     ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
     ${({ theme, app, size }) => {
       return app && size
@@ -78,3 +79,5 @@ const StyledHeadline = styled.span<Props>`
 export function headlineSelector(heading: Heading) {
   return `${heading}${StyledHeadline}`;
 }
+
+export const ALL_HEADLINE_SELECTORS = HEADINGS.map(headlineSelector).join(",");
