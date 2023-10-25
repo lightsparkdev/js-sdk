@@ -17,6 +17,8 @@ import {
 } from "@lightsparkdev/ui/styles/fonts/typographyTokens";
 import { MendableInPlace } from "@mendable/search";
 import { useEffect, useState } from "react";
+import { StyledBody } from "../../styles/fonts/typography/Body";
+import { StyledLabel } from "../../styles/fonts/typography/Label";
 
 interface Navigator {
   userAgentData?: {
@@ -91,7 +93,7 @@ export const Search = ({
           onClick={() => setIsModalOpen(true)}
         >
           <SearchContent>
-            <SearchIcon name="Search" width={0} size={size} mr={8} />
+            <SearchIcon name="Search" width={14} size={size} mr={8} />
             {size === "sm" && (
               <Label
                 app={App.UmaDocs}
@@ -150,6 +152,7 @@ export const Search = ({
 };
 
 const Container = styled.div`
+  min-width: 0;
   button {
     width: 100%;
     display: flex;
@@ -163,6 +166,16 @@ const SearchContent = styled.div`
   align-items: center;
   opacity: 0.5;
   transition: opacity 0.2s ease-out;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  ${StyledLabel},${StyledBody} {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 
 const SearchButton = styled(UnstyledButton)<{
