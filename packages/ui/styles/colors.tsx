@@ -224,6 +224,7 @@ const lightTheme = extend(lightBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
+    secondary: colors.secondary,
   }),
 });
 
@@ -235,12 +236,14 @@ const darkTheme = extend(darkBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
+    secondary: colors.secondary,
   }),
 });
 
 const umaLightTheme = extend(lightTheme, {
   bg: uma.background,
   smBg: uma.background,
+  secondary: uma.secondary,
   content: extendBase(lightBaseTheme, {
     bg: uma.background,
     smBg: uma.background,
@@ -248,7 +251,9 @@ const umaLightTheme = extend(lightTheme, {
     secondary: uma.secondary,
   }),
   controls: extendBase(lightBaseTheme, {
-    text: uma.background,
+    text: uma.black,
+    secondary: uma.secondary,
+    bg: uma.blue90,
   }),
 });
 
