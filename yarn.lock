@@ -4029,7 +4029,7 @@ __metadata:
     "@lightsparkdev/lightspark-sdk": 1.1.4
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
-    "@uma-sdk/core": ^0.1.1
+    "@uma-sdk/core": ^0.1.3
     express: ^4.18.2
     jest: ^29.6.2
     nodemon: ^2.0.22
@@ -5804,15 +5804,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uma-sdk/core@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "@uma-sdk/core@npm:0.1.1"
+"@uma-sdk/core@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "@uma-sdk/core@npm:0.1.3"
   dependencies:
     crypto: ^1.0.1
     eciesjs: ^0.4.4
     secp256k1: ^5.0.0
     zod: ^3.22.2
-  checksum: 5cf7af64f820b4c6c0f8ff13d5c0478ed919840b5abb10471924ac5bdf5e25ff43b5e751875cf857264690b2d4417a439677ffc9a67175d35587a51ebc070680
+  checksum: 6e04f001bf2a699f70f659d661e7cfbfb641f9a42b876033adc5b62d3f8338fd0c48a91637d031705d36446680d2113999b96add1490d2717cab09cebb4628d7
   languageName: node
   linkType: hard
 
