@@ -2,14 +2,13 @@
 
 import styled from "@emotion/styled";
 import { colors } from "../../colors";
-import { App, getTypographyString, TokenSize } from "../typographyTokens";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 
 const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Heading = (typeof HEADINGS)[number];
 
 export interface Props {
   children: React.ReactNode;
-  app?: App;
   size?: TokenSize;
   heading?: Heading;
   color?: string | undefined;
@@ -41,36 +40,30 @@ const toKebabCase = (str: string) => {
 export const Headline = ({
   children,
   color,
-  app = App.Lightspark,
   size = TokenSize.Medium,
   heading = "h1",
 }: Props) => {
-  if (!color) {
-    if (app === App.UmaDocs) {
-      color = colors.uma.black;
-    }
-  }
   const id = toKebabCase(getHeadlineText(children as React.ReactElement));
   return (
-    <StyledHeadline as={heading} id={id} app={app} size={size} color={color}>
+    <StyledHeadline as={heading} id={id} size={size} color={color}>
       {children}
     </StyledHeadline>
   );
 };
 
 const StyledHeadline = styled.span<Props>`
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app].Headline[size])
+  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+  ${({ theme, size }) => {
+    return size
+      ? getTypographyString(theme.typography[theme.app].Headline[size])
       : "";
   }}
 
   * {
-    ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-    ${({ theme, app, size }) => {
-      return app && size
-        ? getTypographyString(theme.typography[app].Headline[size])
+    color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+    ${({ theme, size }) => {
+      return size
+        ? getTypographyString(theme.typography[theme.app].Headline[size])
         : "";
     }}
   }

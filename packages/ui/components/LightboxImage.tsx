@@ -1,6 +1,5 @@
 "use client";
 import styled from "@emotion/styled";
-import { colors } from "@lightsparkdev/ui/styles/colors";
 import { z } from "@lightsparkdev/ui/styles/z-index";
 import {
   useEffect,
@@ -134,11 +133,11 @@ const Lightbox = styled.div<{ isOpen: boolean }>`
   width: 100%;
   height: 100%;
 
-  ${(props) =>
-    props.isOpen
+  ${({ theme, isOpen }) =>
+    isOpen
       ? `
     opacity: 1;
-    background: ${colors.uma.background};
+    background: ${theme.bg};
 
     &:hover {
       cursor: zoom-out;

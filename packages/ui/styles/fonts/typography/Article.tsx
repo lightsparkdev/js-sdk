@@ -1,17 +1,12 @@
 "use client";
 import styled from "@emotion/styled";
 import { colors } from "../../colors";
-import { getTypographyString, TokenSize, type App } from "../typographyTokens";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 import { StyledBody } from "./Body";
 import { displaySelector } from "./Display";
 import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./Headline";
 
-interface Props {
-  app: App;
-}
-
-// TODO: any colors should be retrieved from theme colors
-export const Article = styled.article<Props>`
+export const Article = styled.article`
   ${displaySelector("h1")} {
     margin: 0;
   }
@@ -66,11 +61,11 @@ export const Article = styled.article<Props>`
   }
 
   *:not(${ALL_HEADLINE_SELECTORS}) > a {
-    ${({ theme, app }) =>
+    ${({ theme }) =>
       getTypographyString(
-        theme.typography[app]["Label Strong"][TokenSize.Large],
+        theme.typography[theme.app]["Label Strong"][TokenSize.Large],
       )}
-    color: ${colors.uma.blue};
+    color: ${({ theme }) => theme.link};
   }
 
   ul,
@@ -79,21 +74,21 @@ export const Article = styled.article<Props>`
     margin-top: 8px;
     margin-bottom: 8px;
     *:not(a) {
-      color: ${colors.uma.black};
+      color: ${({ theme }) => theme.text};
     }
   }
 
   li {
-    ${({ theme, app }) =>
-      getTypographyString(theme.typography[app].Body[TokenSize.Medium])}
+    ${({ theme }) =>
+      getTypographyString(theme.typography[theme.app].Body[TokenSize.Medium])}
     :not(:last-child) {
       margin-bottom: 4px;
     }
   }
 
   code:not([class|="language"]) {
-    ${({ theme, app }) =>
-      getTypographyString(theme.typography[app].Code[TokenSize.Medium])}
+    ${({ theme }) =>
+      getTypographyString(theme.typography[theme.app].Code[TokenSize.Medium])}
     background: ${colors.uma.blue90};
     padding: 2px 6px;
     margin: 2px;
@@ -110,7 +105,7 @@ export const Article = styled.article<Props>`
   // Must match specificity of prismjs to get proper line height!
   pre[class|="language"],
   code[class|="language"] {
-    ${({ theme, app }) =>
-      getTypographyString(theme.typography[app].Code[TokenSize.Small])}
+    ${({ theme }) =>
+      getTypographyString(theme.typography[theme.app].Code[TokenSize.Small])}
   }
 `;

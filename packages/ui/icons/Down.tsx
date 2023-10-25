@@ -8,7 +8,7 @@ const Down = () => (
   >
     <path
       d="M3.3335 5.33337L8.00016 10L12.6668 5.33337"
-      stroke="#262626"
+      stroke="currentColor"
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -6,10 +6,7 @@ import styled from "@emotion/styled";
 import { Icon } from "@lightsparkdev/ui/icons";
 import { colors } from "@lightsparkdev/ui/styles/colors";
 import { LabelStrong, Title } from "@lightsparkdev/ui/styles/fonts/typography";
-import {
-  App,
-  TokenSize,
-} from "@lightsparkdev/ui/styles/fonts/typographyTokens";
+import { TokenSize } from "@lightsparkdev/ui/styles/fonts/typographyTokens";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
@@ -33,15 +30,9 @@ export const SdkCard = ({ title, actionText, icon, href }: Props) => {
     <Container onClick={handleClick} contentColor={contentColor}>
       <Content>
         <IconWrapper name={icon} color={contentColor} width={0} />
-        <Title app={App.UmaDocs} color={contentColor}>
-          {title}
-        </Title>
+        <Title color={contentColor}>{title}</Title>
         <ActionText>
-          <LabelStrong
-            app={App.UmaDocs}
-            color={contentColor}
-            size={TokenSize.Large}
-          >
+          <LabelStrong color={contentColor} size={TokenSize.Large}>
             {actionText}
           </LabelStrong>
           <ArrowWrapper name="RightArrow" color={contentColor} width={0} />

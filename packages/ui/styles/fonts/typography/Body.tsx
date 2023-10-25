@@ -2,28 +2,17 @@
 
 import styled from "@emotion/styled";
 import { colors } from "../../colors";
-import { App, getTypographyString, TokenSize } from "../typographyTokens";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 
 interface Props {
   children: React.ReactNode;
-  app?: App;
   size?: TokenSize;
   color?: string | undefined;
 }
 
-export const Body = ({
-  children,
-  color,
-  app = App.Lightspark,
-  size = TokenSize.Medium,
-}: Props) => {
-  if (!color) {
-    if (app === App.UmaDocs) {
-      color = colors.uma.black;
-    }
-  }
+export const Body = ({ children, color, size = TokenSize.Medium }: Props) => {
   return (
-    <StyledBody app={app} size={size} color={color}>
+    <StyledBody size={size} color={color}>
       {children}
     </StyledBody>
   );
@@ -34,10 +23,10 @@ export const Body = ({
  */
 export const StyledBody = styled.span<Props>`
   display: block;
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app].Body[size])
+  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+  ${({ theme, size }) => {
+    return size
+      ? getTypographyString(theme.typography[theme.app].Body[size])
       : "";
   }}
 `;

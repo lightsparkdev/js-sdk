@@ -11,10 +11,7 @@ import {
 } from "@lightsparkdev/ui/components";
 import { colors } from "@lightsparkdev/ui/styles/colors";
 import { Body, Label } from "@lightsparkdev/ui/styles/fonts/typography";
-import {
-  App,
-  TokenSize,
-} from "@lightsparkdev/ui/styles/fonts/typographyTokens";
+import { TokenSize } from "@lightsparkdev/ui/styles/fonts/typographyTokens";
 import { MendableInPlace } from "@mendable/search";
 import { useEffect, useState } from "react";
 import { StyledBody } from "../../styles/fonts/typography/Body";
@@ -95,20 +92,12 @@ export const Search = ({
           <SearchContent>
             <SearchIcon name="Search" width={14} size={size} mr={8} />
             {size === "sm" && (
-              <Label
-                app={App.UmaDocs}
-                size={TokenSize.Large}
-                color={theme.controls.text}
-              >
+              <Label size={TokenSize.Large} color={theme.controls.text}>
                 {placeholder}
               </Label>
             )}
             {size === "lg" && (
-              <Body
-                app={App.UmaDocs}
-                size={TokenSize.Large}
-                color={theme.controls.text}
-              >
+              <Body size={TokenSize.Large} color={theme.controls.text}>
                 {placeholder}
               </Body>
             )}

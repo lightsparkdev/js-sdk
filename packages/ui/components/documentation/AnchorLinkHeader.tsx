@@ -1,20 +1,21 @@
 "use client";
+import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Icon } from "@lightsparkdev/ui/icons";
-import { colors } from "@lightsparkdev/ui/styles/colors";
 import {
   Headline,
   type Props,
 } from "@lightsparkdev/ui/styles/fonts/typography/Headline";
 
 export const AnchorLinkHeader = (props: Props) => {
+  const theme = useTheme();
   return (
     <StyledAnchorLinkHeader {...props}>
       <Headline {...props}>
         {props.children}
         <IconWrapper
           name="AnchorLink"
-          color={props.color || colors.black}
+          color={props.color || theme.text}
           width={0}
         />
       </Headline>

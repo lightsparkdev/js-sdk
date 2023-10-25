@@ -92,6 +92,7 @@ interface BaseTheme {
   hcNeutralFromBg: (hex: string) => string;
   info: string;
   lcNeutral: string;
+  link: string;
   mcNeutral: string;
   onInfoText: string;
   onPrimaryText: string;
@@ -164,6 +165,7 @@ const lightBaseTheme: BaseTheme = {
     hcNeutralFromBg(bgHex, colors.black, colors.white),
   info: colors.blue43,
   lcNeutral: neutral.gray80,
+  link: colors.blue43,
   mcNeutral: neutral.gray40,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
@@ -199,6 +201,7 @@ const darkBaseTheme: BaseTheme = {
     hcNeutralFromBg(bgHex, colors.white, colors.black),
   info: colors.white,
   lcNeutral: neutral.gray40,
+  link: colors.blue43,
   mcNeutral: neutral.gray60,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
@@ -248,6 +251,8 @@ const umaLightTheme = extend(lightTheme, {
   bg: uma.background,
   smBg: uma.background,
   secondary: uma.secondary,
+  text: uma.black,
+  link: uma.blue,
   content: extendBase(lightBaseTheme, {
     bg: uma.background,
     smBg: uma.background,
