@@ -130,7 +130,7 @@ export function useNavigate<RoutesType extends string>() {
       if (typeof to === "string") {
         to = replaceParams<RoutesType>(to, params);
         // need a separate return here to satisfy router internal types
-        return navigate(to);
+        return navigate(to, options);
       }
       return navigate(to);
     },
