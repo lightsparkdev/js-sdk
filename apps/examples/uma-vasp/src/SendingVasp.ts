@@ -3,6 +3,7 @@ import {
   CurrencyUnit,
   InvoiceData,
   LightsparkClient,
+  LightsparkNode,
   OutgoingPayment,
   TransactionStatus,
 } from "@lightsparkdev/lightspark-sdk";
@@ -216,6 +217,7 @@ export default class SendingVasp {
         utxoCallback,
         trInfo,
         payerUtxos,
+        payerNodePubKey: await this.getNodePubKey(),
         payerName: payerProfile.name,
         payerEmail: payerProfile.email,
       });
@@ -240,6 +242,7 @@ export default class SendingVasp {
     }
 
     if (!response.ok) {
+      console.log(await response.text())
       res.status(424).send(`Payreq failed. ${response.status}`);
       return;
     }
@@ -281,6 +284,17 @@ export default class SendingVasp {
         payResponse.paymentInfo.exchangeFeesMillisatoshi,
       currencyCode: payResponse.paymentInfo.currencyCode,
     });
+  }
+
+  private async getNodePubKey() {
+    const node = await this.lightsparkClient.executeRawQuery(
+      LightsparkNode.getLightsparkNodeQuery(this.config.nodeID)
+    );
+    if (!node) {
+      throw new Error("Node not found.");
+    }
+
+    return node.publicKey ?? "";
   }
 
   private async fetchPubKeysOrFail(receivingVaspDomain: string, res: Response) {
@@ -428,6 +442,6 @@ export default class SendingVasp {
 const hostNameWithPort = (req: Request) => {
   const fullUrl = new URL(req.url, `${req.protocol}://${req.headers.host}`);
   const port = fullUrl.port;
-  const portString = port === "80" || port === "443" ? "" : `:${port}`;
+  const portString = port === "80" || port === "443" || port === "" ? "" : `:${port}`;
   return `${req.hostname}${portString}`;
 };

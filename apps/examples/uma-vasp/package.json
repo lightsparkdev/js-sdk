@@ -11,7 +11,7 @@
   "dependencies": {
     "@lightsparkdev/core": "1.0.7",
     "@lightsparkdev/lightspark-sdk": "1.1.4",
-    "@uma-sdk/core": "^0.1.1",
+    "@uma-sdk/core": "^0.1.3",
     "express": "^4.18.2"
   },
   "devDependencies": {
