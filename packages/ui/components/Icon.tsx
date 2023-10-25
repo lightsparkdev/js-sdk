@@ -106,7 +106,7 @@ export const IconContainer = styled.span<IconContainerProps>`
   vertical-align: ${({ verticalAlign }) =>
     isString(verticalAlign) ? verticalAlign : `${verticalAlign}em`};
 
-  ${({ fontColor }) => `
+  ${({ fontColor, theme }) => `
     & svg {
       color: ${fontColor || "inherit"};
     }

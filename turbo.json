@@ -11,7 +11,7 @@
       "cache": false,
       "persistent": true
     },
-    "build-sb": {
+    "build-storybook": {
       "outputs": ["storybook-static/**"]
     },
     "circular-deps": {},

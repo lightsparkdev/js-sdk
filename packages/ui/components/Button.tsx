@@ -99,13 +99,15 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
-function getPaddingX({ size, ghost }: { size: ButtonSize; ghost?: boolean }) {
-  return ghost ? 0 : size === "lg" ? hPaddingPx : size === "md" ? 18 : 16;
-}
-
-function getPadding({ iconWidth, size, ghost, iconSide }: PaddingProps) {
+function getPadding({ iconWidth, size, text, ghost, iconSide }: PaddingProps) {
   const paddingY = ghost ? 0 : size === "lg" ? 14 : size === "md" ? 9 : 6;
-  const paddingX = getPaddingX({ size, ghost });
+  const paddingX = ghost
+    ? 0
+    : size === "lg"
+    ? hPaddingPx
+    : size === "md"
+    ? 18
+    : 16;
   const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
@@ -166,13 +168,13 @@ export function Button<RoutesType extends string>({
   let currentIcon = null;
   if (loading) {
     currentIcon = (
-      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text} size={size}>
+      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text}>
         <Loading size={iconSize} center={false} />
       </ButtonIcon>
     );
   } else if (icon) {
     currentIcon = (
-      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text} size={size}>
+      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text}>
         <Icon name={icon} width={iconSize} />
       </ButtonIcon>
     );
@@ -330,13 +332,12 @@ interface ButtonIconProps {
   ghost?: boolean | undefined;
   iconSide?: IconSide | undefined;
   text?: string | undefined;
-  size: ButtonSize;
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
   ${(props) => (props.ghost ? "" : "position: absolute;")}
-  ${({ iconSide, ghost, text, size }) =>
-    `${iconSide}: ${ghost && text ? 0 : getPaddingX({ size, ghost })}px;`}
+  ${(props) =>
+    `${props.iconSide}: ${props.ghost && props.text ? 0 : hPaddingPx}px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`

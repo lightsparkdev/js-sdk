@@ -12,6 +12,7 @@ import {
   Navigate as RNavigate,
   useLocation,
   useNavigate as useRNavigate,
+  type NavigateOptions,
 } from "react-router-dom";
 /* eslint-enable no-restricted-imports */
 import { colors } from "@lightsparkdev/ui/styles/colors";
@@ -124,7 +125,7 @@ export function useNavigate<RoutesType extends string>() {
       // number eg -1 can be passed to navigate back
       to: LinkProps<RoutesType>["to"] | number,
       params?: LinkProps<RoutesType>["params"],
-      // options?: NavigateOptions,
+      options?: NavigateOptions,
     ) => {
       if (typeof to === "string") {
         to = replaceParams<RoutesType>(to, params);

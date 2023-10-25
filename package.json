@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build-no-cache": "yarn build --force",
-    "build-sb": "turbo run build-sb",
+    "build-storybook": "turbo run build-storybook",
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
     "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
