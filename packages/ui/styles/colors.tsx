@@ -2,7 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints";
-import { getTypography } from "./fonts/typographyTokens";
+import { App, getTypography } from "./fonts/typographyTokens";
 
 const neutral = {
   black: "#000000",
@@ -73,6 +73,7 @@ export const colors = {
 
 interface BaseTheme {
   type: Themes;
+  app: App;
   bg: string;
   smBg: string;
   c05Neutral: string;
@@ -143,6 +144,7 @@ function hcNeutralFromBg(bgHex: string, defaultHex: string, altHex: string) {
 
 const lightBaseTheme: BaseTheme = {
   type: Themes.Light,
+  app: App.Lightspark,
   bg: colors.white,
   smBg: colors.white,
   c05Neutral: neutral.gray95,
@@ -177,6 +179,7 @@ const lightBaseTheme: BaseTheme = {
 
 const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,
+  app: App.Lightspark,
   bg: colors.black,
   smBg: colors.black,
   c05Neutral: neutral.gray5,
@@ -241,6 +244,7 @@ const darkTheme = extend(darkBaseTheme, {
 });
 
 const umaLightTheme = extend(lightTheme, {
+  app: App.UmaDocs,
   bg: uma.background,
   smBg: uma.background,
   secondary: uma.secondary,

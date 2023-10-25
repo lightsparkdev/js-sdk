@@ -91,8 +91,8 @@ export enum TokenSize {
 }
 
 export enum App {
-  Lightspark,
-  UmaDocs,
+  Lightspark = "Lightspark",
+  UmaDocs = "UmaDocs",
 }
 
 export const getTypography = (customFontFamilies?: FontFamilies) => {
