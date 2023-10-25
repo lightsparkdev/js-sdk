@@ -9,6 +9,7 @@ import { LabelStrong, Title } from "@lightsparkdev/ui/styles/fonts/typography";
 import { TokenSize } from "@lightsparkdev/ui/styles/fonts/typographyTokens";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { bp } from "../../styles/breakpoints";
 
 interface Props {
   title: string;
@@ -29,14 +30,16 @@ export const SdkCard = ({ title, actionText, icon, href }: Props) => {
   return (
     <Container onClick={handleClick} contentColor={contentColor}>
       <Content>
-        <IconWrapper name={icon} color={contentColor} width={0} />
-        <Title color={contentColor}>{title}</Title>
-        <ActionText>
-          <LabelStrong color={contentColor} size={TokenSize.Large}>
-            {actionText}
-          </LabelStrong>
-          <ArrowWrapper name="RightArrow" color={contentColor} width={0} />
-        </ActionText>
+        <IconWrapper name={icon} color={contentColor} width={32} />
+        <TextContainer>
+          <Title color={contentColor}>{title}</Title>
+          <ActionText>
+            <LabelStrong color={contentColor} size={TokenSize.Large}>
+              {actionText}
+            </LabelStrong>
+            <ArrowWrapper name="RightArrow" color={contentColor} width={0} />
+          </ActionText>
+        </TextContainer>
       </Content>
     </Container>
   );
@@ -71,11 +74,20 @@ const Container = styled.div<{ contentColor: string }>`
 const IconWrapper = styled(Icon)`
   width: 40px;
   height: 40px;
-  margin-bottom: 40px;
+
+  ${bp.sm("margin-right: 24px;")}
+  ${bp.minSm("margin-bottom: 40px;")}
 `;
 
 const Content = styled.div`
   padding: 32px;
+  display: flex;
+
+  ${bp.sm("flex-direction: row; align-items: center;")}
+  ${bp.minSm("flex-direction: column;")}
+`;
+
+const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
@@ -85,4 +97,6 @@ const ActionText = styled.div`
   align-items: center;
   gap: 4px;
   padding-top: 4px;
+
+  white-space: nowrap;
 `;
