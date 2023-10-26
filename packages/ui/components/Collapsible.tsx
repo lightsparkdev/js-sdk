@@ -47,7 +47,7 @@ export function Collapsible({
         </IconContainer>
       </StyledCollapsibleButton>
       <CollapsingContainer isOpen={isOpen} full={full}>
-        {children}
+        <InnerPadding>{children}</InnerPadding>
       </CollapsingContainer>
     </StyledCollapsible>
   );
@@ -94,7 +94,6 @@ export const CollapsingContainer = styled.div<{
   opacity: 0;
   animation-duration: 0.4s;
   animation-fill-mode: forwards;
-  margin: 4px 0 4px 16px;
   gap: 4px;
   display: flex;
   flex-direction: column;
@@ -128,4 +127,8 @@ export const CollapsingContainer = styled.div<{
       visibility: hidden;
     }
   }
+`;
+
+const InnerPadding = styled.div`
+  padding: 4px 0 4px 16px;
 `;
