@@ -35,13 +35,15 @@ export function Collapsible({
   }, [open]);
 
   const iconName = hamburger ? (isOpen ? "Close" : "StackedLines") : "Down";
+  // This is a one-off because the close svg is much larger in comparison to the designs
+  const iconWidth = iconName === "Close" ? 12 : 14;
 
   return (
     <StyledCollapsible className={className}>
       <StyledCollapsibleButton onClick={handleClick}>
         {text ? text : <div></div>}
         <IconContainer isOpen={isOpen} hamburger={hamburger}>
-          <Icon width={14} name={iconName} />
+          <Icon width={iconWidth} name={iconName} />
         </IconContainer>
       </StyledCollapsibleButton>
       <CollapsingContainer isOpen={isOpen} full={full}>
@@ -84,7 +86,7 @@ const IconContainer = styled.div<{
   width: 20px;
 `;
 
-const CollapsingContainer = styled.div<{
+export const CollapsingContainer = styled.div<{
   isOpen?: boolean | undefined;
   full?: boolean | undefined;
 }>`
