@@ -42,7 +42,7 @@ app.use(function (req, res, next) {
   res.send(errorMessage("Not found."));
 });
 
-app.use((err, req, res, next) => {
+app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   if (res.headersSent) {
     return next(err);

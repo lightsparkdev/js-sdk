@@ -137,7 +137,7 @@ export default class SendingVasp {
     receiver: string,
     request: Request,
   ) {
-    const responseJson = await response.json();
+    const responseJson: any = await response.json();
     const supportedMajorVersions = responseJson.supportedMajorVersions;
     const newSupportedVersion = uma.selectHighestSupportedVersion(
       supportedMajorVersions,
