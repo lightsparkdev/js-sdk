@@ -154,6 +154,7 @@ export const TransactionFromJson = (obj: any): Transaction => {
       failureMessage: !!obj["outgoing_payment_failure_message"]
         ? RichTextFromJson(obj["outgoing_payment_failure_message"])
         : undefined,
+      paymentPreimage: obj["outgoing_payment_payment_preimage"],
     } as OutgoingPayment;
   }
   if (obj["__typename"] == "Withdrawal") {
@@ -354,6 +355,7 @@ fragment TransactionFragment on Transaction {
             __typename
             rich_text_text: text
         }
+        outgoing_payment_payment_preimage: payment_preimage
     }
     ... on Withdrawal {
         __typename

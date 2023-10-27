@@ -1,33 +1,32 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { App, getTypographyString, TokenSize } from "../typographyTokens";
+import { colors } from "../../colors";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 
 interface Props {
   children: React.ReactNode;
-  app?: App;
   size?: TokenSize;
   color?: string | undefined;
 }
 
-export const Body = ({
-  children,
-  color,
-  app = App.Lightspark,
-  size = TokenSize.Medium,
-}: Props) => {
+export const Body = ({ children, color, size = TokenSize.Medium }: Props) => {
   return (
-    <StyledBody app={app} size={size} color={color}>
+    <StyledBody size={size} color={color}>
       {children}
     </StyledBody>
   );
 };
 
-export const StyledBody = styled.p<Props>`
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app].Body[size])
+/**
+ * Images rendered by the markdown renderer are wrapped in a paragraph tag, so we need to use a span and set it display: block to mimic a paragraph element.
+ */
+export const StyledBody = styled.span<Props>`
+  display: block;
+  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+  ${({ theme, size }) => {
+    return size
+      ? getTypographyString(theme.typography[theme.app].Body[size])
       : "";
   }}
 `;

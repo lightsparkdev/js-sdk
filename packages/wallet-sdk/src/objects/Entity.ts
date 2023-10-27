@@ -245,6 +245,7 @@ fragment EntityFragment on Entity {
             __typename
             rich_text_text: text
         }
+        outgoing_payment_payment_preimage: payment_preimage
     }
     ... on Wallet {
         __typename

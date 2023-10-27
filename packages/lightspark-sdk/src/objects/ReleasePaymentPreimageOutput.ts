@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 type ReleasePaymentPreimageOutput = {
+  /** The invoice of the transaction. **/
   invoiceId: string;
 };
 

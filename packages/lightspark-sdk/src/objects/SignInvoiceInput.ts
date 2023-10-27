@@ -1,10 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 type SignInvoiceInput = {
+  /** The unique identifier of the invoice to be signed. **/
   invoiceId: string;
 
+  /** The cryptographic signature for the invoice. **/
   signature: string;
 
+  /** The recovery identifier for the signature. **/
   recoveryId: number;
 };
 

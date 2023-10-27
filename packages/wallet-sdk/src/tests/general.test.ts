@@ -25,7 +25,7 @@ import {
   type OutgoingPayment,
 } from "../objects/index.js";
 import { FRAGMENT } from "../objects/InvoiceData.js";
-import { DEFAULT_BASE_URL, TESTS_TIMEOUT } from "./constants.js";
+import { TESTS_TIMEOUT } from "./constants.js";
 import { deployWallet, getCredentialsFromEnvOrThrow } from "./helpers/index.js";
 import { type CreatedInvoiceData } from "./types.js";
 
@@ -41,14 +41,16 @@ const DECODED_REQUEST_DETAILS_FOR_TESTS = {
   invoice_data_memo: "mmmmm pizza",
 };
 
-const regtestClient = new LightsparkClient(undefined, DEFAULT_BASE_URL);
+const credentials = getCredentialsFromEnvOrThrow();
+
+const regtestClient = new LightsparkClient(undefined, credentials.baseUrl);
 const unauthorizedRegtestClient = new LightsparkClient(
   undefined,
-  DEFAULT_BASE_URL,
+  credentials.baseUrl,
 );
 const authorizedRegtestClientWithLockedWallet = new LightsparkClient(
   undefined,
-  DEFAULT_BASE_URL,
+  credentials.baseUrl,
 );
 let bitcoinAddress: string | null = "";
 
@@ -77,8 +79,6 @@ function log(msg: string, ...args: unknown[]) {
 export const TEST_USER_ID = `test_user_${new Date().getTime()}`;
 export const CREATE_INVOICE_AMOUNT_MSATS = 100_000 * 1000;
 export const CREATE_TEST_INVOICE_AMOUNT_MSATS = 1000 * 1000;
-
-const credentials = getCredentialsFromEnvOrThrow();
 
 let clientDeployWalletResponse:
   | Awaited<ReturnType<typeof deployWallet>>

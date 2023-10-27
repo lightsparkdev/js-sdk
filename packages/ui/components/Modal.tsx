@@ -1,6 +1,5 @@
 "use client";
 import styled from "@emotion/styled";
-import { Button, Icon, UnstyledButton } from "@lightsparkdev/ui/components";
 import {
   bp,
   Breakpoints,
@@ -21,6 +20,9 @@ import type { MutableRefObject } from "react";
 import React, { Fragment, useEffect, useLayoutEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useLiveRef } from "../hooks/useLiveRef";
+import { Button } from "./Button";
+import { Icon } from "./Icon";
+import { UnstyledButton } from "./UnstyledButton";
 
 type ModalProps = {
   visible: boolean;

@@ -1,11 +1,11 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { App, getTypographyString, TokenSize } from "../typographyTokens";
+import { colors } from "../../colors";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 
 interface Props {
   children: React.ReactNode;
-  app?: App;
   size?: TokenSize;
   color?: string | undefined;
 }
@@ -13,30 +13,29 @@ interface Props {
 export const LabelStrong = ({
   children,
   color,
-  app = App.Lightspark,
   size = TokenSize.Medium,
 }: Props) => {
   return (
-    <StyledLabelStrong app={app} size={size} color={color}>
+    <StyledLabelStrong size={size} color={color}>
       {children}
     </StyledLabelStrong>
   );
 };
 
 export const StyledLabelStrong = styled.label<Props>`
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app]["Label Strong"][size])
+  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+  ${({ theme, size }) => {
+    return size
+      ? getTypographyString(theme.typography[theme.app]["Label Strong"][size])
       : "";
   }}
   cursor: inherit;
 
   * {
-    ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-    ${({ theme, app, size }) => {
-      return app && size
-        ? getTypographyString(theme.typography[app]["Label Strong"][size])
+    color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+    ${({ theme, size }) => {
+      return size
+        ? getTypographyString(theme.typography[theme.app]["Label Strong"][size])
         : "";
     }}
   }

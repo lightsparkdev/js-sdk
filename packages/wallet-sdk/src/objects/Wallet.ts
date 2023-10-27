@@ -220,6 +220,7 @@ query FetchWalletToTransactionsConnection($first: Int, $after: ID, $created_afte
                             __typename
                             rich_text_text: text
                         }
+                        outgoing_payment_payment_preimage: payment_preimage
                     }
                     ... on Withdrawal {
                         __typename

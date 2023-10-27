@@ -40,6 +40,7 @@ module.exports.buildConfig = ({
     ],
     server: {
       port,
+      open: false,
       host: "0.0.0.0",
       proxy: {
         "/graphql/internal": {
