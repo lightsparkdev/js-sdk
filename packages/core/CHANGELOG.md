@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.8
-
-### Patch Changes
-
-- a59d636: Remove crypto as dep - available directly in Node
-
 ## 1.0.7
 
 ### Patch Changes
