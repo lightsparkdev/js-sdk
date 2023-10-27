@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon --watch 'src/*.ts' --exec 'ts-node' src/startServer.ts",
+    "start": "./start.sh",
     "test:start": "./test.sh start",
     "test": "./test.sh test"
   },
