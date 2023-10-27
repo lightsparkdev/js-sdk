@@ -9,8 +9,8 @@
   "scripts": {
     "build": "tsc -p .",
     "clean": "rm -rf .turbo && rm -rf dist",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "cli": "ts-node src/index.ts",
+    "cli:watch": "nodemon --watch 'src/**/*.ts' --exec 'node --loader ts-node/esm' src/index.ts",
+    "cli": "node --loader ts-node/esm src/index.ts",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
     "lint:fix": "eslint --fix .",
