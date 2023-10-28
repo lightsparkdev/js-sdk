@@ -24,7 +24,10 @@ export default class ReceivingVasp {
 
   private async handleLnrulpRequest(req: Request, res: Response, next: any) {
     const username = req.params.username;
-    if (username !== this.config.username) {
+    if (
+      username !== this.config.username &&
+      username !== `$${this.config.username}`
+    ) {
       return next(new Error("User not found."));
     }
     const callback = this.getLnurlpCallback(req);
