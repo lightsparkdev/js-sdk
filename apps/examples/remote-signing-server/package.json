@@ -1,16 +1,16 @@
 {
   "name": "@lightsparkdev/remote-signing-server",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon --watch 'src/*.ts' --exec 'ts-node' src/startServer.ts",
+    "start": "./start.sh",
     "test:start": "./test.sh start",
     "test": "./test.sh test"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.0.7",
-    "@lightsparkdev/lightspark-sdk": "1.1.4",
+    "@lightsparkdev/core": "1.0.8",
+    "@lightsparkdev/lightspark-sdk": "1.1.5",
     "express": "^4.18.2"
   },
   "devDependencies": {

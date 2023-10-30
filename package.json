@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build-no-cache": "yarn build --force",
-    "build-storybook": "turbo run build-storybook",
+    "build-sb": "turbo run build-sb",
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
     "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
@@ -41,6 +41,7 @@
   "dependencies": {
     "@changesets/cli": "^2.26.1",
     "@manypkg/cli": "^0.21.0",
+    "rehype-autolink-headings": "^7.0.0",
     "ts-prune": "^0.10.3",
     "turbo": "1.10.15",
     "unimported": "^1.29.2"

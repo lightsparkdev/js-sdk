@@ -2,7 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints";
-import { getTypography } from "./fonts/typographyTokens";
+import { App, getTypography } from "./fonts/typographyTokens";
 
 const neutral = {
   black: "#000000",
@@ -73,6 +73,7 @@ export const colors = {
 
 interface BaseTheme {
   type: Themes;
+  app: App;
   bg: string;
   smBg: string;
   c05Neutral: string;
@@ -91,11 +92,13 @@ interface BaseTheme {
   hcNeutralFromBg: (hex: string) => string;
   info: string;
   lcNeutral: string;
+  link: string;
   mcNeutral: string;
   onInfoText: string;
   onPrimaryText: string;
   onSuccessText: string;
   primary: string;
+  secondary: string;
   success: string;
   text: string;
   typography: ReturnType<typeof getTypography>;
@@ -142,6 +145,7 @@ function hcNeutralFromBg(bgHex: string, defaultHex: string, altHex: string) {
 
 const lightBaseTheme: BaseTheme = {
   type: Themes.Light,
+  app: App.Lightspark,
   bg: colors.white,
   smBg: colors.white,
   c05Neutral: neutral.gray95,
@@ -161,11 +165,13 @@ const lightBaseTheme: BaseTheme = {
     hcNeutralFromBg(bgHex, colors.black, colors.white),
   info: colors.blue43,
   lcNeutral: neutral.gray80,
+  link: colors.blue43,
   mcNeutral: neutral.gray40,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
   onSuccessText: colors.white,
   primary: colors.primary,
+  secondary: colors.secondary,
   success: colors.success,
   text: colors.black,
   typography: getTypography(),
@@ -175,6 +181,7 @@ const lightBaseTheme: BaseTheme = {
 
 const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,
+  app: App.Lightspark,
   bg: colors.black,
   smBg: colors.black,
   c05Neutral: neutral.gray5,
@@ -194,11 +201,13 @@ const darkBaseTheme: BaseTheme = {
     hcNeutralFromBg(bgHex, colors.white, colors.black),
   info: colors.white,
   lcNeutral: neutral.gray40,
+  link: colors.blue43,
   mcNeutral: neutral.gray60,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
   onSuccessText: colors.white,
   primary: colors.primary,
+  secondary: colors.secondary,
   success: colors.success,
   text: colors.white,
   typography: getTypography(),
@@ -221,6 +230,7 @@ const lightTheme = extend(lightBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
+    secondary: colors.secondary,
   }),
 });
 
@@ -232,19 +242,27 @@ const darkTheme = extend(darkBaseTheme, {
     bg: neutral.gray40,
     smBg: neutral.gray40,
     text: neutral.white,
+    secondary: colors.secondary,
   }),
 });
 
 const umaLightTheme = extend(lightTheme, {
+  app: App.UmaDocs,
   bg: uma.background,
   smBg: uma.background,
+  secondary: uma.secondary,
+  text: uma.black,
+  link: uma.blue,
   content: extendBase(lightBaseTheme, {
     bg: uma.background,
     smBg: uma.background,
     text: uma.black,
+    secondary: uma.secondary,
   }),
   controls: extendBase(lightBaseTheme, {
-    text: uma.background,
+    text: uma.black,
+    secondary: uma.secondary,
+    bg: uma.blue90,
   }),
 });
 

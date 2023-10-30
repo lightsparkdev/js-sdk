@@ -12,6 +12,8 @@ export enum SignablePayloadStatus {
   SIGNED = "SIGNED",
 
   VALIDATION_FAILED = "VALIDATION_FAILED",
+
+  INVALID_SIGNATURE = "INVALID_SIGNATURE",
 }
 
 export default SignablePayloadStatus;

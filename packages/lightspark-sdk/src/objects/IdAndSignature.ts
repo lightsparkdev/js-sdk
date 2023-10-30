@@ -1,8 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 type IdAndSignature = {
+  /** The id of the message. **/
   id: string;
 
+  /** The signature of the message. **/
   signature: string;
 };
 

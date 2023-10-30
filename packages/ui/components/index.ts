@@ -14,9 +14,12 @@ export {
   type ButtonRowProps,
 } from "./ButtonRow";
 export { Collapsible } from "./Collapsible";
+export { CommandKey } from "./CommandKey";
 export { CopyToClipboardButton } from "./CopyToClipboardButton";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount";
 export { Icon, IconContainer } from "./Icon";
+export { LightboxImage } from "./LightboxImage";
 export { Loading, LoadingWrapper } from "./Loading";
+export { Modal } from "./Modal";
 export { SecretContainer } from "./SecretContainer";
 export { UnstyledButton } from "./UnstyledButton";

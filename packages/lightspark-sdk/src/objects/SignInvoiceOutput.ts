@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 type SignInvoiceOutput = {
+  /** The signed invoice object. **/
   invoiceId: string;
 };
 

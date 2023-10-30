@@ -3,6 +3,8 @@
 import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
+import type ChannelSnapshot from "./ChannelSnapshot.js";
+import { ChannelSnapshotFromJson } from "./ChannelSnapshot.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
@@ -25,6 +27,7 @@ class OutgoingPaymentAttempt implements Entity {
     public readonly resolvedAt?: string,
     public readonly amount?: CurrencyAmount,
     public readonly fees?: CurrencyAmount,
+    public readonly channelSnapshot?: ChannelSnapshot,
   ) {
     autoBind(this);
   }
@@ -135,6 +138,11 @@ export const OutgoingPaymentAttemptFromJson = (
     !!obj["outgoing_payment_attempt_fees"]
       ? CurrencyAmountFromJson(obj["outgoing_payment_attempt_fees"])
       : undefined,
+    !!obj["outgoing_payment_attempt_channel_snapshot"]
+      ? ChannelSnapshotFromJson(
+          obj["outgoing_payment_attempt_channel_snapshot"],
+        )
+      : undefined,
   );
 };
 
@@ -166,6 +174,33 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
     }
     outgoing_payment_attempt_outgoing_payment: outgoing_payment {
         id
+    }
+    outgoing_payment_attempt_channel_snapshot: channel_snapshot {
+        __typename
+        channel_snapshot_local_balance: local_balance {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_snapshot_local_unsettled_balance: local_unsettled_balance {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        channel_snapshot_local_channel_reserve: local_channel_reserve {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
     }
 }`;
 

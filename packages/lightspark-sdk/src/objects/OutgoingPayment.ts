@@ -35,6 +35,7 @@ class OutgoingPayment implements LightningTransaction {
     public readonly failureReason?: PaymentFailureReason,
     public readonly failureMessage?: RichText,
     public readonly umaPostTransactionData?: PostTransactionData[],
+    public readonly paymentPreimage?: string,
   ) {
     autoBind(this);
   }
@@ -86,6 +87,33 @@ query FetchOutgoingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $af
                     }
                     outgoing_payment_attempt_outgoing_payment: outgoing_payment {
                         id
+                    }
+                    outgoing_payment_attempt_channel_snapshot: channel_snapshot {
+                        __typename
+                        channel_snapshot_local_balance: local_balance {
+                            __typename
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        }
+                        channel_snapshot_local_unsettled_balance: local_unsettled_balance {
+                            __typename
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        }
+                        channel_snapshot_local_channel_reserve: local_channel_reserve {
+                            __typename
+                            currency_amount_original_value: original_value
+                            currency_amount_original_unit: original_unit
+                            currency_amount_preferred_currency_unit: preferred_currency_unit
+                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                        }
                     }
                 }
             }
@@ -149,6 +177,7 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
     obj["outgoing_payment_uma_post_transaction_data"]?.map((e) =>
       PostTransactionDataFromJson(e),
     ),
+    obj["outgoing_payment_payment_preimage"],
   );
 };
 
@@ -440,6 +469,7 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
     }
+    outgoing_payment_payment_preimage: payment_preimage
 }`;
 
 export default OutgoingPayment;

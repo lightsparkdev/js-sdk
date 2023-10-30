@@ -166,6 +166,7 @@ export const TransactionFromJson = (obj: any): Transaction => {
       obj["outgoing_payment_uma_post_transaction_data"]?.map((e) =>
         PostTransactionDataFromJson(e),
       ),
+      obj["outgoing_payment_payment_preimage"],
     );
   }
   if (obj["__typename"] == "RoutingTransaction") {
@@ -646,6 +647,7 @@ fragment TransactionFragment on Transaction {
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
             }
         }
+        outgoing_payment_payment_preimage: payment_preimage
     }
     ... on RoutingTransaction {
         __typename

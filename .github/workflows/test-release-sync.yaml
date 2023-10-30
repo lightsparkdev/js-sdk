@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "**"
+      - ".github/workflows/**"
   push:
     branches:
       - main
     paths:
       - "**"
+      - ".github/workflows/**"
 
 jobs:
   update-lock-file:
@@ -62,16 +64,19 @@ jobs:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
     runs-on: "ubuntu-22.04"
+    strategy:
+      matrix:
+        node-version: ["18.x", "20.x"]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
           ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
-      - name: "Setup Node"
+      - name: "Setup Node v${{ matrix.node-version }}"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: ".nvmrc"
+          node-version: ${{ matrix.node-version }}
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
@@ -79,17 +84,6 @@ jobs:
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
-
-      - name: Restore turbo cache
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules/.cache/turbo
-          # see https://bit.ly/43Til68 - we only need a single cache for all turbo files
-          # but the cache still needs a unique id in order for it to properly save each time.
-          # restore-keys will always take the latest matching cache:
-          key: turbo-checks-${{ runner.os }}-${{ github.run_id }} # Can use time based key as well
-          restore-keys: |
-            turbo-checks-${{ runner.os }}
 
       - name: Setup .lightsparkenv file
         run: |
@@ -122,16 +116,19 @@ jobs:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
     runs-on: "ubuntu-22.04"
+    strategy:
+      matrix:
+        node-version: ["18.x", "20.x"]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
           ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
-      - name: "Setup Node"
+      - name: "Setup Node v${{ matrix.node-version }}"
         uses: "actions/setup-node@v3"
         with:
-          node-version-file: ".nvmrc"
+          node-version: ${{ matrix.node-version }}
           cache: "yarn"
           cache-dependency-path: "yarn.lock"
 
@@ -139,17 +136,6 @@ jobs:
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
-
-      - name: Restore turbo cache
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules/.cache/turbo
-          # see https://bit.ly/43Til68 - we only need a single cache for all turbo files
-          # but the cache still needs a unique id in order for it to properly save each time.
-          # restore-keys will always take the latest matching cache:
-          key: turbo-build-${{ runner.os }}-${{ github.run_id }} # Can use time based key as well
-          restore-keys: |
-            turbo-build-${{ runner.os }}
 
       - run: "yarn build"
 

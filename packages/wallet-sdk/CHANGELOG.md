@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.7.5
+
+### Patch Changes
+
+- a59d636: Regenerate SDK objects. Add channel snapshot and payment preimage
+- Updated dependencies [a59d636]
+  - @lightsparkdev/core@1.0.8
+
 ## 0.7.4
 
 ### Patch Changes

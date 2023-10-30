@@ -1,13 +1,13 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { App, getTypographyString, TokenSize } from "../typographyTokens";
+import { colors } from "../../colors";
+import { getTypographyString, TokenSize } from "../typographyTokens";
 
 type Element = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 interface Props {
   children: React.ReactNode;
-  app?: App;
   size?: TokenSize;
   element?: Element;
   color?: string | undefined;
@@ -16,22 +16,21 @@ interface Props {
 export const Display = ({
   children,
   color,
-  app = App.Lightspark,
   size = TokenSize.Medium,
   element = "h1",
 }: Props) => {
   return (
-    <StyledDisplay as={element} app={app} size={size} color={color}>
+    <StyledDisplay as={element} size={size} color={color}>
       {children}
     </StyledDisplay>
   );
 };
 
 const StyledDisplay = styled.span<Props>`
-  ${(props) => (props.color === undefined ? "" : `color: ${props.color};`)}
-  ${({ theme, app, size }) => {
-    return app && size
-      ? getTypographyString(theme.typography[app].Display[size])
+  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
+  ${({ theme, size }) => {
+    return size
+      ? getTypographyString(theme.typography[theme.app].Display[size])
       : "";
   }}
 `;
