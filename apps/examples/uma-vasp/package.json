@@ -12,7 +12,8 @@
     "@lightsparkdev/core": "1.0.8",
     "@lightsparkdev/lightspark-sdk": "1.1.5",
     "@uma-sdk/core": "^0.1.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@lightsparkdev/tsconfig": "*",

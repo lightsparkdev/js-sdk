@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { colors } from "../../colors";
 import { getTypographyString, TokenSize } from "../typographyTokens";
 
-const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+export const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Heading = (typeof HEADINGS)[number];
 
 export interface Props {

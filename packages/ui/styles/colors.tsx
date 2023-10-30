@@ -112,7 +112,7 @@ type LightsparkSurfaces = {
   content: BaseTheme; // eg main contener
   controls: BaseTheme; // eg secondary nav
 };
-type LightsparkTheme = BaseTheme & LightsparkSurfaces;
+export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}

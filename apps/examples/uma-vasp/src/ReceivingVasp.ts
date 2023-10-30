@@ -24,7 +24,10 @@ export default class ReceivingVasp {
 
   private async handleLnrulpRequest(req: Request, res: Response, next: any) {
     const username = req.params.username;
-    if (username !== this.config.username) {
+    if (
+      username !== this.config.username &&
+      username !== `$${this.config.username}`
+    ) {
       return next(new Error("User not found."));
     }
     const callback = this.getLnurlpCallback(req);
@@ -37,6 +40,7 @@ export default class ReceivingVasp {
     if (isUma) {
       return this.handleUmaLnurlp(req, res, next);
     } else {
+      // Fall back to normal LNURLp.
       res.send({
         callback: callback,
         maxSendable: 10_000_000,
