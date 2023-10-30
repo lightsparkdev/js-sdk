@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.1.5
+
+### Patch Changes
+
+- a59d636: Regenerate SDK objects. Add channel snapshot and payment preimage
+- Updated dependencies [a59d636]
+  - @lightsparkdev/core@1.0.8
+
 ## 1.1.4
 
 ### Patch Changes
