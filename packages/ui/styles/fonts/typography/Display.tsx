@@ -4,7 +4,8 @@ import styled from "@emotion/styled";
 import { colors } from "../../colors";
 import { getTypographyString, TokenSize } from "../typographyTokens";
 
-type Element = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+export const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+type Element = (typeof ELEMENTS)[number];
 
 interface Props {
   children: React.ReactNode;
@@ -35,6 +36,6 @@ const StyledDisplay = styled.span<Props>`
   }}
 `;
 
-export function displaySelector(element: string) {
+export function displaySelector(element: Element) {
   return `${element}${StyledDisplay}`;
 }
