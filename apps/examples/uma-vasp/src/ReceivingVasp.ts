@@ -242,7 +242,8 @@ export default class ReceivingVasp {
     const protocol = req.protocol;
     const fullUrl = new URL(req.url, `${protocol}://${req.headers.host}`);
     const port = fullUrl.port;
-    const portString = port === "80" || port === "443" ? "" : `:${port}`;
+    const portString =
+      port === "80" || port === "443" || port === "" ? "" : `:${port}`;
     const path = `/api/uma/payreq/${this.config.userID}`;
     return `${protocol}://${req.hostname}${portString}${path}`;
   }
