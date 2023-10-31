@@ -491,8 +491,8 @@ export default class SendingVasp {
   private getPayerProfile(requiredPayerData: uma.PayerDataOptions) {
     const port = process.env.PORT || settings.umaVasp.port;
     return {
-      name: requiredPayerData.name.mandatory ? "Alice FakeName" : undefined,
-      email: requiredPayerData.email.mandatory ? "alice@vasp1.com" : undefined,
+      name: requiredPayerData.name?.mandatory ? "Alice FakeName" : undefined,
+      email: requiredPayerData.email?.mandatory ? "alice@vasp1.com" : undefined,
       // Note: This is making an assumption that this is running on localhost. We should make it configurable.
       identifier: `$alice@localhost:${port}`,
     };
