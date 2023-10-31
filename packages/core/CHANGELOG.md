@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.9
+
+### Patch Changes
+
+- 0d43a39: Add common config enum for app reference
+
 ## 1.0.8
 
 ### Patch Changes
