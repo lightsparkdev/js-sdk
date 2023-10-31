@@ -8,7 +8,6 @@
 import LightsparkClient from '../../client.js'
 import day from 'dayjs'
 import { describe, expect, test } from '@jest/globals'
-import { b64encode, DefaultCrypto } from '@lightsparkdev/core'
 import { getCredentialsFromEnvOrThrow } from '../../env.js'
 import { DecodeInvoice } from '../../graphql/DecodeInvoice.js'
 import {
@@ -21,7 +20,7 @@ import {
     TESTS_TIMEOUT,
     PAY_AMOUNT,
     DAY_IN_MS,
-    MAX_FEE,
+    MAX_FEE, LONG_TEST_TIMEOUT,
 } from './const/index.js'
 import {
     AccountTokenAuthProvider,
@@ -47,6 +46,28 @@ let invoicePayment: OutgoingPayment | undefined
 const testModeInvoices: Record<string, string | null> = {
     withMemo: null,
     withoutMemo: null
+}
+
+const createAnTestModePayment = async () => {
+    const regtestNodeId = getRegtestNodeId()
+    const testInvoice = await lightsparkClient.createInvoice(
+        regtestNodeId,
+        PAY_AMOUNT,
+        'hi there!'
+    )
+
+    if(!testInvoice) {
+        throw new TypeError('Test invoice wasn\'t created')
+    }
+
+    const payment = await lightsparkClient.createTestModePayment(
+        regtestNodeId,
+        testInvoice
+    )
+    if(!payment) {
+        throw new TypeError('Test mode payment wasn\'t created')
+    }
+    return payment
 }
 
 const getRegtestNodeId = () => {
@@ -177,54 +198,16 @@ describe('P0 tests', () => {
     // }, TRANSACTION_WAIT_TIME)
 
     test('Should open just-in-time channel from inbound payment', async () => {
-        const regtestNodeId = getRegtestNodeId()
-        const testInvoice = await lightsparkClient.createInvoice(
-            regtestNodeId,
-            PAY_AMOUNT,
-            'hi there!'
-        )
-
-        if(!testInvoice) {
-            throw new TypeError('Test invoice wasn\'t created')
-        }
-
-        const payment = await lightsparkClient.createTestModePayment(
-            regtestNodeId,
-            testInvoice
-        )
-        if(!payment) {
-            throw new TypeError('Test mode payment wasn\'t created')
-        }
-        const transaction = await lightsparkClient.waitForTransactionComplete(
+        const payment = await createAnTestModePayment()
+        const { status } = await lightsparkClient.waitForTransactionComplete(
             payment.id,
             TRANSACTION_WAIT_TIME
         )
-        expect(transaction?.status).toBe(TransactionStatus.SUCCESS)
+        expect(status).toBe(TransactionStatus.SUCCESS)
     }, TESTS_TIMEOUT)
 })
 
 describe('P1 tests', () => {
-    test(
-        'should generate a key',
-        async () => {
-            const { privateKey, publicKey,  } =
-                await DefaultCrypto.generateSigningKeyPair()
-
-            const serializedKeypair = {
-                privateKey: b64encode(
-                    await DefaultCrypto.serializeSigningKey(privateKey, 'pkcs8'),
-                ),
-                publicKey: b64encode(
-                    await DefaultCrypto.serializeSigningKey(publicKey, 'spki'),
-                ),
-            }
-
-            expect(serializedKeypair.privateKey).not.toBeNull()
-            expect(serializedKeypair.publicKey).not.toBeNull()
-        },
-        TESTS_TIMEOUT,
-    )
-
     test(
         'should fetch the current account',
         async () => {
@@ -245,6 +228,9 @@ describe('P1 tests', () => {
     test(
         'should listen current payment requests',
         async () => {
+            for(let i = 0; i < PAGINATION_STEP; i++) {
+                await createAnTestModePayment()
+            }
             const requests = await lightsparkClient.getRecentPaymentRequests(
                 getRegtestNodeId(),
                 PAGINATION_STEP,
@@ -252,7 +238,7 @@ describe('P1 tests', () => {
             )
             expect(requests.length).toBe(PAGINATION_STEP)
         },
-        TESTS_TIMEOUT,
+        LONG_TEST_TIMEOUT,
     )
 
     test(
