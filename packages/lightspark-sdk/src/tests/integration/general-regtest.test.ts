@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, test } from "@jest/globals";
-import day from "dayjs";
+import dayjs from "dayjs";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
 import { DecodeInvoice } from "../../graphql/DecodeInvoice.js";
@@ -265,7 +265,7 @@ describe(p1SuiteName, () => {
   test(
     "should listen current payment requests after some date",
     async () => {
-      const requestsAfterDate = day(Date.now() - DAY_IN_MS).format();
+      const requestsAfterDate = dayjs(Date.now() - DAY_IN_MS).format();
       const requests = await lightsparkClient.getRecentPaymentRequests(
         getRegtestNodeId(),
         PAGINATION_STEP,
@@ -384,36 +384,36 @@ describe(p1SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
-  test(
-    "should create a test mode payment",
-    async () => {
-      const regtestNodeId = getRegtestNodeId();
+  test("should create a test mode payment", async () => {
+    const regtestNodeId = getRegtestNodeId();
 
-      const invoiceForTestPayment = await lightsparkClient.createInvoice(
-        regtestNodeId,
-        PAY_AMOUNT,
-        "hi there!",
-      );
+    const invoiceForTestPayment = await lightsparkClient.createInvoice(
+      regtestNodeId,
+      PAY_AMOUNT,
+      "hi there!",
+    );
 
-      if (!invoiceForTestPayment) {
-        throw new TypeError("Invoice for test payment wasn't created");
-      }
+    if (!invoiceForTestPayment) {
+      throw new TypeError("Invoice for test payment wasn't created");
+    }
 
-      const payment = await lightsparkClient.createTestModePayment(
-        regtestNodeId,
-        invoiceForTestPayment,
-      );
+    const payment = await lightsparkClient.createTestModePayment(
+      regtestNodeId,
+      invoiceForTestPayment,
+    );
 
-      if (!payment) {
-        throw new TypeError("Test mode payment wasn't created");
-      }
+    if (!payment) {
+      throw new TypeError("Test mode payment wasn't created");
+    }
 
-      const transaction = await lightsparkClient.waitForTransactionComplete(
-        payment.id,
-        TRANSACTION_WAIT_TIME,
-      );
+    const transaction = await lightsparkClient.waitForTransactionComplete(
+      payment.id,
+      TRANSACTION_WAIT_TIME,
+    );
 
-      expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+    expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+  });
+
   test(
     "Should successfully create an uma invoice",
     async () => {
