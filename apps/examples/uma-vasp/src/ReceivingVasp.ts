@@ -24,7 +24,10 @@ export default class ReceivingVasp {
 
   private async handleLnrulpRequest(req: Request, res: Response, next: any) {
     const username = req.params.username;
-    if (username !== this.config.username) {
+    if (
+      username !== this.config.username &&
+      username !== `$${this.config.username}`
+    ) {
       return next(new Error("User not found."));
     }
     const callback = this.getLnurlpCallback(req);
@@ -37,6 +40,7 @@ export default class ReceivingVasp {
     if (isUma) {
       return this.handleUmaLnurlp(req, res, next);
     } else {
+      // Fall back to normal LNURLp.
       res.send({
         callback: callback,
         maxSendable: 10_000_000,
@@ -238,13 +242,14 @@ export default class ReceivingVasp {
     const protocol = req.protocol;
     const fullUrl = new URL(req.url, `${protocol}://${req.headers.host}`);
     const port = fullUrl.port;
-    const portString = port === "80" || port === "443" ? "" : `:${port}`;
+    const portString =
+      port === "80" || port === "443" || port === "" ? "" : `:${port}`;
     const path = `/api/uma/payreq/${this.config.userID}`;
     return `${protocol}://${req.hostname}${portString}${path}`;
   }
 
   private getUtxoCallback(req: Request, txId: String): string {
-    const path = "/api/uma/utxoCallback?txId=${txId}";
+    const path = `/api/uma/utxoCallback?txId=${txId}`;
     return `${req.protocol}://${req.hostname}${path}`;
   }
 }

@@ -1,3 +1,4 @@
+import { ConfigKeys, getLocalStorageConfigItem } from "./index.js";
 import { isBrowser, isTest } from "./utils/environment.js";
 
 type GetLoggingEnabled = (() => Promise<boolean> | boolean) | undefined;
@@ -18,8 +19,9 @@ export class Logger {
       this.loggingEnabled = true;
     } else if (isBrowser) {
       try {
-        this.loggingEnabled =
-          localStorage.getItem("lightspark-logging-enabled") === "1";
+        this.loggingEnabled = getLocalStorageConfigItem(
+          ConfigKeys.LoggingEnabled,
+        );
       } catch (e) {
         /* ignore */
       }

@@ -1,6 +1,6 @@
 const FONT_FAMILIES = {
   main: "Montserrat",
-  code: "Roboto mono",
+  code: "Monaco",
 };
 
 const LINE_HEIGHTS = {

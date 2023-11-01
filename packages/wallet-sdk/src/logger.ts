@@ -1,4 +1,4 @@
-import { isTest, Logger } from "@lightsparkdev/core";
+import { ConfigKeys, isTest, Logger } from "@lightsparkdev/core";
 import AsyncStorage, {
   type AsyncStorageStatic,
 } from "@react-native-async-storage/async-storage";
@@ -10,7 +10,7 @@ export const logger = new Logger("@lightsparkdev/wallet-sdk", async () => {
     }
 
     const enabled = await (AsyncStorage as any as AsyncStorageStatic).getItem(
-      "lightspark-logging-enabled",
+      ConfigKeys.LoggingEnabled,
     );
     return enabled === "1";
   } catch (e) {
