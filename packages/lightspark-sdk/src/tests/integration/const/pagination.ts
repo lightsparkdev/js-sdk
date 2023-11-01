@@ -1,1 +1,1 @@
-export const PAGINATION_STEP = 30
+export const PAGINATION_STEP = 3
