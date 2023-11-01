@@ -249,7 +249,7 @@ export default class ReceivingVasp {
   }
 
   private getUtxoCallback(req: Request, txId: String): string {
-    const path = "/api/uma/utxoCallback?txId=${txId}";
+    const path = `/api/uma/utxoCallback?txId=${txId}`;
     return `${req.protocol}://${req.hostname}${path}`;
   }
 }

@@ -499,10 +499,8 @@ export default class SendingVasp {
   }
 
   private getUtxoCallback(req: Request, txId: string): string {
-    const protocol = req.protocol;
-    const host = req.hostname;
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${protocol}://${host}${path}`;
+    return `${req.protocol}://${req.hostname}${path}`;
   }
 
   private async waitForPaymentCompletion(
