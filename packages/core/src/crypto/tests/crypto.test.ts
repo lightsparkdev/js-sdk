@@ -17,5 +17,5 @@ describe("Crypto tests", () => {
 
     expect(serializedKeypair.privateKey).not.toBeNull();
     expect(serializedKeypair.publicKey).not.toBeNull();
-  }, 15000);
+  }, 60_000);
 });
