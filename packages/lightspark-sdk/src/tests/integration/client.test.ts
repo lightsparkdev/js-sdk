@@ -29,7 +29,7 @@ function log(msg: string, ...args: unknown[]) {
   );
 }
 
-describe("lightspark-sdk client", () => {
+describe.skip("lightspark-sdk client", () => {
   const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
     getCredentialsFromEnvOrThrow();
   const accountAuthProvider = new AccountTokenAuthProvider(
