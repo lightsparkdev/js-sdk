@@ -17,6 +17,7 @@ import {
   OutgoingPayment,
   TransactionStatus,
 } from "../../index.js";
+import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
@@ -37,11 +38,8 @@ const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
   getCredentialsFromEnvOrThrow();
 
 let lightsparkClient: LightsparkClient;
-
 let paymentInvoice: string | undefined;
-
 let regtestNodeId: string | undefined;
-
 let invoicePayment: OutgoingPayment | undefined;
 
 const testModeInvoices: Record<string, string | null> = {
@@ -71,6 +69,22 @@ const createAnTestModePayment = async () => {
   return payment;
 };
 
+const initSuiteName = "initialization";
+const p0SuiteName = "p0";
+const p1SuiteName = "p1";
+const p2SuiteName = "p2";
+function log(msg: string, ...args: unknown[]) {
+  logger.info(
+    `${expect
+      .getState()
+      .currentTestName?.replace(
+        new RegExp(`^(${initSuiteName}|p[0-2])\\s`, "g"),
+        "",
+      )}: ${msg}`,
+    ...args,
+  );
+}
+
 const getRegtestNodeId = () => {
   expect(regtestNodeId).toBeDefined();
   if (!regtestNodeId) {
@@ -79,7 +93,7 @@ const getRegtestNodeId = () => {
   return regtestNodeId;
 };
 
-describe("Initialization tests", () => {
+describe(initSuiteName, () => {
   test("should get env vars and construct the client successfully", async () => {
     const accountAuthProvider = new AccountTokenAuthProvider(
       apiTokenClientId,
@@ -103,6 +117,7 @@ describe("Initialization tests", () => {
 
       const [regtestNode] = nodesConnection?.entities;
       regtestNodeId = regtestNode?.id;
+      log("regtestNodeId", regtestNode?.id);
 
       await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
         password: REGTEST_SIGNING_KEY_PASSWORD,
@@ -113,7 +128,7 @@ describe("Initialization tests", () => {
   );
 });
 
-describe("P0 tests", () => {
+describe(p0SuiteName, () => {
   test("Should create a normal payment invoice", async () => {
     paymentInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
@@ -211,7 +226,7 @@ describe("P0 tests", () => {
   );
 });
 
-describe("P1 tests", () => {
+describe(p1SuiteName, () => {
   test(
     "should fetch the current account",
     async () => {
@@ -399,12 +414,28 @@ describe("P1 tests", () => {
       );
 
       expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+  test(
+    "Should successfully create an uma invoice",
+    async () => {
+      const nodeId = getRegtestNodeId();
+
+      const metadata = JSON.stringify([
+        ["text/plain", "Pay to vasp2.com user $bob"],
+        ["text/identifier", "$bob@vasp2.com"],
+      ]);
+
+      const umaInvoice = await lightsparkClient.createUmaInvoice(
+        nodeId,
+        1000,
+        metadata,
+      );
+      expect(umaInvoice?.status).toEqual(PaymentRequestStatus.OPEN);
     },
     TESTS_TIMEOUT,
   );
 });
 
-describe("P2 tests", () => {
+describe(p2SuiteName, () => {
   test(
     "should get a bitcoin fee estimate",
     async () => {
