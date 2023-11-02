@@ -1,17 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { LightsparkException, type Query } from "@lightsparkdev/core";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import type Invoice from "./Invoice.js";
-import { InvoiceDataFromJson, InvoiceDataToJson } from "./InvoiceData.js";
+import { InvoiceDataFromJson } from "./InvoiceData.js";
 import type PaymentRequestData from "./PaymentRequestData.js";
 import PaymentRequestStatus from "./PaymentRequestStatus.js";
 
 /** This object contains information related to a payment request generated or received by a LightsparkNode. You can retrieve this object to receive payment information about a specific invoice. **/
-interface PaymentRequest {
+type PaymentRequest = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -32,7 +30,7 @@ interface PaymentRequest {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const PaymentRequestFromJson = (obj: any): PaymentRequest => {
   if (obj["__typename"] == "Invoice") {
@@ -53,26 +51,6 @@ export const PaymentRequestFromJson = (obj: any): PaymentRequest => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface PaymentRequest corresponding to the typename=${obj["__typename"]}`,
-  );
-};
-export const PaymentRequestToJson = (obj: PaymentRequest): any => {
-  if (obj.typename == "Invoice") {
-    const invoice = obj as Invoice;
-    return {
-      __typename: "Invoice",
-      invoice_id: invoice.id,
-      invoice_created_at: invoice.createdAt,
-      invoice_updated_at: invoice.updatedAt,
-      invoice_data: InvoiceDataToJson(invoice.data),
-      invoice_status: invoice.status,
-      invoice_amount_paid: invoice.amountPaid
-        ? CurrencyAmountToJson(invoice.amountPaid)
-        : undefined,
-    };
-  }
-  throw new LightsparkException(
-    "DeserializationError",
-    `Couldn't find a concrete type for interface PaymentRequest corresponding to the typename=${obj.typename}`,
   );
 };
 

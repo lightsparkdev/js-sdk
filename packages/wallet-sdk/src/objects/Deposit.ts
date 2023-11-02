@@ -2,65 +2,67 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type OnChainTransaction from "./OnChainTransaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a Deposit made to a Lightspark node wallet. This operation occurs for any L1 funding transaction to the wallet. You can retrieve this object to receive detailed information about the deposit. **/
-interface Deposit {
-  /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
-   **/
-  id: string;
+type Deposit = OnChainTransaction &
+  Transaction &
+  Entity & {
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
+    id: string;
 
-  /** The date and time when this transaction was initiated. **/
-  createdAt: string;
+    /** The date and time when this transaction was initiated. **/
+    createdAt: string;
 
-  /** The date and time when the entity was last updated. **/
-  updatedAt: string;
+    /** The date and time when the entity was last updated. **/
+    updatedAt: string;
 
-  /** The current status of this transaction. **/
-  status: TransactionStatus;
+    /** The current status of this transaction. **/
+    status: TransactionStatus;
 
-  /** The amount of money involved in this transaction. **/
-  amount: CurrencyAmount;
+    /** The amount of money involved in this transaction. **/
+    amount: CurrencyAmount;
 
-  /**
-   * The height of the block that included this transaction. This will be zero for unconfirmed
-   * transactions.
-   **/
-  blockHeight: number;
+    /**
+     * The height of the block that included this transaction. This will be zero for unconfirmed
+     * transactions.
+     **/
+    blockHeight: number;
 
-  /** The Bitcoin blockchain addresses this transaction was sent to. **/
-  destinationAddresses: string[];
+    /** The Bitcoin blockchain addresses this transaction was sent to. **/
+    destinationAddresses: string[];
 
-  /** The typename of the object **/
-  typename: string;
+    /** The typename of the object **/
+    typename: string;
 
-  /** The date and time when this transaction was completed or failed. **/
-  resolvedAt?: string | undefined;
+    /** The date and time when this transaction was completed or failed. **/
+    resolvedAt?: string;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-  transactionHash?: string | undefined;
+    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    transactionHash?: string;
 
-  /**
-   * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
-   * blockchain.
-   **/
-  fees?: CurrencyAmount | undefined;
+    /**
+     * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+     * blockchain.
+     **/
+    fees?: CurrencyAmount;
 
-  /**
-   * The hash of the block that included this transaction. This will be null for unconfirmed
-   * transactions.
-   **/
-  blockHash?: string | undefined;
+    /**
+     * The hash of the block that included this transaction. This will be null for unconfirmed
+     * transactions.
+     **/
+    blockHash?: string;
 
-  /** The number of blockchain confirmations for this transaction in real time. **/
-  numConfirmations?: number | undefined;
-}
+    /** The number of blockchain confirmations for this transaction in real time. **/
+    numConfirmations?: number;
+  };
 
 export const DepositFromJson = (obj: any): Deposit => {
   return {
@@ -82,23 +84,6 @@ export const DepositFromJson = (obj: any): Deposit => {
     blockHash: obj["deposit_block_hash"],
     numConfirmations: obj["deposit_num_confirmations"],
   } as Deposit;
-};
-export const DepositToJson = (obj: Deposit): any => {
-  return {
-    __typename: "Deposit",
-    deposit_id: obj.id,
-    deposit_created_at: obj.createdAt,
-    deposit_updated_at: obj.updatedAt,
-    deposit_status: obj.status,
-    deposit_resolved_at: obj.resolvedAt,
-    deposit_amount: CurrencyAmountToJson(obj.amount),
-    deposit_transaction_hash: obj.transactionHash,
-    deposit_fees: obj.fees ? CurrencyAmountToJson(obj.fees) : undefined,
-    deposit_block_hash: obj.blockHash,
-    deposit_block_height: obj.blockHeight,
-    deposit_destination_addresses: obj.destinationAddresses,
-    deposit_num_confirmations: obj.numConfirmations,
-  };
 };
 
 export const FRAGMENT = `

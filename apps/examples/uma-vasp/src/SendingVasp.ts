@@ -3,6 +3,7 @@ import {
   CurrencyUnit,
   InvoiceData,
   LightsparkClient,
+  LightsparkNode,
   OutgoingPayment,
   TransactionStatus,
 } from "@lightsparkdev/lightspark-sdk";
@@ -15,7 +16,6 @@ import SendingVaspRequestCache, {
   SendingVaspPayReqData,
 } from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
-import { getLightsparkNodeQuery } from "@lightsparkdev/lightspark-sdk";
 
 export default class SendingVasp {
   private readonly requestCache: SendingVaspRequestCache =
@@ -317,7 +317,9 @@ export default class SendingVasp {
 
     let invoice: InvoiceData;
     try {
-      invoice = await this.lightsparkClient.decodeInvoice(payResponse.pr);
+      invoice = await this.lightsparkClient.decodeInvoice(
+        payResponse.encodedInvoice,
+      );
     } catch (e) {
       console.error("Error decoding invoice.", e);
       res.status(500).send("Error decoding invoice.");
@@ -325,14 +327,14 @@ export default class SendingVasp {
     }
 
     const newCallbackUuid = this.requestCache.savePayReqData(
-      payResponse.pr,
+      payResponse.encodedInvoice,
       utxoCallback,
       invoice,
     );
 
     res.send({
       callbackUuid: newCallbackUuid,
-      encodedInvoice: payResponse.pr,
+      encodedInvoice: payResponse.encodedInvoice,
       amount: invoice.amount,
       conversionRate: payResponse.paymentInfo.multiplier,
       exchangeFeesMillisatoshi:
@@ -411,7 +413,7 @@ export default class SendingVasp {
 
   private async getNodePubKey() {
     const node = await this.lightsparkClient.executeRawQuery(
-      getLightsparkNodeQuery(this.config.nodeID),
+      LightsparkNode.getLightsparkNodeQuery(this.config.nodeID),
     );
     if (!node) {
       throw new Error("Node not found.");

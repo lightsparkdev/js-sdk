@@ -68,10 +68,7 @@ export {
   default as LightningTransaction,
   getLightningTransactionQuery,
 } from "./LightningTransaction.js";
-export {
-  default as LightsparkNode,
-  getLightsparkNodeQuery,
-} from "./LightsparkNode.js";
+export { default as LightsparkNode } from "./LightsparkNode.js";
 export {
   default as LightsparkNodeOwner,
   getLightsparkNodeOwnerQuery,
@@ -80,7 +77,7 @@ export { default as LightsparkNodeStatus } from "./LightsparkNodeStatus.js";
 export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeToChannelsConnection.js";
 export { default as LightsparkNodeWithOSK } from "./LightsparkNodeWithOSK.js";
 export { default as LightsparkNodeWithRemoteSigning } from "./LightsparkNodeWithRemoteSigning.js";
-export { default as Node, getNodeQuery } from "./Node.js";
+export { default as Node } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";
 export { default as NodeToAddressesConnection } from "./NodeToAddressesConnection.js";

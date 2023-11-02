@@ -1,11 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type ApiToken from "./ApiToken.js";
-import { ApiTokenFromJson, ApiTokenToJson } from "./ApiToken.js";
+import { ApiTokenFromJson } from "./ApiToken.js";
+import type Connection from "./Connection.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
-interface AccountToApiTokensConnection {
+type AccountToApiTokensConnection = Connection & {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -20,7 +21,7 @@ interface AccountToApiTokensConnection {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const AccountToApiTokensConnectionFromJson = (
   obj: any,
@@ -35,18 +36,6 @@ export const AccountToApiTokensConnectionFromJson = (
     ),
     typename: "AccountToApiTokensConnection",
   } as AccountToApiTokensConnection;
-};
-export const AccountToApiTokensConnectionToJson = (
-  obj: AccountToApiTokensConnection,
-): any => {
-  return {
-    __typename: "AccountToApiTokensConnection",
-    account_to_api_tokens_connection_count: obj.count,
-    account_to_api_tokens_connection_page_info: PageInfoToJson(obj.pageInfo),
-    account_to_api_tokens_connection_entities: obj.entities.map((e) =>
-      ApiTokenToJson(e),
-    ),
-  };
 };
 
 export const FRAGMENT = `

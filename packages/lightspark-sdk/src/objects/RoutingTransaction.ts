@@ -2,62 +2,64 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type LightningTransaction from "./LightningTransaction.js";
 import type RichText from "./RichText.js";
-import { RichTextFromJson, RichTextToJson } from "./RichText.js";
+import { RichTextFromJson } from "./RichText.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a transaction that was forwarded through a Lightspark node on the Lightning Network, i.e., a routed transaction. You can retrieve this object to receive information about any transaction routed through your Lightspark Node. **/
-interface RoutingTransaction {
-  /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
-   **/
-  id: string;
+type RoutingTransaction = LightningTransaction &
+  Transaction &
+  Entity & {
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
+    id: string;
 
-  /** The date and time when this transaction was initiated. **/
-  createdAt: string;
+    /** The date and time when this transaction was initiated. **/
+    createdAt: string;
 
-  /** The date and time when the entity was last updated. **/
-  updatedAt: string;
+    /** The date and time when the entity was last updated. **/
+    updatedAt: string;
 
-  /** The current status of this transaction. **/
-  status: TransactionStatus;
+    /** The current status of this transaction. **/
+    status: TransactionStatus;
 
-  /** The amount of money involved in this transaction. **/
-  amount: CurrencyAmount;
+    /** The amount of money involved in this transaction. **/
+    amount: CurrencyAmount;
 
-  /** The typename of the object **/
-  typename: string;
+    /** The typename of the object **/
+    typename: string;
 
-  /** The date and time when this transaction was completed or failed. **/
-  resolvedAt?: string | undefined;
+    /** The date and time when this transaction was completed or failed. **/
+    resolvedAt?: string;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-  transactionHash?: string | undefined;
+    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    transactionHash?: string;
 
-  /** If known, the channel this transaction was received from. **/
-  incomingChannelId?: string | undefined;
+    /** If known, the channel this transaction was received from. **/
+    incomingChannelId?: string;
 
-  /** If known, the channel this transaction was forwarded to. **/
-  outgoingChannelId?: string | undefined;
+    /** If known, the channel this transaction was forwarded to. **/
+    outgoingChannelId?: string;
 
-  /**
-   * The fees collected by the node when routing this transaction. We subtract the outgoing amount to
-   * the incoming amount to determine how much fees were collected.
-   **/
-  fees?: CurrencyAmount | undefined;
+    /**
+     * The fees collected by the node when routing this transaction. We subtract the outgoing amount to
+     * the incoming amount to determine how much fees were collected.
+     **/
+    fees?: CurrencyAmount;
 
-  /** If applicable, user-facing error message describing why the routing failed. **/
-  failureMessage?: RichText | undefined;
+    /** If applicable, user-facing error message describing why the routing failed. **/
+    failureMessage?: RichText;
 
-  /** If applicable, the reason why the routing failed. **/
-  failureReason?: RoutingTransactionFailureReason | undefined;
-}
+    /** If applicable, the reason why the routing failed. **/
+    failureReason?: RoutingTransactionFailureReason;
+  };
 
 export const RoutingTransactionFromJson = (obj: any): RoutingTransaction => {
   return {
@@ -87,29 +89,6 @@ export const RoutingTransactionFromJson = (obj: any): RoutingTransaction => {
         ] ?? RoutingTransactionFailureReason.FUTURE_VALUE
       : null,
   } as RoutingTransaction;
-};
-export const RoutingTransactionToJson = (obj: RoutingTransaction): any => {
-  return {
-    __typename: "RoutingTransaction",
-    routing_transaction_id: obj.id,
-    routing_transaction_created_at: obj.createdAt,
-    routing_transaction_updated_at: obj.updatedAt,
-    routing_transaction_status: obj.status,
-    routing_transaction_resolved_at: obj.resolvedAt,
-    routing_transaction_amount: CurrencyAmountToJson(obj.amount),
-    routing_transaction_transaction_hash: obj.transactionHash,
-    routing_transaction_incoming_channel:
-      { id: obj.incomingChannelId } ?? undefined,
-    routing_transaction_outgoing_channel:
-      { id: obj.outgoingChannelId } ?? undefined,
-    routing_transaction_fees: obj.fees
-      ? CurrencyAmountToJson(obj.fees)
-      : undefined,
-    routing_transaction_failure_message: obj.failureMessage
-      ? RichTextToJson(obj.failureMessage)
-      : undefined,
-    routing_transaction_failure_reason: obj.failureReason,
-  };
 };
 
 export const FRAGMENT = `

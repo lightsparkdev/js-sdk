@@ -4,10 +4,7 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
 import WithdrawalMode from "./WithdrawalMode.js";
 import WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
@@ -27,9 +24,9 @@ class WithdrawalRequest implements Entity {
     public readonly withdrawalMode: WithdrawalMode,
     public readonly status: WithdrawalRequestStatus,
     public readonly typename: string,
-    public readonly estimatedAmount?: CurrencyAmount | undefined,
-    public readonly completedAt?: string | undefined,
-    public readonly withdrawalId?: string | undefined,
+    public readonly estimatedAmount?: CurrencyAmount,
+    public readonly completedAt?: string,
+    public readonly withdrawalId?: string,
   ) {
     autoBind(this);
   }
@@ -181,24 +178,6 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) => WithdrawalRequestFromJson(data.entity),
-    };
-  }
-
-  public toJson() {
-    return {
-      __typename: "WithdrawalRequest",
-      withdrawal_request_id: this.id,
-      withdrawal_request_created_at: this.createdAt,
-      withdrawal_request_updated_at: this.updatedAt,
-      withdrawal_request_amount: CurrencyAmountToJson(this.amount),
-      withdrawal_request_estimated_amount: this.estimatedAmount
-        ? CurrencyAmountToJson(this.estimatedAmount)
-        : undefined,
-      withdrawal_request_bitcoin_address: this.bitcoinAddress,
-      withdrawal_request_withdrawal_mode: this.withdrawalMode,
-      withdrawal_request_status: this.status,
-      withdrawal_request_completed_at: this.completedAt,
-      withdrawal_request_withdrawal: { id: this.withdrawalId } ?? undefined,
     };
   }
 }

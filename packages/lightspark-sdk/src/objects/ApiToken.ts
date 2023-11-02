@@ -1,10 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { type Query } from "@lightsparkdev/core";
+import type Entity from "./Entity.js";
 import Permission from "./Permission.js";
 
 /** This is an object representing a Lightspark API token, that can be used to authenticate this account when making API calls or using our SDKs. See the “Authentication” section of our API docs for more details on its usage. **/
-interface ApiToken {
+type ApiToken = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -34,7 +35,7 @@ interface ApiToken {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const ApiTokenFromJson = (obj: any): ApiToken => {
   return {
@@ -46,17 +47,6 @@ export const ApiTokenFromJson = (obj: any): ApiToken => {
     permissions: obj["api_token_permissions"].map((e) => Permission[e]),
     typename: "ApiToken",
   } as ApiToken;
-};
-export const ApiTokenToJson = (obj: ApiToken): any => {
-  return {
-    __typename: "ApiToken",
-    api_token_id: obj.id,
-    api_token_created_at: obj.createdAt,
-    api_token_updated_at: obj.updatedAt,
-    api_token_client_id: obj.clientId,
-    api_token_name: obj.name,
-    api_token_permissions: obj.permissions,
-  };
 };
 
 export const FRAGMENT = `

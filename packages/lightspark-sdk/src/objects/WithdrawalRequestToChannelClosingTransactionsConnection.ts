@@ -1,14 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
-import {
-  ChannelClosingTransactionFromJson,
-  ChannelClosingTransactionToJson,
-} from "./ChannelClosingTransaction.js";
+import { ChannelClosingTransactionFromJson } from "./ChannelClosingTransaction.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
-interface WithdrawalRequestToChannelClosingTransactionsConnection {
+type WithdrawalRequestToChannelClosingTransactionsConnection = {
   /** An object that holds pagination information about the objects in this connection. **/
   pageInfo: PageInfo;
 
@@ -20,7 +17,7 @@ interface WithdrawalRequestToChannelClosingTransactionsConnection {
 
   /** The channel closing transactions for the current page of this connection. **/
   entities: ChannelClosingTransaction[];
-}
+};
 
 export const WithdrawalRequestToChannelClosingTransactionsConnectionFromJson = (
   obj: any,
@@ -39,18 +36,6 @@ export const WithdrawalRequestToChannelClosingTransactionsConnectionFromJson = (
       "withdrawal_request_to_channel_closing_transactions_connection_entities"
     ].map((e) => ChannelClosingTransactionFromJson(e)),
   } as WithdrawalRequestToChannelClosingTransactionsConnection;
-};
-export const WithdrawalRequestToChannelClosingTransactionsConnectionToJson = (
-  obj: WithdrawalRequestToChannelClosingTransactionsConnection,
-): any => {
-  return {
-    withdrawal_request_to_channel_closing_transactions_connection_page_info:
-      PageInfoToJson(obj.pageInfo),
-    withdrawal_request_to_channel_closing_transactions_connection_count:
-      obj.count,
-    withdrawal_request_to_channel_closing_transactions_connection_entities:
-      obj.entities.map((e) => ChannelClosingTransactionToJson(e)),
-  };
 };
 
 export const FRAGMENT = `

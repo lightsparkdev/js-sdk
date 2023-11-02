@@ -3,19 +3,14 @@
 import type Wallet from "./Wallet.js";
 import { WalletFromJson } from "./Wallet.js";
 
-interface DeployWalletOutput {
+type DeployWalletOutput = {
   wallet: Wallet;
-}
+};
 
 export const DeployWalletOutputFromJson = (obj: any): DeployWalletOutput => {
   return {
     wallet: WalletFromJson(obj["deploy_wallet_output_wallet"]),
   } as DeployWalletOutput;
-};
-export const DeployWalletOutputToJson = (obj: DeployWalletOutput): any => {
-  return {
-    deploy_wallet_output_wallet: obj.wallet.toJson(),
-  };
 };
 
 export const FRAGMENT = `

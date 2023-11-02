@@ -1,12 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+import type Connection from "./Connection.js";
 import type Hop from "./Hop.js";
-import { HopFromJson, HopToJson } from "./Hop.js";
+import { HopFromJson } from "./Hop.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 /** The connection from an outgoing payment attempt to the list of sequential hops that define the path from sender node to recipient node. **/
-interface OutgoingPaymentAttemptToHopsConnection {
+type OutgoingPaymentAttemptToHopsConnection = Connection & {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -21,7 +22,7 @@ interface OutgoingPaymentAttemptToHopsConnection {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const OutgoingPaymentAttemptToHopsConnectionFromJson = (
   obj: any,
@@ -36,20 +37,6 @@ export const OutgoingPaymentAttemptToHopsConnectionFromJson = (
     ),
     typename: "OutgoingPaymentAttemptToHopsConnection",
   } as OutgoingPaymentAttemptToHopsConnection;
-};
-export const OutgoingPaymentAttemptToHopsConnectionToJson = (
-  obj: OutgoingPaymentAttemptToHopsConnection,
-): any => {
-  return {
-    __typename: "OutgoingPaymentAttemptToHopsConnection",
-    outgoing_payment_attempt_to_hops_connection_count: obj.count,
-    outgoing_payment_attempt_to_hops_connection_page_info: PageInfoToJson(
-      obj.pageInfo,
-    ),
-    outgoing_payment_attempt_to_hops_connection_entities: obj.entities.map(
-      (e) => HopToJson(e),
-    ),
-  };
 };
 
 export const FRAGMENT = `

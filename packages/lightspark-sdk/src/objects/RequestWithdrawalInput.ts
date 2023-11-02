@@ -2,7 +2,7 @@
 
 import WithdrawalMode from "./WithdrawalMode.js";
 
-interface RequestWithdrawalInput {
+type RequestWithdrawalInput = {
   /** The node from which you'd like to make the withdrawal. **/
   nodeId: string;
 
@@ -17,7 +17,7 @@ interface RequestWithdrawalInput {
 
   /** The strategy that should be used to withdraw the funds from this node. **/
   withdrawalMode: WithdrawalMode;
-}
+};
 
 export const RequestWithdrawalInputFromJson = (
   obj: any,
@@ -30,16 +30,6 @@ export const RequestWithdrawalInputFromJson = (
       WithdrawalMode[obj["request_withdrawal_input_withdrawal_mode"]] ??
       WithdrawalMode.FUTURE_VALUE,
   } as RequestWithdrawalInput;
-};
-export const RequestWithdrawalInputToJson = (
-  obj: RequestWithdrawalInput,
-): any => {
-  return {
-    request_withdrawal_input_node_id: obj.nodeId,
-    request_withdrawal_input_bitcoin_address: obj.bitcoinAddress,
-    request_withdrawal_input_amount_sats: obj.amountSats,
-    request_withdrawal_input_withdrawal_mode: obj.withdrawalMode,
-  };
 };
 
 export default RequestWithdrawalInput;

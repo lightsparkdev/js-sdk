@@ -3,32 +3,22 @@
 import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
-import type Balances from "./Balances.js";
-import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import type BlockchainBalance from "./BlockchainBalance.js";
-import {
-  BlockchainBalanceFromJson,
-  BlockchainBalanceToJson,
-} from "./BlockchainBalance.js";
+import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
 import type ChannelStatus from "./ChannelStatus.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type LightsparkNode from "./LightsparkNode.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
-import type Node from "./Node.js";
 import type NodeAddressType from "./NodeAddressType.js";
 import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
 
 /** This is a Lightspark node with remote signing. **/
-class LightsparkNodeWithRemoteSigning implements LightsparkNode, Node, Entity {
+class LightsparkNodeWithRemoteSigning implements LightsparkNode {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
@@ -38,17 +28,16 @@ class LightsparkNodeWithRemoteSigning implements LightsparkNode, Node, Entity {
     public readonly ownerId: string,
     public readonly umaPrescreeningUtxos: string[],
     public readonly typename: string,
-    public readonly alias?: string | undefined,
-    public readonly color?: string | undefined,
-    public readonly conductivity?: number | undefined,
-    public readonly publicKey?: string | undefined,
-    public readonly status?: LightsparkNodeStatus | undefined,
-    public readonly totalBalance?: CurrencyAmount | undefined,
-    public readonly totalLocalBalance?: CurrencyAmount | undefined,
-    public readonly localBalance?: CurrencyAmount | undefined,
-    public readonly remoteBalance?: CurrencyAmount | undefined,
-    public readonly blockchainBalance?: BlockchainBalance | undefined,
-    public readonly balances?: Balances | undefined,
+    public readonly alias?: string,
+    public readonly color?: string,
+    public readonly conductivity?: number,
+    public readonly publicKey?: string,
+    public readonly status?: LightsparkNodeStatus,
+    public readonly totalBalance?: CurrencyAmount,
+    public readonly totalLocalBalance?: CurrencyAmount,
+    public readonly localBalance?: CurrencyAmount,
+    public readonly remoteBalance?: CurrencyAmount,
+    public readonly blockchainBalance?: BlockchainBalance,
   ) {
     autoBind(this);
   }
@@ -237,45 +226,6 @@ ${FRAGMENT}
         LightsparkNodeWithRemoteSigningFromJson(data.entity),
     };
   }
-
-  public toJson() {
-    return {
-      __typename: "LightsparkNodeWithRemoteSigning",
-      lightspark_node_with_remote_signing_id: this.id,
-      lightspark_node_with_remote_signing_created_at: this.createdAt,
-      lightspark_node_with_remote_signing_updated_at: this.updatedAt,
-      lightspark_node_with_remote_signing_alias: this.alias,
-      lightspark_node_with_remote_signing_bitcoin_network: this.bitcoinNetwork,
-      lightspark_node_with_remote_signing_color: this.color,
-      lightspark_node_with_remote_signing_conductivity: this.conductivity,
-      lightspark_node_with_remote_signing_display_name: this.displayName,
-      lightspark_node_with_remote_signing_public_key: this.publicKey,
-      lightspark_node_with_remote_signing_owner: { id: this.ownerId },
-      lightspark_node_with_remote_signing_status: this.status,
-      lightspark_node_with_remote_signing_total_balance: this.totalBalance
-        ? CurrencyAmountToJson(this.totalBalance)
-        : undefined,
-      lightspark_node_with_remote_signing_total_local_balance: this
-        .totalLocalBalance
-        ? CurrencyAmountToJson(this.totalLocalBalance)
-        : undefined,
-      lightspark_node_with_remote_signing_local_balance: this.localBalance
-        ? CurrencyAmountToJson(this.localBalance)
-        : undefined,
-      lightspark_node_with_remote_signing_remote_balance: this.remoteBalance
-        ? CurrencyAmountToJson(this.remoteBalance)
-        : undefined,
-      lightspark_node_with_remote_signing_blockchain_balance: this
-        .blockchainBalance
-        ? BlockchainBalanceToJson(this.blockchainBalance)
-        : undefined,
-      lightspark_node_with_remote_signing_uma_prescreening_utxos:
-        this.umaPrescreeningUtxos,
-      lightspark_node_with_remote_signing_balances: this.balances
-        ? BalancesToJson(this.balances)
-        : undefined,
-    };
-  }
 }
 
 export const LightsparkNodeWithRemoteSigningFromJson = (
@@ -325,9 +275,6 @@ export const LightsparkNodeWithRemoteSigningFromJson = (
       ? BlockchainBalanceFromJson(
           obj["lightspark_node_with_remote_signing_blockchain_balance"],
         )
-      : undefined,
-    !!obj["lightspark_node_with_remote_signing_balances"]
-      ? BalancesFromJson(obj["lightspark_node_with_remote_signing_balances"])
       : undefined,
   );
 };
@@ -432,33 +379,6 @@ fragment LightsparkNodeWithRemoteSigningFragment on LightsparkNodeWithRemoteSign
         }
     }
     lightspark_node_with_remote_signing_uma_prescreening_utxos: uma_prescreening_utxos
-    lightspark_node_with_remote_signing_balances: balances {
-        __typename
-        balances_owned_balance: owned_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        balances_available_to_send_balance: available_to_send_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        balances_available_to_withdraw_balance: available_to_withdraw_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-    }
 }`;
 
 export default LightsparkNodeWithRemoteSigning;

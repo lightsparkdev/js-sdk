@@ -2,20 +2,20 @@
 
 import InvoiceType from "./InvoiceType.js";
 
-interface CreateInvoiceInput {
+type CreateInvoiceInput = {
   /** The node from which to create the invoice. **/
   nodeId: string;
 
   /** The amount for which the invoice should be created, in millisatoshis. **/
   amountMsats: number;
 
-  memo?: string | undefined;
+  memo?: string;
 
-  invoiceType?: InvoiceType | undefined;
+  invoiceType?: InvoiceType;
 
   /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
-  expirySecs?: number | undefined;
-}
+  expirySecs?: number;
+};
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
   return {
@@ -28,15 +28,6 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
   } as CreateInvoiceInput;
-};
-export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
-  return {
-    create_invoice_input_node_id: obj.nodeId,
-    create_invoice_input_amount_msats: obj.amountMsats,
-    create_invoice_input_memo: obj.memo,
-    create_invoice_input_invoice_type: obj.invoiceType,
-    create_invoice_input_expiry_secs: obj.expirySecs,
-  };
 };
 
 export default CreateInvoiceInput;

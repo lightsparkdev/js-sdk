@@ -2,64 +2,63 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type LightningTransaction from "./LightningTransaction.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import type PaymentRequestData from "./PaymentRequestData.js";
-import {
-  PaymentRequestDataFromJson,
-  PaymentRequestDataToJson,
-} from "./PaymentRequestData.js";
+import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
 import type RichText from "./RichText.js";
-import { RichTextFromJson, RichTextToJson } from "./RichText.js";
+import { RichTextFromJson } from "./RichText.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. **/
-interface OutgoingPayment {
-  /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
-   **/
-  id: string;
+type OutgoingPayment = LightningTransaction &
+  Transaction &
+  Entity & {
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
+    id: string;
 
-  /** The date and time when this transaction was initiated. **/
-  createdAt: string;
+    /** The date and time when this transaction was initiated. **/
+    createdAt: string;
 
-  /** The date and time when the entity was last updated. **/
-  updatedAt: string;
+    /** The date and time when the entity was last updated. **/
+    updatedAt: string;
 
-  /** The current status of this transaction. **/
-  status: TransactionStatus;
+    /** The current status of this transaction. **/
+    status: TransactionStatus;
 
-  /** The amount of money involved in this transaction. **/
-  amount: CurrencyAmount;
+    /** The amount of money involved in this transaction. **/
+    amount: CurrencyAmount;
 
-  /** The typename of the object **/
-  typename: string;
+    /** The typename of the object **/
+    typename: string;
 
-  /** The date and time when this transaction was completed or failed. **/
-  resolvedAt?: string | undefined;
+    /** The date and time when this transaction was completed or failed. **/
+    resolvedAt?: string;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-  transactionHash?: string | undefined;
+    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    transactionHash?: string;
 
-  /** The fees paid by the sender node to send the payment. **/
-  fees?: CurrencyAmount | undefined;
+    /** The fees paid by the sender node to send the payment. **/
+    fees?: CurrencyAmount;
 
-  /** The data of the payment request that was paid by this transaction, if known. **/
-  paymentRequestData?: PaymentRequestData | undefined;
+    /** The data of the payment request that was paid by this transaction, if known. **/
+    paymentRequestData?: PaymentRequestData;
 
-  /** If applicable, the reason why the payment failed. **/
-  failureReason?: PaymentFailureReason | undefined;
+    /** If applicable, the reason why the payment failed. **/
+    failureReason?: PaymentFailureReason;
 
-  /** If applicable, user-facing error message describing why the payment failed. **/
-  failureMessage?: RichText | undefined;
+    /** If applicable, user-facing error message describing why the payment failed. **/
+    failureMessage?: RichText;
 
-  /** The preimage of the payment. **/
-  paymentPreimage?: string | undefined;
-}
+    /** The preimage of the payment. **/
+    paymentPreimage?: string;
+  };
 
 export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
   return {
@@ -88,29 +87,6 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
       : undefined,
     paymentPreimage: obj["outgoing_payment_payment_preimage"],
   } as OutgoingPayment;
-};
-export const OutgoingPaymentToJson = (obj: OutgoingPayment): any => {
-  return {
-    __typename: "OutgoingPayment",
-    outgoing_payment_id: obj.id,
-    outgoing_payment_created_at: obj.createdAt,
-    outgoing_payment_updated_at: obj.updatedAt,
-    outgoing_payment_status: obj.status,
-    outgoing_payment_resolved_at: obj.resolvedAt,
-    outgoing_payment_amount: CurrencyAmountToJson(obj.amount),
-    outgoing_payment_transaction_hash: obj.transactionHash,
-    outgoing_payment_fees: obj.fees
-      ? CurrencyAmountToJson(obj.fees)
-      : undefined,
-    outgoing_payment_payment_request_data: obj.paymentRequestData
-      ? PaymentRequestDataToJson(obj.paymentRequestData)
-      : undefined,
-    outgoing_payment_failure_reason: obj.failureReason,
-    outgoing_payment_failure_message: obj.failureMessage
-      ? RichTextToJson(obj.failureMessage)
-      : undefined,
-    outgoing_payment_payment_preimage: obj.paymentPreimage,
-  };
 };
 
 export const FRAGMENT = `

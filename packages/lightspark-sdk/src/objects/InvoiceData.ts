@@ -2,15 +2,13 @@
 
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Node from "./Node.js";
-import { NodeFromJson, NodeToJson } from "./Node.js";
+import { NodeFromJson } from "./Node.js";
+import type PaymentRequestData from "./PaymentRequestData.js";
 
 /** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. **/
-interface InvoiceData {
+type InvoiceData = PaymentRequestData & {
   encodedPaymentRequest: string;
 
   bitcoinNetwork: BitcoinNetwork;
@@ -37,8 +35,8 @@ interface InvoiceData {
   typename: string;
 
   /** A short, UTF-8 encoded, description of the purpose of this invoice. **/
-  memo?: string | undefined;
-}
+  memo?: string;
+};
 
 export const InvoiceDataFromJson = (obj: any): InvoiceData => {
   return {
@@ -54,19 +52,6 @@ export const InvoiceDataFromJson = (obj: any): InvoiceData => {
     typename: "InvoiceData",
     memo: obj["invoice_data_memo"],
   } as InvoiceData;
-};
-export const InvoiceDataToJson = (obj: InvoiceData): any => {
-  return {
-    __typename: "InvoiceData",
-    invoice_data_encoded_payment_request: obj.encodedPaymentRequest,
-    invoice_data_bitcoin_network: obj.bitcoinNetwork,
-    invoice_data_payment_hash: obj.paymentHash,
-    invoice_data_amount: CurrencyAmountToJson(obj.amount),
-    invoice_data_created_at: obj.createdAt,
-    invoice_data_expires_at: obj.expiresAt,
-    invoice_data_memo: obj.memo,
-    invoice_data_destination: NodeToJson(obj.destination),
-  };
 };
 
 export const FRAGMENT = `
@@ -199,33 +184,6 @@ fragment InvoiceDataFragment on InvoiceData {
                 }
             }
             lightspark_node_with_o_s_k_uma_prescreening_utxos: uma_prescreening_utxos
-            lightspark_node_with_o_s_k_balances: balances {
-                __typename
-                balances_owned_balance: owned_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-                balances_available_to_send_balance: available_to_send_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-                balances_available_to_withdraw_balance: available_to_withdraw_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-            }
             lightspark_node_with_o_s_k_encrypted_signing_private_key: encrypted_signing_private_key {
                 __typename
                 secret_encrypted_value: encrypted_value
@@ -331,33 +289,6 @@ fragment InvoiceDataFragment on InvoiceData {
                 }
             }
             lightspark_node_with_remote_signing_uma_prescreening_utxos: uma_prescreening_utxos
-            lightspark_node_with_remote_signing_balances: balances {
-                __typename
-                balances_owned_balance: owned_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-                balances_available_to_send_balance: available_to_send_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-                balances_available_to_withdraw_balance: available_to_withdraw_balance {
-                    __typename
-                    currency_amount_original_value: original_value
-                    currency_amount_original_unit: original_unit
-                    currency_amount_preferred_currency_unit: preferred_currency_unit
-                    currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                    currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                }
-            }
         }
     }
 }`;

@@ -3,7 +3,7 @@
 import ComplianceProvider from "./ComplianceProvider.js";
 import PaymentDirection from "./PaymentDirection.js";
 
-interface RegisterPaymentInput {
+type RegisterPaymentInput = {
   /**
    * The compliance provider that is going to screen the node. You need to be a customer of the selected
    * provider and store the API key on the Lightspark account setting page.
@@ -25,7 +25,7 @@ interface RegisterPaymentInput {
 
   /** Indicates whether this payment is an OutgoingPayment or an IncomingPayment. **/
   direction: PaymentDirection;
-}
+};
 
 export const RegisterPaymentInputFromJson = (
   obj: any,
@@ -40,14 +40,6 @@ export const RegisterPaymentInputFromJson = (
       PaymentDirection[obj["register_payment_input_direction"]] ??
       PaymentDirection.FUTURE_VALUE,
   } as RegisterPaymentInput;
-};
-export const RegisterPaymentInputToJson = (obj: RegisterPaymentInput): any => {
-  return {
-    register_payment_input_provider: obj.provider,
-    register_payment_input_payment_id: obj.paymentId,
-    register_payment_input_node_pubkey: obj.nodePubkey,
-    register_payment_input_direction: obj.direction,
-  };
 };
 
 export default RegisterPaymentInput;

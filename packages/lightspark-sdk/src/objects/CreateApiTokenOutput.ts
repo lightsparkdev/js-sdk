@@ -1,9 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type ApiToken from "./ApiToken.js";
-import { ApiTokenFromJson, ApiTokenToJson } from "./ApiToken.js";
+import { ApiTokenFromJson } from "./ApiToken.js";
 
-interface CreateApiTokenOutput {
+type CreateApiTokenOutput = {
   /** The API Token that has been created. **/
   apiToken: ApiToken;
 
@@ -13,7 +13,7 @@ interface CreateApiTokenOutput {
    * account.
    **/
   clientSecret: string;
-}
+};
 
 export const CreateApiTokenOutputFromJson = (
   obj: any,
@@ -22,12 +22,6 @@ export const CreateApiTokenOutputFromJson = (
     apiToken: ApiTokenFromJson(obj["create_api_token_output_api_token"]),
     clientSecret: obj["create_api_token_output_client_secret"],
   } as CreateApiTokenOutput;
-};
-export const CreateApiTokenOutputToJson = (obj: CreateApiTokenOutput): any => {
-  return {
-    create_api_token_output_api_token: ApiTokenToJson(obj.apiToken),
-    create_api_token_output_client_secret: obj.clientSecret,
-  };
 };
 
 export const FRAGMENT = `

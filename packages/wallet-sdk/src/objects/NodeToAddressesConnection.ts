@@ -1,10 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type NodeAddress from "./NodeAddress.js";
-import { NodeAddressFromJson, NodeAddressToJson } from "./NodeAddress.js";
+import { NodeAddressFromJson } from "./NodeAddress.js";
 
 /** A connection between a node and the addresses it has announced for itself on Lightning Network. **/
-interface NodeToAddressesConnection {
+type NodeToAddressesConnection = {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -13,7 +13,7 @@ interface NodeToAddressesConnection {
 
   /** The addresses for the current page of this connection. **/
   entities: NodeAddress[];
-}
+};
 
 export const NodeToAddressesConnectionFromJson = (
   obj: any,
@@ -24,16 +24,6 @@ export const NodeToAddressesConnectionFromJson = (
       NodeAddressFromJson(e),
     ),
   } as NodeToAddressesConnection;
-};
-export const NodeToAddressesConnectionToJson = (
-  obj: NodeToAddressesConnection,
-): any => {
-  return {
-    node_to_addresses_connection_count: obj.count,
-    node_to_addresses_connection_entities: obj.entities.map((e) =>
-      NodeAddressToJson(e),
-    ),
-  };
 };
 
 export const FRAGMENT = `

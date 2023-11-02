@@ -3,7 +3,7 @@
 import CurrencyUnit from "./CurrencyUnit.js";
 
 /** This object represents the value and unit for an amount of currency. **/
-interface CurrencyAmount {
+type CurrencyAmount = {
   /** The original numeric value for this CurrencyAmount. **/
   originalValue: number;
 
@@ -24,7 +24,7 @@ interface CurrencyAmount {
    * currency. For example, for USD, the value will be in cents.
    **/
   preferredCurrencyValueApprox: number;
-}
+};
 
 export const CurrencyAmountFromJson = (obj: any): CurrencyAmount => {
   return {
@@ -40,17 +40,6 @@ export const CurrencyAmountFromJson = (obj: any): CurrencyAmount => {
     preferredCurrencyValueApprox:
       obj["currency_amount_preferred_currency_value_approx"],
   } as CurrencyAmount;
-};
-export const CurrencyAmountToJson = (obj: CurrencyAmount): any => {
-  return {
-    currency_amount_original_value: obj.originalValue,
-    currency_amount_original_unit: obj.originalUnit,
-    currency_amount_preferred_currency_unit: obj.preferredCurrencyUnit,
-    currency_amount_preferred_currency_value_rounded:
-      obj.preferredCurrencyValueRounded,
-    currency_amount_preferred_currency_value_approx:
-      obj.preferredCurrencyValueApprox,
-  };
 };
 
 export const FRAGMENT = `

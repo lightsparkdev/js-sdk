@@ -1,13 +1,9 @@
 import { hexToBytes } from "@lightsparkdev/core";
-import {
-  LightsparkClient,
-  LightsparkNode,
-} from "@lightsparkdev/lightspark-sdk";
+import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
 import { Express, Request, Response } from "express";
 import { errorMessage } from "./errors.js";
 import UmaConfig from "./UmaConfig.js";
-import { getLightsparkNodeQuery } from "@lightsparkdev/lightspark-sdk";
 
 export default class ReceivingVasp {
   constructor(
@@ -198,7 +194,7 @@ export default class ReceivingVasp {
         query: payreq,
         receiverChannelUtxos: [],
         receiverFeesMillisats: 0,
-        receiverNodePubKey: await this.getReceiverNodePubKey(),
+        receiverNodePubKey: "",
         utxoCallback: this.getUtxoCallback(req, txId),
       });
       res.send(response);
@@ -250,23 +246,6 @@ export default class ReceivingVasp {
       port === "80" || port === "443" || port === "" ? "" : `:${port}`;
     const path = `/api/uma/payreq/${this.config.userID}`;
     return `${protocol}://${req.hostname}${portString}${path}`;
-  }
-
-  private async getReceiverNodePubKey(): Promise<string> {
-    const nodeQuery = getLightsparkNodeQuery(this.config.nodeID);
-    let node: LightsparkNode | null;
-    try {
-      node = await this.lightsparkClient.executeRawQuery(nodeQuery);
-    } catch (e) {
-      throw new Error(`Failed to fetch node ${this.config.nodeID}.`);
-    }
-    if (!node) {
-      throw new Error(`Node ${this.config.nodeID} not found.`);
-    }
-    if (!node.publicKey) {
-      throw new Error(`Node ${this.config.nodeID} has no known public key.`);
-    }
-    return node.publicKey;
   }
 
   private getUtxoCallback(req: Request, txId: String): string {

@@ -2,65 +2,67 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
+import type OnChainTransaction from "./OnChainTransaction.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This is an object representing a transaction which closes a channel on the Lightning Network. This operation allocates balances back to the local and remote nodes. **/
-interface ChannelClosingTransaction {
-  /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
-   **/
-  id: string;
+type ChannelClosingTransaction = OnChainTransaction &
+  Transaction &
+  Entity & {
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
+    id: string;
 
-  /** The date and time when this transaction was initiated. **/
-  createdAt: string;
+    /** The date and time when this transaction was initiated. **/
+    createdAt: string;
 
-  /** The date and time when the entity was last updated. **/
-  updatedAt: string;
+    /** The date and time when the entity was last updated. **/
+    updatedAt: string;
 
-  /** The current status of this transaction. **/
-  status: TransactionStatus;
+    /** The current status of this transaction. **/
+    status: TransactionStatus;
 
-  /** The amount of money involved in this transaction. **/
-  amount: CurrencyAmount;
+    /** The amount of money involved in this transaction. **/
+    amount: CurrencyAmount;
 
-  /**
-   * The height of the block that included this transaction. This will be zero for unconfirmed
-   * transactions.
-   **/
-  blockHeight: number;
+    /**
+     * The height of the block that included this transaction. This will be zero for unconfirmed
+     * transactions.
+     **/
+    blockHeight: number;
 
-  /** The Bitcoin blockchain addresses this transaction was sent to. **/
-  destinationAddresses: string[];
+    /** The Bitcoin blockchain addresses this transaction was sent to. **/
+    destinationAddresses: string[];
 
-  /** The typename of the object **/
-  typename: string;
+    /** The typename of the object **/
+    typename: string;
 
-  /** The date and time when this transaction was completed or failed. **/
-  resolvedAt?: string | undefined;
+    /** The date and time when this transaction was completed or failed. **/
+    resolvedAt?: string;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-  transactionHash?: string | undefined;
+    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    transactionHash?: string;
 
-  /**
-   * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
-   * blockchain.
-   **/
-  fees?: CurrencyAmount | undefined;
+    /**
+     * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+     * blockchain.
+     **/
+    fees?: CurrencyAmount;
 
-  /**
-   * The hash of the block that included this transaction. This will be null for unconfirmed
-   * transactions.
-   **/
-  blockHash?: string | undefined;
+    /**
+     * The hash of the block that included this transaction. This will be null for unconfirmed
+     * transactions.
+     **/
+    blockHash?: string;
 
-  /** The number of blockchain confirmations for this transaction in real time. **/
-  numConfirmations?: number | undefined;
-}
+    /** The number of blockchain confirmations for this transaction in real time. **/
+    numConfirmations?: number;
+  };
 
 export const ChannelClosingTransactionFromJson = (
   obj: any,
@@ -85,27 +87,6 @@ export const ChannelClosingTransactionFromJson = (
     blockHash: obj["channel_closing_transaction_block_hash"],
     numConfirmations: obj["channel_closing_transaction_num_confirmations"],
   } as ChannelClosingTransaction;
-};
-export const ChannelClosingTransactionToJson = (
-  obj: ChannelClosingTransaction,
-): any => {
-  return {
-    __typename: "ChannelClosingTransaction",
-    channel_closing_transaction_id: obj.id,
-    channel_closing_transaction_created_at: obj.createdAt,
-    channel_closing_transaction_updated_at: obj.updatedAt,
-    channel_closing_transaction_status: obj.status,
-    channel_closing_transaction_resolved_at: obj.resolvedAt,
-    channel_closing_transaction_amount: CurrencyAmountToJson(obj.amount),
-    channel_closing_transaction_transaction_hash: obj.transactionHash,
-    channel_closing_transaction_fees: obj.fees
-      ? CurrencyAmountToJson(obj.fees)
-      : undefined,
-    channel_closing_transaction_block_hash: obj.blockHash,
-    channel_closing_transaction_block_height: obj.blockHeight,
-    channel_closing_transaction_destination_addresses: obj.destinationAddresses,
-    channel_closing_transaction_num_confirmations: obj.numConfirmations,
-  };
 };
 
 export const FRAGMENT = `

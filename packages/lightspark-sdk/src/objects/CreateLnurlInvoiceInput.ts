@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-interface CreateLnurlInvoiceInput {
+type CreateLnurlInvoiceInput = {
   /** The node from which to create the invoice. **/
   nodeId: string;
 
@@ -14,8 +14,8 @@ interface CreateLnurlInvoiceInput {
   metadataHash: string;
 
   /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
-  expirySecs?: number | undefined;
-}
+  expirySecs?: number;
+};
 
 export const CreateLnurlInvoiceInputFromJson = (
   obj: any,
@@ -26,16 +26,6 @@ export const CreateLnurlInvoiceInputFromJson = (
     metadataHash: obj["create_lnurl_invoice_input_metadata_hash"],
     expirySecs: obj["create_lnurl_invoice_input_expiry_secs"],
   } as CreateLnurlInvoiceInput;
-};
-export const CreateLnurlInvoiceInputToJson = (
-  obj: CreateLnurlInvoiceInput,
-): any => {
-  return {
-    create_lnurl_invoice_input_node_id: obj.nodeId,
-    create_lnurl_invoice_input_amount_msats: obj.amountMsats,
-    create_lnurl_invoice_input_metadata_hash: obj.metadataHash,
-    create_lnurl_invoice_input_expiry_secs: obj.expirySecs,
-  };
 };
 
 export default CreateLnurlInvoiceInput;
