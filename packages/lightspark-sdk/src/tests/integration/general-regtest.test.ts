@@ -20,6 +20,7 @@ import {
 import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
+  DEPOSIT_PAY_AMOUNT,
   ENCODED_REGTEST_REQUEST_FOR_TESTS,
   INVOICE_EXPIRY,
   LONG_TEST_TIMEOUT,
@@ -167,12 +168,21 @@ describe("P0 tests", () => {
   });
 
   test("Should pay an invoice", async () => {
+    const testInvoice = await lightsparkClient.createTestModeInvoice(
+      getRegtestNodeId(),
+      PAY_AMOUNT,
+      "hi there!",
+    );
+
+    if (!testInvoice) {
+      throw new TypeError("Test invoice doesn't created");
+    }
+
     invoicePayment = await lightsparkClient.payInvoice(
       getRegtestNodeId(),
-      ENCODED_REGTEST_REQUEST_FOR_TESTS,
+      testInvoice,
       MAX_FEE,
       TESTS_TIMEOUT,
-      PAY_AMOUNT,
     );
     expect(invoicePayment).toBeDefined();
   });
@@ -185,9 +195,9 @@ describe("P0 tests", () => {
   test("Should deposit funds to wallet with a defined amount of sats", async () => {
     const fundingResult = await lightsparkClient.fundNode(
       getRegtestNodeId(),
-      PAY_AMOUNT,
+      DEPOSIT_PAY_AMOUNT,
     );
-    expect(fundingResult.originalValue).toBe(PAY_AMOUNT);
+    expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
   });
 
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
@@ -316,11 +326,6 @@ describe("P1 tests", () => {
   test(
     "should create STANDARD a test mode invoice",
     async () => {
-      testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(
-        getRegtestNodeId(),
-        PAY_AMOUNT,
-        "hi there!",
-      );
       expect(testModeInvoices.withMemo).not.toBeNull();
     },
     TESTS_TIMEOUT,
