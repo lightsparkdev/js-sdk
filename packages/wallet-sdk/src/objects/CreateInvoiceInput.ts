@@ -2,15 +2,15 @@
 
 import InvoiceType from "./InvoiceType.js";
 
-interface CreateInvoiceInput {
+type CreateInvoiceInput = {
   amountMsats: number;
 
-  memo?: string | undefined;
+  memo?: string;
 
-  invoiceType?: InvoiceType | undefined;
+  invoiceType?: InvoiceType;
 
-  expirySecs?: number | undefined;
-}
+  expirySecs?: number;
+};
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
   return {
@@ -22,14 +22,6 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
   } as CreateInvoiceInput;
-};
-export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
-  return {
-    create_invoice_input_amount_msats: obj.amountMsats,
-    create_invoice_input_memo: obj.memo,
-    create_invoice_input_invoice_type: obj.invoiceType,
-    create_invoice_input_expiry_secs: obj.expirySecs,
-  };
 };
 
 export default CreateInvoiceInput;

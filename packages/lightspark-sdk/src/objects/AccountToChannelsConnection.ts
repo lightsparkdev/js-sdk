@@ -11,15 +11,6 @@ class AccountToChannelsConnection {
   ) {
     autoBind(this);
   }
-
-  public toJson() {
-    return {
-      account_to_channels_connection_count: this.count,
-      account_to_channels_connection_entities: this.entities.map((e) =>
-        e.toJson(),
-      ),
-    };
-  }
 }
 
 export const AccountToChannelsConnectionFromJson = (

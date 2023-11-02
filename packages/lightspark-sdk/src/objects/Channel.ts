@@ -4,15 +4,12 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type ChannelFees from "./ChannelFees.js";
-import { ChannelFeesFromJson, ChannelFeesToJson } from "./ChannelFees.js";
+import { ChannelFeesFromJson } from "./ChannelFees.js";
 import ChannelStatus from "./ChannelStatus.js";
 import type ChannelToTransactionsConnection from "./ChannelToTransactionsConnection.js";
 import { ChannelToTransactionsConnectionFromJson } from "./ChannelToTransactionsConnection.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
 import type TransactionType from "./TransactionType.js";
 
@@ -24,20 +21,20 @@ class Channel implements Entity {
     public readonly updatedAt: string,
     public readonly localNodeId: string,
     public readonly typename: string,
-    public readonly fundingTransactionId?: string | undefined,
-    public readonly capacity?: CurrencyAmount | undefined,
-    public readonly localBalance?: CurrencyAmount | undefined,
-    public readonly localUnsettledBalance?: CurrencyAmount | undefined,
-    public readonly remoteBalance?: CurrencyAmount | undefined,
-    public readonly remoteUnsettledBalance?: CurrencyAmount | undefined,
-    public readonly unsettledBalance?: CurrencyAmount | undefined,
-    public readonly totalBalance?: CurrencyAmount | undefined,
-    public readonly status?: ChannelStatus | undefined,
-    public readonly estimatedForceClosureWaitMinutes?: number | undefined,
-    public readonly commitFee?: CurrencyAmount | undefined,
-    public readonly fees?: ChannelFees | undefined,
-    public readonly remoteNodeId?: string | undefined,
-    public readonly shortChannelId?: string | undefined,
+    public readonly fundingTransactionId?: string,
+    public readonly capacity?: CurrencyAmount,
+    public readonly localBalance?: CurrencyAmount,
+    public readonly localUnsettledBalance?: CurrencyAmount,
+    public readonly remoteBalance?: CurrencyAmount,
+    public readonly remoteUnsettledBalance?: CurrencyAmount,
+    public readonly unsettledBalance?: CurrencyAmount,
+    public readonly totalBalance?: CurrencyAmount,
+    public readonly status?: ChannelStatus,
+    public readonly estimatedForceClosureWaitMinutes?: number,
+    public readonly commitFee?: CurrencyAmount,
+    public readonly fees?: ChannelFees,
+    public readonly remoteNodeId?: string,
+    public readonly shortChannelId?: string,
   ) {
     autoBind(this);
   }
@@ -140,48 +137,6 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) => ChannelFromJson(data.entity),
-    };
-  }
-
-  public toJson() {
-    return {
-      __typename: "Channel",
-      channel_id: this.id,
-      channel_created_at: this.createdAt,
-      channel_updated_at: this.updatedAt,
-      channel_funding_transaction:
-        { id: this.fundingTransactionId } ?? undefined,
-      channel_capacity: this.capacity
-        ? CurrencyAmountToJson(this.capacity)
-        : undefined,
-      channel_local_balance: this.localBalance
-        ? CurrencyAmountToJson(this.localBalance)
-        : undefined,
-      channel_local_unsettled_balance: this.localUnsettledBalance
-        ? CurrencyAmountToJson(this.localUnsettledBalance)
-        : undefined,
-      channel_remote_balance: this.remoteBalance
-        ? CurrencyAmountToJson(this.remoteBalance)
-        : undefined,
-      channel_remote_unsettled_balance: this.remoteUnsettledBalance
-        ? CurrencyAmountToJson(this.remoteUnsettledBalance)
-        : undefined,
-      channel_unsettled_balance: this.unsettledBalance
-        ? CurrencyAmountToJson(this.unsettledBalance)
-        : undefined,
-      channel_total_balance: this.totalBalance
-        ? CurrencyAmountToJson(this.totalBalance)
-        : undefined,
-      channel_status: this.status,
-      channel_estimated_force_closure_wait_minutes:
-        this.estimatedForceClosureWaitMinutes,
-      channel_commit_fee: this.commitFee
-        ? CurrencyAmountToJson(this.commitFee)
-        : undefined,
-      channel_fees: this.fees ? ChannelFeesToJson(this.fees) : undefined,
-      channel_remote_node: { id: this.remoteNodeId } ?? undefined,
-      channel_local_node: { id: this.localNodeId },
-      channel_short_channel_id: this.shortChannelId,
     };
   }
 }

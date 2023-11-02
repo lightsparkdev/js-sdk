@@ -2,22 +2,19 @@
 
 import { LightsparkException } from "@lightsparkdev/core";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 import type InvoiceData from "./InvoiceData.js";
-import { NodeFromJson, NodeToJson } from "./Node.js";
+import { NodeFromJson } from "./Node.js";
 
 /** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. **/
-interface PaymentRequestData {
+type PaymentRequestData = {
   encodedPaymentRequest: string;
 
   bitcoinNetwork: BitcoinNetwork;
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const PaymentRequestDataFromJson = (obj: any): PaymentRequestData => {
   if (obj["__typename"] == "InvoiceData") {
@@ -38,26 +35,6 @@ export const PaymentRequestDataFromJson = (obj: any): PaymentRequestData => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj["__typename"]}`,
-  );
-};
-export const PaymentRequestDataToJson = (obj: PaymentRequestData): any => {
-  if (obj.typename == "InvoiceData") {
-    const invoiceData = obj as InvoiceData;
-    return {
-      __typename: "InvoiceData",
-      invoice_data_encoded_payment_request: invoiceData.encodedPaymentRequest,
-      invoice_data_bitcoin_network: invoiceData.bitcoinNetwork,
-      invoice_data_payment_hash: invoiceData.paymentHash,
-      invoice_data_amount: CurrencyAmountToJson(invoiceData.amount),
-      invoice_data_created_at: invoiceData.createdAt,
-      invoice_data_expires_at: invoiceData.expiresAt,
-      invoice_data_memo: invoiceData.memo,
-      invoice_data_destination: NodeToJson(invoiceData.destination),
-    };
-  }
-  throw new LightsparkException(
-    "DeserializationError",
-    `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj.typename}`,
   );
 };
 
@@ -193,33 +170,6 @@ fragment PaymentRequestDataFragment on PaymentRequestData {
                     }
                 }
                 lightspark_node_with_o_s_k_uma_prescreening_utxos: uma_prescreening_utxos
-                lightspark_node_with_o_s_k_balances: balances {
-                    __typename
-                    balances_owned_balance: owned_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                    balances_available_to_send_balance: available_to_send_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                    balances_available_to_withdraw_balance: available_to_withdraw_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                }
                 lightspark_node_with_o_s_k_encrypted_signing_private_key: encrypted_signing_private_key {
                     __typename
                     secret_encrypted_value: encrypted_value
@@ -325,33 +275,6 @@ fragment PaymentRequestDataFragment on PaymentRequestData {
                     }
                 }
                 lightspark_node_with_remote_signing_uma_prescreening_utxos: uma_prescreening_utxos
-                lightspark_node_with_remote_signing_balances: balances {
-                    __typename
-                    balances_owned_balance: owned_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                    balances_available_to_send_balance: available_to_send_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                    balances_available_to_withdraw_balance: available_to_withdraw_balance {
-                        __typename
-                        currency_amount_original_value: original_value
-                        currency_amount_original_unit: original_unit
-                        currency_amount_preferred_currency_unit: preferred_currency_unit
-                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                    }
-                }
             }
         }
     }

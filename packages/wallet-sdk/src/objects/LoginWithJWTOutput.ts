@@ -3,13 +3,13 @@
 import type Wallet from "./Wallet.js";
 import { WalletFromJson } from "./Wallet.js";
 
-interface LoginWithJWTOutput {
+type LoginWithJWTOutput = {
   accessToken: string;
 
   wallet: Wallet;
 
   validUntil: string;
-}
+};
 
 export const LoginWithJWTOutputFromJson = (obj: any): LoginWithJWTOutput => {
   return {
@@ -17,13 +17,6 @@ export const LoginWithJWTOutputFromJson = (obj: any): LoginWithJWTOutput => {
     wallet: WalletFromJson(obj["login_with_j_w_t_output_wallet"]),
     validUntil: obj["login_with_j_w_t_output_valid_until"],
   } as LoginWithJWTOutput;
-};
-export const LoginWithJWTOutputToJson = (obj: LoginWithJWTOutput): any => {
-  return {
-    login_with_j_w_t_output_access_token: obj.accessToken,
-    login_with_j_w_t_output_wallet: obj.wallet.toJson(),
-    login_with_j_w_t_output_valid_until: obj.validUntil,
-  };
 };
 
 export const FRAGMENT = `

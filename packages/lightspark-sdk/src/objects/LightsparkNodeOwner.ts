@@ -2,12 +2,13 @@
 
 import { LightsparkException, type Query } from "@lightsparkdev/core";
 import Account from "./Account.js";
-import { BalancesFromJson, BalancesToJson } from "./Balances.js";
+import { BalancesFromJson } from "./Balances.js";
+import type Entity from "./Entity.js";
 import Wallet from "./Wallet.js";
 import WalletStatus from "./WalletStatus.js";
 
 /** This is an object representing the owner of a LightsparkNode. **/
-interface LightsparkNodeOwner {
+type LightsparkNodeOwner = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -22,7 +23,7 @@ interface LightsparkNodeOwner {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const LightsparkNodeOwnerFromJson = (obj: any): LightsparkNodeOwner => {
   if (obj["__typename"] == "Account") {
@@ -52,38 +53,6 @@ export const LightsparkNodeOwnerFromJson = (obj: any): LightsparkNodeOwner => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface LightsparkNodeOwner corresponding to the typename=${obj["__typename"]}`,
-  );
-};
-export const LightsparkNodeOwnerToJson = (obj: LightsparkNodeOwner): any => {
-  if (obj.typename == "Account") {
-    const account = obj as Account;
-    return {
-      __typename: "Account",
-      account_id: account.id,
-      account_created_at: account.createdAt,
-      account_updated_at: account.updatedAt,
-      account_name: account.name,
-    };
-  }
-  if (obj.typename == "Wallet") {
-    const wallet = obj as Wallet;
-    return {
-      __typename: "Wallet",
-      wallet_id: wallet.id,
-      wallet_created_at: wallet.createdAt,
-      wallet_updated_at: wallet.updatedAt,
-      wallet_last_login_at: wallet.lastLoginAt,
-      wallet_balances: wallet.balances
-        ? BalancesToJson(wallet.balances)
-        : undefined,
-      wallet_third_party_identifier: wallet.thirdPartyIdentifier,
-      wallet_account: { id: wallet.accountId } ?? undefined,
-      wallet_status: wallet.status,
-    };
-  }
-  throw new LightsparkException(
-    "DeserializationError",
-    `Couldn't find a concrete type for interface LightsparkNodeOwner corresponding to the typename=${obj.typename}`,
   );
 };
 

@@ -1,15 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+import type Connection from "./Connection.js";
 import type LightsparkNode from "./LightsparkNode.js";
-import {
-  LightsparkNodeFromJson,
-  LightsparkNodeToJson,
-} from "./LightsparkNode.js";
+import { LightsparkNodeFromJson } from "./LightsparkNode.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 
 /** A connection between an account and the nodes it manages. **/
-interface AccountToNodesConnection {
+type AccountToNodesConnection = Connection & {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -24,7 +22,7 @@ interface AccountToNodesConnection {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const AccountToNodesConnectionFromJson = (
   obj: any,
@@ -37,18 +35,6 @@ export const AccountToNodesConnectionFromJson = (
     ),
     typename: "AccountToNodesConnection",
   } as AccountToNodesConnection;
-};
-export const AccountToNodesConnectionToJson = (
-  obj: AccountToNodesConnection,
-): any => {
-  return {
-    __typename: "AccountToNodesConnection",
-    account_to_nodes_connection_count: obj.count,
-    account_to_nodes_connection_page_info: PageInfoToJson(obj.pageInfo),
-    account_to_nodes_connection_entities: obj.entities.map((e) =>
-      LightsparkNodeToJson(e),
-    ),
-  };
 };
 
 export const FRAGMENT = `

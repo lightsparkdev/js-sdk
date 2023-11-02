@@ -4,7 +4,7 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type Balances from "./Balances.js";
-import { BalancesFromJson, BalancesToJson } from "./Balances.js";
+import { BalancesFromJson } from "./Balances.js";
 import type Entity from "./Entity.js";
 import type TransactionStatus from "./TransactionStatus.js";
 import type TransactionType from "./TransactionType.js";
@@ -21,7 +21,7 @@ class Wallet implements Entity {
     public readonly updatedAt: string,
     public readonly status: WalletStatus,
     public readonly typename: string,
-    public readonly balances?: Balances | undefined,
+    public readonly balances?: Balances,
   ) {
     autoBind(this);
   }
@@ -374,19 +374,6 @@ ${FRAGMENT}
 `,
       variables: {},
       constructObject: (data: any) => WalletFromJson(data.current_wallet),
-    };
-  }
-
-  public toJson() {
-    return {
-      __typename: "Wallet",
-      wallet_id: this.id,
-      wallet_created_at: this.createdAt,
-      wallet_updated_at: this.updatedAt,
-      wallet_balances: this.balances
-        ? BalancesToJson(this.balances)
-        : undefined,
-      wallet_status: this.status,
     };
   }
 }

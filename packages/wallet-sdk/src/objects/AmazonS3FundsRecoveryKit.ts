@@ -1,6 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-interface AmazonS3FundsRecoveryKit {
+import type FundsRecoveryKit from "./FundsRecoveryKit.js";
+
+type AmazonS3FundsRecoveryKit = FundsRecoveryKit & {
   /** The bitcoin address where the funds should be sent if the recovery kit is used. **/
   bitcoinWalletAddress: string;
 
@@ -9,7 +11,7 @@ interface AmazonS3FundsRecoveryKit {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const AmazonS3FundsRecoveryKitFromJson = (
   obj: any,
@@ -20,16 +22,6 @@ export const AmazonS3FundsRecoveryKitFromJson = (
     s3BucketUrl: obj["amazon_s3_funds_recovery_kit_s3_bucket_url"],
     typename: "AmazonS3FundsRecoveryKit",
   } as AmazonS3FundsRecoveryKit;
-};
-export const AmazonS3FundsRecoveryKitToJson = (
-  obj: AmazonS3FundsRecoveryKit,
-): any => {
-  return {
-    __typename: "AmazonS3FundsRecoveryKit",
-    amazon_s3_funds_recovery_kit_bitcoin_wallet_address:
-      obj.bitcoinWalletAddress,
-    amazon_s3_funds_recovery_kit_s3_bucket_url: obj.s3BucketUrl,
-  };
 };
 
 export const FRAGMENT = `

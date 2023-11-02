@@ -1,13 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.8.0
-
-### Minor Changes
-
-- 4857f66: Fix json serialization of interfaces by including a toJson function for objects
-  - Switch interface types to `interface` instead of `type`
-  - Add `toJson()` to classes and `FooToJson()` to types and interfaces.
-
 ## 0.7.6
 
 ### Patch Changes

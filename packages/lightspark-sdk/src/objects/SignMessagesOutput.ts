@@ -1,15 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type SignablePayload from "./SignablePayload.js";
-import {
-  SignablePayloadFromJson,
-  SignablePayloadToJson,
-} from "./SignablePayload.js";
+import { SignablePayloadFromJson } from "./SignablePayload.js";
 
-interface SignMessagesOutput {
+type SignMessagesOutput = {
   /** The list of signed payloads. **/
   signedPayloads: SignablePayload[];
-}
+};
 
 export const SignMessagesOutputFromJson = (obj: any): SignMessagesOutput => {
   return {
@@ -17,13 +14,6 @@ export const SignMessagesOutputFromJson = (obj: any): SignMessagesOutput => {
       SignablePayloadFromJson(e),
     ),
   } as SignMessagesOutput;
-};
-export const SignMessagesOutputToJson = (obj: SignMessagesOutput): any => {
-  return {
-    sign_messages_output_signed_payloads: obj.signedPayloads.map((e) =>
-      SignablePayloadToJson(e),
-    ),
-  };
 };
 
 export const FRAGMENT = `

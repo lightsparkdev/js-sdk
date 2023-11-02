@@ -2,13 +2,11 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 
 /** This object represents a specific node that existed on a particular payment route. You can retrieve this object to get information about a node on a particular payment path and all payment-relevant information for that node. **/
-interface Hop {
+type Hop = Entity & {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -28,20 +26,20 @@ interface Hop {
   typename: string;
 
   /** The destination node of the hop. **/
-  destinationId?: string | undefined;
+  destinationId?: string;
 
   /** The public key of the node to which the hop is bound. **/
-  publicKey?: string | undefined;
+  publicKey?: string;
 
   /** The amount that is to be forwarded to the destination node. **/
-  amountToForward?: CurrencyAmount | undefined;
+  amountToForward?: CurrencyAmount;
 
   /** The fees to be collected by the source node for forwarding the payment over the hop. **/
-  fee?: CurrencyAmount | undefined;
+  fee?: CurrencyAmount;
 
   /** The block height at which an unsettled HTLC is considered expired. **/
-  expiryBlockHeight?: number | undefined;
-}
+  expiryBlockHeight?: number;
+};
 
 export const HopFromJson = (obj: any): Hop => {
   return {
@@ -58,22 +56,6 @@ export const HopFromJson = (obj: any): Hop => {
     fee: !!obj["hop_fee"] ? CurrencyAmountFromJson(obj["hop_fee"]) : undefined,
     expiryBlockHeight: obj["hop_expiry_block_height"],
   } as Hop;
-};
-export const HopToJson = (obj: Hop): any => {
-  return {
-    __typename: "Hop",
-    hop_id: obj.id,
-    hop_created_at: obj.createdAt,
-    hop_updated_at: obj.updatedAt,
-    hop_destination: { id: obj.destinationId } ?? undefined,
-    hop_index: obj.index,
-    hop_public_key: obj.publicKey,
-    hop_amount_to_forward: obj.amountToForward
-      ? CurrencyAmountToJson(obj.amountToForward)
-      : undefined,
-    hop_fee: obj.fee ? CurrencyAmountToJson(obj.fee) : undefined,
-    hop_expiry_block_height: obj.expiryBlockHeight,
-  };
 };
 
 export const FRAGMENT = `

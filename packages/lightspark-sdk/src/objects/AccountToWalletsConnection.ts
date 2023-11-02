@@ -1,11 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+import type Connection from "./Connection.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import { PageInfoFromJson } from "./PageInfo.js";
 import type Wallet from "./Wallet.js";
 import { WalletFromJson } from "./Wallet.js";
 
-interface AccountToWalletsConnection {
+type AccountToWalletsConnection = Connection & {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -20,7 +21,7 @@ interface AccountToWalletsConnection {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const AccountToWalletsConnectionFromJson = (
   obj: any,
@@ -33,16 +34,6 @@ export const AccountToWalletsConnectionFromJson = (
     ),
     typename: "AccountToWalletsConnection",
   } as AccountToWalletsConnection;
-};
-export const AccountToWalletsConnectionToJson = (
-  obj: AccountToWalletsConnection,
-): any => {
-  return {
-    __typename: "AccountToWalletsConnection",
-    account_to_wallets_connection_count: obj.count,
-    account_to_wallets_connection_page_info: PageInfoToJson(obj.pageInfo),
-    account_to_wallets_connection_entities: obj.entities.map((e) => e.toJson()),
-  };
 };
 
 export const FRAGMENT = `

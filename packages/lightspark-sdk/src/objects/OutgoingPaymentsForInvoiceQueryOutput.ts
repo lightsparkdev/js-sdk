@@ -3,9 +3,9 @@
 import type OutgoingPayment from "./OutgoingPayment.js";
 import { OutgoingPaymentFromJson } from "./OutgoingPayment.js";
 
-interface OutgoingPaymentsForInvoiceQueryOutput {
+type OutgoingPaymentsForInvoiceQueryOutput = {
   payments: OutgoingPayment[];
-}
+};
 
 export const OutgoingPaymentsForInvoiceQueryOutputFromJson = (
   obj: any,
@@ -15,15 +15,6 @@ export const OutgoingPaymentsForInvoiceQueryOutputFromJson = (
       (e) => OutgoingPaymentFromJson(e),
     ),
   } as OutgoingPaymentsForInvoiceQueryOutput;
-};
-export const OutgoingPaymentsForInvoiceQueryOutputToJson = (
-  obj: OutgoingPaymentsForInvoiceQueryOutput,
-): any => {
-  return {
-    outgoing_payments_for_invoice_query_output_payments: obj.payments.map((e) =>
-      e.toJson(),
-    ),
-  };
 };
 
 export const FRAGMENT = `

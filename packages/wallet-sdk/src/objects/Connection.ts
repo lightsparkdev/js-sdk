@@ -2,16 +2,13 @@
 
 import { LightsparkException } from "@lightsparkdev/core";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
-import {
-  PaymentRequestFromJson,
-  PaymentRequestToJson,
-} from "./PaymentRequest.js";
-import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
+import { PageInfoFromJson } from "./PageInfo.js";
+import { PaymentRequestFromJson } from "./PaymentRequest.js";
+import { TransactionFromJson } from "./Transaction.js";
 import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
-interface Connection {
+type Connection = {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -23,7 +20,7 @@ interface Connection {
 
   /** The typename of the object **/
   typename: string;
-}
+};
 
 export const ConnectionFromJson = (obj: any): Connection => {
   if (obj["__typename"] == "WalletToPaymentRequestsConnection") {
@@ -53,44 +50,6 @@ export const ConnectionFromJson = (obj: any): Connection => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`,
-  );
-};
-export const ConnectionToJson = (obj: Connection): any => {
-  if (obj.typename == "WalletToPaymentRequestsConnection") {
-    const walletToPaymentRequestsConnection =
-      obj as WalletToPaymentRequestsConnection;
-    return {
-      __typename: "WalletToPaymentRequestsConnection",
-      wallet_to_payment_requests_connection_count:
-        walletToPaymentRequestsConnection.count,
-      wallet_to_payment_requests_connection_page_info: PageInfoToJson(
-        walletToPaymentRequestsConnection.pageInfo,
-      ),
-      wallet_to_payment_requests_connection_entities:
-        walletToPaymentRequestsConnection.entities.map((e) =>
-          PaymentRequestToJson(e),
-        ),
-    };
-  }
-  if (obj.typename == "WalletToTransactionsConnection") {
-    const walletToTransactionsConnection =
-      obj as WalletToTransactionsConnection;
-    return {
-      __typename: "WalletToTransactionsConnection",
-      wallet_to_transactions_connection_count:
-        walletToTransactionsConnection.count,
-      wallet_to_transactions_connection_page_info: PageInfoToJson(
-        walletToTransactionsConnection.pageInfo,
-      ),
-      wallet_to_transactions_connection_entities:
-        walletToTransactionsConnection.entities.map((e) =>
-          TransactionToJson(e),
-        ),
-    };
-  }
-  throw new LightsparkException(
-    "DeserializationError",
-    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj.typename}`,
   );
 };
 

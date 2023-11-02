@@ -3,9 +3,9 @@
 import type Wallet from "./Wallet.js";
 import { WalletFromJson } from "./Wallet.js";
 
-interface TerminateWalletOutput {
+type TerminateWalletOutput = {
   wallet: Wallet;
-}
+};
 
 export const TerminateWalletOutputFromJson = (
   obj: any,
@@ -13,13 +13,6 @@ export const TerminateWalletOutputFromJson = (
   return {
     wallet: WalletFromJson(obj["terminate_wallet_output_wallet"]),
   } as TerminateWalletOutput;
-};
-export const TerminateWalletOutputToJson = (
-  obj: TerminateWalletOutput,
-): any => {
-  return {
-    terminate_wallet_output_wallet: obj.wallet.toJson(),
-  };
 };
 
 export const FRAGMENT = `

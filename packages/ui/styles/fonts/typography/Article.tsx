@@ -29,7 +29,7 @@ export const Article = styled.article`
   }
 
   ${headlineSelector("h4")} {
-    padding-top: 16px;
+    padding-top: 32px;
     padding-bottom: 8px;
     margin: 0;
   }

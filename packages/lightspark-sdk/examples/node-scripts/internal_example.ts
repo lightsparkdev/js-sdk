@@ -5,8 +5,8 @@ import {
   BitcoinNetwork,
   CurrencyAmount,
   getDepositQuery,
-  getLightsparkNodeQuery,
   LightsparkClient,
+  LightsparkNode,
   Node,
 } from "@lightsparkdev/lightspark-sdk";
 import day from "dayjs";
@@ -21,19 +21,19 @@ const credentials = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(
   new AccountTokenAuthProvider(
     credentials.apiTokenClientId,
-    credentials.apiTokenClientSecret,
+    credentials.apiTokenClientSecret
   ),
-  "api.dev.dev.sparkinfra.net",
+  "api.dev.dev.sparkinfra.net"
 );
 
 // Get some fee estimates for Bitcoin (L1) transactions
 
 const feeEstimate = await client.getBitcoinFeeEstimate(BitcoinNetwork.REGTEST);
 console.log(
-  `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`,
+  `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`
 );
 console.log(
-  `Fees for a cheap transaction ${feeEstimate.feeMin.preferredCurrencyValueApprox} ${feeEstimate.feeMin.preferredCurrencyUnit}.\n`,
+  `Fees for a cheap transaction ${feeEstimate.feeMin.preferredCurrencyValueApprox} ${feeEstimate.feeMin.preferredCurrencyUnit}.\n`
 );
 
 // List your account's lightning nodes
@@ -52,12 +52,12 @@ console.log(`You have ${apiTokenConnection.count} API tokens.`);
 const { apiToken, clientSecret } = await client.createApiToken(
   "newTestToken",
   false,
-  true,
+  true
 );
 console.log(
   `Created API token ${apiToken.name} with ID ${
     apiToken.id
-  }. Permissions: ${JSON.stringify(apiToken.permissions)}\n`,
+  }. Permissions: ${JSON.stringify(apiToken.permissions)}\n`
 );
 
 const apiTokenConnection2 = await account.getApiTokens(client);
@@ -73,8 +73,8 @@ console.log(`You now have ${apiTokenConnection3.count} API tokens.\n`);
 console.log(
   `Your account's conductivity on REGTEST is ${await account.getConductivity(
     client,
-    [BitcoinNetwork.REGTEST],
-  )}/10.\n`,
+    [BitcoinNetwork.REGTEST]
+  )}/10.\n`
 );
 
 // Check your account's local and remote balances for REGTEST
@@ -88,7 +88,7 @@ const remoteBalance = await account.getRemoteBalance(client, [
 if (localBalance && remoteBalance) {
   console.log(
     `Your local balance is ${localBalance.preferredCurrencyValueApprox} ${localBalance.preferredCurrencyUnit}, 
-    your remote balance is ${remoteBalance.preferredCurrencyValueApprox} ${remoteBalance.preferredCurrencyUnit}.`,
+    your remote balance is ${remoteBalance.preferredCurrencyValueApprox} ${remoteBalance.preferredCurrencyUnit}.`
   );
 }
 
@@ -127,18 +127,18 @@ let transactionsConnection = await account.getTransactions(
   undefined,
   undefined,
   undefined,
-  BitcoinNetwork.REGTEST,
+  BitcoinNetwork.REGTEST
 );
 
 console.log(
-  `There is a total of ${transactionsConnection.count} transaction(s) on this account:`,
+  `There is a total of ${transactionsConnection.count} transaction(s) on this account:`
 );
 let depositTransactionId: string | undefined;
 for (const transaction of transactionsConnection.entities) {
   console.log(
     `    - ${transaction.typename} at ${transaction.createdAt}:
     ${transaction.amount.preferredCurrencyValueApprox} ${transaction.amount.preferredCurrencyUnit}
-    (${transaction.status})`,
+    (${transaction.status})`
   );
   if (transaction.typename == "Deposit") {
     depositTransactionId = transaction.id;
@@ -155,7 +155,7 @@ for (const transaction of transactionsConnection.entities) {
     fees = (transaction as unknown as { fees: CurrencyAmount }).fees;
     if (fees !== undefined)
       console.log(
-        `        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`,
+        `        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`
       );
   }
 }
@@ -175,11 +175,11 @@ while (hasNext && iterations < 30) {
     undefined,
     undefined,
     undefined,
-    BitcoinNetwork.REGTEST,
+    BitcoinNetwork.REGTEST
   );
   const num = transactionsConnection.entities.length;
   console.log(
-    `We got ${num} transactions for the page (iteration #${iterations})`,
+    `We got ${num} transactions for the page (iteration #${iterations})`
   );
   if (transactionsConnection.pageInfo.hasNextPage) {
     hasNext = true;
@@ -201,10 +201,10 @@ transactionsConnection = await account.getTransactions(
   undefined,
   day().utc().subtract(1, "day").format(),
   undefined,
-  BitcoinNetwork.REGTEST,
+  BitcoinNetwork.REGTEST
 );
 console.log(
-  `We had ${transactionsConnection.count} transactions in the past 24 hours.`,
+  `We had ${transactionsConnection.count} transactions in the past 24 hours.`
 );
 
 // Get details for a transaction
@@ -214,7 +214,7 @@ if (!depositTransactionId) {
 }
 
 const deposit = await client.executeRawQuery(
-  getDepositQuery(depositTransactionId),
+  getDepositQuery(depositTransactionId)
 );
 console.log("Details of deposit transaction");
 console.log(deposit);
@@ -237,13 +237,13 @@ if (!decodedInvoice) {
 }
 console.log("Decoded payment request:");
 console.log(
-  "    destination public key = " + decodedInvoice.destination.publicKey,
+  "    destination public key = " + decodedInvoice.destination.publicKey
 );
 console.log(
   "    amount = " +
     decodedInvoice.amount.preferredCurrencyValueApprox +
     " " +
-    decodedInvoice.amount.preferredCurrencyUnit,
+    decodedInvoice.amount.preferredCurrencyUnit
 );
 console.log("    memo = " + decodedInvoice.memo);
 console.log("");
@@ -251,9 +251,7 @@ console.log("");
 // Let's send the payment.
 
 // First, we need to recover the signing key.
-await client.loadNodeSigningKey(node2Id, {
-  password: credentials.node2Password!,
-});
+await client.loadNodeSigningKey(node2Id, { password: credentials.node2Password! });
 console.log(`${credentials.node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
@@ -270,25 +268,27 @@ console.log("");
 // console.log("");
 
 // Fetch the channels for Node 1
-const node1 = await client.executeRawQuery(getLightsparkNodeQuery(node1Id));
+const node1 = await client.executeRawQuery(
+  LightsparkNode.getLightsparkNodeQuery(node1Id)
+);
 if (!node1) {
   throw new Error("Unable to find node 1.");
 }
 
 const channelsConnection = await node1.getChannels(client, 10);
 console.log(
-  `${credentials.node1Name} has ${channelsConnection.count} channel(s):`,
+  `${credentials.node1Name} has ${channelsConnection.count} channel(s):`
 );
 for (const channel of channelsConnection.entities) {
   if (channel.remoteNodeId) {
     const remoteNode = await client.executeRawQuery(
-      Node.getNodeQuery(channel.remoteNodeId),
+      Node.getNodeQuery(channel.remoteNodeId)
     );
     const alias = remoteNode?.alias ?? "UNKNOWN";
     if (channel.localBalance && channel.remoteBalance) {
       console.log(
         `    - With ${alias}. Local/remote balance = ${channel.localBalance.preferredCurrencyValueApprox} ${channel.localBalance.preferredCurrencyUnit}
-        / ${channel.remoteBalance.preferredCurrencyValueApprox} ${channel.remoteBalance.preferredCurrencyUnit}`,
+        / ${channel.remoteBalance.preferredCurrencyValueApprox} ${channel.remoteBalance.preferredCurrencyUnit}`
       );
     }
   }

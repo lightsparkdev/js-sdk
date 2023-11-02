@@ -31,7 +31,10 @@ export const getHeadlineText = (element: React.ReactElement): string => {
 };
 
 const toKebabCase = (str: string) => {
-  return str.replaceAll(" ", "-").toLowerCase();
+  return str
+    .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
+    ?.join("-")
+    .toLowerCase();
 };
 
 export const Headline = ({

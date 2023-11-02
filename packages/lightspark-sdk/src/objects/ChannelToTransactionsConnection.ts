@@ -1,12 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type CurrencyAmount from "./CurrencyAmount.js";
-import {
-  CurrencyAmountFromJson,
-  CurrencyAmountToJson,
-} from "./CurrencyAmount.js";
+import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
 
-interface ChannelToTransactionsConnection {
+type ChannelToTransactionsConnection = {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -17,20 +14,20 @@ interface ChannelToTransactionsConnection {
    * The average fee for the transactions that transited through this channel, according to the filters
    * and constraints of the connection.
    **/
-  averageFee?: CurrencyAmount | undefined;
+  averageFee?: CurrencyAmount;
 
   /**
    * The total amount transacted for the transactions that transited through this channel, according to
    * the filters and constraints of the connection.
    **/
-  totalAmountTransacted?: CurrencyAmount | undefined;
+  totalAmountTransacted?: CurrencyAmount;
 
   /**
    * The total amount of fees for the transactions that transited through this channel, according to the
    * filters and constraints of the connection.
    **/
-  totalFees?: CurrencyAmount | undefined;
-}
+  totalFees?: CurrencyAmount;
+};
 
 export const ChannelToTransactionsConnectionFromJson = (
   obj: any,
@@ -55,23 +52,6 @@ export const ChannelToTransactionsConnectionFromJson = (
         )
       : undefined,
   } as ChannelToTransactionsConnection;
-};
-export const ChannelToTransactionsConnectionToJson = (
-  obj: ChannelToTransactionsConnection,
-): any => {
-  return {
-    channel_to_transactions_connection_count: obj.count,
-    channel_to_transactions_connection_average_fee: obj.averageFee
-      ? CurrencyAmountToJson(obj.averageFee)
-      : undefined,
-    channel_to_transactions_connection_total_amount_transacted:
-      obj.totalAmountTransacted
-        ? CurrencyAmountToJson(obj.totalAmountTransacted)
-        : undefined,
-    channel_to_transactions_connection_total_fees: obj.totalFees
-      ? CurrencyAmountToJson(obj.totalFees)
-      : undefined,
-  };
 };
 
 export const FRAGMENT = `

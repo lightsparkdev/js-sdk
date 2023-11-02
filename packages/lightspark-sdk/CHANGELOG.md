@@ -1,19 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.2.0
-
-### Minor Changes
-
-- 4857f66: Fix json serialization of interfaces by including a toJson function for objects
-  - Switch interface types to `interface` instead of `type`
-  - Add `toJson()` to classes and `FooToJson()` to types and interfaces.
-
-## 1.1.7
-
-### Patch Changes
-
-- c6fceaa: Add balances to the js lightspark SDK towards LIG-3787
-
 ## 1.1.6
 
 ### Patch Changes
