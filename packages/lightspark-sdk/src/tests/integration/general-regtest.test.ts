@@ -343,7 +343,7 @@ describe("P1 tests", () => {
         undefined,
         BitcoinNetwork.REGTEST,
       );
-      expect(transactions.length).not.toBe(0);
+      expect(transactions.length > 0).toBe(true);
     },
     TESTS_TIMEOUT,
   );
