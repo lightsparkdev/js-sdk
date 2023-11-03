@@ -17,8 +17,8 @@ import {
   InvoiceType,
   OutgoingPayment,
   TransactionStatus,
+  type AccountToNodesConnection,
 } from "../../index.js";
-import { type AccountToNodesConnection } from "../../objects";
 import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
