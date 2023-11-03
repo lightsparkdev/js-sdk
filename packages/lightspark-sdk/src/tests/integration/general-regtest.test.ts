@@ -12,14 +12,6 @@ import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
 import { DecodeInvoice } from "../../graphql/DecodeInvoice.js";
 import {
-  AccountTokenAuthProvider,
-  BitcoinNetwork,
-  InvoiceType,
-  OutgoingPayment,
-  TransactionStatus,
-  type AccountToNodesConnection,
-} from "../../index.js";
-import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
   DEPOSIT_PAY_AMOUNT,
@@ -36,6 +28,14 @@ import {
   TRANSACTION_WAIT_TIME,
   WALLET_REDUCING_BALANCE_AMOUNT,
 } from "./const/index.js";
+import {
+    AccountTokenAuthProvider,
+    BitcoinNetwork,
+    InvoiceType,
+    OutgoingPayment,
+    TransactionStatus,
+    type AccountToNodesConnection,
+} from "../../index.js";
 
 const unauthorizedLightsparkClient = new LightsparkClient();
 
