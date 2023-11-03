@@ -323,7 +323,6 @@ describe("P1 tests", () => {
   test(
     "should listen current payment requests from unauthorized client",
     async () => {
-
       await expect(
         unauthorizedLightsparkClient.getRecentPaymentRequests(
           getRegtestNodeId(),
