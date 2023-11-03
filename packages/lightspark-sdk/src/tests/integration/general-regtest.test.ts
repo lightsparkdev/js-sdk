@@ -27,11 +27,14 @@ import {
   INVOICE_EXPIRY,
   LONG_TEST_TIMEOUT,
   MAX_FEE,
+  MAX_WALLET_BALANCE,
   PAGINATION_STEP,
   PAY_AMOUNT,
+  REDUCING_BALANCE_FEE,
   REGTEST_SIGNING_KEY_PASSWORD,
   TESTS_TIMEOUT,
   TRANSACTION_WAIT_TIME,
+  WALLET_REDUCING_BALANCE_AMOUNT,
 } from "./const/index.js";
 
 const unauthorizedLightsparkClient = new LightsparkClient();
@@ -59,12 +62,9 @@ const reduceBalanceIfItsNeeded = async () => {
   const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
   const nodeId = getRegtestNodeId();
 
-  /* Backend will error for deposits if node balance is greater than 100,000,000 sats */
-  const maxBalanceSatsForDeposits = 100_000_000;
-
-  if (initialTotalBalance.sats >= maxBalanceSatsForDeposits) {
-    const targetBalanceSats = 50_000_000;
-    const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+  if (initialTotalBalance.sats >= MAX_WALLET_BALANCE) {
+    const invoiceAmount =
+      initialTotalBalance.sats - WALLET_REDUCING_BALANCE_AMOUNT;
 
     await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
       password: REGTEST_SIGNING_KEY_PASSWORD,
@@ -72,18 +72,17 @@ const reduceBalanceIfItsNeeded = async () => {
 
     const invoice = await lightsparkClient.createTestModeInvoice(
       nodeId,
-      invoiceAmount * 1000, // convert to msats
+      invoiceAmount * 1000,
     );
 
     if (!invoice) {
       throw new Error("Unable to create invoice for balance adjustment");
     }
 
-    const feeRate = 0.0016;
     const payment = await lightsparkClient.payInvoice(
       nodeId,
       invoice,
-      round(invoiceAmount * feeRate),
+      round(invoiceAmount * REDUCING_BALANCE_FEE),
     );
 
     if (!payment) {
