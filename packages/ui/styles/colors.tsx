@@ -112,7 +112,7 @@ type LightsparkSurfaces = {
   content: BaseTheme; // eg main contener
   controls: BaseTheme; // eg secondary nav
 };
-type LightsparkTheme = BaseTheme & LightsparkSurfaces;
+export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}
@@ -220,16 +220,17 @@ const lightTheme = extend(lightBaseTheme, {
     text: colors.gray60,
   }),
   nav: extendBase(lightBaseTheme, {
-    text: colors.gray60,
+    text: colors.gray10,
+    secondary: colors.secondary,
   }),
   content: extendBase(lightBaseTheme, {
     bg: colors.white,
     smBg: colors.white,
   }),
   controls: extendBase(lightBaseTheme, {
-    bg: neutral.gray40,
-    smBg: neutral.gray40,
-    text: neutral.white,
+    bg: neutral.gray95,
+    smBg: neutral.gray95,
+    text: neutral.gray60,
     secondary: colors.secondary,
   }),
 });

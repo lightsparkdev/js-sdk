@@ -526,7 +526,7 @@ class LightsparkClient {
     metadata: string,
     expirySecs: number | undefined = undefined,
   ): Promise<Invoice | undefined> {
-  const metadataHash = await createSha256Hash(metadata, true);
+    const metadataHash = await createSha256Hash(metadata, true);
     const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,

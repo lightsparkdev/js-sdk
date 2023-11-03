@@ -36,13 +36,19 @@ app.get("/.well-known/lnurlpubkey", (req, res) => {
   });
 });
 
+app.post("/api/uma/utxoCallback", (req, res) => {
+  console.log(`Received UTXO callback for ${req.query.txid}`);
+  console.log(`  ${req.body}`);
+  res.send("ok");
+});
+
 // Default 404 handler.
 app.use(function (req, res, next) {
   res.status(404);
   res.send(errorMessage("Not found."));
 });
 
-app.use((err, req, res, next) => {
+app.use((err: any, req: any, res: any, next: any) => {
   console.error(err.stack);
   if (res.headersSent) {
     return next(err);

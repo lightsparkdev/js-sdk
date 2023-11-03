@@ -368,9 +368,8 @@ describe('P1 tests', () => {
         async () => {
             testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(
                 getRegtestNodeId(),
-                0,
-                '',
-                InvoiceType.STANDARD
+                PAY_AMOUNT,
+                'hi there!'
             )
             expect(testModeInvoices.withMemo).not.toBeNull()
         },

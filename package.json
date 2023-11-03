@@ -10,7 +10,7 @@
     "build-sb": "turbo run build-sb",
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
-    "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
+    "checks": "yarn deps:check && turbo lint format gql-codegen test test:integration circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
     "clean-all": "yarn clean && rm -f .yarn/install-state.gz && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + 2>/dev/null",
@@ -28,6 +28,7 @@
     "start:check": "turbo run build && turbo run build:watch start types:watch lint:watch --parallel --concurrency 200",
     "start": "turbo run build && turbo run build:watch start --concurrency 200",
     "test": "turbo run test",
+    "test:hermetic-integration": "turbo run test:hermetic-integration",
     "test:integration": "turbo run test:integration",
     "types": "turbo run types"
   },

@@ -10,7 +10,9 @@ import {
 import * as uma from "@uma-sdk/core";
 import { Express, Request, Response } from "express";
 import settings from "../../settings.json" assert { type: "json" };
+import { NonUmaLnurlpResponseSchema } from "./rawLnurl.js";
 import SendingVaspRequestCache, {
+  SendingVaspInitialRequestData,
   SendingVaspPayReqData,
 } from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
@@ -90,11 +92,21 @@ export default class SendingVasp {
     }
 
     let lnurlpResponse: uma.LnurlpResponse;
+    const responseJson = await response.text();
     try {
-      lnurlpResponse = uma.parseLnurlpResponse(await response.text());
+      lnurlpResponse = uma.parseLnurlpResponse(responseJson);
     } catch (e) {
-      console.error("Error parsing lnurlp response.", e);
-      res.status(424).send("Error parsing Lnurlp response.");
+      if (
+        !this.handleAsNonUmaLnurlpResponse(
+          responseJson,
+          receiverId,
+          receivingVaspDomain,
+          res,
+        )
+      ) {
+        console.error("Error parsing lnurlp response.", e);
+        res.status(424).send("Error parsing Lnurlp response.");
+      }
       return;
     }
 
@@ -137,7 +149,7 @@ export default class SendingVasp {
     receiver: string,
     request: Request,
   ) {
-    const responseJson = await response.json();
+    const responseJson: any = await response.json();
     const supportedMajorVersions = responseJson.supportedMajorVersions;
     const newSupportedVersion = uma.selectHighestSupportedVersion(
       supportedMajorVersions,
@@ -150,6 +162,42 @@ export default class SendingVasp {
       umaVersionOverride: newSupportedVersion,
     });
     return fetch(retryRequest);
+  }
+
+  private async handleAsNonUmaLnurlpResponse(
+    responseJson: string,
+    receiverId: string,
+    receivingVaspDomain: string,
+    res: Response,
+  ): Promise<boolean> {
+    const response = JSON.parse(responseJson);
+    if (response.status === "ERROR") {
+      console.error("Error fetching Lnurlp request.", response.reason);
+      return false;
+    }
+    if (response.tag !== "payRequest") {
+      return false;
+    }
+
+    try {
+      const lnurlResponse = NonUmaLnurlpResponseSchema.parse(responseJson);
+      const callbackUuid = this.requestCache.saveNonUmaLnurlpResponseData(
+        lnurlResponse,
+        receiverId,
+        receivingVaspDomain,
+      );
+      res.send({
+        callbackUuid: callbackUuid,
+        maxSendSats: lnurlResponse.maxSendable,
+        minSendSats: lnurlResponse.minSendable,
+        receiverKycStatus: uma.KycStatus.NotVerified,
+      });
+    } catch (e) {
+      console.error("Failed to parse as non-UMA lnurlp response.", e);
+      return false;
+    }
+
+    return true;
   }
 
   private async handleClientUmaPayreq(req: Request, res: Response) {
@@ -174,6 +222,15 @@ export default class SendingVasp {
     const amount = parseInt(amountStr);
     if (isNaN(amount)) {
       res.status(400).send("Invalid amount");
+      return;
+    }
+
+    if (!initialRequestData.lnurlpResponse) {
+      if (!initialRequestData.nonUmaLnurlpResponse) {
+        res.status(400).send("Invalid callbackUuid");
+        return;
+      }
+      this.handleNonUmaPayReq(initialRequestData, amount, req, res);
       return;
     }
 
@@ -242,7 +299,7 @@ export default class SendingVasp {
     }
 
     if (!response.ok) {
-      console.log(await response.text())
+      console.log(await response.text());
       res.status(424).send(`Payreq failed. ${response.status}`);
       return;
     }
@@ -286,9 +343,77 @@ export default class SendingVasp {
     });
   }
 
+  private async handleNonUmaPayReq(
+    initialRequestData: SendingVaspInitialRequestData,
+    amount: number,
+    req: Request,
+    res: Response,
+  ) {
+    const nonUmaLnurlpResponse = initialRequestData.nonUmaLnurlpResponse;
+    if (!nonUmaLnurlpResponse) {
+      throw new Error("Called handleNonUmaPayReq with UMA response.");
+    }
+    let response: globalThis.Response;
+    try {
+      const url = new URL(nonUmaLnurlpResponse.callback);
+      url.searchParams.append("amount", amount.toString());
+      response = await fetch(url.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (e) {
+      res.status(500).send("Error sending payreq.");
+      return;
+    }
+
+    const responseText = await response.text();
+    if (!response.ok) {
+      console.log();
+      res.status(424).send(`Payreq failed. ${response.status}`);
+      return;
+    }
+
+    const responseJson = JSON.parse(responseText);
+    if (responseJson.status === "ERROR") {
+      console.error("Error on pay request.", responseJson.reason);
+      res
+        .status(424)
+        .send(`Error on pay request. reason: ${responseJson.reason}`);
+      return;
+    }
+
+    const encodedInvoice = responseJson.pr;
+
+    let invoice: InvoiceData;
+    try {
+      invoice = await this.lightsparkClient.decodeInvoice(encodedInvoice);
+    } catch (e) {
+      console.error("Error decoding invoice.", e);
+      res.status(500).send("Error decoding invoice.");
+      return;
+    }
+
+    const newCallbackUuid = this.requestCache.savePayReqData(
+      encodedInvoice,
+      "", // No utxo callback for non-UMA lnurl.
+      invoice,
+    );
+
+    res.send({
+      callbackUuid: newCallbackUuid,
+      encodedInvoice: encodedInvoice,
+      amount: invoice.amount,
+      conversionRate: 1,
+      exchangeFeesMillisatoshi: 0,
+      currencyCode: "mSAT",
+    });
+  }
+
   private async getNodePubKey() {
     const node = await this.lightsparkClient.executeRawQuery(
-      LightsparkNode.getLightsparkNodeQuery(this.config.nodeID)
+      LightsparkNode.getLightsparkNodeQuery(this.config.nodeID),
     );
     if (!node) {
       throw new Error("Node not found.");
@@ -366,18 +491,16 @@ export default class SendingVasp {
   private getPayerProfile(requiredPayerData: uma.PayerDataOptions) {
     const port = process.env.PORT || settings.umaVasp.port;
     return {
-      name: requiredPayerData.name.mandatory ? "Alice FakeName" : undefined,
-      email: requiredPayerData.email.mandatory ? "alice@vasp1.com" : undefined,
+      name: requiredPayerData.name?.mandatory ? "Alice FakeName" : undefined,
+      email: requiredPayerData.email?.mandatory ? "alice@vasp1.com" : undefined,
       // Note: This is making an assumption that this is running on localhost. We should make it configurable.
       identifier: `$alice@localhost:${port}`,
     };
   }
 
   private getUtxoCallback(req: Request, txId: string): string {
-    const protocol = req.protocol;
-    const host = req.hostname;
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${protocol}://${host}${path}`;
+    return `${req.protocol}://${req.hostname}${path}`;
   }
 
   private async waitForPaymentCompletion(
@@ -412,6 +535,9 @@ export default class SendingVasp {
     payment: OutgoingPayment,
     payReqData: SendingVaspPayReqData,
   ) {
+    if (!payReqData.utxoCallback || payReqData.utxoCallback === "") {
+      return;
+    }
     const utxos: uma.UtxoWithAmount[] =
       payment.umaPostTransactionData?.map((d) => {
         return {
@@ -442,6 +568,7 @@ export default class SendingVasp {
 const hostNameWithPort = (req: Request) => {
   const fullUrl = new URL(req.url, `${req.protocol}://${req.headers.host}`);
   const port = fullUrl.port;
-  const portString = port === "80" || port === "443" || port === "" ? "" : `:${port}`;
+  const portString =
+    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
   return `${req.hostname}${portString}`;
 };
