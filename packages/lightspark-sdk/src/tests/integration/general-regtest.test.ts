@@ -8,6 +8,7 @@
 import LightsparkClient from '../../client.js'
 import day from 'dayjs'
 import { describe, expect, test } from '@jest/globals'
+import { type AccountToNodesConnection } from '../../objects'
 import { getCredentialsFromEnvOrThrow } from '../../env.js'
 import { DecodeInvoice } from '../../graphql/DecodeInvoice.js'
 import {
@@ -27,8 +28,9 @@ import {
     BitcoinNetwork,
     InvoiceType,
     OutgoingPayment,
-    TransactionStatus
+    TransactionStatus,
 } from '../../index.js'
+import { mapCurrencyAmount, round } from '@lightsparkdev/core'
 
 const unauthorizedLightsparkClient = new LightsparkClient()
 
@@ -43,9 +45,54 @@ let regtestNodeId: string | undefined
 
 let invoicePayment: OutgoingPayment | undefined
 
+let nodesConnection:  AccountToNodesConnection | undefined
+
 const testModeInvoices: Record<string, string | null> = {
     withMemo: null,
     withoutMemo: null
+}
+
+const reduceBalanceIfItsNeeded = async () => {
+    const regtestNode = nodesConnection?.entities[0];
+    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
+    const nodeId = getRegtestNodeId();
+
+    /* Backend will error for deposits if node balance is greater than 100,000,000 sats */
+    const maxBalanceSatsForDeposits = 100_000_000;
+
+    if (initialTotalBalance.sats >= maxBalanceSatsForDeposits) {
+        const targetBalanceSats = 50_000_000;
+        const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+
+        await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
+            password: REGTEST_SIGNING_KEY_PASSWORD,
+        });
+
+        const invoice = await lightsparkClient.createTestModeInvoice(
+            nodeId,
+            invoiceAmount * 1000, // convert to msats
+        );
+
+        if (!invoice) {
+            throw new Error("Unable to create invoice for balance adjustment");
+        }
+
+        const feeRate = 0.0016;
+        const payment = await lightsparkClient.payInvoice(
+            nodeId,
+            invoice,
+            round(invoiceAmount * feeRate),
+        );
+
+        if (!payment) {
+            throw new Error("Payment undefined for balance adjustment");
+        }
+
+        await lightsparkClient.waitForTransactionComplete(
+            payment.id,
+            TRANSACTION_WAIT_TIME,
+        );
+    }
 }
 
 const createAnTestModePayment = async () => {
@@ -90,7 +137,7 @@ describe('Initialization tests', () => {
 
     test('should successfully get the current account regtest node', async () => {
         const account = await lightsparkClient.getCurrentAccount()
-        const nodesConnection = await account?.getNodes(
+        nodesConnection = await account?.getNodes(
             lightsparkClient,
             1,
             [BitcoinNetwork.REGTEST,]
@@ -107,6 +154,8 @@ describe('Initialization tests', () => {
             getRegtestNodeId(),
             { password: REGTEST_SIGNING_KEY_PASSWORD }
         )
+
+        await reduceBalanceIfItsNeeded()
         expect(regtestNode).toBeDefined()
     }, TESTS_TIMEOUT)
 })
@@ -317,6 +366,12 @@ describe('P1 tests', () => {
     test(
         'should create STANDARD a test mode invoice',
         async () => {
+            testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(
+                getRegtestNodeId(),
+                0,
+                '',
+                InvoiceType.STANDARD
+            )
             expect(testModeInvoices.withMemo).not.toBeNull()
         },
         TESTS_TIMEOUT,
