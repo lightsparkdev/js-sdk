@@ -16,6 +16,7 @@ import {
   BitcoinNetwork,
   InvoiceType,
   OutgoingPayment,
+  PaymentRequestStatus,
   TransactionStatus,
   type AccountToNodesConnection,
 } from "../../index.js";
