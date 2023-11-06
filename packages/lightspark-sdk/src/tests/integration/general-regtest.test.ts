@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, test } from "@jest/globals";
-import { mapCurrencyAmount, round } from "@lightsparkdev/core";
+import { mapCurrencyAmount, pollUntil, round } from "@lightsparkdev/core";
 import dayjs from "dayjs";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
@@ -48,6 +48,11 @@ let lightsparkClient: LightsparkClient;
 let paymentInvoice: string | undefined;
 let regtestNodeId: string | undefined;
 let invoicePayment: OutgoingPayment | undefined;
+
+const pollIntervalMs = 250;
+const pollTimeoutSecs = 20;
+const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
+const pollIgnoreErrors = false;
 
 let nodesConnection: AccountToNodesConnection | undefined;
 
@@ -251,12 +256,12 @@ describe(p0SuiteName, () => {
     expect(invoicePayment).toBeDefined();
   });
 
-  test("Should deposit funds to wallet with a clear sats amount", async () => {
+  test("Should deposit funds to node with a default sats amount", async () => {
     const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId());
     expect(fundingResult.originalValue).toBe(10_000_000);
   });
 
-  test("Should deposit funds to wallet with a defined amount of sats", async () => {
+  test("Should deposit funds to node with a defined amount of sats", async () => {
     const fundingResult = await lightsparkClient.fundNode(
       getRegtestNodeId(),
       DEPOSIT_PAY_AMOUNT,
@@ -264,8 +269,96 @@ describe(p0SuiteName, () => {
     expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
   });
 
+  const satsToFund = 40_000;
+  test("Should deposit funds to node with a defined amount of sats", async () => {
+    const account = await lightsparkClient.getCurrentAccount();
+
+    if (!account) {
+      throw new Error("No account");
+    }
+
+    const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      BitcoinNetwork.REGTEST,
+    ]);
+    let regtestNode = nodesConnection?.entities[0];
+    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
+    log("initialTotalBalance.sats", initialTotalBalance.sats);
+
+    const nodeId = getRegtestNodeId();
+
+    /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
+       adjust to a target balance less than that: */
+    const targetBalanceSats = 50_000_000;
+    if (initialTotalBalance.sats > targetBalanceSats) {
+      const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+      log("adjusting balance: invoiceAmount sats", invoiceAmount);
+
+      await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
+        password: REGTEST_SIGNING_KEY_PASSWORD,
+      });
+
+      const invoice = await lightsparkClient.createTestModeInvoice(
+        nodeId,
+        round((initialTotalBalance.sats - targetBalanceSats) * 1000), // convert to msats
+      );
+
+      if (!invoice) {
+        throw new Error("Unable to create invoice for balance adjustment");
+      }
+
+      const feeRate = 0.0016;
+      const payment = await lightsparkClient.payInvoice(
+        nodeId,
+        invoice,
+        round(invoiceAmount * feeRate),
+      );
+
+      if (!payment) {
+        throw new Error("Payment undefined for balance adjustment");
+      }
+
+      const completePayment = await lightsparkClient.waitForTransactionComplete(
+        payment.id,
+        pollTimeoutSecs,
+      );
+      log("adjusting balance: completePayment", completePayment);
+    }
+
+    await lightsparkClient.fundNode(nodeId, satsToFund);
+
+    regtestNode = await pollUntil(
+      () => {
+        return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
+      },
+      (current, response) => {
+        if (
+          current &&
+          !mapCurrencyAmount(current.entities[0]?.totalBalance).isEqualTo(
+            initialTotalBalance,
+          )
+        ) {
+          return {
+            stopPolling: true,
+            value: current.entities[0],
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      pollMaxTimeouts,
+      pollIgnoreErrors,
+      () => new Error("Timeout waiting for payment to be received"),
+    );
+
+    expect(
+      mapCurrencyAmount(regtestNode.totalBalance).isEqualTo(
+        initialTotalBalance,
+      ),
+    ).toBe(false);
+  }, 120_000);
+
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
-  // test('Should deposit funds to wallet with a defined amount of sats', async () => {
+  // test('Should deposit funds to node with a defined amount of sats', async () => {
   //     const fundingResult = await lightsparkClient.requestWithdrawal(getRegtestNodeId(), PAY_AMOUNT, '', WithdrawalMode.WALLET_THEN_CHANNELS)
   //     const transaction = await lightsparkClient.waitForTransactionComplete(fundingResult.id, TRANSACTION_WAIT_TIME)
   //     expect(transaction.status).toBe(TransactionStatus.SUCCESS)
