@@ -1,4 +1,4 @@
-import { pollUntil } from "@lightsparkdev/core";
+import { mapCurrencyAmount, pollUntil, round } from "@lightsparkdev/core";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
 import {
@@ -83,7 +83,7 @@ describe("lightspark-sdk client", () => {
   }, 10000);
 
   const satsToFund = 50_000;
-  test("Should deposit funds to wallet with a defined amount of sats", async () => {
+  test("Should deposit funds to node with a defined amount of sats", async () => {
     const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
     const account = await lightsparkClient.getCurrentAccount();
 
@@ -95,8 +95,44 @@ describe("lightspark-sdk client", () => {
       BitcoinNetwork.REGTEST,
     ]);
     let regtestNode = nodesConnection?.entities[0];
-    const initialLocalBalance = regtestNode?.localBalance?.originalValue;
+    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
     const nodeId = getRegtestNodeId();
+
+    /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
+       adjust to a target balance less than that: */
+    const targetBalanceSats = 50_000_000;
+    if (initialTotalBalance.sats > targetBalanceSats) {
+      const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+
+      await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
+        password: REGTEST_SIGNING_KEY_PASSWORD,
+      });
+
+      const invoice = await lightsparkClient.createTestModeInvoice(
+        nodeId,
+        round((initialTotalBalance.sats - targetBalanceSats) * 1000), // convert to msats
+      );
+
+      if (!invoice) {
+        throw new Error("Unable to create invoice for balance adjustment");
+      }
+
+      const feeRate = 0.0016;
+      const payment = await lightsparkClient.payInvoice(
+        nodeId,
+        invoice,
+        round(invoiceAmount * feeRate),
+      );
+
+      if (!payment) {
+        throw new Error("Payment undefined for balance adjustment");
+      }
+
+      await lightsparkClient.waitForTransactionComplete(
+        payment.id,
+        pollTimeoutSecs,
+      );
+    }
 
     await lightsparkClient.fundNode(nodeId, satsToFund);
 
@@ -107,8 +143,9 @@ describe("lightspark-sdk client", () => {
       (current, response) => {
         if (
           current &&
-          current.entities[0]?.localBalance?.originalValue !==
-            initialLocalBalance
+          !mapCurrencyAmount(current.entities[0]?.totalBalance).isEqualTo(
+            initialTotalBalance,
+          )
         ) {
           return {
             stopPolling: true,
@@ -124,8 +161,10 @@ describe("lightspark-sdk client", () => {
     );
 
     expect(
-      regtestNode.localBalance?.originalValue !== initialLocalBalance,
-    ).toBe(true);
+      mapCurrencyAmount(regtestNode.totalBalance).isEqualTo(
+        initialTotalBalance,
+      ),
+    ).toBe(false);
   }, 120_000);
 
   test("Should send test mode payment", async () => {
