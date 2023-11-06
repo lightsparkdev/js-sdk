@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type CreateTestModeInvoiceOutput = {
+interface CreateTestModeInvoiceOutput {
   encodedPaymentRequest: string;
-};
+}
 
 export const CreateTestModeInvoiceOutputFromJson = (
   obj: any,
@@ -11,6 +11,14 @@ export const CreateTestModeInvoiceOutputFromJson = (
     encodedPaymentRequest:
       obj["create_test_mode_invoice_output_encoded_payment_request"],
   } as CreateTestModeInvoiceOutput;
+};
+export const CreateTestModeInvoiceOutputToJson = (
+  obj: CreateTestModeInvoiceOutput,
+): any => {
+  return {
+    create_test_mode_invoice_output_encoded_payment_request:
+      obj.encodedPaymentRequest,
+  };
 };
 
 export const FRAGMENT = `

@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type DeleteApiTokenOutput = {
+interface DeleteApiTokenOutput {
   accountId: string;
-};
+}
 
 export const DeleteApiTokenOutputFromJson = (
   obj: any,
@@ -10,6 +10,11 @@ export const DeleteApiTokenOutputFromJson = (
   return {
     accountId: obj["delete_api_token_output_account"].id,
   } as DeleteApiTokenOutput;
+};
+export const DeleteApiTokenOutputToJson = (obj: DeleteApiTokenOutput): any => {
+  return {
+    delete_api_token_output_account: { id: obj.accountId },
+  };
 };
 
 export const FRAGMENT = `

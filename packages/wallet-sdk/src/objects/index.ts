@@ -48,7 +48,7 @@ export {
 } from "./LightningTransaction.js";
 export { default as LoginWithJWTInput } from "./LoginWithJWTInput.js";
 export { default as LoginWithJWTOutput } from "./LoginWithJWTOutput.js";
-export { default as Node } from "./Node.js";
+export { default as Node, getNodeQuery } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";
 export { default as NodeToAddressesConnection } from "./NodeToAddressesConnection.js";

@@ -1,13 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type Connection from "./Connection.js";
 import type IncomingPaymentAttempt from "./IncomingPaymentAttempt.js";
-import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
+import {
+  IncomingPaymentAttemptFromJson,
+  IncomingPaymentAttemptToJson,
+} from "./IncomingPaymentAttempt.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 
 /** The connection from incoming payment to all attempts. **/
-type IncomingPaymentToAttemptsConnection = Connection & {
+interface IncomingPaymentToAttemptsConnection {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -22,7 +24,7 @@ type IncomingPaymentToAttemptsConnection = Connection & {
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const IncomingPaymentToAttemptsConnectionFromJson = (
   obj: any,
@@ -37,6 +39,20 @@ export const IncomingPaymentToAttemptsConnectionFromJson = (
     ),
     typename: "IncomingPaymentToAttemptsConnection",
   } as IncomingPaymentToAttemptsConnection;
+};
+export const IncomingPaymentToAttemptsConnectionToJson = (
+  obj: IncomingPaymentToAttemptsConnection,
+): any => {
+  return {
+    __typename: "IncomingPaymentToAttemptsConnection",
+    incoming_payment_to_attempts_connection_count: obj.count,
+    incoming_payment_to_attempts_connection_page_info: PageInfoToJson(
+      obj.pageInfo,
+    ),
+    incoming_payment_to_attempts_connection_entities: obj.entities.map((e) =>
+      IncomingPaymentAttemptToJson(e),
+    ),
+  };
 };
 
 export const FRAGMENT = `

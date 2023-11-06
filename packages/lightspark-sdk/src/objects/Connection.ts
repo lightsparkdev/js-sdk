@@ -6,26 +6,38 @@ import type AccountToNodesConnection from "./AccountToNodesConnection.js";
 import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
 import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
 import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
-import { ApiTokenFromJson } from "./ApiToken.js";
+import { ApiTokenFromJson, ApiTokenToJson } from "./ApiToken.js";
 import { ChannelFromJson } from "./Channel.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import { HopFromJson } from "./Hop.js";
-import { IncomingPaymentAttemptFromJson } from "./IncomingPaymentAttempt.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
+import { HopFromJson, HopToJson } from "./Hop.js";
+import {
+  IncomingPaymentAttemptFromJson,
+  IncomingPaymentAttemptToJson,
+} from "./IncomingPaymentAttempt.js";
 import type IncomingPaymentToAttemptsConnection from "./IncomingPaymentToAttemptsConnection.js";
-import { LightsparkNodeFromJson } from "./LightsparkNode.js";
+import {
+  LightsparkNodeFromJson,
+  LightsparkNodeToJson,
+} from "./LightsparkNode.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { OutgoingPaymentAttemptFromJson } from "./OutgoingPaymentAttempt.js";
 import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemptToHopsConnection.js";
 import type OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
-import { PaymentRequestFromJson } from "./PaymentRequest.js";
-import { TransactionFromJson } from "./Transaction.js";
+import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
+import {
+  PaymentRequestFromJson,
+  PaymentRequestToJson,
+} from "./PaymentRequest.js";
+import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 import { WalletFromJson } from "./Wallet.js";
 import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 
-type Connection = {
+interface Connection {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -37,7 +49,7 @@ type Connection = {
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const ConnectionFromJson = (obj: any): Connection => {
   if (obj["__typename"] == "AccountToApiTokensConnection") {
@@ -192,6 +204,189 @@ export const ConnectionFromJson = (obj: any): Connection => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj["__typename"]}`,
+  );
+};
+export const ConnectionToJson = (obj: Connection): any => {
+  if (obj.typename == "AccountToApiTokensConnection") {
+    const accountToApiTokensConnection = obj as AccountToApiTokensConnection;
+    return {
+      __typename: "AccountToApiTokensConnection",
+      account_to_api_tokens_connection_count:
+        accountToApiTokensConnection.count,
+      account_to_api_tokens_connection_page_info: PageInfoToJson(
+        accountToApiTokensConnection.pageInfo,
+      ),
+      account_to_api_tokens_connection_entities:
+        accountToApiTokensConnection.entities.map((e) => ApiTokenToJson(e)),
+    };
+  }
+  if (obj.typename == "AccountToNodesConnection") {
+    const accountToNodesConnection = obj as AccountToNodesConnection;
+    return {
+      __typename: "AccountToNodesConnection",
+      account_to_nodes_connection_count: accountToNodesConnection.count,
+      account_to_nodes_connection_page_info: PageInfoToJson(
+        accountToNodesConnection.pageInfo,
+      ),
+      account_to_nodes_connection_entities:
+        accountToNodesConnection.entities.map((e) => LightsparkNodeToJson(e)),
+    };
+  }
+  if (obj.typename == "AccountToPaymentRequestsConnection") {
+    const accountToPaymentRequestsConnection =
+      obj as AccountToPaymentRequestsConnection;
+    return {
+      __typename: "AccountToPaymentRequestsConnection",
+      account_to_payment_requests_connection_count:
+        accountToPaymentRequestsConnection.count,
+      account_to_payment_requests_connection_page_info: PageInfoToJson(
+        accountToPaymentRequestsConnection.pageInfo,
+      ),
+      account_to_payment_requests_connection_entities:
+        accountToPaymentRequestsConnection.entities.map((e) =>
+          PaymentRequestToJson(e),
+        ),
+    };
+  }
+  if (obj.typename == "AccountToTransactionsConnection") {
+    const accountToTransactionsConnection =
+      obj as AccountToTransactionsConnection;
+    return {
+      __typename: "AccountToTransactionsConnection",
+      account_to_transactions_connection_count:
+        accountToTransactionsConnection.count,
+      account_to_transactions_connection_page_info: PageInfoToJson(
+        accountToTransactionsConnection.pageInfo,
+      ),
+      account_to_transactions_connection_profit_loss:
+        accountToTransactionsConnection.profitLoss
+          ? CurrencyAmountToJson(accountToTransactionsConnection.profitLoss)
+          : undefined,
+      account_to_transactions_connection_average_fee_earned:
+        accountToTransactionsConnection.averageFeeEarned
+          ? CurrencyAmountToJson(
+              accountToTransactionsConnection.averageFeeEarned,
+            )
+          : undefined,
+      account_to_transactions_connection_total_amount_transacted:
+        accountToTransactionsConnection.totalAmountTransacted
+          ? CurrencyAmountToJson(
+              accountToTransactionsConnection.totalAmountTransacted,
+            )
+          : undefined,
+      account_to_transactions_connection_entities:
+        accountToTransactionsConnection.entities.map((e) =>
+          TransactionToJson(e),
+        ),
+    };
+  }
+  if (obj.typename == "AccountToWalletsConnection") {
+    const accountToWalletsConnection = obj as AccountToWalletsConnection;
+    return {
+      __typename: "AccountToWalletsConnection",
+      account_to_wallets_connection_count: accountToWalletsConnection.count,
+      account_to_wallets_connection_page_info: PageInfoToJson(
+        accountToWalletsConnection.pageInfo,
+      ),
+      account_to_wallets_connection_entities:
+        accountToWalletsConnection.entities.map((e) => e.toJson()),
+    };
+  }
+  if (obj.typename == "IncomingPaymentToAttemptsConnection") {
+    const incomingPaymentToAttemptsConnection =
+      obj as IncomingPaymentToAttemptsConnection;
+    return {
+      __typename: "IncomingPaymentToAttemptsConnection",
+      incoming_payment_to_attempts_connection_count:
+        incomingPaymentToAttemptsConnection.count,
+      incoming_payment_to_attempts_connection_page_info: PageInfoToJson(
+        incomingPaymentToAttemptsConnection.pageInfo,
+      ),
+      incoming_payment_to_attempts_connection_entities:
+        incomingPaymentToAttemptsConnection.entities.map((e) =>
+          IncomingPaymentAttemptToJson(e),
+        ),
+    };
+  }
+  if (obj.typename == "LightsparkNodeToChannelsConnection") {
+    const lightsparkNodeToChannelsConnection =
+      obj as LightsparkNodeToChannelsConnection;
+    return {
+      __typename: "LightsparkNodeToChannelsConnection",
+      lightspark_node_to_channels_connection_count:
+        lightsparkNodeToChannelsConnection.count,
+      lightspark_node_to_channels_connection_page_info: PageInfoToJson(
+        lightsparkNodeToChannelsConnection.pageInfo,
+      ),
+      lightspark_node_to_channels_connection_entities:
+        lightsparkNodeToChannelsConnection.entities.map((e) => e.toJson()),
+    };
+  }
+  if (obj.typename == "OutgoingPaymentAttemptToHopsConnection") {
+    const outgoingPaymentAttemptToHopsConnection =
+      obj as OutgoingPaymentAttemptToHopsConnection;
+    return {
+      __typename: "OutgoingPaymentAttemptToHopsConnection",
+      outgoing_payment_attempt_to_hops_connection_count:
+        outgoingPaymentAttemptToHopsConnection.count,
+      outgoing_payment_attempt_to_hops_connection_page_info: PageInfoToJson(
+        outgoingPaymentAttemptToHopsConnection.pageInfo,
+      ),
+      outgoing_payment_attempt_to_hops_connection_entities:
+        outgoingPaymentAttemptToHopsConnection.entities.map((e) =>
+          HopToJson(e),
+        ),
+    };
+  }
+  if (obj.typename == "OutgoingPaymentToAttemptsConnection") {
+    const outgoingPaymentToAttemptsConnection =
+      obj as OutgoingPaymentToAttemptsConnection;
+    return {
+      __typename: "OutgoingPaymentToAttemptsConnection",
+      outgoing_payment_to_attempts_connection_count:
+        outgoingPaymentToAttemptsConnection.count,
+      outgoing_payment_to_attempts_connection_page_info: PageInfoToJson(
+        outgoingPaymentToAttemptsConnection.pageInfo,
+      ),
+      outgoing_payment_to_attempts_connection_entities:
+        outgoingPaymentToAttemptsConnection.entities.map((e) => e.toJson()),
+    };
+  }
+  if (obj.typename == "WalletToPaymentRequestsConnection") {
+    const walletToPaymentRequestsConnection =
+      obj as WalletToPaymentRequestsConnection;
+    return {
+      __typename: "WalletToPaymentRequestsConnection",
+      wallet_to_payment_requests_connection_count:
+        walletToPaymentRequestsConnection.count,
+      wallet_to_payment_requests_connection_page_info: PageInfoToJson(
+        walletToPaymentRequestsConnection.pageInfo,
+      ),
+      wallet_to_payment_requests_connection_entities:
+        walletToPaymentRequestsConnection.entities.map((e) =>
+          PaymentRequestToJson(e),
+        ),
+    };
+  }
+  if (obj.typename == "WalletToTransactionsConnection") {
+    const walletToTransactionsConnection =
+      obj as WalletToTransactionsConnection;
+    return {
+      __typename: "WalletToTransactionsConnection",
+      wallet_to_transactions_connection_count:
+        walletToTransactionsConnection.count,
+      wallet_to_transactions_connection_page_info: PageInfoToJson(
+        walletToTransactionsConnection.pageInfo,
+      ),
+      wallet_to_transactions_connection_entities:
+        walletToTransactionsConnection.entities.map((e) =>
+          TransactionToJson(e),
+        ),
+    };
+  }
+  throw new LightsparkException(
+    "DeserializationError",
+    `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj.typename}`,
   );
 };
 

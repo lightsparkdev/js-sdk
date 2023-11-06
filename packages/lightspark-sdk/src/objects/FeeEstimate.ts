@@ -1,20 +1,29 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 
 /** This object represents the estimated L1 transaction fees for the Bitcoin network. Fee estimates are separated by potential confirmation speeds for settlement. **/
-type FeeEstimate = {
+interface FeeEstimate {
   feeFast: CurrencyAmount;
 
   feeMin: CurrencyAmount;
-};
+}
 
 export const FeeEstimateFromJson = (obj: any): FeeEstimate => {
   return {
     feeFast: CurrencyAmountFromJson(obj["fee_estimate_fee_fast"]),
     feeMin: CurrencyAmountFromJson(obj["fee_estimate_fee_min"]),
   } as FeeEstimate;
+};
+export const FeeEstimateToJson = (obj: FeeEstimate): any => {
+  return {
+    fee_estimate_fee_fast: CurrencyAmountToJson(obj.feeFast),
+    fee_estimate_fee_min: CurrencyAmountToJson(obj.feeMin),
+  };
 };
 
 export const FRAGMENT = `

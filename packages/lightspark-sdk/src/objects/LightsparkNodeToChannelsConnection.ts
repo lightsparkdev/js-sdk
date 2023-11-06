@@ -2,11 +2,10 @@
 
 import type Channel from "./Channel.js";
 import { ChannelFromJson } from "./Channel.js";
-import type Connection from "./Connection.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 
-type LightsparkNodeToChannelsConnection = Connection & {
+interface LightsparkNodeToChannelsConnection {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -21,7 +20,7 @@ type LightsparkNodeToChannelsConnection = Connection & {
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const LightsparkNodeToChannelsConnectionFromJson = (
   obj: any,
@@ -36,6 +35,20 @@ export const LightsparkNodeToChannelsConnectionFromJson = (
     ),
     typename: "LightsparkNodeToChannelsConnection",
   } as LightsparkNodeToChannelsConnection;
+};
+export const LightsparkNodeToChannelsConnectionToJson = (
+  obj: LightsparkNodeToChannelsConnection,
+): any => {
+  return {
+    __typename: "LightsparkNodeToChannelsConnection",
+    lightspark_node_to_channels_connection_count: obj.count,
+    lightspark_node_to_channels_connection_page_info: PageInfoToJson(
+      obj.pageInfo,
+    ),
+    lightspark_node_to_channels_connection_entities: obj.entities.map((e) =>
+      e.toJson(),
+    ),
+  };
 };
 
 export const FRAGMENT = `
