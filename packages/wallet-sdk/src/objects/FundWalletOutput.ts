@@ -1,16 +1,24 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 
-type FundWalletOutput = {
+interface FundWalletOutput {
   amount: CurrencyAmount;
-};
+}
 
 export const FundWalletOutputFromJson = (obj: any): FundWalletOutput => {
   return {
     amount: CurrencyAmountFromJson(obj["fund_wallet_output_amount"]),
   } as FundWalletOutput;
+};
+export const FundWalletOutputToJson = (obj: FundWalletOutput): any => {
+  return {
+    fund_wallet_output_amount: CurrencyAmountToJson(obj.amount),
+  };
 };
 
 export const FRAGMENT = `

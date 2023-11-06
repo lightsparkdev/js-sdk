@@ -1,23 +1,26 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 
-type ChannelSnapshot = {
+interface ChannelSnapshot {
   channelId: string;
 
   timestamp: string;
 
-  localBalance?: CurrencyAmount;
+  localBalance?: CurrencyAmount | undefined;
 
-  localUnsettledBalance?: CurrencyAmount;
+  localUnsettledBalance?: CurrencyAmount | undefined;
 
-  localChannelReserve?: CurrencyAmount;
+  localChannelReserve?: CurrencyAmount | undefined;
 
-  remoteBalance?: CurrencyAmount;
+  remoteBalance?: CurrencyAmount | undefined;
 
-  remoteUnsettledBalance?: CurrencyAmount;
-};
+  remoteUnsettledBalance?: CurrencyAmount | undefined;
+}
 
 export const ChannelSnapshotFromJson = (obj: any): ChannelSnapshot => {
   return {
@@ -39,6 +42,27 @@ export const ChannelSnapshotFromJson = (obj: any): ChannelSnapshot => {
       ? CurrencyAmountFromJson(obj["channel_snapshot_remote_unsettled_balance"])
       : undefined,
   } as ChannelSnapshot;
+};
+export const ChannelSnapshotToJson = (obj: ChannelSnapshot): any => {
+  return {
+    channel_snapshot_channel: { id: obj.channelId },
+    channel_snapshot_timestamp: obj.timestamp,
+    channel_snapshot_local_balance: obj.localBalance
+      ? CurrencyAmountToJson(obj.localBalance)
+      : undefined,
+    channel_snapshot_local_unsettled_balance: obj.localUnsettledBalance
+      ? CurrencyAmountToJson(obj.localUnsettledBalance)
+      : undefined,
+    channel_snapshot_local_channel_reserve: obj.localChannelReserve
+      ? CurrencyAmountToJson(obj.localChannelReserve)
+      : undefined,
+    channel_snapshot_remote_balance: obj.remoteBalance
+      ? CurrencyAmountToJson(obj.remoteBalance)
+      : undefined,
+    channel_snapshot_remote_unsettled_balance: obj.remoteUnsettledBalance
+      ? CurrencyAmountToJson(obj.remoteUnsettledBalance)
+      : undefined,
+  };
 };
 
 export const FRAGMENT = `

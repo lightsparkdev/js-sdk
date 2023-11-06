@@ -4,21 +4,32 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import type LightningTransaction from "./LightningTransaction.js";
 import type OutgoingPaymentToAttemptsConnection from "./OutgoingPaymentToAttemptsConnection.js";
 import { OutgoingPaymentToAttemptsConnectionFromJson } from "./OutgoingPaymentToAttemptsConnection.js";
 import PaymentFailureReason from "./PaymentFailureReason.js";
 import type PaymentRequestData from "./PaymentRequestData.js";
-import { PaymentRequestDataFromJson } from "./PaymentRequestData.js";
+import {
+  PaymentRequestDataFromJson,
+  PaymentRequestDataToJson,
+} from "./PaymentRequestData.js";
 import type PostTransactionData from "./PostTransactionData.js";
-import { PostTransactionDataFromJson } from "./PostTransactionData.js";
+import {
+  PostTransactionDataFromJson,
+  PostTransactionDataToJson,
+} from "./PostTransactionData.js";
 import type RichText from "./RichText.js";
-import { RichTextFromJson } from "./RichText.js";
+import { RichTextFromJson, RichTextToJson } from "./RichText.js";
+import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. **/
-class OutgoingPayment implements LightningTransaction {
+class OutgoingPayment implements LightningTransaction, Transaction, Entity {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
@@ -27,15 +38,15 @@ class OutgoingPayment implements LightningTransaction {
     public readonly amount: CurrencyAmount,
     public readonly originId: string,
     public readonly typename: string,
-    public readonly resolvedAt?: string,
-    public readonly transactionHash?: string,
-    public readonly destinationId?: string,
-    public readonly fees?: CurrencyAmount,
-    public readonly paymentRequestData?: PaymentRequestData,
-    public readonly failureReason?: PaymentFailureReason,
-    public readonly failureMessage?: RichText,
-    public readonly umaPostTransactionData?: PostTransactionData[],
-    public readonly paymentPreimage?: string,
+    public readonly resolvedAt?: string | undefined,
+    public readonly transactionHash?: string | undefined,
+    public readonly destinationId?: string | undefined,
+    public readonly fees?: CurrencyAmount | undefined,
+    public readonly paymentRequestData?: PaymentRequestData | undefined,
+    public readonly failureReason?: PaymentFailureReason | undefined,
+    public readonly failureMessage?: RichText | undefined,
+    public readonly umaPostTransactionData?: PostTransactionData[] | undefined,
+    public readonly paymentPreimage?: string | undefined,
   ) {
     autoBind(this);
   }
@@ -164,6 +175,34 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) => OutgoingPaymentFromJson(data.entity),
+    };
+  }
+
+  public toJson() {
+    return {
+      __typename: "OutgoingPayment",
+      outgoing_payment_id: this.id,
+      outgoing_payment_created_at: this.createdAt,
+      outgoing_payment_updated_at: this.updatedAt,
+      outgoing_payment_status: this.status,
+      outgoing_payment_resolved_at: this.resolvedAt,
+      outgoing_payment_amount: CurrencyAmountToJson(this.amount),
+      outgoing_payment_transaction_hash: this.transactionHash,
+      outgoing_payment_origin: { id: this.originId },
+      outgoing_payment_destination: { id: this.destinationId } ?? undefined,
+      outgoing_payment_fees: this.fees
+        ? CurrencyAmountToJson(this.fees)
+        : undefined,
+      outgoing_payment_payment_request_data: this.paymentRequestData
+        ? PaymentRequestDataToJson(this.paymentRequestData)
+        : undefined,
+      outgoing_payment_failure_reason: this.failureReason,
+      outgoing_payment_failure_message: this.failureMessage
+        ? RichTextToJson(this.failureMessage)
+        : undefined,
+      outgoing_payment_uma_post_transaction_data:
+        this.umaPostTransactionData?.map((e) => PostTransactionDataToJson(e)),
+      outgoing_payment_payment_preimage: this.paymentPreimage,
     };
   }
 }

@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type DeleteFundsRecoveryKitOutput = {
+interface DeleteFundsRecoveryKitOutput {
   walletId: string;
-};
+}
 
 export const DeleteFundsRecoveryKitOutputFromJson = (
   obj: any,
@@ -10,6 +10,13 @@ export const DeleteFundsRecoveryKitOutputFromJson = (
   return {
     walletId: obj["delete_funds_recovery_kit_output_wallet"].id,
   } as DeleteFundsRecoveryKitOutput;
+};
+export const DeleteFundsRecoveryKitOutputToJson = (
+  obj: DeleteFundsRecoveryKitOutput,
+): any => {
+  return {
+    delete_funds_recovery_kit_output_wallet: { id: obj.walletId },
+  };
 };
 
 export const FRAGMENT = `

@@ -1,12 +1,12 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type UpdateChannelPerCommitmentPointInput = {
+interface UpdateChannelPerCommitmentPointInput {
   channelId: string;
 
   perCommitmentPoint: string;
 
   perCommitmentPointIndex: number;
-};
+}
 
 export const UpdateChannelPerCommitmentPointInputFromJson = (
   obj: any,
@@ -20,6 +20,17 @@ export const UpdateChannelPerCommitmentPointInputFromJson = (
         "update_channel_per_commitment_point_input_per_commitment_point_index"
       ],
   } as UpdateChannelPerCommitmentPointInput;
+};
+export const UpdateChannelPerCommitmentPointInputToJson = (
+  obj: UpdateChannelPerCommitmentPointInput,
+): any => {
+  return {
+    update_channel_per_commitment_point_input_channel_id: obj.channelId,
+    update_channel_per_commitment_point_input_per_commitment_point:
+      obj.perCommitmentPoint,
+    update_channel_per_commitment_point_input_per_commitment_point_index:
+      obj.perCommitmentPointIndex,
+  };
 };
 
 export default UpdateChannelPerCommitmentPointInput;
