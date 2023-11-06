@@ -317,9 +317,7 @@ export default class SendingVasp {
 
     let invoice: InvoiceData;
     try {
-      invoice = await this.lightsparkClient.decodeInvoice(
-        payResponse.encodedInvoice,
-      );
+      invoice = await this.lightsparkClient.decodeInvoice(payResponse.pr);
     } catch (e) {
       console.error("Error decoding invoice.", e);
       res.status(500).send("Error decoding invoice.");
@@ -327,14 +325,14 @@ export default class SendingVasp {
     }
 
     const newCallbackUuid = this.requestCache.savePayReqData(
-      payResponse.encodedInvoice,
+      payResponse.pr,
       utxoCallback,
       invoice,
     );
 
     res.send({
       callbackUuid: newCallbackUuid,
-      encodedInvoice: payResponse.encodedInvoice,
+      encodedInvoice: payResponse.pr,
       amount: invoice.amount,
       conversionRate: payResponse.paymentInfo.multiplier,
       exchangeFeesMillisatoshi:

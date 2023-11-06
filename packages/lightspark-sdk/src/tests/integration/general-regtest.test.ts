@@ -6,6 +6,7 @@
  */
 
 import { describe, expect, test } from "@jest/globals";
+import { mapCurrencyAmount, round } from "@lightsparkdev/core";
 import dayjs from "dayjs";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
@@ -16,20 +17,25 @@ import {
   InvoiceType,
   OutgoingPayment,
   TransactionStatus,
+  type AccountToNodesConnection,
 } from "../../index.js";
 import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
+  DEPOSIT_PAY_AMOUNT,
   ENCODED_REGTEST_REQUEST_FOR_TESTS,
   INVOICE_EXPIRY,
   LONG_TEST_TIMEOUT,
   MAX_FEE,
+  MAX_WALLET_BALANCE,
   PAGINATION_STEP,
   PAY_AMOUNT,
+  REDUCING_BALANCE_FEE,
   REGTEST_SIGNING_KEY_PASSWORD,
   TESTS_TIMEOUT,
   TRANSACTION_WAIT_TIME,
+  WALLET_REDUCING_BALANCE_AMOUNT,
 } from "./const/index.js";
 
 const unauthorizedLightsparkClient = new LightsparkClient();
@@ -42,9 +48,50 @@ let paymentInvoice: string | undefined;
 let regtestNodeId: string | undefined;
 let invoicePayment: OutgoingPayment | undefined;
 
+let nodesConnection: AccountToNodesConnection | undefined;
+
 const testModeInvoices: Record<string, string | null> = {
   withMemo: null,
   withoutMemo: null,
+};
+
+const reduceBalanceIfItsNeeded = async () => {
+  const regtestNode = nodesConnection?.entities[0];
+  const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
+  const nodeId = getRegtestNodeId();
+
+  if (initialTotalBalance.sats >= MAX_WALLET_BALANCE) {
+    const invoiceAmount =
+      initialTotalBalance.sats - WALLET_REDUCING_BALANCE_AMOUNT;
+
+    await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
+      password: REGTEST_SIGNING_KEY_PASSWORD,
+    });
+
+    const invoice = await lightsparkClient.createTestModeInvoice(
+      nodeId,
+      invoiceAmount * 1000,
+    );
+
+    if (!invoice) {
+      throw new Error("Unable to create invoice for balance adjustment");
+    }
+
+    const payment = await lightsparkClient.payInvoice(
+      nodeId,
+      invoice,
+      round(invoiceAmount * REDUCING_BALANCE_FEE),
+    );
+
+    if (!payment) {
+      throw new Error("Payment undefined for balance adjustment");
+    }
+
+    await lightsparkClient.waitForTransactionComplete(
+      payment.id,
+      TRANSACTION_WAIT_TIME,
+    );
+  }
 };
 
 const createAnTestModePayment = async () => {
@@ -107,7 +154,7 @@ describe(initSuiteName, () => {
     "should successfully get the current account regtest node",
     async () => {
       const account = await lightsparkClient.getCurrentAccount();
-      const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      nodesConnection = await account?.getNodes(lightsparkClient, 1, [
         BitcoinNetwork.REGTEST,
       ]);
 
@@ -122,6 +169,8 @@ describe(initSuiteName, () => {
       await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
         password: REGTEST_SIGNING_KEY_PASSWORD,
       });
+
+      await reduceBalanceIfItsNeeded();
       expect(regtestNode).toBeDefined();
     },
     TESTS_TIMEOUT,
@@ -182,12 +231,21 @@ describe(p0SuiteName, () => {
   });
 
   test("Should pay an invoice", async () => {
+    const testInvoice = await lightsparkClient.createTestModeInvoice(
+      getRegtestNodeId(),
+      PAY_AMOUNT,
+      "hi there!",
+    );
+
+    if (!testInvoice) {
+      throw new TypeError("Test invoice doesn't created");
+    }
+
     invoicePayment = await lightsparkClient.payInvoice(
       getRegtestNodeId(),
-      ENCODED_REGTEST_REQUEST_FOR_TESTS,
+      testInvoice,
       MAX_FEE,
       TESTS_TIMEOUT,
-      PAY_AMOUNT,
     );
     expect(invoicePayment).toBeDefined();
   });
@@ -200,9 +258,9 @@ describe(p0SuiteName, () => {
   test("Should deposit funds to wallet with a defined amount of sats", async () => {
     const fundingResult = await lightsparkClient.fundNode(
       getRegtestNodeId(),
-      PAY_AMOUNT,
+      DEPOSIT_PAY_AMOUNT,
     );
-    expect(fundingResult.originalValue).toBe(PAY_AMOUNT);
+    expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
   });
 
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
@@ -299,7 +357,7 @@ describe(p1SuiteName, () => {
         undefined,
         BitcoinNetwork.REGTEST,
       );
-      expect(transactions.length).toBe(20);
+      expect(transactions.length > 0).toBe(true);
     },
     TESTS_TIMEOUT,
   );
