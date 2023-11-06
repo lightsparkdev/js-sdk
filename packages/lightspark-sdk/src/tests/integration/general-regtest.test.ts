@@ -100,7 +100,7 @@ const reduceBalanceIfItsNeeded = async () => {
   }
 };
 
-const createAnTestModePayment = async () => {
+const createTestModePayment = async () => {
   const regtestNodeId = getRegtestNodeId();
   const testInvoice = await lightsparkClient.createInvoice(
     regtestNodeId,
@@ -322,6 +322,10 @@ describe(p0SuiteName, () => {
         pollTimeoutSecs,
       );
       log("adjusting balance: completePayment", completePayment);
+
+      if (completePayment.status !== TransactionStatus.SUCCESS) {
+        throw new Error("Balance adjustment payment failed");
+      }
     }
 
     await lightsparkClient.fundNode(nodeId, satsToFund);
@@ -367,7 +371,7 @@ describe(p0SuiteName, () => {
   test(
     "Should open just-in-time channel from inbound payment",
     async () => {
-      const payment = await createAnTestModePayment();
+      const payment = await createTestModePayment();
       const { status } = await lightsparkClient.waitForTransactionComplete(
         payment.id,
         TRANSACTION_WAIT_TIME,
@@ -402,7 +406,7 @@ describe(p1SuiteName, () => {
     "should listen current payment requests",
     async () => {
       for (let i = 0; i < PAGINATION_STEP; i++) {
-        await createAnTestModePayment();
+        await createTestModePayment();
       }
       const requests = await lightsparkClient.getRecentPaymentRequests(
         getRegtestNodeId(),
