@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type CreateBitcoinFundingAddressOutput = {
+interface CreateBitcoinFundingAddressOutput {
   bitcoinAddress: string;
-};
+}
 
 export const CreateBitcoinFundingAddressOutputFromJson = (
   obj: any,
@@ -11,6 +11,13 @@ export const CreateBitcoinFundingAddressOutputFromJson = (
     bitcoinAddress:
       obj["create_bitcoin_funding_address_output_bitcoin_address"],
   } as CreateBitcoinFundingAddressOutput;
+};
+export const CreateBitcoinFundingAddressOutputToJson = (
+  obj: CreateBitcoinFundingAddressOutput,
+): any => {
+  return {
+    create_bitcoin_funding_address_output_bitcoin_address: obj.bitcoinAddress,
+  };
 };
 
 export const FRAGMENT = `

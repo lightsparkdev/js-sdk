@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type CreateTestModePaymentInput = {
+interface CreateTestModePaymentInput {
   /** The node to where you want to send the payment. **/
   localNodeId: string;
 
@@ -11,8 +11,8 @@ type CreateTestModePaymentInput = {
    * The amount you will be paid for this invoice, expressed in msats. It should ONLY be set when the
    * invoice amount is zero.
    **/
-  amountMsats?: number;
-};
+  amountMsats?: number | undefined;
+}
 
 export const CreateTestModePaymentInputFromJson = (
   obj: any,
@@ -22,6 +22,15 @@ export const CreateTestModePaymentInputFromJson = (
     encodedInvoice: obj["create_test_mode_payment_input_encoded_invoice"],
     amountMsats: obj["create_test_mode_payment_input_amount_msats"],
   } as CreateTestModePaymentInput;
+};
+export const CreateTestModePaymentInputToJson = (
+  obj: CreateTestModePaymentInput,
+): any => {
+  return {
+    create_test_mode_payment_input_local_node_id: obj.localNodeId,
+    create_test_mode_payment_input_encoded_invoice: obj.encodedInvoice,
+    create_test_mode_payment_input_amount_msats: obj.amountMsats,
+  };
 };
 
 export default CreateTestModePaymentInput;

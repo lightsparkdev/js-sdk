@@ -6,8 +6,8 @@ import {
   CurrencyAmount,
   getCredentialsFromEnvOrThrow,
   getDepositQuery,
+  getLightsparkNodeQuery,
   LightsparkClient,
-  LightsparkNode,
   Node,
 } from "@lightsparkdev/lightspark-sdk";
 import day from "dayjs";
@@ -275,9 +275,7 @@ console.log("");
 // console.log("");
 
 // Fetch the channels for Node 1
-const node = await client.executeRawQuery(
-  LightsparkNode.getLightsparkNodeQuery(nodeId),
-);
+const node = await client.executeRawQuery(getLightsparkNodeQuery(nodeId));
 if (!node) {
   throw new Error("Unable to find node.");
 }

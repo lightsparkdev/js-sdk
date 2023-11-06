@@ -1,14 +1,19 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type SendPaymentOutput = {
+interface SendPaymentOutput {
   /** The payment that has been sent. **/
   paymentId: string;
-};
+}
 
 export const SendPaymentOutputFromJson = (obj: any): SendPaymentOutput => {
   return {
     paymentId: obj["send_payment_output_payment"].id,
   } as SendPaymentOutput;
+};
+export const SendPaymentOutputToJson = (obj: SendPaymentOutput): any => {
+  return {
+    send_payment_output_payment: { id: obj.paymentId },
+  };
 };
 
 export const FRAGMENT = `
