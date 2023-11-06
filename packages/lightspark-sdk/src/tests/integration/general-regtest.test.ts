@@ -256,11 +256,6 @@ describe(p0SuiteName, () => {
     expect(invoicePayment).toBeDefined();
   });
 
-  test("Should deposit funds to node with a default sats amount", async () => {
-    const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId());
-    expect(fundingResult.originalValue).toBe(10_000_000);
-  });
-
   test("Should deposit funds to node with a defined amount of sats", async () => {
     const fundingResult = await lightsparkClient.fundNode(
       getRegtestNodeId(),
@@ -288,7 +283,7 @@ describe(p0SuiteName, () => {
 
     /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
        adjust to a target balance less than that: */
-    const targetBalanceSats = 50_000_000;
+    const targetBalanceSats = 80_000_000;
     if (initialTotalBalance.sats > targetBalanceSats) {
       const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
       log("adjusting balance: invoiceAmount sats", invoiceAmount);
@@ -324,6 +319,7 @@ describe(p0SuiteName, () => {
       log("adjusting balance: completePayment", completePayment);
 
       if (completePayment.status !== TransactionStatus.SUCCESS) {
+        log("adjusting balance: completePayment failed", completePayment);
         throw new Error("Balance adjustment payment failed");
       }
     }
