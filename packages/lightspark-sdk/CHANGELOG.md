@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.1.7
-
-### Patch Changes
-
-- c6fceaa: Add balances to the js lightspark SDK towards LIG-3787
-
 ## 1.1.6
 
 ### Patch Changes
