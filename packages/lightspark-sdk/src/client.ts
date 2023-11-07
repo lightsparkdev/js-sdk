@@ -116,7 +116,8 @@ class LightsparkClient {
   /**
    * Constructs a new LightsparkClient.
    *
-   * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider. For server-side
+   * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider.
+   * For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
