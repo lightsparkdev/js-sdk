@@ -283,7 +283,7 @@ describe(p0SuiteName, () => {
 
     /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
        adjust to a target balance less than that: */
-    const targetBalanceSats = 80_000_000;
+    const targetBalanceSats = 40_000_000;
     if (initialTotalBalance.sats > targetBalanceSats) {
       const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
       log("adjusting balance: invoiceAmount sats", invoiceAmount);
@@ -536,38 +536,42 @@ describe(p1SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
-  test("should create a test mode payment", async () => {
-    const regtestNodeId = getRegtestNodeId();
+  test(
+    "should create a test mode payment",
+    async () => {
+      const regtestNodeId = getRegtestNodeId();
 
-    const invoiceForTestPayment = await lightsparkClient.createInvoice(
-      regtestNodeId,
-      PAY_AMOUNT,
-      "hi there!",
-    );
+      const invoiceForTestPayment = await lightsparkClient.createInvoice(
+        regtestNodeId,
+        PAY_AMOUNT,
+        "hi there!",
+      );
 
-    if (!invoiceForTestPayment) {
-      throw new TypeError("Invoice for test payment wasn't created");
-    }
+      if (!invoiceForTestPayment) {
+        throw new TypeError("Invoice for test payment wasn't created");
+      }
 
-    const payment = await lightsparkClient.createTestModePayment(
-      regtestNodeId,
-      invoiceForTestPayment,
-    );
+      const payment = await lightsparkClient.createTestModePayment(
+        regtestNodeId,
+        invoiceForTestPayment,
+      );
 
-    if (!payment) {
-      throw new TypeError("Test mode payment wasn't created");
-    }
+      if (!payment) {
+        throw new TypeError("Test mode payment wasn't created");
+      }
 
-    const transaction = await lightsparkClient.waitForTransactionComplete(
-      payment.id,
-      TRANSACTION_WAIT_TIME,
-    );
+      const transaction = await lightsparkClient.waitForTransactionComplete(
+        payment.id,
+        TRANSACTION_WAIT_TIME,
+      );
 
-    expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
-  });
+      expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+    },
+    TESTS_TIMEOUT,
+  );
 
   test(
-    "Should successfully create an uma invoice",
+    "should successfully create an uma invoice",
     async () => {
       const nodeId = getRegtestNodeId();
 
