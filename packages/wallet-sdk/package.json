@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-sdk",
-  "version": "0.7.6",
+  "version": "0.8.0",
   "description": "Lightspark JS Wallet SDK",
   "author": "Lightspark Inc.",
   "keywords": [
