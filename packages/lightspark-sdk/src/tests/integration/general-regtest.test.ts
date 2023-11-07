@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, test } from "@jest/globals";
-import { mapCurrencyAmount, round } from "@lightsparkdev/core";
-import day from "dayjs";
+import { mapCurrencyAmount, pollUntil, round } from "@lightsparkdev/core";
+import dayjs from "dayjs";
 import LightsparkClient from "../../client.js";
 import { getCredentialsFromEnvOrThrow } from "../../env.js";
 import { DecodeInvoice } from "../../graphql/DecodeInvoice.js";
@@ -16,9 +16,11 @@ import {
   BitcoinNetwork,
   InvoiceType,
   OutgoingPayment,
+  PaymentRequestStatus,
   TransactionStatus,
   type AccountToNodesConnection,
 } from "../../index.js";
+import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
   DECODED_REQUEST_DETAILS_FOR_TESTS,
@@ -43,12 +45,14 @@ const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
   getCredentialsFromEnvOrThrow();
 
 let lightsparkClient: LightsparkClient;
-
 let paymentInvoice: string | undefined;
-
 let regtestNodeId: string | undefined;
-
 let invoicePayment: OutgoingPayment | undefined;
+
+const pollIntervalMs = 250;
+const pollTimeoutSecs = 20;
+const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
+const pollIgnoreErrors = false;
 
 let nodesConnection: AccountToNodesConnection | undefined;
 
@@ -96,7 +100,7 @@ const reduceBalanceIfItsNeeded = async () => {
   }
 };
 
-const createAnTestModePayment = async () => {
+const createTestModePayment = async () => {
   const regtestNodeId = getRegtestNodeId();
   const testInvoice = await lightsparkClient.createInvoice(
     regtestNodeId,
@@ -118,6 +122,22 @@ const createAnTestModePayment = async () => {
   return payment;
 };
 
+const initSuiteName = "initialization";
+const p0SuiteName = "p0";
+const p1SuiteName = "p1";
+const p2SuiteName = "p2";
+function log(msg: string, ...args: unknown[]) {
+  logger.info(
+    `${expect
+      .getState()
+      .currentTestName?.replace(
+        new RegExp(`^(${initSuiteName}|p[0-2])\\s`, "g"),
+        "",
+      )}: ${msg}`,
+    ...args,
+  );
+}
+
 const getRegtestNodeId = () => {
   expect(regtestNodeId).toBeDefined();
   if (!regtestNodeId) {
@@ -126,7 +146,7 @@ const getRegtestNodeId = () => {
   return regtestNodeId;
 };
 
-describe("Initialization tests", () => {
+describe(initSuiteName, () => {
   test("should get env vars and construct the client successfully", async () => {
     const accountAuthProvider = new AccountTokenAuthProvider(
       apiTokenClientId,
@@ -150,6 +170,7 @@ describe("Initialization tests", () => {
 
       const [regtestNode] = nodesConnection?.entities;
       regtestNodeId = regtestNode?.id;
+      log("regtestNodeId", regtestNode?.id);
 
       await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
         password: REGTEST_SIGNING_KEY_PASSWORD,
@@ -162,7 +183,7 @@ describe("Initialization tests", () => {
   );
 });
 
-describe("P0 tests", () => {
+describe(p0SuiteName, () => {
   test("Should create a normal payment invoice", async () => {
     paymentInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
@@ -235,12 +256,7 @@ describe("P0 tests", () => {
     expect(invoicePayment).toBeDefined();
   });
 
-  test("Should deposit funds to wallet with a clear sats amount", async () => {
-    const fundingResult = await lightsparkClient.fundNode(getRegtestNodeId());
-    expect(fundingResult.originalValue).toBe(10_000_000);
-  });
-
-  test("Should deposit funds to wallet with a defined amount of sats", async () => {
+  test("Should deposit funds to node with a defined amount of sats", async () => {
     const fundingResult = await lightsparkClient.fundNode(
       getRegtestNodeId(),
       DEPOSIT_PAY_AMOUNT,
@@ -248,8 +264,101 @@ describe("P0 tests", () => {
     expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
   });
 
+  const satsToFund = 40_000;
+  test("Should deposit funds to node with a defined amount of sats", async () => {
+    const account = await lightsparkClient.getCurrentAccount();
+
+    if (!account) {
+      throw new Error("No account");
+    }
+
+    const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      BitcoinNetwork.REGTEST,
+    ]);
+    let regtestNode = nodesConnection?.entities[0];
+    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
+    log("initialTotalBalance.sats", initialTotalBalance.sats);
+
+    const nodeId = getRegtestNodeId();
+
+    /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
+       adjust to a target balance less than that: */
+    const targetBalanceSats = 80_000_000;
+    if (initialTotalBalance.sats > targetBalanceSats) {
+      const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+      log("adjusting balance: invoiceAmount sats", invoiceAmount);
+
+      await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
+        password: REGTEST_SIGNING_KEY_PASSWORD,
+      });
+
+      const invoice = await lightsparkClient.createTestModeInvoice(
+        nodeId,
+        round((initialTotalBalance.sats - targetBalanceSats) * 1000), // convert to msats
+      );
+
+      if (!invoice) {
+        throw new Error("Unable to create invoice for balance adjustment");
+      }
+
+      const feeRate = 0.0016;
+      const payment = await lightsparkClient.payInvoice(
+        nodeId,
+        invoice,
+        round(invoiceAmount * feeRate),
+      );
+
+      if (!payment) {
+        throw new Error("Payment undefined for balance adjustment");
+      }
+
+      const completePayment = await lightsparkClient.waitForTransactionComplete(
+        payment.id,
+        pollTimeoutSecs,
+      );
+      log("adjusting balance: completePayment", completePayment);
+
+      if (completePayment.status !== TransactionStatus.SUCCESS) {
+        log("adjusting balance: completePayment failed", completePayment);
+        throw new Error("Balance adjustment payment failed");
+      }
+    }
+
+    await lightsparkClient.fundNode(nodeId, satsToFund);
+
+    regtestNode = await pollUntil(
+      () => {
+        return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
+      },
+      (current, response) => {
+        if (
+          current &&
+          !mapCurrencyAmount(current.entities[0]?.totalBalance).isEqualTo(
+            initialTotalBalance,
+          )
+        ) {
+          return {
+            stopPolling: true,
+            value: current.entities[0],
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      pollMaxTimeouts,
+      pollIgnoreErrors,
+      () => new Error("Timeout waiting for payment to be received"),
+    );
+
+    expect(
+      mapCurrencyAmount(regtestNode.totalBalance).isEqualTo(
+        initialTotalBalance,
+      ),
+    ).toBe(false);
+  }, 120_000);
+
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
-  // test('Should deposit funds to wallet with a defined amount of sats', async () => {
+  // test('Should deposit funds to node with a defined amount of sats', async () => {
   //     const fundingResult = await lightsparkClient.requestWithdrawal(getRegtestNodeId(), PAY_AMOUNT, '', WithdrawalMode.WALLET_THEN_CHANNELS)
   //     const transaction = await lightsparkClient.waitForTransactionComplete(fundingResult.id, TRANSACTION_WAIT_TIME)
   //     expect(transaction.status).toBe(TransactionStatus.SUCCESS)
@@ -258,7 +367,7 @@ describe("P0 tests", () => {
   test(
     "Should open just-in-time channel from inbound payment",
     async () => {
-      const payment = await createAnTestModePayment();
+      const payment = await createTestModePayment();
       const { status } = await lightsparkClient.waitForTransactionComplete(
         payment.id,
         TRANSACTION_WAIT_TIME,
@@ -269,7 +378,7 @@ describe("P0 tests", () => {
   );
 });
 
-describe("P1 tests", () => {
+describe(p1SuiteName, () => {
   test(
     "should fetch the current account",
     async () => {
@@ -293,7 +402,7 @@ describe("P1 tests", () => {
     "should listen current payment requests",
     async () => {
       for (let i = 0; i < PAGINATION_STEP; i++) {
-        await createAnTestModePayment();
+        await createTestModePayment();
       }
       const requests = await lightsparkClient.getRecentPaymentRequests(
         getRegtestNodeId(),
@@ -308,7 +417,7 @@ describe("P1 tests", () => {
   test(
     "should listen current payment requests after some date",
     async () => {
-      const requestsAfterDate = day(Date.now() - DAY_IN_MS).format();
+      const requestsAfterDate = dayjs(Date.now() - DAY_IN_MS).format();
       const requests = await lightsparkClient.getRecentPaymentRequests(
         getRegtestNodeId(),
         PAGINATION_STEP,
@@ -427,42 +536,58 @@ describe("P1 tests", () => {
     TESTS_TIMEOUT,
   );
 
+  test("should create a test mode payment", async () => {
+    const regtestNodeId = getRegtestNodeId();
+
+    const invoiceForTestPayment = await lightsparkClient.createInvoice(
+      regtestNodeId,
+      PAY_AMOUNT,
+      "hi there!",
+    );
+
+    if (!invoiceForTestPayment) {
+      throw new TypeError("Invoice for test payment wasn't created");
+    }
+
+    const payment = await lightsparkClient.createTestModePayment(
+      regtestNodeId,
+      invoiceForTestPayment,
+    );
+
+    if (!payment) {
+      throw new TypeError("Test mode payment wasn't created");
+    }
+
+    const transaction = await lightsparkClient.waitForTransactionComplete(
+      payment.id,
+      TRANSACTION_WAIT_TIME,
+    );
+
+    expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+  });
+
   test(
-    "should create a test mode payment",
+    "Should successfully create an uma invoice",
     async () => {
-      const regtestNodeId = getRegtestNodeId();
+      const nodeId = getRegtestNodeId();
 
-      const invoiceForTestPayment = await lightsparkClient.createInvoice(
-        regtestNodeId,
-        PAY_AMOUNT,
-        "hi there!",
+      const metadata = JSON.stringify([
+        ["text/plain", "Pay to vasp2.com user $bob"],
+        ["text/identifier", "$bob@vasp2.com"],
+      ]);
+
+      const umaInvoice = await lightsparkClient.createUmaInvoice(
+        nodeId,
+        1000,
+        metadata,
       );
-
-      if (!invoiceForTestPayment) {
-        throw new TypeError("Invoice for test payment wasn't created");
-      }
-
-      const payment = await lightsparkClient.createTestModePayment(
-        regtestNodeId,
-        invoiceForTestPayment,
-      );
-
-      if (!payment) {
-        throw new TypeError("Test mode payment wasn't created");
-      }
-
-      const transaction = await lightsparkClient.waitForTransactionComplete(
-        payment.id,
-        TRANSACTION_WAIT_TIME,
-      );
-
-      expect(transaction?.status).toBe(TransactionStatus.SUCCESS);
+      expect(umaInvoice?.status).toEqual(PaymentRequestStatus.OPEN);
     },
     TESTS_TIMEOUT,
   );
 });
 
-describe("P2 tests", () => {
+describe(p2SuiteName, () => {
   test(
     "should get a bitcoin fee estimate",
     async () => {
