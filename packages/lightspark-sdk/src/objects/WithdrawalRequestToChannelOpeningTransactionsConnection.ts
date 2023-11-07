@@ -1,11 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
-import { ChannelOpeningTransactionFromJson } from "./ChannelOpeningTransaction.js";
+import {
+  ChannelOpeningTransactionFromJson,
+  ChannelOpeningTransactionToJson,
+} from "./ChannelOpeningTransaction.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 
-type WithdrawalRequestToChannelOpeningTransactionsConnection = {
+interface WithdrawalRequestToChannelOpeningTransactionsConnection {
   /** An object that holds pagination information about the objects in this connection. **/
   pageInfo: PageInfo;
 
@@ -17,7 +20,7 @@ type WithdrawalRequestToChannelOpeningTransactionsConnection = {
 
   /** The channel opening transactions for the current page of this connection. **/
   entities: ChannelOpeningTransaction[];
-};
+}
 
 export const WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson = (
   obj: any,
@@ -36,6 +39,18 @@ export const WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson = (
       "withdrawal_request_to_channel_opening_transactions_connection_entities"
     ].map((e) => ChannelOpeningTransactionFromJson(e)),
   } as WithdrawalRequestToChannelOpeningTransactionsConnection;
+};
+export const WithdrawalRequestToChannelOpeningTransactionsConnectionToJson = (
+  obj: WithdrawalRequestToChannelOpeningTransactionsConnection,
+): any => {
+  return {
+    withdrawal_request_to_channel_opening_transactions_connection_page_info:
+      PageInfoToJson(obj.pageInfo),
+    withdrawal_request_to_channel_opening_transactions_connection_count:
+      obj.count,
+    withdrawal_request_to_channel_opening_transactions_connection_entities:
+      obj.entities.map((e) => ChannelOpeningTransactionToJson(e)),
+  };
 };
 
 export const FRAGMENT = `

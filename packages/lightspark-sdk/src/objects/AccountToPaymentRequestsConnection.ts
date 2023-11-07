@@ -1,12 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type Connection from "./Connection.js";
 import type PageInfo from "./PageInfo.js";
-import { PageInfoFromJson } from "./PageInfo.js";
+import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 import type PaymentRequest from "./PaymentRequest.js";
-import { PaymentRequestFromJson } from "./PaymentRequest.js";
+import {
+  PaymentRequestFromJson,
+  PaymentRequestToJson,
+} from "./PaymentRequest.js";
 
-type AccountToPaymentRequestsConnection = Connection & {
+interface AccountToPaymentRequestsConnection {
   /**
    * The total count of objects in this connection, using the current filters. It is different from the
    * number of objects returned in the current page (in the `entities` field).
@@ -21,7 +23,7 @@ type AccountToPaymentRequestsConnection = Connection & {
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const AccountToPaymentRequestsConnectionFromJson = (
   obj: any,
@@ -36,6 +38,20 @@ export const AccountToPaymentRequestsConnectionFromJson = (
     ),
     typename: "AccountToPaymentRequestsConnection",
   } as AccountToPaymentRequestsConnection;
+};
+export const AccountToPaymentRequestsConnectionToJson = (
+  obj: AccountToPaymentRequestsConnection,
+): any => {
+  return {
+    __typename: "AccountToPaymentRequestsConnection",
+    account_to_payment_requests_connection_count: obj.count,
+    account_to_payment_requests_connection_page_info: PageInfoToJson(
+      obj.pageInfo,
+    ),
+    account_to_payment_requests_connection_entities: obj.entities.map((e) =>
+      PaymentRequestToJson(e),
+    ),
+  };
 };
 
 export const FRAGMENT = `

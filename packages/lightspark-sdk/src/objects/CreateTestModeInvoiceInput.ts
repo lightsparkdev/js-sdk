@@ -2,15 +2,15 @@
 
 import InvoiceType from "./InvoiceType.js";
 
-type CreateTestModeInvoiceInput = {
+interface CreateTestModeInvoiceInput {
   localNodeId: string;
 
   amountMsats: number;
 
-  memo?: string;
+  memo?: string | undefined;
 
-  invoiceType?: InvoiceType;
-};
+  invoiceType?: InvoiceType | undefined;
+}
 
 export const CreateTestModeInvoiceInputFromJson = (
   obj: any,
@@ -24,6 +24,16 @@ export const CreateTestModeInvoiceInputFromJson = (
         InvoiceType.FUTURE_VALUE
       : null,
   } as CreateTestModeInvoiceInput;
+};
+export const CreateTestModeInvoiceInputToJson = (
+  obj: CreateTestModeInvoiceInput,
+): any => {
+  return {
+    create_test_mode_invoice_input_local_node_id: obj.localNodeId,
+    create_test_mode_invoice_input_amount_msats: obj.amountMsats,
+    create_test_mode_invoice_input_memo: obj.memo,
+    create_test_mode_invoice_input_invoice_type: obj.invoiceType,
+  };
 };
 
 export default CreateTestModeInvoiceInput;

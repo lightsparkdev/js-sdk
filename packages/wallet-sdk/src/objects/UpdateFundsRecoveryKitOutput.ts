@@ -1,13 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type FundsRecoveryKit from "./FundsRecoveryKit.js";
-import { FundsRecoveryKitFromJson } from "./FundsRecoveryKit.js";
+import {
+  FundsRecoveryKitFromJson,
+  FundsRecoveryKitToJson,
+} from "./FundsRecoveryKit.js";
 
-type UpdateFundsRecoveryKitOutput = {
+interface UpdateFundsRecoveryKitOutput {
   walletId: string;
 
   fundsRecoveryKit: FundsRecoveryKit;
-};
+}
 
 export const UpdateFundsRecoveryKitOutputFromJson = (
   obj: any,
@@ -18,6 +21,16 @@ export const UpdateFundsRecoveryKitOutputFromJson = (
       obj["update_funds_recovery_kit_output_funds_recovery_kit"],
     ),
   } as UpdateFundsRecoveryKitOutput;
+};
+export const UpdateFundsRecoveryKitOutputToJson = (
+  obj: UpdateFundsRecoveryKitOutput,
+): any => {
+  return {
+    update_funds_recovery_kit_output_wallet: { id: obj.walletId },
+    update_funds_recovery_kit_output_funds_recovery_kit: FundsRecoveryKitToJson(
+      obj.fundsRecoveryKit,
+    ),
+  };
 };
 
 export const FRAGMENT = `

@@ -4,25 +4,33 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type Balances from "./Balances.js";
-import { BalancesFromJson } from "./Balances.js";
+import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import type BlockchainBalance from "./BlockchainBalance.js";
-import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
+import {
+  BlockchainBalanceFromJson,
+  BlockchainBalanceToJson,
+} from "./BlockchainBalance.js";
 import type ChannelStatus from "./ChannelStatus.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import type LightsparkNode from "./LightsparkNode.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
+import type Node from "./Node.js";
 import type NodeAddressType from "./NodeAddressType.js";
 import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.js";
 import type Secret from "./Secret.js";
-import { SecretFromJson } from "./Secret.js";
+import { SecretFromJson, SecretToJson } from "./Secret.js";
 
 /** This is a Lightspark node with OSK. **/
-class LightsparkNodeWithOSK implements LightsparkNode {
+class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
@@ -32,18 +40,18 @@ class LightsparkNodeWithOSK implements LightsparkNode {
     public readonly ownerId: string,
     public readonly umaPrescreeningUtxos: string[],
     public readonly typename: string,
-    public readonly alias?: string,
-    public readonly color?: string,
-    public readonly conductivity?: number,
-    public readonly publicKey?: string,
-    public readonly status?: LightsparkNodeStatus,
-    public readonly totalBalance?: CurrencyAmount,
-    public readonly totalLocalBalance?: CurrencyAmount,
-    public readonly localBalance?: CurrencyAmount,
-    public readonly remoteBalance?: CurrencyAmount,
-    public readonly blockchainBalance?: BlockchainBalance,
-    public readonly balances?: Balances,
-    public readonly encryptedSigningPrivateKey?: Secret,
+    public readonly alias?: string | undefined,
+    public readonly color?: string | undefined,
+    public readonly conductivity?: number | undefined,
+    public readonly publicKey?: string | undefined,
+    public readonly status?: LightsparkNodeStatus | undefined,
+    public readonly totalBalance?: CurrencyAmount | undefined,
+    public readonly totalLocalBalance?: CurrencyAmount | undefined,
+    public readonly localBalance?: CurrencyAmount | undefined,
+    public readonly remoteBalance?: CurrencyAmount | undefined,
+    public readonly blockchainBalance?: BlockchainBalance | undefined,
+    public readonly balances?: Balances | undefined,
+    public readonly encryptedSigningPrivateKey?: Secret | undefined,
   ) {
     autoBind(this);
   }
@@ -230,6 +238,47 @@ ${FRAGMENT}
       variables: { id },
       constructObject: (data: any) =>
         LightsparkNodeWithOSKFromJson(data.entity),
+    };
+  }
+
+  public toJson() {
+    return {
+      __typename: "LightsparkNodeWithOSK",
+      lightspark_node_with_o_s_k_id: this.id,
+      lightspark_node_with_o_s_k_created_at: this.createdAt,
+      lightspark_node_with_o_s_k_updated_at: this.updatedAt,
+      lightspark_node_with_o_s_k_alias: this.alias,
+      lightspark_node_with_o_s_k_bitcoin_network: this.bitcoinNetwork,
+      lightspark_node_with_o_s_k_color: this.color,
+      lightspark_node_with_o_s_k_conductivity: this.conductivity,
+      lightspark_node_with_o_s_k_display_name: this.displayName,
+      lightspark_node_with_o_s_k_public_key: this.publicKey,
+      lightspark_node_with_o_s_k_owner: { id: this.ownerId },
+      lightspark_node_with_o_s_k_status: this.status,
+      lightspark_node_with_o_s_k_total_balance: this.totalBalance
+        ? CurrencyAmountToJson(this.totalBalance)
+        : undefined,
+      lightspark_node_with_o_s_k_total_local_balance: this.totalLocalBalance
+        ? CurrencyAmountToJson(this.totalLocalBalance)
+        : undefined,
+      lightspark_node_with_o_s_k_local_balance: this.localBalance
+        ? CurrencyAmountToJson(this.localBalance)
+        : undefined,
+      lightspark_node_with_o_s_k_remote_balance: this.remoteBalance
+        ? CurrencyAmountToJson(this.remoteBalance)
+        : undefined,
+      lightspark_node_with_o_s_k_blockchain_balance: this.blockchainBalance
+        ? BlockchainBalanceToJson(this.blockchainBalance)
+        : undefined,
+      lightspark_node_with_o_s_k_uma_prescreening_utxos:
+        this.umaPrescreeningUtxos,
+      lightspark_node_with_o_s_k_balances: this.balances
+        ? BalancesToJson(this.balances)
+        : undefined,
+      lightspark_node_with_o_s_k_encrypted_signing_private_key: this
+        .encryptedSigningPrivateKey
+        ? SecretToJson(this.encryptedSigningPrivateKey)
+        : undefined,
     };
   }
 }

@@ -1,10 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { type Query } from "@lightsparkdev/core";
-import type Entity from "./Entity.js";
 import SignablePayloadStatus from "./SignablePayloadStatus.js";
 
-type SignablePayload = Entity & {
+interface SignablePayload {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -33,11 +32,11 @@ type SignablePayload = Entity & {
   typename: string;
 
   /** The tweak value to add. **/
-  addTweak?: string;
+  addTweak?: string | undefined;
 
   /** The tweak value to multiply. **/
-  mulTweak?: string;
-};
+  mulTweak?: string | undefined;
+}
 
 export const SignablePayloadFromJson = (obj: any): SignablePayload => {
   return {
@@ -54,6 +53,20 @@ export const SignablePayloadFromJson = (obj: any): SignablePayload => {
     addTweak: obj["signable_payload_add_tweak"],
     mulTweak: obj["signable_payload_mul_tweak"],
   } as SignablePayload;
+};
+export const SignablePayloadToJson = (obj: SignablePayload): any => {
+  return {
+    __typename: "SignablePayload",
+    signable_payload_id: obj.id,
+    signable_payload_created_at: obj.createdAt,
+    signable_payload_updated_at: obj.updatedAt,
+    signable_payload_payload: obj.payload,
+    signable_payload_derivation_path: obj.derivationPath,
+    signable_payload_status: obj.status,
+    signable_payload_add_tweak: obj.addTweak,
+    signable_payload_mul_tweak: obj.mulTweak,
+    signable_payload_signable: { id: obj.signableId },
+  };
 };
 
 export const FRAGMENT = `
