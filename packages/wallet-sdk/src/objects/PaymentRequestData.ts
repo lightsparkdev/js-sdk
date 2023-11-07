@@ -2,19 +2,22 @@
 
 import { LightsparkException } from "@lightsparkdev/core";
 import BitcoinNetwork from "./BitcoinNetwork.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 import { GraphNodeFromJson } from "./GraphNode.js";
 import type InvoiceData from "./InvoiceData.js";
 
 /** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. **/
-type PaymentRequestData = {
+interface PaymentRequestData {
   encodedPaymentRequest: string;
 
   bitcoinNetwork: BitcoinNetwork;
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const PaymentRequestDataFromJson = (obj: any): PaymentRequestData => {
   if (obj["__typename"] == "InvoiceData") {
@@ -35,6 +38,26 @@ export const PaymentRequestDataFromJson = (obj: any): PaymentRequestData => {
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj["__typename"]}`,
+  );
+};
+export const PaymentRequestDataToJson = (obj: PaymentRequestData): any => {
+  if (obj.typename == "InvoiceData") {
+    const invoiceData = obj as InvoiceData;
+    return {
+      __typename: "InvoiceData",
+      invoice_data_encoded_payment_request: invoiceData.encodedPaymentRequest,
+      invoice_data_bitcoin_network: invoiceData.bitcoinNetwork,
+      invoice_data_payment_hash: invoiceData.paymentHash,
+      invoice_data_amount: CurrencyAmountToJson(invoiceData.amount),
+      invoice_data_created_at: invoiceData.createdAt,
+      invoice_data_expires_at: invoiceData.expiresAt,
+      invoice_data_memo: invoiceData.memo,
+      invoice_data_destination: invoiceData.destination.toJson(),
+    };
+  }
+  throw new LightsparkException(
+    "DeserializationError",
+    `Couldn't find a concrete type for interface PaymentRequestData corresponding to the typename=${obj.typename}`,
   );
 };
 

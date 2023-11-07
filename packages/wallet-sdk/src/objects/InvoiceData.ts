@@ -2,13 +2,15 @@
 
 import BitcoinNetwork from "./BitcoinNetwork.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 import type GraphNode from "./GraphNode.js";
 import { GraphNodeFromJson } from "./GraphNode.js";
-import type PaymentRequestData from "./PaymentRequestData.js";
 
 /** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. **/
-type InvoiceData = PaymentRequestData & {
+interface InvoiceData {
   encodedPaymentRequest: string;
 
   bitcoinNetwork: BitcoinNetwork;
@@ -35,8 +37,8 @@ type InvoiceData = PaymentRequestData & {
   typename: string;
 
   /** A short, UTF-8 encoded, description of the purpose of this invoice. **/
-  memo?: string;
-};
+  memo?: string | undefined;
+}
 
 export const InvoiceDataFromJson = (obj: any): InvoiceData => {
   return {
@@ -52,6 +54,19 @@ export const InvoiceDataFromJson = (obj: any): InvoiceData => {
     typename: "InvoiceData",
     memo: obj["invoice_data_memo"],
   } as InvoiceData;
+};
+export const InvoiceDataToJson = (obj: InvoiceData): any => {
+  return {
+    __typename: "InvoiceData",
+    invoice_data_encoded_payment_request: obj.encodedPaymentRequest,
+    invoice_data_bitcoin_network: obj.bitcoinNetwork,
+    invoice_data_payment_hash: obj.paymentHash,
+    invoice_data_amount: CurrencyAmountToJson(obj.amount),
+    invoice_data_created_at: obj.createdAt,
+    invoice_data_expires_at: obj.expiresAt,
+    invoice_data_memo: obj.memo,
+    invoice_data_destination: obj.destination.toJson(),
+  };
 };
 
 export const FRAGMENT = `

@@ -2,12 +2,14 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
 
 /** This object represents any attempted payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific incoming payment attempt. **/
-type IncomingPaymentAttempt = Entity & {
+interface IncomingPaymentAttempt {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -33,8 +35,8 @@ type IncomingPaymentAttempt = Entity & {
   typename: string;
 
   /** The time the incoming payment attempt failed or succeeded. **/
-  resolvedAt?: string;
-};
+  resolvedAt?: string | undefined;
+}
 
 export const IncomingPaymentAttemptFromJson = (
   obj: any,
@@ -51,6 +53,20 @@ export const IncomingPaymentAttemptFromJson = (
     typename: "IncomingPaymentAttempt",
     resolvedAt: obj["incoming_payment_attempt_resolved_at"],
   } as IncomingPaymentAttempt;
+};
+export const IncomingPaymentAttemptToJson = (
+  obj: IncomingPaymentAttempt,
+): any => {
+  return {
+    __typename: "IncomingPaymentAttempt",
+    incoming_payment_attempt_id: obj.id,
+    incoming_payment_attempt_created_at: obj.createdAt,
+    incoming_payment_attempt_updated_at: obj.updatedAt,
+    incoming_payment_attempt_status: obj.status,
+    incoming_payment_attempt_resolved_at: obj.resolvedAt,
+    incoming_payment_attempt_amount: CurrencyAmountToJson(obj.amount),
+    incoming_payment_attempt_channel: { id: obj.channelId },
+  };
 };
 
 export const FRAGMENT = `

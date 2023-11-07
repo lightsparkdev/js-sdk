@@ -2,70 +2,68 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type OnChainTransaction from "./OnChainTransaction.js";
-import type Transaction from "./Transaction.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any L1 withdrawal associated with your Lightspark Node or account. **/
-type Withdrawal = OnChainTransaction &
-  Transaction &
-  Entity & {
-    /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
-     **/
-    id: string;
+interface Withdrawal {
+  /**
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+   * string.
+   **/
+  id: string;
 
-    /** The date and time when this transaction was initiated. **/
-    createdAt: string;
+  /** The date and time when this transaction was initiated. **/
+  createdAt: string;
 
-    /** The date and time when the entity was last updated. **/
-    updatedAt: string;
+  /** The date and time when the entity was last updated. **/
+  updatedAt: string;
 
-    /** The current status of this transaction. **/
-    status: TransactionStatus;
+  /** The current status of this transaction. **/
+  status: TransactionStatus;
 
-    /** The amount of money involved in this transaction. **/
-    amount: CurrencyAmount;
+  /** The amount of money involved in this transaction. **/
+  amount: CurrencyAmount;
 
-    /**
-     * The height of the block that included this transaction. This will be zero for unconfirmed
-     * transactions.
-     **/
-    blockHeight: number;
+  /**
+   * The height of the block that included this transaction. This will be zero for unconfirmed
+   * transactions.
+   **/
+  blockHeight: number;
 
-    /** The Bitcoin blockchain addresses this transaction was sent to. **/
-    destinationAddresses: string[];
+  /** The Bitcoin blockchain addresses this transaction was sent to. **/
+  destinationAddresses: string[];
 
-    /** The Lightspark node this withdrawal originated from. **/
-    originId: string;
+  /** The Lightspark node this withdrawal originated from. **/
+  originId: string;
 
-    /** The typename of the object **/
-    typename: string;
+  /** The typename of the object **/
+  typename: string;
 
-    /** The date and time when this transaction was completed or failed. **/
-    resolvedAt?: string;
+  /** The date and time when this transaction was completed or failed. **/
+  resolvedAt?: string | undefined;
 
-    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-    transactionHash?: string;
+  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  transactionHash?: string | undefined;
 
-    /**
-     * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
-     * blockchain.
-     **/
-    fees?: CurrencyAmount;
+  /**
+   * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+   * blockchain.
+   **/
+  fees?: CurrencyAmount | undefined;
 
-    /**
-     * The hash of the block that included this transaction. This will be null for unconfirmed
-     * transactions.
-     **/
-    blockHash?: string;
+  /**
+   * The hash of the block that included this transaction. This will be null for unconfirmed
+   * transactions.
+   **/
+  blockHash?: string | undefined;
 
-    /** The number of blockchain confirmations for this transaction in real time. **/
-    numConfirmations?: number;
-  };
+  /** The number of blockchain confirmations for this transaction in real time. **/
+  numConfirmations?: number | undefined;
+}
 
 export const WithdrawalFromJson = (obj: any): Withdrawal => {
   return {
@@ -88,6 +86,24 @@ export const WithdrawalFromJson = (obj: any): Withdrawal => {
     blockHash: obj["withdrawal_block_hash"],
     numConfirmations: obj["withdrawal_num_confirmations"],
   } as Withdrawal;
+};
+export const WithdrawalToJson = (obj: Withdrawal): any => {
+  return {
+    __typename: "Withdrawal",
+    withdrawal_id: obj.id,
+    withdrawal_created_at: obj.createdAt,
+    withdrawal_updated_at: obj.updatedAt,
+    withdrawal_status: obj.status,
+    withdrawal_resolved_at: obj.resolvedAt,
+    withdrawal_amount: CurrencyAmountToJson(obj.amount),
+    withdrawal_transaction_hash: obj.transactionHash,
+    withdrawal_fees: obj.fees ? CurrencyAmountToJson(obj.fees) : undefined,
+    withdrawal_block_hash: obj.blockHash,
+    withdrawal_block_height: obj.blockHeight,
+    withdrawal_destination_addresses: obj.destinationAddresses,
+    withdrawal_num_confirmations: obj.numConfirmations,
+    withdrawal_origin: { id: obj.originId },
+  };
 };
 
 export const FRAGMENT = `

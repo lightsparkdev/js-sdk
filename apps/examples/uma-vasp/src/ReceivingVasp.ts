@@ -7,6 +7,7 @@ import * as uma from "@uma-sdk/core";
 import { Express, Request, Response } from "express";
 import { errorMessage } from "./errors.js";
 import UmaConfig from "./UmaConfig.js";
+import { getLightsparkNodeQuery } from "@lightsparkdev/lightspark-sdk";
 
 export default class ReceivingVasp {
   constructor(
@@ -252,7 +253,7 @@ export default class ReceivingVasp {
   }
 
   private async getReceiverNodePubKey(): Promise<string> {
-    const nodeQuery = LightsparkNode.getLightsparkNodeQuery(this.config.nodeID);
+    const nodeQuery = getLightsparkNodeQuery(this.config.nodeID);
     let node: LightsparkNode | null;
     try {
       node = await this.lightsparkClient.executeRawQuery(nodeQuery);

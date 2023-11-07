@@ -3,7 +3,6 @@ import {
   CurrencyUnit,
   InvoiceData,
   LightsparkClient,
-  LightsparkNode,
   OutgoingPayment,
   TransactionStatus,
 } from "@lightsparkdev/lightspark-sdk";
@@ -16,6 +15,7 @@ import SendingVaspRequestCache, {
   SendingVaspPayReqData,
 } from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
+import { getLightsparkNodeQuery } from "@lightsparkdev/lightspark-sdk";
 
 export default class SendingVasp {
   private readonly requestCache: SendingVaspRequestCache =
@@ -411,7 +411,7 @@ export default class SendingVasp {
 
   private async getNodePubKey() {
     const node = await this.lightsparkClient.executeRawQuery(
-      LightsparkNode.getLightsparkNodeQuery(this.config.nodeID),
+      getLightsparkNodeQuery(this.config.nodeID),
     );
     if (!node) {
       throw new Error("Node not found.");

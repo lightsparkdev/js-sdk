@@ -2,49 +2,47 @@
 
 import { type Query } from "@lightsparkdev/core";
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
-import type Entity from "./Entity.js";
-import type LightningTransaction from "./LightningTransaction.js";
-import type Transaction from "./Transaction.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
-type IncomingPayment = LightningTransaction &
-  Transaction &
-  Entity & {
-    /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
-     **/
-    id: string;
+interface IncomingPayment {
+  /**
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+   * string.
+   **/
+  id: string;
 
-    /** The date and time when this transaction was initiated. **/
-    createdAt: string;
+  /** The date and time when this transaction was initiated. **/
+  createdAt: string;
 
-    /** The date and time when the entity was last updated. **/
-    updatedAt: string;
+  /** The date and time when the entity was last updated. **/
+  updatedAt: string;
 
-    /** The current status of this transaction. **/
-    status: TransactionStatus;
+  /** The current status of this transaction. **/
+  status: TransactionStatus;
 
-    /** The amount of money involved in this transaction. **/
-    amount: CurrencyAmount;
+  /** The amount of money involved in this transaction. **/
+  amount: CurrencyAmount;
 
-    /** The typename of the object **/
-    typename: string;
+  /** The typename of the object **/
+  typename: string;
 
-    /** The date and time when this transaction was completed or failed. **/
-    resolvedAt?: string;
+  /** The date and time when this transaction was completed or failed. **/
+  resolvedAt?: string | undefined;
 
-    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
-    transactionHash?: string;
+  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  transactionHash?: string | undefined;
 
-    /**
-     * The optional payment request for this incoming payment, which will be null if the payment is sent
-     * through keysend.
-     **/
-    paymentRequestId?: string;
-  };
+  /**
+   * The optional payment request for this incoming payment, which will be null if the payment is sent
+   * through keysend.
+   **/
+  paymentRequestId?: string | undefined;
+}
 
 export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
   return {
@@ -60,6 +58,19 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     transactionHash: obj["incoming_payment_transaction_hash"],
     paymentRequestId: obj["incoming_payment_payment_request"]?.id ?? undefined,
   } as IncomingPayment;
+};
+export const IncomingPaymentToJson = (obj: IncomingPayment): any => {
+  return {
+    __typename: "IncomingPayment",
+    incoming_payment_id: obj.id,
+    incoming_payment_created_at: obj.createdAt,
+    incoming_payment_updated_at: obj.updatedAt,
+    incoming_payment_status: obj.status,
+    incoming_payment_resolved_at: obj.resolvedAt,
+    incoming_payment_amount: CurrencyAmountToJson(obj.amount),
+    incoming_payment_transaction_hash: obj.transactionHash,
+    incoming_payment_payment_request: { id: obj.paymentRequestId } ?? undefined,
+  };
 };
 
 export const FRAGMENT = `

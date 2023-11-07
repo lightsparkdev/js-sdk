@@ -4,9 +4,10 @@ import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type Balances from "./Balances.js";
-import { BalancesFromJson } from "./Balances.js";
+import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type Entity from "./Entity.js";
 import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
 import type TransactionStatus from "./TransactionStatus.js";
 import type TransactionType from "./TransactionType.js";
@@ -17,7 +18,7 @@ import type WalletToTransactionsConnection from "./WalletToTransactionsConnectio
 import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
 
 /** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. **/
-class Wallet implements LightsparkNodeOwner {
+class Wallet implements LightsparkNodeOwner, Entity {
   constructor(
     public readonly id: string,
     public readonly createdAt: string,
@@ -25,9 +26,9 @@ class Wallet implements LightsparkNodeOwner {
     public readonly thirdPartyIdentifier: string,
     public readonly status: WalletStatus,
     public readonly typename: string,
-    public readonly lastLoginAt?: string,
-    public readonly balances?: Balances,
-    public readonly accountId?: string,
+    public readonly lastLoginAt?: string | undefined,
+    public readonly balances?: Balances | undefined,
+    public readonly accountId?: string | undefined,
   ) {
     autoBind(this);
   }
@@ -1055,6 +1056,22 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) => WalletFromJson(data.entity),
+    };
+  }
+
+  public toJson() {
+    return {
+      __typename: "Wallet",
+      wallet_id: this.id,
+      wallet_created_at: this.createdAt,
+      wallet_updated_at: this.updatedAt,
+      wallet_last_login_at: this.lastLoginAt,
+      wallet_balances: this.balances
+        ? BalancesToJson(this.balances)
+        : undefined,
+      wallet_third_party_identifier: this.thirdPartyIdentifier,
+      wallet_account: { id: this.accountId } ?? undefined,
+      wallet_status: this.status,
     };
   }
 }

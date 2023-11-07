@@ -2,13 +2,13 @@
 
 import InvoiceType from "./InvoiceType.js";
 
-type CreateTestModeInvoiceInputWallet = {
+interface CreateTestModeInvoiceInputWallet {
   amountMsats: number;
 
-  memo?: string;
+  memo?: string | undefined;
 
-  invoiceType?: InvoiceType;
-};
+  invoiceType?: InvoiceType | undefined;
+}
 
 export const CreateTestModeInvoiceInputWalletFromJson = (
   obj: any,
@@ -22,6 +22,15 @@ export const CreateTestModeInvoiceInputWalletFromJson = (
         ] ?? InvoiceType.FUTURE_VALUE
       : null,
   } as CreateTestModeInvoiceInputWallet;
+};
+export const CreateTestModeInvoiceInputWalletToJson = (
+  obj: CreateTestModeInvoiceInputWallet,
+): any => {
+  return {
+    create_test_mode_invoice_input_wallet_amount_msats: obj.amountMsats,
+    create_test_mode_invoice_input_wallet_memo: obj.memo,
+    create_test_mode_invoice_input_wallet_invoice_type: obj.invoiceType,
+  };
 };
 
 export default CreateTestModeInvoiceInputWallet;

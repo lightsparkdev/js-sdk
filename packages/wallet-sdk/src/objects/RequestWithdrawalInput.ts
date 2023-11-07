@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type RequestWithdrawalInput = {
+interface RequestWithdrawalInput {
   /** The bitcoin address where the withdrawal should be sent. **/
   bitcoinAddress: string;
 
@@ -9,7 +9,7 @@ type RequestWithdrawalInput = {
    * all funds from this node.
    **/
   amountSats: number;
-};
+}
 
 export const RequestWithdrawalInputFromJson = (
   obj: any,
@@ -18,6 +18,14 @@ export const RequestWithdrawalInputFromJson = (
     bitcoinAddress: obj["request_withdrawal_input_bitcoin_address"],
     amountSats: obj["request_withdrawal_input_amount_sats"],
   } as RequestWithdrawalInput;
+};
+export const RequestWithdrawalInputToJson = (
+  obj: RequestWithdrawalInput,
+): any => {
+  return {
+    request_withdrawal_input_bitcoin_address: obj.bitcoinAddress,
+    request_withdrawal_input_amount_sats: obj.amountSats,
+  };
 };
 
 export default RequestWithdrawalInput;

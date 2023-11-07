@@ -1,7 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 /** This is an object identifying the output of a test mode payment. This object can be used to retrieve the associated payment made from a Test Mode Payment call. **/
-type CreateTestModePaymentoutput = {
+interface CreateTestModePaymentoutput {
   /**
    * The payment that has been sent.
    *
@@ -11,7 +11,7 @@ type CreateTestModePaymentoutput = {
 
   /** The payment that has been received. **/
   incomingPaymentId: string;
-};
+}
 
 export const CreateTestModePaymentoutputFromJson = (
   obj: any,
@@ -21,6 +21,16 @@ export const CreateTestModePaymentoutputFromJson = (
     incomingPaymentId:
       obj["create_test_mode_paymentoutput_incoming_payment"].id,
   } as CreateTestModePaymentoutput;
+};
+export const CreateTestModePaymentoutputToJson = (
+  obj: CreateTestModePaymentoutput,
+): any => {
+  return {
+    create_test_mode_paymentoutput_payment: { id: obj.paymentId },
+    create_test_mode_paymentoutput_incoming_payment: {
+      id: obj.incomingPaymentId,
+    },
+  };
 };
 
 export const FRAGMENT = `

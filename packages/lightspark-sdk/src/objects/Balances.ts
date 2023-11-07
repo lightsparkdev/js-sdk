@@ -1,10 +1,13 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type CurrencyAmount from "./CurrencyAmount.js";
-import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import {
+  CurrencyAmountFromJson,
+  CurrencyAmountToJson,
+} from "./CurrencyAmount.js";
 
 /** This is an object representing the balance associated with your Lightspark account. You can retrieve this object to see your balance, which can be broken down into several different categorizations. **/
-type Balances = {
+interface Balances {
   /**
    * This represents the balance that should be displayed when asked "how much do I own right now?". It
    * represents the amount currently owned, including things that may not be owned soon (e.g. in-flight
@@ -27,7 +30,7 @@ type Balances = {
    * likely succeed and therefore likely make your withdrawal fail).
    **/
   availableToWithdrawBalance: CurrencyAmount;
-};
+}
 
 export const BalancesFromJson = (obj: any): Balances => {
   return {
@@ -39,6 +42,17 @@ export const BalancesFromJson = (obj: any): Balances => {
       obj["balances_available_to_withdraw_balance"],
     ),
   } as Balances;
+};
+export const BalancesToJson = (obj: Balances): any => {
+  return {
+    balances_owned_balance: CurrencyAmountToJson(obj.ownedBalance),
+    balances_available_to_send_balance: CurrencyAmountToJson(
+      obj.availableToSendBalance,
+    ),
+    balances_available_to_withdraw_balance: CurrencyAmountToJson(
+      obj.availableToWithdrawBalance,
+    ),
+  };
 };
 
 export const FRAGMENT = `

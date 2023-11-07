@@ -1,9 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { type Query } from "@lightsparkdev/core";
-import type Entity from "./Entity.js";
 
-type Signable = Entity & {
+interface Signable {
   /**
    * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
    * string.
@@ -18,7 +17,7 @@ type Signable = Entity & {
 
   /** The typename of the object **/
   typename: string;
-};
+}
 
 export const SignableFromJson = (obj: any): Signable => {
   return {
@@ -27,6 +26,14 @@ export const SignableFromJson = (obj: any): Signable => {
     updatedAt: obj["signable_updated_at"],
     typename: "Signable",
   } as Signable;
+};
+export const SignableToJson = (obj: Signable): any => {
+  return {
+    __typename: "Signable",
+    signable_id: obj.id,
+    signable_created_at: obj.createdAt,
+    signable_updated_at: obj.updatedAt,
+  };
 };
 
 export const FRAGMENT = `
