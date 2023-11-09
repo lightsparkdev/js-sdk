@@ -16,7 +16,7 @@ jobs:
   update-lock-file:
     if: github.head_ref != 'changeset-release/main'
     name: "Update lock file for PRs before checks and build"
-    runs-on: "ubuntu-22.04"
+    runs-on: "ubuntu-22.04-4"
     permissions:
       contents: write
       pull-requests: write
@@ -63,7 +63,7 @@ jobs:
   checks:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    runs-on: "ubuntu-22.04"
+    runs-on: "ubuntu-22.04-4"
     strategy:
       matrix:
         node-version: ["18.x", "20.x"]
@@ -101,21 +101,69 @@ jobs:
 
       - run: "yarn checks"
 
-      # - name: "Notify failure on Slack"
-      #   if: "failure() && github.event_name == 'push'"
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-      #     {
-      #       "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
+
+  integration-tests:
+    # Wait to see if the lock file should be updated before running:
+    needs: "update-lock-file"
+    if: "!failure()"
+    runs-on: "ubuntu-22.04-4"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v3"
+        with:
+          node-version-file: "js/.nvmrc"
+
+      - name: Install dependencies with yarn cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+
+      - name: Setup .lightsparkenv file
+        run: |
+          echo 'export LIGHTSPARK_WALLET_BASE_URL="api.dev.dev.sparkinfra.net"' > ~/.lightsparkenv
+          echo 'export LIGHTSPARK_ACCOUNT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_ID }}"' >> ~/.lightsparkenv
+          echo 'export LIGHTSPARK_JWT_PRIV_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PRIV_KEY }}"' >> ~/.lightsparkenv
+          echo 'export LIGHTSPARK_JWT_PUB_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PUB_KEY }}"' >> ~/.lightsparkenv
+
+      - name: Setup .lightsparkapienv file
+        run: |
+          echo 'export LIGHTSPARK_API_TOKEN_CLIENT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_ID }}"' > ~/.lightsparkapienv
+          echo 'export LIGHTSPARK_API_TOKEN_CLIENT_SECRET="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_SECRET }}"' >> ~/.lightsparkapienv
+          echo 'export BITCOIN_NETWORK="REGTEST"' >> ~/.lightsparkapienv
+          echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
+
+      - run: "yarn test:integration"
+        working-directory: "js"
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        shell: bash
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
 
   # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    runs-on: "ubuntu-22.04"
+    runs-on: "ubuntu-22.04-4"
     strategy:
       matrix:
         node-version: ["18.x", "20.x"]
@@ -139,14 +187,14 @@ jobs:
 
       - run: "yarn build"
 
-      # - name: "Notify failure on Slack"
-      #   if: "failure() && github.event_name == 'push'"
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-      #     {
-      #       "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
 
   release:
     name: Release
@@ -155,7 +203,7 @@ jobs:
       contents: write
       pull-requests: write
     if: "success() && github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-22.04-4"
     environment: npm
     steps:
       - name: Checkout Repo
@@ -239,19 +287,19 @@ jobs:
           }
           EOF
 
-      # - name: "Notify failure on Slack"
-      #   if: "failure() && github.event_name == 'push'"
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-      #     {
-      #       "text": ":x: js-sdk public repo: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: js-sdk public repo: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
 
   create-webdev-pr:
     name: Create Webdev PR
     if: "github.event_name == 'push'"
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-22.04-4"
     environment: npm
     permissions:
       contents: write
@@ -307,11 +355,11 @@ jobs:
           trap on_exit EXIT
           java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev
 
-      # - name: "Notify failure on Slack"
-      #   if: "failure() && github.event_name == 'push'"
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-      #     {
-      #       "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
