@@ -113,7 +113,6 @@ jobs:
   integration-tests:
     # Wait to see if the lock file should be updated before running:
     needs: "update-lock-file"
-    if: "!failure()"
     runs-on: "ubuntu-22.04-4"
 
     steps:
