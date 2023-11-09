@@ -97,12 +97,11 @@ export const CollapsingContainer = styled.div<{
   gap: 4px;
   display: flex;
   flex-direction: column;
-  transition: max-height 0.25s ease-out;
 
   ${(props) =>
     props.isOpen
-      ? `max-height: 100vh; animation-name: fadeIn;`
-      : `max-height: 0; animation-name: fadeOut;`}
+      ? `height: 100%; animation-name: fadeIn;`
+      : `height: 0; animation-name: fadeOut;`}
   ${(props) => (props.full ? `height: 100vh;` : "")}
 
   @keyframes fadeIn {
