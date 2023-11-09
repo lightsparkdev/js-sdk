@@ -16,7 +16,7 @@ jobs:
   update-lock-file:
     if: github.head_ref != 'changeset-release/main'
     name: "Update lock file for PRs before checks and build"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
     permissions:
       contents: write
       pull-requests: write
@@ -63,7 +63,7 @@ jobs:
   checks:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
     strategy:
       matrix:
         node-version: ["18.x", "20.x"]
@@ -113,7 +113,7 @@ jobs:
   integration-tests:
     # Wait to see if the lock file should be updated before running:
     needs: "update-lock-file"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
 
     steps:
       - name: "Checkout"
@@ -162,7 +162,7 @@ jobs:
   build:
     # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
     strategy:
       matrix:
         node-version: ["18.x", "20.x"]
@@ -202,7 +202,7 @@ jobs:
       contents: write
       pull-requests: write
     if: "success() && github.event_name == 'push'"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
     environment: npm
     steps:
       - name: Checkout Repo
@@ -298,7 +298,7 @@ jobs:
   create-webdev-pr:
     name: Create Webdev PR
     if: "github.event_name == 'push'"
-    runs-on: "ubuntu-22.04-4"
+    runs-on: "ubuntu-22.04"
     environment: npm
     permissions:
       contents: write
