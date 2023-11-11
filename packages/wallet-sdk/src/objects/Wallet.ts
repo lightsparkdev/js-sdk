@@ -16,11 +16,20 @@ import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsCo
 
 class Wallet implements Entity {
   constructor(
+    /**
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
+     * string.
+     **/
     public readonly id: string,
+    /** The date and time when the entity was first created. **/
     public readonly createdAt: string,
+    /** The date and time when the entity was last updated. **/
     public readonly updatedAt: string,
+    /** The status of this wallet. **/
     public readonly status: WalletStatus,
+    /** The typename of the object **/
     public readonly typename: string,
+    /** The balances that describe the funds in this wallet. **/
     public readonly balances?: Balances | undefined,
   ) {
     autoBind(this);
