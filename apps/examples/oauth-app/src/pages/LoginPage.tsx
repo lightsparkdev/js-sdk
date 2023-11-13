@@ -6,6 +6,12 @@ import { Button } from "src/components/Button";
 import { useNavigate } from "src/components/router";
 import { MainRoutes } from "src/routes";
 
+type LocationState =
+  | {
+      from: { pathname: string };
+    }
+  | undefined;
+
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,14 +22,19 @@ const LoginPage = () => {
       const queryString = window.location.search.substring(1); // includes '?'
       navigate(MainRoutes.Oauth, { query: queryString });
     }
-    auth.checkAuth().then((isAuthorized: boolean) => {
-      if (isAuthorized) {
-        navigate(MainRoutes.Base);
-      }
-    });
+    auth
+      .checkAuth()
+      .then((isAuthorized: boolean) => {
+        if (isAuthorized) {
+          navigate(MainRoutes.Base);
+        }
+      })
+      .catch((err) => {
+        console.log("Error checking auth", err);
+      });
   }, [auth, navigate]);
 
-  const from = location.state?.from?.pathname || "/";
+  const from = (location.state as LocationState)?.from?.pathname || "/";
 
   function handleLogin() {
     auth.signin(() => {
@@ -33,7 +44,7 @@ const LoginPage = () => {
       // when they get to the protected page and click the back button, they
       // won't end up back on the login page, which is also really nice for the
       // user experience.
-      navigate(from, undefined, { replace: true });
+      navigate(from as MainRoutes, undefined, { replace: true });
     });
   }
 

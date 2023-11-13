@@ -10,7 +10,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    auth.isAuthorized().then((isAuthorized: boolean) => {
+    void auth.isAuthorized().then((isAuthorized: boolean) => {
       if (!isAuthorized) {
         navigate(Routes.Login);
       }

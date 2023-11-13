@@ -18,7 +18,9 @@ export const assertValidBitcoinNetwork = (
 ): void => {
   if (!isBitcoinNetwork(bitcoinNetwork)) {
     throw new Error(
-      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS}`,
+      `Invalid bitcoin network ${bitcoinNetwork}. Valid networks: ${BITCOIN_NETWORKS.join(
+        ", ",
+      )}`,
     );
   }
 };

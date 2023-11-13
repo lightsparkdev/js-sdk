@@ -3,9 +3,8 @@ import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import React, { useState } from "react";
 import type LightsparkClientContextType from "./LightsparkClientContext";
 
-const LightsparkClientContext = React.createContext<LightsparkClientContextType>(
-  null!
-);
+const LightsparkClientContext =
+  React.createContext<LightsparkClientContextType>(null!);
 
 function LightsparkClientProvider({ children }: { children: React.ReactNode }) {
   const [client, setClient] = useState<LightsparkClient | null>(null);

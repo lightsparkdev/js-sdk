@@ -1,8 +1,4 @@
 export {
-  TextIconAligner,
-  type TextIconAlignerProps,
-} from "@lightsparkdev/ui/components/TextIconAligner";
-export {
   Button,
   ButtonSelector,
   StyledButton,
@@ -22,4 +18,5 @@ export { LightboxImage } from "./LightboxImage";
 export { Loading, LoadingWrapper } from "./Loading";
 export { Modal } from "./Modal";
 export { SecretContainer } from "./SecretContainer";
+export { TextIconAligner, type TextIconAlignerProps } from "./TextIconAligner";
 export { UnstyledButton } from "./UnstyledButton";

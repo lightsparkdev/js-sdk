@@ -36,8 +36,8 @@ class OAuthProvider implements AuthProvider {
     }
   }
 
-  async isAuthorized(): Promise<boolean> {
-    return this.oauthHelper.isAuthorized();
+  isAuthorized(): Promise<boolean> {
+    return Promise.resolve(this.oauthHelper.isAuthorized());
   }
 }
 

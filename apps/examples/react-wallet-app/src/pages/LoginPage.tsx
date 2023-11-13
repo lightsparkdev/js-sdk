@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    auth.isAuthorized().then((isAuthorized: boolean) => {
+    void auth.isAuthorized().then((isAuthorized: boolean) => {
       if (isAuthorized) {
         navigate(Routes.Dashboard);
       }
@@ -22,7 +22,7 @@ const LoginPage = () => {
   }, [auth, navigate]);
 
   function handleLogin() {
-    auth.login(accountId, jwt).then(() => {
+    void auth.login(accountId, jwt).then(() => {
       navigate(Routes.Dashboard);
     });
   }
@@ -30,7 +30,7 @@ const LoginPage = () => {
   const generateDemoTokens = async () => {
     const { token: jwt } = await fetch(
       `https://us-central1-jwt-minter.cloudfunctions.net/getJwt?userId=${userName}&password=${password}`
-    ).then((res) => res.json());
+    ).then((res) => res.json() as Promise<{ token: string }>);
     await auth.login("Account:01857e8b-cc47-9af2-0000-eb2de1fdecce", jwt);
     navigate(Routes.Dashboard);
   };
@@ -79,7 +79,9 @@ const LoginPage = () => {
       </Label>
       <Button
         primary
-        onClick={generateDemoTokens}
+        onClick={() => {
+          void generateDemoTokens();
+        }}
         text="Generate Demo Tokens"
       />
     </Container>

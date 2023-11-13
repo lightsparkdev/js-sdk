@@ -41,7 +41,7 @@ export const getCredentialsFromEnvOrThrow = (
     );
   }
 
-  const accountId = env[RequiredCredentials.AccountId] as string;
+  const accountId = env[RequiredCredentials.AccountId];
   const jwtSigningPrivateKey = env[RequiredCredentials.JwtPrivateKey];
 
   if (requireJwt) {
@@ -60,9 +60,8 @@ export const getCredentialsFromEnvOrThrow = (
     }
   }
 
-  const jwt = env[
-    getWalletEnvVariable(RequiredWalletCredentials.Jwt, walletEnvSuffix)
-  ] as string;
+  const jwt =
+    env[getWalletEnvVariable(RequiredWalletCredentials.Jwt, walletEnvSuffix)];
   const pubKey =
     env[
       getWalletEnvVariable(

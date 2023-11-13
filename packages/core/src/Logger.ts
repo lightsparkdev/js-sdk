@@ -9,7 +9,7 @@ export class Logger {
 
   constructor(loggerContext: string, getLoggingEnabled?: GetLoggingEnabled) {
     this.context = loggerContext;
-    this.updateLoggingEnabled(getLoggingEnabled);
+    void this.updateLoggingEnabled(getLoggingEnabled);
   }
 
   async updateLoggingEnabled(getLoggingEnabled: GetLoggingEnabled) {

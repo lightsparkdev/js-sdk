@@ -4,5 +4,5 @@
     "types": ["chrome"]
   },
   "include": ["src"],
-  "exclude": ["test", "node_modules", "dist"]
+  "exclude": ["node_modules", "dist"]
 }

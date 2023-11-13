@@ -117,6 +117,8 @@ const deriveKey = async (
   return [key, iv];
 };
 
+type Header = { v: number; i: number; lsv?: number };
+
 const decrypt = async (
   header_json: string,
   ciphertext: string,
@@ -124,7 +126,7 @@ const decrypt = async (
 ): Promise<ArrayBuffer> => {
   let decoded = b64decode(ciphertext);
 
-  let header;
+  let header: Header;
   if (header_json === "AES_256_CBC_PBKDF2_5000_SHA256") {
     header = {
       v: 0,
@@ -133,13 +135,13 @@ const decrypt = async (
     // Strip "Salted__" prefix
     decoded = decoded.slice(8);
   } else {
-    header = JSON.parse(header_json);
+    header = JSON.parse(header_json) as Header;
   }
 
   if (header.v < 0 || header.v > 4) {
     throw new LightsparkException(
       "DecryptionError",
-      "Unknown version ".concat(header.v),
+      `Unknown version ${header.v}`,
     );
   }
 
@@ -244,7 +246,7 @@ const sign = async (
       name: "RSA-PSS",
       saltLength: 32,
     },
-    keyOrAlias as CryptoKey,
+    keyOrAlias,
     data,
   );
 };

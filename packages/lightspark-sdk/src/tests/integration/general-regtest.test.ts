@@ -23,7 +23,6 @@ import {
 import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
-  DECODED_REQUEST_DETAILS_FOR_TESTS,
   DEPOSIT_PAY_AMOUNT,
   ENCODED_REGTEST_REQUEST_FOR_TESTS,
   INVOICE_EXPIRY,
@@ -147,7 +146,7 @@ const getRegtestNodeId = () => {
 };
 
 describe(initSuiteName, () => {
-  test("should get env vars and construct the client successfully", async () => {
+  test("should get env vars and construct the client successfully", () => {
     const accountAuthProvider = new AccountTokenAuthProvider(
       apiTokenClientId,
       apiTokenClientSecret,
@@ -456,7 +455,7 @@ describe(p1SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
-  test("should fetch an invoices payment by IDs", async () => {
+  test("should fetch an invoices payment by IDs", () => {
     if (!invoicePayment?.id) throw new TypeError("invoicePayment is null");
 
     const payment = OutgoingPayment.getOutgoingPaymentQuery(invoicePayment?.id);
@@ -616,22 +615,43 @@ describe(p2SuiteName, () => {
   test(
     "should execute a raw graphql query",
     async () => {
-      const result = await lightsparkClient.executeRawQuery({
+      type DecodeInvoiceQueryResult = {
+        decoded_payment_request: {
+          __typename: "InvoiceData";
+          invoice_data_payment_hash: string;
+          invoice_data_amount: {
+            currency_amount_original_value: number;
+          };
+          invoice_data_memo: string;
+        };
+      };
+
+      const result = await lightsparkClient.executeRawQuery<
+        DecodeInvoiceQueryResult["decoded_payment_request"]
+      >({
         queryPayload: DecodeInvoice,
         variables: {
           encoded_payment_request: ENCODED_REGTEST_REQUEST_FOR_TESTS,
         },
-        constructObject: (data) => data?.decoded_payment_request,
+        constructObject: (data) =>
+          (data as DecodeInvoiceQueryResult)?.decoded_payment_request,
       });
 
       expect({
-        invoice_data_payment_hash: result.invoice_data_payment_hash,
+        invoice_data_payment_hash: result?.invoice_data_payment_hash,
         invoice_data_amount: {
           currency_amount_original_value:
-            result.invoice_data_amount.currency_amount_original_value,
+            result?.invoice_data_amount.currency_amount_original_value,
         },
-        invoice_data_memo: result.invoice_data_memo,
-      }).toEqual(DECODED_REQUEST_DETAILS_FOR_TESTS);
+        invoice_data_memo: result?.invoice_data_memo,
+      }).toEqual({
+        invoice_data_payment_hash:
+          "7806a0f8acd5385f9dd13d0aaa14922a7349afc5ba5d4b2bbbaaab5abd7f93ca",
+        invoice_data_amount: {
+          currency_amount_original_value: 0,
+        },
+        invoice_data_memo: "hi there!",
+      });
     },
     TESTS_TIMEOUT,
   );
