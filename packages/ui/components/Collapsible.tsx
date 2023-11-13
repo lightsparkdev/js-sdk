@@ -9,6 +9,9 @@ type CollapsibleProps = {
   open?: boolean | undefined;
   handleToggle?: (open: boolean) => void | undefined;
   hamburger?: boolean | undefined;
+  /**
+   * Opens the collapsible to full screen height if true.
+   */
   full?: boolean | undefined;
 };
 
@@ -102,7 +105,7 @@ export const CollapsingContainer = styled.div<{
     props.isOpen
       ? `height: 100%; animation-name: fadeIn;`
       : `height: 0; animation-name: fadeOut;`}
-  ${(props) => (props.full ? `height: 100vh;` : "")}
+  ${(props) => (props.full ? `height: ${props.isOpen ? "100vh" : 0};` : "")}
 
   @keyframes fadeIn {
     from {
