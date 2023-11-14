@@ -1,5 +1,15 @@
 # @lightsparkdev/react-native
 
+## 0.2.25
+
+### Patch Changes
+
+- aefe52c: Update tsup to latest
+- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
+- Updated dependencies [aefe52c]
+- Updated dependencies [09dfcee]
+  - @lightsparkdev/core@1.0.10
+
 ## 0.2.24
 
 ### Patch Changes
