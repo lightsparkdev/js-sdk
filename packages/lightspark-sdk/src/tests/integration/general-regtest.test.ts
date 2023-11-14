@@ -44,7 +44,7 @@ let paymentInvoice: string | undefined;
 let regtestNodeId: string | undefined;
 let invoicePayment: OutgoingPayment | undefined;
 
-const pollIntervalMs = 250;
+const pollIntervalMs = 750;
 const pollTimeoutSecs = 20;
 const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
 const pollIgnoreErrors = false;
@@ -94,13 +94,37 @@ function log(msg: string, ...args: unknown[]) {
   );
 }
 
-const getRegtestNodeId = () => {
+function getRegtestNodeId() {
   expect(regtestNodeId).toBeDefined();
   if (!regtestNodeId) {
     throw new TypeError("No regtest nodes in account");
   }
   return regtestNodeId;
-};
+}
+
+async function getAccount() {
+  const account = await lightsparkClient.getCurrentAccount();
+  if (!account) {
+    throw new TypeError("No account");
+  }
+  return account;
+}
+
+async function getRegtestNode() {
+  const account = await getAccount();
+  const regtestNodeId = getRegtestNodeId();
+  const nodesConnection = await account.getNodes(
+    lightsparkClient,
+    1,
+    [BitcoinNetwork.REGTEST],
+    [regtestNodeId],
+  );
+  const regtestNode = nodesConnection.entities[0];
+  if (!regtestNode) {
+    throw new TypeError(`No regtest node found for account ${account.id}`);
+  }
+  return regtestNode;
+}
 
 describe(initSuiteName, () => {
   test("should get env vars and construct the client successfully", () => {
@@ -113,10 +137,10 @@ describe(initSuiteName, () => {
   });
 
   test(
-    "should successfully get the current account regtest node",
+    "Should successfully get the current account regtest node and set it as the default for current test suite",
     async () => {
-      const account = await lightsparkClient.getCurrentAccount();
-      nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      const account = await getAccount();
+      nodesConnection = await account.getNodes(lightsparkClient, 1, [
         BitcoinNetwork.REGTEST,
       ]);
 
@@ -193,26 +217,22 @@ describe(p0SuiteName, () => {
 
   const satsToFund = 40_000;
   test("Should deposit funds to node with a defined amount of sats", async () => {
-    const account = await lightsparkClient.getCurrentAccount();
+    let regtestNode = await getRegtestNode();
 
-    if (!account) {
-      throw new Error("No account");
-    }
-
-    const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
-      BitcoinNetwork.REGTEST,
-    ]);
-    let regtestNode = nodesConnection?.entities[0];
     const initialOwnedBalance = mapCurrencyAmount(
       regtestNode?.balances?.ownedBalance,
     );
+    const initialSendBalance = mapCurrencyAmount(
+      regtestNode?.balances?.availableToSendBalance,
+    );
     log("initialOwnedBalance.sats", initialOwnedBalance.sats);
+    log("initialSendBalance.sats", initialSendBalance.sats);
 
     const nodeId = getRegtestNodeId();
 
-    /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
-       adjust to a target balance less than that: */
     const targetBalanceSats = 40_000_000;
+    /* Backend will error on fund_node if total balance is greater than 100,000,000 sats, so we should
+       adjust to a target balance less than that: */
     if (initialOwnedBalance.sats > targetBalanceSats) {
       const invoiceAmount = initialOwnedBalance.sats - targetBalanceSats;
       log("adjusting balance: invoiceAmount sats", invoiceAmount);
@@ -253,22 +273,23 @@ describe(p0SuiteName, () => {
       }
     }
 
+    log(`Funding node ${nodeId} with ${satsToFund} sats`);
     await lightsparkClient.fundNode(nodeId, satsToFund);
 
     regtestNode = await pollUntil(
       () => {
-        return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
+        return getRegtestNode();
       },
       (current, response) => {
         if (
           current &&
           !mapCurrencyAmount(
-            current.entities[0]?.balances?.availableToSendBalance,
-          ).isEqualTo(initialOwnedBalance)
+            current.balances?.availableToSendBalance,
+          ).isEqualTo(initialSendBalance)
         ) {
           return {
             stopPolling: true,
-            value: current.entities[0],
+            value: current,
           };
         }
         return response;
@@ -279,6 +300,23 @@ describe(p0SuiteName, () => {
       () => new Error("Timeout waiting for payment to be received"),
     );
 
+    const balances = regtestNode?.balances;
+    if (!balances) {
+      throw new Error("No balances property on node");
+    }
+    log(
+      "regtestNode.balances.availableToSend sats",
+      mapCurrencyAmount(balances.availableToSendBalance).sats,
+    );
+    log(
+      "regtestNode.balances.ownedBalance sats",
+      mapCurrencyAmount(balances.ownedBalance).sats,
+    );
+    log(
+      "regtestNode.balances.withdrawableBalance sats",
+      mapCurrencyAmount(balances.availableToWithdrawBalance).sats,
+    );
+
     expect(
       mapCurrencyAmount(regtestNode.balances?.availableToSendBalance).isEqualTo(
         initialOwnedBalance,
@@ -287,6 +325,12 @@ describe(p0SuiteName, () => {
   }, 120_000);
 
   test("Should pay an invoice", async () => {
+    const node = await getRegtestNode();
+    log(
+      "node.balances.availableToSendBalance",
+      node.balances?.availableToSendBalance,
+    );
+
     const testInvoice = await lightsparkClient.createTestModeInvoice(
       getRegtestNodeId(),
       PAY_AMOUNT,
