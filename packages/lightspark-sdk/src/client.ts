@@ -180,7 +180,7 @@ class LightsparkClient {
    *
    * @param authProvider
    */
-  public async setAuthProvider(authProvider: AuthProvider) {
+  public setAuthProvider(authProvider: AuthProvider) {
     this.requester = new Requester(
       this.nodeKeyCache,
       this.LIGHTSPARK_SDK_ENDPOINT,
@@ -798,7 +798,7 @@ class LightsparkClient {
    * @param transactionId The ID of the transaction to wait for
    * @param pollTimeoutSecs The timeout in seconds that we will wait before throwing an exception
    */
-  public async waitForTransactionComplete(
+  public async waitForTransactionComplete<T = Transaction>(
     transactionId: string,
     pollTimeoutSecs = 60,
   ) {
@@ -806,7 +806,7 @@ class LightsparkClient {
     const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
     const pollIgnoreErrors = false;
 
-    const transaction = (await pollUntil(
+    const transaction = await pollUntil(
       () => {
         return this.getTransaction(transactionId);
       },
@@ -834,9 +834,9 @@ class LightsparkClient {
           "Timeout",
           "Timeout waiting for transaction to complete.",
         ),
-    )) as Transaction;
+    );
 
-    return transaction;
+    return transaction as T;
   }
 
   /**

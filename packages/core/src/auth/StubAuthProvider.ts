@@ -4,14 +4,13 @@ import type AuthProvider from "./AuthProvider.js";
 import { type Headers, type WsConnectionParams } from "./AuthProvider.js";
 
 export default class StubAuthProvider implements AuthProvider {
-  async addAuthHeaders(headers: Headers) {
-    return headers;
+  addAuthHeaders(headers: Headers) {
+    return Promise.resolve(headers);
   }
-  async isAuthorized(): Promise<boolean> {
-    return false;
+  isAuthorized(): Promise<boolean> {
+    return Promise.resolve(false);
   }
-
-  async addWsConnectionParams(params: WsConnectionParams) {
-    return params;
+  addWsConnectionParams(params: WsConnectionParams) {
+    return Promise.resolve(params);
   }
 }

@@ -9,16 +9,18 @@ import type JwtTokenInfo from "./JwtTokenInfo.js";
 class InMemoryJwtStorage implements JwtStorage {
   private tokenInfo: JwtTokenInfo | null = null;
 
-  async getCurrent(): Promise<JwtTokenInfo | null> {
-    return this.tokenInfo;
+  getCurrent(): Promise<JwtTokenInfo | null> {
+    return Promise.resolve(this.tokenInfo);
   }
 
-  async replace(tokenInfo: JwtTokenInfo): Promise<void> {
+  replace(tokenInfo: JwtTokenInfo): Promise<void> {
     this.tokenInfo = tokenInfo;
+    return Promise.resolve();
   }
 
-  async clear(): Promise<void> {
+  clear(): Promise<void> {
     this.tokenInfo = null;
+    return Promise.resolve();
   }
 }
 

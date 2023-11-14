@@ -49,7 +49,9 @@ function DashboardPage() {
             primary
             text="Sign out"
             onClick={() => {
-              auth.signout();
+              auth.signout().catch((err) => {
+                console.log("Error signing out", err);
+              });
             }}
           />
         </Header>

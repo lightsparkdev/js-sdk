@@ -17,25 +17,29 @@ class AccountTokenAuthProvider implements AuthProvider {
     autoBind(this);
   }
 
-  async addWsConnectionParams(
+  addWsConnectionParams(
     params: Record<string, string>,
   ): Promise<Record<string, string>> {
-    return Object.assign({}, params, {
-      client_id: this.apiTokenClientId,
-      client_secret: this.apiTokenClientSecret,
-    });
+    return Promise.resolve(
+      Object.assign({}, params, {
+        client_id: this.apiTokenClientId,
+        client_secret: this.apiTokenClientSecret,
+      }),
+    );
   }
 
-  async addAuthHeaders(
+  addAuthHeaders(
     headers: Record<string, string>,
   ): Promise<Record<string, string>> {
-    return Object.assign({}, headers, {
-      authorization: `Basic ${b64encode(this.utf8AuthBytes)}`,
-    });
+    return Promise.resolve(
+      Object.assign({}, headers, {
+        authorization: `Basic ${b64encode(this.utf8AuthBytes)}`,
+      }),
+    );
   }
 
-  async isAuthorized(): Promise<boolean> {
-    return true;
+  isAuthorized(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 }
 

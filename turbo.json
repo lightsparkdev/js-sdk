@@ -32,8 +32,12 @@
       /* Always run codegen since it depends on files external to the workspace: */
       "cache": false
     },
-    "lint": {},
-    "lint:fix": {},
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"]
+    },
     "lint:watch": {
       "cache": false,
       "persistent": true

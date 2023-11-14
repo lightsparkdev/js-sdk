@@ -10,3 +10,5 @@ export interface LightsparkWindow extends Window {
   /* google tag manager. assume always defined, from index.html: */
   dataLayer: unknown[];
 }
+
+export {};

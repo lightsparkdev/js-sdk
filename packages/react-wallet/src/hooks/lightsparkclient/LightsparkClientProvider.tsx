@@ -29,7 +29,7 @@ function LightsparkClientProvider({
   };
 
   const setAuthProvider = (authProvider: AuthProvider) => {
-    client.setAuthProvider(authProvider);
+    return client.setAuthProvider(authProvider);
   };
 
   const value = { getClient, setAuthProvider, isAuthenticated };

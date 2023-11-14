@@ -26,6 +26,14 @@ export const LIGHTSPARK_BETA_HEADER_VALUE =
   "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 dayjs.extend(utc);
 
+type BodyData = {
+  query: string;
+  variables: { [key: string]: unknown };
+  operationName: string;
+  nonce?: number;
+  expires_at?: string;
+};
+
 class Requester {
   private readonly wsClient: WsClient;
   constructor(
@@ -55,6 +63,7 @@ class Requester {
   }
 
   public async executeQuery<T>(query: Query<T>): Promise<T | null> {
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- LIG-3400 */
     const data = await this.makeRawRequest(
       query.queryPayload,
       query.variables || {},
@@ -89,7 +98,7 @@ class Requester {
       }
     }
     const operation = operationMatch[2];
-    const bodyData = {
+    const bodyData: BodyData = {
       query: queryPayload,
       variables,
       operationName: operation,
@@ -111,7 +120,7 @@ class Requester {
     signingNodeId: string | undefined = undefined,
     skipAuth: boolean = false,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
-  ): Promise<any | null> {
+  ): Promise<any> {
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
@@ -131,7 +140,7 @@ class Requester {
       }
     }
     const operation = operationMatch[2];
-    let bodyData = {
+    let bodyData: BodyData = {
       query: queryPayload,
       variables,
       operationName: operation,
@@ -179,7 +188,10 @@ class Requester {
         `Request ${operation} failed. ${response.statusText}`,
       );
     }
-    const responseJson = await response.json();
+    const responseJson = (await response.json()) as {
+      data: unknown;
+      errors: unknown;
+    };
     const data = responseJson.data;
     if (!data) {
       throw new LightsparkException(
@@ -201,11 +213,11 @@ class Requester {
   }
 
   private async addSigningDataIfNeeded(
-    queryPayload: { query: string; variables: unknown; operationName: string },
+    queryPayload: BodyData,
     headers: { [key: string]: string },
     signingNodeId: string | undefined,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
-  ): Promise<any> {
+  ): Promise<BodyData> {
     if (!signingNodeId) {
       return queryPayload;
     }
@@ -225,7 +237,7 @@ class Requester {
       expires_at: expiration,
     };
 
-    const key = await this.nodeKeyCache.getKey(signingNodeId);
+    const key = this.nodeKeyCache.getKey(signingNodeId);
     if (!key) {
       throw new LightsparkSigningException(
         "Missing node of encrypted_signing_private_key",

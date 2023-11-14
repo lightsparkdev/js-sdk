@@ -131,7 +131,7 @@ class LightsparkClient {
    *
    * @param authProvider
    */
-  public async setAuthProvider(authProvider: AuthProvider) {
+  public setAuthProvider(authProvider: AuthProvider) {
     this.requester = new Requester(
       this.nodeKeyCache,
       WALLET_SDK_ENDPOINT,
@@ -190,7 +190,7 @@ class LightsparkClient {
       accessToken: response.accessToken,
       validUntil: new Date(response.validUntil),
     });
-    await this.setAuthProvider(authProvider);
+    this.setAuthProvider(authProvider);
 
     return response;
   }
@@ -913,12 +913,10 @@ class LightsparkClient {
       }, timeoutSecs * 1000);
     });
 
-    result.finally(() => {
+    return result.finally(() => {
       clearTimeout(timeout);
       subscription.unsubscribe();
     });
-
-    return result;
   }
 
   private listenToWalletStatus(): Observable<WalletStatus> {
@@ -932,10 +930,8 @@ class LightsparkClient {
       }`,
       )
       .map((responseJson: any) => {
-        return (
-          WalletStatus[responseJson.data.current_wallet.status] ??
-          WalletStatus.FUTURE_VALUE
-        );
+        return (WalletStatus[responseJson.data.current_wallet.status] ??
+          WalletStatus.FUTURE_VALUE) as WalletStatus;
       });
   }
 

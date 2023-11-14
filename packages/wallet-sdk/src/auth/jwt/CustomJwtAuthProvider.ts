@@ -23,7 +23,7 @@ class CustomJwtAuthProvider implements AuthProvider {
     await this.jwtStorage.clear();
   }
 
-  public async addAuthHeaders(headers: any): Promise<any> {
+  public async addAuthHeaders(headers: Record<string, unknown>): Promise<any> {
     const tokenInfo = await this.jwtStorage.getCurrent();
     if (!tokenInfo) {
       return headers;
@@ -41,7 +41,7 @@ class CustomJwtAuthProvider implements AuthProvider {
     return tokenInfo.validUntil > new Date();
   }
 
-  public async addWsConnectionParams(params: any) {
+  public async addWsConnectionParams(params: Record<string, unknown>) {
     const tokenInfo = await this.jwtStorage.getCurrent();
     if (!tokenInfo) {
       return params;

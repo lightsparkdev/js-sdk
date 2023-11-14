@@ -51,11 +51,13 @@ function DashboardPage() {
     content = (
       <DeployWallet
         status={wallet?.status || WalletStatus.FAILED}
-        onDeploy={async () => {
-          setLoading(true);
-          await clientProvider.getClient().deployWalletAndAwaitDeployed();
-          await refreshWallet();
-          setLoading(false);
+        onDeploy={() => {
+          void (async () => {
+            setLoading(true);
+            await clientProvider.getClient().deployWalletAndAwaitDeployed();
+            refreshWallet();
+            setLoading(false);
+          })();
         }}
       />
     );
@@ -66,27 +68,31 @@ function DashboardPage() {
     content = (
       <InitializeWallet
         status={wallet?.status || WalletStatus.FAILED}
-        onInitialize={async () => {
-          setLoading(true);
-          const keys = await DefaultCrypto.generateSigningKeyPair();
-          const serializedPublicKeyBytes =
-            await DefaultCrypto.serializeSigningKey(keys.publicKey, "spki");
-          const serializedPrivateKeyBytes =
-            await DefaultCrypto.serializeSigningKey(keys.privateKey, "pkcs8");
-          // You can save the keys somewhere here if you want to use them later. Here,
-          // we're just logging them to the console for demo purposes.
-          console.log("Save these keys if you want to use this wallet later!");
-          console.log("Public key:", b64encode(serializedPublicKeyBytes));
-          console.log("Private key:", b64encode(serializedPrivateKeyBytes));
-          await clientProvider
-            .getClient()
-            .initializeWalletAndAwaitReady(
-              KeyType.RSA_OAEP,
-              b64encode(serializedPublicKeyBytes),
-              KeyOrAlias.key(b64encode(serializedPrivateKeyBytes))
+        onInitialize={() => {
+          void (async () => {
+            setLoading(true);
+            const keys = await DefaultCrypto.generateSigningKeyPair();
+            const serializedPublicKeyBytes =
+              await DefaultCrypto.serializeSigningKey(keys.publicKey, "spki");
+            const serializedPrivateKeyBytes =
+              await DefaultCrypto.serializeSigningKey(keys.privateKey, "pkcs8");
+            // You can save the keys somewhere here if you want to use them later. Here,
+            // we're just logging them to the console for demo purposes.
+            console.log(
+              "Save these keys if you want to use this wallet later!"
             );
-          await refreshWallet();
-          setLoading(false);
+            console.log("Public key:", b64encode(serializedPublicKeyBytes));
+            console.log("Private key:", b64encode(serializedPrivateKeyBytes));
+            await clientProvider
+              .getClient()
+              .initializeWalletAndAwaitReady(
+                KeyType.RSA_OAEP,
+                b64encode(serializedPublicKeyBytes),
+                KeyOrAlias.key(b64encode(serializedPrivateKeyBytes))
+              );
+            refreshWallet();
+            setLoading(false);
+          })();
         }}
       />
     );
@@ -97,9 +103,11 @@ function DashboardPage() {
           <Button
             text="Sign out"
             primary
-            onClick={async () => {
-              await auth.logout();
-              navigate(Routes.Login);
+            onClick={() => {
+              void (async () => {
+                await auth.logout();
+                navigate(Routes.Login);
+              })();
             }}
           />
         </Header>

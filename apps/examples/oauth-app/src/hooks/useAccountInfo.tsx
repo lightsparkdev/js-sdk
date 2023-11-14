@@ -8,12 +8,12 @@ const useAccountInfo = () => {
   const [nodeId, setNodeId] = useState<string | null>(null);
 
   useEffect(() => {
-    clientProvider.isAuthenticated().then((isAuthed) => {
+    void clientProvider.isAuthenticated().then((isAuthed) => {
       if (!isAuthed) {
         return;
       }
       const client = clientProvider.getClient();
-      client.getCurrentAccount().then(async (account) => {
+      void client.getCurrentAccount().then(async (account) => {
         if (account) {
           setAccount(account);
         }

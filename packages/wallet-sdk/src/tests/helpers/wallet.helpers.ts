@@ -87,7 +87,7 @@ export const getClaimsByType = (
     },
   })[type];
 
-export const createWalletJwt = async (
+export const createWalletJwt = (
   createCredentials: CredentialsForWalletJWTCreating,
 ) => {
   const { options, credentials } = createCredentials;
@@ -128,7 +128,7 @@ export const deployWallet = async (
     throw new Error("Credentials not found in environment.");
   }
 
-  const { token, userId, test } = await createWalletJwt({
+  const { token, userId, test } = createWalletJwt({
     client,
     options,
     credentials,

@@ -23,21 +23,16 @@ import {
 import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
-  DECODED_REQUEST_DETAILS_FOR_TESTS,
-  DEPOSIT_PAY_AMOUNT,
   ENCODED_REGTEST_REQUEST_FOR_TESTS,
   INVOICE_EXPIRY,
   LONG_TEST_TIMEOUT,
   MAX_FEE,
-  MAX_WALLET_BALANCE,
   PAGINATION_STEP,
   PAY_AMOUNT,
-  REDUCING_BALANCE_FEE,
   REGTEST_SIGNING_KEY_PASSWORD,
   TESTS_TIMEOUT,
   TRANSACTION_WAIT_TIME,
-  WALLET_REDUCING_BALANCE_AMOUNT,
-} from "./const/index.js";
+} from "./constants.js";
 
 const unauthorizedLightsparkClient = new LightsparkClient();
 
@@ -49,7 +44,7 @@ let paymentInvoice: string | undefined;
 let regtestNodeId: string | undefined;
 let invoicePayment: OutgoingPayment | undefined;
 
-const pollIntervalMs = 250;
+const pollIntervalMs = 750;
 const pollTimeoutSecs = 20;
 const pollMaxTimeouts = (pollTimeoutSecs * 1000) / pollIntervalMs;
 const pollIgnoreErrors = false;
@@ -59,45 +54,6 @@ let nodesConnection: AccountToNodesConnection | undefined;
 const testModeInvoices: Record<string, string | null> = {
   withMemo: null,
   withoutMemo: null,
-};
-
-const reduceBalanceIfItsNeeded = async () => {
-  const regtestNode = nodesConnection?.entities[0];
-  const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
-  const nodeId = getRegtestNodeId();
-
-  if (initialTotalBalance.sats >= MAX_WALLET_BALANCE) {
-    const invoiceAmount =
-      initialTotalBalance.sats - WALLET_REDUCING_BALANCE_AMOUNT;
-
-    await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
-      password: REGTEST_SIGNING_KEY_PASSWORD,
-    });
-
-    const invoice = await lightsparkClient.createTestModeInvoice(
-      nodeId,
-      invoiceAmount * 1000,
-    );
-
-    if (!invoice) {
-      throw new Error("Unable to create invoice for balance adjustment");
-    }
-
-    const payment = await lightsparkClient.payInvoice(
-      nodeId,
-      invoice,
-      round(invoiceAmount * REDUCING_BALANCE_FEE),
-    );
-
-    if (!payment) {
-      throw new Error("Payment undefined for balance adjustment");
-    }
-
-    await lightsparkClient.waitForTransactionComplete(
-      payment.id,
-      TRANSACTION_WAIT_TIME,
-    );
-  }
 };
 
 const createTestModePayment = async () => {
@@ -138,16 +94,40 @@ function log(msg: string, ...args: unknown[]) {
   );
 }
 
-const getRegtestNodeId = () => {
+function getRegtestNodeId() {
   expect(regtestNodeId).toBeDefined();
   if (!regtestNodeId) {
     throw new TypeError("No regtest nodes in account");
   }
   return regtestNodeId;
-};
+}
+
+async function getAccount() {
+  const account = await lightsparkClient.getCurrentAccount();
+  if (!account) {
+    throw new TypeError("No account");
+  }
+  return account;
+}
+
+async function getRegtestNode() {
+  const account = await getAccount();
+  const regtestNodeId = getRegtestNodeId();
+  const nodesConnection = await account.getNodes(
+    lightsparkClient,
+    1,
+    [BitcoinNetwork.REGTEST],
+    [regtestNodeId],
+  );
+  const regtestNode = nodesConnection.entities[0];
+  if (!regtestNode) {
+    throw new TypeError(`No regtest node found for account ${account.id}`);
+  }
+  return regtestNode;
+}
 
 describe(initSuiteName, () => {
-  test("should get env vars and construct the client successfully", async () => {
+  test("should get env vars and construct the client successfully", () => {
     const accountAuthProvider = new AccountTokenAuthProvider(
       apiTokenClientId,
       apiTokenClientSecret,
@@ -157,10 +137,10 @@ describe(initSuiteName, () => {
   });
 
   test(
-    "should successfully get the current account regtest node",
+    "Should successfully get the current account regtest node and set it as the default for current test suite",
     async () => {
-      const account = await lightsparkClient.getCurrentAccount();
-      nodesConnection = await account?.getNodes(lightsparkClient, 1, [
+      const account = await getAccount();
+      nodesConnection = await account.getNodes(lightsparkClient, 1, [
         BitcoinNetwork.REGTEST,
       ]);
 
@@ -176,7 +156,6 @@ describe(initSuiteName, () => {
         password: REGTEST_SIGNING_KEY_PASSWORD,
       });
 
-      await reduceBalanceIfItsNeeded();
       expect(regtestNode).toBeDefined();
     },
     TESTS_TIMEOUT,
@@ -215,10 +194,10 @@ describe(p0SuiteName, () => {
     expect(AmpPaymentInvoiceWithExpiration).toBeDefined();
   });
 
-  test("Should create an any payment amount invoice", async () => {
+  test("Should create an invoice that allows the payer to specify any amount", async () => {
     const AnyPaymentAmountInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
-      PAY_AMOUNT,
+      0,
       "hi there!",
       InvoiceType.STANDARD,
       INVOICE_EXPIRY,
@@ -236,56 +215,26 @@ describe(p0SuiteName, () => {
     ).rejects.toThrowError();
   });
 
-  test("Should pay an invoice", async () => {
-    const testInvoice = await lightsparkClient.createTestModeInvoice(
-      getRegtestNodeId(),
-      PAY_AMOUNT,
-      "hi there!",
-    );
-
-    if (!testInvoice) {
-      throw new TypeError("Test invoice doesn't created");
-    }
-
-    invoicePayment = await lightsparkClient.payInvoice(
-      getRegtestNodeId(),
-      testInvoice,
-      MAX_FEE,
-      TESTS_TIMEOUT,
-    );
-    expect(invoicePayment).toBeDefined();
-  });
-
-  test("Should deposit funds to node with a defined amount of sats", async () => {
-    const fundingResult = await lightsparkClient.fundNode(
-      getRegtestNodeId(),
-      DEPOSIT_PAY_AMOUNT,
-    );
-    expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
-  });
-
   const satsToFund = 40_000;
   test("Should deposit funds to node with a defined amount of sats", async () => {
-    const account = await lightsparkClient.getCurrentAccount();
+    let regtestNode = await getRegtestNode();
 
-    if (!account) {
-      throw new Error("No account");
-    }
-
-    const nodesConnection = await account?.getNodes(lightsparkClient, 1, [
-      BitcoinNetwork.REGTEST,
-    ]);
-    let regtestNode = nodesConnection?.entities[0];
-    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
-    log("initialTotalBalance.sats", initialTotalBalance.sats);
+    const initialOwnedBalance = mapCurrencyAmount(
+      regtestNode?.balances?.ownedBalance,
+    );
+    const initialSendBalance = mapCurrencyAmount(
+      regtestNode?.balances?.availableToSendBalance,
+    );
+    log("initialOwnedBalance.sats", initialOwnedBalance.sats);
+    log("initialSendBalance.sats", initialSendBalance.sats);
 
     const nodeId = getRegtestNodeId();
 
-    /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
-       adjust to a target balance less than that: */
     const targetBalanceSats = 40_000_000;
-    if (initialTotalBalance.sats > targetBalanceSats) {
-      const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+    /* Backend will error on fund_node if total balance is greater than 100,000,000 sats, so we should
+       adjust to a target balance less than that: */
+    if (initialOwnedBalance.sats > targetBalanceSats) {
+      const invoiceAmount = initialOwnedBalance.sats - targetBalanceSats;
       log("adjusting balance: invoiceAmount sats", invoiceAmount);
 
       await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
@@ -294,7 +243,7 @@ describe(p0SuiteName, () => {
 
       const invoice = await lightsparkClient.createTestModeInvoice(
         nodeId,
-        round((initialTotalBalance.sats - targetBalanceSats) * 1000), // convert to msats
+        round((initialOwnedBalance.sats - targetBalanceSats) * 1000), // convert to msats
       );
 
       if (!invoice) {
@@ -324,22 +273,23 @@ describe(p0SuiteName, () => {
       }
     }
 
+    log(`Funding node ${nodeId} with ${satsToFund} sats`);
     await lightsparkClient.fundNode(nodeId, satsToFund);
 
     regtestNode = await pollUntil(
       () => {
-        return account?.getNodes(lightsparkClient, 1, [BitcoinNetwork.REGTEST]);
+        return getRegtestNode();
       },
       (current, response) => {
         if (
           current &&
-          !mapCurrencyAmount(current.entities[0]?.totalBalance).isEqualTo(
-            initialTotalBalance,
-          )
+          !mapCurrencyAmount(
+            current.balances?.availableToSendBalance,
+          ).isEqualTo(initialSendBalance)
         ) {
           return {
             stopPolling: true,
-            value: current.entities[0],
+            value: current,
           };
         }
         return response;
@@ -350,12 +300,55 @@ describe(p0SuiteName, () => {
       () => new Error("Timeout waiting for payment to be received"),
     );
 
+    const balances = regtestNode?.balances;
+    if (!balances) {
+      throw new Error("No balances property on node");
+    }
+    log(
+      "regtestNode.balances.availableToSend sats",
+      mapCurrencyAmount(balances.availableToSendBalance).sats,
+    );
+    log(
+      "regtestNode.balances.ownedBalance sats",
+      mapCurrencyAmount(balances.ownedBalance).sats,
+    );
+    log(
+      "regtestNode.balances.withdrawableBalance sats",
+      mapCurrencyAmount(balances.availableToWithdrawBalance).sats,
+    );
+
     expect(
-      mapCurrencyAmount(regtestNode.totalBalance).isEqualTo(
-        initialTotalBalance,
+      mapCurrencyAmount(regtestNode.balances?.availableToSendBalance).isEqualTo(
+        initialOwnedBalance,
       ),
     ).toBe(false);
   }, 120_000);
+
+  test("Should pay an invoice", async () => {
+    const node = await getRegtestNode();
+    log(
+      "node.balances.availableToSendBalance",
+      node.balances?.availableToSendBalance,
+    );
+
+    const testInvoice = await lightsparkClient.createTestModeInvoice(
+      getRegtestNodeId(),
+      PAY_AMOUNT,
+      "hi there!",
+    );
+
+    if (!testInvoice) {
+      throw new TypeError("Test invoice doesn't created");
+    }
+
+    invoicePayment = await lightsparkClient.payInvoice(
+      getRegtestNodeId(),
+      testInvoice,
+      MAX_FEE,
+      TESTS_TIMEOUT,
+    );
+    expect(invoicePayment).toBeDefined();
+  });
 
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
   // test('Should deposit funds to node with a defined amount of sats', async () => {
@@ -456,7 +449,7 @@ describe(p1SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
-  test("should fetch an invoices payment by IDs", async () => {
+  test("should fetch an invoices payment by IDs", () => {
     if (!invoicePayment?.id) throw new TypeError("invoicePayment is null");
 
     const payment = OutgoingPayment.getOutgoingPaymentQuery(invoicePayment?.id);
@@ -616,22 +609,43 @@ describe(p2SuiteName, () => {
   test(
     "should execute a raw graphql query",
     async () => {
-      const result = await lightsparkClient.executeRawQuery({
+      type DecodeInvoiceQueryResult = {
+        decoded_payment_request: {
+          __typename: "InvoiceData";
+          invoice_data_payment_hash: string;
+          invoice_data_amount: {
+            currency_amount_original_value: number;
+          };
+          invoice_data_memo: string;
+        };
+      };
+
+      const result = await lightsparkClient.executeRawQuery<
+        DecodeInvoiceQueryResult["decoded_payment_request"]
+      >({
         queryPayload: DecodeInvoice,
         variables: {
           encoded_payment_request: ENCODED_REGTEST_REQUEST_FOR_TESTS,
         },
-        constructObject: (data) => data?.decoded_payment_request,
+        constructObject: (data) =>
+          (data as DecodeInvoiceQueryResult)?.decoded_payment_request,
       });
 
       expect({
-        invoice_data_payment_hash: result.invoice_data_payment_hash,
+        invoice_data_payment_hash: result?.invoice_data_payment_hash,
         invoice_data_amount: {
           currency_amount_original_value:
-            result.invoice_data_amount.currency_amount_original_value,
+            result?.invoice_data_amount.currency_amount_original_value,
         },
-        invoice_data_memo: result.invoice_data_memo,
-      }).toEqual(DECODED_REQUEST_DETAILS_FOR_TESTS);
+        invoice_data_memo: result?.invoice_data_memo,
+      }).toEqual({
+        invoice_data_payment_hash:
+          "7806a0f8acd5385f9dd13d0aaa14922a7349afc5ba5d4b2bbbaaab5abd7f93ca",
+        invoice_data_amount: {
+          currency_amount_original_value: 0,
+        },
+        invoice_data_memo: "hi there!",
+      });
     },
     TESTS_TIMEOUT,
   );

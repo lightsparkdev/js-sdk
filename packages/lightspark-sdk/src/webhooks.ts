@@ -78,7 +78,7 @@ export class RemoteSigningWebhookHandler {
       this.validator,
     );
     const variables = JSON.parse(response.variables);
-    this.client.executeRawQuery({
+    return this.client.executeRawQuery({
       queryPayload: response.query,
       variables,
       constructObject: (rawData: unknown) => rawData,

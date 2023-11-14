@@ -112,7 +112,8 @@ const initEnv = async (options: OptionValues) => {
   let content = `export ${RequiredCredentials.AccountId}="${accountId}"\n`;
   content += `export ${RequiredCredentials.JwtPrivateKey}="${jwtPrivateSigningKey}"\n`;
   if (jwtPublicSigningKey) {
-    content += `export LIGHTSPARK_JWT_PUB_KEY="${jwtPublicSigningKey}"\n`;
+    const jwtPublicSigningKeyStr = jwtPublicSigningKey.toString();
+    content += `export LIGHTSPARK_JWT_PUB_KEY="${jwtPublicSigningKeyStr}"\n`;
   }
   if (options.walletPrivateKey) {
     content += `export ${RequiredWalletCredentials.WalletPrivateKey}="${options.walletPrivateKey}"\n`;

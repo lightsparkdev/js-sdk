@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "logs": "firebase functions:log",
     "serve": "yarn build && firebase emulators:start --only functions",
-    "shell": "yarn build && firebase functions:shell",
-    "start": "yarn shell"
+    "shell": "yarn build && firebase functions:shell"
   },
   "type": "module",
   "engines": {

@@ -7,14 +7,6 @@ module.exports = {
     "universe/native",
     "universe/web",
   ],
-  ignorePatterns: ["build"],
-  overrides: [
-    {
-      files: ["**/__tests__/*"],
-      env: { node: true },
-      globals: { __DEV__: true },
-    },
-  ],
   rules: {
     /* Import order managed by prettier: */
     "import/order": "off",
@@ -26,4 +18,18 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ["**/*.ts?(x)"],
+      excludedFiles: ["**/tests/**/*.ts?(x)"],
+      rules: {
+        /* Too many of these type-aware errors, turn off for now: */
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+      },
+    },
+  ],
 };

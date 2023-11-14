@@ -3,7 +3,7 @@ import type { CryptoInterface, GeneratedKeyPair } from "@lightsparkdev/core";
 import { b64decode, b64encode, LightsparkException } from "@lightsparkdev/core";
 import * as LsCrypto from "@lightsparkdev/ls-react-native-crypto";
 
-export async function decryptSecretWithNodePassword(/* cipher: string, encryptedSecret: string, nodePassword: string */): Promise<ArrayBuffer | null> {
+export function decryptSecretWithNodePassword(/* cipher: string, encryptedSecret: string, nodePassword: string */): Promise<ArrayBuffer | null> {
   throw new LightsparkException(
     "NOT_IMPLEMENTED",
     "Recovering the signing key is not yet supported in React Native.",
@@ -52,7 +52,7 @@ export const sign = async (
     );
   }
 
-  return b64decode(await LsCrypto.sign(keyOrAlias as string, b64encode(data)));
+  return b64decode(await LsCrypto.sign(keyOrAlias, b64encode(data)));
 };
 
 const importPrivateSigningKey = async (

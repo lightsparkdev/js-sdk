@@ -16,7 +16,7 @@ module.exports = {
   overrides: [
     {
       files: ["**/*.ts?(x)"],
-      extends: ["plugin:@typescript-eslint/recommended"],
+      extends: ["plugin:@typescript-eslint/recommended-type-checked"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
         project: [path.join(process.cwd(), "tsconfig.json")],
@@ -31,6 +31,19 @@ module.exports = {
           },
         ],
       },
+    },
+    {
+      files: ["**/tests/**/*.ts?(x)"],
+      parserOptions: {
+        /* Allow linting for test files with tsconfig-test: */
+        project: [path.join(process.cwd(), "./tsconfig-test.json")],
+      },
+    },
+    {
+      files: ["**/*.ts?(x)"],
+      excludedFiles: ["src/**"],
+      /* Allow linting for files outside workspace src folders: */
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
     },
   ],
 };

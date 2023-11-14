@@ -531,7 +531,7 @@ const generateNodeKeys = async (options: OptionValues) => {
   console.log(`Extended public key:\n${extendedPublicKey}`);
 };
 
-const generateSecp256k1Keypair = async () => {
+const generateSecp256k1Keypair = () => {
   let privateKey;
   do {
     privateKey = randomBytes(32);
@@ -544,6 +544,8 @@ const generateSecp256k1Keypair = async () => {
 
   console.log(`Hex-encoded public key: \n${publicKeyAsHex}\n`);
   console.log(`Hex-encoded private key: \n${privateKeyAsHex}\n`);
+
+  return Promise.resolve();
 };
 
 const safeParseInt = (value: string /* dummyPrevious: any */) => {
