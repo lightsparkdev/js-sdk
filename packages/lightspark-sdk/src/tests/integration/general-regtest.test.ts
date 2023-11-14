@@ -23,20 +23,16 @@ import {
 import { logger } from "../../logger.js";
 import {
   DAY_IN_MS,
-  DEPOSIT_PAY_AMOUNT,
   ENCODED_REGTEST_REQUEST_FOR_TESTS,
   INVOICE_EXPIRY,
   LONG_TEST_TIMEOUT,
   MAX_FEE,
-  MAX_WALLET_BALANCE,
   PAGINATION_STEP,
   PAY_AMOUNT,
-  REDUCING_BALANCE_FEE,
   REGTEST_SIGNING_KEY_PASSWORD,
   TESTS_TIMEOUT,
   TRANSACTION_WAIT_TIME,
-  WALLET_REDUCING_BALANCE_AMOUNT,
-} from "./const/index.js";
+} from "./constants.js";
 
 const unauthorizedLightsparkClient = new LightsparkClient();
 
@@ -58,45 +54,6 @@ let nodesConnection: AccountToNodesConnection | undefined;
 const testModeInvoices: Record<string, string | null> = {
   withMemo: null,
   withoutMemo: null,
-};
-
-const reduceBalanceIfItsNeeded = async () => {
-  const regtestNode = nodesConnection?.entities[0];
-  const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
-  const nodeId = getRegtestNodeId();
-
-  if (initialTotalBalance.sats >= MAX_WALLET_BALANCE) {
-    const invoiceAmount =
-      initialTotalBalance.sats - WALLET_REDUCING_BALANCE_AMOUNT;
-
-    await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
-      password: REGTEST_SIGNING_KEY_PASSWORD,
-    });
-
-    const invoice = await lightsparkClient.createTestModeInvoice(
-      nodeId,
-      invoiceAmount * 1000,
-    );
-
-    if (!invoice) {
-      throw new Error("Unable to create invoice for balance adjustment");
-    }
-
-    const payment = await lightsparkClient.payInvoice(
-      nodeId,
-      invoice,
-      round(invoiceAmount * REDUCING_BALANCE_FEE),
-    );
-
-    if (!payment) {
-      throw new Error("Payment undefined for balance adjustment");
-    }
-
-    await lightsparkClient.waitForTransactionComplete(
-      payment.id,
-      TRANSACTION_WAIT_TIME,
-    );
-  }
 };
 
 const createTestModePayment = async () => {
@@ -175,7 +132,6 @@ describe(initSuiteName, () => {
         password: REGTEST_SIGNING_KEY_PASSWORD,
       });
 
-      await reduceBalanceIfItsNeeded();
       expect(regtestNode).toBeDefined();
     },
     TESTS_TIMEOUT,
@@ -214,10 +170,10 @@ describe(p0SuiteName, () => {
     expect(AmpPaymentInvoiceWithExpiration).toBeDefined();
   });
 
-  test("Should create an any payment amount invoice", async () => {
+  test("Should create an invoice that allows the payer to specify any amount", async () => {
     const AnyPaymentAmountInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
-      PAY_AMOUNT,
+      0,
       "hi there!",
       InvoiceType.STANDARD,
       INVOICE_EXPIRY,
@@ -235,34 +191,6 @@ describe(p0SuiteName, () => {
     ).rejects.toThrowError();
   });
 
-  test("Should pay an invoice", async () => {
-    const testInvoice = await lightsparkClient.createTestModeInvoice(
-      getRegtestNodeId(),
-      PAY_AMOUNT,
-      "hi there!",
-    );
-
-    if (!testInvoice) {
-      throw new TypeError("Test invoice doesn't created");
-    }
-
-    invoicePayment = await lightsparkClient.payInvoice(
-      getRegtestNodeId(),
-      testInvoice,
-      MAX_FEE,
-      TESTS_TIMEOUT,
-    );
-    expect(invoicePayment).toBeDefined();
-  });
-
-  test("Should deposit funds to node with a defined amount of sats", async () => {
-    const fundingResult = await lightsparkClient.fundNode(
-      getRegtestNodeId(),
-      DEPOSIT_PAY_AMOUNT,
-    );
-    expect(fundingResult.originalValue).toBe(DEPOSIT_PAY_AMOUNT);
-  });
-
   const satsToFund = 40_000;
   test("Should deposit funds to node with a defined amount of sats", async () => {
     const account = await lightsparkClient.getCurrentAccount();
@@ -275,16 +203,18 @@ describe(p0SuiteName, () => {
       BitcoinNetwork.REGTEST,
     ]);
     let regtestNode = nodesConnection?.entities[0];
-    const initialTotalBalance = mapCurrencyAmount(regtestNode?.totalBalance);
-    log("initialTotalBalance.sats", initialTotalBalance.sats);
+    const initialOwnedBalance = mapCurrencyAmount(
+      regtestNode?.balances?.ownedBalance,
+    );
+    log("initialOwnedBalance.sats", initialOwnedBalance.sats);
 
     const nodeId = getRegtestNodeId();
 
     /* Backend will error on fund_node if node balance is greater than 100,000,000 sats, so we should
        adjust to a target balance less than that: */
     const targetBalanceSats = 40_000_000;
-    if (initialTotalBalance.sats > targetBalanceSats) {
-      const invoiceAmount = initialTotalBalance.sats - targetBalanceSats;
+    if (initialOwnedBalance.sats > targetBalanceSats) {
+      const invoiceAmount = initialOwnedBalance.sats - targetBalanceSats;
       log("adjusting balance: invoiceAmount sats", invoiceAmount);
 
       await lightsparkClient.loadNodeSigningKey(getRegtestNodeId(), {
@@ -293,7 +223,7 @@ describe(p0SuiteName, () => {
 
       const invoice = await lightsparkClient.createTestModeInvoice(
         nodeId,
-        round((initialTotalBalance.sats - targetBalanceSats) * 1000), // convert to msats
+        round((initialOwnedBalance.sats - targetBalanceSats) * 1000), // convert to msats
       );
 
       if (!invoice) {
@@ -332,9 +262,9 @@ describe(p0SuiteName, () => {
       (current, response) => {
         if (
           current &&
-          !mapCurrencyAmount(current.entities[0]?.totalBalance).isEqualTo(
-            initialTotalBalance,
-          )
+          !mapCurrencyAmount(
+            current.entities[0]?.balances?.availableToSendBalance,
+          ).isEqualTo(initialOwnedBalance)
         ) {
           return {
             stopPolling: true,
@@ -350,11 +280,31 @@ describe(p0SuiteName, () => {
     );
 
     expect(
-      mapCurrencyAmount(regtestNode.totalBalance).isEqualTo(
-        initialTotalBalance,
+      mapCurrencyAmount(regtestNode.balances?.availableToSendBalance).isEqualTo(
+        initialOwnedBalance,
       ),
     ).toBe(false);
   }, 120_000);
+
+  test("Should pay an invoice", async () => {
+    const testInvoice = await lightsparkClient.createTestModeInvoice(
+      getRegtestNodeId(),
+      PAY_AMOUNT,
+      "hi there!",
+    );
+
+    if (!testInvoice) {
+      throw new TypeError("Test invoice doesn't created");
+    }
+
+    invoicePayment = await lightsparkClient.payInvoice(
+      getRegtestNodeId(),
+      testInvoice,
+      MAX_FEE,
+      TESTS_TIMEOUT,
+    );
+    expect(invoicePayment).toBeDefined();
+  });
 
   // TODO: THIS ACTION CAN BE CREATED ONLY IN MAINNET
   // test('Should deposit funds to node with a defined amount of sats', async () => {
