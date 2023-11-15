@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.0.10
+
+### Patch Changes
+
+- aefe52c: Update tsup to latest
+- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
+
 ## 1.0.9
 
 ### Patch Changes
