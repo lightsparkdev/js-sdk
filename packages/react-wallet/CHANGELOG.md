@@ -1,17 +1,5 @@
 # @lightsparkdev/react-wallet
 
-## 0.6.35
-
-### Patch Changes
-
-- aefe52c: Update tsup to latest
-- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
-- Updated dependencies [aefe52c]
-- Updated dependencies [219f60f]
-- Updated dependencies [09dfcee]
-  - @lightsparkdev/wallet-sdk@0.8.1
-  - @lightsparkdev/core@1.0.10
-
 ## 0.6.34
 
 ### Patch Changes

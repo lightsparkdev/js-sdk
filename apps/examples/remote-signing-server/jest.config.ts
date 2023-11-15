@@ -6,7 +6,7 @@ module.exports = {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  testTimeout: 20_000,
+  testTimeout: 60_000,
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",

@@ -1,16 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.2.1
-
-### Patch Changes
-
-- aefe52c: Update tsup to latest
-- 219f60f: Add descriptions and deprecation tags to JS class definitions. LIG-3794
-- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
-- Updated dependencies [aefe52c]
-- Updated dependencies [09dfcee]
-  - @lightsparkdev/core@1.0.10
-
 ## 1.2.0
 
 ### Minor Changes

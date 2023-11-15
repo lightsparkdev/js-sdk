@@ -1,16 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.30
-
-### Patch Changes
-
-- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
-- Updated dependencies [aefe52c]
-- Updated dependencies [219f60f]
-- Updated dependencies [09dfcee]
-  - @lightsparkdev/lightspark-sdk@1.2.1
-  - @lightsparkdev/core@1.0.10
-
 ## 0.0.29
 
 ### Patch Changes

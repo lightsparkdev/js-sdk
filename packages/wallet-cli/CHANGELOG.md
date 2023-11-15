@@ -1,16 +1,5 @@
 # @lightsparkdev/wallet-cli
 
-## 0.0.44
-
-### Patch Changes
-
-- 09dfcee: Prevent ts compile of test files for builds and update lint configuration
-- Updated dependencies [aefe52c]
-- Updated dependencies [219f60f]
-- Updated dependencies [09dfcee]
-  - @lightsparkdev/wallet-sdk@0.8.1
-  - @lightsparkdev/core@1.0.10
-
 ## 0.0.43
 
 ### Patch Changes
