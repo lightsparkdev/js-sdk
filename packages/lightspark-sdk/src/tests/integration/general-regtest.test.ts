@@ -164,8 +164,8 @@ async function fundNode(satsToFund: number) {
       }
       return response;
     },
-    (10 * 60 * 1000) / 750 /* can take several minutes */,
-    750,
+    (10 * 60 * 1000) / 3000 /* can take several minutes */,
+    3000,
     pollIgnoreErrors,
     () => new Error("Timeout waiting for node to be funded"),
   );
@@ -322,8 +322,8 @@ describe(p0SuiteName, () => {
           }
           return response;
         },
-        (10 * 60 * 1000) / 2000 /* can take several minutes */,
-        2000,
+        (10 * 60 * 1000) / 3000 /* can take several minutes */,
+        3000,
         pollIgnoreErrors,
         () => new Error("Timeout waiting for payment to be received"),
       );
@@ -335,9 +335,13 @@ describe(p0SuiteName, () => {
   );
 
   const satsToFund = 10_000_000;
-  test("Should deposit funds to node with a defined amount of sats", async () => {
-    await fundNode(10_000_000);
-  }, 120_000);
+  test(
+    "Should deposit funds to node with a defined amount of sats",
+    async () => {
+      await fundNode(10_000_000);
+    },
+    10 * 60 * 1000 /* can take several minutes */,
+  );
 
   test("Should pay an invoice", async () => {
     const node = await getRegtestNode();
