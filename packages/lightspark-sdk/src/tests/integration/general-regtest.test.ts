@@ -164,7 +164,7 @@ async function fundNode(satsToFund: number) {
       }
       return response;
     },
-    (5 * 60 * 1000) / 750,
+    (10 * 60 * 1000) / 750 /* can take several minutes */,
     750,
     pollIgnoreErrors,
     () => new Error("Timeout waiting for node to be funded"),
@@ -322,7 +322,7 @@ describe(p0SuiteName, () => {
           }
           return response;
         },
-        (5 * 60 * 1000) / 2000, // Withdrawal requests can take a few minutes
+        (10 * 60 * 1000) / 2000 /* can take several minutes */,
         2000,
         pollIgnoreErrors,
         () => new Error("Timeout waiting for payment to be received"),
@@ -331,7 +331,7 @@ describe(p0SuiteName, () => {
         WithdrawalRequestStatus.SUCCESSFUL,
       );
     },
-    5 * 60 * 1000,
+    10 * 60 * 1000 /* can take several minutes */,
   );
 
   const satsToFund = 10_000_000;
