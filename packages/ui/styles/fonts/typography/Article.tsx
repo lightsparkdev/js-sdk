@@ -1,6 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 import { colors } from "../../colors";
+import { overflowAutoWithoutScrollbars } from "../../utils";
 import { getTypographyString, TokenSize } from "../typographyTokens";
 import { StyledBody } from "./Body";
 import { displaySelector } from "./Display";
@@ -107,5 +108,7 @@ export const Article = styled.article`
   code[class|="language"] {
     ${({ theme }) =>
       getTypographyString(theme.typography[theme.app].Code[TokenSize.Small])}
+
+    ${overflowAutoWithoutScrollbars}
   }
 `;

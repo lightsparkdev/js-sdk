@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { Icon } from ".";
+import { overflowAutoWithoutScrollbars } from "../styles/utils";
 
 type CollapsibleProps = {
   children: React.ReactNode;
@@ -103,6 +104,8 @@ export const CollapsingContainer = styled.div<{
       ? `height: 100%; animation-name: fadeIn;`
       : `height: 0; animation-name: fadeOut;`}
   ${(props) => (props.full ? `height: ${props.isOpen ? "100vh" : 0};` : "")}
+
+  ${overflowAutoWithoutScrollbars}
 
   @keyframes fadeIn {
     from {
