@@ -99,6 +99,7 @@ const StyledImage = styled.div<{ isOpen: boolean; boundingRect: BoundingRect }>`
   img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
   }
 
   @keyframes zoomIn {
