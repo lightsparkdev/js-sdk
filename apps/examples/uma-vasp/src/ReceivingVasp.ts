@@ -121,6 +121,7 @@ export default class ReceivingVasp {
             maxSendable: 10_000_000,
             minSendable: 1,
             multiplier: 34_150,
+            displayDecimals: 2,
           },
         ],
       });
