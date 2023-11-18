@@ -30,6 +30,33 @@ export const getHeadlineText = (element: React.ReactElement): string => {
   throw new Error("Could not find text in Headline element: " + element);
 };
 
+/**
+ * Assumes the element is a header element containing a link with an href.
+ * Getting the id from the href ensures we get the id that remains
+ * compatible with the links generated automatically in the markdown
+ * with the rehypeAutolinkHeadings plugin. Otherwise, anchor links will not work.
+ */
+const getHeaderId = (element: React.ReactElement): string => {
+  if (element.type === "a") {
+    return getHeaderId(element.props.href);
+  }
+
+  if (typeof element === "string") {
+    // Remove the # from the id
+    return (element as string).replace("#", "");
+  }
+
+  if (Array.isArray(element)) {
+    return getHeaderId(element[0]);
+  }
+
+  if (element.props?.children !== undefined) {
+    return getHeaderId(element.props.children);
+  }
+
+  throw new Error("Could not find text in Headline element: " + element);
+};
+
 const toKebabCase = (str: string) => {
   return str.replaceAll(" ", "-").toLowerCase();
 };
@@ -40,7 +67,7 @@ export const Headline = ({
   size = TokenSize.Medium,
   heading = "h1",
 }: Props) => {
-  const id = toKebabCase(getHeadlineText(children as React.ReactElement));
+  const id = toKebabCase(getHeaderId(children as React.ReactElement));
   return (
     <StyledHeadline as={heading} id={id} size={size} color={color}>
       {children}

@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import supertest from "supertest";
+import settings from "../settings.json" assert { type: "json" };
 import { app } from "./src/index.js";
 
 declare global {
@@ -17,7 +18,7 @@ describe("Test server routes", () => {
   let request = supertest(app);
 
   beforeAll((done) => {
-    server = app.listen(4000, done);
+    server = app.listen(settings.remoteSigningServer, done);
     request = supertest(server);
   });
 

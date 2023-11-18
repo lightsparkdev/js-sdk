@@ -175,6 +175,7 @@ class Requester {
 
     logger.info(`Requester.makeRawRequest`, {
       url,
+      operationName: operation,
       variables,
     });
     const response = await fetch(url, {

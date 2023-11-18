@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { Icon } from ".";
+import { overflowAutoWithoutScrollbars } from "../styles/utils";
 
 type CollapsibleProps = {
   children: React.ReactNode;
@@ -97,15 +98,14 @@ export const CollapsingContainer = styled.div<{
   opacity: 0;
   animation-duration: 0.4s;
   animation-fill-mode: forwards;
-  gap: 4px;
-  display: flex;
-  flex-direction: column;
 
   ${(props) =>
     props.isOpen
       ? `height: 100%; animation-name: fadeIn;`
       : `height: 0; animation-name: fadeOut;`}
   ${(props) => (props.full ? `height: ${props.isOpen ? "100vh" : 0};` : "")}
+
+  ${overflowAutoWithoutScrollbars}
 
   @keyframes fadeIn {
     from {
@@ -133,4 +133,7 @@ export const CollapsingContainer = styled.div<{
 
 const InnerPadding = styled.div`
   padding: 4px 0 4px 16px;
+  gap: 4px;
+  display: flex;
+  flex-direction: column;
 `;
