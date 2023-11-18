@@ -1,4 +1,5 @@
 import supertest from "supertest";
+import settings from "../settings.json" assert { type: "json" };
 import { app } from "./src/index.js";
 
 declare global {
@@ -22,7 +23,7 @@ describe("Test server routes", () => {
   let request = supertest(app);
 
   beforeAll((done) => {
-    server = app.listen(4000, done);
+    server = app.listen(settings.umaVasp, done);
     request = supertest(server);
   });
 
@@ -31,9 +32,7 @@ describe("Test server routes", () => {
   });
 
   test("fetches pub keys", async () => {
-    const response = await request
-      .get("/.well-known/lnurlpubkey")
-      .send();
+    const response = await request.get("/.well-known/lnurlpubkey").send();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
