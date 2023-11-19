@@ -22,10 +22,16 @@ export {
 export { default as ChannelSnapshot } from "./ChannelSnapshot.js";
 export { default as ChannelStatus } from "./ChannelStatus.js";
 export { default as ChannelToTransactionsConnection } from "./ChannelToTransactionsConnection.js";
+export { default as ClaimUmaInvitationInput } from "./ClaimUmaInvitationInput.js";
+export { default as ClaimUmaInvitationOutput } from "./ClaimUmaInvitationOutput.js";
+export { default as ClaimUmaInvitationWithIncentivesInput } from "./ClaimUmaInvitationWithIncentivesInput.js";
+export { default as ClaimUmaInvitationWithIncentivesOutput } from "./ClaimUmaInvitationWithIncentivesOutput.js";
 export { default as ComplianceProvider } from "./ComplianceProvider.js";
 export { default as Connection } from "./Connection.js";
 export { default as CreateApiTokenInput } from "./CreateApiTokenInput.js";
 export { default as CreateApiTokenOutput } from "./CreateApiTokenOutput.js";
+export { default as CreateInvitationWithIncentivesInput } from "./CreateInvitationWithIncentivesInput.js";
+export { default as CreateInvitationWithIncentivesOutput } from "./CreateInvitationWithIncentivesOutput.js";
 export { default as CreateInvoiceInput } from "./CreateInvoiceInput.js";
 export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";
 export { default as CreateLnurlInvoiceInput } from "./CreateLnurlInvoiceInput.js";
@@ -35,6 +41,8 @@ export { default as CreateTestModeInvoiceInput } from "./CreateTestModeInvoiceIn
 export { default as CreateTestModeInvoiceOutput } from "./CreateTestModeInvoiceOutput.js";
 export { default as CreateTestModePaymentInput } from "./CreateTestModePaymentInput.js";
 export { default as CreateTestModePaymentoutput } from "./CreateTestModePaymentoutput.js";
+export { default as CreateUmaInvitationInput } from "./CreateUmaInvitationInput.js";
+export { default as CreateUmaInvitationOutput } from "./CreateUmaInvitationOutput.js";
 export { default as CreateUmaInvoiceInput } from "./CreateUmaInvoiceInput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
@@ -51,6 +59,8 @@ export { default as GraphNode } from "./GraphNode.js";
 export { default as Hop, getHopQuery } from "./Hop.js";
 export { default as HtlcAttemptFailureCode } from "./HtlcAttemptFailureCode.js";
 export { default as IdAndSignature } from "./IdAndSignature.js";
+export { default as IncentivesIneligibilityReason } from "./IncentivesIneligibilityReason.js";
+export { default as IncentivesStatus } from "./IncentivesStatus.js";
 export { default as IncomingPayment } from "./IncomingPayment.js";
 export {
   default as IncomingPaymentAttempt,
@@ -109,6 +119,7 @@ export { default as PaymentRequestStatus } from "./PaymentRequestStatus.js";
 export { default as PayUmaInvoiceInput } from "./PayUmaInvoiceInput.js";
 export { default as Permission } from "./Permission.js";
 export { default as PostTransactionData } from "./PostTransactionData.js";
+export { default as RegionCode } from "./RegionCode.js";
 export { default as RegisterPaymentInput } from "./RegisterPaymentInput.js";
 export { default as RegisterPaymentOutput } from "./RegisterPaymentOutput.js";
 export { default as ReleaseChannelPerCommitmentSecretInput } from "./ReleaseChannelPerCommitmentSecretInput.js";
@@ -148,6 +159,10 @@ export { default as TransactionFailures } from "./TransactionFailures.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
+export {
+  default as UmaInvitation,
+  getUmaInvitationQuery,
+} from "./UmaInvitation.js";
 export { default as UpdateChannelPerCommitmentPointInput } from "./UpdateChannelPerCommitmentPointInput.js";
 export { default as UpdateChannelPerCommitmentPointOutput } from "./UpdateChannelPerCommitmentPointOutput.js";
 export { default as UpdateNodeSharedSecretInput } from "./UpdateNodeSharedSecretInput.js";

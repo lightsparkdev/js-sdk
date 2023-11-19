@@ -27,12 +27,14 @@ class OutgoingPaymentAttempt implements Entity {
      * string.
      **/
     public readonly id: string,
-    /** The date and time when the attempt was initiated. **/
+    /** The date and time when the entity was first created. **/
     public readonly createdAt: string,
     /** The date and time when the entity was last updated. **/
     public readonly updatedAt: string,
     /** The status of an outgoing payment attempt. **/
     public readonly status: OutgoingPaymentAttemptStatus,
+    /** The date and time when the attempt was initiated. **/
+    public readonly attemptedAt: string,
     /** The outgoing payment for this attempt. **/
     public readonly outgoingPaymentId: string,
     /** The typename of the object **/
@@ -155,6 +157,7 @@ ${FRAGMENT}
       outgoing_payment_attempt_status: this.status,
       outgoing_payment_attempt_failure_code: this.failureCode,
       outgoing_payment_attempt_failure_source_index: this.failureSourceIndex,
+      outgoing_payment_attempt_attempted_at: this.attemptedAt,
       outgoing_payment_attempt_resolved_at: this.resolvedAt,
       outgoing_payment_attempt_amount: this.amount
         ? CurrencyAmountToJson(this.amount)
@@ -179,6 +182,7 @@ export const OutgoingPaymentAttemptFromJson = (
     obj["outgoing_payment_attempt_updated_at"],
     OutgoingPaymentAttemptStatus[obj["outgoing_payment_attempt_status"]] ??
       OutgoingPaymentAttemptStatus.FUTURE_VALUE,
+    obj["outgoing_payment_attempt_attempted_at"],
     obj["outgoing_payment_attempt_outgoing_payment"].id,
     "OutgoingPaymentAttempt",
     !!obj["outgoing_payment_attempt_failure_code"]
@@ -210,6 +214,7 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
     outgoing_payment_attempt_status: status
     outgoing_payment_attempt_failure_code: failure_code
     outgoing_payment_attempt_failure_source_index: failure_source_index
+    outgoing_payment_attempt_attempted_at: attempted_at
     outgoing_payment_attempt_resolved_at: resolved_at
     outgoing_payment_attempt_amount: amount {
         __typename

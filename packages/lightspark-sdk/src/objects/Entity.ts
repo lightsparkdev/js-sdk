@@ -1237,6 +1237,7 @@ fragment EntityFragment on Entity {
         outgoing_payment_attempt_status: status
         outgoing_payment_attempt_failure_code: failure_code
         outgoing_payment_attempt_failure_source_index: failure_source_index
+        outgoing_payment_attempt_attempted_at: attempted_at
         outgoing_payment_attempt_resolved_at: resolved_at
         outgoing_payment_attempt_amount: amount {
             __typename
@@ -1360,6 +1361,18 @@ fragment EntityFragment on Entity {
         signable_payload_signable: signable {
             id
         }
+    }
+    ... on UmaInvitation {
+        __typename
+        uma_invitation_id: id
+        uma_invitation_created_at: created_at
+        uma_invitation_updated_at: updated_at
+        uma_invitation_code: code
+        uma_invitation_url: url
+        uma_invitation_inviter_uma: inviter_uma
+        uma_invitation_invitee_uma: invitee_uma
+        uma_invitation_incentives_status: incentives_status
+        uma_invitation_incentives_ineligibility_reason: incentives_ineligibility_reason
     }
     ... on Wallet {
         __typename
