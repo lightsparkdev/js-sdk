@@ -25,15 +25,20 @@ import {
 } from "@lightsparkdev/core";
 import packageJson from "../package.json";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
+import { ClaimUmaInvitation } from "./graphql/ClaimUmaInvitation.js";
+import { ClaimUmaInvitationWithIncentives } from "./graphql/ClaimUmaInvitationWithIncentives.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { CreateLnurlInvoice } from "./graphql/CreateLnurlInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
 import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
+import { CreateUmaInvitation } from "./graphql/CreateUmaInvitation.js";
+import { CreateUmaInvitationWithIncentives } from "./graphql/CreateUmaInvitationWithIncentives.js";
 import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
+import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
 import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
 import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
@@ -47,7 +52,6 @@ import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
-import { TransactionStatus } from "./index.js";
 import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
@@ -68,14 +72,18 @@ import type OutgoingPayment from "./objects/OutgoingPayment.js";
 import { OutgoingPaymentFromJson } from "./objects/OutgoingPayment.js";
 import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
+import type RegionCode from "./objects/RegionCode.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
 import {
   getTransactionQuery,
   TransactionFromJson,
 } from "./objects/Transaction.js";
+import TransactionStatus from "./objects/TransactionStatus.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
+import type UmaInvitation from "./objects/UmaInvitation.js";
+import { UmaInvitationFromJson } from "./objects/UmaInvitation.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
@@ -1068,6 +1076,191 @@ class LightsparkClient {
         );
       },
     });
+  }
+
+  /**
+   * Creates an UMA invitation. If you are part of the incentive program, you should use
+   * [createUmaInvitationWithIncentives].
+   *
+   * @param inviterUma The UMA of the inviter.
+   * @returns The invitation that was created.
+   */
+  public async createUmaInvitation(
+    inviterUma: string,
+  ): Promise<UmaInvitation | null> {
+    return await this.executeRawQuery({
+      queryPayload: CreateUmaInvitation,
+      variables: {
+        inviterUma,
+      },
+      constructObject: (responseJson: {
+        create_uma_invitation: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.create_uma_invitation?.invitation) {
+          throw new LightsparkException(
+            "CreateUmaInvitationError",
+            "Unable to create UMA invitation",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.create_uma_invitation?.invitation,
+        );
+      },
+    });
+  }
+
+  /**
+   * Creates an UMA invitation as part of the incentive program.
+   * @param inviterUma The UMA of the inviter.
+   * @param inviterPhoneNumber The phone number of the inviter in E164 format.
+   * @param inviterRegion The region of the inviter.
+   * @returns The invitation that was created.
+   */
+  public async createUmaInvitationWithIncentives(
+    inviterUma: string,
+    inviterPhoneNumber: string,
+    inviterRegion: RegionCode,
+  ): Promise<UmaInvitation | null> {
+    const inviterPhoneHash = await this.hashPhoneNumber(inviterPhoneNumber);
+    return await this.executeRawQuery({
+      queryPayload: CreateUmaInvitationWithIncentives,
+      variables: {
+        inviterUma,
+        inviterPhoneHash,
+        inviterRegion,
+      },
+      constructObject: (responseJson: {
+        create_uma_invitation_with_incentives: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.create_uma_invitation_with_incentives?.invitation) {
+          throw new LightsparkException(
+            "CreateUmaInvitationError",
+            "Unable to create UMA invitation",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.create_uma_invitation_with_incentives?.invitation,
+        );
+      },
+    });
+  }
+
+  /**
+   * Claims an UMA invitation. If you are part of the incentive program, you should use
+   * [claimUmaInvitationWithIncentives].
+   *
+   * @param invitationCode The invitation code to claim.
+   * @param inviteeUma The UMA of the invitee.
+   * @returns The invitation that was claimed.
+   */
+  public async claimUmaInvitation(
+    invitationCode: string,
+    inviteeUma: string,
+  ): Promise<UmaInvitation | null> {
+    return await this.executeRawQuery({
+      queryPayload: ClaimUmaInvitation,
+      variables: {
+        invitationCode,
+        inviteeUma,
+      },
+      constructObject: (responseJson: {
+        claim_uma_invitation: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.claim_uma_invitation?.invitation) {
+          throw new LightsparkException(
+            "ClaimUmaInvitationError",
+            "Unable to claim UMA invitation",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.claim_uma_invitation?.invitation,
+        );
+      },
+    });
+  }
+
+  /**
+   * Claims an UMA invitation as part of the incentive program.
+   *
+   * @param invitationCode The invitation code to claim.
+   * @param inviteeUma The UMA of the invitee.
+   * @param inviteePhoneNumber The phone number of the invitee in E164 format.
+   * @param inviteeRegion The region of the invitee.
+   * @returns The invitation that was claimed.
+   */
+  public async claimUmaInvitationWithIncentives(
+    invitationCode: string,
+    inviteeUma: string,
+    inviteePhoneNumber: string,
+    inviteeRegion: RegionCode,
+  ): Promise<UmaInvitation | null> {
+    const inviteePhoneHash = await this.hashPhoneNumber(inviteePhoneNumber);
+    return await this.executeRawQuery({
+      queryPayload: ClaimUmaInvitationWithIncentives,
+      variables: {
+        invitationCode,
+        inviteeUma,
+        inviteePhoneHash,
+        inviteeRegion,
+      },
+      constructObject: (responseJson: {
+        claim_uma_invitation_with_incentives: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.claim_uma_invitation_with_incentives?.invitation) {
+          throw new LightsparkException(
+            "ClaimUmaInvitationError",
+            "Unable to claim UMA invitation",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.claim_uma_invitation_with_incentives?.invitation,
+        );
+      },
+    });
+  }
+
+  /**
+   * Fetches an UMA invitation by its invitation code.
+   *
+   * @param invitationCode The code of the invitation to fetch.
+   * @returns The invitation with the given code, or null if no invitation exists with that code.
+   */
+  public async fetchUmaInvitation(
+    invitationCode: string,
+  ): Promise<UmaInvitation | null> {
+    return await this.executeRawQuery({
+      queryPayload: FetchUmaInvitation,
+      variables: {
+        invitationCode,
+      },
+      constructObject: (responseJson: {
+        uma_invitation_by_code: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (!responseJson.uma_invitation_by_code) {
+          return null;
+        }
+        return UmaInvitationFromJson(responseJson.uma_invitation_by_code);
+      },
+    });
+  }
+
+  private async hashPhoneNumber(e164PhoneNumber: string): Promise<string> {
+    const e164PhoneRegex = /^\+[1-9]\d{1,14}$/;
+    if (!e164PhoneRegex.test(e164PhoneNumber)) {
+      throw new LightsparkException(
+        "InvalidPhoneNumber",
+        "Invalid phone number. Phone number must be in E164 format.",
+      );
+    }
+    return await createSha256Hash(e164PhoneNumber, true);
   }
 
   /**
