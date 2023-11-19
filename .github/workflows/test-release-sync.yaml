@@ -146,16 +146,6 @@ jobs:
 
       - run: "yarn test:integration"
 
-      - name: "Notify failure on Slack"
-        if: "failure() && github.event_name == 'push'"
-        shell: bash
-        run: |
-          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-          {
-            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-          }
-          EOF
-
   # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
