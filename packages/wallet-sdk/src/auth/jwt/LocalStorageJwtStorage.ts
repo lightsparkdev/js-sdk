@@ -26,8 +26,8 @@ function isParsedJwtTokenInfo(value: unknown): value is {
 }
 
 /**
- * Stores JWT token info in local storage or the appropriate equivalent for react native.
- * See here for more platform-specific storage location:
+ * Stores JWT token info in local storage or the appropriate equivalent for
+ * react native. See here for more platform-specific storage location:
  * https://react-native-async-storage.github.io/async-storage/docs/advanced/where_data_stored
  */
 class LocalStorageJwtStorage implements JwtStorage {

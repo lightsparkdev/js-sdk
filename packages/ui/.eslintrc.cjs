@@ -1,3 +1,3 @@
 module.exports = {
-  extends: ["@lightsparkdev/eslint-config/react-lib/config"],
+  extends: ["@lightsparkdev/eslint-config/react-lib"],
 };

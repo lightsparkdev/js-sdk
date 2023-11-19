@@ -281,8 +281,8 @@ class OAuthStateHelper {
   }
 
   /**
-   * Completes the authorization flow once the user has been redirected back to the app
-   * if the current url contains an authorization response.
+   * Completes the authorization flow once the user has been redirected back to
+   * the app if the current url contains an authorization response.
    */
   public checkForAuthorizationResponse() {
     return this.authorizationHandler.completeAuthorizationRequestIfPossible();

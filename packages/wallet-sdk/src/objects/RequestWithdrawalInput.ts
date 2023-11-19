@@ -5,8 +5,8 @@ interface RequestWithdrawalInput {
   bitcoinAddress: string;
 
   /**
-   * The amount you want to withdraw from this node in Satoshis. Use the special value -1 to withdrawal
-   * all funds from this node.
+   * The amount you want to withdraw from this node in Satoshis.
+   * Use the special value -1 to withdrawal all funds from this node.
    **/
   amountSats: number;
 }

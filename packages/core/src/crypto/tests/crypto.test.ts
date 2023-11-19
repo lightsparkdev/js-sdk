@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import { b64encode, DefaultCrypto } from "../../index.js";
+import { DefaultCrypto, b64encode } from "../../index.js";
 
 describe("Crypto tests", () => {
   test("should generate a key", async () => {

@@ -12,18 +12,20 @@ import type {
   SigningKey,
 } from "@lightsparkdev/core";
 import {
-  createSha256Hash,
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
   NodeKeyCache,
-  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
+  createSha256Hash,
+  pollUntil,
 } from "@lightsparkdev/core";
 import packageJson from "../package.json";
+import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
+import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { ClaimUmaInvitation } from "./graphql/ClaimUmaInvitation.js";
 import { ClaimUmaInvitationWithIncentives } from "./graphql/ClaimUmaInvitationWithIncentives.js";
@@ -45,14 +47,14 @@ import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNo
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
-import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
+import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
-import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
-import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
+import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
+import { TransactionStatus } from "./index.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -76,10 +78,9 @@ import type RegionCode from "./objects/RegionCode.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
 import {
-  getTransactionQuery,
   TransactionFromJson,
+  getTransactionQuery,
 } from "./objects/Transaction.js";
-import TransactionStatus from "./objects/TransactionStatus.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type UmaInvitation from "./objects/UmaInvitation.js";
@@ -87,12 +88,12 @@ import { UmaInvitationFromJson } from "./objects/UmaInvitation.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
-import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 
 const sdkVersion = packageJson.version;
 
 /**
- * The LightsparkClient is the main entrypoint for interacting with the Lightspark API.
+ * The LightsparkClient is the main entrypoint for interacting with the
+ * Lightspark API.
  *
  * ```ts
  * const lightsparkClient = new LightsparkClient(
@@ -129,7 +130,8 @@ class LightsparkClient {
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
-   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
+   *     For React Native, you should use the `ReactNativeCrypto`
+   *     implementation from `@lightsparkdev/react-native`.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
@@ -154,9 +156,11 @@ class LightsparkClient {
   }
 
   /**
-   * Sets the key loader for a node. This unlocks client operations that require a private key.
-   * Passing in [NodeIdAndPasswordSigningKeyLoaderArgs] loads the RSA key for an OSK node.
-   * Passing in [MasterSeedSigningKeyLoaderArgs] loads the Secp256k1 key for a remote signing node.
+   * Sets the key loader for a node. This unlocks client operations that
+   * require a private key. Passing in [NodeIdAndPasswordSigningKeyLoaderArgs]
+   * loads the RSA key for an OSK node.
+   * Passing in [MasterSeedSigningKeyLoaderArgs] loads the Secp256k1 key for a
+   * remote signing node.
    *
    * @param nodeId The ID of the node the key is for
    * @param loader The loader for the key
@@ -171,7 +175,8 @@ class LightsparkClient {
   }
 
   /**
-   * Gets the signing key for a node. Must have previously called [loadNodeSigningKey].
+   * Gets the signing key for a node. Must have previously called
+   * [loadNodeSigningKey].
    *
    * @param nodeId The ID of the node the key is for
    * @returns The signing key for the node
@@ -183,7 +188,8 @@ class LightsparkClient {
   }
 
   /**
-   * Sets the auth provider for the client. This is useful for switching between auth providers if you are using
+   * Sets the auth provider for the client.
+   * This is useful for switching between auth providers if you are using
    * multiple accounts or waiting for the user to log in.
    *
    * @param authProvider
@@ -282,7 +288,8 @@ class LightsparkClient {
   }
 
   /**
-   * Starts listening for new transactions or updates to existing transactions for a list of nodes.
+   * Starts listening for new transactions or updates to existing transactions
+   * for a list of nodes.
    *
    * @param nodeIds The node IDs for which to listen to transactions.
    * @returns A zen-observable that emits transaction updates for the given node IDs.
@@ -305,8 +312,8 @@ class LightsparkClient {
   }
 
   /**
-   * Retrieves a dashboard of basic info for the authenticated account. See `AccountDashboard` for which info is
-   * included.
+   * Retrieves a dashboard of basic info for the authenticated account.
+   * See `AccountDashboard` for which info is included.
    *
    * @param nodeIds The node IDs to include in the dashboard. Defaults to undefined (all nodes).
    * @param bitcoinNetwork The bitcoin network to include in the dashboard. Defaults to MAINNET.
@@ -397,8 +404,8 @@ class LightsparkClient {
   }
 
   /**
-   * Gets a basic dashboard for a single node, including recent transactions. See `SingleNodeDashboard` for which info is
-   * included.
+   * Gets a basic dashboard for a single node, including recent transactions.
+   * See `SingleNodeDashboard` for which info is included.
    *
    * @param nodeId The node ID for which to get a dashboard.
    * @param bitcoinNetwork The bitcoin network for which to get a dashboard. Defaults to MAINNET.
@@ -479,7 +486,8 @@ class LightsparkClient {
   /**
    * Creates an invoice for the given node.
    *
-   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   * Test mode note: You can simulate a payment of this invoice in test move
+   * using [createTestModePayment].
    *
    * @param nodeId The node ID for which to create an invoice.
    * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
@@ -514,11 +522,13 @@ class LightsparkClient {
   }
 
   /**
-   * Generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment
-   * from another Lightning Node. This should only be used for generating invoices for LNURLs,
+   * Generates a Lightning Invoice (follows the Bolt 11 specification) to
+   * request a payment from another Lightning Node.
+   * This should only be used for generating invoices for LNURLs,
    * with [createInvoice] preferred in the general case.
    *
-   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   * Test mode note: You can simulate a payment of this invoice in test move
+   * using [createTestModePayment].
    *
    * @param nodeId The node ID for which to create an invoice.
    * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
@@ -555,10 +565,12 @@ class LightsparkClient {
   }
 
   /**
-   * Creates a new invoice for the UMA protocol. The metadata is hashed and included in the invoice.
-   * This API generates a Lightning Invoice (follows the Bolt 11 specification) to request a payment
-   * from another Lightning Node. This should only be used for generating invoices for UMA, with `createInvoice`
-   * preferred in the general case.
+   * Creates a new invoice for the UMA protocol.
+   * The metadata is hashed and included in the invoice.
+   * This API generates a Lightning Invoice (follows the Bolt 11 specification)
+   * to request a payment from another Lightning Node.
+   * This should only be used for generating invoices for UMA,
+   * with `createInvoice` preferred in the general case.
    *
    * @param nodeId The node ID for which to create an invoice.
    * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
@@ -606,7 +618,8 @@ class LightsparkClient {
   }
 
   /**
-   * Gets an estimate of the fee for sending a payment over the given bitcoin network.
+   * Gets an estimate of the fee for sending a payment over the given bitcoin
+   * network.
    *
    * @param bitcoinNetwork The bitcoin network for which to get a fee estimate. Defaults to MAINNET.
    * @returns A fee estimate for the given bitcoin network including a minimum fee rate, and a max-speed fee rate.
@@ -652,7 +665,8 @@ class LightsparkClient {
   }
 
   /**
-   * Returns an estimate of the fees that will be paid to send a payment to another Lightning node.
+   * Returns an estimate of the fees that will be paid to send a payment to
+   * another Lightning node.
    *
    * @param nodeId The node from where you want to send the payment.
    * @param destinationNodePublicKey The public key of the node that you want to pay.
@@ -698,17 +712,20 @@ class LightsparkClient {
   /**
    * Sends a lightning payment for a given invoice.
    *
-   * Test mode note: For test mode, you can use the [createTestModeInvoice] function to create an invoice you can
-   * pay in test mode.
+   * Test mode note: For test mode, you can use the [createTestModeInvoice]
+   * function to create an invoice you can pay in test mode.
    *
    * @param payerNodeId The ID of the node that will pay the invoice.
    * @param encodedInvoice The encoded invoice to pay.
    * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
-   *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
+   *     As guidance, a maximum fee of 16 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 16 to 160 sats.
    * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
    * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
-   *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
+   *     invoice. NOTE: This parameter can only be passed for a zero-amount
+   *     invoice. Otherwise, the call will fail.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async payInvoice(
@@ -749,18 +766,23 @@ class LightsparkClient {
   }
 
   /**
-   * sends an UMA payment to a node on the Lightning Network, based on the invoice
-   * (as defined by the BOLT11 specification) that you provide.
-   * This should only be used for paying UMA invoices, with `payInvoice` preferred in the general case.
+   * sends an UMA payment to a node on the Lightning Network,
+   * based on the invoice (as defined by the BOLT11 specification) that you
+   * provide.
+   * This should only be used for paying UMA invoices,
+   * with `payInvoice` preferred in the general case.
    *
    * @param payerNodeId The ID of the node that will pay the invoice.
    * @param encodedInvoice The encoded invoice to pay.
    * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
-   *     As guidance, a maximum fee of 16 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 16 to 160 sats.
+   *     As guidance, a maximum fee of 16 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 16 to 160 sats.
    * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
    * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
-   *     invoice. NOTE: This parameter can only be passed for a zero-amount invoice. Otherwise, the call will fail.
+   *     invoice. NOTE: This parameter can only be passed for a zero-amount
+   *     invoice. Otherwise, the call will fail.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async payUmaInvoice(
@@ -801,7 +823,8 @@ class LightsparkClient {
   }
 
   /**
-   * Waits for a transaction to have a completed status, and returns the transaction.
+   * Waits for a transaction to have a completed status, and returns the
+   * transaction.
    *
    * @param transactionId The ID of the transaction to wait for
    * @param pollTimeoutSecs The timeout in seconds that we will wait before throwing an exception
@@ -848,15 +871,18 @@ class LightsparkClient {
   }
 
   /**
-   * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
+   * Sends a payment directly to a node on the Lightning Network through the
+   * public key of the node without an invoice.
    *
    * @param payerNodeId The ID of the node that will send the payment.
    * @param destinationPublicKey The public key of the destination node.
    * @param timeoutSecs The timeout in seconds that we will try to make the payment.
    * @param amountMsats The amount to pay in msats.
    * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 15 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 15 to 150 sats.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async sendPayment(
@@ -894,7 +920,8 @@ class LightsparkClient {
   }
 
   /**
-   * Creates an L1 Bitcoin wallet address for a given node which can be used to deposit or withdraw funds.
+   * Creates an L1 Bitcoin wallet address for a given node which can be used to
+   * deposit or withdraw funds.
    *
    * @param nodeId The ID of the node to create a wallet address for.
    * @returns A string containing the wallet address for the given node.
@@ -908,12 +935,15 @@ class LightsparkClient {
   }
 
   /**
-   * Withdraws funds from the account and sends it to the requested bitcoin address.
+   * Withdraws funds from the account and sends it to the requested bitcoin
+   * address.
    *
-   * Depending on the chosen mode, it will first take the funds from the wallet, and if applicable, close channels
-   * appropriately to recover enough funds and reopen channels with the remaining funds.
-   * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the
-   * `WithdrawalRequest` that is created, or by subscribing to a webhook.
+   * Depending on the chosen mode, it will first take the funds from the
+   * wallet, and if applicable, close channels appropriately to recover enough
+   * funds and reopen channels with the remaining funds.
+   * The process is asynchronous and may take up to a few minutes.
+   * You can check the progress by polling the `WithdrawalRequest` that is
+   * created, or by subscribing to a webhook.
    *
    * @param nodeId The ID of the node from which to withdraw funds.
    * @param amountSats The amount of funds to withdraw in satoshis.
@@ -940,9 +970,10 @@ class LightsparkClient {
   }
 
   /**
-   * Adds funds to a Lightspark node on the REGTEST network. If the amount is not specified, 10,000,000 SATOSHI will be
-   * added. This API only functions for nodes created on the REGTEST network and will return an error when called for
-   * any non-REGTEST node.
+   * Adds funds to a Lightspark node on the REGTEST network.
+   * If the amount is not specified, 10,000,000 SATOSHI will be added.
+   * This API only functions for nodes created on the REGTEST network and will
+   * return an error when called for any non-REGTEST node.
    *
    * @param nodeId The ID of the node to fund. Must be a REGTEST node.
    * @param amountSats The amount of funds to add to the node in satoshis. Defaults to 10,000,000 SATOSHI.
@@ -960,8 +991,8 @@ class LightsparkClient {
   }
 
   /**
-   * Creates a new API token that can be used to authenticate requests for this account when using the Lightspark APIs
-   * and SDKs.
+   * Creates a new API token that can be used to authenticate requests for this
+   * account when using the Lightspark APIs and SDKs.
    *
    * @param name Creates a new API token that can be used to authenticate requests for this account when using the
    *     Lightspark APIs and SDKs.
@@ -1005,8 +1036,9 @@ class LightsparkClient {
   }
 
   /**
-   * In test mode, generates a Lightning Invoice which can be paid by a local node.
-   * This call is only valid in test mode. You can then pay the invoice using [payInvoice].
+   * In test mode, generates a Lightning Invoice which can be paid by a local
+   * node. This call is only valid in test mode.
+   * You can then pay the invoice using [payInvoice].
    *
    * @param localNodeId The ID of the node that will pay the invoice.
    * @param amountMsats The amount to pay in milli-satoshis.
@@ -1046,8 +1078,9 @@ class LightsparkClient {
   }
 
   /**
-   * In test mode, simulates a payment of a Lightning Invoice from another node.
-   * This can only be used in test mode and should be used with invoices generated by [createInvoice].
+   * In test mode, simulates a payment of a Lightning Invoice from another
+   * node. This can only be used in test mode and should be used with invoices
+   * generated by [createInvoice].
    *
    * @param localNodeId The ID of the node that will receive the payment.
    * @param encodedInvoice The encoded invoice to pay.
@@ -1079,8 +1112,8 @@ class LightsparkClient {
   }
 
   /**
-   * Creates an UMA invitation. If you are part of the incentive program, you should use
-   * [createUmaInvitationWithIncentives].
+   * Creates an UMA invitation. If you are part of the incentive program,
+   * you should use [createUmaInvitationWithIncentives].
    *
    * @param inviterUma The UMA of the inviter.
    * @returns The invitation that was created.
@@ -1150,8 +1183,8 @@ class LightsparkClient {
   }
 
   /**
-   * Claims an UMA invitation. If you are part of the incentive program, you should use
-   * [claimUmaInvitationWithIncentives].
+   * Claims an UMA invitation. If you are part of the incentive program,
+   * you should use [claimUmaInvitationWithIncentives].
    *
    * @param invitationCode The invitation code to claim.
    * @param inviteeUma The UMA of the invitee.
@@ -1266,7 +1299,8 @@ class LightsparkClient {
   /**
    * Executes a raw `Query` against the Lightspark API.
    *
-   * This generally should not be used directly, but is exposed for advanced use cases and for internal use to retrieve
+   * This generally should not be used directly,
+   * but is exposed for advanced use cases and for internal use to retrieve
    * complex fields from objects.
    *
    * @param query The `Query` to execute.

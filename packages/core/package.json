@@ -61,7 +61,7 @@
   ],
   "scripts": {
     "build": "yarn tsc && tsup",
-    "build:watch": "yarn build --watch",
+    "build:watch": "yarn build --watch --clean=false",
     "clean": "rm -rf .turbo && rm -rf dist",
     "dev": "yarn build -- --watch",
     "format:fix": "prettier src --write",
@@ -101,6 +101,6 @@
     "ts-jest": "^29.1.1",
     "tsc-absolute": "^1.0.1",
     "tsup": "^7.2.0",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.0"
   }
 }

@@ -7,26 +7,53 @@ import { isNumber, round } from "./numbers.js";
 
 export const defaultCurrencyCode = "USD";
 
-/** This enum identifies the unit of currency associated with a CurrencyAmount. **/
+/**
+ * This enum identifies the unit of currency associated with a CurrencyAmount.
+ * *
+ */
 export enum CurrencyUnit {
   /**
-   * This is an enum value that represents values that could be added in the future.
-   * Clients should support unknown values as more of them could be added without notice.
+   * This is an enum value that represents values that could be added in the
+   * future. Clients should support unknown values as more of them could be
+   * added without notice.
    */
   FUTURE_VALUE = "FUTURE_VALUE",
-  /** Bitcoin is the cryptocurrency native to the Bitcoin network. It is used as the native medium for value transfer for the Lightning Network. **/
+  /**
+   * Bitcoin is the cryptocurrency native to the Bitcoin network.
+   * It is used as the native medium for value transfer for the Lightning
+   * Network. *
+   */
   BITCOIN = "BITCOIN",
-  /** 0.00000001 (10e-8) Bitcoin or one hundred millionth of a Bitcoin. This is the unit most commonly used in Lightning transactions. **/
+  /**
+   * 0.00000001 (10e-8) Bitcoin or one hundred millionth of a Bitcoin.
+   * This is the unit most commonly used in Lightning transactions.
+   * *
+   */
   SATOSHI = "SATOSHI",
-  /** 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  /**
+   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit
+   * instead when possible. *
+   */
   MILLISATOSHI = "MILLISATOSHI",
   /** United States Dollar. **/
   USD = "USD",
-  /** 0.000000001 (10e-9) Bitcoin or a billionth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  /**
+   * 0.000000001 (10e-9) Bitcoin or a billionth of a Bitcoin.
+   * We recommend using the Satoshi unit instead when possible.
+   * *
+   */
   NANOBITCOIN = "NANOBITCOIN",
-  /** 0.000001 (10e-6) Bitcoin or a millionth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  /**
+   * 0.000001 (10e-6) Bitcoin or a millionth of a Bitcoin.
+   * We recommend using the Satoshi unit instead when possible.
+   * *
+   */
   MICROBITCOIN = "MICROBITCOIN",
-  /** 0.001 (10e-3) Bitcoin or a thousandth of a Bitcoin. We recommend using the Satoshi unit instead when possible. **/
+  /**
+   * 0.001 (10e-3) Bitcoin or a thousandth of a Bitcoin.
+   * We recommend using the Satoshi unit instead when possible.
+   * *
+   */
   MILLIBITCOIN = "MILLIBITCOIN",
 }
 
@@ -39,13 +66,15 @@ export type CurrencyAmountType = {
   /** The unit of user's preferred currency. **/
   preferredCurrencyUnit: CurrencyUnit;
   /**
-   * The rounded numeric value for this CurrencyAmount in the very base level of user's preferred
-   * currency. For example, for USD, the value will be in cents.
+   * The rounded numeric value for this CurrencyAmount in the very base level
+   * of user's preferred currency. For example, for USD, the value will be in
+   * cents.
    **/
   preferredCurrencyValueRounded: number;
   /**
-   * The approximate float value for this CurrencyAmount in the very base level of user's preferred
-   * currency. For example, for USD, the value will be in cents.
+   * The approximate float value for this CurrencyAmount in the very base level
+   * of user's preferred currency. For example, for USD, the value will be in
+   * cents.
    **/
   preferredCurrencyValueApprox: number;
 };
@@ -211,8 +240,12 @@ export type CurrencyMap = {
 };
 
 export type CurrencyAmountObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-     We are intentionally widening the type here to allow for more forgiving input: */
+  /*
+   * Technically the generated graphql schema has value as `any` but it's
+   * always a number.
+   * We are intentionally widening the type here to allow for more forgiving
+   * input:
+   */
   value?: number | string | null;
   /* assume satoshi if not provided */
   unit?: CurrencyUnit;
@@ -402,7 +435,10 @@ export function formatCurrencyStr(
   let { value: num } = currencyAmount;
   const { unit } = currencyAmount;
 
-  /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
+  /**
+   * Currencies should always be represented in the smallest unit, e.g.
+   * cents for USD:
+   */
   if (unit === CurrencyUnit.USD) {
     num = num / 100;
   }
@@ -415,7 +451,8 @@ export function formatCurrencyStr(
       : maxFractionDigits;
   }
 
-  // Symbol handled by toLocaleString for USD. These rely on the LightsparkIcons font
+  // Symbol handled by toLocaleString for USD.
+  // These rely on the LightsparkIcons font
   const symbol = !showBtcSymbol
     ? ""
     : unit === CurrencyUnit.BITCOIN
@@ -472,7 +509,8 @@ export function localeToCurrencySymbol(locale: string) {
     maximumFractionDigits: 0,
   }).format(0);
 
-  // Remove numeric and non-breaking space characters to extract the currency symbol
+  // Remove numeric and non-breaking space characters to extract the currency
+  // symbol
   const { symbol } = separateCurrencyStrParts(formatted);
   return symbol;
 }

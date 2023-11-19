@@ -16,12 +16,18 @@ import { WithdrawalRequestToChannelClosingTransactionsConnectionFromJson } from 
 import type WithdrawalRequestToChannelOpeningTransactionsConnection from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 import { WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 
-/** This object represents a request made for an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can retrieve this object to receive detailed information about any withdrawal request made from your Lightspark account. **/
+/**
+ * This object represents a request made for an L1 withdrawal from your
+ * Lightspark Node to any Bitcoin wallet.
+ * You can retrieve this object to receive detailed information about any
+ * withdrawal request made from your Lightspark account.
+ * *
+ */
 class WithdrawalRequest implements Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
+     * The unique identifier of this entity across all Lightspark systems.
+     * Should be treated as an opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
@@ -32,15 +38,18 @@ class WithdrawalRequest implements Entity {
     public readonly amount: CurrencyAmount,
     /** The bitcoin address where the funds should be sent. **/
     public readonly bitcoinAddress: string,
-    /** The strategy that should be used to withdraw the funds from the account. **/
+    /**
+     * The strategy that should be used to withdraw the funds from the account.
+     * *
+     */
     public readonly withdrawalMode: WithdrawalMode,
     /** The current status of this withdrawal request. **/
     public readonly status: WithdrawalRequestStatus,
     /** The typename of the object **/
     public readonly typename: string,
     /**
-     * If the requested amount is `-1` (i.e. everything), this field may contain an estimate of the amount
-     * for the withdrawal.
+     * If the requested amount is `-1` (i.e. everything),
+     * this field may contain an estimate of the amount for the withdrawal.
      **/
     public readonly estimatedAmount?: CurrencyAmount | undefined,
     /** The time at which this request was completed. **/

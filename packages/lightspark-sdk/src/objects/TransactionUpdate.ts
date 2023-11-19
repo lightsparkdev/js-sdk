@@ -6,8 +6,8 @@ import TransactionStatus from "./TransactionStatus.js";
 
 type TransactionUpdate = {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -29,7 +29,10 @@ type TransactionUpdate = {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  /**
+   * The hash of this transaction, so it can be uniquely identified on the
+   * Lightning Network. *
+   */
   transactionHash?: string;
 };
 

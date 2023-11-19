@@ -1,10 +1,15 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-/** This interface is used by all the entities in the Lightspark system. It defines a few core fields that are available everywhere. Any object that implements this interface can be queried using the `entity` query and its ID. **/
+/**
+ * This interface is used by all the entities in the Lightspark system.
+ * It defines a few core fields that are available everywhere.
+ * Any object that implements this interface can be queried using the `entity`
+ * query and its ID. *
+ */
 interface Entity {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 

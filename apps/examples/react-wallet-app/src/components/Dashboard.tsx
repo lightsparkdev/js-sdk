@@ -4,10 +4,9 @@ import { CurrencyAmount } from "@lightsparkdev/ui/components/CurrencyAmount";
 import type {
   CurrencyAmount as CurrencyAmountType,
   Transaction,
-  WalletDashboard} from "@lightsparkdev/wallet-sdk";
-import {
-  CurrencyUnit
+  WalletDashboard,
 } from "@lightsparkdev/wallet-sdk";
+import { CurrencyUnit } from "@lightsparkdev/wallet-sdk";
 import { Button } from "src/components/Button";
 import { Table, Td, Th, Tr } from "./Table";
 

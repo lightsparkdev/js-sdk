@@ -1,10 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface AmazonS3FundsRecoveryKit {
-  /** The bitcoin address where the funds should be sent if the recovery kit is used. **/
+  /**
+   * The bitcoin address where the funds should be sent if the recovery kit is
+   * used. *
+   */
   bitcoinWalletAddress: string;
 
-  /** The URL of the Amazon S3 bucket URL where we should upload the funds recovery kit. **/
+  /**
+   * The URL of the Amazon S3 bucket URL where we should upload the funds
+   * recovery kit. *
+   */
   s3BucketUrl: string;
 
   /** The typename of the object **/

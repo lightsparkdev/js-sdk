@@ -28,12 +28,17 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve this object to receive payment related information about any payment sent from your Lightspark Node on the Lightning Network. **/
+/**
+ * This object represents a Lightning Network payment sent from a Lightspark
+ * Node. You can retrieve this object to receive payment related information
+ * about any payment sent from your Lightspark Node on the Lightning Network.
+ * *
+ */
 class OutgoingPayment implements LightningTransaction, Transaction, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
+     * The unique identifier of this entity across all Lightspark systems.
+     * Should be treated as an opaque string.
      **/
     public readonly id: string,
     /** The date and time when this transaction was initiated. **/
@@ -50,19 +55,31 @@ class OutgoingPayment implements LightningTransaction, Transaction, Entity {
     public readonly typename: string,
     /** The date and time when this transaction was completed or failed. **/
     public readonly resolvedAt?: string | undefined,
-    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    /**
+     * The hash of this transaction, so it can be uniquely identified on the
+     * Lightning Network. *
+     */
     public readonly transactionHash?: string | undefined,
     /** If known, the final recipient node this payment was sent to. **/
     public readonly destinationId?: string | undefined,
     /** The fees paid by the sender node to send the payment. **/
     public readonly fees?: CurrencyAmount | undefined,
-    /** The data of the payment request that was paid by this transaction, if known. **/
+    /**
+     * The data of the payment request that was paid by this transaction, if
+     * known. *
+     */
     public readonly paymentRequestData?: PaymentRequestData | undefined,
     /** If applicable, the reason why the payment failed. **/
     public readonly failureReason?: PaymentFailureReason | undefined,
-    /** If applicable, user-facing error message describing why the payment failed. **/
+    /**
+     * If applicable, user-facing error message describing why the payment
+     * failed. *
+     */
     public readonly failureMessage?: RichText | undefined,
-    /** The post transaction data which can be used in KYT payment registration. **/
+    /**
+     * The post transaction data which can be used in KYT payment registration.
+     * *
+     */
     public readonly umaPostTransactionData?: PostTransactionData[] | undefined,
     /** The preimage of the payment. **/
     public readonly paymentPreimage?: string | undefined,

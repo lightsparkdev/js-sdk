@@ -4,7 +4,8 @@
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react",
-    "module": "ESNext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "es6"
   }
 }

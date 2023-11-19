@@ -4,7 +4,7 @@ export type Maybe<T> = T | null | undefined;
 
 export type ExpandRecursively<T> = T extends object
   ? T extends infer O
-    ? { [K in keyof O]: ExpandRecursively<O[K]> } // eslint-disable-line @typescript-eslint/no-unused-vars
+    ? { [K in keyof O]: ExpandRecursively<O[K]> }
     : never
   : T;
 

@@ -20,11 +20,18 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 import type Withdrawal from "./Withdrawal.js";
 
-/** This object represents a payment transaction. The transaction can occur either on a Bitcoin Network, or over the Lightning Network. You can retrieve this object to receive specific information about a particular transaction tied to your Lightspark Node. **/
+/**
+ * This object represents a payment transaction.
+ * The transaction can occur either on a Bitcoin Network,
+ * or over the Lightning Network. You can retrieve this object to receive
+ * specific information about a particular transaction tied to your Lightspark
+ * Node.
+ * *
+ */
 interface Transaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -46,7 +53,10 @@ interface Transaction {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  /**
+   * The hash of this transaction, so it can be uniquely identified on the
+   * Lightning Network. *
+   */
   transactionHash?: string | undefined;
 }
 

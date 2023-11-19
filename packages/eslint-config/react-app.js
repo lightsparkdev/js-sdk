@@ -1,9 +1,9 @@
 const baseRestrictedImportPaths =
-  require("./react-lib/constants").restrictedImportPaths;
+  require("./constants/react-restricted-imports").restrictedImportPaths;
 
 module.exports = {
-  extends: ["./react-lib/config"],
-  ignorePatterns: ["src/generated/", "storybook-static/"],
+  extends: ["./react-lib"],
+  ignorePatterns: ["src/generated/"],
   rules: {
     "no-restricted-imports": [
       "error",
@@ -20,35 +20,13 @@ module.exports = {
             importNames: ["Link", "Navigate", "useNavigate"],
             message:
               "Please use typesafe imports from components/router instead.",
-            name: "@lightsparkdev/ui/router",
+            name: "@lightsparkdev/ui/src/router",
           },
           {
             importNames: ["default", "QRCodeSVG"],
             message:
               "Please use imports from @lightsparkdev/ui components instead.",
             name: "qrcode.react",
-          },
-          {
-            importNames: [
-              "Button",
-              "ButtonProps",
-              "ButtonRow",
-              "ButtonRowContainer",
-            ],
-            message:
-              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
-            name: "@lightsparkdev/ui/components",
-          },
-          {
-            importNames: [
-              "CardFormTextWithLink",
-              "Dropdown",
-              "Table",
-              "TableCell",
-            ],
-            message:
-              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
-            name: "@lightsparkdev/private-ui/src/components",
           },
           {
             importNames: ["useWhatChanged"],
@@ -67,17 +45,28 @@ module.exports = {
             message:
               "Please do not import services directly, use Services class to access.",
           },
+          {
+            group: [
+              "@lightsparkdev/ui",
+              "@lightsparkdev/ui/**",
+              "@lightsparkdev/private-ui",
+              "@lightsparkdev/private-ui/**",
+            ],
+            importNames: [
+              "Button",
+              "ButtonProps",
+              "ButtonRow",
+              "ButtonRowContainer",
+              "CardFormTextWithLink",
+              "Dropdown",
+              "Table",
+              "TableCell",
+            ],
+            message:
+              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
+          },
         ],
       },
     ],
   },
-  overrides: [
-    {
-      files: ["src/**/__tests__/**/*", "cypress/**/*"],
-      rules: {
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
-      },
-    },
-  ],
 };

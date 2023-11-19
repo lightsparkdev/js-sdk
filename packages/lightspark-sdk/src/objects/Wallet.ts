@@ -17,19 +17,28 @@ import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequ
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
 
-/** This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used to send or receive funds over the Lightning Network. You can retrieve this object to receive information about a specific wallet tied to your Lightspark account. **/
+/**
+ * This object represents a Lightspark Wallet, tied to your Lightspark account.
+ * Wallets can be used to send or receive funds over the Lightning Network.
+ * You can retrieve this object to receive information about a specific wallet
+ * tied to your Lightspark account. *
+ */
 class Wallet implements LightsparkNodeOwner, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
+     * The unique identifier of this entity across all Lightspark systems.
+     * Should be treated as an opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
     public readonly createdAt: string,
     /** The date and time when the entity was last updated. **/
     public readonly updatedAt: string,
-    /** The unique identifier of this wallet, as provided by the Lightspark Customer during login. **/
+    /**
+     * The unique identifier of this wallet,
+     * as provided by the Lightspark Customer during login.
+     * *
+     */
     public readonly thirdPartyIdentifier: string,
     /** The status of this wallet. **/
     public readonly status: WalletStatus,

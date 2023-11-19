@@ -1,11 +1,31 @@
 {
   "name": "@lightsparkdev/ui",
-  "version": "0.0.7",
-  "private": true,
-  "main": "./index.js",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./components": "./dist/components/index.js",
+    "./components/*": "./dist/components/*.js",
+    "./components/": "./dist/components/",
+    "./hooks/*": "./dist/hooks/*.js",
+    "./hooks": "./dist/hooks/index.js",
+    "./icons": "./dist/icons/index.js",
+    "./icons/*": "./dist/icons/*.js",
+    "./styles/*": "./dist/styles/*.js",
+    "./styles/fonts.css": "./dist/styles/fonts.css",
+    "./types/*": "./dist/types/*.js",
+    "./types": "./dist/types/index.js",
+    "./utils/*": "./dist/utils/*.js",
+    "./utils": "./dist/utils/index.js",
+    "./static/": "./dist/static/",
+    "./router": "./dist/router.js"
+  },
   "scripts": {
-    "build": "echo \"Currently requires outside dependencies, skipping for now\"",
+    "build": "yarn tsc && tsup --dts",
+    "build:watch": "yarn build --watch --clean=false",
     "circular-deps": "madge --circular --extensions ts,tsx .",
     "clean": "rm -rf .turbo",
     "format:fix": "prettier . --write",
@@ -22,6 +42,7 @@
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@lightsparkdev/core": "1.0.10",
     "gql": "^1.1.2",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
@@ -32,12 +53,20 @@
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.0",
+    "@svgr/plugin-jsx": "^8.1.0",
+    "esbuild-plugin-copy": "^2.1.1",
+    "esbuild-plugin-svgr": "^2.1.0",
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
     "graphql": "^16.6.0",
     "madge": "^6.1.0",
     "prettier": "3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",
-    "typescript": "^4.9.5"
-  }
+    "tsup": "^7.2.0",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist/*",
+    "CHANGELOG.md"
+  ]
 }

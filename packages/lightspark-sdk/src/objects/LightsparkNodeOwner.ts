@@ -9,8 +9,8 @@ import WalletStatus from "./WalletStatus.js";
 /** This is an object representing the owner of a LightsparkNode. **/
 interface LightsparkNodeOwner {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 

@@ -10,12 +10,15 @@ interface PayInvoiceInput {
   /** The timeout in seconds that we will try to make the payment. **/
   timeoutSecs: number;
 
-  /** The maximum amount of fees that you want to pay for this payment to be sent, expressed in msats. **/
+  /**
+   * The maximum amount of fees that you want to pay for this payment to be
+   * sent, expressed in msats. *
+   */
   maximumFeesMsats: number;
 
   /**
-   * The amount you will pay for this invoice, expressed in msats. It should ONLY be set when the
-   * invoice amount is zero.
+   * The amount you will pay for this invoice, expressed in msats.
+   * It should ONLY be set when the invoice amount is zero.
    **/
   amountMsats?: number | undefined;
 }

@@ -9,7 +9,11 @@ import {
 import type Node from "./Node.js";
 import { NodeFromJson, NodeToJson } from "./Node.js";
 
-/** This object represents the data associated with a BOLT #11 invoice. You can retrieve this object to receive the relevant data associated with a specific invoice. **/
+/**
+ * This object represents the data associated with a BOLT #11 invoice.
+ * You can retrieve this object to receive the relevant data associated with a
+ * specific invoice. *
+ */
 interface InvoiceData {
   encodedPaymentRequest: string;
 
@@ -19,8 +23,8 @@ interface InvoiceData {
   paymentHash: string;
 
   /**
-   * The requested amount in this invoice. If it is equal to 0, the sender should choose the amount to
-   * send.
+   * The requested amount in this invoice. If it is equal to 0,
+   * the sender should choose the amount to send.
    **/
   amount: CurrencyAmount;
 

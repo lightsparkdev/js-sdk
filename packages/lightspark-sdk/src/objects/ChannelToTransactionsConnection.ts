@@ -8,26 +8,27 @@ import {
 
 interface ChannelToTransactionsConnection {
   /**
-   * The total count of objects in this connection, using the current filters. It is different from the
-   * number of objects returned in the current page (in the `entities` field).
+   * The total count of objects in this connection, using the current filters.
+   * It is different from the number of objects returned in the current page
+   * (in the `entities` field).
    **/
   count: number;
 
   /**
-   * The average fee for the transactions that transited through this channel, according to the filters
-   * and constraints of the connection.
+   * The average fee for the transactions that transited through this channel,
+   * according to the filters and constraints of the connection.
    **/
   averageFee?: CurrencyAmount | undefined;
 
   /**
-   * The total amount transacted for the transactions that transited through this channel, according to
-   * the filters and constraints of the connection.
+   * The total amount transacted for the transactions that transited through
+   * this channel, according to the filters and constraints of the connection.
    **/
   totalAmountTransacted?: CurrencyAmount | undefined;
 
   /**
-   * The total amount of fees for the transactions that transited through this channel, according to the
-   * filters and constraints of the connection.
+   * The total amount of fees for the transactions that transited through this
+   * channel, according to the filters and constraints of the connection.
    **/
   totalFees?: CurrencyAmount | undefined;
 }

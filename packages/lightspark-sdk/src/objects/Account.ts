@@ -26,12 +26,16 @@ import type TransactionFailures from "./TransactionFailures.js";
 import type TransactionStatus from "./TransactionStatus.js";
 import type TransactionType from "./TransactionType.js";
 
-/** This is an object representing the connected Lightspark account. You can retrieve this object to see your account information and objects tied to your account. **/
+/**
+ * This is an object representing the connected Lightspark account.
+ * You can retrieve this object to see your account information and objects
+ * tied to your account. *
+ */
 class Account implements LightsparkNodeOwner, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
+     * The unique identifier of this entity across all Lightspark systems.
+     * Should be treated as an opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
