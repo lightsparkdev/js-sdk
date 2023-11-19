@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.2.2
+
+### Patch Changes
+
+- 770386b: Regenerate JS SDK and add uma invite APIs
+
 ## 1.2.1
 
 ### Patch Changes
