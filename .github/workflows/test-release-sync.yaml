@@ -29,6 +29,7 @@ jobs:
           # use branch name instead of triggering ref so we can commit to the PR branch:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
+
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
         with:
@@ -77,8 +78,6 @@ jobs:
         uses: "actions/setup-node@v3"
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
 
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
@@ -176,10 +175,8 @@ jobs:
         uses: "actions/setup-node@v3"
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
 
-      - name: yarn install with cache
+      - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
         with:
           cwd: "."
@@ -212,8 +209,6 @@ jobs:
         uses: "actions/setup-node@v3"
         with:
           node-version-file: ".nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "yarn.lock"
 
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
