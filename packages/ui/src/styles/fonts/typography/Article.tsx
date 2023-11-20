@@ -68,6 +68,7 @@ export const Article = styled.article`
       getTypographyString(
         theme.typography[theme.app]["Label Strong"][TokenSize.Large],
       )}
+    font-size: inherit;
     color: ${({ theme }) => theme.link};
   }
 
