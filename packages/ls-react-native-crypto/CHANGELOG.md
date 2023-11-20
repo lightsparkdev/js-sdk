@@ -1,11 +1,5 @@
 # @lightsparkdev/ls-react-native-crypto
 
-## 0.2.10
-
-### Patch Changes
-
-- 43dc882: Upgrade to Typescript 5, lint config changes
-
 ## 0.2.9
 
 ### Patch Changes

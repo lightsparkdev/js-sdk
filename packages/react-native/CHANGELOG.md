@@ -1,14 +1,5 @@
 # @lightsparkdev/react-native
 
-## 0.2.26
-
-### Patch Changes
-
-- 43dc882: Upgrade to Typescript 5, lint config changes
-- Updated dependencies [43dc882]
-  - @lightsparkdev/ls-react-native-crypto@0.2.10
-  - @lightsparkdev/core@1.0.11
-
 ## 0.2.25
 
 ### Patch Changes

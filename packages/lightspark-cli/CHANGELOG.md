@@ -1,14 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.32
-
-### Patch Changes
-
-- 43dc882: Upgrade to Typescript 5, lint config changes
-- Updated dependencies [43dc882]
-  - @lightsparkdev/lightspark-sdk@1.2.3
-  - @lightsparkdev/core@1.0.11
-
 ## 0.0.31
 
 ### Patch Changes
