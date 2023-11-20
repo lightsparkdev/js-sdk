@@ -55,8 +55,8 @@ interface Deposit {
   transactionHash?: string | undefined;
 
   /**
-   * The fees that were paid by the wallet sending the transaction to commit it
-   * to the Bitcoin blockchain.
+   * The fees that were paid by the wallet sending the transaction to commit
+   * it to the Bitcoin blockchain.
    **/
   fees?: CurrencyAmount | undefined;
 
@@ -67,8 +67,8 @@ interface Deposit {
   blockHash?: string | undefined;
 
   /**
-   * The number of blockchain confirmations for this transaction in real time.
-   * *
+   * The number of blockchain confirmations for this transaction in real
+   * time. *
    */
   numConfirmations?: number | undefined;
 }

@@ -12,8 +12,8 @@ import {
  */
 interface PostTransactionData {
   /**
-   * The utxo of the channel over which the payment went through in the format
-   * of <transaction_hash>:<output_index>.
+   * The utxo of the channel over which the payment went through in the
+   * format of <transaction_hash>:<output_index>.
    **/
   utxo: string;
 

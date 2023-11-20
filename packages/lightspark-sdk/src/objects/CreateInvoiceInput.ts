@@ -6,14 +6,20 @@ interface CreateInvoiceInput {
   /** The node from which to create the invoice. **/
   nodeId: string;
 
-  /** The amount for which the invoice should be created, in millisatoshis. **/
+  /**
+   * The amount for which the invoice should be created, in millisatoshis.
+   * *
+   */
   amountMsats: number;
 
   memo?: string | undefined;
 
   invoiceType?: InvoiceType | undefined;
 
-  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
+  /**
+   * The expiry of the invoice in seconds. Default value is 86400 (1 day).
+   * *
+   */
   expirySecs?: number | undefined;
 }
 

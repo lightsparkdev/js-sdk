@@ -23,9 +23,8 @@ import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymen
  * This object represents an attempted Lightning Network payment sent from a
  * Lightspark Node. You can retrieve this object to receive payment related
  * information about any payment attempt sent from your Lightspark Node on the
- * Lightning Network,
- * including any potential reasons the payment may have failed.
- * *
+ * Lightning Network, including any potential reasons the payment may have
+ * failed. *
  */
 class OutgoingPaymentAttempt implements Entity {
   constructor(
@@ -59,11 +58,11 @@ class OutgoingPaymentAttempt implements Entity {
     /** The time the outgoing payment attempt failed or succeeded. **/
     public readonly resolvedAt?: string | undefined,
     /**
-     * The total amount of funds required to complete a payment over this route.
-     * This value includes the cumulative fees for each hop. As a result,
-     * the attempt extended to the first-hop in the route will need to have at
-     * least this much value, otherwise the route will fail at an intermediate
-     * node due to an insufficient amount.
+     * The total amount of funds required to complete a payment over this
+     * route. This value includes the cumulative fees for each hop. As a
+     * result, the attempt extended to the first-hop in the route will need to
+     * have at least this much value, otherwise the route will fail at an
+     * intermediate node due to an insufficient amount.
      **/
     public readonly amount?: CurrencyAmount | undefined,
     /**

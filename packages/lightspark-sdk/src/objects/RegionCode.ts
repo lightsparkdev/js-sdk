@@ -400,8 +400,8 @@ export enum RegionCode {
   /** The code representing the country of Saint Barthélemy. **/
   BL = "BL",
   /**
-   * The code representing the country of Saint Helena  Ascension and Tristan
-   * da Cunha. *
+   * The code representing the country of Saint Helena  Ascension and Tristan da
+   * Cunha. *
    */
   SH = "SH",
   /** The code representing the country of Saint Kitts and Nevis. **/

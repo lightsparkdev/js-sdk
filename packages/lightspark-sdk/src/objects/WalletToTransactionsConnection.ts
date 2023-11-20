@@ -7,9 +7,9 @@ import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 
 interface WalletToTransactionsConnection {
   /**
-   * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page
-   * (in the `entities` field).
+   * The total count of objects in this connection, using the current
+   * filters. It is different from the number of objects returned in the
+   * current page (in the `entities` field).
    **/
   count: number;
 

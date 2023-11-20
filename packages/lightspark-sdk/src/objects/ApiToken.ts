@@ -30,8 +30,8 @@ interface ApiToken {
   clientId: string;
 
   /**
-   * An arbitrary name chosen by the creator of the token to help identify the
-   * token in the list of tokens that have been created for the account.
+   * An arbitrary name chosen by the creator of the token to help identify
+   * the token in the list of tokens that have been created for the account.
    **/
   name: string;
 

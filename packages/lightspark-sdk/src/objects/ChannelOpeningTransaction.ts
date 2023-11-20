@@ -11,8 +11,7 @@ import TransactionStatus from "./TransactionStatus.js";
 /**
  * This is an object representing a transaction which opens a channel on the
  * Lightning Network. This object occurs only for channels funded by the local
- * Lightspark node.
- * *
+ * Lightspark node. *
  */
 interface ChannelOpeningTransaction {
   /**
@@ -55,8 +54,8 @@ interface ChannelOpeningTransaction {
   transactionHash?: string | undefined;
 
   /**
-   * The fees that were paid by the wallet sending the transaction to commit it
-   * to the Bitcoin blockchain.
+   * The fees that were paid by the wallet sending the transaction to commit
+   * it to the Bitcoin blockchain.
    **/
   fees?: CurrencyAmount | undefined;
 
@@ -67,8 +66,8 @@ interface ChannelOpeningTransaction {
   blockHash?: string | undefined;
 
   /**
-   * The number of blockchain confirmations for this transaction in real time.
-   * *
+   * The number of blockchain confirmations for this transaction in real
+   * time. *
    */
   numConfirmations?: number | undefined;
 

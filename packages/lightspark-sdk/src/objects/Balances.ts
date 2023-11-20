@@ -14,8 +14,8 @@ import {
  */
 interface Balances {
   /**
-   * This represents the balance that should be displayed when asked "how much
-   * do I own right now?". It represents the amount currently owned,
+   * This represents the balance that should be displayed when asked "how
+   * much do I own right now?". It represents the amount currently owned,
    * including things that may not be owned soon (e.g. in-flight outgoing
    * payments, in-flight withdrawals, commit fees, etc.).
    * It really is a snapshot of what is officially owned at this instant.
@@ -23,8 +23,8 @@ interface Balances {
   ownedBalance: CurrencyAmount;
 
   /**
-   * This represents the balance that should be displayed when asked "how much
-   * can I send on Lightning right now?".
+   * This represents the balance that should be displayed when asked "how
+   * much can I send on Lightning right now?".
    * It represents the amount currently available to be sent on the Lightning
    * network. We remove from the balance all the funds that are temporarily
    * locked (e.g. channel reserves).
@@ -32,12 +32,12 @@ interface Balances {
   availableToSendBalance: CurrencyAmount;
 
   /**
-   * This represents the balance that should be displayed when asked "how much
-   * money can I withdraw on the Bitcoin network right now?".
+   * This represents the balance that should be displayed when asked "how
+   * much money can I withdraw on the Bitcoin network right now?".
    * It represents the amount currently available to withdraw and is usually
-   * equal to the `owned_balance` but it does not include in-flight operations
-   * (which would likely succeed and therefore likely make your withdrawal
-   * fail).
+   * equal to the `owned_balance` but it does not include in-flight
+   * operations (which would likely succeed and therefore likely make your
+   * withdrawal fail).
    **/
   availableToWithdrawBalance: CurrencyAmount;
 }

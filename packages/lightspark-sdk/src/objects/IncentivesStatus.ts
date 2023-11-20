@@ -9,9 +9,8 @@ export enum IncentivesStatus {
    */
   FUTURE_VALUE = "FUTURE_VALUE",
   /**
-   * The invitation is eligible for incentives in its current state.
-   * When it is claimed, we will reassess.
-   * *
+   * The invitation is eligible for incentives in its current state. When it is
+   * claimed, we will reassess. *
    */
   PENDING = "PENDING",
   /** The incentives have been validated. **/

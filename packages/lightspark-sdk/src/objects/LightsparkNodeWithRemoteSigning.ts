@@ -67,8 +67,7 @@ class LightsparkNodeWithRemoteSigning implements LightsparkNode, Node, Entity {
     /**
      * A hexadecimal string that describes a color. For example "#000000" is
      * black, "#FFFFFF" is white. It has no importance in terms of operating
-     * the node,
-     * it is just a way to visually differentiate nodes.
+     * the node, it is just a way to visually differentiate nodes.
      * That color can be changed at any time by the node operator.
      **/
     public readonly color?: string | undefined,

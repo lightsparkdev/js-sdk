@@ -14,8 +14,8 @@ export enum ChannelStatus {
   /** The channel is online and ready to send and receive funds. **/
   OK = "OK",
   /**
-   * The channel has been created, but the Bitcoin transaction that initiates
-   * it still needs to be confirmed on the Bitcoin blockchain.
+   * The channel has been created, but the Bitcoin transaction that initiates it
+   * still needs to be confirmed on the Bitcoin blockchain.
    * *
    */
   PENDING = "PENDING",
@@ -29,8 +29,8 @@ export enum ChannelStatus {
    */
   UNBALANCED_FOR_SEND = "UNBALANCED_FOR_SEND",
   /**
-   * The channel is behaving properly, but its remote balance is much lower
-   * than its local balance so it is not balanced properly for receiving funds.
+   * The channel is behaving properly, but its remote balance is much lower than
+   * its local balance so it is not balanced properly for receiving funds.
    * *
    */
   UNBALANCED_FOR_RECEIVE = "UNBALANCED_FOR_RECEIVE",

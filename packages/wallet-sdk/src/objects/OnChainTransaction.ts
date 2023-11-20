@@ -16,8 +16,7 @@ import type Withdrawal from "./Withdrawal.js";
  * This object represents an L1 transaction that occurred on the Bitcoin
  * Network. You can retrieve this object to receive information about a
  * specific on-chain transaction made on the Lightning Network associated with
- * your Lightspark Node.
- * *
+ * your Lightspark Node. *
  */
 interface OnChainTransaction {
   /**
@@ -60,8 +59,8 @@ interface OnChainTransaction {
   transactionHash?: string | undefined;
 
   /**
-   * The fees that were paid by the wallet sending the transaction to commit it
-   * to the Bitcoin blockchain.
+   * The fees that were paid by the wallet sending the transaction to commit
+   * it to the Bitcoin blockchain.
    **/
   fees?: CurrencyAmount | undefined;
 
@@ -72,8 +71,8 @@ interface OnChainTransaction {
   blockHash?: string | undefined;
 
   /**
-   * The number of blockchain confirmations for this transaction in real time.
-   * *
+   * The number of blockchain confirmations for this transaction in real
+   * time. *
    */
   numConfirmations?: number | undefined;
 }

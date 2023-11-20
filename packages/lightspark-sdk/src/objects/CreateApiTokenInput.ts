@@ -4,8 +4,8 @@ import Permission from "./Permission.js";
 
 interface CreateApiTokenInput {
   /**
-   * An arbitrary name that the user can choose to identify the API token in a
-   * list. *
+   * An arbitrary name that the user can choose to identify the API token in
+   * a list. *
    */
   name: string;
 

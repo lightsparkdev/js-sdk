@@ -15,7 +15,10 @@ interface RequestWithdrawalInput {
    **/
   amountSats: number;
 
-  /** The strategy that should be used to withdraw the funds from this node. **/
+  /**
+   * The strategy that should be used to withdraw the funds from this node.
+   * *
+   */
   withdrawalMode: WithdrawalMode;
 }
 

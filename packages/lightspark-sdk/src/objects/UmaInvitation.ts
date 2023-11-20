@@ -28,8 +28,8 @@ interface UmaInvitation {
   inviterUma: string;
 
   /**
-   * The current status of the incentives that may be tied to this invitation.
-   * *
+   * The current status of the incentives that may be tied to this
+   * invitation. *
    */
   incentivesStatus: IncentivesStatus;
 

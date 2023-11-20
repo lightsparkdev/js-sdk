@@ -8,9 +8,9 @@ import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 /** The connection from outgoing payment to all attempts. **/
 interface OutgoingPaymentToAttemptsConnection {
   /**
-   * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page
-   * (in the `entities` field).
+   * The total count of objects in this connection, using the current
+   * filters. It is different from the number of objects returned in the
+   * current page (in the `entities` field).
    **/
   count: number;
 

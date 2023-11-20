@@ -28,8 +28,7 @@ export enum IncentivesIneligibilityReason {
   RECEIVER_NOT_ELIGIBLE = "RECEIVER_NOT_ELIGIBLE",
   /**
    * This invitation is not eligible for incentives because the sending VASP is
-   * not part of the incentives program.
-   * *
+   * not part of the incentives program. *
    */
   SENDING_VASP_NOT_ELIGIBLE = "SENDING_VASP_NOT_ELIGIBLE",
   /**

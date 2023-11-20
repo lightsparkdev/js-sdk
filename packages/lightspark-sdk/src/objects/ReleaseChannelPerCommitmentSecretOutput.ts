@@ -1,7 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface ReleaseChannelPerCommitmentSecretOutput {
-  /** The channel object after the per-commitment secret release operation. **/
+  /**
+   * The channel object after the per-commitment secret release operation.
+   * *
+   */
   channelId: string;
 }
 

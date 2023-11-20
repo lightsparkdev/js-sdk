@@ -11,9 +11,9 @@ import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 /** The connection from incoming payment to all attempts. **/
 interface IncomingPaymentToAttemptsConnection {
   /**
-   * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page
-   * (in the `entities` field).
+   * The total count of objects in this connection, using the current
+   * filters. It is different from the number of objects returned in the
+   * current page (in the `entities` field).
    **/
   count: number;
 
@@ -23,7 +23,10 @@ interface IncomingPaymentToAttemptsConnection {
    */
   pageInfo: PageInfo;
 
-  /** The incoming payment attempts for the current page of this connection. **/
+  /**
+   * The incoming payment attempts for the current page of this connection.
+   * *
+   */
   entities: IncomingPaymentAttempt[];
 
   /** The typename of the object **/

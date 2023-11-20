@@ -25,8 +25,7 @@ import type Withdrawal from "./Withdrawal.js";
  * The transaction can occur either on a Bitcoin Network,
  * or over the Lightning Network. You can retrieve this object to receive
  * specific information about a particular transaction tied to your Lightspark
- * Node.
- * *
+ * Node. *
  */
 interface Transaction {
   /**

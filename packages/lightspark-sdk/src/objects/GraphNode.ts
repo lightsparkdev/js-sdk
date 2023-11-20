@@ -14,8 +14,7 @@ import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.j
  * This object represents a node that exists on the Lightning Network,
  * including nodes not managed by Lightspark.
  * You can retrieve this object to get publicly available information about any
- * node on the Lightning Network.
- * *
+ * node on the Lightning Network. *
  */
 class GraphNode implements Node, Entity {
   constructor(
@@ -49,8 +48,7 @@ class GraphNode implements Node, Entity {
     /**
      * A hexadecimal string that describes a color. For example "#000000" is
      * black, "#FFFFFF" is white. It has no importance in terms of operating
-     * the node,
-     * it is just a way to visually differentiate nodes.
+     * the node, it is just a way to visually differentiate nodes.
      * That color can be changed at any time by the node operator.
      **/
     public readonly color?: string | undefined,

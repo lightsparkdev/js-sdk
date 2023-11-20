@@ -20,8 +20,8 @@ interface SignablePayload {
   payload: string;
 
   /**
-   * The consistent method for generating the same set of accounts and wallets
-   * for a given private key *
+   * The consistent method for generating the same set of accounts and
+   * wallets for a given private key *
    */
   derivationPath: string;
 
