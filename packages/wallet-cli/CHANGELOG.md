@@ -1,5 +1,14 @@
 # @lightsparkdev/wallet-cli
 
+## 0.0.45
+
+### Patch Changes
+
+- 43dc882: Upgrade to Typescript 5, lint config changes
+- Updated dependencies [43dc882]
+  - @lightsparkdev/wallet-sdk@0.8.2
+  - @lightsparkdev/core@1.0.11
+
 ## 0.0.44
 
 ### Patch Changes
