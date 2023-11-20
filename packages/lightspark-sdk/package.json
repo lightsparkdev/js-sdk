@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -88,7 +88,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "1.0.10",
+    "@lightsparkdev/core": "1.0.11",
     "@lightsparkdev/crypto-wasm": "0.1.2",
     "auto-bind": "^5.0.1",
     "crypto-browserify": "^3.12.0",
