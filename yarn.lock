@@ -3771,7 +3771,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
     tsup: ^7.2.0
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     ws: ^8.12.1
     zen-observable-ts: ^1.1.0
   languageName: unknown
@@ -3801,6 +3801,7 @@ __metadata:
     eslint-config-next: 13.4.19
     eslint-config-prettier: ^9.0.0
     eslint-config-universe: ^12.0.0
+    eslint-plugin-comment-length: ^1.7.2
     eslint-plugin-flowtype: ^8.0.3
     eslint-plugin-jest: ^27.4.2
     eslint-plugin-testing-library: ^6.0.2
@@ -3824,7 +3825,7 @@ __metadata:
     firebase-functions: ^4.4.1
     firebase-functions-test: ^3.0.0
     jsonwebtoken: ^9.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -3856,7 +3857,7 @@ __metadata:
     secp256k1: ^5.0.0
     ts-node: ^10.9.1
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   bin:
     lightspark: ./dist/index.js
   languageName: unknown
@@ -3889,7 +3890,7 @@ __metadata:
     tsc-absolute: ^1.0.1
     tsup: ^7.2.0
     typedoc: ^0.24.7
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     ws: ^8.12.1
     zen-observable-ts: ^1.1.0
   languageName: unknown
@@ -3911,7 +3912,7 @@ __metadata:
     react-native: ^0.71.8
     react-native-web: ~0.18.10
     text-encoding: ^0.7.0
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -3933,7 +3934,7 @@ __metadata:
     react: ^18.2.0
     react-native: ^0.71.8
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   peerDependencies:
     expo: "*"
     react: "*"
@@ -3952,7 +3953,7 @@ __metadata:
     "@lightsparkdev/lightspark-sdk": 1.2.2
     "@lightsparkdev/oauth": "*"
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": "*"
+    "@lightsparkdev/ui": 0.0.0
     "@types/jest": ^29.5.3
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -3965,7 +3966,7 @@ __metadata:
     react-dom: ^18.1.0
     react-router-dom: 6.11.2
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     vite: ^4.3.9
     web-vitals: ^3.3.0
   languageName: unknown
@@ -3990,7 +3991,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
     tsup: ^7.2.0
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4012,7 +4013,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
     tsup: ^7.2.0
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4026,7 +4027,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.10
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/react-wallet": 0.6.35
-    "@lightsparkdev/ui": "*"
+    "@lightsparkdev/ui": 0.0.0
     "@lightsparkdev/vite": 0.0.0
     "@lightsparkdev/wallet-sdk": 0.8.1
     "@types/lodash-es": ^4.17.6
@@ -4040,7 +4041,7 @@ __metadata:
     react-dom: ^18.1.0
     react-router-dom: 6.11.2
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     vite: ^4.3.9
     web-vitals: ^3.3.0
   languageName: unknown
@@ -4066,7 +4067,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
     tsup: ^7.2.0
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   peerDependencies:
     "@types/react": "*"
     react: "*"
@@ -4089,7 +4090,7 @@ __metadata:
     supertest: ^6.3.3
     ts-jest: ^29.1.1
     ts-node: ^10.9.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4102,6 +4103,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.10
     "@lightsparkdev/lightspark-sdk": 1.2.2
     "@lightsparkdev/tsconfig": "*"
+    "@lightsparkdev/ui": 0.0.0
     "@lightsparkdev/vite": "*"
     "@types/chrome": ^0.0.227
     "@types/jest": ^29.5.3
@@ -4115,7 +4117,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.1.0
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     uuid: ^9.0.0
     vite: ^4.3.9
   languageName: unknown
@@ -4129,7 +4131,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ui@*, @lightsparkdev/ui@workspace:packages/ui":
+"@lightsparkdev/ui@0.0.0, @lightsparkdev/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ui@workspace:packages/ui"
   dependencies:
@@ -4137,8 +4139,12 @@ __metadata:
     "@emotion/css": ^11.11.0
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
+    "@lightsparkdev/core": 1.0.10
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
+    "@svgr/plugin-jsx": ^8.1.0
+    esbuild-plugin-copy: ^2.1.1
+    esbuild-plugin-svgr: ^2.1.0
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
     gql: ^1.1.2
@@ -4151,7 +4157,8 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.1.0
     react-tooltip: ^5.10.1
-    typescript: ^4.9.5
+    tsup: ^7.2.0
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4172,7 +4179,7 @@ __metadata:
     supertest: ^6.3.3
     ts-jest: ^29.1.1
     ts-node: ^10.9.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -4210,7 +4217,7 @@ __metadata:
     qrcode-terminal: ^0.12.0
     ts-node: ^10.9.1
     tsc-absolute: ^1.0.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   bin:
     lightspark-wallet: ./dist/index.js
   languageName: unknown
@@ -4226,7 +4233,7 @@ __metadata:
     commander: ^11.0.0
     dayjs: ^1.11.7
     ts-node: ^10.9.1
-    typescript: ^4.9.5
+    typescript: ^5.0.0
   languageName: unknown
   linkType: soft
 
@@ -4256,7 +4263,7 @@ __metadata:
     ts-jest: ^29.1.1
     tsup: ^7.2.0
     typedoc: ^0.24.7
-    typescript: ^4.9.5
+    typescript: ^5.0.0
     ws: ^8.12.1
     zen-observable-ts: ^1.1.0
   languageName: unknown
@@ -4979,7 +4986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/core@npm:^8.1.0":
+"@svgr/core@npm:^8.0.0, @svgr/core@npm:^8.1.0":
   version: 8.1.0
   resolution: "@svgr/core@npm:8.1.0"
   dependencies:
@@ -5002,7 +5009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@svgr/plugin-jsx@npm:^8.1.0":
+"@svgr/plugin-jsx@npm:^8.0.1, @svgr/plugin-jsx@npm:^8.1.0":
   version: 8.1.0
   resolution: "@svgr/plugin-jsx@npm:8.1.0"
   dependencies:
@@ -5969,6 +5976,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/scope-manager@npm:6.11.0":
+  version: 6.11.0
+  resolution: "@typescript-eslint/scope-manager@npm:6.11.0"
+  dependencies:
+    "@typescript-eslint/types": 6.11.0
+    "@typescript-eslint/visitor-keys": 6.11.0
+  checksum: d219a96fd80fb14176cdcc47b070e870c73ccc0dfb32a8657f6ceaefb613dc0ea240a77250dcfc437d9c9360ca165c2765d4cf8fe689dae7e9eee2c0d6a98a50
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/scope-manager@npm:6.9.1":
   version: 6.9.1
   resolution: "@typescript-eslint/scope-manager@npm:6.9.1"
@@ -6010,6 +6027,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/types@npm:6.11.0":
+  version: 6.11.0
+  resolution: "@typescript-eslint/types@npm:6.11.0"
+  checksum: ca8a11320286c9b0759a70ec83b9fd99937c9686fafdd41d8ea09ed7b2fa12e6b342bf65547efe5495926cd04cfc6488315920e3caffd27f12d42cb9a8cf88c8
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/types@npm:6.9.1":
   version: 6.9.1
   resolution: "@typescript-eslint/types@npm:6.9.1"
@@ -6032,6 +6056,24 @@ __metadata:
     typescript:
       optional: true
   checksum: 3624520abb5807ed8f57b1197e61c7b1ed770c56dfcaca66372d584ff50175225798bccb701f7ef129d62c5989070e1ee3a0aa2d84e56d9524dcf011a2bb1a52
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/typescript-estree@npm:6.11.0":
+  version: 6.11.0
+  resolution: "@typescript-eslint/typescript-estree@npm:6.11.0"
+  dependencies:
+    "@typescript-eslint/types": 6.11.0
+    "@typescript-eslint/visitor-keys": 6.11.0
+    debug: ^4.3.4
+    globby: ^11.1.0
+    is-glob: ^4.0.3
+    semver: ^7.5.4
+    ts-api-utils: ^1.0.1
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: e137ba7c4cad08853a44d9c40072496ca5f2d440828be9fd2d207a59db56b05a6dcb4756f3ba341ee2ae714de45df80114477946d30801c5a46eed67314fd9c6
   languageName: node
   linkType: hard
 
@@ -6106,6 +6148,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/utils@npm:^6.10.0":
+  version: 6.11.0
+  resolution: "@typescript-eslint/utils@npm:6.11.0"
+  dependencies:
+    "@eslint-community/eslint-utils": ^4.4.0
+    "@types/json-schema": ^7.0.12
+    "@types/semver": ^7.5.0
+    "@typescript-eslint/scope-manager": 6.11.0
+    "@typescript-eslint/types": 6.11.0
+    "@typescript-eslint/typescript-estree": 6.11.0
+    semver: ^7.5.4
+  peerDependencies:
+    eslint: ^7.0.0 || ^8.0.0
+  checksum: e90aa2c8c56038a48de65a5303f9e4a4a70bb0d4d0a05cfcd28157fc0f06b2fc186c2e76a495f4540a903ea37577daa1403bab923d940114ec27a6326153d60f
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/visitor-keys@npm:4.33.0":
   version: 4.33.0
   resolution: "@typescript-eslint/visitor-keys@npm:4.33.0"
@@ -6123,6 +6182,16 @@ __metadata:
     "@typescript-eslint/types": 5.62.0
     eslint-visitor-keys: ^3.3.0
   checksum: 976b05d103fe8335bef5c93ad3f76d781e3ce50329c0243ee0f00c0fcfb186c81df50e64bfdd34970148113f8ade90887f53e3c4938183afba830b4ba8e30a35
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/visitor-keys@npm:6.11.0":
+  version: 6.11.0
+  resolution: "@typescript-eslint/visitor-keys@npm:6.11.0"
+  dependencies:
+    "@typescript-eslint/types": 6.11.0
+    eslint-visitor-keys: ^3.4.1
+  checksum: 6aae9dd79963bbefbf2e310015b909627da541a13ab4d8359eea3c86c34fdbb91e583f65b5a99dee1959f7c5d67b21b45e5a05c63ddb4b82dacd60c890ce8b25
   languageName: node
   linkType: hard
 
@@ -10051,6 +10120,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esbuild-plugin-copy@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "esbuild-plugin-copy@npm:2.1.1"
+  dependencies:
+    chalk: ^4.1.2
+    chokidar: ^3.5.3
+    fs-extra: ^10.0.1
+    globby: ^11.0.3
+  peerDependencies:
+    esbuild: ">= 0.14.0"
+  checksum: d0122fa059e1cf8b80c3aa2cba1dee94ca28a992bb28ea5a4690399aa1fefdc6522c177e90a8373aa676c5fbd878f234a72cc004207c1262a6d334277a1e1368
+  languageName: node
+  linkType: hard
+
+"esbuild-plugin-svgr@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "esbuild-plugin-svgr@npm:2.1.0"
+  dependencies:
+    "@svgr/core": ^8.0.0
+    "@svgr/plugin-jsx": ^8.0.1
+  peerDependencies:
+    esbuild: ^0.19.1
+  checksum: f531389d1d50850671d0f98ad73bf9acbe2e9ec6952c1cb364fce8b7498115e267062327c9ffc69f4ad2c07055d9eafec340895c1847fdc8fcfbb76e3d53e1ac
+  languageName: node
+  linkType: hard
+
 "esbuild@npm:^0.18.10, esbuild@npm:^0.18.2":
   version: 0.18.20
   resolution: "esbuild@npm:0.18.20"
@@ -10314,6 +10409,17 @@ __metadata:
     eslint:
       optional: true
   checksum: 74c6dfea7641ebcfe174be61168541a11a14aa8d72e515f5f09af55cd0d0862686104b0524aa4b8e0ce66418a44aa38a94d2588743db5fd07a6b49ffd16921d2
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-comment-length@npm:^1.7.2":
+  version: 1.7.2
+  resolution: "eslint-plugin-comment-length@npm:1.7.2"
+  dependencies:
+    "@typescript-eslint/utils": ^6.10.0
+  peerDependencies:
+    eslint: ">=8.0.0"
+  checksum: dff31bc9748446d874a1039455ffcb1753110feae295361c27ae0e013fd1388b0ba1be5f40c1da091646b4a0535f882aa37ed285894881ca0eee76f64e90f281
   languageName: node
   linkType: hard
 
@@ -11606,6 +11712,17 @@ __metadata:
     jsonfile: ^6.0.1
     universalify: ^1.0.0
   checksum: c4269fbfd8d8d2a1edca4257fa28545caf7e5ad218d264f723c338a154d3624d2ef098c19915b9436d3186b7ac45d5b032371a2004008ec0cd4072512e853aa8
+  languageName: node
+  linkType: hard
+
+"fs-extra@npm:^10.0.1":
+  version: 10.1.0
+  resolution: "fs-extra@npm:10.1.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: dc94ab37096f813cc3ca12f0f1b5ad6744dfed9ed21e953d72530d103cea193c2f81584a39e9dee1bea36de5ee66805678c0dddc048e8af1427ac19c00fffc50
   languageName: node
   linkType: hard
 
@@ -21355,7 +21472,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.1.3":
+"typescript@npm:^5.0.0, typescript@npm:^5.1.3":
   version: 5.2.2
   resolution: "typescript@npm:5.2.2"
   bin:
@@ -21385,7 +21502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^5.1.3#~builtin<compat/typescript>":
+"typescript@patch:typescript@^5.0.0#~builtin<compat/typescript>, typescript@patch:typescript@^5.1.3#~builtin<compat/typescript>":
   version: 5.2.2
   resolution: "typescript@patch:typescript@npm%3A5.2.2#~builtin<compat/typescript>::version=5.2.2&hash=5da071"
   bin:

@@ -7,8 +7,8 @@ import IncentivesStatus from "./IncentivesStatus.js";
 /** This is an object representing an UMA.ME invitation. **/
 interface UmaInvitation {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -27,7 +27,10 @@ interface UmaInvitation {
   /** The UMA of the user who created the invitation. **/
   inviterUma: string;
 
-  /** The current status of the incentives that may be tied to this invitation. **/
+  /**
+   * The current status of the incentives that may be tied to this invitation.
+   * *
+   */
   incentivesStatus: IncentivesStatus;
 
   /** The typename of the object **/
@@ -36,7 +39,10 @@ interface UmaInvitation {
   /** The UMA of the user who claimed the invitation. **/
   inviteeUma?: string | undefined;
 
-  /** The reason why the invitation is not eligible for incentives, if applicable. **/
+  /**
+   * The reason why the invitation is not eligible for incentives, if
+   * applicable. *
+   */
   incentivesIneligibilityReason?: IncentivesIneligibilityReason | undefined;
 }
 

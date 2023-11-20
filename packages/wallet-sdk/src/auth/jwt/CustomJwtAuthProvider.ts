@@ -7,8 +7,8 @@ import type JwtTokenInfo from "./JwtTokenInfo.js";
 /**
  * A custom [AuthProvider] that uses a JWT token to authenticate requests.
  *
- * Should generally not be used directly by clients, but rather through the [loginWithJwt] method of a
- * [LightsparkWalletClient].
+ * Should generally not be used directly by clients,
+ * but rather through the [loginWithJwt] method of a [LightsparkWalletClient].
  *
  * @param tokenStorage A [JwtStorage] implementation that stores or retrieves the current JWT token info.
  */

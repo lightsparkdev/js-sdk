@@ -1,8 +1,8 @@
 import {
-  b64encode,
-  isBrowser,
   LightsparkSigningException,
   SigningKeyType,
+  b64encode,
+  isBrowser,
   type CryptoInterface,
   type Maybe,
   type Requester,
@@ -21,15 +21,18 @@ export type SigningKeyLoaderArgs =
 
 /**
  * Args for creating a new SigningKeyLoader from a node ID and password.
- * This cannot be used if you are using remote signing. It is used to recover an RSA operation signing key using
- * the password you chose when setting up your node. For REGTEST nodes, the password is "1234!@#$".
+ * This cannot be used if you are using remote signing.
+ * It is used to recover an RSA operation signing key using the password you
+ * chose when setting up your node. For REGTEST nodes, the password is
+ * "1234!@#$".
  */
 export interface NodeIdAndPasswordSigningKeyLoaderArgs {
   password: string;
 }
 
 /**
- * Internal version of NodeIdAndPasswordSigningKeyLoaderArgs that includes the node ID.
+ * Internal version of NodeIdAndPasswordSigningKeyLoaderArgs that includes the
+ * node ID.
  */
 interface NodeIdAndPasswordSigningKeyLoaderArgsInternal
   extends NodeIdAndPasswordSigningKeyLoaderArgs {
@@ -38,7 +41,8 @@ interface NodeIdAndPasswordSigningKeyLoaderArgsInternal
 
 /**
  * Args for creating a new SigningKeyLoader from a master seed and network.
- * This should be used if you are using remote signing, rather than an RSA operation signing key.
+ * This should be used if you are using remote signing,
+ * rather than an RSA operation signing key.
  */
 export interface MasterSeedSigningKeyLoaderArgs {
   masterSeed: Uint8Array;
@@ -70,7 +74,8 @@ export function isMasterSeedSigningKeyLoaderArgs(
 }
 
 /**
- * Key loader that loads an RSA signing key by providing a node ID and password to recover the key from Lightspark.
+ * Key loader that loads an RSA signing key by providing a node ID and password
+ * to recover the key from Lightspark.
  */
 export class NodeIdAndPasswordSigningKeyLoader implements SigningKeyLoader {
   private readonly nodeId: string;

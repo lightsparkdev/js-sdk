@@ -8,8 +8,8 @@ interface LightningFeeEstimateForInvoiceInput {
   encodedPaymentRequest: string;
 
   /**
-   * If the invoice does not specify a payment amount, then the amount that you wish to pay, expressed
-   * in msats.
+   * If the invoice does not specify a payment amount,
+   * then the amount that you wish to pay, expressed in msats.
    **/
   amountMsats?: number | undefined;
 }

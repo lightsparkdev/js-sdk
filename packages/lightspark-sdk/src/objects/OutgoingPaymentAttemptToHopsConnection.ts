@@ -5,15 +5,23 @@ import { HopFromJson, HopToJson } from "./Hop.js";
 import type PageInfo from "./PageInfo.js";
 import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 
-/** The connection from an outgoing payment attempt to the list of sequential hops that define the path from sender node to recipient node. **/
+/**
+ * The connection from an outgoing payment attempt to the list of sequential
+ * hops that define the path from sender node to recipient node.
+ * *
+ */
 interface OutgoingPaymentAttemptToHopsConnection {
   /**
-   * The total count of objects in this connection, using the current filters. It is different from the
-   * number of objects returned in the current page (in the `entities` field).
+   * The total count of objects in this connection, using the current filters.
+   * It is different from the number of objects returned in the current page
+   * (in the `entities` field).
    **/
   count: number;
 
-  /** An object that holds pagination information about the objects in this connection. **/
+  /**
+   * An object that holds pagination information about the objects in this
+   * connection. *
+   */
   pageInfo: PageInfo;
 
   /** The hops for the current page of this connection. **/

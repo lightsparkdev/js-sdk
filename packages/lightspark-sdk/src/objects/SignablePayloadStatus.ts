@@ -2,8 +2,9 @@
 
 export enum SignablePayloadStatus {
   /**
-   * This is an enum value that represents values that could be added in the future.
-   * Clients should support unknown values as more of them could be added without notice.
+   * This is an enum value that represents values that could be added in the
+   * future. Clients should support unknown values as more of them could be
+   * added without notice.
    */
   FUTURE_VALUE = "FUTURE_VALUE",
 

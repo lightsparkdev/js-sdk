@@ -3,11 +3,16 @@
 import { type Query } from "@lightsparkdev/core";
 import Permission from "./Permission.js";
 
-/** This is an object representing a Lightspark API token, that can be used to authenticate this account when making API calls or using our SDKs. See the “Authentication” section of our API docs for more details on its usage. **/
+/**
+ * This is an object representing a Lightspark API token,
+ * that can be used to authenticate this account when making API calls or using
+ * our SDKs. See the “Authentication” section of our API docs for more details
+ * on its usage. *
+ */
 interface ApiToken {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -18,14 +23,15 @@ interface ApiToken {
   updatedAt: string;
 
   /**
-   * An opaque identifier that should be used as a client_id (or username) in the HTTP Basic
-   * Authentication scheme when issuing requests against the Lightspark API.
+   * An opaque identifier that should be used as a client_id (or username) in
+   * the HTTP Basic Authentication scheme when issuing requests against the
+   * Lightspark API.
    **/
   clientId: string;
 
   /**
-   * An arbitrary name chosen by the creator of the token to help identify the token in the list of
-   * tokens that have been created for the account.
+   * An arbitrary name chosen by the creator of the token to help identify the
+   * token in the list of tokens that have been created for the account.
    **/
   name: string;
 

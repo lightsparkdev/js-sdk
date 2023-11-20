@@ -7,10 +7,10 @@ import {
   type SigningKey,
 } from "@lightsparkdev/core";
 import {
-  isMasterSeedSigningKeyLoaderArgs,
-  isNodeIdAndPasswordSigningKeyLoaderArgs,
   MasterSeedSigningKeyLoader,
   NodeIdAndPasswordSigningKeyLoader,
+  isMasterSeedSigningKeyLoaderArgs,
+  isNodeIdAndPasswordSigningKeyLoaderArgs,
   type SigningKeyLoader,
   type SigningKeyLoaderArgs,
 } from "./SigningKeyLoader.js";
@@ -30,7 +30,8 @@ export default class NodeKeyLoaderCache {
 
   /**
    * Sets the signing key loader for a node.
-   * Instantiates a signing key loader based on the type of args passed in by the user.
+   * Instantiates a signing key loader based on the type of args passed in by
+   * the user.
    *
    * @param nodeId The ID of the node to get the key for
    * @param loaderArgs Loader arguments for loading the key

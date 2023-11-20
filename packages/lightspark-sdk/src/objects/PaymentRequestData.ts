@@ -9,7 +9,11 @@ import {
 import type InvoiceData from "./InvoiceData.js";
 import { NodeFromJson, NodeToJson } from "./Node.js";
 
-/** This object is an interface of a payment request on the Lightning Network (i.e., a Lightning Invoice). It contains data related to parsing the payment details of a Lightning Invoice. **/
+/**
+ * This object is an interface of a payment request on the Lightning Network
+ * (i.e., a Lightning Invoice). It contains data related to parsing the payment
+ * details of a Lightning Invoice. *
+ */
 interface PaymentRequestData {
   encodedPaymentRequest: string;
 

@@ -7,7 +7,10 @@ type Query<T> = {
   /** The variables that will be passed to the query. **/
   variables?: { [key: string]: unknown };
 
-  /** The function that will be called to construct the object from the response. **/
+  /**
+   * The function that will be called to construct the object from the
+   * response. *
+   */
   constructObject: (rawData: any) => T; // eslint-disable-line @typescript-eslint/no-explicit-any -- LIG-3400
 
   /** The id of the node that will be used to sign the query. **/

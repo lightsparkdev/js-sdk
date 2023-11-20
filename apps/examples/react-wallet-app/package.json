@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.0.10",
     "@lightsparkdev/react-wallet": "0.6.35",
-    "@lightsparkdev/ui": "*",
+    "@lightsparkdev/ui": "0.0.0",
     "@lightsparkdev/wallet-sdk": "0.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.1.0",
@@ -37,7 +37,7 @@
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
     "tsc-absolute": "^1.0.1",
-    "typescript": "^4.9.5",
+    "typescript": "^5.0.0",
     "vite": "^4.3.9"
   }
 }

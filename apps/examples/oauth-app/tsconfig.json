@@ -7,6 +7,6 @@
     },
     "types": ["node", "vite/client"]
   },
-  "include": ["src/**/*", "../../../packages/ui/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

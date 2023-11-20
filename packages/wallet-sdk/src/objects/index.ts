@@ -24,9 +24,9 @@ export { default as DeployWalletOutput } from "./DeployWalletOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
 export { default as Entity } from "./Entity.js";
 export { default as FeeEstimate } from "./FeeEstimate.js";
-export { default as FundsRecoveryKit } from "./FundsRecoveryKit.js";
 export { default as FundWalletInput } from "./FundWalletInput.js";
 export { default as FundWalletOutput } from "./FundWalletOutput.js";
+export { default as FundsRecoveryKit } from "./FundsRecoveryKit.js";
 export { default as GraphNode } from "./GraphNode.js";
 export {
   default as IncomingPayment,

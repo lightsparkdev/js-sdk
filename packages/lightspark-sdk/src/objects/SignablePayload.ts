@@ -5,8 +5,8 @@ import SignablePayloadStatus from "./SignablePayloadStatus.js";
 
 interface SignablePayload {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -19,7 +19,10 @@ interface SignablePayload {
   /** The payload that needs to be signed. **/
   payload: string;
 
-  /** The consistent method for generating the same set of accounts and wallets for a given private key **/
+  /**
+   * The consistent method for generating the same set of accounts and wallets
+   * for a given private key *
+   */
   derivationPath: string;
 
   /** The status of the payload. **/

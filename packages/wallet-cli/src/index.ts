@@ -2,7 +2,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { confirm, input } from "@inquirer/prompts";
-import { b64encode, DefaultCrypto, KeyOrAlias } from "@lightsparkdev/core";
+import { DefaultCrypto, KeyOrAlias, b64encode } from "@lightsparkdev/core";
 import {
   InMemoryJwtStorage,
   InvoiceType,
@@ -19,9 +19,9 @@ import * as jsonwebtoken from "jsonwebtoken";
 import qrcode from "qrcode-terminal";
 import type { EnvCredentials } from "./authHelpers.js";
 import {
-  getCredentialsFromEnvOrThrow,
   RequiredCredentials,
   RequiredWalletCredentials,
+  getCredentialsFromEnvOrThrow,
 } from "./authHelpers.js";
 import { getPackageVersion } from "./helpers.js";
 

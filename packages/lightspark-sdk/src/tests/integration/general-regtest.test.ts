@@ -213,7 +213,7 @@ describe(initSuiteName, () => {
         throw new TypeError("No connections in account");
       }
 
-      const [regtestNode] = nodesConnection?.entities;
+      const [regtestNode] = nodesConnection.entities;
       regtestNodeId = regtestNode?.id;
       log("regtestNodeId", regtestNode?.id);
 

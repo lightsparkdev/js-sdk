@@ -21,12 +21,17 @@ import {
 import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
+/**
+ * This object represents any payment sent to a Lightspark node on the
+ * Lightning Network. You can retrieve this object to receive payment related
+ * information about a specific payment received by a Lightspark node.
+ * *
+ */
 class IncomingPayment implements LightningTransaction, Transaction, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-     * string.
+     * The unique identifier of this entity across all Lightspark systems.
+     * Should be treated as an opaque string.
      **/
     public readonly id: string,
     /** The date and time when this transaction was initiated. **/
@@ -43,14 +48,20 @@ class IncomingPayment implements LightningTransaction, Transaction, Entity {
     public readonly typename: string,
     /** The date and time when this transaction was completed or failed. **/
     public readonly resolvedAt?: string | undefined,
-    /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+    /**
+     * The hash of this transaction, so it can be uniquely identified on the
+     * Lightning Network. *
+     */
     public readonly transactionHash?: string | undefined,
     /**
-     * The optional payment request for this incoming payment, which will be null if the payment is sent
-     * through keysend.
+     * The optional payment request for this incoming payment,
+     * which will be null if the payment is sent through keysend.
      **/
     public readonly paymentRequestId?: string | undefined,
-    /** The post transaction data which can be used in KYT payment registration. **/
+    /**
+     * The post transaction data which can be used in KYT payment registration.
+     * *
+     */
     public readonly umaPostTransactionData?: PostTransactionData[] | undefined,
   ) {
     autoBind(this);

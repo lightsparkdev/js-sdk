@@ -1,5 +1,7 @@
 /* From https://github.com/tadeegan/locale-currency. For now only USD conversion from
-   BTC is supported by sparkcore, strip additional currency codes from the bundle: */
+ * BTC is supported by sparkcore, strip additional currency codes from the
+ * bundle:
+ */
 export const countryCodesToCurrencyCodes = {
   AD: "EUR",
   // AE: "AED",

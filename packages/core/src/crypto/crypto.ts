@@ -154,8 +154,7 @@ const decrypt = async (
     const salt = decoded.slice(decoded.length - 8, decoded.length);
     const nonce = decoded.slice(0, 12);
     const cipherText = decoded.slice(12, decoded.length - 8);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [key, _iv] = await deriveKey(
+    const [key /* , _iv */] = await deriveKey(
       password,
       salt,
       header.i,

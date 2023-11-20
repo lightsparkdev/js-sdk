@@ -76,8 +76,9 @@ function DashboardPage() {
               await DefaultCrypto.serializeSigningKey(keys.publicKey, "spki");
             const serializedPrivateKeyBytes =
               await DefaultCrypto.serializeSigningKey(keys.privateKey, "pkcs8");
-            // You can save the keys somewhere here if you want to use them later. Here,
-            // we're just logging them to the console for demo purposes.
+            // You can save the keys somewhere here if you want to use them
+            // later. Here, we're just logging them to the console for demo
+            // purposes.
             console.log(
               "Save these keys if you want to use this wallet later!"
             );

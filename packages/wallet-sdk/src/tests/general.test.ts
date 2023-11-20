@@ -7,20 +7,20 @@
 
 import { describe, expect, jest, test } from "@jest/globals";
 import {
-  b64encode,
   DefaultCrypto,
   KeyOrAlias,
   LightsparkException,
+  b64encode,
 } from "@lightsparkdev/core";
 
 import LightsparkClient from "../client.js";
 
 import { logger } from "../logger.js";
 import {
-  getOutgoingPaymentQuery,
   KeyType,
   TransactionStatus,
   WalletStatus,
+  getOutgoingPaymentQuery,
   type InvoiceType,
   type OutgoingPayment,
 } from "../objects/index.js";
@@ -201,7 +201,8 @@ describe("REGTEST createInvoice with createTestModePayment", () => {
 
       log("payment.id", payment?.id);
 
-      // FIXME: add payment result awaiting and change expecting status to SUCCESS
+      // FIXME: add payment result awaiting and change expecting status to
+      // SUCCESS
       expect(payment?.status).toBe(TransactionStatus.PENDING);
     },
     TESTS_TIMEOUT,
@@ -273,7 +274,8 @@ describe("REGTEST createInvoice with createTestModePayment", () => {
 
       log("payment.id", testInvoicePayment.STANDARD?.id);
 
-      // FIXME: add payment result awaiting and change expecting status to SUCCESS
+      // FIXME: add payment result awaiting and change expecting status to
+      // SUCCESS
       expect(testInvoicePayment.STANDARD?.status).toBe(
         TransactionStatus.PENDING,
       );

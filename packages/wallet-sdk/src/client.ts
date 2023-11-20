@@ -11,10 +11,10 @@ import {
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
-  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
+  pollUntil,
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type { Observable, Subscription } from "zen-observable-ts";
@@ -71,7 +71,8 @@ import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
 const sdkVersion = packageJson.version;
 
 /**
- * The LightsparkClient is the main entrypoint for interacting with the Lightspark Wallet SDK.
+ * The LightsparkClient is the main entrypoint for interacting with the
+ * Lightspark Wallet SDK.
  *
  * ```ts
  * const lightsparkClient = new LightsparkClient(
@@ -103,7 +104,8 @@ class LightsparkClient {
    *     use, you should use the `AccountTokenAuthProvider`.
    * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
-   *     For React Native, you should use the `ReactNativeCrypto` implementation from `@lightsparkdev/react-native`.
+   *     For React Native, you should use the `ReactNativeCrypto`
+   *     implementation from `@lightsparkdev/react-native`.
    * @param signingKeyType The type of signing key used in the LightsparkClient. Different signing operations are used depending on the key type.
    */
   constructor(
@@ -126,7 +128,8 @@ class LightsparkClient {
   }
 
   /**
-   * Sets the auth provider for the client. This is useful for switching between auth providers if you are using
+   * Sets the auth provider for the client.
+   * This is useful for switching between auth providers if you are using
    * multiple accounts or waiting for the user to log in.
    *
    * @param authProvider
@@ -151,11 +154,14 @@ class LightsparkClient {
   }
 
   /**
-   * Login using the Custom JWT authentication scheme described in our documentation.
+   * Login using the Custom JWT authentication scheme described in our
+   * documentation.
    *
-   * Note: When using this method, you are responsible for refreshing the JWT token before or when it expires. If the
-   * token expires, the client will throw a [LightsparkAuthenticationException] on the next API call which requires
-   * valid authentication. Then you'll need to call this method again to get a new token.
+   * Note: When using this method, you are responsible for refreshing the JWT
+   * token before or when it expires. If the token expires,
+   * the client will throw a [LightsparkAuthenticationException] on the next
+   * API call which requires valid authentication.
+   * Then you'll need to call this method again to get a new token.
    *
    * @param accountId The account ID to login with. This is specific to your company's account.
    * @param jwt The JWT to use for authentication of this user.
@@ -196,9 +202,11 @@ class LightsparkClient {
   }
 
   /**
-   * Deploys a wallet in the Lightspark infrastructure. This is an asynchronous operation, the caller should then poll
-   * the wallet frequently (or subscribe to its modifications). When this process is over, the Wallet status will
-   * change to `DEPLOYED` (or `FAILED`).
+   * Deploys a wallet in the Lightspark infrastructure.
+   * This is an asynchronous operation,
+   * the caller should then poll the wallet frequently (or subscribe to its
+   * modifications). When this process is over,
+   * the Wallet status will change to `DEPLOYED` (or `FAILED`).
    *
    * @return The wallet that was deployed.
    */
@@ -213,9 +221,10 @@ class LightsparkClient {
   }
 
   /**
-   * Deploys a wallet in the Lightspark infrastructure and waits for it to be deployed.
-   * This is an asynchronous operation, which will continue processing wallet status updates until
-   * the Wallet status changes to `DEPLOYED` (or `FAILED`).
+   * Deploys a wallet in the Lightspark infrastructure and waits for it to be
+   * deployed. This is an asynchronous operation,
+   * which will continue processing wallet status updates until the Wallet
+   * status changes to `DEPLOYED` (or `FAILED`).
    *
    * @return A Promise with the final wallet status after deployment or failure.
    * @throws LightsparkException if the wallet status is not `DEPLOYED` or `FAILED` after 60 seconds,
@@ -236,15 +245,19 @@ class LightsparkClient {
   }
 
   /**
-   * Initializes a wallet in the Lightspark infrastructure and syncs it to the Bitcoin network. This is an
-   * asynchronous operation, the caller should then poll the wallet frequently (or subscribe to its modifications).
-   * When this process is over, the Wallet status will change to `READY` (or `FAILED`).
+   * Initializes a wallet in the Lightspark infrastructure and syncs it to the
+   * Bitcoin network. This is an asynchronous operation,
+   * the caller should then poll the wallet frequently (or subscribe to its
+   * modifications). When this process is over,
+   * the Wallet status will change to `READY` (or `FAILED`).
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
    * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
-   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
-   *     key will not leave the device. It is only used for signing transactions locally.
+   *     React Native, a key alias for a key in the mobile keystore.
+   *     The key will be used for signing transactions.
+   *     This key will not leave the device.
+   *     It is only used for signing transactions locally.
    * @return The wallet that was initialized.
    */
   public async initializeWallet(
@@ -269,15 +282,18 @@ class LightsparkClient {
   }
 
   /**
-   * Initializes a wallet in the Lightspark infrastructure and syncs it to the Bitcoin network.
-   * This is an asynchronous operation, which will continue processing wallet status updates until
-   * the Wallet status changes to `READY` (or `FAILED`).
+   * Initializes a wallet in the Lightspark infrastructure and syncs it to the
+   * Bitcoin network. This is an asynchronous operation,
+   * which will continue processing wallet status updates until the Wallet
+   * status changes to `READY` (or `FAILED`).
    *
    * @param keyType The type of key to use for the wallet.
    * @param signingPublicKey The base64-encoded public key to use for signing transactions.
    * @param signingPrivateKeyOrAlias An object containing either the base64-encoded private key or, in the case of
-   *     React Native, a key alias for a key in the mobile keystore. The key will be used for signing transactions. This
-   *     key will not leave the device. It is only used for signing transactions locally.
+   *     React Native, a key alias for a key in the mobile keystore.
+   *     The key will be used for signing transactions.
+   *     This key will not leave the device.
+   *     It is only used for signing transactions locally.
    * @return A Promise with the final wallet status after initialization or failure.
    * @throws LightsparkException if the wallet status is not `READY` or `FAILED` after 5 minutes,
    * or if the subscription fails.
@@ -305,8 +321,9 @@ class LightsparkClient {
   }
 
   /**
-   * Removes the wallet from Lightspark infrastructure. It won't be connected to the Lightning network anymore and
-   * its funds won't be accessible outside of the Funds Recovery Kit process.
+   * Removes the wallet from Lightspark infrastructure.
+   * It won't be connected to the Lightning network anymore and its funds won't
+   * be accessible outside of the Funds Recovery Kit process.
    *
    * @return The wallet that was terminated.
    */
@@ -322,8 +339,9 @@ class LightsparkClient {
   }
 
   /**
-   * Get the dashboard overview for a Lightning wallet. Includes balance info and
-   * the most recent transactions and payment requests.
+   * Get the dashboard overview for a Lightning wallet.
+   * Includes balance info and the most recent transactions and payment
+   * requests.
    *
    * @param numTransactions The max number of recent transactions to fetch. Defaults to 20.
    * @param numPaymentRequests The max number of recent payment requests to fetch. Defaults to 20.
@@ -368,7 +386,8 @@ class LightsparkClient {
   /**
    * Creates a lightning invoice from the current wallet.
    *
-   * Test mode note: You can simulate a payment of this invoice in test move using [createTestModePayment].
+   * Test mode note: You can simulate a payment of this invoice in test move
+   * using [createTestModePayment].
    *
    * @param amountMsats The amount of the invoice in milli-satoshis.
    * @param memo Optional memo to include in the invoice.
@@ -398,20 +417,25 @@ class LightsparkClient {
   }
 
   /**
-   * Pay a lightning invoice from the current wallet. This function will return immediately with the payment details,
-   * which may still be in a PENDING state. You can use the [payInvoiceAndAwaitResult] function to wait for the payment
-   * to complete or fail.
+   * Pay a lightning invoice from the current wallet.
+   * This function will return immediately with the payment details,
+   * which may still be in a PENDING state.
+   * You can use the [payInvoiceAndAwaitResult] function to wait for the
+   * payment to complete or fail.
    *
-   * Note: This call will fail if the wallet is not unlocked yet via [loadWalletSigningKey]. You must successfully
-   * unlock the wallet before calling this function.
+   * Note: This call will fail if the wallet is not unlocked yet via
+   * [loadWalletSigningKey]. You must successfully unlock the wallet before
+   * calling this function.
    *
-   * Test mode note: For test mode, you can use the [createTestModeInvoice] function to create an invoice you can
-   * pay in test mode.
+   * Test mode note: For test mode, you can use the [createTestModeInvoice]
+   * function to create an invoice you can pay in test mode.
    *
    * @param encodedInvoice An encoded string representation of the invoice to pay.
    * @param maxFeesMsats The maximum fees to pay in milli-satoshis. You must pass a value.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 15 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 15 to 150 sats.
    * @param amountMsats The amount to pay in milli-satoshis. Defaults to the full amount of the invoice.
    * @param timeoutSecs The number of seconds to wait for the payment to complete. Defaults to 60.
    * @return The payment details, which may still be in a PENDING state. You can use the [payInvoiceAndAwaitResult]
@@ -451,15 +475,19 @@ class LightsparkClient {
   }
 
   /**
-   * Pay a lightning invoice from the current wallet and wait for the payment to complete or fail.
+   * Pay a lightning invoice from the current wallet and wait for the payment
+   * to complete or fail.
    *
-   * Note: This call will fail if the wallet is not unlocked yet via [loadWalletSigningKey]. You must successfully
-   * unlock the wallet before calling this function.
+   * Note: This call will fail if the wallet is not unlocked yet via
+   * [loadWalletSigningKey]. You must successfully unlock the wallet before
+   * calling this function.
    *
    * @param encodedInvoice An encoded string representation of the invoice to pay.
    * @param maxFeesMsats The maximum fees to pay in milli-satoshis. You must pass a value.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 15 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 15 to 150 sats.
    * @param amountMsats The amount to pay in milli-satoshis. Defaults to the full amount of the invoice.
    * @param timeoutSecs The number of seconds to wait for the payment to complete. Defaults to 60.
    * @return The payment details.
@@ -517,12 +545,11 @@ class LightsparkClient {
 
     const pollIntervalMs = 500;
     const ignoreErrors = false;
-    let paymentResult: OutgoingPayment;
-    try {
-      paymentResult = await pollUntil(
-        () => {
-          return this.executeRawQuery({
-            queryPayload: `
+
+    const paymentResult: OutgoingPayment = await pollUntil(
+      () => {
+        return this.executeRawQuery({
+          queryPayload: `
               query PaymentStatusQuery {
                 entity(id: "${payment.id}") {
                   ...OutgoingPaymentFragment
@@ -530,46 +557,49 @@ class LightsparkClient {
               }
               ${OutgoingPaymentFragment}
             `,
-            constructObject: (responseJson: any) => {
-              return OutgoingPaymentFromJson(responseJson.entity);
-            },
-          });
-        },
-        (current, response) => {
-          logger.info(`pollUntil current`, current);
-          if (current && completionStatuses.includes(current.status)) {
-            return {
-              stopPolling: true,
-              value: current,
-            };
-          }
-          return response;
-        },
-        pollIntervalMs,
-        (timeoutSecs * 1000) / pollIntervalMs,
-        ignoreErrors,
-        () => timeoutError,
-      );
-    } catch (error) {
-      throw error;
-    }
+          constructObject: (responseJson: any) => {
+            return OutgoingPaymentFromJson(responseJson.entity);
+          },
+        });
+      },
+      (current, response) => {
+        logger.info(`pollUntil current`, current);
+        if (current && completionStatuses.includes(current.status)) {
+          return {
+            stopPolling: true,
+            value: current,
+          };
+        }
+        return response;
+      },
+      pollIntervalMs,
+      (timeoutSecs * 1000) / pollIntervalMs,
+      ignoreErrors,
+      () => timeoutError,
+    );
 
     return paymentResult;
   }
 
   /**
-   * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
-   * This function will return immediately with the payment details, which may still be in a PENDING state. You can use
-   * the [sendPaymentAndAwaitResult] function to wait for the payment to complete or fail.
+   * Sends a payment directly to a node on the Lightning Network through the
+   * public key of the node without an invoice.
+   * This function will return immediately with the payment details,
+   * which may still be in a PENDING state.
+   * You can use the [sendPaymentAndAwaitResult] function to wait for the
+   * payment to complete or fail.
    *
    * @param destinationPublicKey The public key of the destination node.
    * @param amountMsats The amount to pay in milli-satoshis.
    * @param maxFeesMsats The maximum amount of fees that you want to pay for this payment to be sent.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 15 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 15 to 150 sats.
    * @param timeoutSecs The timeout in seconds that we will try to make the payment.
    * @return An `OutgoingPayment` object, which may still be in a PENDING state. You can use the
-   *     [sendPaymentAndAwaitResult] function to wait for the payment to complete or fail.
+   *     [sendPaymentAndAwaitResult] function to wait for the payment to
+   *     complete or fail.
    */
   public async sendPayment(
     destinationNodePublicKey: string,
@@ -602,14 +632,17 @@ class LightsparkClient {
   }
 
   /**
-   * Sends a payment directly to a node on the Lightning Network through the public key of the node without an invoice.
+   * Sends a payment directly to a node on the Lightning Network through the
+   * public key of the node without an invoice.
    * Waits for the payment to complete or fail.
    *
    * @param destinationPublicKey The public key of the destination node.
    * @param amountMsats The amount to pay in milli-satoshis.
    * @param maxFeesMsats The maximum amount of fees that you want to pay for this payment to be sent.
-   *     As guidance, a maximum fee of 15 basis points should make almost all transactions succeed. For example,
-   *     for a transaction between 10k sats and 100k sats, this would mean a fee limit of 15 to 150 sats.
+   *     As guidance, a maximum fee of 15 basis points should make almost all
+   *     transactions succeed. For example,
+   *     for a transaction between 10k sats and 100k sats,
+   *     this would mean a fee limit of 15 to 150 sats.
    * @param timeoutSecs The timeout in seconds that we will try to make the payment.
    * @return An `OutgoingPayment` object. Check the `status` field to see if the payment succeeded or failed.
    */
@@ -629,7 +662,8 @@ class LightsparkClient {
   }
 
   /**
-   * Decode a lightning invoice to get its details included payment amount, destination, etc.
+   * Decode a lightning invoice to get its details included payment amount,
+   * destination, etc.
    *
    * @param encodedInvoice An encoded string representation of the invoice to decode.
    * @return The decoded invoice details.
@@ -647,7 +681,8 @@ class LightsparkClient {
   }
 
   /**
-   * Gets an estimate of the fee for sending a payment over the given bitcoin network.
+   * Gets an estimate of the fee for sending a payment over the given bitcoin
+   * network.
    *
    * @param bitcoinNetwork The bitcoin network for which to get a fee estimate. Defaults to MAINNET.
    * @returns A fee estimate for the given bitcoin network including a minimum fee rate, and a max-speed fee rate.
@@ -686,7 +721,8 @@ class LightsparkClient {
   }
 
   /**
-   * Returns an estimate of the fees that will be paid to send a payment to another Lightning node.
+   * Returns an estimate of the fees that will be paid to send a payment to
+   * another Lightning node.
    *
    * @param destinationNodePublicKey The public key of the node that you want to pay.
    * @param amountMsats The payment amount expressed in msats.
@@ -711,15 +747,19 @@ class LightsparkClient {
   }
 
   /**
-   * Unlocks the wallet for use with the SDK for the current application session. This function
-   * must be called before any other functions that require wallet signing keys, including [payInvoice].
+   * Unlocks the wallet for use with the SDK for the current application
+   * session. This function must be called before any other functions that
+   * require wallet signing keys, including [payInvoice].
    *
-   * This function is intended for use in cases where the wallet's private signing key is already saved by the
-   * application outside of the SDK. It is the responsibility of the application to ensure that the key is valid and
-   * that it is the correct key for the wallet. Otherwise signed requests will fail.
+   * This function is intended for use in cases where the wallet's private
+   * signing key is already saved by the application outside of the SDK.
+   * It is the responsibility of the application to ensure that the key is
+   * valid and that it is the correct key for the wallet.
+   * Otherwise signed requests will fail.
    *
    * @param signingKeyBytesOrAlias An object holding either the PEM encoded bytes of the wallet's private signing key or,
-   *     in the case of ReactNative, the alias of the key in the mobile keychain.
+   *     in the case of ReactNative, the alias of the key in the mobile
+   *     keychain.
    */
   public loadWalletSigningKey(signingKeyBytesOrAlias: KeyOrAliasType) {
     return this.nodeKeyCache.loadKey(
@@ -730,7 +770,8 @@ class LightsparkClient {
   }
 
   /**
-   * Creates an L1 Bitcoin wallet address which can be used to deposit or withdraw funds from the Lightning wallet.
+   * Creates an L1 Bitcoin wallet address which can be used to deposit or
+   * withdraw funds from the Lightning wallet.
    *
    * @return The newly created L1 wallet address.
    */
@@ -759,10 +800,12 @@ class LightsparkClient {
   }
 
   /**
-   * Withdraws funds from the account and sends it to the requested bitcoin address.
+   * Withdraws funds from the account and sends it to the requested bitcoin
+   * address.
    *
-   * The process is asynchronous and may take up to a few minutes. You can check the progress by polling the
-   * `WithdrawalRequest` that is created, or by subscribing to a webhook.
+   * The process is asynchronous and may take up to a few minutes.
+   * You can check the progress by polling the `WithdrawalRequest` that is
+   * created, or by subscribing to a webhook.
    *
    * @param amountSats The amount of funds to withdraw in SATOSHI.
    * @param bitcoinAddress The Bitcoin address to withdraw funds to.
@@ -789,8 +832,9 @@ class LightsparkClient {
   }
 
   /**
-   * In test mode, generates a Lightning Invoice which can be paid by a local node.
-   * This call is only valid in test mode. You can then pay the invoice using [payInvoice].
+   * In test mode, generates a Lightning Invoice which can be paid by a local
+   * node. This call is only valid in test mode.
+   * You can then pay the invoice using [payInvoice].
    *
    * @param amountMsats The amount to pay in milli-satoshis.
    * @param memo An optional memo to attach to the invoice.
@@ -824,8 +868,9 @@ class LightsparkClient {
   }
 
   /**
-   * In test mode, simulates a payment of a Lightning Invoice from another node.
-   * This can only be used in test mode and should be used with invoices generated by [createInvoice].
+   * In test mode, simulates a payment of a Lightning Invoice from another
+   * node. This can only be used in test mode and should be used with invoices
+   * generated by [createInvoice].
    *
    * @param encodedInvoice The encoded invoice to pay.
    * @param amountMsats The amount to pay in milli-satoshis for 0-amount invoices. This should be null for non-zero
@@ -936,8 +981,8 @@ class LightsparkClient {
   }
 
   /**
-   * Executes a raw `Query` as a subscription and returns an `Observable` that emits the result of the query when it
-   * changes.
+   * Executes a raw `Query` as a subscription and returns an `Observable` that
+   * emits the result of the query when it changes.
    *
    * This can only be used with `subscription` operations.
    *
@@ -955,7 +1000,8 @@ class LightsparkClient {
   /**
    * Executes a raw `Query` against the Lightspark API.
    *
-   * This generally should not be used directly, but is exposed for advanced use cases and for internal use to retrieve
+   * This generally should not be used directly,
+   * but is exposed for advanced use cases and for internal use to retrieve
    * complex fields from objects.
    *
    * @param query The `Query` to execute.

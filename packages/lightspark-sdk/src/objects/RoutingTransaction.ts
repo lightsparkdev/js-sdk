@@ -11,11 +11,17 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import RoutingTransactionFailureReason from "./RoutingTransactionFailureReason.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** This object represents a transaction that was forwarded through a Lightspark node on the Lightning Network, i.e., a routed transaction. You can retrieve this object to receive information about any transaction routed through your Lightspark Node. **/
+/**
+ * This object represents a transaction that was forwarded through a Lightspark
+ * node on the Lightning Network, i.e., a routed transaction.
+ * You can retrieve this object to receive information about any transaction
+ * routed through your Lightspark Node.
+ * *
+ */
 interface RoutingTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -37,7 +43,10 @@ interface RoutingTransaction {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  /**
+   * The hash of this transaction, so it can be uniquely identified on the
+   * Lightning Network. *
+   */
   transactionHash?: string | undefined;
 
   /** If known, the channel this transaction was received from. **/
@@ -47,12 +56,16 @@ interface RoutingTransaction {
   outgoingChannelId?: string | undefined;
 
   /**
-   * The fees collected by the node when routing this transaction. We subtract the outgoing amount to
-   * the incoming amount to determine how much fees were collected.
+   * The fees collected by the node when routing this transaction.
+   * We subtract the outgoing amount to the incoming amount to determine how
+   * much fees were collected.
    **/
   fees?: CurrencyAmount | undefined;
 
-  /** If applicable, user-facing error message describing why the routing failed. **/
+  /**
+   * If applicable, user-facing error message describing why the routing
+   * failed. *
+   */
   failureMessage?: RichText | undefined;
 
   /** If applicable, the reason why the routing failed. **/

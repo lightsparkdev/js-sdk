@@ -8,11 +8,16 @@ import {
 } from "./CurrencyAmount.js";
 import TransactionStatus from "./TransactionStatus.js";
 
-/** This object represents any payment sent to a Lightspark node on the Lightning Network. You can retrieve this object to receive payment related information about a specific payment received by a Lightspark node. **/
+/**
+ * This object represents any payment sent to a Lightspark node on the
+ * Lightning Network. You can retrieve this object to receive payment related
+ * information about a specific payment received by a Lightspark node.
+ * *
+ */
 interface IncomingPayment {
   /**
-   * The unique identifier of this entity across all Lightspark systems. Should be treated as an opaque
-   * string.
+   * The unique identifier of this entity across all Lightspark systems.
+   * Should be treated as an opaque string.
    **/
   id: string;
 
@@ -34,12 +39,15 @@ interface IncomingPayment {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
+  /**
+   * The hash of this transaction, so it can be uniquely identified on the
+   * Lightning Network. *
+   */
   transactionHash?: string | undefined;
 
   /**
-   * The optional payment request for this incoming payment, which will be null if the payment is sent
-   * through keysend.
+   * The optional payment request for this incoming payment,
+   * which will be null if the payment is sent through keysend.
    **/
   paymentRequestId?: string | undefined;
 }

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "ES2022",
+    "module": "node16",
     "allowJs": true,
     "declaration": true,
     "sourceMap": true,
