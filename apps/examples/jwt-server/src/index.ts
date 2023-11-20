@@ -40,7 +40,7 @@ export const getJwt = onRequest(
         .status(500)
         .send(
           "Missing account config. Please add account_id and " +
-            "private_signing_key to the firebase config.",
+            "private_signing_key to the firebase config."
         );
       return;
     }
@@ -62,7 +62,7 @@ export const getJwt = onRequest(
 
     logger.info("Generating JWT for a user", { userId, accountId });
     response.send({ token, accountId });
-  },
+  }
 );
 
 export const handleWebhook = onRequest(
@@ -73,23 +73,24 @@ export const handleWebhook = onRequest(
     const event = await verifyAndParseWebhook(
       bodyData,
       hexdigest,
-      webhookSecretParam.value(),
+      webhookSecretParam.value()
     );
     console.log(`Received webhook event: ${event.event_type}`);
     console.log(`Event data: ${JSON.stringify(event)}`);
 
-    // From here, you could take some action based on the event type. For example:
-    // if (event.event_type === WebhookEventType.WALLET_INCOMING_PAYMENT_FINISHED) {
-    //   const payment = await lightsparkClient.executeRawQuery(
-    //       IncomingPayment.getIncomingPaymentQuery(event.entity_id)
-    //   );
-    //   console.log(`Incoming payment: ${JSON.stringify(payment)}`);
-    //   const wallet = await lightsparkClient.executeRawQuery(Wallet.getWalletQuery(payment.wallet_id));
-    //   await sendPaymentReceivedNotification(wallet.thirdPartyIdentifier, payment.amount);
-    // }
+    // From here, you could take some action based on the event type. For
+    // example: if (event.event_type ===
+    // WebhookEventType.WALLET_INCOMING_PAYMENT_FINISHED) { const payment =
+    // await lightsparkClient.executeRawQuery(
+    // IncomingPayment.getIncomingPaymentQuery(event.entity_id) );
+    // console.log(`Incoming payment: ${JSON.stringify(payment)}`);
+    // const wallet = await
+    // lightsparkClient.executeRawQuery(Wallet.getWalletQuery(payment.wallet_id));
+    // await sendPaymentReceivedNotification(wallet.thirdPartyIdentifier,
+    // payment.amount); }
 
     response.send("ok");
-  },
+  }
 );
 
 const checkOrCreateUser = async (userId: string, password: string) => {
