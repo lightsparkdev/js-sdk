@@ -90,7 +90,7 @@ const LETTER_SPACING = {
     "tight-medium": "-2%",
     "tight-low": "-0.5%",
     normal: "0",
-    "loose-max": "12%",
+    "loose-max": "1.44px",
   },
 };
 
@@ -432,8 +432,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
       },
       Overline: {
         [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
           "font-size": `${FONT_SIZE[App.Lightspark].md}`,
           "letter-spacing": `${LETTER_SPACING[App.Lightspark]["loose-max"]}`,
@@ -443,8 +443,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
           "text-decoration": `${TEXT_DECORATION.none}`,
         },
         [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
           "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
           "letter-spacing": `${LETTER_SPACING[App.Lightspark]["loose-max"]}`,
@@ -454,8 +454,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
           "text-decoration": `${TEXT_DECORATION.none}`,
         },
         [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
           "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
           "letter-spacing": `${LETTER_SPACING[App.Lightspark]["loose-max"]}`,
@@ -784,8 +784,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
       },
       Overline: {
         [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
           "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
           "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,
@@ -795,8 +795,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
           "text-decoration": `${TEXT_DECORATION.none}`,
         },
         [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
           "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
           "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,
@@ -806,8 +806,8 @@ export const getTypography = (customFontFamilies?: FontFamilies) => {
           "text-decoration": `${TEXT_DECORATION.none}`,
         },
         [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
+          "font-family": `${fontFamilies.main}`,
+          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
           "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
           "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
           "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,

@@ -221,7 +221,7 @@ const lightTheme = extend(lightBaseTheme, {
   }),
   nav: extendBase(lightBaseTheme, {
     text: colors.gray10,
-    secondary: colors.secondary,
+    secondary: colors.gray40,
   }),
   content: extendBase(lightBaseTheme, {
     bg: colors.white,

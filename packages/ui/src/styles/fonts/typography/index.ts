@@ -6,4 +6,5 @@ export { Headline } from "./Headline.js";
 export { Label } from "./Label.js";
 export { LabelModerate } from "./LabelModerate.js";
 export { LabelStrong } from "./LabelStrong.js";
+export { Overline } from "./Overline.js";
 export { Title } from "./Title.js";

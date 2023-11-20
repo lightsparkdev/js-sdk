@@ -7,6 +7,7 @@ type CollapsibleProps = {
   children: React.ReactNode;
   className?: string;
   text?: string;
+  color?: string;
   open?: boolean | undefined;
   handleToggle?: (open: boolean) => void | undefined;
   hamburger?: boolean | undefined;
@@ -20,6 +21,7 @@ export function Collapsible({
   children,
   className,
   text,
+  color,
   open,
   handleToggle,
   hamburger,
@@ -46,7 +48,7 @@ export function Collapsible({
   return (
     <StyledCollapsible className={className}>
       <StyledCollapsibleButton onClick={handleClick}>
-        {text ? text : <div></div>}
+        {text ? <Text color={color}>{text}</Text> : <div></div>}
         <IconContainer isOpen={isOpen} hamburger={hamburger}>
           <Icon width={iconWidth} name={iconName} />
         </IconContainer>
@@ -137,4 +139,9 @@ const InnerPadding = styled.div`
   gap: 4px;
   display: flex;
   flex-direction: column;
+`;
+
+const Text = styled.span<{ color?: string | undefined }>`
+  ${(props) => (props.color ? `color: ${props.color};` : "")}
+  line-height: inherit;
 `;
