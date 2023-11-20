@@ -1,5 +1,6 @@
 export { Article } from "./Article.js";
 export { Body } from "./Body.js";
+export { BodyStrong } from "./BodyStrong.js";
 export { Code } from "./Code.js";
 export { Display } from "./Display.js";
 export { Headline } from "./Headline.js";

@@ -4,8 +4,10 @@ import { colors } from "../../colors.js";
 import { overflowAutoWithoutScrollbars } from "../../utils.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
 import { StyledBody } from "./Body.js";
+import { StyledCode } from "./Code.js";
 import { displaySelector } from "./Display.js";
 import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./Headline.js";
+import { StyledTitle } from "./Title.js";
 
 export const Article = styled.article`
   ${displaySelector("h1")} {
@@ -61,7 +63,7 @@ export const Article = styled.article`
     font-weight: 700;
   }
 
-  *:not(${ALL_HEADLINE_SELECTORS}) > a {
+  *:not(${ALL_HEADLINE_SELECTORS},${StyledTitle},${StyledCode}) > a {
     ${({ theme }) =>
       getTypographyString(
         theme.typography[theme.app]["Label Strong"][TokenSize.Large],
