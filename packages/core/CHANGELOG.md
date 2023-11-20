@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.11
+
+### Patch Changes
+
+- 43dc882: Upgrade to Typescript 5, lint config changes
+
 ## 1.0.10
 
 ### Patch Changes
