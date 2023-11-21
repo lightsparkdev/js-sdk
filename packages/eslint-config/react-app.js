@@ -20,7 +20,7 @@ module.exports = {
             importNames: ["Link", "Navigate", "useNavigate"],
             message:
               "Please use typesafe imports from components/router instead.",
-            name: "@lightsparkdev/ui/src/router",
+            name: "@lightsparkdev/ui/router",
           },
           {
             importNames: ["default", "QRCodeSVG"],
