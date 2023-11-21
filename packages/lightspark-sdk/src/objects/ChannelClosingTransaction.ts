@@ -9,9 +9,9 @@ import {
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This is an object representing a transaction which closes a channel on the
- * Lightning Network. This operation allocates balances back to the local and
- * remote nodes. *
+ * This is an object representing a transaction which closes a channel on the Lightning Network.
+ * This operation allocates balances back to the local and remote nodes.
+ * *
  */
 interface ChannelClosingTransaction {
   /**
@@ -33,8 +33,8 @@ interface ChannelClosingTransaction {
   amount: CurrencyAmount;
 
   /**
-   * The height of the block that included this transaction.
-   * This will be zero for unconfirmed transactions.
+   * The height of the block that included this transaction. This will be zero for unconfirmed
+   * transactions.
    **/
   blockHeight: number;
 
@@ -47,28 +47,22 @@ interface ChannelClosingTransaction {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /**
-   * The hash of this transaction, so it can be uniquely identified on the
-   * Lightning Network. *
-   */
+  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
   transactionHash?: string | undefined;
 
   /**
-   * The fees that were paid by the wallet sending the transaction to commit
-   * it to the Bitcoin blockchain.
+   * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
+   * blockchain.
    **/
   fees?: CurrencyAmount | undefined;
 
   /**
-   * The hash of the block that included this transaction.
-   * This will be null for unconfirmed transactions.
+   * The hash of the block that included this transaction. This will be null for unconfirmed
+   * transactions.
    **/
   blockHash?: string | undefined;
 
-  /**
-   * The number of blockchain confirmations for this transaction in real
-   * time. *
-   */
+  /** The number of blockchain confirmations for this transaction in real time. **/
   numConfirmations?: number | undefined;
 
   /** If known, the channel this transaction is closing. **/

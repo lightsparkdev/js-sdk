@@ -25,9 +25,9 @@ import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 import { SecretFromJson, SecretToJson } from "./Secret.js";
 
 /**
- * This is an object representing a node managed by Lightspark and owned by the
- * current connected account. This object contains information about the node’s
- * configuration, state, and metadata. *
+ * This is an object representing a node managed by Lightspark and owned by the current connected
+ * account. This object contains information about the node’s configuration, state, and metadata.
+ * *
  */
 interface LightsparkNode {
   /**
@@ -46,8 +46,7 @@ interface LightsparkNode {
   bitcoinNetwork: BitcoinNetwork;
 
   /**
-   * The name of this node in the network.
-   * It will be the most human-readable option possible,
+   * The name of this node in the network. It will be the most human-readable option possible,
    * depending on the data available for this node.
    **/
   displayName: string;
@@ -56,8 +55,8 @@ interface LightsparkNode {
   ownerId: string;
 
   /**
-   * The utxos of the channels that are connected to this node.
-   * This is used in uma flow for pre-screening.
+   * The utxos of the channels that are connected to this node. This is used in uma flow for
+   * pre-screening.
    **/
   umaPrescreeningUtxos: string[];
 
@@ -65,34 +64,30 @@ interface LightsparkNode {
   typename: string;
 
   /**
-   * A name that identifies the node.
-   * It has no importance in terms of operating the node,
-   * it is just a way to identify and search for commercial services or
-   * popular nodes. This alias can be changed at any time by the node
-   * operator.
+   * A name that identifies the node. It has no importance in terms of operating the node,
+   * it is just a way to identify and search for commercial services or popular nodes.
+   * This alias can be changed at any time by the node operator.
    **/
   alias?: string | undefined;
 
   /**
-   * A hexadecimal string that describes a color. For example "#000000" is
-   * black, "#FFFFFF" is white. It has no importance in terms of operating
-   * the node, it is just a way to visually differentiate nodes.
+   * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
+   * white. It has no importance in terms of operating the node,
+   * it is just a way to visually differentiate nodes.
    * That color can be changed at any time by the node operator.
    **/
   color?: string | undefined;
 
   /**
-   * A summary metric used to capture how well positioned a node is to send,
-   * receive, or route transactions efficiently.
-   * Maximizing a node's conductivity helps a node’s transactions to be
-   * capital efficient. The value is an integer ranging between 0 and 10
-   * (bounds included).
+   * A summary metric used to capture how well positioned a node is to send, receive, or route
+   * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
+   * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
    **/
   conductivity?: number | undefined;
 
   /**
-   * The public key of this node. It acts as a unique identifier of this node
-   * in the Lightning Network. *
+   * The public key of this node. It acts as a unique identifier of this node in the Lightning
+   * Network. *
    */
   publicKey?: string | undefined;
 
@@ -100,8 +95,8 @@ interface LightsparkNode {
   status?: LightsparkNodeStatus | undefined;
 
   /**
-   * The sum of the balance on the Bitcoin Network, channel balances,
-   * and commit fees on this node.
+   * The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this
+   * node.
    *
    * @deprecated Use `balances` instead.
    **/
@@ -115,16 +110,14 @@ interface LightsparkNode {
   totalLocalBalance?: CurrencyAmount | undefined;
 
   /**
-   * The sum of the channel balances (online only) that are available to send
-   * on this node.
+   * The sum of the channel balances (online only) that are available to send on this node.
    *
    * @deprecated Use `balances` instead.
    **/
   localBalance?: CurrencyAmount | undefined;
 
   /**
-   * The sum of the channel balances that are available to receive on this
-   * node.
+   * The sum of the channel balances that are available to receive on this node.
    *
    * @deprecated Use `balances` instead.
    **/

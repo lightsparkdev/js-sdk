@@ -6,10 +6,7 @@ import {
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
 
-/**
- * This represents the fee policies set for a channel on the Lightning Network.
- * *
- */
+/** This represents the fee policies set for a channel on the Lightning Network. **/
 interface ChannelFees {
   baseFee?: CurrencyAmount | undefined;
 

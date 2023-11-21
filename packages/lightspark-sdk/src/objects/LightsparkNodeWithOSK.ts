@@ -44,53 +44,48 @@ class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
     /** The Bitcoin Network this node is deployed in. **/
     public readonly bitcoinNetwork: BitcoinNetwork,
     /**
-     * The name of this node in the network.
-     * It will be the most human-readable option possible,
+     * The name of this node in the network. It will be the most human-readable option possible,
      * depending on the data available for this node.
      **/
     public readonly displayName: string,
     /** The owner of this LightsparkNode. **/
     public readonly ownerId: string,
     /**
-     * The utxos of the channels that are connected to this node.
-     * This is used in uma flow for pre-screening.
+     * The utxos of the channels that are connected to this node. This is used in uma flow for
+     * pre-screening.
      **/
     public readonly umaPrescreeningUtxos: string[],
     /** The typename of the object **/
     public readonly typename: string,
     /**
-     * A name that identifies the node.
-     * It has no importance in terms of operating the node,
-     * it is just a way to identify and search for commercial services or
-     * popular nodes. This alias can be changed at any time by the node
-     * operator.
+     * A name that identifies the node. It has no importance in terms of operating the node,
+     * it is just a way to identify and search for commercial services or popular nodes.
+     * This alias can be changed at any time by the node operator.
      **/
     public readonly alias?: string | undefined,
     /**
-     * A hexadecimal string that describes a color. For example "#000000" is
-     * black, "#FFFFFF" is white. It has no importance in terms of operating
-     * the node, it is just a way to visually differentiate nodes.
+     * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
+     * white. It has no importance in terms of operating the node,
+     * it is just a way to visually differentiate nodes.
      * That color can be changed at any time by the node operator.
      **/
     public readonly color?: string | undefined,
     /**
-     * A summary metric used to capture how well positioned a node is to send,
-     * receive, or route transactions efficiently.
-     * Maximizing a node's conductivity helps a node’s transactions to be
-     * capital efficient. The value is an integer ranging between 0 and 10
-     * (bounds included).
+     * A summary metric used to capture how well positioned a node is to send, receive, or route
+     * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
+     * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
      **/
     public readonly conductivity?: number | undefined,
     /**
-     * The public key of this node. It acts as a unique identifier of this node
-     * in the Lightning Network. *
+     * The public key of this node. It acts as a unique identifier of this node in the Lightning
+     * Network. *
      */
     public readonly publicKey?: string | undefined,
     /** The current status of this node. **/
     public readonly status?: LightsparkNodeStatus | undefined,
     /**
-     * The sum of the balance on the Bitcoin Network, channel balances,
-     * and commit fees on this node.
+     * The sum of the balance on the Bitcoin Network, channel balances, and commit fees on this
+     * node.
      *
      * @deprecated Use `balances` instead.
      **/
@@ -102,15 +97,13 @@ class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
      **/
     public readonly totalLocalBalance?: CurrencyAmount | undefined,
     /**
-     * The sum of the channel balances (online only) that are available to send
-     * on this node.
+     * The sum of the channel balances (online only) that are available to send on this node.
      *
      * @deprecated Use `balances` instead.
      **/
     public readonly localBalance?: CurrencyAmount | undefined,
     /**
-     * The sum of the channel balances that are available to receive on this
-     * node.
+     * The sum of the channel balances that are available to receive on this node.
      *
      * @deprecated Use `balances` instead.
      **/
@@ -124,8 +117,8 @@ class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
     /** The balances that describe the funds in this node. **/
     public readonly balances?: Balances | undefined,
     /**
-     * The private key client is using to sign a GraphQL request which will be
-     * verified at server side. *
+     * The private key client is using to sign a GraphQL request which will be verified at server
+     * side. *
      */
     public readonly encryptedSigningPrivateKey?: Secret | undefined,
   ) {

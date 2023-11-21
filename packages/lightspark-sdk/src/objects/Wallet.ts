@@ -20,8 +20,8 @@ import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsCo
 /**
  * This object represents a Lightspark Wallet, tied to your Lightspark account.
  * Wallets can be used to send or receive funds over the Lightning Network.
- * You can retrieve this object to receive information about a specific wallet
- * tied to your Lightspark account. *
+ * You can retrieve this object to receive information about a specific wallet tied to your
+ * Lightspark account. *
  */
 class Wallet implements LightsparkNodeOwner, Entity {
   constructor(
@@ -35,8 +35,7 @@ class Wallet implements LightsparkNodeOwner, Entity {
     /** The date and time when the entity was last updated. **/
     public readonly updatedAt: string,
     /**
-     * The unique identifier of this wallet,
-     * as provided by the Lightspark Customer during login.
+     * The unique identifier of this wallet, as provided by the Lightspark Customer during login.
      * *
      */
     public readonly thirdPartyIdentifier: string,

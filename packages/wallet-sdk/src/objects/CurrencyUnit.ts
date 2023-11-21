@@ -1,20 +1,16 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-/**
- * This enum identifies the unit of currency associated with a CurrencyAmount.
- * *
- */
+/** This enum identifies the unit of currency associated with a CurrencyAmount. **/
 export enum CurrencyUnit {
   /**
-   * This is an enum value that represents values that could be added in the
-   * future. Clients should support unknown values as more of them could be
-   * added without notice.
+   * This is an enum value that represents values that could be added in the future.
+   * Clients should support unknown values as more of them could be added without notice.
    */
   FUTURE_VALUE = "FUTURE_VALUE",
   /**
    * Bitcoin is the cryptocurrency native to the Bitcoin network.
-   * It is used as the native medium for value transfer for the Lightning
-   * Network. *
+   * It is used as the native medium for value transfer for the Lightning Network.
+   * *
    */
   BITCOIN = "BITCOIN",
   /**
@@ -24,8 +20,8 @@ export enum CurrencyUnit {
    */
   SATOSHI = "SATOSHI",
   /**
-   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit
-   * instead when possible. *
+   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible.
+   * *
    */
   MILLISATOSHI = "MILLISATOSHI",
   /** United States Dollar. **/

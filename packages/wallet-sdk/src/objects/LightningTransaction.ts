@@ -17,10 +17,9 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This is an object representing a transaction made over the Lightning
- * Network. You can retrieve this object to receive information about a
- * specific transaction made over Lightning for a Lightspark node.
- * *
+ * This is an object representing a transaction made over the Lightning Network.
+ * You can retrieve this object to receive information about a specific transaction made over
+ * Lightning for a Lightspark node. *
  */
 interface LightningTransaction {
   /**
@@ -47,10 +46,7 @@ interface LightningTransaction {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /**
-   * The hash of this transaction, so it can be uniquely identified on the
-   * Lightning Network. *
-   */
+  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
   transactionHash?: string | undefined;
 }
 

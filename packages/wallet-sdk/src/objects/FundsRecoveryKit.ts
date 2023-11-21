@@ -4,10 +4,7 @@ import { LightsparkException } from "@lightsparkdev/core";
 import type AmazonS3FundsRecoveryKit from "./AmazonS3FundsRecoveryKit.js";
 
 interface FundsRecoveryKit {
-  /**
-   * The bitcoin address where the funds should be sent if the recovery kit
-   * is used. *
-   */
+  /** The bitcoin address where the funds should be sent if the recovery kit is used. **/
   bitcoinWalletAddress: string;
 
   /** The typename of the object **/

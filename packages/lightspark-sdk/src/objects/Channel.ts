@@ -18,8 +18,8 @@ import type TransactionType from "./TransactionType.js";
 
 /**
  * This is an object representing a channel on the Lightning Network.
- * You can retrieve this object to get detailed information on a specific
- * Lightning Network channel. *
+ * You can retrieve this object to get detailed information on a specific Lightning Network
+ * channel. *
  */
 class Channel implements Entity {
   constructor(
@@ -39,48 +39,39 @@ class Channel implements Entity {
     /** The transaction that funded the channel upon channel opening. **/
     public readonly fundingTransactionId?: string | undefined,
     /**
-     * The total amount of funds in this channel,
-     * including the channel balance on the local node,
-     * the channel balance on the remote node and the on-chain fees to close
-     * the channel.
+     * The total amount of funds in this channel, including the channel balance on the local node,
+     * the channel balance on the remote node and the on-chain fees to close the channel.
      **/
     public readonly capacity?: CurrencyAmount | undefined,
     /** The channel balance on the local node. **/
     public readonly localBalance?: CurrencyAmount | undefined,
     /**
-     * The channel balance on the local node that is currently allocated to
-     * in-progress payments. *
+     * The channel balance on the local node that is currently allocated to in-progress payments.
+     * *
      */
     public readonly localUnsettledBalance?: CurrencyAmount | undefined,
     /** The channel balance on the remote node. **/
     public readonly remoteBalance?: CurrencyAmount | undefined,
     /**
-     * The channel balance on the remote node that is currently allocated to
-     * in-progress payments. *
+     * The channel balance on the remote node that is currently allocated to in-progress payments.
+     * *
      */
     public readonly remoteUnsettledBalance?: CurrencyAmount | undefined,
-    /**
-     * The channel balance that is currently allocated to in-progress payments.
-     * *
-     */
+    /** The channel balance that is currently allocated to in-progress payments. **/
     public readonly unsettledBalance?: CurrencyAmount | undefined,
     /**
-     * The total balance in this channel,
-     * including the channel balance on both local and remote nodes.
-     * *
+     * The total balance in this channel, including the channel balance on both local and remote
+     * nodes. *
      */
     public readonly totalBalance?: CurrencyAmount | undefined,
     /** The current status of this channel. **/
     public readonly status?: ChannelStatus | undefined,
     /**
-     * The estimated time to wait for the channel's hash timelock contract to
-     * expire when force closing the channel. It is in unit of minutes.
+     * The estimated time to wait for the channel's hash timelock contract to expire when force
+     * closing the channel. It is in unit of minutes.
      **/
     public readonly estimatedForceClosureWaitMinutes?: number | undefined,
-    /**
-     * The amount to be paid in fees for the current set of commitment
-     * transactions. *
-     */
+    /** The amount to be paid in fees for the current set of commitment transactions. **/
     public readonly commitFee?: CurrencyAmount | undefined,
     /** The fees charged for routing payments through this channel. **/
     public readonly fees?: ChannelFees | undefined,
@@ -88,8 +79,8 @@ class Channel implements Entity {
     public readonly remoteNodeId?: string | undefined,
     /**
      * The unique identifier of the channel on Lightning Network,
-     * which is the location in the chain that the channel was confirmed.
-     * The format is <block-height>:<tx-index>:<tx-output>.
+     * which is the location in the chain that the channel was confirmed. The format is
+     * <block-height>:<tx-index>:<tx-output>.
      **/
     public readonly shortChannelId?: string | undefined,
   ) {

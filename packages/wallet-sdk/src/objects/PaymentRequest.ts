@@ -11,10 +11,9 @@ import type PaymentRequestData from "./PaymentRequestData.js";
 import PaymentRequestStatus from "./PaymentRequestStatus.js";
 
 /**
- * This object contains information related to a payment request generated or
- * received by a LightsparkNode. You can retrieve this object to receive
- * payment information about a specific invoice.
- * *
+ * This object contains information related to a payment request generated or received by a
+ * LightsparkNode. You can retrieve this object to receive payment information about a specific
+ * invoice. *
  */
 interface PaymentRequest {
   /**

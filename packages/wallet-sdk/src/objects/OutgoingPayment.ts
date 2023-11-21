@@ -17,9 +17,9 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This object represents a Lightning Network payment sent from a Lightspark
- * Node. You can retrieve this object to receive payment related information
- * about any payment sent from your Lightspark Node on the Lightning Network.
+ * This object represents a Lightning Network payment sent from a Lightspark Node.
+ * You can retrieve this object to receive payment related information about any payment sent from
+ * your Lightspark Node on the Lightning Network.
  * *
  */
 interface OutgoingPayment {
@@ -47,28 +47,19 @@ interface OutgoingPayment {
   /** The date and time when this transaction was completed or failed. **/
   resolvedAt?: string | undefined;
 
-  /**
-   * The hash of this transaction, so it can be uniquely identified on the
-   * Lightning Network. *
-   */
+  /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
   transactionHash?: string | undefined;
 
   /** The fees paid by the sender node to send the payment. **/
   fees?: CurrencyAmount | undefined;
 
-  /**
-   * The data of the payment request that was paid by this transaction, if
-   * known. *
-   */
+  /** The data of the payment request that was paid by this transaction, if known. **/
   paymentRequestData?: PaymentRequestData | undefined;
 
   /** If applicable, the reason why the payment failed. **/
   failureReason?: PaymentFailureReason | undefined;
 
-  /**
-   * If applicable, user-facing error message describing why the payment
-   * failed. *
-   */
+  /** If applicable, user-facing error message describing why the payment failed. **/
   failureMessage?: RichText | undefined;
 
   /** The preimage of the payment. **/

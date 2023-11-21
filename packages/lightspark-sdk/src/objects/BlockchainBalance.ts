@@ -6,10 +6,7 @@ import {
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
 
-/**
- * This is an object representing a detailed breakdown of the balance for a
- * Lightspark Node. *
- */
+/** This is an object representing a detailed breakdown of the balance for a Lightspark Node. **/
 interface BlockchainBalance {
   /** The total wallet balance, including unconfirmed UTXOs. **/
   totalBalance?: CurrencyAmount | undefined;

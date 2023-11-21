@@ -7,15 +7,12 @@ interface SendPaymentInput {
   /** The timeout in seconds that we will try to make the payment. **/
   timeoutSecs: number;
 
-  /**
-   * The amount you will send to the destination node, expressed in msats.
-   * *
-   */
+  /** The amount you will send to the destination node, expressed in msats. **/
   amountMsats: number;
 
   /**
-   * The maximum amount of fees that you want to pay for this payment to be
-   * sent, expressed in msats. *
+   * The maximum amount of fees that you want to pay for this payment to be sent, expressed in
+   * msats. *
    */
   maximumFeesMsats: number;
 }

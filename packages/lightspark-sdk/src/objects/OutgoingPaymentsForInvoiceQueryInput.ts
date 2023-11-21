@@ -6,10 +6,7 @@ interface OutgoingPaymentsForInvoiceQueryInput {
   /** The encoded invoice that the outgoing payments paid to. **/
   encodedInvoice: string;
 
-  /**
-   * An optional filter to only query outgoing payments of given statuses.
-   * *
-   */
+  /** An optional filter to only query outgoing payments of given statuses. **/
   statuses?: TransactionStatus[] | undefined;
 }
 

@@ -17,9 +17,8 @@ import type WithdrawalRequestToChannelOpeningTransactionsConnection from "./With
 import { WithdrawalRequestToChannelOpeningTransactionsConnectionFromJson } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 
 /**
- * This object represents a request made for an L1 withdrawal from your
- * Lightspark Node to any Bitcoin wallet.
- * You can retrieve this object to receive detailed information about any
+ * This object represents a request made for an L1 withdrawal from your Lightspark Node to any
+ * Bitcoin wallet. You can retrieve this object to receive detailed information about any
  * withdrawal request made from your Lightspark account.
  * *
  */
@@ -38,10 +37,7 @@ class WithdrawalRequest implements Entity {
     public readonly amount: CurrencyAmount,
     /** The bitcoin address where the funds should be sent. **/
     public readonly bitcoinAddress: string,
-    /**
-     * The strategy that should be used to withdraw the funds from the account.
-     * *
-     */
+    /** The strategy that should be used to withdraw the funds from the account. **/
     public readonly withdrawalMode: WithdrawalMode,
     /** The current status of this withdrawal request. **/
     public readonly status: WithdrawalRequestStatus,

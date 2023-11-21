@@ -20,11 +20,11 @@ import type OutgoingPaymentAttemptToHopsConnection from "./OutgoingPaymentAttemp
 import { OutgoingPaymentAttemptToHopsConnectionFromJson } from "./OutgoingPaymentAttemptToHopsConnection.js";
 
 /**
- * This object represents an attempted Lightning Network payment sent from a
- * Lightspark Node. You can retrieve this object to receive payment related
- * information about any payment attempt sent from your Lightspark Node on the
- * Lightning Network, including any potential reasons the payment may have
- * failed. *
+ * This object represents an attempted Lightning Network payment sent from a Lightspark Node.
+ * You can retrieve this object to receive payment related information about any payment attempt
+ * sent from your Lightspark Node on the Lightning Network,
+ * including any potential reasons the payment may have failed.
+ * *
  */
 class OutgoingPaymentAttempt implements Entity {
   constructor(
@@ -45,36 +45,29 @@ class OutgoingPaymentAttempt implements Entity {
     public readonly outgoingPaymentId: string,
     /** The typename of the object **/
     public readonly typename: string,
-    /**
-     * If the payment attempt failed, then this contains the Bolt #4 failure
-     * code. *
-     */
+    /** If the payment attempt failed, then this contains the Bolt #4 failure code. **/
     public readonly failureCode?: HtlcAttemptFailureCode | undefined,
     /**
-     * If the payment attempt failed, then this contains the index of the hop
-     * at which the problem occurred.
+     * If the payment attempt failed, then this contains the index of the hop at which the problem
+     * occurred.
      **/
     public readonly failureSourceIndex?: number | undefined,
     /** The time the outgoing payment attempt failed or succeeded. **/
     public readonly resolvedAt?: string | undefined,
     /**
-     * The total amount of funds required to complete a payment over this
-     * route. This value includes the cumulative fees for each hop. As a
-     * result, the attempt extended to the first-hop in the route will need to
-     * have at least this much value, otherwise the route will fail at an
-     * intermediate node due to an insufficient amount.
+     * The total amount of funds required to complete a payment over this route.
+     * This value includes the cumulative fees for each hop. As a result,
+     * the attempt extended to the first-hop in the route will need to have at least this much
+     * value, otherwise the route will fail at an intermediate node due to an insufficient amount.
      **/
     public readonly amount?: CurrencyAmount | undefined,
     /**
      * The sum of the fees paid at each hop within the route of this attempt.
-     * In the case of a one-hop payment,
-     * this value will be zero as we don't need to pay a fee to ourselves.
+     * In the case of a one-hop payment, this value will be zero as we don't need to pay a fee to
+     * ourselves.
      **/
     public readonly fees?: CurrencyAmount | undefined,
-    /**
-     * The channel snapshot at the time the outgoing payment attempt was made.
-     * *
-     */
+    /** The channel snapshot at the time the outgoing payment attempt was made. **/
     public readonly channelSnapshot?: ChannelSnapshot | undefined,
   ) {
     autoBind(this);

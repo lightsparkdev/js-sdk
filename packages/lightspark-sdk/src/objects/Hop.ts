@@ -8,9 +8,9 @@ import {
 } from "./CurrencyAmount.js";
 
 /**
- * This object represents a specific node that existed on a particular payment
- * route. You can retrieve this object to get information about a node on a
- * particular payment path and all payment-relevant information for that node.
+ * This object represents a specific node that existed on a particular payment route.
+ * You can retrieve this object to get information about a node on a particular payment path and
+ * all payment-relevant information for that node.
  * *
  */
 interface Hop {
@@ -41,10 +41,7 @@ interface Hop {
   /** The amount that is to be forwarded to the destination node. **/
   amountToForward?: CurrencyAmount | undefined;
 
-  /**
-   * The fees to be collected by the source node for forwarding the payment
-   * over the hop. *
-   */
+  /** The fees to be collected by the source node for forwarding the payment over the hop. **/
   fee?: CurrencyAmount | undefined;
 
   /** The block height at which an unsettled HTLC is considered expired. **/

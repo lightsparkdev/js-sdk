@@ -9,10 +9,9 @@ import {
 import IncomingPaymentAttemptStatus from "./IncomingPaymentAttemptStatus.js";
 
 /**
- * This object represents any attempted payment sent to a Lightspark node on
- * the Lightning Network. You can retrieve this object to receive payment
- * related information about a specific incoming payment attempt.
- * *
+ * This object represents any attempted payment sent to a Lightspark node on the Lightning Network.
+ * You can retrieve this object to receive payment related information about a specific incoming
+ * payment attempt. *
  */
 interface IncomingPaymentAttempt {
   /**
