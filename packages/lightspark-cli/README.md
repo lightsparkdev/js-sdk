@@ -8,7 +8,7 @@ The `lightspark` script is a wrapper around the `lightspark-sdk` which can simpl
 
 The first command you'll need to run get set up is init-env.
 
-You'll need to provide your API token's client ID and client secret. You can set this up from the [Lightspark API config page](https://app.lightspark.com/api-config). For more info on API authentication, see the [Lightspark API Authentication docs](https://app.lightspark.com/docs/api/authentication).
+You'll need to provide your API token's client ID and client secret. You can set this up from the [Lightspark API config page](https://app.lightspark.com/api-config). For more info on API authentication, see the [Lightspark API Authentication docs](https://docs.lightspark.com/lightspark-sdk/authentication?language=Typescript).
 
 If you run it without any arguments, it will prompt you for your API token's client ID and client secret:
 
