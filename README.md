@@ -33,4 +33,4 @@ Or to build all packages and run all examples simply do:
 yarn start
 ```
 
-Please see the README files in the [examples directory](./apps/examples) for instructions on running the examples. Please note that some packages such as @lightspark/ui are for building the examples only and not necessary for your implementation of our [published SDK packages](https://www.npmjs.com/search?q=%40lightsparkdev).
+Please see the README files in the [examples directory](./apps/examples) for instructions on running the examples. Please note that some packages such as @lightsparkdev/ui are for building the examples only and not necessary for your implementation of our [published SDK packages](https://www.npmjs.com/search?q=%40lightsparkdev).
