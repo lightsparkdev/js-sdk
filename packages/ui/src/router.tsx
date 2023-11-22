@@ -30,8 +30,11 @@ export type RouteParams = {
 
 export type RouteHash = string | null;
 
+export type ExternalLink = string;
+
 export type LinkProps<RoutesType extends string> = {
-  to: RoutesType;
+  to?: RoutesType | undefined;
+  externalLink?: ExternalLink | undefined;
   onClick?: MouseEventHandler<HTMLAnchorElement> | undefined;
   params?: RouteParams | undefined;
   children?: React.ReactNode;
@@ -43,9 +46,9 @@ export type LinkProps<RoutesType extends string> = {
 };
 
 export function replaceParams<RoutesType extends string>(
-  to: LinkProps<RoutesType>["to"],
+  to: RoutesType,
   params: LinkProps<RoutesType>["params"],
-): LinkProps<RoutesType>["to"] {
+): RoutesType {
   if (params) {
     let toWithParams = to;
     Object.entries(omit(params, "query")).forEach(([key, value]) => {
@@ -75,6 +78,7 @@ export function replaceParams<RoutesType extends string>(
 // preserved.
 export function Link<RoutesType extends string>({
   to,
+  externalLink,
   params,
   children,
   css,
@@ -84,8 +88,23 @@ export function Link<RoutesType extends string>({
   blue = false,
   newTab = false,
 }: LinkProps<RoutesType>) {
-  let toStr: RoutesType | string = replaceParams(to, params);
-  toStr += hash ? `#${hash}` : "";
+  if (!to && !externalLink) {
+    throw new Error("Link must have either `to` or `externalLink` defined");
+  }
+
+  let toStr: RoutesType | string;
+  if (to) {
+    toStr = replaceParams(to, params);
+    toStr += hash ? `#${hash}` : "";
+  } else {
+    // externalLink must be defined
+    const definedExternalLink = externalLink as ExternalLink;
+    if (!definedExternalLink.startsWith("http")) {
+      throw new Error("Link's externalLink must start with http");
+    }
+    toStr = definedExternalLink;
+  }
+
   return (
     <RLink
       to={toStr}
@@ -105,6 +124,7 @@ type NavigateProps<RoutesType extends string> = Omit<
   LinkProps<RoutesType>,
   "children"
 > & {
+  to: RoutesType;
   state?: unknown;
   replace?: boolean;
 };
@@ -124,7 +144,7 @@ export function useNavigate<RoutesType extends string>() {
   return useCallback(
     (
       // number eg -1 can be passed to navigate back
-      to: LinkProps<RoutesType>["to"] | number,
+      to: RoutesType | number,
       params?: LinkProps<RoutesType>["params"],
       options?: NavigateOptions,
     ) => {
