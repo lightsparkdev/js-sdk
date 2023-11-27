@@ -15,6 +15,7 @@ import {
   type NavigateOptions,
 } from "react-router-dom";
 import { colors } from "./styles/colors.js";
+import { isString } from "./utils/strings.js";
 /* eslint-enable no-restricted-imports */
 
 export type QueryParams =
@@ -88,12 +89,12 @@ export function Link<RoutesType extends string>({
   blue = false,
   newTab = false,
 }: LinkProps<RoutesType>) {
-  if (!to && !externalLink) {
+  if (!isString(to) && !externalLink) {
     throw new Error("Link must have either `to` or `externalLink` defined");
   }
 
   let toStr: RoutesType | string;
-  if (to) {
+  if (isString(to)) {
     toStr = replaceParams(to, params);
     toStr += hash ? `#${hash}` : "";
   } else {
