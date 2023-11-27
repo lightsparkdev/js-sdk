@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/base.json",
+  "extends": "../tsconfig/base.json",
   "include": ["src", "src/crypto/types.ts"],
   "exclude": ["**/tests", "node_modules", "dist"]
 }
