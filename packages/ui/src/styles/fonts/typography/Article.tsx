@@ -1,5 +1,6 @@
 "use client";
 import styled from "@emotion/styled";
+import { StyledContentTable } from "../../../components/ContentTable.js";
 import { colors } from "../../colors.js";
 import { overflowAutoWithoutScrollbars } from "../../utils.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
@@ -52,6 +53,10 @@ export const Article = styled.article`
   ${StyledBody} {
     margin-top: 12px;
     margin-bottom: 12px;
+  }
+
+  ${StyledContentTable} {
+    margin: 40px 0;
   }
 
   img {

@@ -8,17 +8,24 @@ interface Props {
   children: React.ReactNode;
   size?: TokenSize;
   color?: string | undefined;
+  block?: boolean;
 }
 
-export const Title = ({ children, color, size = TokenSize.Medium }: Props) => {
+export const Title = ({
+  children,
+  color,
+  size = TokenSize.Medium,
+  block = false,
+}: Props) => {
   return (
-    <StyledTitle size={size} color={color}>
+    <StyledTitle size={size} color={color} block={block}>
       {children}
     </StyledTitle>
   );
 };
 
 export const StyledTitle = styled.span<Props>`
+  ${({ block }) => (block ? "display: block;" : "")}
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
     return size
