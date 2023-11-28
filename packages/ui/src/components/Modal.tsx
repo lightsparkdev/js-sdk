@@ -16,6 +16,7 @@ import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { Button } from "./Button.js";
 import { Icon } from "./Icon.js";
+import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type ModalProps = {
@@ -33,18 +34,15 @@ type ModalProps = {
   submitLoading?: boolean;
   submitText?: string;
   children: React.ReactNode;
-  /**
-   * most of the time this is an Element but not in the case of Select - it
-   * just extends .focus method:
-   */
+  /* most of the time this is an Element but not in the case of Select - it
+   * just extends .focus method: */
   firstFocusRef?: MutableRefObject<{ focus: () => void } | null>;
-  /**
-   * This should always be true for accessibility purposes unless you are
-   * managing focus in a child component
-   */
+  /* This should always be true for accessibility purposes unless you are
+   * managing focus in a child component */
   autoFocus?: boolean;
   nonDismissable?: boolean;
-  width?: number;
+  width?: 460 | 600;
+  progressBar?: ProgressBarProps;
 };
 
 export function Modal({
@@ -65,7 +63,8 @@ export function Modal({
   firstFocusRef,
   nonDismissable = false,
   autoFocus = true,
-  width,
+  width = 460,
+  progressBar,
 }: ModalProps) {
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
@@ -188,6 +187,14 @@ export function Modal({
             </CloseButton>
           )}
           <ModalContentInner ghost={ghost}>
+            {progressBar ? (
+              <div css={{ marginBottom: "20px" }}>
+                <ProgressBar
+                  progressPercentage={progressBar.progressPercentage}
+                  isSm={progressBar.isSm}
+                />
+              </div>
+            ) : null}
             {title ? <h4>{title}</h4> : null}
             {description ? <Description>{description}</Description> : null}
             <div>{children}</div>
@@ -297,14 +304,15 @@ const ModalButtonRow = styled.div`
 `;
 
 const ModalContent = styled.div<{
-  width?: number | undefined;
+  width: number;
   ghost?: boolean | undefined;
 }>`
   ${overflowAutoWithoutScrollbars}
   ${smContentInset}
   ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;
-  width: ${(props) => props.width || 430}px;
+  transition: width 0.25s ease-in;
+  width: ${(props) => props.width}px;
   max-width: 100%;
   max-height: 100%;
   border-radius: 16px;

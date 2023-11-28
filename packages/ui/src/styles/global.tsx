@@ -77,7 +77,7 @@ export const globalComponentStyles = ({ theme }: ThemeProp) => css`
   }
 
   strong {
-    font-weight: 600;
+    font-weight: 700;
   }
 `;
 

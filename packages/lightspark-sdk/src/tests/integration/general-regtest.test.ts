@@ -485,6 +485,20 @@ describe(p1SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
+  test("Should create and cancel uma invoice", async () => {
+    const umaInvoice = await lightsparkClient.createUmaInvoice(
+      getRegtestNodeId(),
+      10_000,
+      "hi there!",
+    );
+    expect(umaInvoice).toBeDefined();
+    const cancelledInvoice = await lightsparkClient.cancelInvoice(
+      umaInvoice!.id,
+    );
+    expect(cancelledInvoice).toBeDefined();
+    expect(cancelledInvoice?.id).toBe(umaInvoice?.id);
+  });
+
   test(
     "Should create STANDARD a test mode invoice",
     async () => {

@@ -11,9 +11,9 @@ const LeftArrow = () => (
     <path
       d="M12.9837 8.00003L3.01636 8.00003M3.01636 8.00003L7.01636 12.1905M3.01636 8.00003L7.01636 3.80955"
       stroke="#666666"
-      stroke-width="1.33333"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.33333"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

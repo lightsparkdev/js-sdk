@@ -18,6 +18,7 @@ export { LightboxImage } from "./LightboxImage.js";
 export { LightsparkProvider } from "./LightsparkProvider.js";
 export { Loading, LoadingWrapper } from "./Loading.js";
 export { Modal } from "./Modal.js";
+export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { SecretContainer } from "./SecretContainer.js";
 export {
   TextIconAligner,

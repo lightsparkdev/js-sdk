@@ -22,6 +22,7 @@ import packageJson from "../package.json";
 import CustomJwtAuthProvider from "./auth/jwt/CustomJwtAuthProvider.js";
 import type JwtStorage from "./auth/jwt/JwtStorage.js";
 import BitcoinFeeEstimateQuery from "./graqhql/BitcoinFeeEstimate.js";
+import { CancelInvoice } from "./graqhql/CancelInvoice.js";
 import CreateBitcoinFundingAddress from "./graqhql/CreateBitcoinFundingAddress.js";
 import CreateInvoice from "./graqhql/CreateInvoice.js";
 import CreateTestModeInvoice from "./graqhql/CreateTestModeInvoice.js";
@@ -412,6 +413,25 @@ class LightsparkClient {
       },
       constructObject: (responseJson: any) => {
         return InvoiceFromJson(responseJson.create_invoice.invoice);
+      },
+    });
+  }
+
+  /**
+   * Cancels an existing unpaid invoice and returns that invoice. Cancelled invoices cannot be paid.
+   *
+   * @param invoiceId The ID of the invoice to cancel.
+   * @returns The cancelled invoice, or undefined if the invoice could not be cancelled.
+   */
+  public async cancelInvoice(invoiceId: string) {
+    await this.requireValidAuth();
+    return await this.executeRawQuery({
+      queryPayload: CancelInvoice,
+      variables: {
+        invoice_id: invoiceId,
+      },
+      constructObject: (responseJson: any) => {
+        return InvoiceFromJson(responseJson.cancel_invoice.invoice);
       },
     });
   }
