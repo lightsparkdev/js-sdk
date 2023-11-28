@@ -13,15 +13,12 @@ import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 interface AccountToTransactionsConnection {
   /**
    * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page
-   * (in the `entities` field).
+   * It is different from the number of objects returned in the current page (in the `entities`
+   * field).
    **/
   count: number;
 
-  /**
-   * An object that holds pagination information about the objects in this
-   * connection. *
-   */
+  /** An object that holds pagination information about the objects in this connection. **/
   pageInfo: PageInfo;
 
   /** The transactions for the current page of this connection. **/
@@ -43,8 +40,8 @@ interface AccountToTransactionsConnection {
   averageFeeEarned?: CurrencyAmount | undefined;
 
   /**
-   * Total amount transacted by the transactions in this connection,
-   * with the set of filters and constraints provided.
+   * Total amount transacted by the transactions in this connection, with the set of filters and
+   * constraints provided.
    **/
   totalAmountTransacted?: CurrencyAmount | undefined;
 }

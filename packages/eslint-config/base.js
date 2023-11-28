@@ -2,7 +2,7 @@ const path = require("path");
 
 const commentOptions = {
   mode: "overflow-only",
-  maxLength: 80,
+  maxLength: 100,
   logicalWrap: true,
   ignoreUrls: true,
   ignoreCommentsWithCode: true,

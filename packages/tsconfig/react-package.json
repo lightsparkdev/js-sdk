@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/base.json",
+  "extends": "./base.json",
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     "jsx": "react-jsx",

@@ -12,9 +12,8 @@ import { NodeToAddressesConnectionFromJson } from "./NodeToAddressesConnection.j
 
 /**
  * This object represents a node that exists on the Lightning Network,
- * including nodes not managed by Lightspark.
- * You can retrieve this object to get publicly available information about any
- * node on the Lightning Network.
+ * including nodes not managed by Lightspark. You can retrieve this object to get publicly
+ * available information about any node on the Lightning Network.
  * *
  */
 class GraphNode implements Node, Entity {
@@ -31,40 +30,34 @@ class GraphNode implements Node, Entity {
     /** The Bitcoin Network this node is deployed in. **/
     public readonly bitcoinNetwork: BitcoinNetwork,
     /**
-     * The name of this node in the network.
-     * It will be the most human-readable option possible,
+     * The name of this node in the network. It will be the most human-readable option possible,
      * depending on the data available for this node.
      **/
     public readonly displayName: string,
     /** The typename of the object **/
     public readonly typename: string,
     /**
-     * A name that identifies the node.
-     * It has no importance in terms of operating the node,
-     * it is just a way to identify and search for commercial services or
-     * popular nodes. This alias can be changed at any time by the node
-     * operator.
+     * A name that identifies the node. It has no importance in terms of operating the node,
+     * it is just a way to identify and search for commercial services or popular nodes.
+     * This alias can be changed at any time by the node operator.
      **/
     public readonly alias?: string | undefined,
     /**
-     * A hexadecimal string that describes a color. For example "#000000" is
-     * black, "#FFFFFF" is white. It has no importance in terms of operating
-     * the node,
+     * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
+     * white. It has no importance in terms of operating the node,
      * it is just a way to visually differentiate nodes.
      * That color can be changed at any time by the node operator.
      **/
     public readonly color?: string | undefined,
     /**
-     * A summary metric used to capture how well positioned a node is to send,
-     * receive, or route transactions efficiently.
-     * Maximizing a node's conductivity helps a node’s transactions to be
-     * capital efficient. The value is an integer ranging between 0 and 10
-     * (bounds included).
+     * A summary metric used to capture how well positioned a node is to send, receive, or route
+     * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
+     * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
      **/
     public readonly conductivity?: number | undefined,
     /**
-     * The public key of this node. It acts as a unique identifier of this node
-     * in the Lightning Network. *
+     * The public key of this node. It acts as a unique identifier of this node in the Lightning
+     * Network. *
      */
     public readonly publicKey?: string | undefined,
   ) {

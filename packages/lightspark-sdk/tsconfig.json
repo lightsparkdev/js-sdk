@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/base.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     "exactOptionalPropertyTypes": false,
     /* Allow implicit any due to generated files. TODO look into resolving

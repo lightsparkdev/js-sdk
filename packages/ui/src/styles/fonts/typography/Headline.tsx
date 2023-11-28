@@ -40,7 +40,7 @@ export const getHeadlineText = (element: React.ReactNode): string => {
   }
 
   if (isReactNodeWithChildren(element)) {
-    getHeadlineText(element.props.children);
+    return getHeadlineText(element.props.children);
   }
 
   throw new Error(

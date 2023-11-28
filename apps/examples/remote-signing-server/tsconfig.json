@@ -1,3 +1,3 @@
 {
-  "extends": "@lightsparkdev/tsconfig/ts-node-app.json"
+  "extends": "../../../packages/tsconfig/ts-node-app.json"
 }

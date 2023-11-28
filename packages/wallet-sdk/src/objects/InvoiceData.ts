@@ -11,8 +11,8 @@ import { GraphNodeFromJson } from "./GraphNode.js";
 
 /**
  * This object represents the data associated with a BOLT #11 invoice.
- * You can retrieve this object to receive the relevant data associated with a
- * specific invoice. *
+ * You can retrieve this object to receive the relevant data associated with a specific invoice.
+ * *
  */
 interface InvoiceData {
   encodedPaymentRequest: string;

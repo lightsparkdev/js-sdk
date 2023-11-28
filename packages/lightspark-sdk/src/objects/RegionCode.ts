@@ -1,14 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-/**
- * The alpha-2 representation of a country, as defined by the ISO 3166-1
- * standard. *
- */
+/** The alpha-2 representation of a country, as defined by the ISO 3166-1 standard. **/
 export enum RegionCode {
   /**
-   * This is an enum value that represents values that could be added in the
-   * future. Clients should support unknown values as more of them could be
-   * added without notice.
+   * This is an enum value that represents values that could be added in the future.
+   * Clients should support unknown values as more of them could be added without notice.
    */
   FUTURE_VALUE = "FUTURE_VALUE",
   /** The code representing the country of Afghanistan. **/
@@ -63,15 +59,9 @@ export enum RegionCode {
   BM = "BM",
   /** The code representing the country of Bhutan. **/
   BT = "BT",
-  /**
-   * The code representing the country of The Plurinational State of Bolivia.
-   * *
-   */
+  /** The code representing the country of The Plurinational State of Bolivia. **/
   BO = "BO",
-  /**
-   * The code representing the country of Bonaire, Sint Eustatius, and Saba.
-   * *
-   */
+  /** The code representing the country of Bonaire, Sint Eustatius, and Saba. **/
   BQ = "BQ",
   /** The code representing the country of Bosnia and Herzegovina. **/
   BA = "BA",
@@ -119,10 +109,7 @@ export enum RegionCode {
   KM = "KM",
   /** The code representing the country of Congo. **/
   CG = "CG",
-  /**
-   * The code representing the country of The Democratic Republic of the Congo.
-   * *
-   */
+  /** The code representing the country of The Democratic Republic of the Congo. **/
   CD = "CD",
   /** The code representing the country of Cook Islands. **/
   CK = "CK",
@@ -212,10 +199,7 @@ export enum RegionCode {
   GY = "GY",
   /** The code representing the country of Haiti. **/
   HT = "HT",
-  /**
-   * The code representing the country of Heard Island and McDonald Islands.
-   * *
-   */
+  /** The code representing the country of Heard Island and McDonald Islands. **/
   HM = "HM",
   /** The code representing the country of Holy See (Vatican City State). **/
   VA = "VA",
@@ -257,10 +241,7 @@ export enum RegionCode {
   KE = "KE",
   /** The code representing the country of Kiribati. **/
   KI = "KI",
-  /**
-   * The code representing the country of Democratic People's Republic ofKorea.
-   * *
-   */
+  /** The code representing the country of Democratic People's Republic ofKorea. **/
   KP = "KP",
   /** The code representing the country of Republic of Korea. **/
   KR = "KR",
@@ -288,10 +269,7 @@ export enum RegionCode {
   LU = "LU",
   /** The code representing the country of Macao. **/
   MO = "MO",
-  /**
-   * The code representing the country of The Former Yugoslav Republic of
-   * Macedonia. *
-   */
+  /** The code representing the country of The Former Yugoslav Republic of Macedonia. **/
   MK = "MK",
   /** The code representing the country of Madagascar. **/
   MG = "MG",
@@ -399,10 +377,7 @@ export enum RegionCode {
   RW = "RW",
   /** The code representing the country of Saint Barthélemy. **/
   BL = "BL",
-  /**
-   * The code representing the country of Saint Helena  Ascension and Tristan
-   * da Cunha. *
-   */
+  /** The code representing the country of Saint Helena  Ascension and Tristan da Cunha. **/
   SH = "SH",
   /** The code representing the country of Saint Kitts and Nevis. **/
   KN = "KN",
@@ -444,10 +419,7 @@ export enum RegionCode {
   SO = "SO",
   /** The code representing the country of South Africa. **/
   ZA = "ZA",
-  /**
-   * The code representing the country of South Georgia and the South Sandwich
-   * Islands. *
-   */
+  /** The code representing the country of South Georgia and the South Sandwich Islands. **/
   GS = "GS",
   /** The code representing the country of South Sudan. **/
   SS = "SS",
@@ -507,10 +479,7 @@ export enum RegionCode {
   GB = "GB",
   /** The code representing the country of United States. **/
   US = "US",
-  /**
-   * The code representing the country of United States Minor Outlying Islands.
-   * *
-   */
+  /** The code representing the country of United States Minor Outlying Islands. **/
   UM = "UM",
   /** The code representing the country of Uruguay. **/
   UY = "UY",

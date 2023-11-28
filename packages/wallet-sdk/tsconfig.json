@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/base.json",
+  "extends": "../tsconfig/base.json",
   "compilerOptions": {
     /* Allow implicit any due to generated files. TODO look into resolving
        implicit any for generated files or move them out of the type checks */

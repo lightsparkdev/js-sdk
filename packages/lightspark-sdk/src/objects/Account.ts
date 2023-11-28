@@ -28,8 +28,8 @@ import type TransactionType from "./TransactionType.js";
 
 /**
  * This is an object representing the connected Lightspark account.
- * You can retrieve this object to see your account information and objects
- * tied to your account. *
+ * You can retrieve this object to see your account information and objects tied to your account.
+ * *
  */
 class Account implements LightsparkNodeOwner, Entity {
   constructor(

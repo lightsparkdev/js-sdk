@@ -3,8 +3,8 @@
 /**
  * This interface is used by all the entities in the Lightspark system.
  * It defines a few core fields that are available everywhere.
- * Any object that implements this interface can be queried using the `entity`
- * query and its ID. *
+ * Any object that implements this interface can be queried using the `entity` query and its ID.
+ * *
  */
 interface Entity {
   /**

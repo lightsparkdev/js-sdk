@@ -9,10 +9,10 @@ interface Props {
 }
 
 export const Code = ({ children, size = TokenSize.Medium }: Props) => {
-  return <CodeStyles size={size}>{children}</CodeStyles>;
+  return <StyledCode size={size}>{children}</StyledCode>;
 };
 
-const CodeStyles = styled.div<Props>`
+export const StyledCode = styled.div<Props>`
   ${({ theme, size }) => {
     return size
       ? getTypographyString(theme.typography[theme.app].Code[size])

@@ -14,16 +14,14 @@ interface CurrencyAmount {
   preferredCurrencyUnit: CurrencyUnit;
 
   /**
-   * The rounded numeric value for this CurrencyAmount in the very base level
-   * of user's preferred currency. For example, for USD, the value will be in
-   * cents.
+   * The rounded numeric value for this CurrencyAmount in the very base level of user's preferred
+   * currency. For example, for USD, the value will be in cents.
    **/
   preferredCurrencyValueRounded: number;
 
   /**
-   * The approximate float value for this CurrencyAmount in the very base level
-   * of user's preferred currency. For example, for USD, the value will be in
-   * cents.
+   * The approximate float value for this CurrencyAmount in the very base level of user's
+   * preferred currency. For example, for USD, the value will be in cents.
    **/
   preferredCurrencyValueApprox: number;
 }

@@ -27,7 +27,7 @@ a JWT allocated for the user by your own server.
 
 ![jwt diagram](./docs-media/jwt-diagram.png)
 
-First, you'll need to register your account public key with Lightspark. You can do this from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). You'll need to provide the public key for the account you want to use to sign JWTs. You can manually generate a keypair using the _ES256_ algorithm, or install and use our [Wallet CLI](https://app.lightspark.com/docs/wallet-sdk/wallet-cli) which can generate a new keypair for you:
+First, you'll need to register your account public key with Lightspark. You can do this from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). You'll need to provide the public key for the account you want to use to sign JWTs. You can manually generate a keypair using the _ES256_ algorithm, or install and use our [Wallet CLI](https://docs.lightspark.com/wallet-sdk/wallet-cli?language=Typescript) which can generate a new keypair for you:
 
 ```bash
 lightspark-wallet init-env

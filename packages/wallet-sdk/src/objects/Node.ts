@@ -8,9 +8,8 @@ import type NodeAddressType from "./NodeAddressType.js";
 import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 
 /**
- * This object is an interface representing a Lightning Node on the Lightning
- * Network, and could either be a Lightspark node or a node managed by a third
- * party.
+ * This object is an interface representing a Lightning Node on the Lightning Network,
+ * and could either be a Lightspark node or a node managed by a third party.
  * *
  */
 interface Node {
@@ -30,8 +29,7 @@ interface Node {
   bitcoinNetwork: BitcoinNetwork;
 
   /**
-   * The name of this node in the network.
-   * It will be the most human-readable option possible,
+   * The name of this node in the network. It will be the most human-readable option possible,
    * depending on the data available for this node.
    **/
   displayName: string;
@@ -40,34 +38,30 @@ interface Node {
   typename: string;
 
   /**
-   * A name that identifies the node. It has no importance in terms of
-   * operating the node, it is just a way to identify and search for commercial
-   * services or popular nodes. This alias can be changed at any time by the
-   * node operator.
+   * A name that identifies the node. It has no importance in terms of operating the node,
+   * it is just a way to identify and search for commercial services or popular nodes.
+   * This alias can be changed at any time by the node operator.
    **/
   alias?: string | undefined;
 
   /**
-   * A hexadecimal string that describes a color. For example "#000000" is
-   * black, "#FFFFFF" is white. It has no importance in terms of operating the
-   * node,
+   * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
+   * white. It has no importance in terms of operating the node,
    * it is just a way to visually differentiate nodes.
    * That color can be changed at any time by the node operator.
    **/
   color?: string | undefined;
 
   /**
-   * A summary metric used to capture how well positioned a node is to send,
-   * receive, or route transactions efficiently.
-   * Maximizing a node's conductivity helps a node’s transactions to be capital
-   * efficient. The value is an integer ranging between 0 and 10 (bounds
-   * included).
+   * A summary metric used to capture how well positioned a node is to send, receive, or route
+   * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
+   * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
    **/
   conductivity?: number | undefined;
 
   /**
-   * The public key of this node. It acts as a unique identifier of this node
-   * in the Lightning Network. *
+   * The public key of this node. It acts as a unique identifier of this node in the Lightning
+   * Network. *
    */
   publicKey?: string | undefined;
 

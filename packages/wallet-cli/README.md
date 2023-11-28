@@ -8,7 +8,7 @@ The `lightspark-wallet` script is a wrapper around the `wallet-sdk` which can si
 
 The first command you'll need to run get set up is init-env.
 
-You'll need to provide your Company Account ID and a JWT signing key that can mint wallet JWTs. You can set this up from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). For more info on JWT authentication, see the [Lightspark Wallet Authentication docs](https://app.lightspark.com/docs/api/wallet/authentication).
+You'll need to provide your Company Account ID and a JWT signing key that can mint wallet JWTs. You can set this up from the [Lightspark Account Settings page](https://app.lightspark.com/account#security). For more info on JWT authentication, see the [Lightspark Wallet Authentication docs](https://docs.lightspark.com/wallet-sdk/authentication?language=Typescript).
 
 If you run it without any arguments, it will prompt you for your account ID and JWT signing key:
 

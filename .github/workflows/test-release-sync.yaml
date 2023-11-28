@@ -32,6 +32,8 @@ jobs:
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
         with:
           node-version-file: ".nvmrc"
 
@@ -76,6 +78,8 @@ jobs:
 
       - name: "Setup Node v${{ matrix.node-version }}"
         uses: "actions/setup-node@v3"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -122,6 +126,8 @@ jobs:
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
         with:
           node-version-file: ".nvmrc"
 
@@ -163,6 +169,8 @@ jobs:
 
       - name: "Setup Node v${{ matrix.node-version }}"
         uses: "actions/setup-node@v3"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -197,6 +205,8 @@ jobs:
 
       - name: "Setup Node"
         uses: "actions/setup-node@v3"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
         with:
           node-version-file: ".nvmrc"
 

@@ -1,3 +1,5 @@
+import { type JSONType } from "./types.js";
+
 export const isError = (e: unknown): e is Error => {
   return Boolean(
     typeof e === "object" &&
@@ -34,3 +36,17 @@ export const isErrorMsg = (e: unknown, msg: string) => {
   }
   return false;
 };
+
+export function errorToJSON(err: unknown) {
+  if (
+    typeof err === "object" &&
+    err !== null &&
+    "toJSON" in err &&
+    typeof err.toJSON === "function"
+  ) {
+    return err.toJSON() as JSONType;
+  }
+  return JSON.parse(
+    JSON.stringify(err, Object.getOwnPropertyNames(err)),
+  ) as JSONType;
+}

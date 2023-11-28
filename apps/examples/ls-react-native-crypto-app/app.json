@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ls-react-native-crypto-example",
+    "name": "@lightsparkdev/ls-react-native-crypto-example",
     "slug": "ls-react-native-crypto-example",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lightspark.sdk.rn.crypto.example"

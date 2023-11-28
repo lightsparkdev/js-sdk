@@ -9,23 +9,17 @@ import type PageInfo from "./PageInfo.js";
 import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 
 interface WithdrawalRequestToChannelClosingTransactionsConnection {
-  /**
-   * An object that holds pagination information about the objects in this
-   * connection. *
-   */
+  /** An object that holds pagination information about the objects in this connection. **/
   pageInfo: PageInfo;
 
   /**
    * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page
-   * (in the `entities` field).
+   * It is different from the number of objects returned in the current page (in the `entities`
+   * field).
    **/
   count: number;
 
-  /**
-   * The channel closing transactions for the current page of this connection.
-   * *
-   */
+  /** The channel closing transactions for the current page of this connection. **/
   entities: ChannelClosingTransaction[];
 }
 

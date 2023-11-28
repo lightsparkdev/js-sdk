@@ -49,7 +49,7 @@ function DashboardPage() {
 
 ## Authentication
 
-The `JwtAuthProvider` component is used to authenticate with the user's Lightspark account. The `useLocalStorage` prop will store the access token in local storage, so that the user doesn't need to re-authenticate when they refresh the page. To initialize the client, you'll need to provide your Company Account ID and a JWT for the user. You can set this up from the [Lightspark API Tokens page](https://app.lightspark.com/api-config). For more info on JWT authentication, see the [Lightspark Wallet Authentication docs](https://app.lightspark.com/docs/api/wallet/authentication).
+The `JwtAuthProvider` component is used to authenticate with the user's Lightspark account. The `useLocalStorage` prop will store the access token in local storage, so that the user doesn't need to re-authenticate when they refresh the page. To initialize the client, you'll need to provide your Company Account ID and a JWT for the user. You can set this up from the [Lightspark API Tokens page](https://app.lightspark.com/api-config). For more info on JWT authentication, see the [Lightspark Wallet Authentication docs](https://docs.lightspark.com/wallet-sdk/authentication?language=Typescript).
 
 First, you'll need to create a JWT for the user. This can be done from your server, For example, to create a JWT from a typescript+node server:
 
