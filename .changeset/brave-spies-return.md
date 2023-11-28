@@ -3,4 +3,4 @@
 "@lightsparkdev/wallet-sdk": minor
 ---
 
-- Add a cancelInvoice function which cancels an unpaid invoice.
+Add a cancelInvoice function which cancels an unpaid invoice
