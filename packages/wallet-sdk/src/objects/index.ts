@@ -1,6 +1,8 @@
 export { default as AmazonS3FundsRecoveryKit } from "./AmazonS3FundsRecoveryKit.js";
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
+export { default as CancelInvoiceInput } from "./CancelInvoiceInput.js";
+export { default as CancelInvoiceOutput } from "./CancelInvoiceOutput.js";
 export {
   default as ChannelClosingTransaction,
   getChannelClosingTransactionQuery,

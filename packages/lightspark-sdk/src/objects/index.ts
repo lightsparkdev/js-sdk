@@ -9,6 +9,8 @@ export { default as ApiToken, getApiTokenQuery } from "./ApiToken.js";
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
 export { default as BlockchainBalance } from "./BlockchainBalance.js";
+export { default as CancelInvoiceInput } from "./CancelInvoiceInput.js";
+export { default as CancelInvoiceOutput } from "./CancelInvoiceOutput.js";
 export { default as Channel } from "./Channel.js";
 export {
   default as ChannelClosingTransaction,

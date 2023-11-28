@@ -27,6 +27,7 @@ import packageJson from "../package.json";
 import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
+import { CancelInvoice } from "./graphql/CancelInvoice.js";
 import { ClaimUmaInvitation } from "./graphql/ClaimUmaInvitation.js";
 import { ClaimUmaInvitationWithIncentives } from "./graphql/ClaimUmaInvitationWithIncentives.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
@@ -598,6 +599,23 @@ class LightsparkClient {
       variables,
     );
     const invoiceJson = response.create_uma_invoice?.invoice;
+    if (!invoiceJson) {
+      return undefined;
+    }
+    return InvoiceFromJson(invoiceJson);
+  }
+
+  /**
+   * Cancels an existing unpaid invoice and returns that invoice. Cancelled invoices cannot be paid.
+   *
+   * @param invoiceId The ID of the invoice to cancel.
+   * @returns The cancelled invoice, or undefined if the invoice could not be cancelled.
+   */
+  public async cancelInvoice(invoiceId: string): Promise<Invoice | undefined> {
+    const response = await this.requester.makeRawRequest(CancelInvoice, {
+      invoice_id: invoiceId,
+    });
+    const invoiceJson = response.cancel_invoice?.invoice;
     if (!invoiceJson) {
       return undefined;
     }
