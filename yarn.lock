@@ -4221,6 +4221,7 @@ __metadata:
     react-dom: ^18.1.0
     react-router-dom: 6.11.2
     react-tooltip: ^5.10.1
+    tsc-absolute: ^1.0.1
     tsup: ^7.2.0
     typescript: ^5.0.0
   languageName: unknown
