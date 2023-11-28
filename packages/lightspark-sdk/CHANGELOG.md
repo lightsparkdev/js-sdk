@@ -1,5 +1,18 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.3.0
+
+### Minor Changes
+
+- b473527: Add UMA invites functions
+- b473527: Add a cancelInvoice function which cancels an unpaid invoice
+
+### Patch Changes
+
+- 35513da: Upgrade dependencies
+- Updated dependencies [35513da]
+  - @lightsparkdev/core@1.0.12
+
 ## 1.2.3
 
 ### Patch Changes
