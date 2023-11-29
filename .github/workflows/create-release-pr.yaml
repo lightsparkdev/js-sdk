@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REF: ${{ github.ref }}
         run: |
-          node ./.github/workflows/ensureReleasePR.mjs
+          node ./.github/workflows/runEnsureReleasePR.mjs
 
       - name: "Checkout"
         uses: "actions/checkout@v3"
