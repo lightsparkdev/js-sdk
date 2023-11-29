@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.3.1
+
+### Patch Changes
+
+- 338e641: Fix a bug in parsing a successful uma payment
+
 ## 1.3.0
 
 ### Minor Changes
