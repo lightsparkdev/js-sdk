@@ -9,7 +9,7 @@ export async function ensureReleasePR({ github, ref, base = "main" }) {
     const prRequest = await github.rest.pulls.get({
       owner,
       repo,
-      pull_number: editedId,
+      pull_number: editingPRNumber,
     });
     return prRequest.data;
   }
