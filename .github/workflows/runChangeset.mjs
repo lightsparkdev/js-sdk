@@ -57,7 +57,7 @@ const workspace = {
 
 const parsedConfig = parseConfig(config, workspace);
 
-const releasePlan = assembleReleasePlan.default(
+const releasePlan = assembleReleasePlan(
   changesets,
   workspace,
   parsedConfig,
