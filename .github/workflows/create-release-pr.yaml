@@ -22,51 +22,13 @@ jobs:
         run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: current-branch-name
 
-      - name: Create release PR or get existing PR ID
-        id: get-pr
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            /* We already have the id if this is a PR edit event: */
-            const editedIdMatch = context.ref.match(/^refs\/pull\/(\d+)\//);
-            const editedId = editedIdMatch ? editedIdMatch[1] : null;
-            if (editedId) {
-              return editedId;
-            }
-
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const triggeringRefHead = context.ref.split('/').pop();
-            const base = "main";
-
-            const { data: prs } = await github.rest.pulls.list({
-              owner,
-              repo,
-            });
-
-            let pr = prs.find((pr) => {
-              return pr.head.ref === triggeringRefHead && pr.base.ref === base;
-            });
-
-            if (!pr) {
-              const { data: latestCommit } = await github.rest.repos.getCommit({
-                owner,
-                repo,
-                ref: triggeringRefHead,
-              });
-
-              const result = await github.rest.pulls.create({
-                owner,
-                repo,
-                head: triggeringRefHead,
-                base,
-                title: latestCommit.commit.message.replace(/\sGitOrigin-RevId.*/, "").replace(/^(.+)\s\(#[0-9]+\).*/, "$1").substring(0, 80),
-                body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the link provided by changeset bot below."
-              });
-              pr = result.data;
-            }
-            return pr.number;
+      - name: Create release PR if necessary
+        id: create-release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          node ./.github/workflows/ensureReleasePR.mjs
 
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -110,8 +72,6 @@ jobs:
         id: pr-comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
-          GITHUB_REPO: ${{ github.repository }}
           GITHUB_REF: ${{ github.ref }}
           LAST_COMMIT: ${{ steps.pr-comment-vars.outputs.lastCommit }}
           CHANGESET: ${{ steps.changesets.outputs.changeset }}
