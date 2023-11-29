@@ -26,12 +26,15 @@ if [ "$use_examples_filters" -eq 1 ]; then
 elif [ "$use_private_filters" -eq 1 ]; then
   build_cmd+=" $private_filters"
   start_cmd+=" $private_filters"
-else
+elif [ $# -gt 0 ]; then
   # Process regular arguments if no special arguments are found
   for arg in "$@"; do
     build_cmd+=" --filter=@lightsparkdev/$arg"
     start_cmd+=" --filter=@lightsparkdev/$arg"
   done
+else
+  build_cmd+=" $private_filters --filter=@lightsparkdev/ui"
+  start_cmd+=" $private_filters --filter=@lightsparkdev/ui"
 fi
 
 echo $build_cmd && eval $build_cmd && echo $start_cmd && eval $start_cmd
