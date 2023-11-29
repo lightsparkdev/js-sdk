@@ -93,8 +93,5 @@ const changeset = {
   }),
 };
 
-console.log("changeset", changeset);
-
 const changesetStr = JSON.stringify(changeset);
-console.log("changesetStr", changesetStr);
 process.stdout.write(`\nchangeset='${changesetStr}'`);
