@@ -5,11 +5,12 @@ const auth = createActionAuth();
 const authentication = await auth();
 console.log("authentication", authentication);
 
-const octokit = new Octokit({
+const github = new Octokit({
   authStrategy: createActionAuth,
   auth: authentication,
 });
 
+const ref = process.env.GITHUB_REF;
 const owner = "lightsparkdev";
 const repo = "lightsparkdev/js-sdk";
 const base = "main";
@@ -18,60 +19,56 @@ let pr;
 console.log("process.env.GITHUB_REF", process.env.GITHUB_REF);
 
 /* We already have the id if this is a PR edit event: */
-const editedIdMatch = process.env.GITHUB_REF.match(/^refs\/pull\/(\d+)\//);
+const editedIdMatch = ref.match(/^refs\/pull\/(\d+)\//);
 const editedId = editedIdMatch ? editedIdMatch[1] : null;
 
-console.log({
-  editedId,
-  editedIdMatch,
+if (editedId) {
+  const prRequest = await github.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: editedId,
+  });
+  pr = prRequest.data;
+} else {
+  const triggeringRefHead = ref.split("/").pop();
+
+  const { data: prs } = await github.rest.pulls.list({
+    owner,
+    repo,
+  });
+
+  pr = prs.find((pr) => {
+    return pr.head.ref === triggeringRefHead && pr.base.ref === base;
+  });
+
+  if (!pr) {
+    const { data: latestCommit } = await github.rest.repos.getCommit({
+      owner,
+      repo,
+      ref: triggeringRefHead,
+    });
+
+    const result = await github.rest.pulls.create({
+      owner,
+      repo,
+      head: triggeringRefHead,
+      base,
+      title: latestCommit.commit.message
+        .replace(/\sGitOrigin-RevId.*/, "")
+        .replace(/^(.+)\s\(#[0-9]+\).*/, "$1")
+        .substring(0, 80),
+      body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch.",
+    });
+    pr = result.data;
+  }
+}
+
+const { data: comments } = await github.rest.issues.listComments({
+  owner,
+  repo,
+  issue_number: pr.number,
 });
-
-// if (editedId) {
-//   const prRequest = await github.rest.pulls.get({
-//     owner,
-//     repo,
-//     pull_number: editedId,
-//   });
-//   pr = prRequest.data;
-// } else {
-//   const triggeringRefHead = context.ref.split("/").pop();
-
-//   const { data: prs } = await github.rest.pulls.list({
-//     owner,
-//     repo,
-//   });
-
-//   pr = prs.find((pr) => {
-//     return pr.head.ref === triggeringRefHead && pr.base.ref === base;
-//   });
-
-//   if (!pr) {
-//     const { data: latestCommit } = await github.rest.repos.getCommit({
-//       owner,
-//       repo,
-//       ref: triggeringRefHead,
-//     });
-
-//     const result = await github.rest.pulls.create({
-//       owner,
-//       repo,
-//       head: triggeringRefHead,
-//       base,
-//       title: latestCommit.commit.message
-//         .replace(/\sGitOrigin-RevId.*/, "")
-//         .replace(/^(.+)\s\(#[0-9]+\).*/, "$1")
-//         .substring(0, 80),
-//       body: "If this change should result in new package versions please add a changeset before merging. You can do so by clicking the maintainers link provided by changeset-bot below.\n\nPlease note that changeset-bot appears to produce inconsistent / incorrect results with the latest version of changesets when run locally. Be sure to check that it is correctly mentioning the changed packages in the referenced link, or produce the changeset locally `yarn changeset` and push it to the branch.",
-//     });
-//     pr = result.data;
-//   }
-// }
-
-// const { data: comments } = await github.rest.issues.listComments({
-//   owner,
-//   repo,
-//   issue_number: pr.number,
-// });
+console.log("comments", comments);
 
 // /* 41898282 is github-actions[bot] */
 // let comment = comments.find((comment) => comment.user.id === 41898282);
