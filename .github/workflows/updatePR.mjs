@@ -70,7 +70,8 @@ const { data: comments } = await github.rest.issues.listComments({
 let comment = comments.find((comment) => comment.user.id === 41898282);
 
 console.log("process.env.CHANGESET", process.env.CHANGESET);
-const changesetRawStr = process.env.CHANGESET.replace(/\n/g, "\\n");
+let changesetRawStr = process.env.CHANGESET.replace(/\n/g, "\\n");
+changesetRawStr = changesetRawStr.replace(/^'(.*)'$/, "$1");
 console.log("changesetRawStr", changesetRawStr);
 const hasUndef = changesetRawStr.includes("undefined");
 console.log("hasUndef", hasUndef);
