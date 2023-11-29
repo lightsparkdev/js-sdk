@@ -1,5 +1,17 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.9.0
+
+### Minor Changes
+
+- b473527: Add a cancelInvoice function which cancels an unpaid invoice
+
+### Patch Changes
+
+- 35513da: Upgrade dependencies
+- Updated dependencies [35513da]
+  - @lightsparkdev/core@1.0.12
+
 ## 0.8.2
 
 ### Patch Changes
