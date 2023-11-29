@@ -1,11 +1,15 @@
 import { Octokit, App } from "octokit";
+const { createActionAuth } = require("@octokit/auth-action");
+// or: import { createActionAuth } from "@octokit/auth-action";
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const auth = createActionAuth();
+const authentication = await auth();
+console.log("authentication", authentication);
 
-const {
-  data: { login },
-} = await octokit.rest.users.getAuthenticated();
-console.log("Hello, %s", login);
+const octokit = new Octokit({ auth: authentication });
+
+const { data } = await octokit.rest.repos.listForAuthenticatedUser();
+console.log("data", data);
 
 // const owner = context.repo.owner;
 // const repo = context.repo.repo;
