@@ -95,7 +95,7 @@ jobs:
       - name: Run changeset
         id: changeset
         run: |
-          echo "$(node ./.github/workflows/runChangeset.mjs | grep changeset)" >> $GITHUB_OUTPUT
+          echo "$(node ./.github/workflows/runChangeset.mjs | grep changeset)"
 
       - name: List changed packages
         run: |
