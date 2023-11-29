@@ -110,6 +110,8 @@ jobs:
         id: pr-comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPO: ${{ github.repository }}
           LAST_COMMIT: ${{ steps.pr-comment-vars.outputs.lastCommit }}
           CHANGESET: ${{ steps.changeset.outputs.changeset }}
         run: |

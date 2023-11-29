@@ -10,7 +10,8 @@ const octokit = new Octokit({
   auth: authentication,
 });
 
-const { data } = await octokit.rest.repos.listForAuthenticatedUser();
+console.log("owner", process.env.GITHUB_OWNER);
+console.log("repo", process.env.GITHUB_REPO);
 console.log("data", data);
 
 // const owner = context.repo.owner;
