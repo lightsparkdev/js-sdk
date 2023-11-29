@@ -12,7 +12,6 @@ const octokit = new Octokit({
 
 console.log("owner", process.env.GITHUB_OWNER);
 console.log("repo", process.env.GITHUB_REPO);
-console.log("data", data);
 
 // const owner = context.repo.owner;
 // const repo = context.repo.repo;
