@@ -5,7 +5,10 @@ const auth = createActionAuth();
 const authentication = await auth();
 console.log("authentication", authentication);
 
-const octokit = new Octokit({ auth: authentication });
+const octokit = new Octokit({
+  authStrategy: createActionAuth,
+  auth: authentication,
+});
 
 const { data } = await octokit.rest.repos.listForAuthenticatedUser();
 console.log("data", data);
