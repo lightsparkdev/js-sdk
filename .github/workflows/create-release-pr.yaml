@@ -112,6 +112,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
           GITHUB_REPO: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
           LAST_COMMIT: ${{ steps.pr-comment-vars.outputs.lastCommit }}
           CHANGESET: ${{ steps.changeset.outputs.changeset }}
         run: |

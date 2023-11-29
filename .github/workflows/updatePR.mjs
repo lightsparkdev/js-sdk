@@ -10,17 +10,21 @@ const octokit = new Octokit({
   auth: authentication,
 });
 
-console.log("owner", process.env.GITHUB_OWNER);
-console.log("repo", process.env.GITHUB_REPO);
+const owner = "lightsparkdev";
+const repo = "lightsparkdev/js-sdk";
+const base = "main";
+let pr;
 
-// const owner = context.repo.owner;
-// const repo = context.repo.repo;
-// const base = "main";
-// let pr;
+console.log("process.env.GITHUB_REF", process.env.GITHUB_REF);
 
-// /* We already have the id if this is a PR edit event: */
-// const editedIdMatch = context.ref.match(/^refs\/pull\/(\d+)\//);
-// const editedId = editedIdMatch ? editedIdMatch[1] : null;
+/* We already have the id if this is a PR edit event: */
+const editedIdMatch = process.env.GITHUB_REF.match(/^refs\/pull\/(\d+)\//);
+const editedId = editedIdMatch ? editedIdMatch[1] : null;
+
+console.log({
+  editedId,
+  editedIdMatch,
+});
 
 // if (editedId) {
 //   const prRequest = await github.rest.pulls.get({
