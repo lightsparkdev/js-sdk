@@ -4539,6 +4539,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/auth-action@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@octokit/auth-action@npm:4.0.1"
+  dependencies:
+    "@octokit/auth-token": ^4.0.0
+    "@octokit/types": ^12.0.0
+  checksum: d280794a96657075397a2a180e723f2d1d76735739ae8f970dd08a8ff80c6b7b453e94ed9eb35aa94fa3644d317def597c678c3b170bf9317238ac9b1ed2bde5
+  languageName: node
+  linkType: hard
+
 "@octokit/auth-app@npm:^6.0.0":
   version: 6.0.1
   resolution: "@octokit/auth-app@npm:6.0.1"
@@ -14556,6 +14566,7 @@ __metadata:
   dependencies:
     "@changesets/cli": ^2.27.1
     "@manypkg/cli": ^0.21.0
+    "@octokit/auth-action": ^4.0.1
     octokit: ^3.1.2
     rehype-autolink-headings: ^7.0.0
     ts-prune: ^0.10.3
