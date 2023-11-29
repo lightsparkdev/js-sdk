@@ -93,9 +93,9 @@ jobs:
           install-mode: "install-allow-lock-update"
 
       - name: Run changeset
-        id: changeset
+        id: changesets
         run: |
-          echo "$(node ./.github/workflows/runChangeset.mjs | grep changeset)"
+          echo "$(node ./.github/workflows/runChangeset.mjs | grep changeset)" >> $GITHUB_OUTPUT
 
       - name: List changed packages
         run: |
@@ -114,6 +114,6 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_REF: ${{ github.ref }}
           LAST_COMMIT: ${{ steps.pr-comment-vars.outputs.lastCommit }}
-          CHANGESET: ${{ steps.changeset.outputs.changeset }}
+          CHANGESET: ${{ steps.changesets.outputs.changeset }}
         run: |
           node ./.github/workflows/updatePR.mjs
