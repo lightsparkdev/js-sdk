@@ -1,5 +1,5 @@
 import { Octokit, App } from "octokit";
-import { createAppAuth } from "@octokit/auth-app";
+import { createActionAuth } from "@octokit/auth-action";
 
 const auth = createActionAuth();
 const authentication = await auth();
