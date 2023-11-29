@@ -22,13 +22,13 @@ jobs:
         run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: current-branch-name
 
-      # - name: Create release PR if necessary
-      #   id: create-release-pr
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     GITHUB_REF: ${{ github.ref }}
-      #   run: |
-      #     node ./.github/workflows/runEnsureReleasePR.mjs
+      - name: Create release PR if necessary
+        id: create-release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          node ./.github/workflows/runEnsureReleasePR.mjs
 
       - name: "Checkout"
         uses: "actions/checkout@v3"
