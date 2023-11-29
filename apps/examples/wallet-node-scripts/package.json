@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/wallet-node-scripts",
-  "version": "1.0.15",
+  "version": "1.0.14",
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",
   "private": true,
@@ -16,8 +16,8 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.0.12",
-    "@lightsparkdev/wallet-sdk": "0.9.0",
+    "@lightsparkdev/core": "1.0.11",
+    "@lightsparkdev/wallet-sdk": "0.8.2",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7"
   }
