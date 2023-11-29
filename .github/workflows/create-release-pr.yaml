@@ -22,14 +22,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create release PR if necessary
-        id: create-release-pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF: ${{ github.ref }}
-        run: |
-          node ./.github/workflows/runEnsureReleasePR.mjs
-
       - name: Create main branch
         run: "git branch --track main origin/main"
 
@@ -48,6 +40,14 @@ jobs:
           # sync up with the test-release-sync workflow (which actually needs the lock
           # to be updated and runs at the same time)
           install-mode: "install-allow-lock-update"
+
+      - name: Create release PR if necessary
+        id: create-release-pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REF: ${{ github.ref }}
+        run: |
+          node ./.github/workflows/runEnsureReleasePR.mjs
 
       - name: Run changeset
         id: changesets
