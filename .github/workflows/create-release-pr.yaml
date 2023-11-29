@@ -17,10 +17,10 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Save branch name output
-        shell: bash
-        run: echo "branchName=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: current-branch-name
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          fetch-depth: 0
 
       - name: Create release PR if necessary
         id: create-release-pr
@@ -29,11 +29,6 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |
           node ./.github/workflows/runEnsureReleasePR.mjs
-
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-        with:
-          fetch-depth: 0
 
       - name: Create main branch
         run: "git branch --track main origin/main"
