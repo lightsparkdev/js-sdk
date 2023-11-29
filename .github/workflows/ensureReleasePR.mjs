@@ -4,7 +4,7 @@ export async function ensureReleasePR({ github, ref, base = "main" }) {
 
   /* We already have the PR number if this is a PR edit event: */
   const editingPRNumberMatch = ref.match(/^refs\/pull\/(\d+)\//);
-  const editingPRNumber = editPRNumberMatch ? editPRNumberMatch[1] : null;
+  const editingPRNumber = editingPRNumberMatch ? editingPRNumberMatch[1] : null;
   if (editingPRNumber) {
     const prRequest = await github.rest.pulls.get({
       owner,
