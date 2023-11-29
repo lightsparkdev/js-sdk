@@ -68,8 +68,8 @@ const { data: comments } = await github.rest.issues.listComments({
 
 /* 41898282 is github-actions[bot] */
 let comment = comments.find((comment) => comment.user.id === 41898282);
-console.log("process.env.CHANGESET", process.env.CHANGESET);
 
+console.log("process.env.CHANGESET", process.env.CHANGESET);
 const changesetRawStr = process.env.CHANGESET.replace(/\n/g, "\\n");
 console.log("changesetRawStr", changesetRawStr);
 const changeset = JSON.parse(changesetRawStr);
