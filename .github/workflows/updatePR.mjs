@@ -12,7 +12,7 @@ const github = new Octokit({
 
 const ref = process.env.GITHUB_REF;
 const owner = "lightsparkdev";
-const repo = "lightsparkdev/js-sdk";
+const repo = "js-sdk";
 const base = "main";
 let pr;
 
@@ -36,6 +36,7 @@ if (editedId) {
     owner,
     repo,
   });
+  console.log("prs", prs);
 
   pr = prs.find((pr) => {
     return pr.head.ref === triggeringRefHead && pr.base.ref === base;
