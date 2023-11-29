@@ -827,16 +827,16 @@ class LightsparkClient {
       variables,
       payerNodeId,
     );
-    if (response.pay_invoice?.payment.outgoing_payment_failure_message) {
+    if (response.pay_uma_invoice?.payment.outgoing_payment_failure_message) {
       throw new LightsparkException(
         "PaymentError",
-        response.pay_invoice?.payment.outgoing_payment_failure_message
+        response.pay_uma_invoice?.payment.outgoing_payment_failure_message
           .rich_text_text,
       );
     }
     return (
       response.pay_uma_invoice &&
-      OutgoingPaymentFromJson(response.pay_invoice.payment)
+      OutgoingPaymentFromJson(response.pay_uma_invoice.payment)
     );
   }
 
