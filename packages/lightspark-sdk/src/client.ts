@@ -50,15 +50,18 @@ import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
+import { RegisterPayment } from "./graphql/RegisterPayment.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
+import { ScreenNode } from "./graphql/ScreenNode.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
-import { TransactionStatus } from "./index.js";
+import { RiskRating, TransactionStatus } from "./index.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
+import type ComplianceProvider from "./objects/ComplianceProvider.js";
 import type CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
@@ -73,6 +76,7 @@ import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
 import InvoiceType from "./objects/InvoiceType.js";
 import type OutgoingPayment from "./objects/OutgoingPayment.js";
 import { OutgoingPaymentFromJson } from "./objects/OutgoingPayment.js";
+import type PaymentDirection from "./objects/PaymentDirection.js";
 import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
 import type RegionCode from "./objects/RegionCode.js";
@@ -1125,6 +1129,78 @@ class LightsparkClient {
         return IncomingPaymentFromJson(
           responseJson.create_test_mode_payment?.incoming_payment,
         );
+      },
+    });
+  }
+
+  /**
+   * Performs sanction screening on a lightning node against a given compliance provider.
+   *
+   * @param complianceProvider The provider that you want to use to perform the screening. You must have a valid
+   *     API token for the provider set in your Lightspark account settings.
+   * @param nodePubKey The public key of the node that needs to be screened.
+   * @returns A RiskRating for the node.
+   */
+  public async screenNode(
+    complianceProvider: ComplianceProvider,
+    nodePubKey: string,
+  ): Promise<RiskRating | null> {
+    return await this.requester.executeQuery({
+      queryPayload: ScreenNode,
+      variables: {
+        node_pubkey: nodePubKey,
+        provider: complianceProvider,
+      },
+      constructObject: (responseJson: {
+        screen_node: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (responseJson.screen_node?.rating === undefined) {
+          throw new LightsparkException(
+            "ScreenNodeError",
+            "Unable to screen node",
+          );
+        }
+        const rating = responseJson.screen_node.rating;
+        return RiskRating[rating] ?? RiskRating.FUTURE_VALUE;
+      },
+    });
+  }
+
+  /**
+   * Registers a succeeded payment with a compliance provider for monitoring.
+   *
+   * @param complianceProvider The provider that you want to use to register the payment. You must have
+   *     a valid API token for the provider set in your Lightspark account settings.
+   * @param paymentId The unique ID of the payment
+   * @param nodePubKey The public key of the counterparty node which is the recipient node if the
+   *     payment is an outgoing payment and the sender node if the payment is an incoming payment.
+   * @param paymentDirection Indicates whether the payment is an incoming or outgoing payment.
+   * @returns The ID of the payment that was registered.
+   */
+  public async registerPayment(
+    complianceProvider: ComplianceProvider,
+    paymentId: string,
+    nodePubKey: string,
+    paymentDirection: PaymentDirection,
+  ): Promise<string | null> {
+    return await this.requester.executeQuery({
+      queryPayload: RegisterPayment,
+      variables: {
+        payment_id: paymentId,
+        node_pubkey: nodePubKey,
+        direction: paymentDirection,
+        provider: complianceProvider,
+      },
+      constructObject: (responseJson: {
+        register_payment: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (!responseJson.register_payment?.payment?.id) {
+          throw new LightsparkException(
+            "RegisterPaymentError",
+            "Unable to register payment",
+          );
+        }
+        return responseJson.register_payment.payment.id as string;
       },
     });
   }
