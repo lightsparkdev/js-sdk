@@ -33,8 +33,8 @@ import { SecretFromJson, SecretToJson } from "./Secret.js";
 class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems.
-     * Should be treated as an opaque string.
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+     * opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
@@ -58,16 +58,15 @@ class LightsparkNodeWithOSK implements LightsparkNode, Node, Entity {
     /** The typename of the object **/
     public readonly typename: string,
     /**
-     * A name that identifies the node. It has no importance in terms of operating the node,
-     * it is just a way to identify and search for commercial services or popular nodes.
-     * This alias can be changed at any time by the node operator.
+     * A name that identifies the node. It has no importance in terms of operating the node, it is
+     * just a way to identify and search for commercial services or popular nodes. This alias can
+     * be changed at any time by the node operator.
      **/
     public readonly alias?: string | undefined,
     /**
      * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
-     * white. It has no importance in terms of operating the node,
-     * it is just a way to visually differentiate nodes.
-     * That color can be changed at any time by the node operator.
+     * white. It has no importance in terms of operating the node, it is just a way to visually
+     * differentiate nodes. That color can be changed at any time by the node operator.
      **/
     public readonly color?: string | undefined,
     /**

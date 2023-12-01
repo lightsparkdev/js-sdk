@@ -8,16 +8,14 @@ export enum WalletStatus {
    */
   FUTURE_VALUE = "FUTURE_VALUE",
   /**
-   * The wallet has not been set up yet and is ready to be deployed.
-   * This is the default status after the first login.
-   * *
+   * The wallet has not been set up yet and is ready to be deployed. This is the default status
+   * after the first login. *
    */
   NOT_SETUP = "NOT_SETUP",
   /** The wallet is currently being deployed in the Lightspark infrastructure. **/
   DEPLOYING = "DEPLOYING",
   /**
-   * The wallet has been deployed in the Lightspark infrastructure and is ready to be initialized.
-   * *
+   * The wallet has been deployed in the Lightspark infrastructure and is ready to be initialized. *
    */
   DEPLOYED = "DEPLOYED",
   /** The wallet is currently being initialized. **/
@@ -35,8 +33,8 @@ export enum WalletStatus {
   TERMINATING = "TERMINATING",
   /**
    * The wallet has been terminated and is not available in the Lightspark infrastructure anymore.
-   * It is not connected to the Lightning network and its funds can only be accessed using the Funds
-   * Recovery flow. *
+   * It is not connected to the Lightning network and its funds can only be accessed using the
+   * Funds Recovery flow. *
    */
   TERMINATED = "TERMINATED",
 }

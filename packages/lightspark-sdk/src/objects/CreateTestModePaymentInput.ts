@@ -8,8 +8,8 @@ interface CreateTestModePaymentInput {
   encodedInvoice: string;
 
   /**
-   * The amount you will be paid for this invoice, expressed in msats.
-   * It should ONLY be set when the invoice amount is zero.
+   * The amount you will be paid for this invoice, expressed in msats. It should ONLY be set when
+   * the invoice amount is zero.
    **/
   amountMsats?: number | undefined;
 }

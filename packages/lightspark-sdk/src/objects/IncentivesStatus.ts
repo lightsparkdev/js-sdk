@@ -15,9 +15,8 @@ export enum IncentivesStatus {
   /** The incentives have been validated. **/
   VALIDATED = "VALIDATED",
   /**
-   * This invitation is not eligible for incentives.
-   * A more detailed reason can be found in the `incentives_ineligibility_reason` field.
-   * *
+   * This invitation is not eligible for incentives. A more detailed reason can be found in the
+   * `incentives_ineligibility_reason` field. *
    */
   INELIGIBLE = "INELIGIBLE",
 }

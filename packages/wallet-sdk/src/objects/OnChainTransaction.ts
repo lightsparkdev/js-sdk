@@ -13,15 +13,14 @@ import TransactionStatus from "./TransactionStatus.js";
 import type Withdrawal from "./Withdrawal.js";
 
 /**
- * This object represents an L1 transaction that occurred on the Bitcoin Network.
- * You can retrieve this object to receive information about a specific on-chain transaction made
- * on the Lightning Network associated with your Lightspark Node.
- * *
+ * This object represents an L1 transaction that occurred on the Bitcoin Network. You can retrieve
+ * this object to receive information about a specific on-chain transaction made on the Lightning
+ * Network associated with your Lightspark Node. *
  */
 interface OnChainTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

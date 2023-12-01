@@ -10,12 +10,16 @@ import {
 import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import type WalletToWithdrawalRequestsConnection from "./WalletToWithdrawalRequestsConnection.js";
+import {
+  WithdrawalRequestFromJson,
+  WithdrawalRequestToJson,
+} from "./WithdrawalRequest.js";
 
 interface Connection {
   /**
-   * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page (in the `entities`
-   * field).
+   * The total count of objects in this connection, using the current filters. It is different
+   * from the number of objects returned in the current page (in the `entities` field).
    **/
   count: number;
 
@@ -50,6 +54,18 @@ export const ConnectionFromJson = (obj: any): Connection => {
       ),
       typename: "WalletToTransactionsConnection",
     } as WalletToTransactionsConnection;
+  }
+  if (obj["__typename"] == "WalletToWithdrawalRequestsConnection") {
+    return {
+      count: obj["wallet_to_withdrawal_requests_connection_count"],
+      pageInfo: PageInfoFromJson(
+        obj["wallet_to_withdrawal_requests_connection_page_info"],
+      ),
+      entities: obj["wallet_to_withdrawal_requests_connection_entities"].map(
+        (e) => WithdrawalRequestFromJson(e),
+      ),
+      typename: "WalletToWithdrawalRequestsConnection",
+    } as WalletToWithdrawalRequestsConnection;
   }
   throw new LightsparkException(
     "DeserializationError",
@@ -89,6 +105,22 @@ export const ConnectionToJson = (obj: Connection): any => {
         ),
     };
   }
+  if (obj.typename == "WalletToWithdrawalRequestsConnection") {
+    const walletToWithdrawalRequestsConnection =
+      obj as WalletToWithdrawalRequestsConnection;
+    return {
+      __typename: "WalletToWithdrawalRequestsConnection",
+      wallet_to_withdrawal_requests_connection_count:
+        walletToWithdrawalRequestsConnection.count,
+      wallet_to_withdrawal_requests_connection_page_info: PageInfoToJson(
+        walletToWithdrawalRequestsConnection.pageInfo,
+      ),
+      wallet_to_withdrawal_requests_connection_entities:
+        walletToWithdrawalRequestsConnection.entities.map((e) =>
+          WithdrawalRequestToJson(e),
+        ),
+    };
+  }
   throw new LightsparkException(
     "DeserializationError",
     `Couldn't find a concrete type for interface Connection corresponding to the typename=${obj.typename}`,
@@ -123,6 +155,20 @@ fragment ConnectionFragment on Connection {
             page_info_end_cursor: end_cursor
         }
         wallet_to_transactions_connection_entities: entities {
+            id
+        }
+    }
+    ... on WalletToWithdrawalRequestsConnection {
+        __typename
+        wallet_to_withdrawal_requests_connection_count: count
+        wallet_to_withdrawal_requests_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        wallet_to_withdrawal_requests_connection_entities: entities {
             id
         }
     }

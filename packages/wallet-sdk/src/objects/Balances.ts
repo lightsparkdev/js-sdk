@@ -7,18 +7,16 @@ import {
 } from "./CurrencyAmount.js";
 
 /**
- * This is an object representing the balance associated with your Lightspark account.
- * You can retrieve this object to see your balance,
- * which can be broken down into several different categorizations.
- * *
+ * This is an object representing the balance associated with your Lightspark account. You can
+ * retrieve this object to see your balance, which can be broken down into several different
+ * categorizations. *
  */
 interface Balances {
   /**
    * This represents the balance that should be displayed when asked "how much do I own right
-   * now?". It represents the amount currently owned,
-   * including things that may not be owned soon (e.g. in-flight outgoing payments, in-flight
-   * withdrawals, commit fees, etc.). It really is a snapshot of what is officially owned at this
-   * instant.
+   * now?". It represents the amount currently owned, including things that may not be owned soon
+   * (e.g. in-flight outgoing payments, in-flight withdrawals, commit fees, etc.). It really is a
+   * snapshot of what is officially owned at this instant.
    **/
   ownedBalance: CurrencyAmount;
 
@@ -32,10 +30,9 @@ interface Balances {
 
   /**
    * This represents the balance that should be displayed when asked "how much money can I
-   * withdraw on the Bitcoin network right now?".
-   * It represents the amount currently available to withdraw and is usually equal to the
-   * `owned_balance` but it does not include in-flight operations (which would likely succeed and
-   * therefore likely make your withdrawal fail).
+   * withdraw on the Bitcoin network right now?". It represents the amount currently available to
+   * withdraw and is usually equal to the `owned_balance` but it does not include in-flight
+   * operations (which would likely succeed and therefore likely make your withdrawal fail).
    **/
   availableToWithdrawBalance: CurrencyAmount;
 }

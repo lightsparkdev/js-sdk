@@ -88,6 +88,7 @@ export { default as WalletDashboard } from "./WalletDashboard.js";
 export { default as WalletStatus } from "./WalletStatus.js";
 export { default as WalletToPaymentRequestsConnection } from "./WalletToPaymentRequestsConnection.js";
 export { default as WalletToTransactionsConnection } from "./WalletToTransactionsConnection.js";
+export { default as WalletToWithdrawalRequestsConnection } from "./WalletToWithdrawalRequestsConnection.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export {
   default as WithdrawalRequest,

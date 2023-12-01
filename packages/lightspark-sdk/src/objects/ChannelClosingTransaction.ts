@@ -10,13 +10,12 @@ import TransactionStatus from "./TransactionStatus.js";
 
 /**
  * This is an object representing a transaction which closes a channel on the Lightning Network.
- * This operation allocates balances back to the local and remote nodes.
- * *
+ * This operation allocates balances back to the local and remote nodes. *
  */
 interface ChannelClosingTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

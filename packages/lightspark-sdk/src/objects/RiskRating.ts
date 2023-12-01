@@ -2,8 +2,7 @@
 
 /**
  * This is an enum of the potential risk ratings related to a transaction made over the Lightning
- * Network. These risk ratings are returned from the CryptoSanctionScreeningProvider.
- * *
+ * Network. These risk ratings are returned from the CryptoSanctionScreeningProvider. *
  */
 export enum RiskRating {
   /**

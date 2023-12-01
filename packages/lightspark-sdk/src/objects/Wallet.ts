@@ -16,18 +16,20 @@ import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsCon
 import { WalletToPaymentRequestsConnectionFromJson } from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 import { WalletToTransactionsConnectionFromJson } from "./WalletToTransactionsConnection.js";
+import type WalletToWithdrawalRequestsConnection from "./WalletToWithdrawalRequestsConnection.js";
+import { WalletToWithdrawalRequestsConnectionFromJson } from "./WalletToWithdrawalRequestsConnection.js";
+import type WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
 
 /**
- * This object represents a Lightspark Wallet, tied to your Lightspark account.
- * Wallets can be used to send or receive funds over the Lightning Network.
- * You can retrieve this object to receive information about a specific wallet tied to your
- * Lightspark account. *
+ * This object represents a Lightspark Wallet, tied to your Lightspark account. Wallets can be used
+ * to send or receive funds over the Lightning Network. You can retrieve this object to receive
+ * information about a specific wallet tied to your Lightspark account. *
  */
 class Wallet implements LightsparkNodeOwner, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems.
-     * Should be treated as an opaque string.
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+     * opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
@@ -35,8 +37,7 @@ class Wallet implements LightsparkNodeOwner, Entity {
     /** The date and time when the entity was last updated. **/
     public readonly updatedAt: string,
     /**
-     * The unique identifier of this wallet, as provided by the Lightspark Customer during login.
-     * *
+     * The unique identifier of this wallet, as provided by the Lightspark Customer during login. *
      */
     public readonly thirdPartyIdentifier: string,
     /** The status of this wallet. **/
@@ -1023,6 +1024,94 @@ query FetchWalletTotalAmountReceived($entity_id: ID!, $created_after_date: DateT
       constructObject: (json) => {
         const connection = json["entity"]["total_amount_received"];
         return CurrencyAmountFromJson(connection);
+      },
+    }))!;
+  }
+
+  public async getWithdrawalRequests(
+    client: LightsparkClient,
+    first: number | undefined = undefined,
+    after: string | undefined = undefined,
+    statuses: WithdrawalRequestStatus[] | undefined = undefined,
+    createdAfterDate: string | undefined = undefined,
+    createdBeforeDate: string | undefined = undefined,
+  ): Promise<WalletToWithdrawalRequestsConnection> {
+    return (await client.executeRawQuery({
+      queryPayload: ` 
+query FetchWalletToWithdrawalRequestsConnection($entity_id: ID!, $first: Int, $after: ID, $statuses: [WithdrawalRequestStatus!], $created_after_date: DateTime, $created_before_date: DateTime) {
+    entity(id: $entity_id) {
+        ... on Wallet {
+            withdrawal_requests(, first: $first, after: $after, statuses: $statuses, created_after_date: $created_after_date, created_before_date: $created_before_date) {
+                __typename
+                wallet_to_withdrawal_requests_connection_count: count
+                wallet_to_withdrawal_requests_connection_page_info: page_info {
+                    __typename
+                    page_info_has_next_page: has_next_page
+                    page_info_has_previous_page: has_previous_page
+                    page_info_start_cursor: start_cursor
+                    page_info_end_cursor: end_cursor
+                }
+                wallet_to_withdrawal_requests_connection_entities: entities {
+                    __typename
+                    withdrawal_request_id: id
+                    withdrawal_request_created_at: created_at
+                    withdrawal_request_updated_at: updated_at
+                    withdrawal_request_requested_amount: requested_amount {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                    withdrawal_request_amount: amount {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                    withdrawal_request_estimated_amount: estimated_amount {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                    withdrawal_request_amount_withdrawn: amount_withdrawn {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                    withdrawal_request_bitcoin_address: bitcoin_address
+                    withdrawal_request_withdrawal_mode: withdrawal_mode
+                    withdrawal_request_status: status
+                    withdrawal_request_completed_at: completed_at
+                    withdrawal_request_withdrawal: withdrawal {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}
+`,
+      variables: {
+        entity_id: this.id,
+        first: first,
+        after: after,
+        statuses: statuses,
+        created_after_date: createdAfterDate,
+        created_before_date: createdBeforeDate,
+      },
+      constructObject: (json) => {
+        const connection = json["entity"]["withdrawal_requests"];
+        return WalletToWithdrawalRequestsConnectionFromJson(connection);
       },
     }))!;
   }

@@ -6,6 +6,7 @@ import type AccountToNodesConnection from "./AccountToNodesConnection.js";
 import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
 import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
 import type AccountToWalletsConnection from "./AccountToWalletsConnection.js";
+import type AccountToWithdrawalRequestsConnection from "./AccountToWithdrawalRequestsConnection.js";
 import { ApiTokenFromJson, ApiTokenToJson } from "./ApiToken.js";
 import { ChannelFromJson } from "./Channel.js";
 import {
@@ -36,12 +37,13 @@ import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 import { WalletFromJson } from "./Wallet.js";
 import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
+import type WalletToWithdrawalRequestsConnection from "./WalletToWithdrawalRequestsConnection.js";
+import { WithdrawalRequestFromJson } from "./WithdrawalRequest.js";
 
 interface Connection {
   /**
-   * The total count of objects in this connection, using the current filters.
-   * It is different from the number of objects returned in the current page (in the `entities`
-   * field).
+   * The total count of objects in this connection, using the current filters. It is different
+   * from the number of objects returned in the current page (in the `entities` field).
    **/
   count: number;
 
@@ -130,6 +132,18 @@ export const ConnectionFromJson = (obj: any): Connection => {
       typename: "AccountToWalletsConnection",
     } as AccountToWalletsConnection;
   }
+  if (obj["__typename"] == "AccountToWithdrawalRequestsConnection") {
+    return {
+      count: obj["account_to_withdrawal_requests_connection_count"],
+      pageInfo: PageInfoFromJson(
+        obj["account_to_withdrawal_requests_connection_page_info"],
+      ),
+      entities: obj["account_to_withdrawal_requests_connection_entities"].map(
+        (e) => WithdrawalRequestFromJson(e),
+      ),
+      typename: "AccountToWithdrawalRequestsConnection",
+    } as AccountToWithdrawalRequestsConnection;
+  }
   if (obj["__typename"] == "IncomingPaymentToAttemptsConnection") {
     return {
       count: obj["incoming_payment_to_attempts_connection_count"],
@@ -201,6 +215,18 @@ export const ConnectionFromJson = (obj: any): Connection => {
       ),
       typename: "WalletToTransactionsConnection",
     } as WalletToTransactionsConnection;
+  }
+  if (obj["__typename"] == "WalletToWithdrawalRequestsConnection") {
+    return {
+      count: obj["wallet_to_withdrawal_requests_connection_count"],
+      pageInfo: PageInfoFromJson(
+        obj["wallet_to_withdrawal_requests_connection_page_info"],
+      ),
+      entities: obj["wallet_to_withdrawal_requests_connection_entities"].map(
+        (e) => WithdrawalRequestFromJson(e),
+      ),
+      typename: "WalletToWithdrawalRequestsConnection",
+    } as WalletToWithdrawalRequestsConnection;
   }
   throw new LightsparkException(
     "DeserializationError",
@@ -293,6 +319,20 @@ export const ConnectionToJson = (obj: Connection): any => {
         accountToWalletsConnection.entities.map((e) => e.toJson()),
     };
   }
+  if (obj.typename == "AccountToWithdrawalRequestsConnection") {
+    const accountToWithdrawalRequestsConnection =
+      obj as AccountToWithdrawalRequestsConnection;
+    return {
+      __typename: "AccountToWithdrawalRequestsConnection",
+      account_to_withdrawal_requests_connection_count:
+        accountToWithdrawalRequestsConnection.count,
+      account_to_withdrawal_requests_connection_page_info: PageInfoToJson(
+        accountToWithdrawalRequestsConnection.pageInfo,
+      ),
+      account_to_withdrawal_requests_connection_entities:
+        accountToWithdrawalRequestsConnection.entities.map((e) => e.toJson()),
+    };
+  }
   if (obj.typename == "IncomingPaymentToAttemptsConnection") {
     const incomingPaymentToAttemptsConnection =
       obj as IncomingPaymentToAttemptsConnection;
@@ -383,6 +423,20 @@ export const ConnectionToJson = (obj: Connection): any => {
         walletToTransactionsConnection.entities.map((e) =>
           TransactionToJson(e),
         ),
+    };
+  }
+  if (obj.typename == "WalletToWithdrawalRequestsConnection") {
+    const walletToWithdrawalRequestsConnection =
+      obj as WalletToWithdrawalRequestsConnection;
+    return {
+      __typename: "WalletToWithdrawalRequestsConnection",
+      wallet_to_withdrawal_requests_connection_count:
+        walletToWithdrawalRequestsConnection.count,
+      wallet_to_withdrawal_requests_connection_page_info: PageInfoToJson(
+        walletToWithdrawalRequestsConnection.pageInfo,
+      ),
+      wallet_to_withdrawal_requests_connection_entities:
+        walletToWithdrawalRequestsConnection.entities.map((e) => e.toJson()),
     };
   }
   throw new LightsparkException(
@@ -488,6 +542,20 @@ fragment ConnectionFragment on Connection {
             id
         }
     }
+    ... on AccountToWithdrawalRequestsConnection {
+        __typename
+        account_to_withdrawal_requests_connection_count: count
+        account_to_withdrawal_requests_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        account_to_withdrawal_requests_connection_entities: entities {
+            id
+        }
+    }
     ... on IncomingPaymentToAttemptsConnection {
         __typename
         incoming_payment_to_attempts_connection_count: count
@@ -569,6 +637,20 @@ fragment ConnectionFragment on Connection {
             page_info_end_cursor: end_cursor
         }
         wallet_to_transactions_connection_entities: entities {
+            id
+        }
+    }
+    ... on WalletToWithdrawalRequestsConnection {
+        __typename
+        wallet_to_withdrawal_requests_connection_count: count
+        wallet_to_withdrawal_requests_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        wallet_to_withdrawal_requests_connection_entities: entities {
             id
         }
     }
