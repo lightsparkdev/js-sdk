@@ -33,8 +33,8 @@ elif [ $# -gt 0 ]; then
     start_cmd+=" --filter=@lightsparkdev/$arg"
   done
 else
-  build_cmd+=" $private_filters --filter=@lightsparkdev/ui"
-  start_cmd+=" $private_filters --filter=@lightsparkdev/ui"
+  build_cmd+=" --filter='./apps/private/*' --filter='./packages/*'"
+  start_cmd+=" --filter='./apps/private/*' --filter='./packages/*'"
 fi
 
 echo $build_cmd && eval $build_cmd && echo $start_cmd && eval $start_cmd
