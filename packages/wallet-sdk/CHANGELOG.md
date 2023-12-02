@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.10.0
+
+### Minor Changes
+
+- b0f564d: Add withdrawal_requests to the account and wallet object in the js sdks
+
 ## 0.9.0
 
 ### Minor Changes
