@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.4.0
+
+### Minor Changes
+
+- b0f564d: Add the screenNode and registerPayment functions to the lightspark-sdk
+- b0f564d: Add withdrawal_requests to the account and wallet object in the js sdks
+
 ## 1.3.1
 
 ### Patch Changes
