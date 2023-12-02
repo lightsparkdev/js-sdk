@@ -8,14 +8,13 @@ import type NodeAddressType from "./NodeAddressType.js";
 import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
 
 /**
- * This object is an interface representing a Lightning Node on the Lightning Network,
- * and could either be a Lightspark node or a node managed by a third party.
- * *
+ * This object is an interface representing a Lightning Node on the Lightning Network, and could
+ * either be a Lightspark node or a node managed by a third party. *
  */
 interface Node {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 
@@ -38,17 +37,16 @@ interface Node {
   typename: string;
 
   /**
-   * A name that identifies the node. It has no importance in terms of operating the node,
-   * it is just a way to identify and search for commercial services or popular nodes.
-   * This alias can be changed at any time by the node operator.
+   * A name that identifies the node. It has no importance in terms of operating the node, it is
+   * just a way to identify and search for commercial services or popular nodes. This alias can
+   * be changed at any time by the node operator.
    **/
   alias?: string | undefined;
 
   /**
    * A hexadecimal string that describes a color. For example "#000000" is black, "#FFFFFF" is
-   * white. It has no importance in terms of operating the node,
-   * it is just a way to visually differentiate nodes.
-   * That color can be changed at any time by the node operator.
+   * white. It has no importance in terms of operating the node, it is just a way to visually
+   * differentiate nodes. That color can be changed at any time by the node operator.
    **/
   color?: string | undefined;
 

@@ -18,26 +18,22 @@ export enum ChannelStatus {
   OFFLINE = "OFFLINE",
   /**
    * The channel is behaving properly, but its remote balance is much higher than its local balance
-   * so it is not balanced properly for sending funds out.
-   * *
+   * so it is not balanced properly for sending funds out. *
    */
   UNBALANCED_FOR_SEND = "UNBALANCED_FOR_SEND",
   /**
    * The channel is behaving properly, but its remote balance is much lower than its local balance
-   * so it is not balanced properly for receiving funds.
-   * *
+   * so it is not balanced properly for receiving funds. *
    */
   UNBALANCED_FOR_RECEIVE = "UNBALANCED_FOR_RECEIVE",
   /**
    * The channel has been closed. Information about the channel is still available for historical
-   * purposes but the channel cannot be used anymore.
-   * *
+   * purposes but the channel cannot be used anymore. *
    */
   CLOSED = "CLOSED",
   /**
-   * Something unexpected happened and we cannot determine the status of this channel.
-   * Please try again later or contact the support.
-   * *
+   * Something unexpected happened and we cannot determine the status of this channel. Please try
+   * again later or contact the support. *
    */
   ERROR = "ERROR",
 }

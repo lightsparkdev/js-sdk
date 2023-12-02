@@ -17,8 +17,8 @@ import PaymentRequestStatus from "./PaymentRequestStatus.js";
  */
 interface PaymentRequest {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

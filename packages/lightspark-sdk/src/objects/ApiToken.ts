@@ -4,15 +4,14 @@ import { type Query } from "@lightsparkdev/core";
 import Permission from "./Permission.js";
 
 /**
- * This is an object representing a Lightspark API token,
- * that can be used to authenticate this account when making API calls or using our SDKs.
- * See the “Authentication” section of our API docs for more details on its usage.
- * *
+ * This is an object representing a Lightspark API token, that can be used to authenticate this
+ * account when making API calls or using our SDKs. See the “Authentication” section of our API
+ * docs for more details on its usage. *
  */
 interface ApiToken {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

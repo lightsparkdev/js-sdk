@@ -13,14 +13,13 @@ import TransactionStatus from "./TransactionStatus.js";
 
 /**
  * This object represents a transaction that was forwarded through a Lightspark node on the
- * Lightning Network, i.e., a routed transaction.
- * You can retrieve this object to receive information about any transaction routed through your
- * Lightspark Node. *
+ * Lightning Network, i.e., a routed transaction. You can retrieve this object to receive
+ * information about any transaction routed through your Lightspark Node. *
  */
 interface RoutingTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 
@@ -52,9 +51,8 @@ interface RoutingTransaction {
   outgoingChannelId?: string | undefined;
 
   /**
-   * The fees collected by the node when routing this transaction.
-   * We subtract the outgoing amount to the incoming amount to determine how much fees were
-   * collected.
+   * The fees collected by the node when routing this transaction. We subtract the outgoing
+   * amount to the incoming amount to determine how much fees were collected.
    **/
   fees?: CurrencyAmount | undefined;
 

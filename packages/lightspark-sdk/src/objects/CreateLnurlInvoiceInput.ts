@@ -8,9 +8,8 @@ interface CreateLnurlInvoiceInput {
   amountMsats: number;
 
   /**
-   * The SHA256 hash of the LNURL metadata payload.
-   * This will be present in the h-tag (SHA256 purpose of payment) of the resulting Bolt 11
-   * invoice.
+   * The SHA256 hash of the LNURL metadata payload. This will be present in the h-tag (SHA256
+   * purpose of payment) of the resulting Bolt 11 invoice.
    **/
   metadataHash: string;
 

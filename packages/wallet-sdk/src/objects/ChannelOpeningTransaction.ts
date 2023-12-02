@@ -10,13 +10,12 @@ import TransactionStatus from "./TransactionStatus.js";
 
 /**
  * This is an object representing a transaction which opens a channel on the Lightning Network.
- * This object occurs only for channels funded by the local Lightspark node.
- * *
+ * This object occurs only for channels funded by the local Lightspark node. *
  */
 interface ChannelOpeningTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

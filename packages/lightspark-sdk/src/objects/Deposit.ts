@@ -9,15 +9,14 @@ import {
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This object represents a Deposit made to a Lightspark node wallet.
- * This operation occurs for any L1 funding transaction to the wallet.
- * You can retrieve this object to receive detailed information about the deposit.
- * *
+ * This object represents a Deposit made to a Lightspark node wallet. This operation occurs for any
+ * L1 funding transaction to the wallet. You can retrieve this object to receive detailed
+ * information about the deposit. *
  */
 interface Deposit {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

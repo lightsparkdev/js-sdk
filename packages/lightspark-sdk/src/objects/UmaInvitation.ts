@@ -7,8 +7,8 @@ import IncentivesStatus from "./IncentivesStatus.js";
 /** This is an object representing an UMA.ME invitation. **/
 interface UmaInvitation {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

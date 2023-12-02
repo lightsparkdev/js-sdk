@@ -8,9 +8,8 @@ interface SetInvoicePaymentHashInput {
   paymentHash: string;
 
   /**
-   * The 32-byte nonce used to generate the invoice preimage if applicable.
-   * It will later be included in RELEASE_PAYMENT_PREIMAGE webhook to help recover the raw
-   * preimage.
+   * The 32-byte nonce used to generate the invoice preimage if applicable. It will later be
+   * included in RELEASE_PAYMENT_PREIMAGE webhook to help recover the raw preimage.
    **/
   preimageNonce?: string | undefined;
 }

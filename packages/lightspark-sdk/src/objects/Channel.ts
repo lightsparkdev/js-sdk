@@ -17,15 +17,14 @@ import type Entity from "./Entity.js";
 import type TransactionType from "./TransactionType.js";
 
 /**
- * This is an object representing a channel on the Lightning Network.
- * You can retrieve this object to get detailed information on a specific Lightning Network
- * channel. *
+ * This is an object representing a channel on the Lightning Network. You can retrieve this object
+ * to get detailed information on a specific Lightning Network channel. *
  */
 class Channel implements Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems.
-     * Should be treated as an opaque string.
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+     * opaque string.
      **/
     public readonly id: string,
     /** The date and time when the entity was first created. **/
@@ -46,8 +45,7 @@ class Channel implements Entity {
     /** The channel balance on the local node. **/
     public readonly localBalance?: CurrencyAmount | undefined,
     /**
-     * The channel balance on the local node that is currently allocated to in-progress payments.
-     * *
+     * The channel balance on the local node that is currently allocated to in-progress payments. *
      */
     public readonly localUnsettledBalance?: CurrencyAmount | undefined,
     /** The channel balance on the remote node. **/
@@ -78,9 +76,8 @@ class Channel implements Entity {
     /** If known, the remote node of the channel. **/
     public readonly remoteNodeId?: string | undefined,
     /**
-     * The unique identifier of the channel on Lightning Network,
-     * which is the location in the chain that the channel was confirmed. The format is
-     * <block-height>:<tx-index>:<tx-output>.
+     * The unique identifier of the channel on Lightning Network, which is the location in the
+     * chain that the channel was confirmed. The format is <block-height>:<tx-index>:<tx-output>.
      **/
     public readonly shortChannelId?: string | undefined,
   ) {

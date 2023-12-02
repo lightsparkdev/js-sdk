@@ -17,14 +17,14 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This is an object representing a transaction made over the Lightning Network.
- * You can retrieve this object to receive information about a specific transaction made over
- * Lightning for a Lightspark node. *
+ * This is an object representing a transaction made over the Lightning Network. You can retrieve
+ * this object to receive information about a specific transaction made over Lightning for a
+ * Lightspark node. *
  */
 interface LightningTransaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

@@ -5,8 +5,8 @@ import SignablePayloadStatus from "./SignablePayloadStatus.js";
 
 interface SignablePayload {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

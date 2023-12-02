@@ -5,6 +5,7 @@ export { default as AccountToNodesConnection } from "./AccountToNodesConnection.
 export { default as AccountToPaymentRequestsConnection } from "./AccountToPaymentRequestsConnection.js";
 export { default as AccountToTransactionsConnection } from "./AccountToTransactionsConnection.js";
 export { default as AccountToWalletsConnection } from "./AccountToWalletsConnection.js";
+export { default as AccountToWithdrawalRequestsConnection } from "./AccountToWithdrawalRequestsConnection.js";
 export { default as ApiToken, getApiTokenQuery } from "./ApiToken.js";
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
@@ -173,6 +174,7 @@ export { default as Wallet } from "./Wallet.js";
 export { default as WalletStatus } from "./WalletStatus.js";
 export { default as WalletToPaymentRequestsConnection } from "./WalletToPaymentRequestsConnection.js";
 export { default as WalletToTransactionsConnection } from "./WalletToTransactionsConnection.js";
+export { default as WalletToWithdrawalRequestsConnection } from "./WalletToWithdrawalRequestsConnection.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";

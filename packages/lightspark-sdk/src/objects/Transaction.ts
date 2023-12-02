@@ -29,13 +29,12 @@ import type Withdrawal from "./Withdrawal.js";
 /**
  * This object represents a payment transaction. The transaction can occur either on a Bitcoin
  * Network, or over the Lightning Network. You can retrieve this object to receive specific
- * information about a particular transaction tied to your Lightspark Node.
- * *
+ * information about a particular transaction tied to your Lightspark Node. *
  */
 interface Transaction {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

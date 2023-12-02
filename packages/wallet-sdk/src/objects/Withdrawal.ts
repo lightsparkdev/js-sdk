@@ -9,14 +9,14 @@ import {
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet.
- * You can retrieve this object to receive detailed information about any L1 withdrawal associated
- * with your Lightspark Node or account. *
+ * This object represents an L1 withdrawal from your Lightspark Node to any Bitcoin wallet. You can
+ * retrieve this object to receive detailed information about any L1 withdrawal associated with
+ * your Lightspark Node or account. *
  */
 interface Withdrawal {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

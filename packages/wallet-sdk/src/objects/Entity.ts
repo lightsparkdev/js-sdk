@@ -1,15 +1,14 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 /**
- * This interface is used by all the entities in the Lightspark system.
- * It defines a few core fields that are available everywhere.
- * Any object that implements this interface can be queried using the `entity` query and its ID.
- * *
+ * This interface is used by all the entities in the Lightspark system. It defines a few core
+ * fields that are available everywhere. Any object that implements this interface can be queried
+ * using the `entity` query and its ID. *
  */
 interface Entity {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 
@@ -320,6 +319,14 @@ fragment EntityFragment on Entity {
         withdrawal_request_id: id
         withdrawal_request_created_at: created_at
         withdrawal_request_updated_at: updated_at
+        withdrawal_request_requested_amount: requested_amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
         withdrawal_request_amount: amount {
             __typename
             currency_amount_original_value: original_value
@@ -329,6 +336,14 @@ fragment EntityFragment on Entity {
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
         withdrawal_request_estimated_amount: estimated_amount {
+            __typename
+            currency_amount_original_value: original_value
+            currency_amount_original_unit: original_unit
+            currency_amount_preferred_currency_unit: preferred_currency_unit
+            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+        }
+        withdrawal_request_amount_withdrawn: amount_withdrawn {
             __typename
             currency_amount_original_value: original_value
             currency_amount_original_unit: original_unit

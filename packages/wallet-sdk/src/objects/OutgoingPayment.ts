@@ -17,15 +17,14 @@ import { RichTextFromJson, RichTextToJson } from "./RichText.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This object represents a Lightning Network payment sent from a Lightspark Node.
- * You can retrieve this object to receive payment related information about any payment sent from
- * your Lightspark Node on the Lightning Network.
- * *
+ * This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve
+ * this object to receive payment related information about any payment sent from your Lightspark
+ * Node on the Lightning Network. *
  */
 interface OutgoingPayment {
   /**
-   * The unique identifier of this entity across all Lightspark systems.
-   * Should be treated as an opaque string.
+   * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+   * opaque string.
    **/
   id: string;
 

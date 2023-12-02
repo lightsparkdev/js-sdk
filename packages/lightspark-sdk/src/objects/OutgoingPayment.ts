@@ -29,16 +29,15 @@ import type Transaction from "./Transaction.js";
 import TransactionStatus from "./TransactionStatus.js";
 
 /**
- * This object represents a Lightning Network payment sent from a Lightspark Node.
- * You can retrieve this object to receive payment related information about any payment sent from
- * your Lightspark Node on the Lightning Network.
- * *
+ * This object represents a Lightning Network payment sent from a Lightspark Node. You can retrieve
+ * this object to receive payment related information about any payment sent from your Lightspark
+ * Node on the Lightning Network. *
  */
 class OutgoingPayment implements LightningTransaction, Transaction, Entity {
   constructor(
     /**
-     * The unique identifier of this entity across all Lightspark systems.
-     * Should be treated as an opaque string.
+     * The unique identifier of this entity across all Lightspark systems. Should be treated as an
+     * opaque string.
      **/
     public readonly id: string,
     /** The date and time when this transaction was initiated. **/
