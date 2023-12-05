@@ -177,6 +177,8 @@ export { default as WalletToTransactionsConnection } from "./WalletToTransaction
 export { default as WalletToWithdrawalRequestsConnection } from "./WalletToWithdrawalRequestsConnection.js";
 export { default as WebhookEventType } from "./WebhookEventType.js";
 export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
+export { default as WithdrawalFeeEstimateInput } from "./WithdrawalFeeEstimateInput.js";
+export { default as WithdrawalFeeEstimateOutput } from "./WithdrawalFeeEstimateOutput.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";
 export { default as WithdrawalRequest } from "./WithdrawalRequest.js";
 export { default as WithdrawalRequestStatus } from "./WithdrawalRequestStatus.js";

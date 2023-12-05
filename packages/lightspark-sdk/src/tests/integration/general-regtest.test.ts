@@ -601,6 +601,15 @@ describe(p2SuiteName, () => {
     TESTS_TIMEOUT,
   );
 
+  test("Should get a withdrawal fee estimate", async () => {
+    const fee = await lightsparkClient.getWithrawalFeeEstimate(
+      getRegtestNodeId(),
+      100,
+      WithdrawalMode.WALLET_THEN_CHANNELS,
+    );
+    expect(fee).not.toBeNull();
+  });
+
   test(
     "Should execute a raw graphql query",
     async () => {

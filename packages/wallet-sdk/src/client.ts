@@ -39,6 +39,7 @@ import RequestWithdrawalMutation from "./graqhql/RequestWithdrawal.js";
 import SendPaymentMutation from "./graqhql/SendPayment.js";
 import TerminateWallet from "./graqhql/TerminateWallet.js";
 import WalletDashboardQuery from "./graqhql/WalletDashboard.js";
+import { WithdrawalFeeEstimate } from "./graqhql/WithdrawalFeeEstimate.js";
 import { logger } from "./logger.js";
 import { BalancesFromJson } from "./objects/Balances.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
@@ -66,6 +67,9 @@ import type WalletDashboard from "./objects/WalletDashboard.js";
 import WalletStatus from "./objects/WalletStatus.js";
 import { WalletToPaymentRequestsConnectionFromJson } from "./objects/WalletToPaymentRequestsConnection.js";
 import { WalletToTransactionsConnectionFromJson } from "./objects/WalletToTransactionsConnection.js";
+import type WithdrawalFeeEstimateOutput from "./objects/WithdrawalFeeEstimateOutput.js";
+import { WithdrawalFeeEstimateOutputFromJson } from "./objects/WithdrawalFeeEstimateOutput.js";
+import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
 
@@ -764,6 +768,45 @@ class LightsparkClient {
       response.lightning_fee_estimate_for_node
         .lightning_fee_estimate_output_fee_estimate,
     );
+  }
+
+  /**
+   * Returns an estimated amount for the L1 withdrawal fees for the specified node, amount, and
+   * strategy.
+   *
+   * @param amountSats The amount you want to withdraw from this node in Satoshis. Use the special value -1 to
+   *     withdrawal all funds from this wallet.
+   * @param withdrawalMode The strategy that should be used to withdraw the funds from this node.
+   * @returns An estimated amount for the L1 withdrawal fees for the specified node, amount, and strategy.
+   */
+  public async getWithrawalFeeEstimate(
+    amountSats: number,
+    withdrawalMode: WithdrawalMode,
+  ): Promise<CurrencyAmount> {
+    const response: WithdrawalFeeEstimateOutput | null =
+      await this.executeRawQuery({
+        queryPayload: WithdrawalFeeEstimate,
+        variables: {
+          amount_sats: amountSats,
+          withdrawal_mode: withdrawalMode,
+        },
+        constructObject: (response: {
+          withdrawal_fee_estimate: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        }) => {
+          return WithdrawalFeeEstimateOutputFromJson(
+            response.withdrawal_fee_estimate,
+          );
+        },
+      });
+
+    if (!response) {
+      throw new LightsparkException(
+        "WithdrawalFeeEstimateError",
+        "Null or invalid fee estimate response from server",
+      );
+    }
+
+    return response.feeEstimate;
   }
 
   /**

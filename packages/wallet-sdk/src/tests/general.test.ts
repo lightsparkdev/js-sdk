@@ -20,6 +20,7 @@ import {
   KeyType,
   TransactionStatus,
   WalletStatus,
+  WithdrawalMode,
   getOutgoingPaymentQuery,
   type InvoiceType,
   type OutgoingPayment,
@@ -536,6 +537,19 @@ describe(p2SuiteName, () => {
     "should get an estimated gas price",
     async () => {
       const fee = await regtestClient.getBitcoinFeeEstimate();
+      log("fee", fee);
+      expect(fee).not.toBeNull();
+    },
+    TESTS_TIMEOUT,
+  );
+
+  test(
+    "should get an estimated withdrawal fee",
+    async () => {
+      const fee = await regtestClient.getWithrawalFeeEstimate(
+        50,
+        WithdrawalMode.WALLET_THEN_CHANNELS,
+      );
       log("fee", fee);
       expect(fee).not.toBeNull();
     },
