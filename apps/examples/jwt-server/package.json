@@ -1,15 +1,11 @@
 {
   "name": "@lightsparkdev/jwt-server",
   "scripts": {
-    "build:watch": "tsc --watch",
-    "build": "tsc",
-    "deploy": "firebase deploy --only functions",
+    "start": "./start.sh",
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
-    "logs": "firebase functions:log",
-    "serve": "yarn build && firebase emulators:start --only functions",
-    "shell": "yarn build && firebase functions:shell"
+    "ngrok": "ngrok http 3000"
   },
   "type": "module",
   "engines": {
@@ -17,10 +13,13 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@lightsparkdev/lightspark-sdk": "^1.2.0",
-    "firebase-admin": "^11.9.0",
-    "firebase-functions": "^4.4.1",
-    "jsonwebtoken": "^9.0.1"
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.2.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "level": "^8.0.0"
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
@@ -31,7 +30,8 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-watch": "^8.0.0",
-    "firebase-functions-test": "^3.0.0",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.0"
   },
   "private": true
