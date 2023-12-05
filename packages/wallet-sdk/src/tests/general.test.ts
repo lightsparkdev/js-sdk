@@ -7,20 +7,21 @@
 
 import { describe, expect, jest, test } from "@jest/globals";
 import {
+  b64encode,
   DefaultCrypto,
   KeyOrAlias,
   LightsparkException,
-  b64encode,
 } from "@lightsparkdev/core";
 
 import LightsparkClient from "../client.js";
 
 import { logger } from "../logger.js";
 import {
+  getOutgoingPaymentQuery,
   KeyType,
   TransactionStatus,
   WalletStatus,
-  getOutgoingPaymentQuery,
+  WithdrawalMode,
   type InvoiceType,
   type OutgoingPayment,
 } from "../objects/index.js";
@@ -536,6 +537,19 @@ describe(p2SuiteName, () => {
     "should get an estimated gas price",
     async () => {
       const fee = await regtestClient.getBitcoinFeeEstimate();
+      log("fee", fee);
+      expect(fee).not.toBeNull();
+    },
+    TESTS_TIMEOUT,
+  );
+
+  test(
+    "should get an estimated withdrawal fee",
+    async () => {
+      const fee = await regtestClient.getWithrawalFeeEstimate(
+        50,
+        WithdrawalMode.WALLET_THEN_CHANNELS,
+      );
       log("fee", fee);
       expect(fee).not.toBeNull();
     },

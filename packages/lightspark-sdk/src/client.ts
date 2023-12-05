@@ -12,20 +12,18 @@ import type {
   SigningKey,
 } from "@lightsparkdev/core";
 import {
+  createSha256Hash,
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
   NodeKeyCache,
+  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
-  createSha256Hash,
-  pollUntil,
 } from "@lightsparkdev/core";
 import packageJson from "../package.json";
-import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
-import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CancelInvoice } from "./graphql/CancelInvoice.js";
 import { ClaimUmaInvitation } from "./graphql/ClaimUmaInvitation.js";
@@ -48,16 +46,18 @@ import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNo
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
-import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
+import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { RegisterPayment } from "./graphql/RegisterPayment.js";
 import { RequestWithdrawal } from "./graphql/RequestWithdrawal.js";
 import { ScreenNode } from "./graphql/ScreenNode.js";
 import { SendPayment } from "./graphql/SendPayment.js";
 import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/SingleNodeDashboard.js";
-import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
+import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
+import { WithdrawalFeeEstimate } from "./graphql/WithdrawalFeeEstimate.js";
 import { RiskRating, TransactionStatus } from "./index.js";
+import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -83,8 +83,8 @@ import type RegionCode from "./objects/RegionCode.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
 import {
-  TransactionFromJson,
   getTransactionQuery,
+  TransactionFromJson,
 } from "./objects/Transaction.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
@@ -95,6 +95,7 @@ import { WithdrawalFeeEstimateOutputFromJson } from "./objects/WithdrawalFeeEsti
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
+import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 
 const sdkVersion = packageJson.version;
 
@@ -732,7 +733,7 @@ class LightsparkClient {
   ): Promise<CurrencyAmount> {
     const response: WithdrawalFeeEstimateOutput | null =
       await this.executeRawQuery({
-        queryPayload: RequestWithdrawal,
+        queryPayload: WithdrawalFeeEstimate,
         variables: {
           node_id: nodeId,
           amount_sats: amountSats,
