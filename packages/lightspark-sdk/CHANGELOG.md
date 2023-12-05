@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.5.0
-
-### Minor Changes
-
-- 4c93e7f: Add withdrawal_fee_estimate to the js sdks
-
 ## 1.4.0
 
 ### Minor Changes

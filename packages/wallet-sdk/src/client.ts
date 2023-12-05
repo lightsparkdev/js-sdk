@@ -11,10 +11,10 @@ import {
   LightsparkAuthException,
   LightsparkException,
   NodeKeyCache,
+  pollUntil,
   Requester,
   SigningKeyType,
   StubAuthProvider,
-  pollUntil,
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type { Observable, Subscription } from "zen-observable-ts";
@@ -67,9 +67,10 @@ import type WalletDashboard from "./objects/WalletDashboard.js";
 import WalletStatus from "./objects/WalletStatus.js";
 import { WalletToPaymentRequestsConnectionFromJson } from "./objects/WalletToPaymentRequestsConnection.js";
 import { WalletToTransactionsConnectionFromJson } from "./objects/WalletToTransactionsConnection.js";
-import type WithdrawalFeeEstimateOutput from "./objects/WithdrawalFeeEstimateOutput.js";
-import { WithdrawalFeeEstimateOutputFromJson } from "./objects/WithdrawalFeeEstimateOutput.js";
-import type WithdrawalMode from "./objects/WithdrawalMode.js";
+import WithdrawalFeeEstimateOutput, {
+  WithdrawalFeeEstimateOutputFromJson,
+} from "./objects/WithdrawalFeeEstimateOutput.js";
+import WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
 
