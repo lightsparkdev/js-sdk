@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.11.0
+
+### Minor Changes
+
+- 4c93e7f: Add withdrawal_fee_estimate to the js sdks
+
 ## 0.10.0
 
 ### Minor Changes
