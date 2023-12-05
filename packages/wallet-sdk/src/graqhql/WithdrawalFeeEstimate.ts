@@ -4,7 +4,7 @@ import { FRAGMENT as WithdrawalFeeEstimateOutputFragment } from "../objects/With
 
 export const WithdrawalFeeEstimate = `
   query WithdrawalFeeEstimate(
-    $amount_sats: Long
+    $amount_sats: Long!
     $withdrawal_mode: WithdrawalMode!
   ) {
     withdrawal_fee_estimate(input: {
