@@ -90,6 +90,8 @@ import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type UmaInvitation from "./objects/UmaInvitation.js";
 import { UmaInvitationFromJson } from "./objects/UmaInvitation.js";
+import type WithdrawalFeeEstimateOutput from "./objects/WithdrawalFeeEstimateOutput.js";
+import { WithdrawalFeeEstimateOutputFromJson } from "./objects/WithdrawalFeeEstimateOutput.js";
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
@@ -712,6 +714,47 @@ class LightsparkClient {
       response.lightning_fee_estimate_for_node
         .lightning_fee_estimate_output_fee_estimate,
     );
+  }
+
+  /**
+   * Returns an estimated amount for the L1 withdrawal fees for the specified node, amount, and
+   * strategy.
+   *
+   * @param nodeId The node from which you'd like to make the withdrawal.
+   * @param amountSats The amount you want to withdraw from this node in Satoshis. Use the special value -1 to withdrawal all funds from this node.
+   * @param withdrawalMode The strategy that should be used to withdraw the funds from this node.
+   * @returns An estimated amount for the L1 withdrawal fees for the specified node, amount, and strategy.
+   */
+  public async getWithrawalFeeEstimate(
+    nodeId: string,
+    amountSats: number,
+    withdrawalMode: WithdrawalMode,
+  ): Promise<CurrencyAmount> {
+    const response: WithdrawalFeeEstimateOutput | null =
+      await this.executeRawQuery({
+        queryPayload: RequestWithdrawal,
+        variables: {
+          node_id: nodeId,
+          amount_sats: amountSats,
+          withdrawal_mode: withdrawalMode,
+        },
+        constructObject: (response: {
+          withdrawal_fee_estimate: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        }) => {
+          return WithdrawalFeeEstimateOutputFromJson(
+            response.withdrawal_fee_estimate,
+          );
+        },
+      });
+
+    if (!response) {
+      throw new LightsparkException(
+        "WithdrawalFeeEstimateError",
+        "Null or invalid fee estimate response from server",
+      );
+    }
+
+    return response.feeEstimate;
   }
 
   /**
