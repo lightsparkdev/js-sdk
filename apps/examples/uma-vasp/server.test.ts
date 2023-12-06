@@ -1,6 +1,13 @@
 import supertest from "supertest";
 import settings from "../settings.json" assert { type: "json" };
-import { app } from "./src/index.js";
+import { createUmaServer } from "./src/server.js";
+import UmaConfig from "./src/UmaConfig.js";
+import { AccountTokenAuthProvider, LightsparkClient } from "@lightsparkdev/lightspark-sdk";
+import DemoUserService from "./src/demo/DemoUserService.js";
+import { InMemoryPublicKeyCache } from "@uma-sdk/core";
+import InMemorySendingVaspRequestCache from "./src/demo/InMemorySendingVaspRequestCache.js";
+import DemoInternalLedgerService from "./src/demo/DemoInternalLedgerService.js";
+import DemoComplianceService from "./src/demo/DemoComplianceService.js";
 
 declare global {
   namespace NodeJS {
@@ -18,12 +25,29 @@ declare global {
   }
 }
 
+const config = UmaConfig.fromEnvironment();
+const lightsparkClient = new LightsparkClient(
+  new AccountTokenAuthProvider(config.apiClientID, config.apiClientSecret),
+  config.clientBaseURL,
+);
+const userService = new DemoUserService();
+
+const app = createUmaServer(
+  config,
+  lightsparkClient,
+  new InMemoryPublicKeyCache(),
+  new InMemorySendingVaspRequestCache(),
+  userService,
+  new DemoInternalLedgerService(config, userService, lightsparkClient),
+  new DemoComplianceService(config, lightsparkClient),
+);
+
 describe("Test server routes", () => {
   let server: ReturnType<typeof app.listen>;
   let request = supertest(app);
 
   beforeAll((done) => {
-    server = app.listen(settings.umaVasp, done);
+    server = app.listen(settings.umaVasp.port, done);
     request = supertest(server);
   });
 
