@@ -12,6 +12,7 @@ const LoginPage = () => {
   const [jwt, setJwt] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [jwtServerUrl, setJwtServerUrl] = useState("");
 
   useEffect(() => {
     void auth.isAuthorized().then((isAuthorized: boolean) => {
@@ -28,10 +29,16 @@ const LoginPage = () => {
   }
 
   const generateDemoTokens = async () => {
-    const { token: jwt } = await fetch(
-      `https://us-central1-jwt-minter.cloudfunctions.net/getJwt?userId=${userName}&password=${password}`
-    ).then((res) => res.json() as Promise<{ token: string }>);
-    await auth.login("Account:01857e8b-cc47-9af2-0000-eb2de1fdecce", jwt);
+    const { token: jwt, accountId: jwtServerAccountId } = await fetch(
+      `${jwtServerUrl.replace(/\/$/, "")}/getJwt?userId=${userName}&password=${password}`,
+      {
+        method: "GET",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        }
+      }
+    ).then((res) => res.json() as Promise<{ token: string, accountId: string }>);
+    await auth.login(jwtServerAccountId, jwt);
     navigate(Routes.Dashboard);
   };
 
@@ -56,11 +63,20 @@ const LoginPage = () => {
         />
       </Label>
       <Button primary onClick={handleLogin} text="Login" />
+
       <Description>
         Alternatively, use our demo jwt server with a user name and password.
         <br />
         See js-sdk/packages/wallet-sdk/examples/jwt-server
       </Description>
+      <Label>
+        <span>JWT Server URL:</span>
+        <input
+          type="text"
+          value={jwtServerUrl}
+          onChange={(e) => setJwtServerUrl(e.target.value)}
+        />
+      </Label>
       <Label>
         <span>User Name:</span>
         <input
@@ -122,6 +138,7 @@ const Container = styled.div`
   justify-content: center;
   margin: auto;
   height: 100vh;
+  max-width: 600px;
 `;
 
 export default LoginPage;

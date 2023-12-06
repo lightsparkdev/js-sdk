@@ -4,13 +4,14 @@ import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function SignIn({ onSignIn }: { onSignIn: () => void }) {
+  const [jwtServerUrl, setJwtServerUrl] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const auth = useJwtAuth();
 
   const generateDemoTokens = async () => {
     const { token: jwt, accountId } = await fetch(
-      `https://us-central1-jwt-minter.cloudfunctions.net/getJwt?userId=${userName}&password=${password}`
+      `${jwtServerUrl.replace(/\/$/, "")}/getJwt?userId=${userName}&password=${password}`
     ).then((res) => res.json());
     const result = await auth.login(accountId, jwt);
     if (result.wallet) {
@@ -21,6 +22,12 @@ export default function SignIn({ onSignIn }: { onSignIn: () => void }) {
   return (
     <View style={styles.container}>
       <Text>Sign in to your wallet</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={setJwtServerUrl}
+        value={jwtServerUrl}
+        placeholder="JWT Server URL"
+      />
       <TextInput
         style={styles.input}
         onChangeText={setUserName}

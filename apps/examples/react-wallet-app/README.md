@@ -4,6 +4,6 @@ This example demonstrates how to use the react-wallet library to initialize and 
 
 ## Running the example
 
-Please follow the [instructions](https://github.com/lightsparkdev/js-sdk#running-the-sdks-and-examples) on setting up the js-sdk workspace to run these examples locally.
-
-Then run `yarn start` from this directory to launch the app at http://localhost:3002.
+1. Follow the [instructions](https://github.com/lightsparkdev/js-sdk#running-the-sdks-and-examples) on setting up the js-sdk workspace to run these examples locally.
+2. Run the [JWT Server example](https://github.com/lightsparkdev/js-sdk/tree/main/apps/examples/jwt-server).
+3. Then run `yarn start` from this directory to launch the app at http://localhost:3002.
