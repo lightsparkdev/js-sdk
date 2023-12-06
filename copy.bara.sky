@@ -37,7 +37,6 @@ core.workflow(
     transformations=[
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
-        core.todo_replace(mode="SCRUB_NAMES"),
         core.move("js/README-PUBLIC.md", "README.md"),
         core.move("js/", ""),
     ],

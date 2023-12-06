@@ -215,7 +215,7 @@ export default class SendingVasp {
     const senderCurrencies =
       await this.userService.getCurrencyPreferencesForUser(user.id);
 
-    // TODO: Add the sending currency too for display purposes.
+    // TODO(Jeremy): Add the sending currency too for display purposes.
     return {
       httpStatus: 200,
       data: {
@@ -528,7 +528,7 @@ export default class SendingVasp {
     }
 
     const newCallbackUuid = this.requestCache.savePayReqData(
-      "", // TODO: Parse LUD-18 payerdata for this.
+      "", // TODO(Jeremy): Parse LUD-18 payerdata for this.
       encodedInvoice,
       "", // No utxo callback for non-UMA lnurl.
       invoice,

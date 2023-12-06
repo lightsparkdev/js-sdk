@@ -254,7 +254,7 @@ export default class ReceivingVasp {
       };
     }
 
-    // TODO: Move this to the currency service.
+    // TODO(Jeremy): Move this to the currency service.
     const receiverFeesMillisats = 0;
     const amountMsats =
       payreq.amount * currency.multiplier + receiverFeesMillisats;
