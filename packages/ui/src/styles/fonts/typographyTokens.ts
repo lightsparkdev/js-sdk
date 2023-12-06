@@ -931,8 +931,6 @@ export const getTypographyString = (token: Token) => {
     .map((entry) => {
       // Transform any non-css token properties into valid css.
       switch (entry[0]) {
-        case "paragraph-spacing":
-          return entry[1] === "default" ? "" : `margin-bottom: ${entry[1]};`;
         case "paragraph-indent":
           return `text-indent: ${entry[1]};`;
         case "text-case":
