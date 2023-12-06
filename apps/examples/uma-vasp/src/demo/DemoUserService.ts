@@ -24,7 +24,7 @@ export default class DemoUserService implements UserService {
     fullUrl: URL,
     headers: { [key: string]: string | string[] | undefined },
   ): Promise<User | undefined> {
-    // TODO: Add authentication.
+    // TODO(Jeremy): Add authentication.
     return this.usersById.get(DEMO_UID);
   }
 
