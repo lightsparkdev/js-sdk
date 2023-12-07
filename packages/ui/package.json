@@ -43,6 +43,7 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.0.12",
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "gql": "^1.1.2",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
