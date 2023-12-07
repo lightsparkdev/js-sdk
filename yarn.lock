@@ -4178,6 +4178,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
+    "@simbathesailor/use-what-changed": ^2.0.0
     "@svgr/plugin-jsx": ^8.1.0
     esbuild-plugin-copy: ^2.1.1
     esbuild-plugin-svgr: ^2.1.0
@@ -5230,6 +5231,15 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 0f4491e5897fcf5bf02c46f5c359c56a314e90ba243f42f0c100437935daa2488f20482f0f77186bd6bf43345095a95d8143ecf8b1f4d876a7bc0806aba9c3d2
+  languageName: node
+  linkType: hard
+
+"@simbathesailor/use-what-changed@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@simbathesailor/use-what-changed@npm:2.0.0"
+  peerDependencies:
+    react: ">=16"
+  checksum: a90e5b7388584749d19b138e0ab50fc69d9af69bee7beaa7616fa287122577f027877e0bd622ec1149057adb2f5bd3f27691dae5723c6a7c93d044bfb96e77ec
   languageName: node
   linkType: hard
 
