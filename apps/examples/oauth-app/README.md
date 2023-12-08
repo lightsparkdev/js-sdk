@@ -2,6 +2,16 @@
 
 This example demonstrates how to use the OAuth to authenticate via the Lightspark JS SDK. See the `src/auth` directory for the most relevant code. The LoginPage uses the `useAuth` hook to handle the OAuth flow and redirects to the DashboardPage when the user is authenticated.
 
+## Setup
+
+1. Create a `.env.local` file in this directory.
+2. Add the client ID and secret to the `.env.local` file as [Vite environment variables](https://vitejs.dev/guide/env-and-mode), for example:
+
+```
+VITE_CLIENT_ID=<insert client id here>
+VITE_CLIENT_SECRET=<insert client secret here>
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -9,7 +19,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Open [http://localhost:3102](http://localhost:3102) to view it in the browser.
 
 The page will reload if you make edits.
 You will also see any lint errors in the console.
