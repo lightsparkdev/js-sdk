@@ -1,4 +1,4 @@
-import { wasm_handle_remote_signing_webhook_event } from "@lightsparkdev/crypto-wasm";
+import { LightsparkSigningException, isNode } from "@lightsparkdev/core";
 import type LightsparkClient from "./client.js";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
@@ -65,11 +65,20 @@ export class RemoteSigningWebhookHandler {
     this.validator = validator;
   }
 
-  handleWebhookRequest(
+  async handleWebhookRequest(
     data: Uint8Array,
     webhookSignature: string,
     webhookSecret: string,
   ) {
+    if (!isNode) {
+      throw new LightsparkSigningException(
+        "Environment not supported for handling webhooks.",
+      );
+    }
+
+    const { wasm_handle_remote_signing_webhook_event } = await import(
+      "@lightsparkdev/crypto-wasm"
+    );
     const response = wasm_handle_remote_signing_webhook_event(
       data,
       webhookSignature,
