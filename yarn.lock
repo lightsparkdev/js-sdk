@@ -4039,10 +4039,12 @@ __metadata:
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/ls-react-native-crypto": 0.2.10
     "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/wallet-sdk": 0.11.0
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
+    expo-secure-store: ~12.3.1
     jest: ^29.6.2
     prettier: 3.0.3
     prettier-plugin-organize-imports: ^3.2.4
@@ -11371,6 +11373,15 @@ __metadata:
   bin:
     expo-pwa: build/cli.js
   checksum: d9fd7bd6d875342caf7eb4a0b893928301b507a4d26830722c56f96e2a973be852bc8ec77a277dde8bc166e95b7c09c58e3014fb8849ba125289f55bd01e39f8
+  languageName: node
+  linkType: hard
+
+"expo-secure-store@npm:~12.3.1":
+  version: 12.3.1
+  resolution: "expo-secure-store@npm:12.3.1"
+  peerDependencies:
+    expo: "*"
+  checksum: b4e0bb14b39d9276483e6d219a445399dbe556921fa71c10dbd7927ae8f3fb8c964fab35c7ba4a9e3acc4e944130d779edaf1337c2b8d74ed25b5621ebbb0cd4
   languageName: node
   linkType: hard
 
