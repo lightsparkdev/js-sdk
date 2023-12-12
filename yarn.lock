@@ -3873,7 +3873,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/crypto-wasm": 0.1.2
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.5.0
+    "@lightsparkdev/lightspark-sdk": 1.5.1
     "@lightsparkdev/tsconfig": 0.0.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
@@ -3899,7 +3899,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@1.5.0, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@1.5.1, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
@@ -3986,10 +3986,10 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/lightspark-sdk": 1.5.0
+    "@lightsparkdev/lightspark-sdk": 1.5.1
     "@lightsparkdev/oauth": "*"
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": 0.0.2
+    "@lightsparkdev/ui": 0.0.3
     "@types/jest": ^29.5.3
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -4039,7 +4039,7 @@ __metadata:
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/ls-react-native-crypto": 0.2.10
     "@lightsparkdev/tsconfig": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.11.0
+    "@lightsparkdev/wallet-sdk": 0.12.0
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     eslint: ^8.3.0
@@ -4064,10 +4064,10 @@ __metadata:
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/react-wallet": 0.6.39
-    "@lightsparkdev/ui": 0.0.2
+    "@lightsparkdev/react-wallet": 0.7.0
+    "@lightsparkdev/ui": 0.0.3
     "@lightsparkdev/vite": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.11.0
+    "@lightsparkdev/wallet-sdk": 0.12.0
     "@types/lodash-es": ^4.17.6
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -4085,14 +4085,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/react-wallet@0.6.39, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
+"@lightsparkdev/react-wallet@0.7.0, @lightsparkdev/react-wallet@workspace:packages/react-wallet":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/react-wallet@workspace:packages/react-wallet"
   dependencies:
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
-    "@lightsparkdev/wallet-sdk": 0.11.0
+    "@lightsparkdev/wallet-sdk": 0.12.0
     "@types/react": ^18.2.12
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
@@ -4117,7 +4117,7 @@ __metadata:
   resolution: "@lightsparkdev/remote-signing-server@workspace:apps/examples/remote-signing-server"
   dependencies:
     "@lightsparkdev/core": 1.0.12
-    "@lightsparkdev/lightspark-sdk": 1.5.0
+    "@lightsparkdev/lightspark-sdk": 1.5.1
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
     express: ^4.18.2
@@ -4139,9 +4139,9 @@ __metadata:
     "@emotion/react": ^11.11.0
     "@emotion/styled": ^11.11.0
     "@lightsparkdev/core": 1.0.12
-    "@lightsparkdev/lightspark-sdk": 1.5.0
+    "@lightsparkdev/lightspark-sdk": 1.5.1
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": 0.0.2
+    "@lightsparkdev/ui": 0.0.3
     "@lightsparkdev/vite": "*"
     "@types/chrome": ^0.0.254
     "@types/jest": ^29.5.3
@@ -4169,7 +4169,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ui@0.0.2, @lightsparkdev/ui@workspace:packages/ui":
+"@lightsparkdev/ui@0.0.3, @lightsparkdev/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ui@workspace:packages/ui"
   dependencies:
@@ -4208,7 +4208,7 @@ __metadata:
   resolution: "@lightsparkdev/uma-vasp@workspace:apps/examples/uma-vasp"
   dependencies:
     "@lightsparkdev/core": 1.0.12
-    "@lightsparkdev/lightspark-sdk": 1.5.0
+    "@lightsparkdev/lightspark-sdk": 1.5.1
     "@lightsparkdev/tsconfig": "*"
     "@types/supertest": ^2.0.14
     "@uma-sdk/core": ^0.5.0
@@ -4241,7 +4241,7 @@ __metadata:
     "@inquirer/prompts": ^1.1.3
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
-    "@lightsparkdev/wallet-sdk": 0.11.0
+    "@lightsparkdev/wallet-sdk": 0.12.0
     "@types/jsonwebtoken": ^9.0.2
     "@types/node": ^20.2.5
     "@types/qrcode-terminal": ^0.12.0
@@ -4269,7 +4269,7 @@ __metadata:
   resolution: "@lightsparkdev/wallet-node-scripts@workspace:apps/examples/wallet-node-scripts"
   dependencies:
     "@lightsparkdev/core": 1.0.12
-    "@lightsparkdev/wallet-sdk": 0.11.0
+    "@lightsparkdev/wallet-sdk": 0.12.0
     "@types/node": ^20.2.5
     commander: ^11.0.0
     dayjs: ^1.11.7
@@ -4278,7 +4278,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/wallet-sdk@0.11.0, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
+"@lightsparkdev/wallet-sdk@0.12.0, @lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/wallet-sdk@workspace:packages/wallet-sdk"
   dependencies:
