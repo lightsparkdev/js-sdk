@@ -1,5 +1,12 @@
 # @lightsparkdev/ui
 
+## 0.0.3
+
+### Patch Changes
+
+- e77aa92: - Add spacing tokens for every component in Article
+  - Fix modal focus on previous focused element when closed
+
 ## 0.0.2
 
 ### Patch Changes

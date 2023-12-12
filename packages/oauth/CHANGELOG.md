@@ -1,5 +1,11 @@
 # @lightsparkdev/oauth
 
+## 0.1.33
+
+### Patch Changes
+
+- e77aa92: - remove potentially sensitive console logs
+
 ## 0.1.32
 
 ### Patch Changes

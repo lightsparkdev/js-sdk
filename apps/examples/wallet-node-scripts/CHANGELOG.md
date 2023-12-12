@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-node-scripts
 
+## 1.0.18
+
+### Patch Changes
+
+- Updated dependencies [e77aa92]
+  - @lightsparkdev/wallet-sdk@0.12.0
+
 ## 1.0.17
 
 ### Patch Changes

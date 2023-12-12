@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.5.1
+
+### Patch Changes
+
+- e77aa92: - fix runtime error in non-node environments by dynamically importing crypto-wasm for node environments
+
 ## 1.5.0
 
 ### Minor Changes
