@@ -76,7 +76,7 @@ export default class SendingVasp {
       sendResponse(resp, response);
     });
 
-    app.get("/api/sendpayment/:callbackUuid", async (req, resp) => {
+    app.post("/api/sendpayment/:callbackUuid", async (req, resp) => {
       const user = await this.userService.getCallingUserFromRequest(
         fullUrlForRequest(req),
         req.headers,
@@ -176,9 +176,9 @@ export default class SendingVasp {
       );
       if (!response) {
         console.error("Error parsing lnurlp response.", e);
-        return { httpStatus: 424, data: "Error parsing Lnurlp response." };
+        return { httpStatus: 424, data: `Error parsing Lnurlp response. ${e}` };
       }
-      return response;
+      return { httpStatus: 424, data: `Error parsing Lnurlp response. ${response.data}` };
     }
 
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
@@ -187,7 +187,6 @@ export default class SendingVasp {
         httpStatus: 424,
         data: "Error fetching receiving vasp public key.",
       };
-
     try {
       const isSignatureValid = await uma.verifyUmaLnurlpResponseSignature(
         lnurlpResponse,
@@ -223,7 +222,7 @@ export default class SendingVasp {
         receiverCurrencies: lnurlpResponse.currencies,
         minSendableSats: lnurlpResponse.minSendable,
         maxSendableSats: lnurlpResponse.maxSendable,
-        callbackUuid: callbackUuid,
+        callbackUuid,
         // You might not actually send this to a client in practice.
         receiverKycStatus: lnurlpResponse.compliance.kycStatus,
       },
@@ -420,7 +419,7 @@ export default class SendingVasp {
     }
 
     if (!response.ok) {
-      console.log(await response.text());
+      console.log("Error response:", await response.text());
       return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
     }
 
@@ -460,9 +459,9 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       payerProfile.identifier,
       payResponse.pr,
-      utxoCallback,
       invoice,
       senderCurrencies,
+      payResponse.compliance.utxoCallback,
     );
 
     return {
@@ -530,9 +529,9 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       "", // TODO(Jeremy): Parse LUD-18 payerdata for this.
       encodedInvoice,
-      "", // No utxo callback for non-UMA lnurl.
       invoice,
       [],
+      // No utxo callback for non-UMA lnurl.
     );
 
     return {
@@ -735,7 +734,10 @@ export default class SendingVasp {
 
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${requestUrl.protocol}//${requestUrl.hostname}${path}`;
+    const port = requestUrl.port;
+    const portString =
+    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
+    return `${requestUrl.protocol}//${requestUrl.hostname}${portString}${path}`;
   }
 
   private async waitForPaymentCompletion(

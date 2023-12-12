@@ -4,7 +4,18 @@ An example UMA VASP server implementation using Typescript.
 
 ## Running the server
 
-Configuration parameters (API keys, etc.) and information on how to set them can be found in `src/UmaConfig.ts`.
+Configure environment variables needed to talk to Lightspark and UMA messages (API keys, etc.). Information on how to set them can be found in `src/UmaConfig.ts`.
+
+1. Create an API token (`LIGHTSPARK_API_TOKEN_CLIENT_ID`, `LIGHTSPARK_API_TOKEN_CLIENT_SECRET`)
+in your account's [API config page](https://app.lightspark.com/api-config).
+
+1. Find your node credentials (`LIGHTSPARK_UMA_NODE_ID`, `LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD`)
+in your account's [API config page](https://app.lightspark.com/api-config).
+
+1. Create a secp256k1 keypair to use as your encryption keys (`LIGHTSPARK_UMA_ENCRYPTION_PUBKEY`, `LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY`)
+and signing keys (`LIGHTSPARK_UMA_SIGNING_PUBKEY`, `LIGHTSPARK_UMA_SIGNING_PRIVKEY`). For information on generating these,
+see [our docs](https://docs.uma.me/uma-standard/keys-authentication-encryption).
+
 To run locally on your machine, from the `uma-vasp` directory, run:
 
 ```bash
@@ -24,7 +35,8 @@ PORT=8080 \
 LIGHTSPARK_API_TOKEN_CLIENT_ID=<api token id> \
 LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<api token secret> \
 LIGHTSPARK_UMA_NODE_ID=<your node ID> \
-LIGHTSPARK_UMA_RECEIVER_USER=\$bob \
+LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD=<your node ID password> \
+LIGHTSPARK_UMA_RECEIVER_USER=bob \
 LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<encryption public key hex> \
 LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<encryption private key hex> \
 LIGHTSPARK_UMA_SIGNING_PUBKEY=<signing public key hex> \
@@ -69,9 +81,9 @@ $ curl -X GET http://localhost:8080/api/umalookup/\$bob@localhost:8081
 
 # Now, call to vasp1 to get a payment request from vasp2. Replace the last path component here with the callbackUuid
 # from the previous call. This will return an invoice and another callback ID that you'll need for the next call.
-$ curl -X GET "http://localhost:8080/api/umapayreq/52ca86cd-62ed-4110-9774-4e07b9aa1f0e?amount=100&currencyCode=USD"
+$ curl -X GET "http://localhost:8080/api/umapayreq/52ca86cd-62ed-4110-9774-4e07b9aa1f0e?amount=100&currencyCode=SAT"
 
 # Now, call to vasp1 to send the payment. Replace the last path component here with the callbackUuid from the payreq
 # call. This will return a payment ID that you can use to check the status of the payment.
-curl -X POST http://localhost:8080/api/sendpayment/e26cbee9-f09d-4ada-a731-965cbd043d50
+$ curl -X POST http://localhost:8080/api/sendpayment/e26cbee9-f09d-4ada-a731-965cbd043d50
 ```
