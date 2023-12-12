@@ -1,5 +1,17 @@
 # @lightsparkdev/react-wallet
 
+## 0.7.0
+
+### Minor Changes
+
+- e77aa92: - Rename the JwtStorage interface to AccessTokenStorage to more accurately reflect what it's storing and alleviate security concerns
+  - [React native] Use SecureStorage for storing the access tokens for wallets
+
+### Patch Changes
+
+- Updated dependencies [e77aa92]
+  - @lightsparkdev/wallet-sdk@0.12.0
+
 ## 0.6.39
 
 ### Patch Changes
