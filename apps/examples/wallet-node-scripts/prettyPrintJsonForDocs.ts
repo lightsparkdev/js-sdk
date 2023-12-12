@@ -2,7 +2,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import {
-  InMemoryJwtStorage,
+  InMemoryTokenStorage,
   LightsparkClient,
 } from "@lightsparkdev/wallet-sdk";
 
@@ -13,7 +13,7 @@ const client = new LightsparkClient(undefined, "api.dev.dev.sparkinfra.net");
 await client.loginWithJWT(
   credentials.accountId,
   credentials.jwt,
-  new InMemoryJwtStorage()
+  new InMemoryTokenStorage()
 );
 
 const makeRequest = async () => {

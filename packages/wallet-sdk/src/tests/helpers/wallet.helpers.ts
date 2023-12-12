@@ -7,7 +7,7 @@ import { type EnvCredentials } from "@lightsparkdev/wallet-cli/src/authHelpers.j
 import type LightsparkClient from "../../client.js";
 import WalletStatus from "../../objects/WalletStatus.js";
 
-import { InMemoryJwtStorage } from "../../index.js";
+import { InMemoryTokenStorage } from "../../index.js";
 import { MINUTES_IN_HOUR, MS_IN_SECOND } from "../constants.js";
 import {
   type CredentialsForWalletJWTCreating,
@@ -139,7 +139,7 @@ export const deployWallet = async (
   const loginOutput = await client.loginWithJWT(
     credentials.accountId,
     token,
-    new InMemoryJwtStorage(),
+    new InMemoryTokenStorage(),
   );
 
   let walletStatus = loginOutput.wallet.status;

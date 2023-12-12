@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import type JwtStorage from "./JwtStorage.js";
-import type JwtTokenInfo from "./JwtTokenInfo.js";
-import { isParsedJwtTokenInfo } from "./JwtTokenInfo.js";
+import type AccessTokenInfo from "./AccessTokenInfo.js";
+import { isParsedAccessTokenInfo } from "./AccessTokenInfo.js";
+import type AccessTokenStorage from "./AccessTokenStorage.js";
 
 const STORAGE_KEY = "lightspark-jwt";
 
@@ -10,13 +10,13 @@ const STORAGE_KEY = "lightspark-jwt";
  * Stores JWT access token info in local storage for use in Chrome Extensions
  * (chrome.storage.local).
  *
- * For web: This should not be used in web. Instead, you should use InMemoryJwtStorage
+ * For web: This should not be used in web. Instead, you should use InMemoryTokenStorage
  * and silently re-auth the user when the page is refreshed.
  * For React Native: This should not be used in React Native. Instead, you should use
  * EncryptedLocalTokenStorage from the @lightsparkdev/react-native package.
  */
-class ChromeExtensionLocalTokenStorage implements JwtStorage {
-  async getCurrent(): Promise<JwtTokenInfo | null> {
+class ChromeExtensionLocalTokenStorage implements AccessTokenStorage {
+  async getCurrent(): Promise<AccessTokenInfo | null> {
     if (!chrome || !chrome.storage || !chrome.storage.local) {
       throw new Error(
         "Chrome extension local storage is not available in this environment.",
@@ -27,7 +27,7 @@ class ChromeExtensionLocalTokenStorage implements JwtStorage {
       return null;
     }
 
-    if (isParsedJwtTokenInfo(tokenInfo)) {
+    if (isParsedAccessTokenInfo(tokenInfo)) {
       return {
         accessToken: tokenInfo.accessToken,
         validUntil: new Date(tokenInfo.validUntil),
@@ -37,7 +37,7 @@ class ChromeExtensionLocalTokenStorage implements JwtStorage {
     return null;
   }
 
-  async replace(tokenInfo: JwtTokenInfo): Promise<void> {
+  async replace(tokenInfo: AccessTokenInfo): Promise<void> {
     await chrome.storage.local.set({
       STORAGE_KEY: {
         accessToken: tokenInfo.accessToken,

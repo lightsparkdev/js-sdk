@@ -1,13 +1,13 @@
 import { useLightsparkClient } from "@lightsparkdev/react-wallet";
 import {
   CustomJwtAuthProvider,
-  JwtStorage,
+  AccessTokenStorage,
   Wallet,
 } from "@lightsparkdev/wallet-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { EncryptedLocalTokenStorage } from "@lightsparkdev/react-native";
 
-const useWalletInfo = (tokenStorage?: JwtStorage) => {
+const useWalletInfo = (tokenStorage?: AccessTokenStorage) => {
   const clientProvider = useLightsparkClient();
   const [wallet, setWallet] = useState<Wallet | null>(null);
 

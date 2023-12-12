@@ -4,7 +4,7 @@
 import { confirm, input } from "@inquirer/prompts";
 import { DefaultCrypto, KeyOrAlias, b64encode } from "@lightsparkdev/core";
 import {
-  InMemoryJwtStorage,
+  InMemoryTokenStorage,
   InvoiceType,
   KeyType,
   LightsparkClient,
@@ -45,7 +45,7 @@ const main = async (
     await client.loginWithJWT(
       credentials.accountId,
       credentials.jwt,
-      new InMemoryJwtStorage(),
+      new InMemoryTokenStorage(),
     );
   }
   await action(client, options, credentials);
@@ -399,7 +399,7 @@ const createDeployAndInitWallet = async (
   const loginOutput = await client.loginWithJWT(
     credentials.accountId,
     token,
-    new InMemoryJwtStorage(),
+    new InMemoryTokenStorage(),
   );
   console.log("Wallet:", JSON.stringify(loginOutput.wallet, null, 2));
   let serializedKeypair: { privateKey: string; publicKey: string } | undefined =

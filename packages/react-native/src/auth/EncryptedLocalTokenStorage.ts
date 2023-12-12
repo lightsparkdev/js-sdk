@@ -1,4 +1,7 @@
-import { type JwtStorage, type JwtTokenInfo } from "@lightsparkdev/wallet-sdk";
+import {
+  type AccessTokenInfo,
+  type AccessTokenStorage,
+} from "@lightsparkdev/wallet-sdk";
 import * as SecureStore from "expo-secure-store";
 
 const STORAGE_KEY = "lightspark-access-token";
@@ -17,8 +20,8 @@ function isParsedJwtTokenInfo(value: unknown): value is {
   );
 }
 
-export default class EncryptedLocalTokenStorage implements JwtStorage {
-  async getCurrent(): Promise<JwtTokenInfo | null> {
+export default class EncryptedLocalTokenStorage implements AccessTokenStorage {
+  async getCurrent(): Promise<AccessTokenInfo | null> {
     const tokenInfo = await SecureStore.getItemAsync(STORAGE_KEY);
     if (tokenInfo === null) {
       return null;
@@ -36,7 +39,7 @@ export default class EncryptedLocalTokenStorage implements JwtStorage {
     return null;
   }
 
-  async replace(tokenInfo: JwtTokenInfo): Promise<void> {
+  async replace(tokenInfo: AccessTokenInfo): Promise<void> {
     await SecureStore.setItemAsync(
       STORAGE_KEY,
       JSON.stringify({

@@ -3,15 +3,15 @@
 
 import {
   CustomJwtAuthProvider,
-  InMemoryJwtStorage,
+  InMemoryTokenStorage,
   LightsparkClient,
 } from "@lightsparkdev/wallet-sdk";
 
 import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 const account = getCredentialsFromEnvOrThrow();
-const storage = new InMemoryJwtStorage();
-const authProvider = new CustomJwtAuthProvider(new InMemoryJwtStorage());
+const storage = new InMemoryTokenStorage();
+const authProvider = new CustomJwtAuthProvider(new InMemoryTokenStorage());
 const client = new LightsparkClient(authProvider, account.baseUrl);
 await client.loginWithJWT(account.accountId, account.jwt, storage);
 client.getWalletDashboard().then((dashboard) => {

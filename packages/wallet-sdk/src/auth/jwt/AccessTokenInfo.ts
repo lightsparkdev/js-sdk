@@ -1,11 +1,11 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-type JwtTokenInfo = {
+type AccessTokenInfo = {
   accessToken: string;
   validUntil: Date;
 };
 
-export function isParsedJwtTokenInfo(value: unknown): value is {
+export function isParsedAccessTokenInfo(value: unknown): value is {
   accessToken: string;
   validUntil: string;
 } {
@@ -19,4 +19,4 @@ export function isParsedJwtTokenInfo(value: unknown): value is {
   );
 }
 
-export default JwtTokenInfo;
+export default AccessTokenInfo;
