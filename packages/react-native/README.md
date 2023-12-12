@@ -33,7 +33,10 @@ const lightsparkClient = new LightsparkClient(
 Alternatively, if you're using the `lightsparkdev/react-wallet` package, you can set the crypto implementation when constructing the `LightsparkClientProvider`:
 
 ```typescript
-import { ReactNativeCrypto } from "@lightsparkdev/react-native";
+import {
+  EncryptedLocalTokenStorage,
+  ReactNativeCrypto,
+} from "@lightsparkdev/react-native";
 import {
   JwtAuthProvider,
   LightsparkClientProvider,
@@ -43,7 +46,7 @@ import PageContainer from "./PageContainer";
 export default function App() {
   return (
     <LightsparkClientProvider customCryptoImpl={ReactNativeCrypto}>
-      <JwtAuthProvider useLocalStorage>
+      <JwtAuthProvider customTokenStorage={new EncryptedLocalTokenStorage()}>
         <PageContainer />
       </JwtAuthProvider>
     </LightsparkClientProvider>
