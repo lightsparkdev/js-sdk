@@ -14,7 +14,7 @@ export default function App() {
       serverUrl="api.dev.dev.sparkinfra.net"
       customCryptoImpl={ReactNativeCrypto}
     >
-      <JwtAuthProvider customTokenStorage={new EncryptedLocalTokenStorage()}>
+      <JwtAuthProvider tokenStorage={new EncryptedLocalTokenStorage()}>
         <PageContainer />
       </JwtAuthProvider>
     </LightsparkClientProvider>

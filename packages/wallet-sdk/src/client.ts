@@ -81,7 +81,7 @@ const sdkVersion = packageJson.version;
  *
  * ```ts
  * const lightsparkClient = new LightsparkClient(
- *    new CustomJwtAuthProvider(new LocalStorageJwtStorage()),
+ *    new CustomJwtAuthProvider(new InMemoryJwtStorage()),
  * );
  * const encodedInvoice = await lightsparkClient.createInvoice(
  *   { value: 100, unit: CurrencyUnit.SATOSHI },

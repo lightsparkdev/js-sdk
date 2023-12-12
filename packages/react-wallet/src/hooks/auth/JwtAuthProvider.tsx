@@ -1,7 +1,6 @@
 import {
   CustomJwtAuthProvider,
   InMemoryJwtStorage,
-  LocalStorageJwtStorage,
   type JwtStorage,
 } from "@lightsparkdev/wallet-sdk";
 import React, { useEffect, useState } from "react";
@@ -14,33 +13,21 @@ const AuthContext = React.createContext<JwtAuthContextType>(null!);
  * A provider element that provides the JWT auth context to its children.
  *
  * @param children
- * @param useLocalStorage Set this to true to use persisent local storage instead of in-memory storage.
- *     This should only be used in a web context and not with React Native.
- *     For React Native, set the customTokenStorage param to an instance of the
- *     EncryptedLocalTokenStorage class from the @lightsparkdev/react-native package.
- * @param customTokenStorage Allows you to provide a custom implementation of the JwtStorage interface.
- *     Useful for React Native to inject the EncryptedLocalTokenStorage class from the
+ * @param tokenStorage Allows you to provide a custom implementation of the JwtStorage interface for persistent storage.
+ *     In React Native, inject the EncryptedLocalTokenStorage class from the
  *     @lightsparkdev/react-native package.
+ *     For chrome extensions, inject the ChromeExtensionLocalTokenStorage class.
+ *     Web apps should just use the InMemoryJwtStorage class, which is the default.
  */
 function JwtAuthProvider({
   children,
-  useLocalStorage,
-  customTokenStorage,
+  tokenStorage,
 }: {
   children: React.ReactNode;
-  useLocalStorage?: boolean;
-  customTokenStorage?: JwtStorage;
+  tokenStorage?: JwtStorage;
 }) {
-  const getTokenStorage = () => {
-    if (customTokenStorage) {
-      return customTokenStorage;
-    }
-    return useLocalStorage
-      ? new LocalStorageJwtStorage()
-      : new InMemoryJwtStorage();
-  };
   const [authProvider] = useState<CustomJwtAuthProvider>(
-    new CustomJwtAuthProvider(getTokenStorage()),
+    new CustomJwtAuthProvider(tokenStorage ?? new InMemoryJwtStorage()),
   );
   const clientProvider = useLightsparkClient();
 
@@ -52,7 +39,7 @@ function JwtAuthProvider({
     clientProvider.setAuthProvider(authProvider);
     return await clientProvider
       .getClient()
-      .loginWithJWT(accountId, jwt, getTokenStorage());
+      .loginWithJWT(accountId, jwt, tokenStorage ?? new InMemoryJwtStorage());
   };
 
   const logout = () => {
