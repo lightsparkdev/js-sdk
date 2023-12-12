@@ -245,9 +245,11 @@ class Requester {
       );
     }
 
-    let TextEncoderImpl = TextEncoder;
+    let TextEncoderImpl;
     if (typeof TextEncoder === "undefined") {
       TextEncoderImpl = (await import("text-encoding")).TextEncoder;
+    } else {
+      TextEncoderImpl = TextEncoder;
     }
     const encodedPayload = new TextEncoderImpl().encode(
       JSON.stringify(payload),

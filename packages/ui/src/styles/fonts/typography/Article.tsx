@@ -2,6 +2,7 @@
 import styled from "@emotion/styled";
 import { StyledContentTable } from "../../../components/ContentTable.js";
 import { colors } from "../../colors.js";
+import { Spacing } from "../../tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../../utils.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
 import { StyledBody } from "./Body.js";
@@ -17,51 +18,51 @@ export const Article = styled.article`
 
   ${headlineSelector("h1")} {
     margin: 0;
-    padding-bottom: 8px;
+    padding-bottom: ${Spacing.xs};
   }
 
   ${headlineSelector("h2")} {
-    padding-top: 32px;
-    padding-bottom: 8px;
+    padding-top: ${Spacing["2xl"]};
+    padding-bottom: ${Spacing.xs};
     margin: 0;
   }
 
   ${headlineSelector("h3")} {
-    padding-top: 32px;
-    padding-bottom: 8px;
+    padding-top: ${Spacing["2xl"]};
+    padding-bottom: ${Spacing.xs};
     margin: 0;
   }
 
   ${headlineSelector("h4")} {
-    padding-top: 16px;
-    padding-bottom: 8px;
+    padding-top: ${Spacing["2xl"]};
+    padding-bottom: ${Spacing.xs};
     margin: 0;
   }
 
   ${headlineSelector("h5")} {
-    padding-top: 32px;
-    padding-bottom: 8px;
+    padding-top: ${Spacing["2xl"]};
+    padding-bottom: ${Spacing.xs};
     margin: 0;
   }
 
   ${headlineSelector("h6")} {
-    padding-top: 32px;
-    padding-bottom: 8px;
+    padding-top: ${Spacing["2xl"]};
+    padding-bottom: ${Spacing.xs};
     margin: 0;
   }
 
   ${StyledBody} {
-    margin-top: 12px;
-    margin-bottom: 12px;
+    margin-top: ${Spacing.xs};
+    margin-bottom: ${Spacing.xs};
   }
 
   ${StyledContentTable} {
-    margin: 40px 0;
+    margin: ${Spacing["2xl"]} 0;
   }
 
   img {
-    margin-top: 16px;
-    margin-bottom: 16px;
+    margin-top: ${Spacing.md};
+    margin-bottom: ${Spacing.md};
   }
 
   strong {
@@ -79,9 +80,9 @@ export const Article = styled.article`
 
   ul,
   ol {
-    padding-left: 24px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    padding-left: ${Spacing.lg};
+    margin-top: ${Spacing.xs};
+    margin-bottom: ${Spacing.xs};
     *:not(a) {
       color: ${({ theme }) => theme.text};
     }
@@ -91,7 +92,7 @@ export const Article = styled.article`
     ${({ theme }) =>
       getTypographyString(theme.typography[theme.app].Body[TokenSize.Medium])}
     :not(:last-child) {
-      margin-bottom: 4px;
+      margin-bottom: ${Spacing["3xs"]};
     }
   }
 
@@ -99,16 +100,16 @@ export const Article = styled.article`
     ${({ theme }) =>
       getTypographyString(theme.typography[theme.app].Code[TokenSize.Medium])}
     background: ${colors.uma.blue90};
-    padding: 2px 6px;
-    margin: 2px;
+    padding: ${Spacing["4xs"]} ${Spacing["2xs"]};
+    margin: ${Spacing["4xs"]};
     border-radius: 4px;
   }
 
   pre[class|="language"] {
     border-radius: 8px;
     width: 100%;
-    padding: 16px 24px;
-    margin: 0;
+    padding: ${Spacing.md} ${Spacing.lg};
+    margin: ${Spacing.md} 0;
   }
 
   // Must match specificity of prismjs to get proper line height!
@@ -118,5 +119,9 @@ export const Article = styled.article`
       getTypographyString(theme.typography[theme.app].Code[TokenSize.Small])}
 
     ${overflowAutoWithoutScrollbars}
+  }
+
+  blockquote {
+    margin: ${Spacing.xs} 0;
   }
 `;

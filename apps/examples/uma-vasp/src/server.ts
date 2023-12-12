@@ -53,7 +53,7 @@ export const createUmaServer = (
   });
 
   app.post("/api/uma/utxoCallback", (req, res) => {
-    console.log(`Received UTXO callback for ${req.query.txid}`);
+    console.log(`Received UTXO callback for ${req.query.txId}`);
     console.log(`  ${req.body}`);
     res.send("ok");
   });

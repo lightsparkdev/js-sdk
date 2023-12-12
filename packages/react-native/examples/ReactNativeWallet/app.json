@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jlklein.ReactNativeWallet"
+      "bundleIdentifier": "com.lightspark.ReactNativeWallet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.jlklein.ReactNativeWallet"
+      "package": "com.lightspark.ReactNativeWallet"
     },
     "web": {
       "favicon": "./assets/favicon.png"

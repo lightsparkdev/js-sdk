@@ -9,7 +9,7 @@ function App(props: { children: React.ReactNode }) {
   return (
     <div className="App">
       <LightsparkClientProvider serverUrl="api.dev.dev.sparkinfra.net">
-        <JwtAuthProvider useLocalStorage>{props.children}</JwtAuthProvider>
+        <JwtAuthProvider>{props.children}</JwtAuthProvider>
       </LightsparkClientProvider>
     </div>
   );

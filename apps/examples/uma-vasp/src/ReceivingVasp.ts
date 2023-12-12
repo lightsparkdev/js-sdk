@@ -28,7 +28,7 @@ export default class ReceivingVasp {
 
   registerRoutes(app: Express): void {
     app.get("/.well-known/lnurlp/:username", async (req, resp) => {
-      const response = await this.handleLnrulpRequest(
+      const response = await this.handleLnurlpRequest(
         req.params.username,
         fullUrlForRequest(req),
       );
@@ -53,7 +53,7 @@ export default class ReceivingVasp {
     });
   }
 
-  private async handleLnrulpRequest(
+  private async handleLnurlpRequest(
     username: string,
     requestUrl: URL,
   ): Promise<HttpResponse> {
@@ -389,6 +389,9 @@ export default class ReceivingVasp {
 
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${requestUrl.protocol}//${requestUrl.hostname}${path}`;
+    const port = requestUrl.port;
+    const portString =
+    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
+    return `${requestUrl.protocol}//${requestUrl.hostname}${portString}${path}`;
   }
 }

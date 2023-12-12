@@ -89,6 +89,7 @@
   },
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
+    "@types/chrome": "^0.0.254",
     "@types/crypto-js": "^4.1.1",
     "@types/ws": "^8.5.4",
     "dotenv": "^16.3.1",

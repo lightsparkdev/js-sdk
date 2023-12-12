@@ -31,7 +31,7 @@
   "devDependencies": {
     "@lightsparkdev/tsconfig": "*",
     "@lightsparkdev/vite": "*",
-    "@types/chrome": "^0.0.227",
+    "@types/chrome": "^0.0.254",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.2.5",
     "@types/react": "^18.2.12",

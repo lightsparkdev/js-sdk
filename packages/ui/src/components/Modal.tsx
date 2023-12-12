@@ -66,6 +66,7 @@ export function Modal({
   width = 460,
   progressBar,
 }: ModalProps) {
+  const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
   const ref = firstFocusRef || defaultFirstFocusRef;
@@ -75,6 +76,13 @@ export function Modal({
   const modalContainerRef = useRef<null | HTMLDivElement>(null);
   const bp = useBreakpoints();
   const isSm = bp.current(Breakpoints.sm);
+
+  useEffect(() => {
+    if (visible !== visibleChangedRef.current) {
+      visibleChangedRef.current = visible;
+    }
+  }, [visible]);
+  const visibleChanged = visible !== visibleChangedRef.current;
 
   useEffect(() => {
     prevFocusedElement.current = document.activeElement;
@@ -138,14 +146,16 @@ export function Modal({
 
   useLayoutEffect(() => {
     if (visible) {
-      prevFocusedElement.current = document.activeElement;
+      if (visibleChanged) {
+        prevFocusedElement.current = document.activeElement;
+      }
       if (typeof ref === "object" && ref?.current && autoFocus) {
         ref.current.focus();
       }
-    } else if (prevFocusedElement.current) {
+    } else if (visibleChanged && prevFocusedElement.current) {
       (prevFocusedElement.current as HTMLElement).focus();
     }
-  }, [visible, ref, autoFocus]);
+  }, [visible, visibleChanged, ref, autoFocus]);
 
   function onClickCloseButton(event: React.MouseEvent) {
     event.stopPropagation();

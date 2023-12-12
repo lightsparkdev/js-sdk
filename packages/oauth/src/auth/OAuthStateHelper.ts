@@ -92,7 +92,7 @@ class OAuthStateHelper {
     this.authorizationHandler.setAuthorizationNotifier(this.notifier);
     this.notifier.setAuthorizationListener((request, response, error) => {
       // TODO: Consider a way to cache the auth state or allow clients to do so.
-      console.log("Authorization request complete ", request, response, error);
+      console.log("Authorization request complete.");
       if (response) {
         this.authRequest = request;
         this.authResponse = response;
@@ -189,9 +189,9 @@ class OAuthStateHelper {
           // unset code, so we can do refresh token exchanges subsequently.
           this.code = undefined;
           if (isFirstRequest) {
-            console.log(`Obtained a refresh token ${response.refreshToken}`);
+            console.log(`Obtained a refresh token.`);
           } else {
-            console.log(`Obtained an access token ${response.accessToken}.`);
+            console.log(`Obtained an access token.`);
           }
           this.pendingTokenRequest = undefined;
           resolve(response);

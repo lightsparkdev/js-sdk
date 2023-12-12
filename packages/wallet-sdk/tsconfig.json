@@ -3,7 +3,8 @@
   "compilerOptions": {
     /* Allow implicit any due to generated files. TODO look into resolving
        implicit any for generated files or move them out of the type checks */
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "types": ["node", "jest", "chrome"]
   },
   "include": ["src"],
   "exclude": ["**/tests", "node_modules", "dist"]

@@ -1,8 +1,8 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import type { AuthProvider } from "@lightsparkdev/core";
-import type JwtStorage from "./JwtStorage.js";
-import type JwtTokenInfo from "./JwtTokenInfo.js";
+import type AccessTokenInfo from "./AccessTokenInfo.js";
+import type AccessTokenStorage from "./AccessTokenStorage.js";
 
 /**
  * A custom [AuthProvider] that uses a JWT token to authenticate requests.
@@ -10,21 +10,22 @@ import type JwtTokenInfo from "./JwtTokenInfo.js";
  * Should generally not be used directly by clients,
  * but rather through the [loginWithJwt] method of a [LightsparkWalletClient].
  *
- * @param tokenStorage A [JwtStorage] implementation that stores or retrieves the current JWT token info.
+ * @param tokenStorage An [AccessTokenStorage] implementation that stores or retrieves the
+ *     current JWT token info.
  */
 class CustomJwtAuthProvider implements AuthProvider {
-  constructor(private jwtStorage: JwtStorage) {}
+  constructor(private tokenStorage: AccessTokenStorage) {}
 
-  public async setTokenInfo(tokenInfo: JwtTokenInfo): Promise<void> {
-    await this.jwtStorage.replace(tokenInfo);
+  public async setTokenInfo(tokenInfo: AccessTokenInfo): Promise<void> {
+    await this.tokenStorage.replace(tokenInfo);
   }
 
   public async logout(): Promise<void> {
-    await this.jwtStorage.clear();
+    await this.tokenStorage.clear();
   }
 
   public async addAuthHeaders(headers: Record<string, unknown>): Promise<any> {
-    const tokenInfo = await this.jwtStorage.getCurrent();
+    const tokenInfo = await this.tokenStorage.getCurrent();
     if (!tokenInfo) {
       return headers;
     }
@@ -34,7 +35,7 @@ class CustomJwtAuthProvider implements AuthProvider {
   }
 
   public async isAuthorized(): Promise<boolean> {
-    const tokenInfo = await this.jwtStorage.getCurrent();
+    const tokenInfo = await this.tokenStorage.getCurrent();
     if (!tokenInfo) {
       return false;
     }
@@ -42,7 +43,7 @@ class CustomJwtAuthProvider implements AuthProvider {
   }
 
   public async addWsConnectionParams(params: Record<string, unknown>) {
-    const tokenInfo = await this.jwtStorage.getCurrent();
+    const tokenInfo = await this.tokenStorage.getCurrent();
     if (!tokenInfo) {
       return params;
     }

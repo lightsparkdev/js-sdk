@@ -19,8 +19,8 @@ import {
 import autoBind from "auto-bind";
 import type { Observable, Subscription } from "zen-observable-ts";
 import packageJson from "../package.json";
+import type AccessTokenStorage from "./auth/jwt/AccessTokenStorage.js";
 import CustomJwtAuthProvider from "./auth/jwt/CustomJwtAuthProvider.js";
-import type JwtStorage from "./auth/jwt/JwtStorage.js";
 import BitcoinFeeEstimateQuery from "./graqhql/BitcoinFeeEstimate.js";
 import { CancelInvoice } from "./graqhql/CancelInvoice.js";
 import CreateBitcoinFundingAddress from "./graqhql/CreateBitcoinFundingAddress.js";
@@ -81,7 +81,7 @@ const sdkVersion = packageJson.version;
  *
  * ```ts
  * const lightsparkClient = new LightsparkClient(
- *    new CustomJwtAuthProvider(new LocalStorageJwtStorage()),
+ *    new CustomJwtAuthProvider(new InMemoryTokenStorage()),
  * );
  * const encodedInvoice = await lightsparkClient.createInvoice(
  *   { value: 100, unit: CurrencyUnit.SATOSHI },
@@ -176,7 +176,7 @@ class LightsparkClient {
   public async loginWithJWT(
     accountId: string,
     jwt: string,
-    storage: JwtStorage,
+    storage: AccessTokenStorage,
   ) {
     const response = await this.executeRawQuery({
       queryPayload: LoginWithJWT,

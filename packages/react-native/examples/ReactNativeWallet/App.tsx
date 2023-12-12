@@ -1,4 +1,7 @@
-import { ReactNativeCrypto } from "@lightsparkdev/react-native";
+import {
+  EncryptedLocalTokenStorage,
+  ReactNativeCrypto,
+} from "@lightsparkdev/react-native";
 import {
   JwtAuthProvider,
   LightsparkClientProvider,
@@ -11,7 +14,7 @@ export default function App() {
       serverUrl="api.dev.dev.sparkinfra.net"
       customCryptoImpl={ReactNativeCrypto}
     >
-      <JwtAuthProvider useLocalStorage>
+      <JwtAuthProvider tokenStorage={new EncryptedLocalTokenStorage()}>
         <PageContainer />
       </JwtAuthProvider>
     </LightsparkClientProvider>

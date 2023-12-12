@@ -1,7 +1,7 @@
 import {
   CustomJwtAuthProvider,
-  InMemoryJwtStorage,
-  LocalStorageJwtStorage,
+  InMemoryTokenStorage,
+  type AccessTokenStorage,
 } from "@lightsparkdev/wallet-sdk";
 import React, { useEffect, useState } from "react";
 import { useLightsparkClient } from "../lightsparkclient/LightsparkClientProvider.js";
@@ -9,17 +9,25 @@ import type JwtAuthContextType from "./JwtAuthContext.js";
 
 const AuthContext = React.createContext<JwtAuthContextType>(null!);
 
+/**
+ * A provider element that provides the JWT auth context to its children.
+ *
+ * @param children
+ * @param tokenStorage Allows you to provide a custom implementation of the AccessTokenStorage interface for persistent storage.
+ *     In React Native, inject the EncryptedLocalTokenStorage class from the
+ *     @lightsparkdev/react-native package.
+ *     For chrome extensions, inject the ChromeExtensionLocalTokenStorage class.
+ *     Web apps should just use the InMemoryTokenStorage class, which is the default.
+ */
 function JwtAuthProvider({
   children,
-  useLocalStorage,
+  tokenStorage,
 }: {
   children: React.ReactNode;
-  useLocalStorage: boolean;
+  tokenStorage?: AccessTokenStorage;
 }) {
   const [authProvider] = useState<CustomJwtAuthProvider>(
-    new CustomJwtAuthProvider(
-      useLocalStorage ? new LocalStorageJwtStorage() : new InMemoryJwtStorage(),
-    ),
+    new CustomJwtAuthProvider(tokenStorage ?? new InMemoryTokenStorage()),
   );
   const clientProvider = useLightsparkClient();
 
@@ -28,13 +36,10 @@ function JwtAuthProvider({
   }, [authProvider, clientProvider]);
 
   const login = async (accountId: string, jwt: string) => {
-    const jwtStorage = useLocalStorage
-      ? new LocalStorageJwtStorage()
-      : new InMemoryJwtStorage();
     clientProvider.setAuthProvider(authProvider);
     return await clientProvider
       .getClient()
-      .loginWithJWT(accountId, jwt, jwtStorage);
+      .loginWithJWT(accountId, jwt, tokenStorage ?? new InMemoryTokenStorage());
   };
 
   const logout = () => {

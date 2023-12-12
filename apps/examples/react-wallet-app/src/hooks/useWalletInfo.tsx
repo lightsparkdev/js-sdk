@@ -1,12 +1,12 @@
 import { useLightsparkClient } from "@lightsparkdev/react-wallet";
-import type { Wallet } from "@lightsparkdev/wallet-sdk";
+import type { AccessTokenStorage, Wallet } from "@lightsparkdev/wallet-sdk";
 import {
   CustomJwtAuthProvider,
-  LocalStorageJwtStorage,
+  InMemoryTokenStorage,
 } from "@lightsparkdev/wallet-sdk";
 import { useCallback, useEffect, useState } from "react";
 
-const useWalletInfo = () => {
+const useWalletInfo = (tokenStorage?: AccessTokenStorage) => {
   const clientProvider = useLightsparkClient();
   const [wallet, setWallet] = useState<Wallet | null>(null);
 
@@ -26,10 +26,10 @@ const useWalletInfo = () => {
 
   useEffect(() => {
     clientProvider.setAuthProvider(
-      new CustomJwtAuthProvider(new LocalStorageJwtStorage())
+      new CustomJwtAuthProvider(tokenStorage ?? new InMemoryTokenStorage())
     );
     void refresh();
-  }, [clientProvider, refresh]);
+  }, [clientProvider, refresh, tokenStorage]);
 
   return { wallet, refresh };
 };

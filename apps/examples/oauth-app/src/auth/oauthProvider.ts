@@ -1,10 +1,17 @@
 import { OAuthStateHelper } from "@lightsparkdev/oauth";
 
-const CLIENT_ID = "0186ffea-9d6e-7777-0000-8c584f503545";
-const CLIENT_SECRET = "JrsBdKnPqLOPomGSXrGKFmS1YWuL8C77nxV1o8M5yEf";
 const REDIRECT_URI =
   window.location.href.substring(0, window.location.href.lastIndexOf("/")) +
   "/oauth";
+
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID as string;
+const CLIENT_SECRET = import.meta.env.VITE_CLIENT_SECRET as string;
+
+if (!CLIENT_ID || !CLIENT_SECRET) {
+  throw new Error(
+    "Missing required environment variables. Please set VITE_CLIENT_ID and VITE_CLIENT_SECRET in .env.local."
+  );
+}
 
 class OAuthProvider {
   readonly oauthHelper = new OAuthStateHelper(

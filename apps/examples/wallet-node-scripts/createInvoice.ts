@@ -2,7 +2,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import {
-  InMemoryJwtStorage,
+  InMemoryTokenStorage,
   InvoiceType,
   LightsparkClient,
 } from "@lightsparkdev/wallet-sdk";
@@ -15,7 +15,7 @@ const main = async (program: Command) => {
   await client.loginWithJWT(
     credentials.accountId,
     credentials.jwt,
-    new InMemoryJwtStorage()
+    new InMemoryTokenStorage()
   );
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));

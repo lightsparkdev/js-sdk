@@ -4039,10 +4039,12 @@ __metadata:
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/ls-react-native-crypto": 0.2.10
     "@lightsparkdev/tsconfig": 0.0.0
+    "@lightsparkdev/wallet-sdk": 0.11.0
     auto-bind: ^5.0.1
     dayjs: ^1.11.7
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
+    expo-secure-store: ~12.3.1
     jest: ^29.6.2
     prettier: 3.0.3
     prettier-plugin-organize-imports: ^3.2.4
@@ -4141,7 +4143,7 @@ __metadata:
     "@lightsparkdev/tsconfig": "*"
     "@lightsparkdev/ui": 0.0.2
     "@lightsparkdev/vite": "*"
-    "@types/chrome": ^0.0.227
+    "@types/chrome": ^0.0.254
     "@types/jest": ^29.5.3
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -4178,6 +4180,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": 0.0.0
+    "@simbathesailor/use-what-changed": ^2.0.0
     "@svgr/plugin-jsx": ^8.1.0
     esbuild-plugin-copy: ^2.1.1
     esbuild-plugin-svgr: ^2.1.0
@@ -4282,6 +4285,7 @@ __metadata:
     "@lightsparkdev/core": 1.0.12
     "@lightsparkdev/eslint-config": "*"
     "@react-native-async-storage/async-storage": ^1.18.1
+    "@types/chrome": ^0.0.254
     "@types/crypto-js": ^4.1.1
     "@types/ws": ^8.5.4
     auto-bind: ^5.0.1
@@ -5233,6 +5237,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@simbathesailor/use-what-changed@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@simbathesailor/use-what-changed@npm:2.0.0"
+  peerDependencies:
+    react: ">=16"
+  checksum: a90e5b7388584749d19b138e0ab50fc69d9af69bee7beaa7616fa287122577f027877e0bd622ec1149057adb2f5bd3f27691dae5723c6a7c93d044bfb96e77ec
+  languageName: node
+  linkType: hard
+
 "@sinclair/typebox@npm:^0.27.8":
   version: 0.27.8
   resolution: "@sinclair/typebox@npm:0.27.8"
@@ -5565,13 +5578,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chrome@npm:^0.0.227":
-  version: 0.0.227
-  resolution: "@types/chrome@npm:0.0.227"
+"@types/chrome@npm:^0.0.254":
+  version: 0.0.254
+  resolution: "@types/chrome@npm:0.0.254"
   dependencies:
     "@types/filesystem": "*"
     "@types/har-format": "*"
-  checksum: 75de76b1958ebd8077acb426d487ab9fe44273ebdbab3a7ce971096982f410bccc9fd42bb84a45703b0311fc1c893c12d136c0c082abaa65d46fbe0b9734b1f8
+  checksum: ec54e73b792eb93cdadead294a0de0f757cc30d8ddebabab548cbfd3ed479c2a557aa33cee6eb190b67f500eebbc2e09496017a1dd521df1154a7b38cdca70d3
   languageName: node
   linkType: hard
 
@@ -11361,6 +11374,15 @@ __metadata:
   bin:
     expo-pwa: build/cli.js
   checksum: d9fd7bd6d875342caf7eb4a0b893928301b507a4d26830722c56f96e2a973be852bc8ec77a277dde8bc166e95b7c09c58e3014fb8849ba125289f55bd01e39f8
+  languageName: node
+  linkType: hard
+
+"expo-secure-store@npm:~12.3.1":
+  version: 12.3.1
+  resolution: "expo-secure-store@npm:12.3.1"
+  peerDependencies:
+    expo: "*"
+  checksum: b4e0bb14b39d9276483e6d219a445399dbe556921fa71c10dbd7927ae8f3fb8c964fab35c7ba4a9e3acc4e944130d779edaf1337c2b8d74ed25b5621ebbb0cd4
   languageName: node
   linkType: hard
 

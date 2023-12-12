@@ -31,7 +31,7 @@ module.exports = {
           {
             importNames: ["useWhatChanged"],
             message: "This is for use in local development only.",
-            name: "@lightsparkdev/private-ui/src/hooks/useWhatChanged",
+            name: "@lightsparkdev/ui/hooks/useWhatChanged",
           },
         ],
         patterns: [
