@@ -24,3 +24,11 @@ Then run it!
 ```bash
 npx expo run:ios
 ```
+
+### Issues running on iOS
+
+- "Xcode must be fully installed before you can continue". See https://github.com/expo/expo/issues/21727 for suggested fix `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
+
+### General issues
+
+- "Duplicated files or mocks" runtime error. Please delete packages/tsconfig/dist if it exists.

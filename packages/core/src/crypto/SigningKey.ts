@@ -45,6 +45,6 @@ export class Secp256k1SigningKey extends SigningKey {
     const keyBytes = new Uint8Array(hexToBytes(this.privateKey));
     const hash = await createSha256Hash(data);
     const signResult = secp256k1.ecdsaSign(hash, keyBytes);
-    return signResult.signature;
+    return secp256k1.signatureExport(signResult.signature);
   }
 }
