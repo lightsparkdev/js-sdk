@@ -1,5 +1,12 @@
 # @lightsparkdev/ui
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [da1e0b2]
+  - @lightsparkdev/core@1.0.13
+
 ## 0.0.3
 
 ### Patch Changes

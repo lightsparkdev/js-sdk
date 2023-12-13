@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.13
+
+### Patch Changes
+
+- da1e0b2: - export secp256k1 signatures to DER format
+
 ## 1.0.12
 
 ### Patch Changes
