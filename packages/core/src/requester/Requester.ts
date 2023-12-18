@@ -77,14 +77,14 @@ class Requester {
     queryPayload: string,
     variables: { [key: string]: unknown } = {},
   ) {
-    logger.info(`Requester.subscribe variables`, variables);
+    logger.trace(`Requester.subscribe variables`, variables);
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
       throw new LightsparkException("InvalidQuery", "Invalid query payload");
     }
     const operationType = operationMatch[1];
-    logger.info(`Requester.subscribe operationType`, operationType);
+    logger.trace(`Requester.subscribe operationType`, operationType);
     if (operationType == "mutation") {
       throw new LightsparkException(
         "InvalidQuery",
@@ -105,7 +105,7 @@ class Requester {
     };
 
     return new Observable<{ data: T }>((observer) => {
-      logger.info(`Requester.subscribe observer`, observer);
+      logger.trace(`Requester.subscribe observer`, observer);
       return this.wsClient.subscribe(bodyData, {
         next: (data) => observer.next(data as { data: T }),
         error: (err) => observer.error(err),
@@ -173,7 +173,7 @@ class Requester {
 
     const url = `${urlWithProtocol}/${this.schemaEndpoint}`;
 
-    logger.info(`Requester.makeRawRequest`, {
+    logger.trace(`Requester.makeRawRequest`, {
       url,
       operationName: operation,
       variables,
