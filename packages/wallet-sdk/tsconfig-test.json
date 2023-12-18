@@ -3,7 +3,7 @@
   "compilerOptions": {
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "chrome"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
