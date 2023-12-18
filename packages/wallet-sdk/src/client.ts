@@ -522,7 +522,7 @@ class LightsparkClient {
     amountMsats: number | undefined = undefined,
     timeoutSecs: number = 60,
   ) {
-    logger.info(`payInvoiceAndAwaitResult params`, {
+    logger.trace(`payInvoiceAndAwaitResult params`, {
       encodedInvoice,
       maxFeesMsats,
       amountMsats,
@@ -534,7 +534,7 @@ class LightsparkClient {
       amountMsats,
       timeoutSecs,
     );
-    logger.info(`payInvoiceAndAwaitResult payment`, {
+    logger.trace(`payInvoiceAndAwaitResult payment`, {
       paymentId: payment.id,
       paymentStatus: payment.status,
     });
@@ -546,7 +546,7 @@ class LightsparkClient {
     payment: OutgoingPayment,
     timeoutSecs: number = 60,
   ): Promise<OutgoingPayment> {
-    logger.info(`awaitPaymentResult payment`, {
+    logger.trace(`awaitPaymentResult payment`, {
       paymentId: payment.id,
       paymentStatus: payment.status,
     });
@@ -555,7 +555,7 @@ class LightsparkClient {
       TransactionStatus.CANCELLED,
       TransactionStatus.SUCCESS,
     ];
-    logger.info(`awaitPaymentResult payment.status`, payment.status);
+    logger.trace(`awaitPaymentResult payment.status`, payment.status);
     if (completionStatuses.includes(payment.status)) {
       return Promise.resolve(payment);
     }
@@ -587,7 +587,7 @@ class LightsparkClient {
         });
       },
       (current, response) => {
-        logger.info(`pollUntil current`, current);
+        logger.trace(`pollUntil current`, current);
         if (current && completionStatuses.includes(current.status)) {
           return {
             stopPolling: true,
