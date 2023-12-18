@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.14
-
-### Patch Changes
-
-- b9dd0c2: Return null if !error in errorToJSON
-
 ## 1.0.13
 
 ### Patch Changes
