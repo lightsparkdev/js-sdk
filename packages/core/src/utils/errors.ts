@@ -38,6 +38,9 @@ export const isErrorMsg = (e: unknown, msg: string) => {
 };
 
 export function errorToJSON(err: unknown) {
+  if (!err) {
+    return null;
+  }
   if (
     typeof err === "object" &&
     err !== null &&
