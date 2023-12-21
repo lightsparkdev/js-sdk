@@ -48,11 +48,15 @@ export default class DemoUserService implements UserService {
         symbol: "sat",
         code: "SAT",
         name: "Satoshis",
-        maxSendable: 10_000_000_000,
+        maxSendable: 100_000_000,
         minSendable: 1,
         multiplier: 1000,
         decimals: 0,
       },
     ];
+  }
+
+  async getReceivableSatsRangeForUser(userId: string): Promise<[number, number]> {
+    return [1, 100_000_000];
   }
 }

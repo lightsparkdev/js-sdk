@@ -159,14 +159,17 @@ export default class ReceivingVasp {
       };
     }
 
+    const [minSendableSats, maxSendableSats] =
+      await this.userService.getReceivableSatsRangeForUser(user.id);
+
     try {
       const response = await uma.getLnurlpResponse({
         request: umaQuery,
         callback: this.getLnurlpCallback(requestUrl, true, user),
         requiresTravelRuleInfo: true,
         encodedMetadata: this.getEncodedMetadata(requestUrl, user),
-        minSendableSats: 1000,
-        maxSendableSats: 10000000,
+        minSendableSats,
+        maxSendableSats,
         privateKeyBytes: this.config.umaSigningPrivKey(),
         receiverKycStatus: user.kycStatus,
         payerDataOptions: {
@@ -251,6 +254,16 @@ export default class ReceivingVasp {
       return {
         httpStatus: 400,
         data: `Invalid currency. This user does not accept ${payreq.currency}.`,
+      };
+    }
+
+    if (
+      payreq.amount < currency.minSendable ||
+      payreq.amount > currency.maxSendable
+    ) {
+      return {
+        httpStatus: 400,
+        data: `Invalid amount. This user only accepts between ${currency.minSendable} and ${currency.maxSendable} ${currency.code}.`,
       };
     }
 
@@ -391,7 +404,7 @@ export default class ReceivingVasp {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
     const port = requestUrl.port;
     const portString =
-    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
+      port === "80" || port === "443" || port === "" ? "" : `:${port}`;
     return `${requestUrl.protocol}//${requestUrl.hostname}${portString}${path}`;
   }
 }

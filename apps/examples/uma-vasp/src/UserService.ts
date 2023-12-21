@@ -11,4 +11,5 @@ export default interface UserService {
   getCurrencyPreferencesForUser(
     userId: string,
   ): Promise<Currency[] | undefined>;
+  getReceivableSatsRangeForUser(userId: string): Promise<[number, number]>;
 }
