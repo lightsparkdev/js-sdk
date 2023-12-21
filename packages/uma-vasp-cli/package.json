@@ -1,0 +1,52 @@
+{
+  "name": "@lightsparkdev/uma-vasp-cli",
+  "version": "0.0.1",
+  "description": "CLI for the Demo UMA VASP in ../apps/examples/uma-vasp",
+  "main": "./dist/index.js",
+  "bin": {
+    "uma-vasp": "./dist/index.js"
+  },
+  "private": true,
+  "scripts": {
+    "build": "tsc -p .",
+    "clean": "rm -rf .turbo && rm -rf dist",
+    "cli:watch": "nodemon --watch 'src/**/*.ts' --exec 'node --loader ts-node/esm' src/index.ts",
+    "cli": "node --loader ts-node/esm src/index.ts",
+    "format:fix": "prettier src --write",
+    "format": "prettier src --check",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
+    "local": "sudo npm i -g && uma-vasp",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",
+    "start:windows": "nodemon --watch 'src/**/*.ts' --exec \"npx ts-node\" src/index.ts",
+    "test": "./test.sh",
+    "types": "tsc",
+    "types:watch": "tsc-absolute --watch"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@lightsparkdev/eslint-config": "*",
+    "@lightsparkdev/tsconfig": "0.0.0",
+    "@types/chalk": "^2.2.0",
+    "@types/node": "^20.2.5",
+    "eslint": "^8.3.0",
+    "eslint-watch": "^8.0.0",
+    "nodemon": "^2.0.22",
+    "prettier": "3.0.3",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "ts-node": "^10.9.1",
+    "tsc-absolute": "^1.0.1",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^1.1.3",
+    "@lightsparkdev/core": "1.0.13",
+    "@lightsparkdev/lightspark-sdk": "1.5.2",
+    "@uma-sdk/core": "^0.6.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0"
+  }
+}
