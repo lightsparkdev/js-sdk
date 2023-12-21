@@ -2,6 +2,7 @@
 
 import styled from "@emotion/styled";
 import React from "react";
+import { select } from "../../../utils/emotion.js";
 import { colors } from "../../colors.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
 
@@ -120,7 +121,7 @@ const StyledHeadline = styled.span<Props>`
 `;
 
 export function headlineSelector(heading: Heading) {
-  return `${heading}${StyledHeadline.toString()}`;
+  return `${heading}${select(StyledHeadline)}`;
 }
 
 export const ALL_HEADLINE_SELECTORS = HEADINGS.map(headlineSelector).join(",");

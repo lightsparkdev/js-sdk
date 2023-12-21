@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { colors, themeOr } from "../styles/colors.js";
 import { getFocusOutline } from "../styles/common.js";
+import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -349,4 +350,6 @@ const ButtonHrefLink = styled.a<StyledButtonProps>`
 `;
 
 export const ButtonSelector = (prepend = "", append = "") =>
-  `${prepend}${StyledButton.toString()}${append}, ${prepend}${ButtonLink.toString()}${append}, ${prepend}${ButtonHrefLink.toString()}${append}`;
+  `${prepend}${select(StyledButton)}${append}, ${prepend}${select(
+    ButtonLink,
+  )}${append}, ${prepend}${select(ButtonHrefLink)}${append}`;

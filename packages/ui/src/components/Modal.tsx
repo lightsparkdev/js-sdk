@@ -14,6 +14,7 @@ import {
 } from "../styles/common.js";
 import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
+import { select } from "../utils/emotion.js";
 import { Button } from "./Button.js";
 import { Icon } from "./Icon.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
@@ -333,7 +334,7 @@ const ModalContent = styled.div<{
     margin: 0;
     font-weight: 800;
     font-size: ${pxToRems(21)};
-    & + *:not(${Description}) {
+    & + *:not(${select(Description)}) {
       margin-top: ${contentTopMarginPx}px;
     }
   }

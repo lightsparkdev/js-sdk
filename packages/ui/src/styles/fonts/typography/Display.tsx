@@ -1,6 +1,7 @@
 "use client";
 
 import styled from "@emotion/styled";
+import { select } from "../../../utils/emotion.js";
 import { colors } from "../../colors.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
 
@@ -37,5 +38,5 @@ const StyledDisplay = styled.span<Props>`
 `;
 
 export function displaySelector(element: Element) {
-  return `${element}${StyledDisplay.toString()}`;
+  return `${element}${select(StyledDisplay)}`;
 }

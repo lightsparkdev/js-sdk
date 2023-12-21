@@ -1,6 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 import { StyledContentTable } from "../../../components/ContentTable.js";
+import { select } from "../../../utils/emotion.js";
 import { colors } from "../../colors.js";
 import { Spacing } from "../../tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../../utils.js";
@@ -51,12 +52,12 @@ export const Article = styled.article`
     margin: 0;
   }
 
-  ${StyledBody} {
+  ${select(StyledBody)} {
     margin-top: ${Spacing.xs};
     margin-bottom: ${Spacing.xs};
   }
 
-  ${StyledContentTable} {
+  ${select(StyledContentTable)} {
     margin: ${Spacing["2xl"]} 0;
   }
 
@@ -69,7 +70,8 @@ export const Article = styled.article`
     font-weight: 700;
   }
 
-  *:not(${ALL_HEADLINE_SELECTORS},${StyledTitle},${StyledCode}) > a {
+  *:not(${ALL_HEADLINE_SELECTORS},${select(StyledTitle)},${select(StyledCode)})
+    > a {
     ${({ theme }) =>
       getTypographyString(
         theme.typography[theme.app]["Label Strong"][TokenSize.Large],
