@@ -3,6 +3,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { themeOr } from "../styles/colors.js";
+import { standardBorderRadius } from "../styles/common.js";
 
 export type ProgressBarProps = {
   background?: string | undefined;
@@ -52,9 +53,9 @@ export function ProgressBar({
 ProgressBar.defaultProps = defaultProps;
 
 const ProgressBarContainer = styled.div<{ isSm: boolean }>`
+  ${standardBorderRadius(16)}
   background-color: ${({ theme }) =>
     themeOr(theme.c05Neutral, theme.c1Neutral)({ theme })};
-  border-radius: 16px;
   box-sizing: border-box;
   display: flex;
   height: ${({ isSm }) => (isSm ? "6px" : "16px")};
@@ -71,7 +72,7 @@ interface BarProps {
 }
 
 const BarBg = styled.div<BarProps>`
-  border-radius: 16px;
+  ${standardBorderRadius(16)}
   width: ${({ percentage }) => (100 / percentage) * 100}%;
   height: 100%;
 
@@ -89,8 +90,8 @@ const BarBg = styled.div<BarProps>`
 `;
 
 const Bar = styled.div<BarProps>`
+  ${standardBorderRadius(16)}
   overflow: hidden;
-  border-radius: ${({ isSm }) => (isSm ? "6px" : "16px")};
   box-sizing: border-box;
   display: inline-block;
   height: ${({ isSm }) => (isSm ? "6px" : "16px")};

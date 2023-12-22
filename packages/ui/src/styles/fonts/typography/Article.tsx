@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { StyledContentTable } from "../../../components/ContentTable.js";
 import { select } from "../../../utils/emotion.js";
 import { colors } from "../../colors.js";
+import { standardBorderRadius } from "../../common.js";
 import { Spacing } from "../../tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../../utils.js";
 import { getTypographyString, TokenSize } from "../typographyTokens.js";
@@ -108,7 +109,7 @@ export const Article = styled.article`
   }
 
   pre[class|="language"] {
-    border-radius: 8px;
+    ${standardBorderRadius(8)}
     width: 100%;
     padding: ${Spacing.md} ${Spacing.lg};
     margin: ${Spacing.md} 0;

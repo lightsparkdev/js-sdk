@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
+import { standardBorderRadius } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { Icon } from "./Icon.js";
@@ -91,7 +92,7 @@ export const StyledCollapsibleButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  border-radius: 8px;
+  ${standardBorderRadius(8)}
   padding: 0;
 `;
 

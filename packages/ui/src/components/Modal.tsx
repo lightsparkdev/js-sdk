@@ -9,6 +9,7 @@ import { Breakpoints, bp, useBreakpoints } from "../styles/breakpoints.js";
 import {
   overlaySurface,
   smContentInset,
+  standardBorderRadius,
   standardContentInsetSmPx,
   standardFocusOutline,
 } from "../styles/common.js";
@@ -320,13 +321,13 @@ const ModalContent = styled.div<{
 }>`
   ${overflowAutoWithoutScrollbars}
   ${smContentInset}
+  ${standardBorderRadius(16)}
   ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;
   transition: width 0.25s ease-in;
   width: ${(props) => props.width}px;
   max-width: 100%;
   max-height: 100%;
-  border-radius: 16px;
   position: absolute;
   ${(props) => (props.ghost ? "" : "padding: 16px 16px 40px;")}
 

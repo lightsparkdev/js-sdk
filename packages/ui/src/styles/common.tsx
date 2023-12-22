@@ -15,7 +15,19 @@ export const standardContentInsetPx = 32;
 export const standardContentInsetMdPx = 24;
 export const standardContentInsetSmPx = 16;
 
+const standardBorderRadiusPx = [0, 8, 16] as const;
+type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
 export const cardBorderRadiusPx = 16;
+
+type BorderRadiusArg = StandardBorderRadius | StandardBorderRadius[];
+export const standardBorderRadius = (radius: BorderRadiusArg) => {
+  const borderRadiusPx = Array.isArray(radius)
+    ? radius.map((r) => `${r}px`).join(" ")
+    : `${radius}px`;
+  return `
+    border-radius: ${borderRadiusPx};
+  `;
+};
 
 export const smContentInset = css`
   ${bp.sm(`
