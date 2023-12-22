@@ -379,3 +379,4 @@ export function useThemeBg() {
 export type ThemeProp = {
   theme: Theme;
 };
+export type WithTheme<T extends Record<string, unknown>> = T & ThemeProp;

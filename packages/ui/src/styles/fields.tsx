@@ -1,8 +1,7 @@
-import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
-import { themeOr, type ThemeProp } from "./colors.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./colors.js";
 import { subtext } from "./common.js";
 import { z } from "./z-index.js";
 
@@ -38,13 +37,12 @@ export const textInputStyle = ({
   hasError,
   paddingLeftPx,
   paddingRightPx,
-}: {
-  theme: Theme;
+}: WithTheme<{
   disabled: boolean;
   hasError: boolean;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
-}) => css`
+}>) => css`
   border-radius: ${textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.bg};
   pointer-events: ${disabled ? "none" : "auto"};
@@ -104,10 +102,7 @@ export const FieldError = styled.div`
 export const aboveFieldError = ({
   theme,
   hasError,
-}: {
-  theme: Theme;
-  hasError: boolean;
-}) => css`
+}: WithTheme<{ hasError: boolean }>) => css`
   ${hasError ? "border: none !important" : ""};
   background-color: ${theme.bg};
   position: relative;
@@ -170,10 +165,7 @@ export const StyledInputSubtext = styled.div<{
 export const labelStyle = ({
   theme,
   hasError,
-}: {
-  theme: Theme;
-  hasError?: boolean;
-}) => css`
+}: WithTheme<{ hasError?: boolean }>) => css`
   color: ${hasError ? theme.danger : theme.text};
   font-size: 14px;
   display: flex;

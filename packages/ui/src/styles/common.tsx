@@ -3,7 +3,13 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Tooltip } from "react-tooltip";
 import { bp } from "./breakpoints.js";
-import { colors, darkGradient, themeOr, type ThemeProp } from "./colors.js";
+import {
+  colors,
+  darkGradient,
+  themeOr,
+  type ThemeProp,
+  type WithTheme,
+} from "./colors.js";
 import { z } from "./z-index.js";
 
 export const rootFontSizePx = 12;
@@ -67,10 +73,7 @@ export const pageBorderRadius = `
 export const getFocusOutline = ({
   theme,
   onBgHex,
-}: {
-  theme: Theme;
-  onBgHex?: string;
-}) =>
+}: WithTheme<{ onBgHex?: string }>) =>
   `${onBgHex ? theme.hcNeutralFromBg(onBgHex) : theme.hcNeutral} dashed 1px`;
 export const outlineOffset = "-2px";
 export const standardFocusOutline = ({ theme }: ThemeProp) => css`
@@ -88,11 +91,10 @@ export const delta = ({
   theme,
   delta = 0,
   invertSuccessColor = false,
-}: {
-  theme: Theme;
+}: WithTheme<{
   delta?: number;
   invertSuccessColor?: boolean;
-}) => css`
+}>) => css`
   color: ${delta >= 0
     ? invertSuccessColor
       ? theme.danger
