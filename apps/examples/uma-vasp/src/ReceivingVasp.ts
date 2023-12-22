@@ -307,6 +307,7 @@ export default class ReceivingVasp {
       response = await uma.getPayReqResponse({
         conversionRate: currency.multiplier,
         currencyCode: currency.code,
+        currencyDecimals: currency.decimals,
         invoiceCreator: umaInvoiceCreator,
         metadata: this.getEncodedMetadata(requestUrl, user),
         query: payreq,
