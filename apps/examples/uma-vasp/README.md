@@ -87,3 +87,9 @@ $ curl -X GET "http://localhost:8080/api/umapayreq/52ca86cd-62ed-4110-9774-4e07b
 # call. This will return a payment ID that you can use to check the status of the payment.
 $ curl -X POST http://localhost:8080/api/sendpayment/e26cbee9-f09d-4ada-a731-965cbd043d50
 ```
+
+Alternatively, you can use the `uma-vasp-cli` (see ../uma-vasp-cli) tool to send payments interactively:
+
+```bash
+uma-vasp send -e http://localhost:8080 -r $bob@localhost:8081
+```

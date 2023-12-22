@@ -6,7 +6,7 @@ The `uma-vasp-cli` tool is a wrapper around the example UMA VASP to allow sendin
 
 ### Starting the demo VASP
 
-First, you'll need to have your demo VASP running somewhere (see [the example UMA VASP README](../../apps/examples/uma-vasp/README.md) for instructions on how to do that). You can run the VASP locally or on a server, but you'll need to make sure that the server is accessible from the internet.
+First, you'll need to have your demo VASP running somewhere (see [the example UMA VASP README](../uma-vasp/README.md) for instructions on how to do that). You can run the VASP locally or on a server, but you'll need to make sure that the server is accessible from the internet.
 
 ### Sending payments
 
