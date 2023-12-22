@@ -17,6 +17,7 @@ export const globalComponentStyles = ({ theme }: ThemeProp) => css`
     /* required for iOS https://bit.ly/3Q8syG8 */
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
+    scroll-behavior: smooth;
   }
 
   body {
