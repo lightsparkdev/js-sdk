@@ -61,6 +61,7 @@ module.exports = {
               "Dropdown",
               "Table",
               "TableCell",
+              "TextButton",
             ],
             message:
               "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",

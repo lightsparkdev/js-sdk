@@ -16,6 +16,7 @@ import {
 import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { select } from "../utils/emotion.js";
+import { newlinesToBreaks } from "../utils/strings.js";
 import { Button } from "./Button.js";
 import { Icon } from "./Icon.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
@@ -78,6 +79,9 @@ export function Modal({
   const modalContainerRef = useRef<null | HTMLDivElement>(null);
   const bp = useBreakpoints();
   const isSm = bp.current(Breakpoints.sm);
+  const descriptionWithNewlines = description
+    ? newlinesToBreaks(description)
+    : null;
 
   useEffect(() => {
     if (visible !== visibleChangedRef.current) {
@@ -208,7 +212,9 @@ export function Modal({
               </div>
             ) : null}
             {title ? <h4>{title}</h4> : null}
-            {description ? <Description>{description}</Description> : null}
+            {descriptionWithNewlines ? (
+              <Description>{descriptionWithNewlines}</Description>
+            ) : null}
             <div>{children}</div>
             {onSubmit ? (
               <ModalButtonRow>

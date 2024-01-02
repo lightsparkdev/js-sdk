@@ -156,7 +156,7 @@ export function Heading({
 }: HeadingProps) {
   const StyledHeading = headings[type];
   const theme = useTheme();
-  return (
+  const heading = (
     <StyledHeading
       id={id}
       mt={m0 ? 0 : mt}
@@ -166,9 +166,17 @@ export function Heading({
       light={light}
       theme={theme}
     >
-      {children}
+      {id ? (
+        <a href={`#${id}`} css={{ color: "inherit" }}>
+          {children}
+        </a>
+      ) : (
+        children
+      )}
     </StyledHeading>
   );
+
+  return heading;
 }
 
 export function headingWithDefaults(defaultProps: HeadingProps) {
