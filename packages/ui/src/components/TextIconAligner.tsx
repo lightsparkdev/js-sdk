@@ -8,18 +8,24 @@ type MarginPx = (typeof marginPx)[number];
 
 export type TextIconAlignerProps = {
   text: string;
-  rightIcon?: {
-    name: string;
-    color?: string;
-    lg?: boolean | undefined;
-    ml?: MarginPx | undefined;
-  } | null;
-  leftIcon?: {
-    name: string;
-    color?: string;
-    lg?: boolean | undefined;
-    mr?: MarginPx | undefined;
-  } | null;
+  rightIcon?:
+    | {
+        name: string;
+        color?: string;
+        lg?: boolean | undefined;
+        ml?: MarginPx | undefined;
+      }
+    | undefined
+    | null;
+  leftIcon?:
+    | {
+        name: string;
+        color?: string;
+        lg?: boolean | undefined;
+        mr?: MarginPx | undefined;
+      }
+    | undefined
+    | null;
   onClick?: (() => void) | undefined;
 };
 

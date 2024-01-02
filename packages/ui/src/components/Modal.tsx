@@ -36,7 +36,7 @@ type ModalProps = {
   submitDisabled?: boolean;
   submitLoading?: boolean;
   submitText?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /* most of the time this is an Element but not in the case of Select - it
    * just extends .focus method: */
   firstFocusRef?: MutableRefObject<{ focus: () => void } | null>;

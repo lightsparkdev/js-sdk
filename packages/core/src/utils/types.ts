@@ -31,3 +31,5 @@ export type DeepPartial<T> = T extends object
 export type JSONLiteral = string | number | boolean | null;
 export type JSONType = JSONLiteral | JSONType[] | { [key: string]: JSONType };
 export type JSONObject = { [key: string]: JSONType };
+
+export type NN<T> = NonNullable<T>;

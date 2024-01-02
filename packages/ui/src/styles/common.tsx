@@ -21,7 +21,7 @@ export const standardContentInsetPx = 32;
 export const standardContentInsetMdPx = 24;
 export const standardContentInsetSmPx = 16;
 
-const standardBorderRadiusPx = [0, 8, 12, 16] as const;
+const standardBorderRadiusPx = [0, 4, 8, 12, 16] as const;
 type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
 export const cardBorderRadiusPx = 16;
 
