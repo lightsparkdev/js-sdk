@@ -1,5 +1,5 @@
 {
-  "extends": "@lightsparkdev/tsconfig/react-package.json",
+  "extends": "../tsconfig/react-package.json",
   "compilerOptions": {
     "rootDir": "src"
   },

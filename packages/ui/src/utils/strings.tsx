@@ -1,6 +1,5 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { Fragment } from "react";
 import { type Maybe } from "../types/utils.js";
 
 export const capitalize = (str: string): string => {
@@ -66,15 +65,4 @@ export function removeLeadingZeros(value: string): string {
   }
 
   return value;
-}
-
-export function newlinesToBreaks(value?: string | undefined | null) {
-  return value
-    ? value.split("\n").map((line, i) => (
-        <Fragment key={i}>
-          {line}
-          <br />
-        </Fragment>
-      ))
-    : "";
 }
