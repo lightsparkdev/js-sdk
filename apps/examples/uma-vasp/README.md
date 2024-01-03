@@ -37,6 +37,7 @@ LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<api token secret> \
 LIGHTSPARK_UMA_NODE_ID=<your node ID> \
 LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD=<your node ID password> \
 LIGHTSPARK_UMA_RECEIVER_USER=bob \
+LIGHTSPARK_UMA_RECEIVER_USER_PASSWORD=pa55w0rd \
 LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<encryption public key hex> \
 LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<encryption private key hex> \
 LIGHTSPARK_UMA_SIGNING_PUBKEY=<signing public key hex> \
@@ -77,15 +78,15 @@ Now, you can test the full uma flow like:
 ```bash
 # First, call to vasp1 to lookup Bob at vasp2. This will return currency conversion info, etc. It will also contain a 
 # callback ID that you'll need for the next call
-$ curl -X GET http://localhost:8080/api/umalookup/\$bob@localhost:8081
+$ curl -X GET http://localhost:8080/api/umalookup/\$bob@localhost:8081 -u bob:pa55word
 
 # Now, call to vasp1 to get a payment request from vasp2. Replace the last path component here with the callbackUuid
 # from the previous call. This will return an invoice and another callback ID that you'll need for the next call.
-$ curl -X GET "http://localhost:8080/api/umapayreq/52ca86cd-62ed-4110-9774-4e07b9aa1f0e?amount=100&currencyCode=SAT"
+$ curl -X GET "http://localhost:8080/api/umapayreq/52ca86cd-62ed-4110-9774-4e07b9aa1f0e?amount=100&currencyCode=SAT" -u bob:pa55word
 
 # Now, call to vasp1 to send the payment. Replace the last path component here with the callbackUuid from the payreq
 # call. This will return a payment ID that you can use to check the status of the payment.
-$ curl -X POST http://localhost:8080/api/sendpayment/e26cbee9-f09d-4ada-a731-965cbd043d50
+$ curl -X POST http://localhost:8080/api/sendpayment/e26cbee9-f09d-4ada-a731-965cbd043d50 -u bob:pa55word
 ```
 
 Alternatively, you can use the `uma-vasp-cli` (see ../uma-vasp-cli) tool to send payments interactively:

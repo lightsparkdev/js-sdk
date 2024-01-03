@@ -13,6 +13,7 @@ import {
   sendResponse,
 } from "./networking/expressAdapters.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
+import NonceValidator from "./NonceValidator.js";
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
@@ -24,6 +25,7 @@ export default class ReceivingVasp {
     private readonly pubKeyCache: uma.PublicKeyCache,
     private readonly userService: UserService,
     private readonly complianceService: ComplianceService,
+    private readonly nonceValidator: NonceValidator,
   ) {}
 
   registerRoutes(app: Express): void {
@@ -149,6 +151,18 @@ export default class ReceivingVasp {
       };
     }
 
+    if (
+      !this.nonceValidator.checkAndSaveNonce(
+        umaQuery.nonce,
+        umaQuery.timestamp.getTime() / 1000,
+      )
+    ) {
+      return {
+        httpStatus: 424,
+        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
+      };
+    }
+
     const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
       user.id,
     );
@@ -204,11 +218,13 @@ export default class ReceivingVasp {
     try {
       payreq = uma.parsePayRequest(requestBody);
     } catch (e) {
+      console.error("Failed to parse pay req", e);
       return {
         httpStatus: 500,
         data: new Error("Invalid UMA pay request.", { cause: e }),
       };
     }
+    console.log(`Parsed payreq: ${JSON.stringify(payreq, null, 2)}`);
 
     let pubKeys: uma.PubKeyResponse;
     try {
@@ -219,11 +235,14 @@ export default class ReceivingVasp {
         ),
       });
     } catch (e) {
+      console.error(e);
       return {
         httpStatus: 500,
         data: new Error("Failed to fetch public key.", { cause: e }),
       };
     }
+
+    console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
 
     try {
       const isSignatureValid = await uma.verifyPayReqSignature(
@@ -234,16 +253,32 @@ export default class ReceivingVasp {
         return { httpStatus: 400, data: "Invalid payreq signature." };
       }
     } catch (e) {
+      console.error(e);
       return {
         httpStatus: 500,
         data: new Error("Invalid payreq signature.", { cause: e }),
       };
     }
 
+    if (
+      !this.nonceValidator.checkAndSaveNonce(
+        payreq.payerData.compliance.signatureNonce,
+        payreq.payerData.compliance.signatureTimestamp,
+      )
+    ) {
+      return {
+        httpStatus: 424,
+        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
+      };
+    }
+
+    console.log(`Verified payreq signature.`);
+
     const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
       user.id,
     );
     if (!currencyPrefs) {
+      console.error("Failed to fetch currency preferences.");
       return {
         httpStatus: 500,
         data: "Failed to fetch currency preferences.",
@@ -251,6 +286,7 @@ export default class ReceivingVasp {
     }
     const currency = currencyPrefs.find((c) => c.code === payreq.currency);
     if (!currency) {
+      console.error(`Invalid currency: ${payreq.currency}`);
       return {
         httpStatus: 400,
         data: `Invalid currency. This user does not accept ${payreq.currency}.`,
@@ -292,12 +328,14 @@ export default class ReceivingVasp {
     const txId = "1234";
     const umaInvoiceCreator = {
       createUmaInvoice: async (amountMsats: number, metadata: string) => {
+        console.log(`Creating invoice for ${amountMsats} msats.`);
         const invoice = await this.lightsparkClient.createUmaInvoice(
           this.config.nodeID,
           amountMsats,
           metadata,
           expirationTimeSec,
         );
+        console.log(`Created invoice: ${invoice?.id}`);
         return invoice?.data.encodedPaymentRequest;
       },
     };
@@ -318,6 +356,7 @@ export default class ReceivingVasp {
       });
       return { httpStatus: 200, data: response };
     } catch (e) {
+      console.log(`Failed to generate UMA response: ${e}`);
       console.error(e);
       return {
         httpStatus: 500,
