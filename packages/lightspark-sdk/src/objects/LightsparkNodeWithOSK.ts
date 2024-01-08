@@ -18,10 +18,13 @@ import {
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
+import type LightningPaymentDirection from "./LightningPaymentDirection.js";
 import type LightsparkNode from "./LightsparkNode.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
 import { LightsparkNodeToChannelsConnectionFromJson } from "./LightsparkNodeToChannelsConnection.js";
+import type LightsparkNodeToDailyLiquidityForecastsConnection from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
+import { LightsparkNodeToDailyLiquidityForecastsConnectionFromJson } from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
 import type Node from "./Node.js";
 import type NodeAddressType from "./NodeAddressType.js";
 import type NodeToAddressesConnection from "./NodeToAddressesConnection.js";
@@ -284,6 +287,55 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
       constructObject: (json) => {
         const connection = json["entity"]["channels"];
         return LightsparkNodeToChannelsConnectionFromJson(connection);
+      },
+    }))!;
+  }
+
+  public async getDailyLiquidityForecasts(
+    client: LightsparkClient,
+    fromDate: string,
+    toDate: string,
+    direction: LightningPaymentDirection,
+  ): Promise<LightsparkNodeToDailyLiquidityForecastsConnection> {
+    return (await client.executeRawQuery({
+      queryPayload: ` 
+query FetchLightsparkNodeToDailyLiquidityForecastsConnection($entity_id: ID!, $from_date: Date!, $to_date: Date!, $direction: LightningPaymentDirection!) {
+    entity(id: $entity_id) {
+        ... on LightsparkNodeWithOSK {
+            daily_liquidity_forecasts(, from_date: $from_date, to_date: $to_date, direction: $direction) {
+                __typename
+                lightspark_node_to_daily_liquidity_forecasts_connection_from_date: from_date
+                lightspark_node_to_daily_liquidity_forecasts_connection_to_date: to_date
+                lightspark_node_to_daily_liquidity_forecasts_connection_direction: direction
+                lightspark_node_to_daily_liquidity_forecasts_connection_entities: entities {
+                    __typename
+                    daily_liquidity_forecast_date: date
+                    daily_liquidity_forecast_direction: direction
+                    daily_liquidity_forecast_amount: amount {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
+                }
+            }
+        }
+    }
+}
+`,
+      variables: {
+        entity_id: this.id,
+        from_date: fromDate,
+        to_date: toDate,
+        direction: direction,
+      },
+      constructObject: (json) => {
+        const connection = json["entity"]["daily_liquidity_forecasts"];
+        return LightsparkNodeToDailyLiquidityForecastsConnectionFromJson(
+          connection,
+        );
       },
     }))!;
   }

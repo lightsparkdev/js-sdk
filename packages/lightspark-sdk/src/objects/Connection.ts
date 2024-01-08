@@ -2,6 +2,7 @@
 
 import { LightsparkException } from "@lightsparkdev/core";
 import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
+import type AccountToChannelsConnection from "./AccountToChannelsConnection.js";
 import type AccountToNodesConnection from "./AccountToNodesConnection.js";
 import type AccountToPaymentRequestsConnection from "./AccountToPaymentRequestsConnection.js";
 import type AccountToTransactionsConnection from "./AccountToTransactionsConnection.js";
@@ -66,6 +67,18 @@ export const ConnectionFromJson = (obj: any): Connection => {
       ),
       typename: "AccountToApiTokensConnection",
     } as AccountToApiTokensConnection;
+  }
+  if (obj["__typename"] == "AccountToChannelsConnection") {
+    return {
+      count: obj["account_to_channels_connection_count"],
+      pageInfo: PageInfoFromJson(
+        obj["account_to_channels_connection_page_info"],
+      ),
+      entities: obj["account_to_channels_connection_entities"].map((e) =>
+        ChannelFromJson(e),
+      ),
+      typename: "AccountToChannelsConnection",
+    } as AccountToChannelsConnection;
   }
   if (obj["__typename"] == "AccountToNodesConnection") {
     return {
@@ -245,6 +258,18 @@ export const ConnectionToJson = (obj: Connection): any => {
       ),
       account_to_api_tokens_connection_entities:
         accountToApiTokensConnection.entities.map((e) => ApiTokenToJson(e)),
+    };
+  }
+  if (obj.typename == "AccountToChannelsConnection") {
+    const accountToChannelsConnection = obj as AccountToChannelsConnection;
+    return {
+      __typename: "AccountToChannelsConnection",
+      account_to_channels_connection_count: accountToChannelsConnection.count,
+      account_to_channels_connection_page_info: PageInfoToJson(
+        accountToChannelsConnection.pageInfo,
+      ),
+      account_to_channels_connection_entities:
+        accountToChannelsConnection.entities.map((e) => e.toJson()),
     };
   }
   if (obj.typename == "AccountToNodesConnection") {
@@ -459,6 +484,20 @@ fragment ConnectionFragment on Connection {
             page_info_end_cursor: end_cursor
         }
         account_to_api_tokens_connection_entities: entities {
+            id
+        }
+    }
+    ... on AccountToChannelsConnection {
+        __typename
+        account_to_channels_connection_count: count
+        account_to_channels_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        account_to_channels_connection_entities: entities {
             id
         }
     }

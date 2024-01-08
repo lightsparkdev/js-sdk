@@ -49,6 +49,7 @@ export { default as CreateUmaInvitationOutput } from "./CreateUmaInvitationOutpu
 export { default as CreateUmaInvoiceInput } from "./CreateUmaInvoiceInput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
+export { default as DailyLiquidityForecast } from "./DailyLiquidityForecast.js";
 export { default as DeclineToSignMessagesInput } from "./DeclineToSignMessagesInput.js";
 export { default as DeclineToSignMessagesOutput } from "./DeclineToSignMessagesOutput.js";
 export { default as DeleteApiTokenInput } from "./DeleteApiTokenInput.js";
@@ -77,6 +78,7 @@ export { default as InvoiceType } from "./InvoiceType.js";
 export { default as LightningFeeEstimateForInvoiceInput } from "./LightningFeeEstimateForInvoiceInput.js";
 export { default as LightningFeeEstimateForNodeInput } from "./LightningFeeEstimateForNodeInput.js";
 export { default as LightningFeeEstimateOutput } from "./LightningFeeEstimateOutput.js";
+export { default as LightningPaymentDirection } from "./LightningPaymentDirection.js";
 export {
   default as LightningTransaction,
   getLightningTransactionQuery,
@@ -91,6 +93,7 @@ export {
 } from "./LightsparkNodeOwner.js";
 export { default as LightsparkNodeStatus } from "./LightsparkNodeStatus.js";
 export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeToChannelsConnection.js";
+export { default as LightsparkNodeToDailyLiquidityForecastsConnection } from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
 export { default as LightsparkNodeWithOSK } from "./LightsparkNodeWithOSK.js";
 export { default as LightsparkNodeWithRemoteSigning } from "./LightsparkNodeWithRemoteSigning.js";
 export { default as Node, getNodeQuery } from "./Node.js";
