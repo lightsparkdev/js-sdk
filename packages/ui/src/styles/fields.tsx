@@ -45,7 +45,7 @@ export const textInputStyle = ({
 }>) => css`
   border-radius: ${textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.bg};
-  pointer-events: ${disabled ? "none" : "auto"};
+  cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;
   font-weight: ${textInputFontWeight};
 
