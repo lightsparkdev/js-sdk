@@ -108,7 +108,7 @@ export function GlobalStyles() {
 
     :root {
       ${cssVars.docHeight}: 100vh;
-      --rt-opacity: 1;
+      --rt-opacity: 1 !important;
     }
 
     html {

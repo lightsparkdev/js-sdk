@@ -24,15 +24,14 @@ export function ProgressBar({
   stepDuration = defaultProps.stepDuration,
 }: ProgressBarProps) {
   const [percentage, setPercentage] = useState(5);
-  if (progressPercentage === undefined) {
-    setTimeout(() => {
-      setPercentage(100);
-    }, 0);
-  }
 
   useEffect(() => {
     if (progressPercentage !== undefined) {
       setPercentage(progressPercentage);
+    } else {
+      setTimeout(() => {
+        setPercentage(100);
+      }, 0);
     }
   }, [progressPercentage]);
 

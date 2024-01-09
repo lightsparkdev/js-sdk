@@ -127,11 +127,25 @@ export const StyledTooltip = styled(Tooltip)`
   z-index: ${z.modalOverlay};
 `;
 
-export const overlaySurface = ({ theme }: ThemeProp) => css`
-  background-color: ${themeOr(colors.white, theme.c1Neutral)({ theme })};
-  border: 0.5px solid ${themeOr(theme.c1Neutral, theme.c3Neutral)({ theme })};
+export const overlaySurfaceBorderColor = ({
+  theme,
+  important = false,
+}: WithTheme<{ important?: boolean }>) => css`
+  border-color: ${themeOr(theme.c1Neutral, theme.c3Neutral)({ theme })}
+    ${important ? "!important" : ""};
+`;
+export const overlaySurface = ({
+  theme,
+  important = false,
+}: WithTheme<{ important?: boolean }>) => css`
+  background-color: ${themeOr(colors.white, theme.c1Neutral)({ theme })}
+    ${important ? "!important" : ""};
+  border: 0.5px solid ${important ? "!important" : ""};
+  ${overlaySurfaceBorderColor({ theme, important })};
   ${themeOr(
-    "box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1);",
+    `box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1) ${
+      important ? "!important" : ""
+    };`,
     "",
   )({ theme })}
 `;
