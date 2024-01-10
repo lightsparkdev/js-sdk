@@ -1,5 +1,17 @@
 # @lightsparkdev/ui
 
+## 0.0.6
+
+### Patch Changes
+
+- 66e76d3: - Avoid requiring babel transform to process selectors - convert selectors to strings instead with new select util.
+  - withTheme util
+  - standardBorderRadius util
+  - Fix issue where ProgressBar state is not properly reset
+  - scroll-behavior: smooth applied globally
+- Updated dependencies [66e76d3]
+  - @lightsparkdev/core@1.0.15
+
 ## 0.0.5
 
 ### Patch Changes
