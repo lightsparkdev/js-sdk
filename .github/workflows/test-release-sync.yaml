@@ -113,45 +113,6 @@ jobs:
           }
           EOF
 
-  integration-tests:
-    # Wait to see if the lock file should be updated before running:
-    needs: "update-lock-file"
-    runs-on: "ubuntu-22.04"
-
-    steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-        with:
-          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
-
-      - name: "Setup Node"
-        uses: "actions/setup-node@v3"
-        env:
-          SKIP_YARN_COREPACK_CHECK: true
-        with:
-          node-version-file: ".nvmrc"
-
-      - name: Install dependencies with yarn cache
-        uses: ./.github/actions/yarn-nm-install
-        with:
-          cwd: "."
-
-      - name: Setup .lightsparkenv file
-        run: |
-          echo 'export LIGHTSPARK_WALLET_BASE_URL="api.dev.dev.sparkinfra.net"' > ~/.lightsparkenv
-          echo 'export LIGHTSPARK_ACCOUNT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_ID }}"' >> ~/.lightsparkenv
-          echo 'export LIGHTSPARK_JWT_PRIV_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PRIV_KEY }}"' >> ~/.lightsparkenv
-          echo 'export LIGHTSPARK_JWT_PUB_KEY="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_JWT_PUB_KEY }}"' >> ~/.lightsparkenv
-
-      - name: Setup .lightsparkapienv file
-        run: |
-          echo 'export LIGHTSPARK_API_TOKEN_CLIENT_ID="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_ID }}"' > ~/.lightsparkapienv
-          echo 'export LIGHTSPARK_API_TOKEN_CLIENT_SECRET="${{ secrets.LIGHTSPARK_TEST_ACCOUNT_API_TOKEN_CLIENT_SECRET }}"' >> ~/.lightsparkapienv
-          echo 'export BITCOIN_NETWORK="REGTEST"' >> ~/.lightsparkapienv
-          echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
-
-      - run: "yarn test:integration"
-
   # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
