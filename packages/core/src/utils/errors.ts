@@ -43,12 +43,22 @@ export function errorToJSON(err: unknown) {
   }
   if (
     typeof err === "object" &&
-    err !== null &&
     "toJSON" in err &&
     typeof err.toJSON === "function"
   ) {
     return err.toJSON() as JSONType;
   }
+
+  if (
+    typeof err === "object" &&
+    /* This happens for certain errors like DOMException: */
+    Object.getOwnPropertyNames(err).length === 0 &&
+    "message" in err &&
+    typeof err.message === "string"
+  ) {
+    return { message: err.message };
+  }
+
   return JSON.parse(
     JSON.stringify(err, Object.getOwnPropertyNames(err)),
   ) as JSONType;
