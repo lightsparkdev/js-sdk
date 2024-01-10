@@ -1,12 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.5.5
-
-### Patch Changes
-
-- Updated dependencies [cb28f0e]
-  - @lightsparkdev/core@1.0.16
-
 ## 1.5.4
 
 ### Patch Changes

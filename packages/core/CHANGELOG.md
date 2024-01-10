@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.16
-
-### Patch Changes
-
-- cb28f0e: - Serialize errors that have messages but not own properties
-
 ## 1.0.15
 
 ### Patch Changes
