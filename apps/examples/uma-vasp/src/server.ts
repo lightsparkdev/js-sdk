@@ -1,15 +1,16 @@
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import { InMemoryPublicKeyCache } from "@uma-sdk/core";
 import bodyParser from "body-parser";
-import ComplianceService from "./ComplianceService.js";
 import express from "express";
-import { errorMessage } from "./errors.js";
+import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
+import NonceValidator from "./NonceValidator.js";
 import ReceivingVasp from "./ReceivingVasp.js";
 import SendingVasp from "./SendingVasp.js";
 import SendingVaspRequestCache from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
 import UserService from "./UserService.js";
+import { errorMessage } from "./errors.js";
 
 export const createUmaServer = (
   config: UmaConfig,
@@ -19,8 +20,14 @@ export const createUmaServer = (
   userService: UserService,
   ledgerService: InternalLedgerService,
   complianceService: ComplianceService,
+  nonceValidator: NonceValidator,
 ): {
-  listen: (port: number, onStarted: () => void) => any;
+  listen: (
+    port: number,
+    onStarted: () => void,
+  ) => {
+    close: (callback?: ((err?: Error | undefined) => void) | undefined) => void;
+  };
 } => {
   const app = express();
 
@@ -34,6 +41,7 @@ export const createUmaServer = (
     userService,
     ledgerService,
     complianceService,
+    nonceValidator,
   );
   sendingVasp.registerRoutes(app);
   const receivingVasp = new ReceivingVasp(
@@ -42,6 +50,7 @@ export const createUmaServer = (
     pubKeyCache,
     userService,
     complianceService,
+    nonceValidator,
   );
   receivingVasp.registerRoutes(app);
 
@@ -53,7 +62,7 @@ export const createUmaServer = (
   });
 
   app.post("/api/uma/utxoCallback", (req, res) => {
-    console.log(`Received UTXO callback for ${req.query.txId}`);
+    console.log(`Received UTXO callback for ${req.query.txid}`);
     console.log(`  ${req.body}`);
     res.send("ok");
   });

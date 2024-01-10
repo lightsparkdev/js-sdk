@@ -3,7 +3,13 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { Tooltip } from "react-tooltip";
 import { bp } from "./breakpoints.js";
-import { colors, darkGradient, themeOr, type ThemeProp } from "./colors.js";
+import {
+  colors,
+  darkGradient,
+  themeOr,
+  type ThemeProp,
+  type WithTheme,
+} from "./colors.js";
 import { z } from "./z-index.js";
 
 export const rootFontSizePx = 12;
@@ -15,7 +21,19 @@ export const standardContentInsetPx = 32;
 export const standardContentInsetMdPx = 24;
 export const standardContentInsetSmPx = 16;
 
+const standardBorderRadiusPx = [0, 4, 8, 12, 16] as const;
+type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
 export const cardBorderRadiusPx = 16;
+
+type BorderRadiusArg = StandardBorderRadius | StandardBorderRadius[];
+export const standardBorderRadius = (radius: BorderRadiusArg) => {
+  const borderRadiusPx = Array.isArray(radius)
+    ? radius.map((r) => `${r}px`).join(" ")
+    : `${radius}px`;
+  return `
+    border-radius: ${borderRadiusPx};
+  `;
+};
 
 export const smContentInset = css`
   ${bp.sm(`
@@ -55,10 +73,7 @@ export const pageBorderRadius = `
 export const getFocusOutline = ({
   theme,
   onBgHex,
-}: {
-  theme: Theme;
-  onBgHex?: string;
-}) =>
+}: WithTheme<{ onBgHex?: string }>) =>
   `${onBgHex ? theme.hcNeutralFromBg(onBgHex) : theme.hcNeutral} dashed 1px`;
 export const outlineOffset = "-2px";
 export const standardFocusOutline = ({ theme }: ThemeProp) => css`
@@ -76,11 +91,10 @@ export const delta = ({
   theme,
   delta = 0,
   invertSuccessColor = false,
-}: {
-  theme: Theme;
+}: WithTheme<{
   delta?: number;
   invertSuccessColor?: boolean;
-}) => css`
+}>) => css`
   color: ${delta >= 0
     ? invertSuccessColor
       ? theme.danger
@@ -113,11 +127,25 @@ export const StyledTooltip = styled(Tooltip)`
   z-index: ${z.modalOverlay};
 `;
 
-export const overlaySurface = ({ theme }: ThemeProp) => css`
-  background-color: ${themeOr(colors.white, theme.c1Neutral)({ theme })};
-  border: 0.5px solid ${themeOr(theme.c1Neutral, theme.c3Neutral)({ theme })};
+export const overlaySurfaceBorderColor = ({
+  theme,
+  important = false,
+}: WithTheme<{ important?: boolean }>) => css`
+  border-color: ${themeOr(theme.c1Neutral, theme.c3Neutral)({ theme })}
+    ${important ? "!important" : ""};
+`;
+export const overlaySurface = ({
+  theme,
+  important = false,
+}: WithTheme<{ important?: boolean }>) => css`
+  background-color: ${themeOr(colors.white, theme.c1Neutral)({ theme })}
+    ${important ? "!important" : ""};
+  border: 0.5px solid ${important ? "!important" : ""};
+  ${overlaySurfaceBorderColor({ theme, important })};
   ${themeOr(
-    "box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1);",
+    `box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1) ${
+      important ? "!important" : ""
+    };`,
     "",
   )({ theme })}
 `;

@@ -16,8 +16,10 @@ import {
   CurrencyAmountFromJson,
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
+import type LightningPaymentDirection from "./LightningPaymentDirection.js";
 import LightsparkNodeStatus from "./LightsparkNodeStatus.js";
 import type LightsparkNodeToChannelsConnection from "./LightsparkNodeToChannelsConnection.js";
+import type LightsparkNodeToDailyLiquidityForecastsConnection from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
 import LightsparkNodeWithOSK from "./LightsparkNodeWithOSK.js";
 import LightsparkNodeWithRemoteSigning from "./LightsparkNodeWithRemoteSigning.js";
 import type NodeAddressType from "./NodeAddressType.js";
@@ -143,6 +145,13 @@ interface LightsparkNode {
     statuses?: ChannelStatus[] | undefined,
     after?: string | undefined,
   ): Promise<LightsparkNodeToChannelsConnection>;
+
+  getDailyLiquidityForecasts(
+    client: LightsparkClient,
+    fromDate: string,
+    toDate: string,
+    direction: LightningPaymentDirection,
+  ): Promise<LightsparkNodeToDailyLiquidityForecastsConnection>;
 }
 
 export const LightsparkNodeFromJson = (obj: any): LightsparkNode => {

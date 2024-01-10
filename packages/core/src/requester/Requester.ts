@@ -21,9 +21,6 @@ import { b64encode } from "../utils/base64.js";
 import { isNode } from "../utils/environment.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
-export const LIGHTSPARK_BETA_HEADER_KEY = "X-Lightspark-Beta";
-export const LIGHTSPARK_BETA_HEADER_VALUE =
-  "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo";
 dayjs.extend(utc);
 
 type BodyData = {
@@ -150,7 +147,6 @@ class Requester {
     const sdkUserAgent = this.getSdkUserAgent();
     const baseHeaders = {
       "Content-Type": "application/json",
-      [LIGHTSPARK_BETA_HEADER_KEY]: LIGHTSPARK_BETA_HEADER_VALUE,
       "X-Lightspark-SDK": sdkUserAgent,
       "User-Agent": browserUserAgent || sdkUserAgent,
     };

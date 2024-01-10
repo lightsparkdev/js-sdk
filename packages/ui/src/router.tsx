@@ -185,7 +185,19 @@ export function useMatchRoute<RoutesType extends string>(
   return matchPath(route, location.pathname);
 }
 
-export function useCurrentRoute<RoutesType>(): RoutesType {
+export function useCurrentRoute<RoutesType extends string>(): RoutesType {
   const location = useLocation();
   return location.pathname as RoutesType;
+}
+
+export function getRouteName<RoutesType extends string>(
+  path: RoutesType,
+  routes: { [key: string]: string },
+) {
+  for (const routeName of Object.keys(routes)) {
+    if (matchPath(routes[routeName], path)) {
+      return routeName;
+    }
+  }
+  return null;
 }

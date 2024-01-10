@@ -4,8 +4,9 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { ReactNode } from "react";
 import { Link, type RouteParams } from "../router.js";
-import { colors, themeOr } from "../styles/colors.js";
+import { colors, themeOr, type WithTheme } from "../styles/colors.js";
 import { getFocusOutline } from "../styles/common.js";
+import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -41,14 +42,13 @@ export type ButtonProps<RoutesType extends string> = {
   zIndex?: number;
 };
 
-type PrimaryProps = {
+type PrimaryProps = WithTheme<{
   color?: string | undefined;
   backgroundColor?: string | undefined;
   primary: boolean;
-  theme: Theme;
   blue: boolean;
   ghost?: boolean | undefined;
-};
+}>;
 
 type PaddingProps = {
   size: ButtonSize;
@@ -349,4 +349,6 @@ const ButtonHrefLink = styled.a<StyledButtonProps>`
 `;
 
 export const ButtonSelector = (prepend = "", append = "") =>
-  `${prepend}${StyledButton.toString()}${append}, ${prepend}${ButtonLink.toString()}${append}, ${prepend}${ButtonHrefLink.toString()}${append}`;
+  `${prepend}${select(StyledButton)}${append}, ${prepend}${select(
+    ButtonLink,
+  )}${append}, ${prepend}${select(ButtonHrefLink)}${append}`;

@@ -1,5 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
+import { standardBorderRadius } from "../styles/common.js";
 import { type Maybe } from "../types/utils.js";
 import { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 
@@ -38,7 +39,7 @@ type StyledSecretContainerProps = {
 const StyledSecretContainer = styled.div<StyledSecretContainerProps>`
   background-color: ${({ theme, hasSecret, success }) =>
     hasSecret ? (success ? theme.success : theme.c05Neutral) : theme.bg};
-  border-radius: 8px;
+  ${standardBorderRadius(8)}
   padding: 18px 20px;
   color: ${({ theme, success }) => (success ? theme.hcNeutral : theme.text)};
   border: solid 1px

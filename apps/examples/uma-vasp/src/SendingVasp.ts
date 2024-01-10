@@ -1,23 +1,18 @@
 import { convertCurrencyAmount, hexToBytes } from "@lightsparkdev/core";
 import {
   CurrencyUnit,
-  getLightsparkNodeQuery,
   InvoiceData,
   LightsparkClient,
   OutgoingPayment,
   PaymentDirection,
   TransactionStatus,
+  getLightsparkNodeQuery,
 } from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
 import { Express, Request } from "express";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
-import {
-  fullUrlForRequest,
-  sendResponse,
-} from "./networking/expressAdapters.js";
-import { HttpResponse } from "./networking/HttpResponse.js";
-import { NonUmaLnurlpResponseSchema } from "./rawLnurl.js";
+import NonceValidator from "./NonceValidator.js";
 import SendingVaspRequestCache, {
   SendingVaspInitialRequestData,
   SendingVaspPayReqData,
@@ -25,6 +20,12 @@ import SendingVaspRequestCache, {
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
+import { HttpResponse } from "./networking/HttpResponse.js";
+import {
+  fullUrlForRequest,
+  sendResponse,
+} from "./networking/expressAdapters.js";
+import { NonUmaLnurlpResponseSchema } from "./rawLnurl.js";
 
 export default class SendingVasp {
   constructor(
@@ -35,6 +36,7 @@ export default class SendingVasp {
     private readonly userService: UserService,
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
+    private readonly nonceValidator: NonceValidator,
   ) {}
 
   registerRoutes(app: Express) {
@@ -46,7 +48,7 @@ export default class SendingVasp {
       if (!user) {
         return sendResponse(resp, {
           httpStatus: 401,
-          data: "Unauthorized",
+          data: "Unauthorized. Check your credentials.",
         });
       }
       const response = await this.handleClientUmaLookup(
@@ -65,7 +67,7 @@ export default class SendingVasp {
       if (!user) {
         return sendResponse(resp, {
           httpStatus: 401,
-          data: "Unauthorized",
+          data: "Unauthorized. Check your credentials.",
         });
       }
       const response = await this.handleClientUmaPayreq(
@@ -84,7 +86,7 @@ export default class SendingVasp {
       if (!user) {
         return sendResponse(resp, {
           httpStatus: 401,
-          data: "Unauthorized",
+          data: "Unauthorized. Check your credentials.",
         });
       }
       const response = await this.handleClientSendPayment(
@@ -178,7 +180,7 @@ export default class SendingVasp {
         console.error("Error parsing lnurlp response.", e);
         return { httpStatus: 424, data: `Error parsing Lnurlp response. ${e}` };
       }
-      return { httpStatus: 424, data: `Error parsing Lnurlp response. ${response.data}` };
+      return response;
     }
 
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
@@ -187,6 +189,7 @@ export default class SendingVasp {
         httpStatus: 424,
         data: "Error fetching receiving vasp public key.",
       };
+
     try {
       const isSignatureValid = await uma.verifyUmaLnurlpResponseSignature(
         lnurlpResponse,
@@ -205,6 +208,18 @@ export default class SendingVasp {
       };
     }
 
+    if (
+      !this.nonceValidator.checkAndSaveNonce(
+        lnurlpResponse.compliance.signatureNonce,
+        lnurlpResponse.compliance.signatureTimestamp,
+      )
+    ) {
+      return {
+        httpStatus: 424,
+        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
+      };
+    }
+
     const callbackUuid = this.requestCache.saveLnurlpResponseData(
       lnurlpResponse,
       receiverId,
@@ -214,7 +229,6 @@ export default class SendingVasp {
     const senderCurrencies =
       await this.userService.getCurrencyPreferencesForUser(user.id);
 
-    // TODO(Jeremy): Add the sending currency too for display purposes.
     return {
       httpStatus: 200,
       data: {
@@ -315,7 +329,7 @@ export default class SendingVasp {
     if (!amountStr || typeof amountStr !== "string") {
       return { httpStatus: 400, data: "Missing amount" };
     }
-    const amount = parseInt(amountStr);
+    const amount = parseFloat(amountStr);
     if (isNaN(amount)) {
       return { httpStatus: 400, data: "Invalid amount" };
     }
@@ -405,6 +419,7 @@ export default class SendingVasp {
       return { httpStatus: 500, data: "Error generating payreq." };
     }
 
+    console.log(`Sending payreq: ${JSON.stringify(payReq, null, 2)}`);
     let response: globalThis.Response;
     try {
       response = await fetch(initialRequestData.lnurlpResponse.callback, {
@@ -459,9 +474,9 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       payerProfile.identifier,
       payResponse.pr,
+      utxoCallback,
       invoice,
       senderCurrencies,
-      payResponse.compliance.utxoCallback,
     );
 
     return {
@@ -529,9 +544,9 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       "", // TODO(Jeremy): Parse LUD-18 payerdata for this.
       encodedInvoice,
+      "", // No utxo callback for non-UMA lnurl.
       invoice,
       [],
-      // No utxo callback for non-UMA lnurl.
     );
 
     return {
@@ -646,10 +661,10 @@ export default class SendingVasp {
         payReqData.encodedInvoice,
         /* maxFeesMsats */ 1_000_000,
       );
-      if (!paymentResult) {
+      paymentId = paymentResult?.id;
+      if (!paymentResult || !paymentId) {
         throw new Error("Payment request failed.");
       }
-      paymentId = paymentResult.id;
       await this.ledgerService.recordOutgoingTransactionBegan(
         user.id,
         payReqData.receiverUmaAddress,
@@ -734,10 +749,7 @@ export default class SendingVasp {
 
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    const port = requestUrl.port;
-    const portString =
-    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
-    return `${requestUrl.protocol}//${requestUrl.hostname}${portString}${path}`;
+    return `${requestUrl.protocol}//${hostNameWithPort(requestUrl)}${path}`;
   }
 
   private async waitForPaymentCompletion(

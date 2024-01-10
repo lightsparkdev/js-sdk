@@ -1,9 +1,9 @@
 "use client";
-import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { firstChild, pxToRems } from "../styles/utils.js";
 import { bp } from "./breakpoints.js";
+import { type WithTheme } from "./colors.js";
 
 const HeadingTypes = ["h1", "h2", "h3", "h4"] as const;
 type HeadingType = (typeof HeadingTypes)[number];
@@ -72,9 +72,7 @@ type StyledHeadingBaseProps = {
   mbSm: MarginPx;
   light?: boolean;
 };
-type StyledHeadingProps = StyledHeadingBaseProps & {
-  theme: Theme;
-};
+type StyledHeadingProps = WithTheme<StyledHeadingBaseProps>;
 
 const baseHeading = ({ mt, mb, mtSm, mbSm, theme }: StyledHeadingProps) => css`
   line-height: 1.214em;
@@ -158,7 +156,7 @@ export function Heading({
 }: HeadingProps) {
   const StyledHeading = headings[type];
   const theme = useTheme();
-  return (
+  const heading = (
     <StyledHeading
       id={id}
       mt={m0 ? 0 : mt}
@@ -168,9 +166,17 @@ export function Heading({
       light={light}
       theme={theme}
     >
-      {children}
+      {id ? (
+        <a href={`#${id}`} css={{ color: "inherit" }}>
+          {children}
+        </a>
+      ) : (
+        children
+      )}
     </StyledHeading>
   );
+
+  return heading;
 }
 
 export function headingWithDefaults(defaultProps: HeadingProps) {

@@ -29,7 +29,6 @@ export const reserveStreamingDemoAccountCredentials =
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Lightspark-Beta": "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo",
       },
       body: JSON.stringify({
         query: `mutation DemoAccountReserve {
@@ -82,7 +81,6 @@ export const unreserveStreamingDemoAccountCredentials = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Lightspark-Beta": "z2h0BBYxTA83cjW7fi8QwWtBPCzkQKiemcuhKY08LOo",
     },
     body: JSON.stringify({
       query: `mutation DemoAccountUnreserve {

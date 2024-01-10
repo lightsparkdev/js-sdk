@@ -9,6 +9,7 @@ import type {
 import { CurrencyUnit } from "@lightsparkdev/wallet-sdk";
 import { Button } from "src/components/Button";
 import { Table, Td, Th, Tr } from "./Table";
+import { standardBorderRadius } from "@lightsparkdev/ui/styles/common";
 
 const Dashboard = ({ data }: { data: WalletDashboard }) => {
   return (
@@ -147,7 +148,7 @@ const AmountWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 8px;
-  border-radius: 8px;
+  ${standardBorderRadius(8)}
   border: 1px solid #e0e0e0;
   background-color: #fafafa;
   box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.08);

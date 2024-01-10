@@ -5,6 +5,7 @@ import {
   Headline,
   type Props,
 } from "../../styles/fonts/typography/Headline.js";
+import { select } from "../../utils/emotion.js";
 import { Icon } from "../Icon.js";
 
 export const AnchorLinkHeader = (props: Props) => {
@@ -47,7 +48,7 @@ const StyledAnchorLinkHeader = styled.div`
     padding-right: 24px;
   }
 
-  &:hover ${IconWrapper} {
+  &:hover ${select(IconWrapper)} {
     opacity: 1;
     transform: translateX(0px);
   }

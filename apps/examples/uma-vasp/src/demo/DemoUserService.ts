@@ -24,7 +24,28 @@ export default class DemoUserService implements UserService {
     fullUrl: URL,
     headers: { [key: string]: string | string[] | undefined },
   ): Promise<User | undefined> {
-    // TODO(Jeremy): Add authentication.
+    // Using basic auth with a static username/password for demo purposes.
+    const basicAuthHeader = headers["authorization"];
+    if (!basicAuthHeader || typeof basicAuthHeader !== "string" || !basicAuthHeader.startsWith("Basic ")) {
+      return undefined;
+    }
+    const usernameAndPassword = basicAuthHeader.split(" ")[1];
+    if (!usernameAndPassword) {
+      return undefined;
+    }
+    const [username, password] = Buffer.from(usernameAndPassword, "base64")
+      .toString("utf8")
+      .split(":");
+    if (!username || !password) {
+      return undefined;
+    }
+    if (username !== requireEnv("LIGHTSPARK_UMA_RECEIVER_USER")) {
+      return undefined;
+    }
+    if (password  !== requireEnv("LIGHTSPARK_UMA_RECEIVER_USER_PASSWORD")) {
+      return undefined;
+    }
+
     return this.usersById.get(DEMO_UID);
   }
 
@@ -48,11 +69,15 @@ export default class DemoUserService implements UserService {
         symbol: "sat",
         code: "SAT",
         name: "Satoshis",
-        maxSendable: 10_000_000_000,
+        maxSendable: 100_000_000,
         minSendable: 1,
         multiplier: 1000,
         decimals: 0,
       },
     ];
+  }
+
+  async getReceivableSatsRangeForUser(userId: string): Promise<[number, number]> {
+    return [1, 100_000_000];
   }
 }

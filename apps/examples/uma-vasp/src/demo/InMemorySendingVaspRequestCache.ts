@@ -66,17 +66,17 @@ export default class InMemorySendingVaspRequestCache implements SendingVaspReque
   public savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
+    utxoCallback: string,
     invoiceData: InvoiceData,
     senderCurrencies: Currency[],
-    utxoCallback?: string,
   ): string {
     const uuid = uuidv4();
     this.payReqCache.set(uuid, {
       receiverUmaAddress,
       encodedInvoice,
+      utxoCallback,
       invoiceData,
       senderCurrencies,
-      utxoCallback,
     });
     return uuid;
   }
@@ -98,7 +98,7 @@ export interface SendingVaspInitialRequestData {
 export interface SendingVaspPayReqData {
   receiverUmaAddress: string;
   encodedInvoice: string;
+  utxoCallback: string;
   invoiceData: InvoiceData;
   senderCurrencies: Currency[];
-  utxoCallback?: string;
 }
