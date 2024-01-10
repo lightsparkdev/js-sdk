@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.15
+
+### Patch Changes
+
+- 66e76d3: - Remove beta headers in Requester
+
 ## 1.0.14
 
 ### Patch Changes

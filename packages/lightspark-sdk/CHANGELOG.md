@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.5.4
+
+### Patch Changes
+
+- 66e76d3: - Regenerate GQL objects
+- Updated dependencies [66e76d3]
+  - @lightsparkdev/core@1.0.15
+
 ## 1.5.3
 
 ### Patch Changes
