@@ -1,13 +1,5 @@
 # @lightsparkdev/react-native
 
-## 0.3.4
-
-### Patch Changes
-
-- Updated dependencies [cb28f0e]
-  - @lightsparkdev/core@1.0.16
-  - @lightsparkdev/wallet-sdk@0.12.4
-
 ## 0.3.3
 
 ### Patch Changes
