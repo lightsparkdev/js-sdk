@@ -595,7 +595,9 @@ describe(p2SuiteName, () => {
   test(
     "Should get a bitcoin fee estimate",
     async () => {
-      const fee = await lightsparkClient.getBitcoinFeeEstimate();
+      const fee = await lightsparkClient.getBitcoinFeeEstimate(
+        BitcoinNetwork.REGTEST,
+      );
       expect(fee).not.toBeNull();
     },
     TESTS_TIMEOUT,
