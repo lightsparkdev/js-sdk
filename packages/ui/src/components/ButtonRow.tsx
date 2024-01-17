@@ -65,7 +65,7 @@ export const ButtonRowContainer = styled.div<{
     )}
 `;
 
-const StyledButtonRow = styled.div`
+export const StyledButtonRow = styled.div`
   ${overflowAutoWithoutScrollbars}
   background: ${({ theme }) => theme.bg};
   display: flex;
