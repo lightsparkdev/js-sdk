@@ -349,6 +349,6 @@ const ButtonHrefLink = styled.a<StyledButtonProps>`
 `;
 
 export const ButtonSelector = (prepend = "", append = "") =>
-  `${prepend}${select(StyledButton)}${append}, ${prepend}${select(
-    ButtonLink,
-  )}${append}, ${prepend}${select(ButtonHrefLink)}${append}`;
+  `${prepend}*:is(${select(StyledButton)}, ${select(ButtonLink)}, ${select(
+    ButtonHrefLink,
+  )})${append}`;
