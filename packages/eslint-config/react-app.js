@@ -17,7 +17,16 @@ module.exports = {
             name: "react-router-dom",
           },
           {
-            importNames: ["Link", "Navigate", "useNavigate"],
+            importNames: [
+              "Link",
+              "Navigate",
+              "useNavigate",
+              "useMatchRoutes",
+              "useFindMatchingRoute",
+              "useMatchRoute",
+              "useCurrentRoute",
+              "getRouteName",
+            ],
             message:
               "Please use typesafe imports from components/router instead.",
             name: "@lightsparkdev/ui/router",
