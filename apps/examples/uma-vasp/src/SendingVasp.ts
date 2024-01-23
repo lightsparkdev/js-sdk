@@ -130,7 +130,7 @@ export default class SendingVasp {
       isSubjectToTravelRule: true,
       receiverAddress: receiverUmaAddress,
       signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: hostNameWithPort(requestUrl),
+      senderVaspDomain: this.getSendingVaspDomain(requestUrl),
     });
 
     console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
@@ -171,6 +171,7 @@ export default class SendingVasp {
     try {
       lnurlpResponse = uma.parseLnurlpResponse(responseJson);
     } catch (e) {
+      console.error("Couldn't parse as uma. Trying raw lnurl.", e);
       const response = await this.handleAsNonUmaLnurlpResponse(
         responseJson,
         receiverId,
@@ -257,7 +258,7 @@ export default class SendingVasp {
       isSubjectToTravelRule: true,
       receiverAddress: receiver,
       signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: hostNameWithPort(requestUrl),
+      senderVaspDomain: this.getSendingVaspDomain(requestUrl),
       umaVersionOverride: newSupportedVersion,
     });
     return fetch(retryRequest);
@@ -387,7 +388,7 @@ export default class SendingVasp {
     const payerProfile = this.getPayerProfile(
       user,
       initialRequestData.lnurlpResponse.payerData,
-      hostNameWithPort(requestUrl),
+      this.getSendingVaspDomain(requestUrl),
     );
     const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
       user.id,
@@ -433,16 +434,17 @@ export default class SendingVasp {
       return { httpStatus: 500, data: "Error sending payreq." };
     }
 
-    if (!response.ok) {
-      console.log("Error response:", await response.text());
+    if (!response.ok || response.status !== 200) {
       return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
     }
 
     let payResponse: uma.PayReqResponse;
+    const bodyText = await response.text();
     try {
-      payResponse = await uma.parsePayReqResponse(await response.text());
+      payResponse = await uma.parsePayReqResponse(bodyText);
     } catch (e) {
-      console.error("Error parsing payreq response.", e);
+      console.error("Error parsing payreq response. Raw response: " + bodyText);
+      console.error("Error:", e);
       return { httpStatus: 424, data: "Error parsing payreq response." };
     }
 
@@ -661,10 +663,10 @@ export default class SendingVasp {
         payReqData.encodedInvoice,
         /* maxFeesMsats */ 1_000_000,
       );
-      paymentId = paymentResult?.id;
-      if (!paymentResult || !paymentId) {
+      if (!paymentResult) {
         throw new Error("Payment request failed.");
       }
+      paymentId = paymentResult.id;
       await this.ledgerService.recordOutgoingTransactionBegan(
         user.id,
         payReqData.receiverUmaAddress,
@@ -749,7 +751,7 @@ export default class SendingVasp {
 
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${requestUrl.protocol}//${hostNameWithPort(requestUrl)}${path}`;
+    return `${requestUrl.protocol}//${requestUrl.hostname}${path}`;
   }
 
   private async waitForPaymentCompletion(
@@ -851,6 +853,14 @@ export default class SendingVasp {
       masterSeed: remoteSigningMasterSeed,
       network: node.bitcoinNetwork,
     });
+  }
+
+  private getSendingVaspDomain(requestUrl: URL): string {
+    const configVaspDomain = this.config.sendingVaspDomain;
+    if (configVaspDomain) {
+      return configVaspDomain;
+    }
+    return hostNameWithPort(requestUrl);
   }
 }
 

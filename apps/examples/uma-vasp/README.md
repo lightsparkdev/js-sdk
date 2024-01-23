@@ -45,6 +45,43 @@ LIGHTSPARK_UMA_SIGNING_PRIVKEY=<signing private key hex> \
 yarn start
 ```
 
+## Running with Docker
+
+You can also run this server with Docker. First we need to build the image. From the root `js` directory, run:
+
+```bash
+docker build -t uma-vasp-js . -f apps/examples/uma-vasp/Dockerfile
+```
+
+Next, we need to set up the config variables. You can do this by creating a file called `local.env` in the `js/apps/examples/uma-vasp/`
+directory. This file should contain the following:
+
+```bash
+LIGHTSPARK_API_TOKEN_CLIENT_ID=<your lightspark API token client ID from https://app.lightspark.com/api-config>
+LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<your lightspark API token client secret from https://app.lightspark.com/api-config>
+LIGHTSPARK_UMA_NODE_ID=<your lightspark node ID. ex: LightsparkNodeWithOSKLND:018b24d0-1c45-f96b-0000-1ed0328b72cc>
+LIGHTSPARK_UMA_RECEIVER_USER=<receiver UMA>
+LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<hex-encoded encryption pubkey>
+LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<hex-encoded encryption privkey>
+LIGHTSPARK_UMA_SIGNING_PUBKEY=<hex-encoded signing pubkey>
+LIGHTSPARK_UMA_SIGNING_PRIVKEY=<hex-encoded signing privkey>
+
+# If you are using an OSK node:
+LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD=<password for the signing key>
+
+# If you are using a remote signing node:
+LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED=<hex-encoded master seed>
+
+# Optional: A custom VASP domain in case you're hosting this at a fixed hostname.
+LIGHTSPARK_UMA_VASP_DOMAIN=<your custom VASP domain. ex: vasp1.example.com>
+```
+
+Then, run the image:
+
+```bash
+docker run -it --env-file apps/examples/uma-vasp/local.env -p 8080:8080 uma-vasp-js
+```
+
 ## Running Test Queries
 
 First, we'll start two instances of the server, one on port 8080 and one on port 8081 (in separate terminals):
