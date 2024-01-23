@@ -1,3 +1,4 @@
+export { Badge } from "./Badge.js";
 export {
   Button,
   ButtonSelector,
