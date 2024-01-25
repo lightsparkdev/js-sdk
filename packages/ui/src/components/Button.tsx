@@ -56,6 +56,7 @@ type PaddingProps = {
   iconWidth?: number;
   text?: string | undefined;
   ghost: boolean;
+  isRound: boolean;
 };
 
 type BorderProps = {
@@ -98,13 +99,45 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
-function getPaddingX({ size, ghost }: { size: ButtonSize; ghost?: boolean }) {
-  return ghost ? 0 : size === "lg" ? hPaddingPx : size === "md" ? 18 : 16;
+const paddingsY = {
+  lg: 14,
+  md: 9,
+  sm: 6,
+} as const;
+
+const roundPaddingsX = {
+  lg: 19,
+  md: 14,
+  sm: 10,
+} as const;
+
+const paddingsX = {
+  lg: 24,
+  md: 18,
+  sm: 16,
+} as const;
+
+function getPaddingX({
+  size,
+  ghost,
+  isRound,
+}: {
+  size: ButtonSize;
+  ghost?: boolean;
+  isRound: boolean;
+}) {
+  return ghost ? 0 : isRound ? roundPaddingsX[size] : paddingsX[size];
 }
 
-function getPadding({ iconWidth, size, ghost, iconSide }: PaddingProps) {
-  const paddingY = ghost ? 0 : size === "lg" ? 14 : size === "md" ? 9 : 6;
-  const paddingX = getPaddingX({ size, ghost });
+function getPadding({
+  iconWidth,
+  size,
+  ghost,
+  iconSide,
+  isRound,
+}: PaddingProps) {
+  const paddingY = ghost ? 0 : paddingsY[size];
+  const paddingX = getPaddingX({ size, ghost, isRound });
   const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
@@ -198,6 +231,8 @@ export function Button<RoutesType extends string>({
     </div>
   );
 
+  const isSingleCharRoundButton = Boolean(text && text.length === 1 && !icon);
+
   const commonProps = {
     backgroundColor,
     color,
@@ -210,6 +245,7 @@ export function Button<RoutesType extends string>({
     fullWidth,
     blue,
     iconSide,
+    isRound: isSingleCharRoundButton,
     iconWidth: currentIcon ? iconSize + iconMarginRight : 0,
     isLoading: loading,
     disabled: disabled || loading,
@@ -255,9 +291,9 @@ type StyledButtonProps = {
   text?: string | undefined;
   zIndex?: number | undefined;
   iconSide?: IconSide | undefined;
+  isRound: boolean;
 };
 
-const hPaddingPx = 24;
 const buttonStyle = ({
   color,
   backgroundColor,
@@ -274,6 +310,7 @@ const buttonStyle = ({
   text,
   zIndex,
   iconSide,
+  isRound,
 }: StyledButtonProps & { theme: Theme }) => css`
   display: inline-flex;
   opacity: ${disabled && !isLoading ? 0.2 : 1};
@@ -310,8 +347,15 @@ const buttonStyle = ({
       primary,
       blue,
     })};
-    border-radius: 32px;
-    padding: ${getPadding({ size, iconWidth, text, ghost, iconSide })};
+    border-radius: ${isRound ? "100%" : "32px"};
+    padding: ${getPadding({
+      size,
+      iconWidth,
+      text,
+      ghost,
+      iconSide,
+      isRound,
+    })};
     color: ${getTextColor({ color, theme, primary, blue })};
     transition:
       background-color 0.2s ease-out,
@@ -335,7 +379,9 @@ interface ButtonIconProps {
 const ButtonIcon = styled.div<ButtonIconProps>`
   ${(props) => (props.ghost ? "" : "position: absolute;")}
   ${({ iconSide, ghost, text, size }) =>
-    `${iconSide}: ${ghost && text ? 0 : getPaddingX({ size, ghost })}px;`}
+    `${iconSide}: ${
+      ghost && text ? 0 : getPaddingX({ size, ghost, isRound: false })
+    }px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`
