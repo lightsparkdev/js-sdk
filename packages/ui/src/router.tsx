@@ -89,21 +89,24 @@ export function Link<RoutesType extends string>({
   blue = false,
   newTab = false,
 }: LinkProps<RoutesType>) {
-  if (!isString(to) && !externalLink) {
-    throw new Error("Link must have either `to` or `externalLink` defined");
+  if (!isString(to) && !externalLink && !onClick) {
+    throw new Error(
+      "Link must have either `to` or `externalLink` or `onClick` defined",
+    );
   }
 
   let toStr: RoutesType | string;
   if (isString(to)) {
     toStr = replaceParams(to, params);
     toStr += hash ? `#${hash}` : "";
-  } else {
-    // externalLink must be defined
-    const definedExternalLink = externalLink as ExternalLink;
+  } else if (externalLink) {
+    const definedExternalLink = externalLink;
     if (!definedExternalLink.startsWith("http")) {
       throw new Error("Link's externalLink must start with http");
     }
     toStr = definedExternalLink;
+  } else {
+    toStr = "#";
   }
 
   return (
