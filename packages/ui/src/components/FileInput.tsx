@@ -22,8 +22,6 @@ export function FileInput({
   const [fileErrorMsg, setFileErrorMsg] = useState<string>();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  console.log("tmp state", { fileName, fileContent, fileErrorMsg });
-
   const handleChange = (changeEvent: React.ChangeEvent<HTMLInputElement>) => {
     const file = changeEvent.target.files?.[0];
     if (!file) {
