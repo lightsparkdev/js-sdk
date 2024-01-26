@@ -2,12 +2,14 @@
 import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import type { ReactNode } from "react";
+import { uniqueId } from "lodash-es";
+import { Fragment, useRef, type ReactNode } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { colors, themeOr, type WithTheme } from "../styles/colors.js";
 import { getFocusOutline } from "../styles/common.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon.js";
+import { LightTooltip } from "./LightTooltip.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
@@ -39,6 +41,7 @@ export type ButtonProps<RoutesType extends string> = {
   type?: "button" | "submit";
   blue?: boolean;
   newTab?: boolean;
+  tooltipText?: string;
   zIndex?: number;
 };
 
@@ -192,7 +195,9 @@ export function Button<RoutesType extends string>({
   blue = false,
   newTab = false,
   zIndex = undefined,
+  tooltipText,
 }: ButtonProps<RoutesType>) {
+  const tooltipId = useRef(uniqueId());
   const iconMarginRight = 6;
   const iconSize = size === "lg" ? 16 : 12;
   let currentIcon = null;
@@ -211,24 +216,30 @@ export function Button<RoutesType extends string>({
   }
 
   const content: ReactNode = (
-    <div
-      css={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {iconSide === "left" && currentIcon}
+    <Fragment>
       <div
+        {...(tooltipText ? { "data-tooltip-id": tooltipId.current } : {})}
         css={{
-          textOverflow: "ellipsis",
-          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {text}
+        {iconSide === "left" && currentIcon}
+        <div
+          css={{
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+          }}
+        >
+          {text}
+        </div>
+        {iconSide === "right" && currentIcon}
       </div>
-      {iconSide === "right" && currentIcon}
-    </div>
+      {tooltipText ? (
+        <LightTooltip id={tooltipId.current} content={tooltipText} />
+      ) : null}
+    </Fragment>
   );
 
   const isSingleCharRoundButton = Boolean(text && text.length === 1 && !icon);
