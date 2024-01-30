@@ -11,6 +11,7 @@ import {
   KeyOrAlias,
   LightsparkException,
   b64encode,
+  sleep,
 } from "@lightsparkdev/core";
 
 import LightsparkClient from "../client.js";
@@ -102,6 +103,10 @@ describe(generalSuiteName, () => {
         walletId: clientDeployWalletResponse.walletId,
       });
       expect(clientDeployWalletResponse.userId).not.toBeNull();
+
+      /* See LIG-4271 - There's a slight delay here between when a wallet is deployed and
+         when balances update in RF: */
+      await sleep(5000);
     },
     TESTS_TIMEOUT,
   );
