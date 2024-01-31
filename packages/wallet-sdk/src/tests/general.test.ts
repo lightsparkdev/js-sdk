@@ -80,7 +80,6 @@ const invoiceData = {} as CreatedInvoiceData;
 const testInvoiceData = {} as Record<InvoiceType, string | null>;
 
 const invoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
-const testInvoicePayment = {} as Record<InvoiceType, OutgoingPayment | null>;
 
 describe(generalSuiteName, () => {
   jest
@@ -201,15 +200,19 @@ describe("REGTEST createInvoice with createTestModePayment", () => {
 
       if (!invoice) throw new TypeError("invoice is null");
 
-      const payment = await regtestClient.createTestModePayment(
+      let payment = await regtestClient.createTestModePayment(
         invoice.data.encodedPaymentRequest,
       );
 
-      log("payment.id", payment?.id);
+      if (!payment) {
+        throw new TypeError("payment is null");
+      }
 
-      // FIXME: add payment result awaiting and change expecting status to
-      // SUCCESS
-      expect(payment?.status).toBe(TransactionStatus.PENDING);
+      log("payment.id", payment.id);
+
+      payment = await regtestClient.awaitPaymentResult(payment, 1000 * 60 * 5);
+
+      expect(payment.status).toBe(TransactionStatus.SUCCESS);
     },
     TESTS_TIMEOUT,
   );
@@ -274,17 +277,19 @@ describe("REGTEST createInvoice with createTestModePayment", () => {
         throw new Error("testnetInvoiceData is null");
       }
 
-      testInvoicePayment.STANDARD = await regtestClient.createTestModePayment(
+      let payment = await regtestClient.createTestModePayment(
         invoiceData.STANDARD.encodedPaymentRequest,
       );
 
-      log("payment.id", testInvoicePayment.STANDARD?.id);
+      if (!payment) {
+        throw new Error("payment is null");
+      }
 
-      // FIXME: add payment result awaiting and change expecting status to
-      // SUCCESS
-      expect(testInvoicePayment.STANDARD?.status).toBe(
-        TransactionStatus.PENDING,
-      );
+      log("payment.id", payment.id);
+
+      payment = await regtestClient.awaitPaymentResult(payment, 1000 * 60 * 5);
+
+      expect(payment.status).toBe(TransactionStatus.SUCCESS);
     },
     TESTS_TIMEOUT,
   );
@@ -292,7 +297,7 @@ describe("REGTEST createInvoice with createTestModePayment", () => {
 
 describe("REGTEST createTestModeInvoice with payInvoice", () => {
   test(
-    "should deposit test funds to wallet",
+    "should send a payment back to the routing node",
     async () => {
       const invoice = await regtestClient.createTestModeInvoice(
         CREATE_TEST_INVOICE_AMOUNT_MSATS,
