@@ -1,20 +1,14 @@
 import { css } from "@emotion/css";
 import { useTheme, type Theme } from "@emotion/react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, type ComponentProps } from "react";
 import ReactDOM from "react-dom";
 import { Tooltip } from "react-tooltip";
 import { overlaySurface } from "../styles/common.js";
 import { z } from "../styles/z-index.js";
 
-type TooltipProps = {
-  id: string;
-  content?: string;
-  render?: () => JSX.Element;
-};
-
-/* Avoid third party lib undefined type issue with our config: */
-type ExplicitTooltipProps = {
-  render?: () => JSX.Element;
+type TooltipProps = Omit<ComponentProps<typeof Tooltip>, "id"> & {
+  /* Make 3rd party types compatible with our undefined rule: */
+  id?: string | undefined;
 };
 
 export function LightTooltip(props: TooltipProps) {
@@ -36,20 +30,19 @@ export function LightTooltip(props: TooltipProps) {
   }, []);
 
   const theme = useTheme();
-  const tooltipProps = {} as ExplicitTooltipProps;
-  if (props.render) {
-    tooltipProps["render"] = props.render;
-  }
+  console.log("LightTooltip.tsx: tooltipProps:", props);
+
   return nodeReady && nodeRef.current
     ? ReactDOM.createPortal(
         <Tooltip
-          id={props.id}
+          {...props}
+          id={props.id || ""}
           content={props.content || ""}
           noArrow
           border="0.05rem solid rgba(0, 0, 0, 0.1)"
           className={styles({ theme })}
           variant="light"
-          {...tooltipProps}
+          delayShow={180}
         />,
         nodeRef.current,
       )

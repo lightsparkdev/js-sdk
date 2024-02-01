@@ -4,8 +4,8 @@ import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
 import { nanoid } from "nanoid";
 import React, { useState } from "react";
-import { StyledTooltip } from "../styles/common.js";
 import { Icon } from "./Icon.js";
+import { LightTooltip } from "./LightTooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type Props = {
@@ -52,9 +52,11 @@ const CopyToClipboardButton = (props: Props) => {
         {props.children ? <Children>{props.children}</Children> : null}
         <Icon name={icon} width={props.isSm ? 12 : 16} />
       </Button>
-      <StyledTooltip id={id} place={props.place || "right"} variant="dark">
-        {tooltipContent}
-      </StyledTooltip>
+      <LightTooltip
+        id={id}
+        place={props.place || "right"}
+        content={tooltipContent}
+      />
     </>
   );
 };

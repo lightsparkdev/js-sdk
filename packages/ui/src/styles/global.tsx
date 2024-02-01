@@ -109,6 +109,8 @@ export function GlobalStyles() {
     :root {
       ${cssVars.docHeight}: 100vh;
       --rt-opacity: 1 !important;
+      --rt-transition-show-delay: 0.15s !important;
+      --rt-transition-closing-delay: 0.2s !important;
     }
 
     html {
