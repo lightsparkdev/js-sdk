@@ -1,7 +1,6 @@
 import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Tooltip } from "react-tooltip";
 import { bp } from "./breakpoints.js";
 import {
   colors,
@@ -10,7 +9,6 @@ import {
   type ThemeProp,
   type WithTheme,
 } from "./colors.js";
-import { z } from "./z-index.js";
 
 export const rootFontSizePx = 12;
 export const rootFontSizeRems = rootFontSizePx / 16;
@@ -121,10 +119,6 @@ export const Subtext = styled.div`
 
 export const darkGradientBg = css`
   background: ${darkGradient};
-`;
-
-export const StyledTooltip = styled(Tooltip)`
-  z-index: ${z.modalOverlay};
 `;
 
 export const overlaySurfaceBorderColor = ({

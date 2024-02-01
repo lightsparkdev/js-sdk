@@ -12,12 +12,12 @@ export const z = {
   smNavMenu: 100,
   navAction: 101,
   smNavAction: 100, // keep under navDropdown
-  tooltip: 160,
   notificationBanner: 170,
   qrReaderVideo: 180,
   qrReaderOverlay: 181,
   modalOverlay: 190,
   modalContainer: 191,
   dropdown: 192,
+  tooltip: 193,
   toast: 200,
 };

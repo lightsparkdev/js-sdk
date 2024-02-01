@@ -138,9 +138,11 @@ const inputSubtextSeconds = 0.25;
 export function InputSubtext({
   text,
   hasError = false,
+  tooltipId,
 }: {
   text?: string | undefined;
   hasError?: boolean;
+  tooltipId?: string | undefined;
 }) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [subtext, setSubtext] = useState(text);
@@ -162,8 +164,12 @@ export function InputSubtext({
   }, [text]);
 
   return (
-    <StyledInputSubtext visible={visible} hasError={hasError}>
-      {subtext}
+    <StyledInputSubtext
+      visible={visible}
+      hasError={hasError}
+      cursorPointer={Boolean(tooltipId)}
+    >
+      {tooltipId ? <span data-tooltip-id={tooltipId}>{subtext}</span> : subtext}
     </StyledInputSubtext>
   );
 }
@@ -171,6 +177,7 @@ export function InputSubtext({
 export const StyledInputSubtext = styled.div<{
   hasError: boolean;
   visible: boolean;
+  cursorPointer: boolean;
 }>`
   margin-top: ${({ visible }) => (visible ? "8px" : "0px")};
   margin-left: ${({ visible }) => (visible ? "8px" : "0px")};
@@ -183,6 +190,7 @@ export const StyledInputSubtext = styled.div<{
     opacity ${inputSubtextSeconds * 0.8}s cubic-bezier(0.25, 0.87, 0.56, 1.23),
     margin ${inputSubtextSeconds}s cubic-bezier(0.25, 0.87, 0.56, 1.23);
   color: ${({ hasError, theme }) => (hasError ? theme.danger : theme.text)};
+  cursor: ${({ cursorPointer }) => (cursorPointer ? "pointer" : "auto")};
 `;
 
 export const labelStyle = ({
