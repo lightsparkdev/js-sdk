@@ -214,7 +214,7 @@ export function Modal({
               <Description>{formattedDescription}</Description>
             ) : null}
             <div>{children}</div>
-            {onSubmit ? (
+            {onSubmit || onCancel ? (
               <ModalButtonRow>
                 {!isSm && !cancelHidden && (
                   <Button
@@ -223,15 +223,17 @@ export function Modal({
                     text={cancelText ?? "Cancel"}
                   />
                 )}
-                <Button
-                  disabled={submitDisabled}
-                  primary
-                  text={submitText ?? "Continue"}
-                  loading={submitLoading}
-                  type="submit"
-                />
+                {onSubmit && (
+                  <Button
+                    disabled={submitDisabled}
+                    primary
+                    text={submitText ?? "Continue"}
+                    loading={submitLoading}
+                    type="submit"
+                  />
+                )}
                 {isSm && !cancelHidden && (
-                  <Button onClick={onClose} text="Cancel" />
+                  <Button onClick={onClose} text={cancelText ?? "Cancel"} />
                 )}
               </ModalButtonRow>
             ) : null}
@@ -301,6 +303,7 @@ const Description = styled.div`
 const ModalButtonRow = styled.div`
   margin-top: 32px;
   ${bp.minSm(`display: flex;`)}
+  gap: 10px;
 
   button {
     width: 50%;
@@ -312,9 +315,6 @@ const ModalButtonRow = styled.div`
   button:last-of-type {
     ${bp.sm(`
       margin-top: 16px;
-    `)}
-    ${bp.minSm(`
-      margin-left: 10px;
     `)}
   }
 `;

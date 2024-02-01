@@ -1,16 +1,5 @@
 # @lightsparkdev/ui
 
-## 0.0.8
-
-### Patch Changes
-
-- df7bd3f: - Updates to LightTooltip
-- 20fb70b: - Add Badge, FileInput, LightTooltip, Pill
-  - Single character Button should be round
-  - Allow "divider" in ButtonRow
-- Updated dependencies [20fb70b]
-  - @lightsparkdev/core@1.0.17
-
 ## 0.0.7
 
 ### Patch Changes
