@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.5
+
+### Patch Changes
+
+- 20fb70b: - Allow polling for IncomingPayment completion in awaitPaymentResult and make public
+- Updated dependencies [20fb70b]
+  - @lightsparkdev/core@1.0.17
+
 ## 0.12.4
 
 ### Patch Changes

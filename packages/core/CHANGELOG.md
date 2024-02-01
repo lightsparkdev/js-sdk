@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.0.17
+
+### Patch Changes
+
+- 20fb70b: - Update deps
+  - Expose LoggingLevel
+
 ## 1.0.16
 
 ### Patch Changes
