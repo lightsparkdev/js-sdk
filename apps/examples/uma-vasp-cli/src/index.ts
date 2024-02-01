@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { confirm, input, select } from "@inquirer/prompts";
+import { confirm, input, password, select } from "@inquirer/prompts";
 import { type CurrencyAmount } from "@lightsparkdev/lightspark-sdk";
 import { type Currency } from "@uma-sdk/core";
 import chalk from "chalk";
@@ -14,9 +14,11 @@ const sendPayment = async (options: OptionValues) => {
     chalk.yellowBright.bold("\n⚡️ Welcome to the UMA VASP CLI! ⚡️\n"),
   );
 
-  let { endpoint, receiverUma } = options as {
+  let { endpoint, receiverUma, sendingUser, sendingPassword } = options as {
     endpoint: string;
     receiverUma: string;
+    sendingUser: string | undefined;
+    sendingPassword: string | undefined;
   };
   if (!endpoint) {
     endpoint = process.env.UMA_VASP_ENDPOINT || "";
@@ -41,7 +43,15 @@ const sendPayment = async (options: OptionValues) => {
   }
   // TODO: Validate UMA address more thoroughly.
 
-  const lnurlpResponse = await fetchLnurlp(endpoint, receiverUma);
+  const lnurlpResponse = await fetchLnurlp(
+    endpoint,
+    receiverUma,
+    sendingUser,
+    sendingPassword,
+  );
+
+  sendingUser = lnurlpResponse.sendingUsername;
+  sendingPassword = lnurlpResponse.sendingUserPassword;
 
   let currencyChoice = lnurlpResponse.receiverCurrencies[0];
   if (lnurlpResponse.receiverCurrencies.length > 1) {
@@ -100,6 +110,8 @@ const sendPayment = async (options: OptionValues) => {
     lnurlpResponse.callbackUuid,
     amount,
     currencyChoice.code,
+    sendingUser,
+    sendingPassword,
   );
 
   console.log(`\nPayreq details:`);
@@ -122,12 +134,42 @@ const sendPayment = async (options: OptionValues) => {
   const payResponse = await completePayment(
     endpoint,
     payreqResponse.callbackUuid,
+    sendingUser,
+    sendingPassword,
   );
   console.log(`\nPayment: ${JSON.stringify(payResponse, null, 2)}\n`);
 };
 
-const fetchLnurlp = async (endpoint: string, receiverUma: string) => {
-  const response = await fetch(`${endpoint}/api/umalookup/${receiverUma}`);
+type LookupResponse = {
+  senderCurrencies: Currency[];
+  receiverCurrencies: Currency[];
+  minSendableSats: number;
+  maxSendableSats: number;
+  callbackUuid: string;
+  sendingUsername?: string;
+  sendingUserPassword?: string;
+};
+
+const fetchLnurlp = async (
+  endpoint: string,
+  receiverUma: string,
+  sendingUsername: string | undefined,
+  sendingUserPassword: string | undefined,
+): Promise<LookupResponse> => {
+  const response = await fetch(
+    `${endpoint}/api/umalookup/${receiverUma}`,
+    getAuthOptions(sendingUsername, sendingUserPassword),
+  );
+  if ((!sendingUsername || !sendingUserPassword) && response.status === 401) {
+    const username = await input({
+      message: "The sending vasp requires auth. What is your username?",
+    });
+    const pass = await password({
+      message: "What is your password?",
+    });
+    return fetchLnurlp(endpoint, receiverUma, username, pass);
+  }
+
   if (!response.ok) {
     throw new Error(`Failed to fetch lnurlp: ${response.statusText}`);
   }
@@ -139,7 +181,7 @@ const fetchLnurlp = async (endpoint: string, receiverUma: string) => {
     callbackUuid: string;
   };
 
-  return lnurlp;
+  return Object.assign(lnurlp, { sendingUsername, sendingUserPassword });
 };
 
 const fetchPayreq = async (
@@ -147,9 +189,12 @@ const fetchPayreq = async (
   callbackUuid: string,
   amount: number,
   currency: string,
+  sendingUsername: string | undefined,
+  sendingUserPassword: string | undefined,
 ) => {
   const response = await fetch(
     `${endpoint}/api/umapayreq/${callbackUuid}?amount=${amount}&currencyCode=${currency}`,
+    getAuthOptions(sendingUsername, sendingUserPassword),
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch payreq: ${response.statusText}`);
@@ -167,12 +212,23 @@ const fetchPayreq = async (
   return payreq;
 };
 
-const completePayment = async (endpoint: string, callbackUuid: string) => {
+const completePayment = async (
+  endpoint: string,
+  callbackUuid: string,
+  sendingUsername: string | undefined,
+  sendingUserPassword: string | undefined,
+) => {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+  };
+  if (sendingUsername && sendingUserPassword) {
+    headers.Authorization = `Basic ${Buffer.from(
+      `${sendingUsername}:${sendingUserPassword}`,
+    ).toString("base64")}`;
+  }
   const response = await fetch(`${endpoint}/api/sendpayment/${callbackUuid}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
   });
   if (!response.ok) {
     throw new Error(`Failed to complete payment: ${response.statusText}`);
@@ -183,6 +239,23 @@ const completePayment = async (endpoint: string, callbackUuid: string) => {
   };
 
   return pay;
+};
+
+const getAuthOptions = (
+  sendingUsername: string | undefined,
+  sendingUserPassword: string | undefined,
+): RequestInit | undefined => {
+  if (!sendingUsername || !sendingUserPassword) {
+    return undefined;
+  }
+
+  return {
+    headers: {
+      Authorization: `Basic ${Buffer.from(
+        `${sendingUsername}:${sendingUserPassword}`,
+      ).toString("base64")}`,
+    },
+  };
 };
 
 (() => {
@@ -196,6 +269,16 @@ const completePayment = async (endpoint: string, callbackUuid: string) => {
     .option(
       "-e, --endpoint  <value>",
       "The base url where the vasp is running.",
+      undefined,
+    )
+    .option(
+      "-u, --sending-user  <value>",
+      "The user name of the sending user.",
+      undefined,
+    )
+    .option(
+      "-p, --sending-password  <value>",
+      "The password of the sending user if the sending vasp requires one.",
       undefined,
     )
     .action((options) => {

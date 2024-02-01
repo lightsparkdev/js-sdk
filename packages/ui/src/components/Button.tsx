@@ -2,12 +2,14 @@
 import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import type { ReactNode } from "react";
+import { uniqueId } from "lodash-es";
+import { Fragment, useRef, type ReactNode } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { colors, themeOr, type WithTheme } from "../styles/colors.js";
 import { getFocusOutline } from "../styles/common.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon.js";
+import { LightTooltip } from "./LightTooltip.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
@@ -39,6 +41,7 @@ export type ButtonProps<RoutesType extends string> = {
   type?: "button" | "submit";
   blue?: boolean;
   newTab?: boolean;
+  tooltipText?: string;
   zIndex?: number;
 };
 
@@ -56,6 +59,7 @@ type PaddingProps = {
   iconWidth?: number;
   text?: string | undefined;
   ghost: boolean;
+  isRound: boolean;
 };
 
 type BorderProps = {
@@ -98,13 +102,45 @@ function getBackgroundColor({
   return themeOr(colors.white, theme.c1Neutral)({ theme });
 }
 
-function getPaddingX({ size, ghost }: { size: ButtonSize; ghost?: boolean }) {
-  return ghost ? 0 : size === "lg" ? hPaddingPx : size === "md" ? 18 : 16;
+const paddingsY = {
+  lg: 14,
+  md: 9,
+  sm: 6,
+} as const;
+
+const roundPaddingsX = {
+  lg: 19,
+  md: 14,
+  sm: 10,
+} as const;
+
+const paddingsX = {
+  lg: 24,
+  md: 18,
+  sm: 16,
+} as const;
+
+function getPaddingX({
+  size,
+  ghost,
+  isRound,
+}: {
+  size: ButtonSize;
+  ghost?: boolean;
+  isRound: boolean;
+}) {
+  return ghost ? 0 : isRound ? roundPaddingsX[size] : paddingsX[size];
 }
 
-function getPadding({ iconWidth, size, ghost, iconSide }: PaddingProps) {
-  const paddingY = ghost ? 0 : size === "lg" ? 14 : size === "md" ? 9 : 6;
-  const paddingX = getPaddingX({ size, ghost });
+function getPadding({
+  iconWidth,
+  size,
+  ghost,
+  iconSide,
+  isRound,
+}: PaddingProps) {
+  const paddingY = ghost ? 0 : paddingsY[size];
+  const paddingX = getPaddingX({ size, ghost, isRound });
   const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
@@ -159,7 +195,9 @@ export function Button<RoutesType extends string>({
   blue = false,
   newTab = false,
   zIndex = undefined,
+  tooltipText,
 }: ButtonProps<RoutesType>) {
+  const tooltipId = useRef(uniqueId());
   const iconMarginRight = 6;
   const iconSize = size === "lg" ? 16 : 12;
   let currentIcon = null;
@@ -178,25 +216,33 @@ export function Button<RoutesType extends string>({
   }
 
   const content: ReactNode = (
-    <div
-      css={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {iconSide === "left" && currentIcon}
+    <Fragment>
       <div
+        {...(tooltipText ? { "data-tooltip-id": tooltipId.current } : {})}
         css={{
-          textOverflow: "ellipsis",
-          overflow: "hidden",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {text}
+        {iconSide === "left" && currentIcon}
+        <div
+          css={{
+            textOverflow: "ellipsis",
+            overflow: "hidden",
+          }}
+        >
+          {text}
+        </div>
+        {iconSide === "right" && currentIcon}
       </div>
-      {iconSide === "right" && currentIcon}
-    </div>
+      {tooltipText ? (
+        <LightTooltip id={tooltipId.current} content={tooltipText} />
+      ) : null}
+    </Fragment>
   );
+
+  const isSingleCharRoundButton = Boolean(text && text.length === 1 && !icon);
 
   const commonProps = {
     backgroundColor,
@@ -210,6 +256,7 @@ export function Button<RoutesType extends string>({
     fullWidth,
     blue,
     iconSide,
+    isRound: isSingleCharRoundButton,
     iconWidth: currentIcon ? iconSize + iconMarginRight : 0,
     isLoading: loading,
     disabled: disabled || loading,
@@ -255,9 +302,9 @@ type StyledButtonProps = {
   text?: string | undefined;
   zIndex?: number | undefined;
   iconSide?: IconSide | undefined;
+  isRound: boolean;
 };
 
-const hPaddingPx = 24;
 const buttonStyle = ({
   color,
   backgroundColor,
@@ -274,6 +321,7 @@ const buttonStyle = ({
   text,
   zIndex,
   iconSide,
+  isRound,
 }: StyledButtonProps & { theme: Theme }) => css`
   display: inline-flex;
   opacity: ${disabled && !isLoading ? 0.2 : 1};
@@ -310,8 +358,15 @@ const buttonStyle = ({
       primary,
       blue,
     })};
-    border-radius: 32px;
-    padding: ${getPadding({ size, iconWidth, text, ghost, iconSide })};
+    border-radius: ${isRound ? "100%" : "32px"};
+    padding: ${getPadding({
+      size,
+      iconWidth,
+      text,
+      ghost,
+      iconSide,
+      isRound,
+    })};
     color: ${getTextColor({ color, theme, primary, blue })};
     transition:
       background-color 0.2s ease-out,
@@ -335,7 +390,9 @@ interface ButtonIconProps {
 const ButtonIcon = styled.div<ButtonIconProps>`
   ${(props) => (props.ghost ? "" : "position: absolute;")}
   ${({ iconSide, ghost, text, size }) =>
-    `${iconSide}: ${ghost && text ? 0 : getPaddingX({ size, ghost })}px;`}
+    `${iconSide}: ${
+      ghost && text ? 0 : getPaddingX({ size, ghost, isRound: false })
+    }px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`
@@ -349,6 +406,6 @@ const ButtonHrefLink = styled.a<StyledButtonProps>`
 `;
 
 export const ButtonSelector = (prepend = "", append = "") =>
-  `${prepend}${select(StyledButton)}${append}, ${prepend}${select(
-    ButtonLink,
-  )}${append}, ${prepend}${select(ButtonHrefLink)}${append}`;
+  `${prepend}*:is(${select(StyledButton)}, ${select(ButtonLink)}, ${select(
+    ButtonHrefLink,
+  )})${append}`;

@@ -48,7 +48,10 @@ import { DeployWalletOutputFromJson } from "./objects/DeployWalletOutput.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import type IncomingPayment from "./objects/IncomingPayment.js";
-import { IncomingPaymentFromJson } from "./objects/IncomingPayment.js";
+import {
+  FRAGMENT as IncomingPaymentFragment,
+  IncomingPaymentFromJson,
+} from "./objects/IncomingPayment.js";
 import { InitializeWalletOutputFromJson } from "./objects/InitializeWalletOutput.js";
 import { InvoiceFromJson } from "./objects/Invoice.js";
 import { InvoiceDataFromJson } from "./objects/InvoiceData.js";
@@ -72,6 +75,15 @@ import { WithdrawalFeeEstimateOutputFromJson } from "./objects/WithdrawalFeeEsti
 import type WithdrawalMode from "./objects/WithdrawalMode.js";
 import type WithdrawalRequest from "./objects/WithdrawalRequest.js";
 import { WithdrawalRequestFromJson } from "./objects/WithdrawalRequest.js";
+
+function isOutgoingPayment(payment: unknown): payment is OutgoingPayment {
+  return Boolean(
+    payment &&
+      typeof payment === "object" &&
+      "typename" in payment &&
+      payment.typename === "OutgoingPayment",
+  );
+}
 
 const sdkVersion = packageJson.version;
 
@@ -542,10 +554,10 @@ class LightsparkClient {
     return paymentResult;
   }
 
-  private async awaitPaymentResult(
-    payment: OutgoingPayment,
+  public async awaitPaymentResult<T extends OutgoingPayment | IncomingPayment>(
+    payment: T,
     timeoutSecs: number = 60,
-  ): Promise<OutgoingPayment> {
+  ): Promise<T> {
     logger.trace(`awaitPaymentResult payment`, {
       paymentId: payment.id,
       paymentStatus: payment.status,
@@ -570,19 +582,26 @@ class LightsparkClient {
     const pollIntervalMs = 500;
     const ignoreErrors = false;
 
-    const paymentResult: OutgoingPayment = await pollUntil(
+    const isOutgoing = isOutgoingPayment(payment);
+    const paymentResult: T = await pollUntil(
       () => {
         return this.executeRawQuery({
           queryPayload: `
-              query PaymentStatusQuery {
-                entity(id: "${payment.id}") {
-                  ...OutgoingPaymentFragment
-                }
+          query ${isOutgoing ? "Outgoing" : "Incoming"}PaymentStatusQuery {
+            entity(id: "${payment.id}") {
+              ...${
+                isOutgoing
+                  ? "OutgoingPaymentFragment"
+                  : "IncomingPaymentFragment"
               }
-              ${OutgoingPaymentFragment}
-            `,
+            }
+          }
+          ${isOutgoing ? OutgoingPaymentFragment : IncomingPaymentFragment}
+        `,
           constructObject: (responseJson: any) => {
-            return OutgoingPaymentFromJson(responseJson.entity);
+            return isOutgoing
+              ? OutgoingPaymentFromJson(responseJson.entity)
+              : IncomingPaymentFromJson(responseJson.entity);
           },
         });
       },
@@ -591,13 +610,13 @@ class LightsparkClient {
         if (current && completionStatuses.includes(current.status)) {
           return {
             stopPolling: true,
-            value: current,
+            value: current as T,
           };
         }
         return response;
       },
-      pollIntervalMs,
       (timeoutSecs * 1000) / pollIntervalMs,
+      pollIntervalMs,
       ignoreErrors,
       () => timeoutError,
     );

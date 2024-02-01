@@ -1,8 +1,8 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
-import { themeOr, type ThemeProp, type WithTheme } from "./colors.js";
-import { subtext } from "./common.js";
+import { colors, themeOr, type ThemeProp, type WithTheme } from "./colors.js";
+import { standardBorderRadius, subtext } from "./common.js";
 import { z } from "./z-index.js";
 
 export const maxFieldWidth = "100%";
@@ -16,6 +16,29 @@ export const formButtonTopMarginStyle = css`
 
 export const standardBorderColor = ({ theme }: ThemeProp) => css`
   border-color: ${themeOr(theme.c1Neutral, theme.mcNeutral)({ theme })};
+`;
+export const inputBlockStyle = ({
+  theme,
+  hasValue,
+  hasError,
+}: WithTheme<{ hasValue: boolean; hasError: boolean }>) => css`
+  ${subtext({ theme })}
+  ${standardBorderColor({ theme })}
+  ${standardBorderRadius(8)}
+  background-color: ${theme.bg};
+  border-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  padding: 52.5px;
+  ${hasError
+    ? `border-style: solid; border-color: ${colors.danger}; border-width: 2px;`
+    : hasValue
+    ? `border-style: solid; border-color: ${theme.info};`
+    : `border-style: dashed;`}
 `;
 
 export const textInputPlaceholderColor = ({ theme }: ThemeProp) =>

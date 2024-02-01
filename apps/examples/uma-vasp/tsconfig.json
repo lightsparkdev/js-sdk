@@ -1,6 +1,9 @@
 {
   "extends": "../../../packages/tsconfig/ts-node-app.json",
   "compilerOptions": {
-    "types": ["node", "jest"]
-  }
+    "types": ["node", "jest"],
+    "outDir": "dist",
+  },
+  "exclude": ["test", "node_modules", "dist"],
+  "include": ["src/**/*", "package.json", "jest.config.ts"]
 }

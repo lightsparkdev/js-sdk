@@ -24,8 +24,9 @@
     "./router": "./dist/router.js"
   },
   "scripts": {
-    "build": "yarn tsc && tsup --dts",
-    "build:watch": "yarn build --watch --clean=false",
+    "build-tsup": "tsup --dts",
+    "build": "yarn tsc && yarn build-tsup",
+    "build:watch": "yarn build-tsup --watch --clean=false",
     "circular-deps": "madge --circular --extensions ts,tsx .",
     "clean": "rm -rf .turbo",
     "format:fix": "prettier . --write",

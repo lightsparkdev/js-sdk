@@ -43,6 +43,7 @@
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
     "octokit": "^3.1.2",
+    "react-datetime-picker": "^5.6.0",
     "rehype-autolink-headings": "^7.0.0",
     "ts-prune": "^0.10.3",
     "turbo": "1.10.16",

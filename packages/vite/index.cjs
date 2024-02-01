@@ -48,6 +48,11 @@ module.exports.buildConfig = ({
           changeOrigin: true,
           ws: true,
         },
+        "/graphql/custody": {
+          target: "http://127.0.0.1:5000",
+          changeOrigin: true,
+          ws: true,
+        },
         "/graphql/frontend": {
           target: "http://127.0.0.1:5000",
           changeOrigin: true,

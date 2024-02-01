@@ -4,6 +4,8 @@ declare global {
 
 /* window props that may be considered common to any Lightspark web app: */
 export interface LightsparkWindow extends Window {
+  Cypress?: unknown;
+  lightsparkRouter?: unknown;
   dev?: {
     [key: string]: unknown;
   };
