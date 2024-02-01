@@ -5,7 +5,7 @@ import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { Button, type ButtonProps } from "./Button.js";
 
 export type ButtonRowProps<RoutesType extends string> = {
-  buttons: ButtonProps<RoutesType>[];
+  buttons: (ButtonProps<RoutesType> | "divider")[];
   smSticky?: boolean;
   className?: string;
   headerHeight?: number;
@@ -20,9 +20,13 @@ export function ButtonRow<RoutesType extends string>({
   return (
     <ButtonRowContainer smSticky={smSticky} headerHeight={headerHeight}>
       <StyledButtonRow className={className}>
-        {buttons.map((button, idx) => (
-          <Button<RoutesType> key={idx} {...button} />
-        ))}
+        {buttons.map((button, idx) =>
+          button === "divider" ? (
+            <ButtonRowDivider key={idx} />
+          ) : (
+            <Button<RoutesType> key={idx} {...button} />
+          ),
+        )}
       </StyledButtonRow>
     </ButtonRowContainer>
   );
@@ -65,6 +69,12 @@ export const ButtonRowContainer = styled.div<{
     )}
 `;
 
+const ButtonRowDivider = styled.div`
+  border-left: 1px #d9d9d9 solid;
+  margin-left: 16px;
+  padding-left: 16px;
+`;
+
 export const StyledButtonRow = styled.div`
   ${overflowAutoWithoutScrollbars}
   background: ${({ theme }) => theme.bg};
@@ -75,6 +85,11 @@ export const StyledButtonRow = styled.div`
   & button:not(:first-of-type),
   & a:not(:first-of-type) {
     margin-left: 8px;
+  }
+
+  & ${ButtonRowDivider} + button,
+  & ${ButtonRowDivider} + a {
+    margin-left: 0;
   }
 
   ${bp.sm(`
