@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { bp } from "../styles/breakpoints.js";
-import { standardContentInsetSmPx } from "../styles/common.js";
+import { standardContentInset } from "../styles/common.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { Button, type ButtonProps } from "./Button.js";
 
@@ -48,9 +48,9 @@ export const ButtonRowContainer = styled.div<{
             position: sticky;
             top: ${headerHeight}px;
             margin-top: 24px;
-            margin-left: -${standardContentInsetSmPx}px;
-            width: calc(100% + ${standardContentInsetSmPx * 2}px);
-            max-width: calc(100% + ${standardContentInsetSmPx * 2}px);
+            margin-left: -${standardContentInset.smPx}px;
+            width: calc(100% + ${standardContentInset.smPx * 2}px);
+            max-width: calc(100% + ${standardContentInset.smPx * 2}px);
             z-index: 2;`
             : `position: relative;`
         }

@@ -8,9 +8,8 @@ import { useLiveRef } from "../hooks/useLiveRef.js";
 import { Breakpoints, bp, useBreakpoints } from "../styles/breakpoints.js";
 import {
   overlaySurface,
-  smContentInset,
   standardBorderRadius,
-  standardContentInsetSmPx,
+  standardContentInset,
   standardFocusOutline,
 } from "../styles/common.js";
 import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
@@ -288,7 +287,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.text};
-  padding-top: ${standardContentInsetSmPx}px;
+  padding-top: ${standardContentInset.smPx}px;
 `;
 
 const contentTopMarginPx = 24;
@@ -324,7 +323,7 @@ const ModalContent = styled.div<{
   ghost?: boolean | undefined;
 }>`
   ${overflowAutoWithoutScrollbars}
-  ${smContentInset}
+  ${standardContentInset.smCSS}
   ${standardBorderRadius(16)}
   ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;
