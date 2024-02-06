@@ -61,7 +61,7 @@ export function Modal({
   submitDisabled,
   submitLoading,
   submitText,
-  cancelText,
+  cancelText = "Cancel",
   firstFocusRef,
   nonDismissable = false,
   autoFocus = true,
@@ -219,7 +219,7 @@ export function Modal({
                   <Button
                     disabled={cancelDisabled}
                     onClick={onClickCancel}
-                    text={cancelText ?? "Cancel"}
+                    text={cancelText}
                   />
                 )}
                 {onSubmit && (
@@ -232,7 +232,7 @@ export function Modal({
                   />
                 )}
                 {isSm && !cancelHidden && (
-                  <Button onClick={onClose} text={cancelText ?? "Cancel"} />
+                  <Button onClick={onClose} text={cancelText} />
                 )}
               </ModalButtonRow>
             ) : null}
