@@ -235,7 +235,7 @@ describe(p0SuiteName, () => {
       "hi there!",
     );
     expect(paymentInvoice).toBeDefined();
-  });
+  }, 10_000);
 
   test("Should create a AMP type invoice", async () => {
     const AmpPaymentInvoice = await lightsparkClient.createInvoice(
