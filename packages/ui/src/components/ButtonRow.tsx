@@ -93,6 +93,6 @@ export const StyledButtonRow = styled.div`
   }
 
   ${bp.sm(`
-    padding: 12px;
+    padding: ${standardContentInset.smPx}px;
   `)}
 `;

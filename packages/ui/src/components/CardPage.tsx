@@ -144,11 +144,12 @@ const CardPageContainer = styled.div<{
   z-index: ${z.card};
 
   ${({ minContentHeight }) => `
-  min-height: ${
-    minContentHeight !== undefined && minContentHeight !== null
-      ? `${minContentHeight}px`
-      : "250px"
-  };`}
+    min-height: ${
+      minContentHeight !== undefined && minContentHeight !== null
+        ? `${minContentHeight}px`
+        : "250px"
+    };
+  `}
 
   ${bp.sm(`
     width: 100% !important;
@@ -159,15 +160,7 @@ const CardPageContainer = styled.div<{
   }
 
   & ${CardPageFullContent}, & ${CardPageFullWidth} {
-    & > * {
-      padding: ${vCardPaddingPx}px ${standardContentInset.lgPx}px;
-      ${bp.sm(`padding: 0;`)}
-    }
-
-    margin-top: -${vCardPaddingPx}px;
-
     ${bp.sm(`
-      margin-top: 0;
       width: calc(100% + ${standardContentInset.smPx * 2}px);
       margin-left: -${standardContentInset.smPx}px;
     `)}
@@ -175,15 +168,26 @@ const CardPageContainer = styled.div<{
     ${bp.minSmMaxLg(`
       width: calc(100% + ${standardContentInset.minSmMaxLgPx * 2}px);
       margin-left: -${standardContentInset.minSmMaxLgPx}px;
-      & > * {
-        padding: ${vCardPaddingPx}px ${standardContentInset.minSmMaxLgPx}px;
-      }
     `)}
 
     ${bp.lg(`
       width: calc(100% + ${standardContentInset.lgPx * 2}px);
       margin-left: -${standardContentInset.lgPx}px;
     `)}
+  }
+
+  & ${CardPageFullContent} {
+    & > * {
+      padding-top: ${vCardPaddingPx}px;
+      padding-bottom: ${vCardPaddingPx}px;
+      ${bp.sm(`
+        padding-top: 0;
+        padding-bottom: 0;
+      `)}
+    }
+
+    margin-top: -${vCardPaddingPx}px;
+    ${bp.sm(`margin-top: 0;`)}
   }
 
   ${bp.minSm(`

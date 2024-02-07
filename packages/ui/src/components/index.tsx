@@ -14,6 +14,7 @@ export {
   CardPage,
   CardPageContent,
   CardPageFullContent,
+  CardPageFullWidth,
   CardPageRightContentInner,
   CardPageSubtitle,
 } from "./CardPage.js";
