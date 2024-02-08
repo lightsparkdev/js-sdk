@@ -61,8 +61,8 @@ export const textInputStyle = ({
   paddingLeftPx,
   paddingRightPx,
 }: WithTheme<{
-  disabled: boolean;
-  hasError: boolean;
+  disabled?: boolean | undefined;
+  hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
 }>) => css`

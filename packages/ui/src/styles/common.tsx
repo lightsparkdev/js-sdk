@@ -15,9 +15,50 @@ export const rootFontSizeRems = rootFontSizePx / 16;
 export const standardLineHeightEms = 1.21;
 
 export const headingContentMarginPx = 30;
-export const standardContentInsetPx = 32;
-export const standardContentInsetMdPx = 24;
-export const standardContentInsetSmPx = 16;
+
+function buildStandardContentInset(
+  smPx: number,
+  minSmMaxLgPx: number,
+  lgPx: number,
+) {
+  const smCSS = css`
+    ${bp.sm(`
+      margin-left: auto;
+      margin-right: auto;
+      width: calc(100% - ${smPx * 2}px);
+    `)}
+  `;
+  const minSmMaxLgCSS = css`
+    ${bp.minSmMaxLg(`
+      margin-left: auto;
+      margin-right: auto;
+      width: calc(100% - ${minSmMaxLgPx * 2}px);
+    `)}
+  `;
+  const lgCSS = css`
+    ${bp.lg(`
+      margin-left: auto;
+      margin-right: auto;
+      width: calc(100% - ${lgPx * 2}px);
+      max-width: 1280px;
+    `)}
+  `;
+  return {
+    smPx,
+    minSmMaxLgPx,
+    lgPx,
+    smCSS,
+    minSmMaxLgCSS,
+    lgCSS,
+    css: css`
+      ${lgCSS}
+      ${smCSS}
+      ${minSmMaxLgCSS}
+    `,
+  };
+}
+
+export const standardContentInset = buildStandardContentInset(16, 24, 32);
 
 const standardBorderRadiusPx = [0, 4, 8, 12, 16] as const;
 type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
@@ -32,30 +73,6 @@ export const standardBorderRadius = (radius: BorderRadiusArg) => {
     border-radius: ${borderRadiusPx};
   `;
 };
-
-export const smContentInset = css`
-  ${bp.sm(`
-    margin-left: auto;
-    margin-right: auto;
-    width: calc(100% - ${standardContentInsetSmPx * 2}px);
-  `)}
-`;
-
-export const minSmMaxLgContentInset = css`
-  ${bp.minSmMaxLg(`
-    width: calc(100% - ${standardContentInsetMdPx * 2}px);
-  `)}
-`;
-
-export const standardContentInset = css`
-  margin-left: auto;
-  margin-right: auto;
-  width: calc(100% - ${standardContentInsetPx * 2}px);
-  max-width: 1280px;
-
-  ${smContentInset}
-  ${minSmMaxLgContentInset}
-`;
 
 export const standardCardShadow = css`
   box-shadow:

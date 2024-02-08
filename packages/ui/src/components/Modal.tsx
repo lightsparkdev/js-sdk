@@ -8,9 +8,8 @@ import { useLiveRef } from "../hooks/useLiveRef.js";
 import { Breakpoints, bp, useBreakpoints } from "../styles/breakpoints.js";
 import {
   overlaySurface,
-  smContentInset,
   standardBorderRadius,
-  standardContentInsetSmPx,
+  standardContentInset,
   standardFocusOutline,
 } from "../styles/common.js";
 import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
@@ -62,7 +61,7 @@ export function Modal({
   submitDisabled,
   submitLoading,
   submitText,
-  cancelText,
+  cancelText = "Cancel",
   firstFocusRef,
   nonDismissable = false,
   autoFocus = true,
@@ -214,24 +213,26 @@ export function Modal({
               <Description>{formattedDescription}</Description>
             ) : null}
             <div>{children}</div>
-            {onSubmit ? (
+            {onSubmit || onCancel ? (
               <ModalButtonRow>
                 {!isSm && !cancelHidden && (
                   <Button
                     disabled={cancelDisabled}
                     onClick={onClickCancel}
-                    text={cancelText ?? "Cancel"}
+                    text={cancelText}
                   />
                 )}
-                <Button
-                  disabled={submitDisabled}
-                  primary
-                  text={submitText ?? "Continue"}
-                  loading={submitLoading}
-                  type="submit"
-                />
+                {onSubmit && (
+                  <Button
+                    disabled={submitDisabled}
+                    primary
+                    text={submitText ?? "Continue"}
+                    loading={submitLoading}
+                    type="submit"
+                  />
+                )}
                 {isSm && !cancelHidden && (
-                  <Button onClick={onClose} text="Cancel" />
+                  <Button onClick={onClose} text={cancelText} />
                 )}
               </ModalButtonRow>
             ) : null}
@@ -286,7 +287,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.text};
-  padding-top: ${standardContentInsetSmPx}px;
+  padding-top: ${standardContentInset.smPx}px;
 `;
 
 const contentTopMarginPx = 24;
@@ -301,6 +302,7 @@ const Description = styled.div`
 const ModalButtonRow = styled.div`
   margin-top: 32px;
   ${bp.minSm(`display: flex;`)}
+  gap: 10px;
 
   button {
     width: 50%;
@@ -313,9 +315,6 @@ const ModalButtonRow = styled.div`
     ${bp.sm(`
       margin-top: 16px;
     `)}
-    ${bp.minSm(`
-      margin-left: 10px;
-    `)}
   }
 `;
 
@@ -324,7 +323,7 @@ const ModalContent = styled.div<{
   ghost?: boolean | undefined;
 }>`
   ${overflowAutoWithoutScrollbars}
-  ${smContentInset}
+  ${standardContentInset.smCSS}
   ${standardBorderRadius(16)}
   ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;

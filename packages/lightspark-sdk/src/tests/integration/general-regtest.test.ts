@@ -111,12 +111,12 @@ async function getRegtestNode() {
   return regtestNode;
 }
 
-const createTestModePayment = async () => {
+const createTestModePayment = async (invoiceMemo = "hi there!") => {
   const regtestNodeId = getRegtestNodeId();
   const testInvoice = await lightsparkClient.createInvoice(
     regtestNodeId,
     10_000,
-    "hi there!",
+    invoiceMemo,
   );
 
   if (!testInvoice) {
@@ -228,20 +228,20 @@ describe(initSuiteName, () => {
 });
 
 describe(p0SuiteName, () => {
-  test("Should create a normal payment invoice", async () => {
+  test("Should create a standard payment invoice", async () => {
     paymentInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
       10_000,
-      "hi there!",
+      "Standard payment invoice memo",
     );
     expect(paymentInvoice).toBeDefined();
-  });
+  }, 10_000);
 
   test("Should create a AMP type invoice", async () => {
     const AmpPaymentInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
       10_000,
-      "hi there!",
+      "AMP payment invoice memo",
       InvoiceType.AMP,
     );
     expect(AmpPaymentInvoice).toBeDefined();
@@ -252,7 +252,7 @@ describe(p0SuiteName, () => {
       await lightsparkClient.createInvoice(
         getRegtestNodeId(),
         10_000,
-        "hi there!",
+        "Invoice with custom expiration memo",
         InvoiceType.STANDARD,
         INVOICE_EXPIRY,
       );
@@ -263,7 +263,7 @@ describe(p0SuiteName, () => {
     const AnyPaymentAmountInvoice = await lightsparkClient.createInvoice(
       getRegtestNodeId(),
       0,
-      "hi there!",
+      "Any amount invoice memo",
       InvoiceType.STANDARD,
       INVOICE_EXPIRY,
     );
@@ -275,7 +275,7 @@ describe(p0SuiteName, () => {
       unauthorizedLightsparkClient.createInvoice(
         getRegtestNodeId(),
         0,
-        "hi there!",
+        "Unauthorized invoice memo",
       ),
     ).rejects.toThrowError();
   });
@@ -353,7 +353,7 @@ describe(p0SuiteName, () => {
     const testInvoice = await lightsparkClient.createTestModeInvoice(
       getRegtestNodeId(),
       round(satsToFund / 4), // should be some small fraction of the sats we know we have from earlier funding test
-      "hi there!",
+      "Attempt to pay test invoice memo",
     );
 
     if (!testInvoice) {
@@ -372,7 +372,9 @@ describe(p0SuiteName, () => {
   test(
     "Should open just-in-time channel from inbound payment",
     async () => {
-      const payment = await createTestModePayment();
+      const payment = await createTestModePayment(
+        "Just-in-time channel payment memo",
+      );
       const { status } = await lightsparkClient.waitForTransactionComplete(
         payment.id,
         TRANSACTION_WAIT_TIME,
@@ -404,10 +406,10 @@ describe(p1SuiteName, () => {
   );
 
   test(
-    "Should listen current payment requests",
+    "Should list current payment requests",
     async () => {
       for (let i = 0; i < PAGINATION_STEP; i++) {
-        await createTestModePayment();
+        await createTestModePayment(`Recent payment request ${i} memo`);
       }
       const requests = await lightsparkClient.getRecentPaymentRequests(
         getRegtestNodeId(),
@@ -489,7 +491,7 @@ describe(p1SuiteName, () => {
     const umaInvoice = await lightsparkClient.createUmaInvoice(
       getRegtestNodeId(),
       10_000,
-      "hi there!",
+      "UMA invoice memo",
     );
     expect(umaInvoice).toBeDefined();
     const cancelledInvoice = await lightsparkClient.cancelInvoice(
@@ -500,12 +502,12 @@ describe(p1SuiteName, () => {
   });
 
   test(
-    "Should create STANDARD a test mode invoice",
+    "Should create standard a test mode invoice",
     async () => {
       testModeInvoices.withMemo = await lightsparkClient.createTestModeInvoice(
         getRegtestNodeId(),
         10_000,
-        "hi there!",
+        "Standard test mode invoice memo",
       );
       expect(testModeInvoices.withMemo).not.toBeNull();
     },
@@ -544,7 +546,7 @@ describe(p1SuiteName, () => {
       const invoiceForTestPayment = await lightsparkClient.createInvoice(
         regtestNodeId,
         10_000,
-        "hi there!",
+        "Create test mode payment invoice memo",
       );
 
       if (!invoiceForTestPayment) {
