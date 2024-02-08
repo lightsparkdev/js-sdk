@@ -56,11 +56,13 @@ export const textInputBorderColorFocused = ({ theme }: ThemeProp) =>
 
 export const textInputStyle = ({
   theme,
+  active,
   disabled,
   hasError,
   paddingLeftPx,
   paddingRightPx,
 }: WithTheme<{
+  active?: boolean | undefined;
   disabled?: boolean | undefined;
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
