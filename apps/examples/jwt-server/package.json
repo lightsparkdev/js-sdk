@@ -1,5 +1,6 @@
 {
   "name": "@lightsparkdev/jwt-server",
+  "private": true,
   "scripts": {
     "start": "./start.sh",
     "lint:fix": "eslint --fix .",
@@ -8,9 +9,6 @@
     "ngrok": "ngrok http 3000"
   },
   "type": "module",
-  "engines": {
-    "node": "18"
-  },
   "main": "dist/index.js",
   "dependencies": {
     "@types/cors": "^2.8.17",
@@ -34,5 +32,7 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.0"
   },
-  "private": true
+  "engines": {
+    "node": ">=18"
+  }
 }

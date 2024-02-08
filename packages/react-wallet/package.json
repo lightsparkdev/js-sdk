@@ -22,9 +22,6 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "engines": {
-    "node": ">=18.17.0"
-  },
   "browser": {
     "crypto": false
   },
@@ -73,5 +70,8 @@
   "peerDependencies": {
     "@types/react": "*",
     "react": "*"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

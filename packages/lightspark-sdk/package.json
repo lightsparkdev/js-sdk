@@ -18,9 +18,6 @@
   "bugs": {
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
-  "engines": {
-    "node": ">=18.17.0"
-  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -116,5 +113,8 @@
     "tsup": "^7.2.0",
     "typedoc": "^0.24.7",
     "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

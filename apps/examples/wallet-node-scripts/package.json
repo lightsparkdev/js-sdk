@@ -1,9 +1,9 @@
 {
   "name": "@lightsparkdev/wallet-node-scripts",
   "version": "1.0.23",
+  "private": true,
   "description": "Example node scripts for the lightspark js sdk",
   "main": "index.js",
-  "private": true,
   "scripts": {
     "test": "echo \"TODO\""
   },
@@ -20,5 +20,8 @@
     "@lightsparkdev/wallet-sdk": "0.12.5",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

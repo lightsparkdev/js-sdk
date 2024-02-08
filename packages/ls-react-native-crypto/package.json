@@ -57,5 +57,8 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
