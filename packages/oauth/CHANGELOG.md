@@ -1,5 +1,13 @@
 # @lightsparkdev/oauth
 
+## 0.1.39
+
+### Patch Changes
+
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+- Updated dependencies [062bf8a]
+  - @lightsparkdev/core@1.0.18
+
 ## 0.1.38
 
 ### Patch Changes

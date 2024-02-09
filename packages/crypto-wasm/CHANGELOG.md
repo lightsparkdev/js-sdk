@@ -1,5 +1,11 @@
 # @lightsparkdev/crypto-wasm
 
+## 0.1.3
+
+### Patch Changes
+
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+
 ## 0.1.2
 
 ### Patch Changes

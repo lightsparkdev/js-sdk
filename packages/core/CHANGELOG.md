@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.18
+
+### Patch Changes
+
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+
 ## 1.0.17
 
 ### Patch Changes
