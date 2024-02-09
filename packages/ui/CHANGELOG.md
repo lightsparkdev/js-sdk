@@ -1,5 +1,18 @@
 # @lightsparkdev/ui
 
+## 0.0.9
+
+### Patch Changes
+
+- 79f9f9f: - Fix ButtonRow inset
+  - Add CardPage
+  - Add GradientCardHeader
+  - Default cancelText value for Modal and simplify inset refs
+- 062bf8a: - Add active prop to textInputStyle for indicating active style in response to external factors
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+- Updated dependencies [062bf8a]
+  - @lightsparkdev/core@1.0.18
+
 ## 0.0.8
 
 ### Patch Changes

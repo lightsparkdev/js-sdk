@@ -1,5 +1,16 @@
 # @lightsparkdev/streaming-wallet-extension
 
+## 1.0.53
+
+### Patch Changes
+
+- Updated dependencies [79f9f9f]
+- Updated dependencies [062bf8a]
+- Updated dependencies [062bf8a]
+  - @lightsparkdev/ui@0.0.9
+  - @lightsparkdev/lightspark-sdk@1.5.7
+  - @lightsparkdev/core@1.0.18
+
 ## 1.0.52
 
 ### Patch Changes

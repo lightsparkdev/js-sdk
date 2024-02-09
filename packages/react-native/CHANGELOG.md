@@ -1,5 +1,15 @@
 # @lightsparkdev/react-native
 
+## 0.3.6
+
+### Patch Changes
+
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+- Updated dependencies [062bf8a]
+  - @lightsparkdev/ls-react-native-crypto@0.2.11
+  - @lightsparkdev/wallet-sdk@0.12.6
+  - @lightsparkdev/core@1.0.18
+
 ## 0.3.5
 
 ### Patch Changes
