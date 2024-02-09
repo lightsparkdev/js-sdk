@@ -2,15 +2,14 @@
 
 import { KeyOrAlias } from "@lightsparkdev/core";
 import {
-  CurrencyAmount,
-  getTransactionQuery,
   InMemoryTokenStorage,
   LightsparkClient,
+  getTransactionQuery,
+  type CurrencyAmount,
 } from "@lightsparkdev/wallet-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/wallet-sdk/env";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
-
-import { getCredentialsFromEnvOrThrow } from "./authHelpers.js";
 
 day.extend(utc);
 
@@ -20,17 +19,17 @@ const client = new LightsparkClient(undefined, credentials.baseUrl);
 await client.loginWithJWT(
   credentials.accountId,
   credentials.jwt,
-  new InMemoryTokenStorage()
+  new InMemoryTokenStorage(),
 );
 
 // Get some fee estimates for Bitcoin (L1) transactions
 
 const feeEstimate = await client.getBitcoinFeeEstimate();
 console.log(
-  `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`
+  `Fees for a fast transaction ${feeEstimate.feeFast.preferredCurrencyValueApprox} ${feeEstimate.feeFast.preferredCurrencyUnit}.`,
 );
 console.log(
-  `Fees for a cheap transaction ${feeEstimate.feeMin.preferredCurrencyValueApprox} ${feeEstimate.feeMin.preferredCurrencyUnit}.\n`
+  `Fees for a cheap transaction ${feeEstimate.feeMin.preferredCurrencyValueApprox} ${feeEstimate.feeMin.preferredCurrencyUnit}.\n`,
 );
 
 // Get your current wallet.
@@ -43,16 +42,16 @@ console.log(`Current wallet: ${JSON.stringify(wallet, undefined, 2)}.\n`);
 
 // List the payment requests for our wallet.
 
-let paymentRequestsConnection = await wallet.getPaymentRequests(
+const paymentRequestsConnection = await wallet.getPaymentRequests(
   client,
   100,
   undefined,
   undefined,
-  undefined
+  undefined,
 );
 
 console.log(
-  `There is a total of ${paymentRequestsConnection.count} payment request(s) on this wallet.`
+  `There is a total of ${paymentRequestsConnection.count} payment request(s) on this wallet.`,
 );
 
 // List the transactions for our wallet.
@@ -62,17 +61,17 @@ let transactionsConnection = await wallet.getTransactions(
   100,
   undefined,
   undefined,
-  undefined
+  undefined,
 );
 
 console.log(
-  `There is a total of ${transactionsConnection.count} transaction(s) on this wallet:`
+  `There is a total of ${transactionsConnection.count} transaction(s) on this wallet:`,
 );
 for (const transaction of transactionsConnection.entities) {
   console.log(
     `    - ${transaction.typename} at ${transaction.createdAt}:
     ${transaction.amount.preferredCurrencyValueApprox} ${transaction.amount.preferredCurrencyUnit}
-    (${transaction.status})`
+    (${transaction.status})`,
   );
 
   let fees;
@@ -86,7 +85,7 @@ for (const transaction of transactionsConnection.entities) {
     fees = (transaction as unknown as { fees: CurrencyAmount }).fees;
     if (fees !== undefined)
       console.log(
-        `        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`
+        `        Paid ${fees.preferredCurrencyValueApprox} ${fees.preferredCurrencyUnit} in fees.`,
       );
   }
 }
@@ -105,11 +104,11 @@ while (hasNext && iterations < 30) {
     after,
     undefined,
     undefined,
-    undefined
+    undefined,
   );
   const num = transactionsConnection.entities.length;
   console.log(
-    `We got ${num} transactions for the page (iteration #${iterations})`
+    `We got ${num} transactions for the page (iteration #${iterations})`,
   );
   if (transactionsConnection.pageInfo.hasNextPage) {
     hasNext = true;
@@ -130,16 +129,16 @@ const lastDayTransactionsConnection = await wallet.getTransactions(
   undefined,
   undefined,
   day().utc().subtract(1, "day").format(),
-  undefined
+  undefined,
 );
 console.log(
-  `We had ${lastDayTransactionsConnection.count} transactions in the past 24 hours.`
+  `We had ${lastDayTransactionsConnection.count} transactions in the past 24 hours.`,
 );
 
 // Get details for a transaction
 if (transactionsConnection.entities.length > 0) {
   const transaction = await client.executeRawQuery(
-    getTransactionQuery(transactionsConnection.entities[0].id)
+    getTransactionQuery(transactionsConnection.entities[0].id),
   );
   console.log("Details of transaction");
   console.log(JSON.stringify(transaction, undefined, 2));
@@ -156,13 +155,13 @@ console.log(`Invoice created: ${JSON.stringify(invoice, undefined, 2)}`);
 
 // Decode the payment request
 const decodedInvoice = await client.decodeInvoice(
-  invoice.encodedPaymentRequest
+  invoice.data.encodedPaymentRequest,
 );
 if (!decodedInvoice) {
   throw new Error("Unable to decode the invoice.");
 }
 console.log(
-  `Decoded payment request: ${JSON.stringify(decodedInvoice, undefined, 2)}`
+  `Decoded payment request: ${JSON.stringify(decodedInvoice, undefined, 2)}`,
 );
 
 // Let's send the payment.
@@ -171,7 +170,7 @@ console.log(
 const signingPrivateKey = credentials.privKey;
 if (!signingPrivateKey) {
   throw new Error(
-    "Missing signing key in the environment. Please set LIGHTSPARK_WALLET_PUB_KEY and LIGHTSPARK_WALLET_PRIV_KEY."
+    "Missing signing key in the environment. Please set LIGHTSPARK_WALLET_PUB_KEY and LIGHTSPARK_WALLET_PRIV_KEY.",
   );
 }
 await client.loadWalletSigningKey(KeyOrAlias.key(signingPrivateKey));
@@ -184,7 +183,7 @@ const ampInvoice =
 const payment = await client.payInvoiceAndAwaitResult(
   ampInvoice,
   1_000_000,
-  100_000
+  100_000,
 );
 console.log(`Payment done with status= ${payment.status}, ID = ${payment.id}`);
 console.log("");

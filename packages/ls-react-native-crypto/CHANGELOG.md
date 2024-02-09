@@ -1,11 +1,5 @@
 # @lightsparkdev/ls-react-native-crypto
 
-## 0.2.11
-
-### Patch Changes
-
-- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
-
 ## 0.2.10
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/eslint-config",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "devDependencies": {
     "@babel/core": "^7.21.4",

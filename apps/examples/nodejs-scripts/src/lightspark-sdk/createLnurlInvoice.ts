@@ -4,9 +4,9 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
-  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 import { Command } from "commander";
 
 const main = async (program: Command) => {
@@ -19,9 +19,18 @@ const main = async (program: Command) => {
     credentials.baseUrl,
   );
   const account = await client.getCurrentAccount();
+
+  if (!account) {
+    throw new Error("Unable to get account");
+  }
+
   const nodeId = (await account.getNodes(client)).entities.find(
     (node) => node.bitcoinNetwork === BitcoinNetwork.REGTEST,
   )?.id;
+  if (!nodeId) {
+    throw new Error("Unable to find regtest node");
+  }
+
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
   const metadata = [
@@ -33,6 +42,10 @@ const main = async (program: Command) => {
     options.amount * 1000,
     JSON.stringify(metadata),
   );
+  if (!invoice) {
+    throw new Error("Unable to create invoice");
+  }
+
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
   console.log("Simulating payment...");
   const incomingPayment = await client.createTestModePayment(

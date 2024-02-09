@@ -4,9 +4,9 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
-  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 
 const account = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(

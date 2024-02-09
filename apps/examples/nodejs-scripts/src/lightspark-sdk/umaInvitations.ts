@@ -5,17 +5,7 @@ import {
   LightsparkClient,
   RegionCode,
 } from "@lightsparkdev/lightspark-sdk";
-
-import fetch, { Headers, Request, Response } from "node-fetch";
-import { getCredentialsFromEnvOrThrow } from "./internalAuthHelpers";
-
-// Need to polyfill fetch if running on node 16.
-if (!globalThis.fetch) {
-  globalThis.fetch = fetch;
-  globalThis.Headers = Headers;
-  globalThis.Request = Request;
-  globalThis.Response = Response;
-}
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 
 // Let's start by creating a client
 const credentials = getCredentialsFromEnvOrThrow();
@@ -28,6 +18,9 @@ const client = new LightsparkClient(
 );
 
 const invitation = await client.createUmaInvitation("bob@vasp1.com");
+if (!invitation) {
+  throw new Error("Unable to create invitation");
+}
 
 console.log(`Invitation: ${JSON.stringify(invitation, null, 2)}`);
 
@@ -42,6 +35,10 @@ const claimedInvitation = await client.claimUmaInvitation(
   "alice@vasp2.com",
 );
 
+if (!claimedInvitation) {
+  throw new Error("Unable to claim invitation");
+}
+
 console.log(
   `Claimed invitation: ${JSON.stringify(claimedInvitation, null, 2)}`,
 );
@@ -53,6 +50,10 @@ const incentiveInvite = await client.createUmaInvitationWithIncentives(
   "+13105552234",
   RegionCode.US,
 );
+
+if (!incentiveInvite) {
+  throw new Error("Unable to create incentive invite");
+}
 
 console.log(`Incentive invite: ${JSON.stringify(incentiveInvite, null, 2)}`);
 

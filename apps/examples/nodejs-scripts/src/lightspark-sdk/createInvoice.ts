@@ -3,11 +3,36 @@
 
 import {
   AccountTokenAuthProvider,
-  getCredentialsFromEnvOrThrow,
   InvoiceType,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 import { Command } from "commander";
+import { isObject } from "lodash-es";
+
+function validateOptions(options: unknown) {
+  if (!isObject(options)) {
+    throw new Error("Options must be an object");
+  }
+
+  const validOpts = {
+    amount: 0,
+    memo: "",
+    amp: false,
+  };
+
+  if ("amount" in options && typeof options.amount === "number") {
+    validOpts.amount = options.amount;
+  }
+  if ("memo" in options && typeof options.memo === "string") {
+    validOpts.memo = options.memo;
+  }
+  if ("amp" in options && typeof options.amp === "boolean") {
+    validOpts.amp = options.amp;
+  }
+
+  return validOpts;
+}
 
 const main = async (program: Command) => {
   const credentials = getCredentialsFromEnvOrThrow();
@@ -19,14 +44,19 @@ const main = async (program: Command) => {
     credentials.baseUrl,
   );
   const account = await client.getCurrentAccount();
+  if (!account) {
+    throw new Error("Unable to get account");
+  }
+
   const nodeId = (await account.getNodes(client)).entities[0].id;
   const options = program.opts();
   console.log("Options: ", JSON.stringify(options, null, 2));
+  const opts = validateOptions(options);
   const invoice = await client.createInvoice(
     nodeId,
-    options.amount * 1000,
-    options.memo,
-    options.amp ? InvoiceType.AMP : InvoiceType.STANDARD,
+    opts.amount * 1000,
+    opts.memo,
+    opts.amp ? InvoiceType.AMP : InvoiceType.STANDARD,
   );
   console.log("Invoice:", JSON.stringify(invoice, null, 2));
 };

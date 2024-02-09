@@ -2,5 +2,7 @@
   "extends": "../../../packages/tsconfig/ts-node-app.json",
   "compilerOptions": {
     "noEmit": true
-  }
+  },
+  "exclude": ["**/tests", "node_modules", "dist"],
+  "include": ["src/**/*"]
 }

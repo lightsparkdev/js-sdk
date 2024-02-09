@@ -1,13 +1,5 @@
 # @lightsparkdev/wallet-sdk
 
-## 0.12.6
-
-### Patch Changes
-
-- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
-- Updated dependencies [062bf8a]
-  - @lightsparkdev/core@1.0.18
-
 ## 0.12.5
 
 ### Patch Changes

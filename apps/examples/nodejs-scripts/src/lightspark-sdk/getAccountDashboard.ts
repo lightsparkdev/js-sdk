@@ -4,9 +4,9 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
-  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 
 const account = getCredentialsFromEnvOrThrow();
 const client = new LightsparkClient(
@@ -20,4 +20,7 @@ client
   .getAccountDashboard(undefined, BitcoinNetwork.REGTEST)
   .then((dashboard) => {
     console.log("Got dashboard:", JSON.stringify(dashboard, null, 2));
+  })
+  .catch((error) => {
+    console.error("Error fetching dashboard:", error);
   });

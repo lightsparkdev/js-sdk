@@ -281,7 +281,7 @@ const getAuthOptions = (
       "The password of the sending user if the sending vasp requires one.",
       undefined,
     )
-    .action((options) => {
+    .action((options: OptionValues) => {
       sendPayment(options).catch((err) =>
         console.error("Oh no, something went wrong.\n", err),
       );
