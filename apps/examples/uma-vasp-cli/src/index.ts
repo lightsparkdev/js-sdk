@@ -35,7 +35,7 @@ const sendPayment = async (options: OptionValues) => {
   }
 
   if (!receiverUma.startsWith("$")) {
-    receiverUma = "$" + receiverUma;
+    console.log('Not an UMA user, falling back to LNURL.')
   }
 
   if (receiverUma.split("@").length !== 2) {
