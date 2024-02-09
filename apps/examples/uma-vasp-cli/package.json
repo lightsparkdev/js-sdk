@@ -1,12 +1,12 @@
 {
   "name": "@lightsparkdev/uma-vasp-cli",
   "version": "0.0.4",
+  "private": true,
   "description": "CLI for the Demo UMA VASP in ../apps/examples/uma-vasp",
   "main": "./dist/index.js",
   "bin": {
     "uma-vasp": "./dist/index.js"
   },
-  "private": true,
   "scripts": {
     "build": "tsc -p .",
     "clean": "rm -rf .turbo && rm -rf dist",
@@ -48,5 +48,8 @@
     "@uma-sdk/core": "^0.7.3",
     "chalk": "^5.3.0",
     "commander": "^11.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

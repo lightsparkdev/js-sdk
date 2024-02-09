@@ -1,6 +1,7 @@
 {
   "name": "@lightsparkdev/react-native-wallet",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -38,5 +39,7 @@
       "nativeModulesDir": "../../../../"
     }
   },
-  "private": true
+  "engines": {
+    "node": ">=18"
+  }
 }

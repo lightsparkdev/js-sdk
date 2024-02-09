@@ -1,6 +1,7 @@
 {
   "name": "@lightsparkdev/oauth",
   "version": "0.1.38",
+  "private": true,
   "description": "Lightspark JS Oauth SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -22,9 +23,6 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "engines": {
-    "node": ">=18.17.0"
-  },
   "browser": {
     "crypto": false
   },
@@ -69,5 +67,7 @@
     "tsup": "^7.2.0",
     "typescript": "^5.0.0"
   },
-  "private": true
+  "engines": {
+    "node": ">=18"
+  }
 }

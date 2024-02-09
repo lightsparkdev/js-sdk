@@ -54,13 +54,32 @@ export const textInputBorderColor = ({ theme }: ThemeProp) =>
 export const textInputBorderColorFocused = ({ theme }: ThemeProp) =>
   themeOr(theme.hcNeutral, theme.hcNeutral)({ theme });
 
+const textInputActiveStyles = ({
+  theme,
+  paddingLeftPx,
+  paddingRightPx,
+}: WithTheme<{
+  paddingLeftPx?: number | undefined;
+  paddingRightPx?: number | undefined;
+}>) => css`
+  border-color: ${textInputBorderColorFocused({ theme })};
+  border-width: 2px;
+  color: ${textInputColor({ theme })};
+  padding: ${textInputPaddingPx - 1}px;
+  ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
+  ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
+`;
+
 export const textInputStyle = ({
   theme,
+  active,
   disabled,
   hasError,
   paddingLeftPx,
   paddingRightPx,
 }: WithTheme<{
+  // In some cases we want to show an active state when another element is focused.
+  active?: boolean | undefined;
   disabled?: boolean | undefined;
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
@@ -96,14 +115,12 @@ export const textInputStyle = ({
   max-width: ${maxFieldWidth};
   text-overflow: ellipsis;
   &:focus,
-  &:active {
-    border-color: ${textInputBorderColorFocused({ theme })};
-    border-width: 2px;
-    color: ${textInputColor({ theme })};
-    padding: ${textInputPaddingPx - 1}px;
-    ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
-    ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
+  &:active,
+  &:has(:focus) {
+    ${textInputActiveStyles({ theme, paddingLeftPx, paddingRightPx })}
   }
+
+  ${active && textInputActiveStyles({ theme, paddingLeftPx, paddingRightPx })}
 
   &::placeholder {
     color: ${textInputPlaceholderColor({ theme })};

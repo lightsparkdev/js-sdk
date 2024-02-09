@@ -2,9 +2,9 @@
   "name": "js",
   "description": "Lightspark JS Projects",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "license": "Apache-2.0",
-  "private": true,
   "scripts": {
     "build-no-cache": "yarn build --force",
     "build-sb": "turbo run build-sb",
@@ -48,6 +48,9 @@
     "ts-prune": "^0.10.3",
     "turbo": "1.10.16",
     "unimported": "^1.29.2"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "packageManager": "yarn@3.6.0"
 }

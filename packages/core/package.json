@@ -48,9 +48,6 @@
       "default": "./dist/utils/index.cjs"
     }
   },
-  "engines": {
-    "node": ">=18.17.0"
-  },
   "browser": {
     "crypto": false
   },
@@ -105,5 +102,8 @@
     "tsc-absolute": "^1.0.1",
     "tsup": "^7.2.0",
     "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

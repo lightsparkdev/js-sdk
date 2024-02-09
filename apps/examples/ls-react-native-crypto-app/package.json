@@ -1,6 +1,7 @@
 {
   "name": "@lightsparkdev/ls-react-native-crypto-app",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start-tmp": "expo start --dev-client",
     "android": "expo run:android",
@@ -24,10 +25,12 @@
     "@types/react": "^18.2.12",
     "typescript": "^5.0.0"
   },
-  "private": true,
   "expo": {
     "autolinking": {
       "nativeModulesDir": ".."
     }
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

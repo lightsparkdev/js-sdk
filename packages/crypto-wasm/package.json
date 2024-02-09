@@ -17,5 +17,8 @@
     "ts-jest": "^29.1.1"
   },
   "main": "crypto.cjs",
-  "types": "crypto.d.ts"
+  "types": "crypto.d.ts",
+  "engines": {
+    "node": ">=18"
+  }
 }

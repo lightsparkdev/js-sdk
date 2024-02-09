@@ -39,5 +39,8 @@
     "test": "echo \"TODO\"",
     "types:watch": "tsc-absolute --watch",
     "types": "tsc"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
