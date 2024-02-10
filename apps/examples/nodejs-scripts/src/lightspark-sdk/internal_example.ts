@@ -3,21 +3,24 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
-  CurrencyAmount,
+  LightsparkClient,
   getDepositQuery,
   getLightsparkNodeQuery,
-  LightsparkClient,
-  Node,
+  getNodeQuery,
+  type CurrencyAmount,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
-
-import { getCredentialsFromEnvOrThrow } from "./internalAuthHelpers.js";
 
 day.extend(utc);
 
 // Let's start by creating a client
 const credentials = getCredentialsFromEnvOrThrow();
+const node1Name = process.env["LIGHTSPARK_EXAMPLE_NODE_1_NAME"];
+const node2Name = process.env["LIGHTSPARK_EXAMPLE_NODE_2_NAME"];
+const node2Password = process.env["LIGHTSPARK_EXAMPLE_NODE_2_PASSWORD"];
+
 const client = new LightsparkClient(
   new AccountTokenAuthProvider(
     credentials.apiTokenClientId,
@@ -49,11 +52,7 @@ console.log(`Your account name is ${account.name}.\n`);
 const apiTokenConnection = await account.getApiTokens(client);
 console.log(`You have ${apiTokenConnection.count} API tokens.`);
 
-const { apiToken, clientSecret } = await client.createApiToken(
-  "newTestToken",
-  false,
-  true,
-);
+const { apiToken } = await client.createApiToken("newTestToken", false, true);
 console.log(
   `Created API token ${apiToken.name} with ID ${
     apiToken.id
@@ -63,7 +62,7 @@ console.log(
 const apiTokenConnection2 = await account.getApiTokens(client);
 console.log(`You now have ${apiTokenConnection2.count} API tokens.\n`);
 
-client.deleteApiToken(apiToken.id);
+await client.deleteApiToken(apiToken.id);
 
 const apiTokenConnection3 = await account.getApiTokens(client);
 console.log(`You now have ${apiTokenConnection3.count} API tokens.\n`);
@@ -108,8 +107,8 @@ let node2Id: string | undefined;
 for (const node of nodesConnection.entities) {
   if (node) {
     console.log(`    - ${node.displayName} (${node.status})`);
-    if (node.displayName == credentials.node1Name) node1Id = node.id;
-    else if (node.displayName == credentials.node2Name) node2Id = node.id;
+    if (node.displayName == node1Name) node1Id = node.id;
+    else if (node.displayName == node2Name) node2Id = node.id;
   }
 }
 console.log("");
@@ -226,7 +225,7 @@ const invoice = await client.createInvoice(node1Id, 42000, "Pizza!");
 if (!invoice) {
   throw new Error("Unable to create the invoice.");
 }
-console.log(`Invoice created from ${credentials.node1Name}:`);
+console.log(`Invoice created from ${node1Name}:`);
 console.log(`Encoded invoice = ${invoice}`);
 console.log("");
 
@@ -252,17 +251,20 @@ console.log("");
 
 // First, we need to recover the signing key.
 await client.loadNodeSigningKey(node2Id, {
-  password: credentials.node2Password!,
+  password: node2Password!,
 });
-console.log(`${credentials.node2Name}'s signing key has been loaded.`);
+console.log(`${node2Name}'s signing key has been loaded.`);
 
 // Then we can send the payment
 const payment = await client.payInvoice(node2Id, invoice, 100000);
+if (!payment) {
+  throw new Error("Unable to send the payment.");
+}
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 
 const address = await client.createNodeWalletAddress(node1Id);
-console.log(`Got a bitcoin address for ${credentials.node1Name}: ${address}`);
+console.log(`Got a bitcoin address for ${node1Name}: ${address}`);
 console.log("");
 
 // const withdrawal = await client.requestWithdrawal(node2Id, 1000000, address, WithdrawalMode.WALLET_THEN_CHANNELS);
@@ -276,13 +278,11 @@ if (!node1) {
 }
 
 const channelsConnection = await node1.getChannels(client, 10);
-console.log(
-  `${credentials.node1Name} has ${channelsConnection.count} channel(s):`,
-);
+console.log(`${node1Name} has ${channelsConnection.count} channel(s):`);
 for (const channel of channelsConnection.entities) {
   if (channel.remoteNodeId) {
     const remoteNode = await client.executeRawQuery(
-      Node.getNodeQuery(channel.remoteNodeId),
+      getNodeQuery(channel.remoteNodeId),
     );
     const alias = remoteNode?.alias ?? "UNKNOWN";
     if (channel.localBalance && channel.remoteBalance) {

@@ -1,11 +1,12 @@
 // An example server which uses the lightspark-sdk to generate LNURL endpoints.
 
+import { isError } from "@lightsparkdev/core";
 import {
   AccountTokenAuthProvider,
-  getCredentialsFromEnvOrThrow,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
-import express, { Request } from "express";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
+import express, { type Request } from "express";
 
 ////////////////////////////////////////////////////////
 // MODIFY THESE VARIABLES BEFORE RUNNING THE EXAMPLE  //
@@ -80,34 +81,36 @@ app.get("/.well-known/lnurlp/:username", (req, res) => {
   });
 });
 
-app.get("/api/lnurl/payreq/:uuid", async (req, res, next) => {
-  const uuid = req.params.uuid;
-  if (uuid !== LS_TEST_USER.uuid) {
-    return next(new Error("User not found."));
-  }
-  const client = new LightsparkClient(
-    new AccountTokenAuthProvider(
-      credentials.apiTokenClientId,
-      credentials.apiTokenClientSecret,
-    ),
-    credentials.baseUrl,
-  );
+app.get("/api/lnurl/payreq/:uuid", (req, res, next) => {
+  (async () => {
+    const uuid = req.params.uuid;
+    if (uuid !== LS_TEST_USER.uuid) {
+      return next(new Error("User not found."));
+    }
+    const client = new LightsparkClient(
+      new AccountTokenAuthProvider(
+        credentials.apiTokenClientId,
+        credentials.apiTokenClientSecret,
+      ),
+      credentials.baseUrl,
+    );
 
-  const amountMsats = parseInt(req.query.amount as string);
-  if (!amountMsats) {
-    res.status(400).send(errorMessage("Missing amount query parameter."));
-    return;
-  }
+    const amountMsats = parseInt(req.query.amount as string);
+    if (!amountMsats) {
+      res.status(400).send(errorMessage("Missing amount query parameter."));
+      return;
+    }
 
-  const invoice = await client.createLnurlInvoice(
-    LS_TEST_USER.nodeId,
-    amountMsats,
-    generateMetadataForUser(LS_TEST_USER),
-  );
-  if (!invoice) {
-    return next(new Error("Invoice creation failed."));
-  }
-  res.send({ pr: invoice.data.encodedPaymentRequest, routes: [] });
+    const invoice = await client.createLnurlInvoice(
+      LS_TEST_USER.nodeId,
+      amountMsats,
+      generateMetadataForUser(LS_TEST_USER),
+    );
+    if (!invoice) {
+      return next(new Error("Invoice creation failed."));
+    }
+    res.send({ pr: invoice.data.encodedPaymentRequest, routes: [] });
+  })().catch((err) => next(err));
 });
 
 // Default 404 handler.
@@ -116,19 +119,24 @@ app.use(function (req, res, next) {
   res.send(errorMessage("Not found."));
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+const appErrorHandler: express.ErrorRequestHandler = (err, req, res, next) => {
+  const error = isError(err) ? err : new Error("Unknown error");
+  if (isError(error)) {
+    console.error(error);
+  }
   if (res.headersSent) {
     return next(err);
   }
 
-  if (err.message === "User not found.") {
-    res.status(404).send(errorMessage(err.message));
+  if (error.message === "User not found.") {
+    res.status(404).send(errorMessage(error.message));
     return;
   }
 
-  res.status(500).send(errorMessage(`Something broke! ${err.message}`));
-});
+  res.status(500).send(errorMessage(`Something broke! ${error.message}`));
+};
+
+app.use(appErrorHandler);
 
 const errorMessage = (message: string) => {
   return { status: "ERROR", reason: message };

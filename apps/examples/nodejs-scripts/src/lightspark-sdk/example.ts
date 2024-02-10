@@ -3,25 +3,15 @@
 import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
-  CurrencyAmount,
-  getCredentialsFromEnvOrThrow,
+  LightsparkClient,
   getDepositQuery,
   getLightsparkNodeQuery,
-  LightsparkClient,
-  Node,
+  getNodeQuery,
+  type CurrencyAmount,
 } from "@lightsparkdev/lightspark-sdk";
+import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 import day from "dayjs";
 import utc from "dayjs/plugin/utc.js";
-
-import fetch, { Headers, Request, Response } from "node-fetch";
-
-// Need to polyfill fetch if running on node 16.
-if (!globalThis.fetch) {
-  globalThis.fetch = fetch;
-  globalThis.Headers = Headers;
-  globalThis.Request = Request;
-  globalThis.Response = Response;
-}
 
 day.extend(utc);
 
@@ -58,11 +48,7 @@ console.log(`Your account name is ${account.name}.\n`);
 const apiTokenConnection = await account.getApiTokens(client);
 console.log(`You have ${apiTokenConnection.count} API tokens.`);
 
-const { apiToken, clientSecret } = await client.createApiToken(
-  "newTestToken",
-  false,
-  true,
-);
+const { apiToken } = await client.createApiToken("newTestToken", false, true);
 console.log(
   `Created API token ${apiToken.name} with ID ${
     apiToken.id
@@ -72,7 +58,9 @@ console.log(
 const apiTokenConnection2 = await account.getApiTokens(client);
 console.log(`You now have ${apiTokenConnection2.count} API tokens.\n`);
 
-client.deleteApiToken(apiToken.id);
+client.deleteApiToken(apiToken.id).catch((e) => {
+  console.error("Unable to delete the API token: " + e);
+});
 
 const apiTokenConnection3 = await account.getApiTokens(client);
 console.log(`You now have ${apiTokenConnection3.count} API tokens.\n`);
@@ -252,7 +240,9 @@ console.log("");
 // Let's send the payment.
 
 // First, we need to recover the signing key.
-await client.unlockNode(nodeId, credentials.testNodePassword!);
+await client.loadNodeSigningKey(nodeId, {
+  password: credentials.testNodePassword,
+});
 console.log(`${nodeName}'s signing key has been loaded.`);
 
 // Then we can send the payment. Note that this isn't paying the invoice we just made because
@@ -262,7 +252,13 @@ const testInvoice = await client.createTestModeInvoice(
   100_000,
   "example script payment",
 );
+if (!testInvoice) {
+  throw new Error("Unable to create the test invoice.");
+}
 const payment = await client.payInvoice(nodeId, testInvoice, 100_000, 60);
+if (!payment) {
+  throw new Error("Unable to pay invoice.");
+}
 console.log(`Payment done with ID = ${payment.id}`);
 console.log("");
 
@@ -285,7 +281,7 @@ console.log(`${nodeName} has ${channelsConnection.count} channel(s):`);
 for (const channel of channelsConnection.entities) {
   if (channel.remoteNodeId) {
     const remoteNode = await client.executeRawQuery(
-      Node.getNodeQuery(channel.remoteNodeId),
+      getNodeQuery(channel.remoteNodeId),
     );
     const alias = remoteNode?.alias ?? "UNKNOWN";
     if (channel.localBalance && channel.remoteBalance) {

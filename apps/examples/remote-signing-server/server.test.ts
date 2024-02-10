@@ -4,15 +4,6 @@ import supertest from "supertest";
 import settings from "../settings.json" assert { type: "json" };
 import { app } from "./src/index.js";
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      RK_WEBHOOK_SECRET: string;
-      RK_MASTER_SEED_HEX: string;
-    }
-  }
-}
-
 describe("Test server routes", () => {
   let server: ReturnType<typeof app.listen>;
   let request = supertest(app);
@@ -44,11 +35,10 @@ describe("Test server routes", () => {
   });
 
   test("error reponse from /lightspark-webhook webhook data is invalid", async () => {
-    let response: supertest.Response;
     jest
       .spyOn(LightsparkClient.prototype, "executeRawQuery")
       .mockReturnValue(Promise.resolve("mock-query-response"));
-    response = await request
+    const response = await request
       .post("/lightspark-webhook")
       .set(
         "lightspark-signature",
