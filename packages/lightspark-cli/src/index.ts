@@ -260,10 +260,7 @@ const balances = async (
   const nodes = await account.getNodes(client, 100, [bitcoinNetwork]);
   const balances = nodes.entities[0]?.balances || {};
 
-  console.log(
-    "Balances:",
-    JSON.stringify(balances, null, 2),
-  );
+  console.log("Balances:", JSON.stringify(balances, null, 2));
 };
 
 const l1FeeEstimate = async (
