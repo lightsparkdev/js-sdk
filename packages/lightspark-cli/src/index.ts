@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { input, password } from "@inquirer/prompts";
