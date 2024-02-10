@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/ls-react-native-crypto",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "A thin react native library for crypto operations required by the Lightspark SDKs.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

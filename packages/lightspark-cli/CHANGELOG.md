@@ -1,5 +1,15 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.43
+
+### Patch Changes
+
+- 062bf8a: [js] Add engines field to all packages to indicate supported NodeJS versions
+- Updated dependencies [062bf8a]
+  - @lightsparkdev/lightspark-sdk@1.5.7
+  - @lightsparkdev/crypto-wasm@0.1.3
+  - @lightsparkdev/core@1.0.18
+
 ## 0.0.42
 
 ### Patch Changes
