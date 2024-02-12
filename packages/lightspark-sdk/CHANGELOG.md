@@ -1,13 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.5.8
-
-### Patch Changes
-
-- 330f913: - Switch dependency placement to resolve TSUP bundling issues
-- Updated dependencies [330f913]
-  - @lightsparkdev/core@1.0.19
-
 ## 1.5.7
 
 ### Patch Changes

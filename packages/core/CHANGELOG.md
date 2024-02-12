@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.19
-
-### Patch Changes
-
-- 330f913: - Ensure tsup properly bundles ESM-only auto-bind and lodash dependencies for CJS support
-
 ## 1.0.18
 
 ### Patch Changes
