@@ -7,6 +7,9 @@
   "scripts": {
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
+    "lint:fix": "eslint --fix .",
+    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint": "eslint .",
     "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand",
     "types": "tsc",
     "types:watch": "tsc-absolute --watch"
@@ -30,6 +33,7 @@
   },
   "dependencies": {
     "@lightsparkdev/core": "1.0.18",
+    "@lightsparkdev/lightspark-sdk": "1.5.7",
     "@lightsparkdev/wallet-sdk": "0.12.6",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
