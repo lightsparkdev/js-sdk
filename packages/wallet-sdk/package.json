@@ -78,7 +78,7 @@
     "lint": "eslint .",
     "postversion": "yarn build",
     "test": "echo \"TODO\"",
-    "test:hermetic-integration": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test:integration": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "types": "tsc"
   },
   "license": "Apache-2.0",
