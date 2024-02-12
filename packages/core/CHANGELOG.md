@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.0.20
-
-### Patch Changes
-
-- b47bc60: - Add lsidToUUID util
-
 ## 1.0.19
 
 ### Patch Changes

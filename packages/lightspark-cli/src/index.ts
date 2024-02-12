@@ -244,19 +244,23 @@ const invoices = async (client: LightsparkClient, options: OptionValues) => {
 };
 
 const balances = async (
-  client: LightsparkClient /* options: OptionValues */,
+  client: LightsparkClient,
+  options: OptionValues,
+  credentials: EnvCredentials,
 ) => {
-  console.log("Fetching account balances...\n");
+  const bitcoinNetwork = getBitcoinNetworkOrThrow(credentials.bitcoinNetwork);
+
+  console.log("Fetching balances...\n");
   const account = await client.getCurrentAccount();
   if (!account) {
     throw new Error("Failed to get current account");
   }
-  const localBalance = await account.getLocalBalance(client);
-  const remoteBalance = await account.getRemoteBalance(client);
-  console.log(
-    "Balances:",
-    JSON.stringify({ localBalance, remoteBalance }, null, 2),
-  );
+
+  console.log("Got account:", JSON.stringify(account, null, 2));
+  const nodes = await account.getNodes(client, 100, [bitcoinNetwork]);
+  const balances = nodes.entities[0]?.balances || {};
+
+  console.log("Balances:", JSON.stringify(balances, null, 2));
 };
 
 const l1FeeEstimate = async (
