@@ -1,14 +1,14 @@
 {
   "name": "@lightsparkdev/oauth-app",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "private": true,
   "dependencies": {
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@lightsparkdev/lightspark-sdk": "1.5.7",
+    "@lightsparkdev/lightspark-sdk": "1.5.8",
     "@lightsparkdev/oauth": "*",
-    "@lightsparkdev/ui": "0.0.9",
+    "@lightsparkdev/ui": "0.0.10",
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.1.0",

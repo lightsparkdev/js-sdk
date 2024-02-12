@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.7
+
+### Patch Changes
+
+- 330f913: - Switch dependency placement to resolve TSUP bundling issues
+- Updated dependencies [330f913]
+  - @lightsparkdev/core@1.0.19
+
 ## 0.12.6
 
 ### Patch Changes
