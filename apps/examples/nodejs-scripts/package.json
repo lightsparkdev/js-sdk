@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@lightsparkdev/core": "1.0.19",
+    "@lightsparkdev/lightspark-sdk": "1.5.8",
     "@lightsparkdev/wallet-sdk": "0.12.7",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",

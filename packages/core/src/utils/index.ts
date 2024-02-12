@@ -12,5 +12,6 @@ export * from "./localeToCurrencyCodes.js";
 export * from "./numbers.js";
 export * from "./pollUntil.js";
 export * from "./sleep.js";
+export * from "./strings.js";
 export * from "./typeGuards.js";
 export * from "./types.js";
