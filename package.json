@@ -27,7 +27,6 @@
     "release": "turbo build && changeset publish",
     "start": "./start.sh",
     "test": "turbo run test",
-    "test:hermetic-integration": "turbo run test:hermetic-integration",
     "test:integration": "turbo run test:integration",
     "types": "turbo run types"
   },

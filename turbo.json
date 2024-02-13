@@ -49,9 +49,6 @@
     "test": {
       "dependsOn": ["^build"]
     },
-    "test:hermetic-integration": {
-      "dependsOn": ["^build"]
-    },
     "test:integration": {
       "dependsOn": ["^build"]
     },
