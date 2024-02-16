@@ -15,6 +15,7 @@ module.exports.buildConfig = ({
   base = "/",
   dirname,
   rollupOptions,
+  proxyTarget = "http://127.0.0.1:5000",
 }) =>
   defineConfig({
     base,
@@ -44,27 +45,27 @@ module.exports.buildConfig = ({
       host: "0.0.0.0",
       proxy: {
         "/graphql/internal": {
-          target: "http://127.0.0.1:5000",
+          target: proxyTarget,
           changeOrigin: true,
           ws: true,
         },
         "/graphql/custody": {
-          target: "http://127.0.0.1:5000",
+          target: proxyTarget,
           changeOrigin: true,
           ws: true,
         },
         "/graphql/frontend": {
-          target: "http://127.0.0.1:5000",
+          target: proxyTarget,
           changeOrigin: true,
           ws: true,
         },
         "/umame/graphql": {
-          target: "http://127.0.0.1:5000",
+          target: proxyTarget,
           changeOrigin: true,
           ws: true,
         },
         "/clientlogs": {
-          target: "http://127.0.0.1:5000",
+          target: proxyTarget,
           changeOrigin: true,
         },
       },
