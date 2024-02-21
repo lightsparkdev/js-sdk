@@ -227,7 +227,8 @@ const serializeSigningKey = async (
 
 const getNonce = async () => {
   const nonceSt = await getRandomValues32(new Uint32Array(2));
-  return Number(nonceSt);
+  // The server doesn't seem to like signed nonces, so we need to make sure it's positive.
+  return Math.abs(Number(nonceSt));
 };
 
 const sign = async (
