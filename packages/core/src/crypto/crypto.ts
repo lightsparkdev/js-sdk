@@ -226,7 +226,7 @@ const serializeSigningKey = async (
 };
 
 const getNonce = async () => {
-  const nonceSt = await getRandomValues32(new Uint32Array(1));
+  const nonceSt = await getRandomValues32(new Uint32Array(2));
   return Number(nonceSt);
 };
 
