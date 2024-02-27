@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.0.21
+
+### Patch Changes
+
+- 15d0720: - Consolidate type utils from ui to core
+- 15d0720: - Use 64 bit nonces
+
 ## 1.0.20
 
 ### Patch Changes
