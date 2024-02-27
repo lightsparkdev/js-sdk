@@ -1,5 +1,15 @@
 # @lightsparkdev/ui
 
+## 0.0.12
+
+### Patch Changes
+
+- 15d0720: - Add CodeBlock
+- 15d0720: - Consolidate type utils from ui to core
+- Updated dependencies [15d0720]
+- Updated dependencies [15d0720]
+  - @lightsparkdev/core@1.0.21
+
 ## 0.0.11
 
 ### Patch Changes

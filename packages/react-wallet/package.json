@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/react-wallet",
-  "version": "0.7.8",
+  "version": "0.7.9",
   "description": "Lightspark JS Wallet SDK react helpers",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -47,8 +47,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "1.0.20",
-    "@lightsparkdev/wallet-sdk": "0.12.8",
+    "@lightsparkdev/core": "1.0.21",
+    "@lightsparkdev/wallet-sdk": "0.12.9",
     "auto-bind": "^5.0.1",
     "dayjs": "^1.11.7"
   },
