@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Maybe } from "../types/utils.js";
+import { type Maybe } from "@lightsparkdev/core";
 
 export const capitalize = (str: string): string => {
   if (str.length === 0) {

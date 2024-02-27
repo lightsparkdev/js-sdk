@@ -8,7 +8,6 @@ import { InMemoryPublicKeyCache } from "@uma-sdk/core";
 import InMemorySendingVaspRequestCache from "./src/demo/InMemorySendingVaspRequestCache.js";
 import DemoInternalLedgerService from "./src/demo/DemoInternalLedgerService.js";
 import DemoComplianceService from "./src/demo/DemoComplianceService.js";
-import InMemoryNonceValidator from "./src/demo/InMemoryNonceValidator.js";
 
 declare global {
   namespace NodeJS {
@@ -41,7 +40,6 @@ const app = createUmaServer(
   userService,
   new DemoInternalLedgerService(config, userService, lightsparkClient),
   new DemoComplianceService(config, lightsparkClient),
-  new InMemoryNonceValidator(Date.now() - 1000 * 60 * 60 * 24),
 );
 
 describe("Test server routes", () => {

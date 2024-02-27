@@ -14,7 +14,6 @@ import {
   sendResponse,
 } from "./networking/expressAdapters.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
-import NonceValidator from "./NonceValidator.js";
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
@@ -26,7 +25,6 @@ export default class ReceivingVasp {
     private readonly pubKeyCache: uma.PublicKeyCache,
     private readonly userService: UserService,
     private readonly complianceService: ComplianceService,
-    private readonly nonceValidator: NonceValidator,
   ) {}
 
   registerRoutes(app: Express): void {
@@ -152,18 +150,6 @@ export default class ReceivingVasp {
       };
     }
 
-    if (
-      !this.nonceValidator.checkAndSaveNonce(
-        umaQuery.nonce,
-        umaQuery.timestamp.getTime() / 1000,
-      )
-    ) {
-      return {
-        httpStatus: 424,
-        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
-      };
-    }
-
     const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
       user.id,
     );
@@ -258,18 +244,6 @@ export default class ReceivingVasp {
       return {
         httpStatus: 500,
         data: new Error("Invalid payreq signature.", { cause: e }),
-      };
-    }
-
-    if (
-      !this.nonceValidator.checkAndSaveNonce(
-        payreq.payerData.compliance.signatureNonce,
-        payreq.payerData.compliance.signatureTimestamp,
-      )
-    ) {
-      return {
-        httpStatus: 424,
-        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
       };
     }
 

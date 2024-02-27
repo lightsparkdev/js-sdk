@@ -18,6 +18,7 @@ export {
   CardPageRightContentInner,
   CardPageSubtitle,
 } from "./CardPage.js";
+export { CodeBlock, InlineCode, StyledCodeBlock } from "./CodeBlock.js";
 export { Collapsible } from "./Collapsible.js";
 export { CommandKey } from "./CommandKey.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";

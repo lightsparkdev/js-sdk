@@ -226,8 +226,12 @@ const serializeSigningKey = async (
 };
 
 const getNonce = async () => {
-  const nonceSt = await getRandomValues32(new Uint32Array(1));
-  return Number(nonceSt);
+  const nonceSt = await getRandomValues32(new Uint32Array(2));
+  const [upper, lower] = nonceSt;
+  const nonce = (BigInt(upper) << 32n) | BigInt(lower);
+  // Note: We lose some precision here going from bigint to number
+  // because js numbers are floats, but it's ok.
+  return Number(nonce);
 };
 
 const sign = async (

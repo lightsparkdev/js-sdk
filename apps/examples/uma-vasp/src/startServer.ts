@@ -7,7 +7,6 @@ import UmaConfig from "./UmaConfig.js";
 import DemoComplianceService from "./demo/DemoComplianceService.js";
 import DemoInternalLedgerService from "./demo/DemoInternalLedgerService.js";
 import DemoUserService from "./demo/DemoUserService.js";
-import InMemoryNonceValidator from "./demo/InMemoryNonceValidator.js";
 import InMemorySendingVaspRequestCache from "./demo/InMemorySendingVaspRequestCache.js";
 import { createUmaServer } from "./server.js";
 
@@ -19,7 +18,6 @@ const lightsparkClient = new LightsparkClient(
   config.clientBaseURL,
 );
 const userService = new DemoUserService();
-const oneWeekAgo = Date.now() - 1000 * 60 * 60 * 24 * 7;
 
 const umaServer = createUmaServer(
   config,
@@ -29,7 +27,6 @@ const umaServer = createUmaServer(
   userService,
   new DemoInternalLedgerService(config, userService, lightsparkClient),
   new DemoComplianceService(config, lightsparkClient),
-  new InMemoryNonceValidator(oneWeekAgo),
 );
 
 let port = 8080;

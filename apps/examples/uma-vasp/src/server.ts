@@ -4,7 +4,6 @@ import bodyParser from "body-parser";
 import express from "express";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
-import NonceValidator from "./NonceValidator.js";
 import ReceivingVasp from "./ReceivingVasp.js";
 import SendingVasp from "./SendingVasp.js";
 import SendingVaspRequestCache from "./SendingVaspRequestCache.js";
@@ -20,7 +19,6 @@ export const createUmaServer = (
   userService: UserService,
   ledgerService: InternalLedgerService,
   complianceService: ComplianceService,
-  nonceValidator: NonceValidator,
 ): {
   listen: (
     port: number,
@@ -41,7 +39,6 @@ export const createUmaServer = (
     userService,
     ledgerService,
     complianceService,
-    nonceValidator,
   );
   sendingVasp.registerRoutes(app);
   const receivingVasp = new ReceivingVasp(
@@ -50,7 +47,6 @@ export const createUmaServer = (
     pubKeyCache,
     userService,
     complianceService,
-    nonceValidator,
   );
   receivingVasp.registerRoutes(app);
 

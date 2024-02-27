@@ -49,6 +49,9 @@
     "test": {
       "dependsOn": ["^build"]
     },
+    "test:ui": {
+      "dependsOn": ["^build"]
+    },
     "test:integration": {
       "dependsOn": ["^build"]
     },

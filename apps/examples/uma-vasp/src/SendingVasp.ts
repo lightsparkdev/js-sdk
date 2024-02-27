@@ -12,7 +12,6 @@ import * as uma from "@uma-sdk/core";
 import { Express, Request } from "express";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
-import NonceValidator from "./NonceValidator.js";
 import SendingVaspRequestCache, {
   SendingVaspInitialRequestData,
   SendingVaspPayReqData,
@@ -36,7 +35,6 @@ export default class SendingVasp {
     private readonly userService: UserService,
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
-    private readonly nonceValidator: NonceValidator,
   ) {}
 
   registerRoutes(app: Express) {
@@ -206,18 +204,6 @@ export default class SendingVasp {
         data: new Error("Error verifying UMA response signature.", {
           cause: e,
         }),
-      };
-    }
-
-    if (
-      !this.nonceValidator.checkAndSaveNonce(
-        lnurlpResponse.compliance.signatureNonce,
-        lnurlpResponse.compliance.signatureTimestamp,
-      )
-    ) {
-      return {
-        httpStatus: 424,
-        data: "Invalid response nonce. Already seen this nonce or the timestamp is too old.",
       };
     }
 

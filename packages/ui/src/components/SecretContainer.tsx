@@ -1,7 +1,7 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
+import { type Maybe } from "@lightsparkdev/core";
 import { standardBorderRadius } from "../styles/common.js";
-import { type Maybe } from "../types/utils.js";
 import { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 
 type SecretContainerProps = {

@@ -1743,6 +1743,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.12.0, @babel/runtime@npm:^7.8.7":
+  version: 7.23.9
+  resolution: "@babel/runtime@npm:7.23.9"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: 6bbebe8d27c0c2dd275d1ac197fc1a6c00e18dab68cc7aaff0adc3195b45862bae9c4cc58975629004b0213955b2ed91e99eccb3d9b39cabea246c657323d667
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:^7.9.2":
   version: 7.23.8
   resolution: "@babel/runtime@npm:7.23.8"
@@ -2072,7 +2081,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/cache@npm:^11.11.0":
+"@emotion/cache@npm:^11.11.0, @emotion/cache@npm:^11.4.0":
   version: 11.11.0
   resolution: "@emotion/cache@npm:11.11.0"
   dependencies:
@@ -2142,6 +2151,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/react@npm:^11.8.1":
+  version: 11.11.4
+  resolution: "@emotion/react@npm:11.11.4"
+  dependencies:
+    "@babel/runtime": ^7.18.3
+    "@emotion/babel-plugin": ^11.11.0
+    "@emotion/cache": ^11.11.0
+    "@emotion/serialize": ^1.1.3
+    "@emotion/use-insertion-effect-with-fallbacks": ^1.0.1
+    "@emotion/utils": ^1.2.1
+    "@emotion/weak-memoize": ^0.3.1
+    hoist-non-react-statics: ^3.3.1
+  peerDependencies:
+    react: ">=16.8.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 6abaa7a05c5e1db31bffca7ac79169f5456990022cbb3794e6903221536609a60420f2b4888dd3f84e9634a304e394130cb88dc32c243a1dedc263e50da329f8
+  languageName: node
+  linkType: hard
+
 "@emotion/serialize@npm:^1.1.2":
   version: 1.1.2
   resolution: "@emotion/serialize@npm:1.1.2"
@@ -2152,6 +2182,19 @@ __metadata:
     "@emotion/utils": ^1.2.1
     csstype: ^3.0.2
   checksum: 413c352e657f1b5e27ea6437b3ef7dcc3860669b7ae17fd5c18bfbd44e033af1acc56b64d252284a813ca4f3b3e1b0841c42d3fb08e02d2df56fd3cd63d72986
+  languageName: node
+  linkType: hard
+
+"@emotion/serialize@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@emotion/serialize@npm:1.1.3"
+  dependencies:
+    "@emotion/hash": ^0.9.1
+    "@emotion/memoize": ^0.8.1
+    "@emotion/unitless": ^0.8.1
+    "@emotion/utils": ^1.2.1
+    csstype: ^3.0.2
+  checksum: 5a756ce7e2692322683978d8ed2e84eadd60bd6f629618a82c5018c84d98684b117e57fad0174f68ec2ec0ac089bb2e0bcc8ea8c2798eb904b6d3236aa046063
   languageName: node
   linkType: hard
 
@@ -3165,6 +3208,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^1.0.0":
+  version: 1.6.0
+  resolution: "@floating-ui/core@npm:1.6.0"
+  dependencies:
+    "@floating-ui/utils": ^0.2.1
+  checksum: 2e25c53b0c124c5c9577972f8ae21d081f2f7895e6695836a53074463e8c65b47722744d6d2b5a993164936da006a268bcfe87fe68fd24dc235b1cb86bed3127
+  languageName: node
+  linkType: hard
+
 "@floating-ui/core@npm:^1.4.2":
   version: 1.5.0
   resolution: "@floating-ui/core@npm:1.5.0"
@@ -3184,10 +3236,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/dom@npm:^1.0.1":
+  version: 1.6.3
+  resolution: "@floating-ui/dom@npm:1.6.3"
+  dependencies:
+    "@floating-ui/core": ^1.0.0
+    "@floating-ui/utils": ^0.2.0
+  checksum: 81cbb18ece3afc37992f436e469e7fabab2e433248e46fff4302d12493a175b0c64310f8a971e6e1eda7218df28ace6b70237b0f3c22fe12a21bba05b5579555
+  languageName: node
+  linkType: hard
+
 "@floating-ui/utils@npm:^0.1.3":
   version: 0.1.6
   resolution: "@floating-ui/utils@npm:0.1.6"
   checksum: b34d4b5470869727f52e312e08272edef985ba5a450a76de0917ba0a9c6f5df2bdbeb99448e2c60f39b177fb8981c772ff1831424e75123471a27ebd5b52c1eb
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.2.0, @floating-ui/utils@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@floating-ui/utils@npm:0.2.1"
+  checksum: 9ed4380653c7c217cd6f66ae51f20fdce433730dbc77f95b5abfb5a808f5fdb029c6ae249b4e0490a816f2453aa6e586d9a873cd157fdba4690f65628efc6e06
   languageName: node
   linkType: hard
 
@@ -4235,6 +4304,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.4.3
     "@types/jest": ^29.5.3
+    "@types/prismjs": ^1.26.0
     babel-jest: ^29.6.4
     esbuild-plugin-copy: ^2.1.1
     esbuild-plugin-svgr: ^2.1.0
@@ -4249,9 +4319,11 @@ __metadata:
     nanoid: ^4.0.0
     prettier: 3.0.3
     prettier-plugin-organize-imports: ^3.2.4
+    prismjs: ^1.29.0
     react: ^18.2.0
     react-dom: ^18.1.0
     react-router-dom: 6.11.2
+    react-select: ^5.4.0
     react-tooltip: ^5.10.1
     ts-jest: ^29.1.1
     tsc-absolute: ^1.0.1
@@ -6099,6 +6171,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/prismjs@npm:^1.26.0":
+  version: 1.26.3
+  resolution: "@types/prismjs@npm:1.26.3"
+  checksum: c627fa9d9f4277ce413bb8347944152cddfc892702e34ff4b099dc1cf3f00c09514d36349c23529b903b0e57f3b2e0dc91ee66e98af07fbbe1e3fe8346b23370
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.11
   resolution: "@types/prop-types@npm:15.7.11"
@@ -6151,6 +6230,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: 701d7d815fe7b921712ebdb2c4434e99b92403d37c51b33a01ce1b62fed7d1efbf9f749971d9031a5b137c6d5e194249c378106768aa69725a01f150fef0ec7f
+  languageName: node
+  linkType: hard
+
+"@types/react-transition-group@npm:^4.4.0":
+  version: 4.4.10
+  resolution: "@types/react-transition-group@npm:4.4.10"
+  dependencies:
+    "@types/react": "*"
+  checksum: fe2ea11f70251e9f79f368e198c18fd469b1d4f1e1d44e4365845b44e15974b0ec925100036f449b023b0ca3480a82725c5f0a73040e282ad32ec7b0def9b57c
   languageName: node
   linkType: hard
 
@@ -10201,6 +10289,16 @@ __metadata:
   dependencies:
     utila: ~0.4
   checksum: ea52fe303f5392e48dea563abef0e6fb3a478b8dbe3c599e99bb5d53981c6c38fc4944e56bb92a8ead6bb989d10b7914722ae11febbd2fd0910e33b9fc4aaa77
+  languageName: node
+  linkType: hard
+
+"dom-helpers@npm:^5.0.1":
+  version: 5.2.1
+  resolution: "dom-helpers@npm:5.2.1"
+  dependencies:
+    "@babel/runtime": ^7.8.7
+    csstype: ^3.0.2
+  checksum: 863ba9e086f7093df3376b43e74ce4422571d404fc9828bf2c56140963d5edf0e56160f9b2f3bb61b282c07f8fc8134f023c98fd684bddcb12daf7b0f14d951c
   languageName: node
   linkType: hard
 
@@ -15728,6 +15826,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"memoize-one@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "memoize-one@npm:6.0.0"
+  checksum: f185ea69f7cceae5d1cb596266dcffccf545e8e7b4106ec6aa93b71ab9d16460dd118ac8b12982c55f6d6322fcc1485de139df07eacffaae94888b9b3ad7675f
+  languageName: node
+  linkType: hard
+
 "memory-cache@npm:~0.2.0":
   version: 0.2.0
   resolution: "memory-cache@npm:0.2.0"
@@ -18294,6 +18399,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prismjs@npm:^1.29.0":
+  version: 1.29.0
+  resolution: "prismjs@npm:1.29.0"
+  checksum: 007a8869d4456ff8049dc59404e32d5666a07d99c3b0e30a18bd3b7676dfa07d1daae9d0f407f20983865fd8da56de91d09cb08e6aa61f5bc420a27c0beeaf93
+  languageName: node
+  linkType: hard
+
 "proc-log@npm:^3.0.0":
   version: 3.0.0
   resolution: "proc-log@npm:3.0.0"
@@ -18367,7 +18479,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.0, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -18882,6 +18994,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-select@npm:^5.4.0":
+  version: 5.8.0
+  resolution: "react-select@npm:5.8.0"
+  dependencies:
+    "@babel/runtime": ^7.12.0
+    "@emotion/cache": ^11.4.0
+    "@emotion/react": ^11.8.1
+    "@floating-ui/dom": ^1.0.1
+    "@types/react-transition-group": ^4.4.0
+    memoize-one: ^6.0.0
+    prop-types: ^15.6.0
+    react-transition-group: ^4.3.0
+    use-isomorphic-layout-effect: ^1.1.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: c8398cc0aefb5ee5438b6176c86676e2d3fed7457c16b0769f423a0da0ae431a7df25c2cadf13b709700882b8ebd80a58b1e557fec3e22ad3cbf60164ca9e745
+  languageName: node
+  linkType: hard
+
 "react-shallow-renderer@npm:^16.15.0":
   version: 16.15.0
   resolution: "react-shallow-renderer@npm:16.15.0"
@@ -18940,6 +19072,21 @@ __metadata:
     react: ">=16.14.0"
     react-dom: ">=16.14.0"
   checksum: daa9cb054031f65f7d59b0926dff4ebc449554117c36a6cc8e93837c70c30d223263c5c133dc723aed56aa4b6fa3809ef90e8f231eded470633462915356dffd
+  languageName: node
+  linkType: hard
+
+"react-transition-group@npm:^4.3.0":
+  version: 4.4.5
+  resolution: "react-transition-group@npm:4.4.5"
+  dependencies:
+    "@babel/runtime": ^7.5.5
+    dom-helpers: ^5.0.1
+    loose-envify: ^1.4.0
+    prop-types: ^15.6.2
+  peerDependencies:
+    react: ">=16.6.0"
+    react-dom: ">=16.6.0"
+  checksum: 75602840106aa9c6545149d6d7ae1502fb7b7abadcce70a6954c4b64a438ff1cd16fc77a0a1e5197cdd72da398f39eb929ea06f9005c45b132ed34e056ebdeb1
   languageName: node
   linkType: hard
 
@@ -22206,6 +22353,18 @@ __metadata:
     querystringify: ^2.1.1
     requires-port: ^1.0.0
   checksum: fbdba6b1d83336aca2216bbdc38ba658d9cfb8fc7f665eb8b17852de638ff7d1a162c198a8e4ed66001ddbf6c9888d41e4798912c62b4fd777a31657989f7bdf
+  languageName: node
+  linkType: hard
+
+"use-isomorphic-layout-effect@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "use-isomorphic-layout-effect@npm:1.1.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: a6532f7fc9ae222c3725ff0308aaf1f1ddbd3c00d685ef9eee6714fd0684de5cb9741b432fbf51e61a784e2955424864f7ea9f99734a02f237b17ad3e18ea5cb
   languageName: node
   linkType: hard
 

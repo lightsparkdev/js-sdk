@@ -18,4 +18,9 @@ describe("Crypto tests", () => {
     expect(serializedKeypair.privateKey).not.toBeNull();
     expect(serializedKeypair.publicKey).not.toBeNull();
   }, 60_000);
+
+  test("should generate a valid nonce", async () => {
+    const nonce = await DefaultCrypto.getNonce();
+    expect(nonce).toBeGreaterThan(0);
+  }, 10_000);
 });
