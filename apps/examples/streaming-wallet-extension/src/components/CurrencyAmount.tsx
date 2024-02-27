@@ -3,7 +3,7 @@ import {
   CurrencyAmount as CurrencyAmountType,
   CurrencyUnit,
 } from "@lightsparkdev/lightspark-sdk";
-import { Maybe } from "@lightsparkdev/ui/types/utils";
+import { Maybe } from "@lightsparkdev/core";
 import CurrencyAmountRaw from "./CurrencyAmountRaw";
 
 type Props = {

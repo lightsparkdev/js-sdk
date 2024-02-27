@@ -1,15 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.46
-
-### Patch Changes
-
-- ecd415d: - Use node balances instead of account balances
-- Updated dependencies [15d0720]
-- Updated dependencies [15d0720]
-  - @lightsparkdev/core@1.0.21
-  - @lightsparkdev/lightspark-sdk@1.5.10
-
 ## 0.0.45
 
 ### Patch Changes

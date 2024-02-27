@@ -8,7 +8,7 @@ import {
   SingleNodeDashboard,
   Transaction,
 } from "@lightsparkdev/lightspark-sdk";
-import { Maybe } from "@lightsparkdev/ui/types/utils";
+import { Maybe } from "@lightsparkdev/core";
 import React from "react";
 import "./App.css";
 import AccountStorage from "./auth/AccountStorage";
