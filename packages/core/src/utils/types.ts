@@ -33,3 +33,9 @@ export type JSONType = JSONLiteral | JSONType[] | { [key: string]: JSONType };
 export type JSONObject = { [key: string]: JSONType };
 
 export type NN<T> = NonNullable<T>;
+
+export function notNullUndefined<TValue>(
+  value: TValue | null | undefined,
+): value is TValue {
+  return value !== null && value !== undefined;
+}
