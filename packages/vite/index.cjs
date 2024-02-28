@@ -10,11 +10,9 @@ const currentCommit = childProcess
   .trim()
   .substr(0, 8);
 
-const basename = process.env.VITE_BASENAME || "/";
-
 module.exports.buildConfig = ({
   port = 3000,
-  base = basename,
+  base = "/",
   dirname,
   rollupOptions,
   proxyTarget = "http://127.0.0.1:5000",
@@ -23,7 +21,6 @@ module.exports.buildConfig = ({
     base,
     define: {
       __CURRENT_COMMIT__: `"${currentCommit}"`,
-      __BASENAME__: `"${basename}"`,
     },
     plugins: [
       {
