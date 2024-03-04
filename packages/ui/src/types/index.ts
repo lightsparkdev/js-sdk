@@ -1,5 +1,6 @@
 declare global {
   const __CURRENT_COMMIT__: string;
+  const __BASENAME__: string;
 }
 
 /* window props that may be considered common to any Lightspark web app: */
