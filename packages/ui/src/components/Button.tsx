@@ -19,13 +19,14 @@ type ButtonSize = (typeof ButtonSizes)[number];
 type IconSide = "left" | "right";
 
 export type ButtonProps<RoutesType extends string> = {
-  backgroundColor?: string;
-  color?: string;
-  hoverColor?: string;
-  text?: string;
+  backgroundColor?: string | undefined;
+  color?: string | undefined;
+  hoverColor?: string | undefined;
+  text?: string | undefined;
   disabled?: boolean | undefined;
+  id?: string | undefined;
   to?: RoutesType | undefined;
-  hash?: string;
+  hash?: string | undefined;
   href?: string;
   toParams?: RouteParams | undefined;
   primary?: boolean | undefined;
@@ -39,10 +40,10 @@ export type ButtonProps<RoutesType extends string> = {
   ml?: number;
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
-  blue?: boolean;
+  blue?: boolean | undefined;
   newTab?: boolean;
   tooltipText?: string;
-  zIndex?: number;
+  zIndex?: number | undefined;
 };
 
 type PrimaryProps = WithTheme<{
@@ -179,6 +180,7 @@ export function Button<RoutesType extends string>({
   ghost = false,
   text,
   to,
+  id,
   hash,
   href,
   toParams,
@@ -245,6 +247,7 @@ export function Button<RoutesType extends string>({
   const isSingleCharRoundButton = Boolean(text && text.length === 1 && !icon);
 
   const commonProps = {
+    id,
     backgroundColor,
     color,
     hoverColor,
@@ -286,23 +289,17 @@ export function Button<RoutesType extends string>({
   );
 }
 
-type StyledButtonProps = {
-  backgroundColor?: string | undefined;
-  color?: string | undefined;
-  hoverColor?: string | undefined;
+type StyledButtonProps = ButtonProps<string> & {
+  isLoading: boolean;
+  blue: boolean;
   primary: boolean;
   ghost: boolean;
+  iconWidth: number;
+  isRound: boolean;
   size: ButtonSize;
   disabled: boolean;
   fullWidth: boolean;
-  isLoading: boolean;
-  blue: boolean;
-  iconWidth: number;
-  newTab: boolean;
-  text?: string | undefined;
-  zIndex?: number | undefined;
-  iconSide?: IconSide | undefined;
-  isRound: boolean;
+  css: { marginTop: string | undefined; marginLeft: string | undefined };
 };
 
 const buttonStyle = ({

@@ -35,6 +35,7 @@ export type ExternalLink = string;
 
 export type LinkProps<RoutesType extends string> = {
   to?: RoutesType | undefined;
+  id?: string | undefined;
   externalLink?: ExternalLink | undefined;
   onClick?: MouseEventHandler<HTMLAnchorElement> | undefined;
   params?: RouteParams | undefined;
@@ -79,6 +80,7 @@ export function replaceParams<RoutesType extends string>(
 // preserved.
 export function Link<RoutesType extends string>({
   to,
+  id,
   externalLink,
   params,
   children,
@@ -112,6 +114,7 @@ export function Link<RoutesType extends string>({
   return (
     <RLink
       to={toStr}
+      id={id}
       css={css}
       onClick={onClick}
       className={className}
