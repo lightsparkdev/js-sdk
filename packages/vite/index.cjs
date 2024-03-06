@@ -10,7 +10,7 @@ const currentCommit = childProcess
   .trim()
   .substr(0, 8);
 
-const basename = process.env.BASENAME || "/";
+const basename = process.env.VITE_BASENAME || "/";
 
 module.exports.buildConfig = ({
   port = 3000,
