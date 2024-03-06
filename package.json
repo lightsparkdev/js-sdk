@@ -25,6 +25,7 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "release": "turbo build && changeset publish",
+    "start:prod": "VITE_PROXY_TARGET=https://app.lightspark.com yarn start",
     "start": "./start.sh",
     "test": "turbo run test",
     "test:ui": "turbo run test:ui",
