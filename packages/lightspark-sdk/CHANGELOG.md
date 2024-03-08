@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.5.12
+
+### Patch Changes
+
+- a73d027: Regenerate the sdk to pick up internal payment field
+
 ## 1.5.11
 
 ### Patch Changes
