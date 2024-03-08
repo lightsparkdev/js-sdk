@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.11
+
+### Patch Changes
+
+- a73d027: Regenerate the sdk to pick up internal payment field
+
 ## 0.12.10
 
 ### Patch Changes

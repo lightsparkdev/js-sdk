@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/uma-vasp",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@lightsparkdev/core": "1.0.22",
-    "@lightsparkdev/lightspark-sdk": "1.5.11",
+    "@lightsparkdev/lightspark-sdk": "1.5.12",
     "@uma-sdk/core": "^0.7.3",
     "express": "^4.18.2",
     "uuid": "^9.0.0",

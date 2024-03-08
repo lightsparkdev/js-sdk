@@ -1,5 +1,13 @@
 # @lightsparkdev/nodejs-scripts
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [a73d027]
+  - @lightsparkdev/lightspark-sdk@1.5.12
+  - @lightsparkdev/wallet-sdk@0.12.11
+
 ## 0.0.4
 
 ### Patch Changes
