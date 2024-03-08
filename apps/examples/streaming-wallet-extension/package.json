@@ -1,13 +1,13 @@
 {
   "name": "@lightsparkdev/streaming-wallet-extension",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@lightsparkdev/core": "1.0.21",
-    "@lightsparkdev/lightspark-sdk": "1.5.10",
-    "@lightsparkdev/ui": "0.0.12",
+    "@lightsparkdev/core": "1.0.22",
+    "@lightsparkdev/lightspark-sdk": "1.5.11",
+    "@lightsparkdev/ui": "0.0.13",
     "eslint": "^8.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.1.0",

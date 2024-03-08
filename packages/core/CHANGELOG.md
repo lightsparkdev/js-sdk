@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.0.22
+
+### Patch Changes
+
+- baeccd9: - Improve currency functions and types
+
 ## 1.0.21
 
 ### Patch Changes
