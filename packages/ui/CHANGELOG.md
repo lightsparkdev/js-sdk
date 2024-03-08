@@ -1,5 +1,14 @@
 # @lightsparkdev/ui
 
+## 0.0.13
+
+### Patch Changes
+
+- baeccd9: - Add StatusIndicator
+- 9b3896a: - Remove types/utils. Use equivalent imports from @lightsparkdev/core instead
+- Updated dependencies [baeccd9]
+  - @lightsparkdev/core@1.0.22
+
 ## 0.0.12
 
 ### Patch Changes
