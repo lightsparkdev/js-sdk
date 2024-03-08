@@ -1,7 +1,11 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import { gql } from "@apollo/client";
 import styled from "@emotion/styled";
-import type { CurrencyAmountArg, CurrencyMap } from "@lightsparkdev/core";
+import type {
+  CurrencyAmountArg,
+  CurrencyMap,
+  CurrencyUnitType,
+} from "@lightsparkdev/core";
 import {
   CurrencyUnit,
   formatCurrencyStr,
@@ -12,7 +16,7 @@ import { Icon } from "./Icon.js";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
-  displayUnit?: CurrencyUnit;
+  displayUnit?: CurrencyUnitType;
   shortNumber?: boolean;
   showUnits?: boolean;
   ml?: number;
@@ -66,7 +70,7 @@ export function CurrencyAmount({
   );
 }
 
-export const CurrencyIcon = ({ unit }: { unit: CurrencyUnit }) => {
+export const CurrencyIcon = ({ unit }: { unit: CurrencyUnitType }) => {
   switch (unit) {
     case CurrencyUnit.BITCOIN:
       return <Icon name="BitcoinB" width={8} verticalAlign={-2} mr={2} />;
@@ -77,7 +81,7 @@ export const CurrencyIcon = ({ unit }: { unit: CurrencyUnit }) => {
   }
 };
 
-const shorttext = (unit: CurrencyUnit, value: number) => {
+const shorttext = (unit: CurrencyUnitType, value: number) => {
   const pl = value !== 1;
   switch (unit) {
     case CurrencyUnit.BITCOIN:
@@ -90,8 +94,9 @@ const shorttext = (unit: CurrencyUnit, value: number) => {
       return `sat${pl ? "s" : ""}`;
     case CurrencyUnit.MILLISATOSHI:
       return `msat${pl ? "s" : ""}`;
+    default:
+      return unit;
   }
-  return unit;
 };
 
 const StyledCurrencyAmount = styled.span<{ ml: number }>`

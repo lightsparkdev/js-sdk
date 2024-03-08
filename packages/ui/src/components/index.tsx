@@ -1,4 +1,4 @@
-export { Badge } from "./Badge.js";
+export { Badge, BadgeProps } from "./Badge.js";
 export {
   Button,
   ButtonSelector,
@@ -33,6 +33,11 @@ export { Modal } from "./Modal.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { SecretContainer } from "./SecretContainer.js";
+export {
+  StatusIndicator,
+  type StatusIndicatorColors,
+  type StatusIndicatorProps,
+} from "./StatusIndicator.js";
 export {
   TextIconAligner,
   type TextIconAlignerProps,

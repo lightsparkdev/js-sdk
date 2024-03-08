@@ -7,75 +7,35 @@ import { isNumber, round } from "./numbers.js";
 
 export const defaultCurrencyCode = "USD";
 
-/**
- * This enum identifies the unit of currency associated with a CurrencyAmount.
- * *
- */
-export enum CurrencyUnit {
-  /**
-   * This is an enum value that represents values that could be added in the
-   * future. Clients should support unknown values as more of them could be
-   * added without notice.
-   */
-  FUTURE_VALUE = "FUTURE_VALUE",
-  /**
-   * Bitcoin is the cryptocurrency native to the Bitcoin network.
-   * It is used as the native medium for value transfer for the Lightning
-   * Network. *
-   */
-  BITCOIN = "BITCOIN",
-  /**
-   * 0.00000001 (10e-8) Bitcoin or one hundred millionth of a Bitcoin.
-   * This is the unit most commonly used in Lightning transactions.
-   * *
-   */
-  SATOSHI = "SATOSHI",
-  /**
-   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit
-   * instead when possible. *
-   */
-  MILLISATOSHI = "MILLISATOSHI",
-  /** United States Dollar. **/
-  USD = "USD",
-  /**
-   * 0.000000001 (10e-9) Bitcoin or a billionth of a Bitcoin.
-   * We recommend using the Satoshi unit instead when possible.
-   * *
-   */
-  NANOBITCOIN = "NANOBITCOIN",
-  /**
-   * 0.000001 (10e-6) Bitcoin or a millionth of a Bitcoin.
-   * We recommend using the Satoshi unit instead when possible.
-   * *
-   */
-  MICROBITCOIN = "MICROBITCOIN",
-  /**
-   * 0.001 (10e-3) Bitcoin or a thousandth of a Bitcoin.
-   * We recommend using the Satoshi unit instead when possible.
-   * *
-   */
-  MILLIBITCOIN = "MILLIBITCOIN",
-}
+/* This const identifies the unit of currency associated with a CurrencyAmount as created by the SDK
+ * writer and used in JS SDKs. The schema version uses camel case for the keys so we convert
+ * arguments of that type to this format for use in the functions below. */
+export const CurrencyUnit = {
+  FUTURE_VALUE: "FUTURE_VALUE",
+  BITCOIN: "BITCOIN",
+  SATOSHI: "SATOSHI",
+  MILLISATOSHI: "MILLISATOSHI",
+  USD: "USD",
+  NANOBITCOIN: "NANOBITCOIN",
+  MICROBITCOIN: "MICROBITCOIN",
+  MILLIBITCOIN: "MILLIBITCOIN",
 
-/** This object represents the value and unit for an amount of currency. **/
-export type CurrencyAmountType = {
-  /** The original numeric value for this CurrencyAmount. **/
+  Bitcoin: "BITCOIN",
+  Microbitcoin: "MICROBITCOIN",
+  Millibitcoin: "MILLIBITCOIN",
+  Millisatoshi: "MILLISATOSHI",
+  Nanobitcoin: "NANOBITCOIN",
+  Satoshi: "SATOSHI",
+  Usd: "USD",
+} as const;
+
+export type CurrencyUnitType = (typeof CurrencyUnit)[keyof typeof CurrencyUnit];
+
+export type SDKCurrencyAmountType = {
   originalValue: number;
-  /** The original unit of currency for this CurrencyAmount. **/
-  originalUnit: CurrencyUnit;
-  /** The unit of user's preferred currency. **/
-  preferredCurrencyUnit: CurrencyUnit;
-  /**
-   * The rounded numeric value for this CurrencyAmount in the very base level
-   * of user's preferred currency. For example, for USD, the value will be in
-   * cents.
-   **/
+  originalUnit: CurrencyUnitType;
+  preferredCurrencyUnit: CurrencyUnitType;
   preferredCurrencyValueRounded: number;
-  /**
-   * The approximate float value for this CurrencyAmount in the very base level
-   * of user's preferred currency. For example, for USD, the value will be in
-   * cents.
-   **/
   preferredCurrencyValueApprox: number;
 };
 
@@ -163,8 +123,8 @@ const CONVERSION_MAP = {
 };
 
 export function convertCurrencyAmountValue(
-  fromUnit: CurrencyUnit,
-  toUnit: CurrencyUnit,
+  fromUnit: CurrencyUnitType,
+  toUnit: CurrencyUnitType,
   amount: number,
   centsPerBtc = 1,
 ): number {
@@ -191,9 +151,9 @@ export function convertCurrencyAmountValue(
 }
 
 export const convertCurrencyAmount = (
-  from: CurrencyAmountType,
-  toUnit: CurrencyUnit,
-): CurrencyAmountType => {
+  from: SDKCurrencyAmountType,
+  toUnit: CurrencyUnitType,
+): SDKCurrencyAmountType => {
   const value = convertCurrencyAmountValue(
     from.originalUnit,
     toUnit,
@@ -240,21 +200,17 @@ export type CurrencyMap = {
 };
 
 export type CurrencyAmountObj = {
-  /*
-   * Technically the generated graphql schema has value as `any` but it's
-   * always a number.
-   * We are intentionally widening the type here to allow for more forgiving
-   * input:
-   */
+  /* Technically the generated graphql schema has value as `any` but it's always a number.
+   * We are intentionally widening the type here to allow for more forgiving input: */
   value?: number | string | null;
   /* assume satoshi if not provided */
-  unit?: CurrencyUnit;
-  __typename?: "CurrencyAmount";
+  unit?: CurrencyUnitType;
+  __typename?: "CurrencyAmount" | undefined;
 };
 
 export type CurrencyAmountArg =
   | CurrencyAmountObj
-  | CurrencyAmountType
+  | SDKCurrencyAmountType
   | undefined
   | null;
 
@@ -264,10 +220,13 @@ export function isCurrencyAmountObj(arg: unknown): arg is CurrencyAmountObj {
   );
 }
 
-export function isCurrencyAmount(arg: unknown): arg is CurrencyAmountType {
+export function isSDKCurrencyAmount(
+  arg: unknown,
+): arg is SDKCurrencyAmountType {
   return (
     typeof arg === "object" &&
     arg !== null &&
+    /* We can expect all SDK CurrencyAmount types to always have these exact properties: */
     "originalValue" in arg &&
     "originalUnit" in arg &&
     "preferredCurrencyUnit" in arg &&
@@ -275,7 +234,6 @@ export function isCurrencyAmount(arg: unknown): arg is CurrencyAmountType {
     "preferredCurrencyValueApprox" in arg
   );
 }
-
 function asNumber(value: string | number | null | undefined) {
   if (typeof value === "string") {
     return Number(value);
@@ -287,12 +245,12 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   let value = 0;
   let unit = undefined;
 
-  if (isCurrencyAmountObj(currencyAmountArg)) {
-    value = asNumber(currencyAmountArg.value);
-    unit = currencyAmountArg.unit;
-  } else if (isCurrencyAmount(currencyAmountArg)) {
+  if (isSDKCurrencyAmount(currencyAmountArg)) {
     value = currencyAmountArg.originalValue;
     unit = currencyAmountArg.originalUnit;
+  } else if (isCurrencyAmountObj(currencyAmountArg)) {
+    value = asNumber(currencyAmountArg.value);
+    unit = currencyAmountArg.unit;
   }
 
   return {
@@ -410,7 +368,7 @@ export const isCurrencyMap = (
   typeof currencyMap.type === "string" &&
   currencyMap.type === "CurrencyMap";
 
-export const abbrCurrencyUnit = (unit: CurrencyUnit) => {
+export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
   switch (unit) {
     case CurrencyUnit.BITCOIN:
       return "BTC";
