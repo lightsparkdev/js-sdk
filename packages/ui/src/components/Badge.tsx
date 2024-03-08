@@ -2,12 +2,13 @@ import styled from "@emotion/styled";
 import { isLight } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
 
-type BadgeProps = {
+export type BadgeProps = {
   text?: string | undefined;
-  ml?: number;
+  ml?: 0 | 4 | 6;
+  mr?: 0 | 4 | 6;
 };
 
-export function Badge({ text, ml = 0 }: BadgeProps) {
+export function Badge({ text, ml = 0, mr = 0 }: BadgeProps) {
   return text ? <StyledBadge ml={ml}>{text}</StyledBadge> : null;
 }
 

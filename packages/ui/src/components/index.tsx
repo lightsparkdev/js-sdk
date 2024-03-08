@@ -1,4 +1,4 @@
-export { Badge } from "./Badge.js";
+export { Badge, BadgeProps } from "./Badge.js";
 export {
   Button,
   ButtonSelector,

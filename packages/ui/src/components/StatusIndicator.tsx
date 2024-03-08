@@ -5,7 +5,8 @@ export type StatusIndicatorColors =
   | "success"
   | "warning"
   | "danger"
-  | "primary";
+  | "text"
+  | "c4Neutral";
 export type StatusIndicatorProps = {
   color?: StatusIndicatorColors;
   text: string;
