@@ -3,10 +3,16 @@
 import RegionCode from "./RegionCode.js";
 
 interface CreateInvitationWithIncentivesInput {
+  /**
+   * The UMA of the user creating the invitation. It will be used to identify the inviter when
+   * receiving the invitation.
+   **/
   inviterUma: string;
 
+  /** The phone hash of the user creating the invitation. **/
   inviterPhoneHash: string;
 
+  /** The region of the user creating the invitation. **/
   inviterRegion: RegionCode;
 }
 

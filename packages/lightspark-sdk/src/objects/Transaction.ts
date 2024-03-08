@@ -137,7 +137,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       TransactionStatus[obj["incoming_payment_status"]] ??
         TransactionStatus.FUTURE_VALUE,
       CurrencyAmountFromJson(obj["incoming_payment_amount"]),
+      obj["incoming_payment_is_uma"],
       obj["incoming_payment_destination"].id,
+      obj["incoming_payment_is_internal_payment"],
       "IncomingPayment",
       obj["incoming_payment_resolved_at"],
       obj["incoming_payment_transaction_hash"],
@@ -155,7 +157,9 @@ export const TransactionFromJson = (obj: any): Transaction => {
       TransactionStatus[obj["outgoing_payment_status"]] ??
         TransactionStatus.FUTURE_VALUE,
       CurrencyAmountFromJson(obj["outgoing_payment_amount"]),
+      obj["outgoing_payment_is_uma"],
       obj["outgoing_payment_origin"].id,
+      obj["outgoing_payment_is_internal_payment"],
       "OutgoingPayment",
       obj["outgoing_payment_resolved_at"],
       obj["outgoing_payment_transaction_hash"],
@@ -334,6 +338,7 @@ export const TransactionToJson = (obj: Transaction): any => {
       incoming_payment_resolved_at: incomingPayment.resolvedAt,
       incoming_payment_amount: CurrencyAmountToJson(incomingPayment.amount),
       incoming_payment_transaction_hash: incomingPayment.transactionHash,
+      incoming_payment_is_uma: incomingPayment.isUma,
       incoming_payment_destination: { id: incomingPayment.destinationId },
       incoming_payment_payment_request:
         { id: incomingPayment.paymentRequestId } ?? undefined,
@@ -341,6 +346,7 @@ export const TransactionToJson = (obj: Transaction): any => {
         incomingPayment.umaPostTransactionData?.map((e) =>
           PostTransactionDataToJson(e),
         ),
+      incoming_payment_is_internal_payment: incomingPayment.isInternalPayment,
     };
   }
   if (obj.typename == "OutgoingPayment") {
@@ -354,6 +360,7 @@ export const TransactionToJson = (obj: Transaction): any => {
       outgoing_payment_resolved_at: outgoingPayment.resolvedAt,
       outgoing_payment_amount: CurrencyAmountToJson(outgoingPayment.amount),
       outgoing_payment_transaction_hash: outgoingPayment.transactionHash,
+      outgoing_payment_is_uma: outgoingPayment.isUma,
       outgoing_payment_origin: { id: outgoingPayment.originId },
       outgoing_payment_destination:
         { id: outgoingPayment.destinationId } ?? undefined,
@@ -372,6 +379,7 @@ export const TransactionToJson = (obj: Transaction): any => {
           PostTransactionDataToJson(e),
         ),
       outgoing_payment_payment_preimage: outgoingPayment.paymentPreimage,
+      outgoing_payment_is_internal_payment: outgoingPayment.isInternalPayment,
     };
   }
   if (obj.typename == "RoutingTransaction") {
@@ -542,6 +550,7 @@ fragment TransactionFragment on Transaction {
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
         incoming_payment_transaction_hash: transaction_hash
+        incoming_payment_is_uma: is_uma
         incoming_payment_destination: destination {
             id
         }
@@ -560,6 +569,7 @@ fragment TransactionFragment on Transaction {
                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
             }
         }
+        incoming_payment_is_internal_payment: is_internal_payment
     }
     ... on OutgoingPayment {
         __typename
@@ -577,6 +587,7 @@ fragment TransactionFragment on Transaction {
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
         outgoing_payment_transaction_hash: transaction_hash
+        outgoing_payment_is_uma: is_uma
         outgoing_payment_origin: origin {
             id
         }
@@ -903,6 +914,7 @@ fragment TransactionFragment on Transaction {
             }
         }
         outgoing_payment_payment_preimage: payment_preimage
+        outgoing_payment_is_internal_payment: is_internal_payment
     }
     ... on RoutingTransaction {
         __typename

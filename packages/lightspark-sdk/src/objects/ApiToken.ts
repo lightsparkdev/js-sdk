@@ -36,6 +36,9 @@ interface ApiToken {
   /** A list of permissions granted to the token. **/
   permissions: Permission[];
 
+  /** Whether the api token has been deleted. **/
+  isDeleted: boolean;
+
   /** The typename of the object **/
   typename: string;
 }
@@ -48,6 +51,7 @@ export const ApiTokenFromJson = (obj: any): ApiToken => {
     clientId: obj["api_token_client_id"],
     name: obj["api_token_name"],
     permissions: obj["api_token_permissions"].map((e) => Permission[e]),
+    isDeleted: obj["api_token_is_deleted"],
     typename: "ApiToken",
   } as ApiToken;
 };
@@ -60,6 +64,7 @@ export const ApiTokenToJson = (obj: ApiToken): any => {
     api_token_client_id: obj.clientId,
     api_token_name: obj.name,
     api_token_permissions: obj.permissions,
+    api_token_is_deleted: obj.isDeleted,
   };
 };
 
@@ -72,6 +77,7 @@ fragment ApiTokenFragment on ApiToken {
     api_token_client_id: client_id
     api_token_name: name
     api_token_permissions: permissions
+    api_token_is_deleted: is_deleted
 }`;
 
 export const getApiTokenQuery = (id: string): Query<ApiToken> => {

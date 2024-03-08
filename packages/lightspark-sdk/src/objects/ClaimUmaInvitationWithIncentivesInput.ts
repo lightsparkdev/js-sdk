@@ -3,12 +3,19 @@
 import RegionCode from "./RegionCode.js";
 
 interface ClaimUmaInvitationWithIncentivesInput {
+  /** The unique code that identifies this invitation and was shared by the inviter. **/
   invitationCode: string;
 
+  /**
+   * The UMA of the user claiming the invitation. It will be sent to the inviter so that they can
+   * start transacting with the invitee.
+   **/
   inviteeUma: string;
 
+  /** The phone hash of the user getting the invitation. **/
   inviteePhoneHash: string;
 
+  /** The region of the user getting the invitation. **/
   inviteeRegion: RegionCode;
 }
 

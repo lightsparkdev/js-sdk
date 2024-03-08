@@ -48,8 +48,15 @@ class OutgoingPayment implements LightningTransaction, Transaction, Entity {
     public readonly status: TransactionStatus,
     /** The amount of money involved in this transaction. **/
     public readonly amount: CurrencyAmount,
+    /**
+     * Whether this payment is an UMA payment or not. NOTE: this field is only set if the payment
+     * has been sent using the recommended `pay_uma_invoice` function.
+     **/
+    public readonly isUma: boolean,
     /** The Lightspark node this payment originated from. **/
     public readonly originId: string,
+    /** Whether the payment is made to the same node. **/
+    public readonly isInternalPayment: boolean,
     /** The typename of the object **/
     public readonly typename: string,
     /** The date and time when this transaction was completed or failed. **/
@@ -124,51 +131,7 @@ query FetchOutgoingPaymentToAttemptsConnection($entity_id: ID!, $first: Int, $af
                         id
                     }
                     outgoing_payment_attempt_channel_snapshot: channel_snapshot {
-                        __typename
-                        channel_snapshot_channel: channel {
-                            id
-                        }
-                        channel_snapshot_timestamp: timestamp
-                        channel_snapshot_local_balance: local_balance {
-                            __typename
-                            currency_amount_original_value: original_value
-                            currency_amount_original_unit: original_unit
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
-                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        }
-                        channel_snapshot_local_unsettled_balance: local_unsettled_balance {
-                            __typename
-                            currency_amount_original_value: original_value
-                            currency_amount_original_unit: original_unit
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
-                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        }
-                        channel_snapshot_local_channel_reserve: local_channel_reserve {
-                            __typename
-                            currency_amount_original_value: original_value
-                            currency_amount_original_unit: original_unit
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
-                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        }
-                        channel_snapshot_remote_balance: remote_balance {
-                            __typename
-                            currency_amount_original_value: original_value
-                            currency_amount_original_unit: original_unit
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
-                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        }
-                        channel_snapshot_remote_unsettled_balance: remote_unsettled_balance {
-                            __typename
-                            currency_amount_original_value: original_value
-                            currency_amount_original_unit: original_unit
-                            currency_amount_preferred_currency_unit: preferred_currency_unit
-                            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-                            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-                        }
+                        id
                     }
                 }
             }
@@ -212,6 +175,7 @@ ${FRAGMENT}
       outgoing_payment_resolved_at: this.resolvedAt,
       outgoing_payment_amount: CurrencyAmountToJson(this.amount),
       outgoing_payment_transaction_hash: this.transactionHash,
+      outgoing_payment_is_uma: this.isUma,
       outgoing_payment_origin: { id: this.originId },
       outgoing_payment_destination: { id: this.destinationId } ?? undefined,
       outgoing_payment_fees: this.fees
@@ -227,6 +191,7 @@ ${FRAGMENT}
       outgoing_payment_uma_post_transaction_data:
         this.umaPostTransactionData?.map((e) => PostTransactionDataToJson(e)),
       outgoing_payment_payment_preimage: this.paymentPreimage,
+      outgoing_payment_is_internal_payment: this.isInternalPayment,
     };
   }
 }
@@ -239,7 +204,9 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
     TransactionStatus[obj["outgoing_payment_status"]] ??
       TransactionStatus.FUTURE_VALUE,
     CurrencyAmountFromJson(obj["outgoing_payment_amount"]),
+    obj["outgoing_payment_is_uma"],
     obj["outgoing_payment_origin"].id,
+    obj["outgoing_payment_is_internal_payment"],
     "OutgoingPayment",
     obj["outgoing_payment_resolved_at"],
     obj["outgoing_payment_transaction_hash"],
@@ -281,6 +248,7 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
     outgoing_payment_transaction_hash: transaction_hash
+    outgoing_payment_is_uma: is_uma
     outgoing_payment_origin: origin {
         id
     }
@@ -607,6 +575,7 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
         }
     }
     outgoing_payment_payment_preimage: payment_preimage
+    outgoing_payment_is_internal_payment: is_internal_payment
 }`;
 
 export default OutgoingPayment;

@@ -1,5 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/**
+ * The Invoice that was cancelled. If the invoice was already cancelled, the same invoice is
+ * returned. *
+ */
 interface CancelInvoiceOutput {
   invoiceId: string;
 }

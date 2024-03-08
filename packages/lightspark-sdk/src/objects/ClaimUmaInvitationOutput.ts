@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface ClaimUmaInvitationOutput {
+  /** An UMA.ME invitation object. **/
   invitationId: string;
 }
 

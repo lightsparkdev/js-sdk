@@ -1,6 +1,10 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface CreateUmaInvitationInput {
+  /**
+   * The UMA of the user creating the invitation. It will be used to identify the inviter when
+   * receiving the invitation.
+   **/
   inviterUma: string;
 }
 
