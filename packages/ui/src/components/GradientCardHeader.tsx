@@ -1,9 +1,13 @@
 import styled from "@emotion/styled";
 import { z } from "../styles/z-index.js";
+import {
+  StatusIndicator,
+  type StatusIndicatorProps,
+} from "./StatusIndicator.js";
 
 type GradientCardHeaderProps = {
   children: React.ReactNode;
-  status?: React.ReactNode;
+  status?: StatusIndicatorProps | undefined;
   title?: string;
 };
 
@@ -12,7 +16,7 @@ export function GradientCardHeader(props: GradientCardHeaderProps) {
     <CardHeaderWrapper>
       <Gradients />
       <div>
-        {props.status}
+        {props.status && <StatusIndicator {...props.status} />}
         <CardHeaderTitle>{props.title}</CardHeaderTitle>
       </div>
       {props.children}

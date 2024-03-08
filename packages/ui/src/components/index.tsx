@@ -34,6 +34,11 @@ export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { SecretContainer } from "./SecretContainer.js";
 export {
+  StatusIndicator,
+  type StatusIndicatorColors,
+  type StatusIndicatorProps,
+} from "./StatusIndicator.js";
+export {
   TextIconAligner,
   type TextIconAlignerProps,
 } from "./TextIconAligner.js";
