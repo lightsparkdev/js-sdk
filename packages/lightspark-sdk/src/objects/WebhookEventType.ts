@@ -36,6 +36,8 @@ export enum WebhookEventType {
   REMOTE_SIGNING = "REMOTE_SIGNING",
 
   LOW_BALANCE = "LOW_BALANCE",
+
+  HIGH_BALANCE = "HIGH_BALANCE",
 }
 
 export default WebhookEventType;

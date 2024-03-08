@@ -80,6 +80,7 @@ query FetchAccountToApiTokensConnection($first: Int, $after: String) {
                     api_token_client_id: client_id
                     api_token_name: name
                     api_token_permissions: permissions
+                    api_token_is_deleted: is_deleted
                 }
             }
         }
@@ -885,6 +886,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
                         incoming_payment_transaction_hash: transaction_hash
+                        incoming_payment_is_uma: is_uma
                         incoming_payment_destination: destination {
                             id
                         }
@@ -903,6 +905,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                                 currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                             }
                         }
+                        incoming_payment_is_internal_payment: is_internal_payment
                     }
                     ... on OutgoingPayment {
                         __typename
@@ -920,6 +923,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
                         outgoing_payment_transaction_hash: transaction_hash
+                        outgoing_payment_is_uma: is_uma
                         outgoing_payment_origin: origin {
                             id
                         }
@@ -1246,6 +1250,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                             }
                         }
                         outgoing_payment_payment_preimage: payment_preimage
+                        outgoing_payment_is_internal_payment: is_internal_payment
                     }
                     ... on RoutingTransaction {
                         __typename

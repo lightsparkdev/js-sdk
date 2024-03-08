@@ -41,8 +41,15 @@ class IncomingPayment implements LightningTransaction, Transaction, Entity {
     public readonly status: TransactionStatus,
     /** The amount of money involved in this transaction. **/
     public readonly amount: CurrencyAmount,
+    /**
+     * Whether this payment is an UMA payment or not. NOTE: this field is only set if the invoice
+     * that is being paid has been created using the recommended `create_uma_invoice` function.
+     **/
+    public readonly isUma: boolean,
     /** The recipient Lightspark node this payment was sent to. **/
     public readonly destinationId: string,
+    /** Whether the payment is made from the same node. **/
+    public readonly isInternalPayment: boolean,
     /** The typename of the object **/
     public readonly typename: string,
     /** The date and time when this transaction was completed or failed. **/
@@ -146,11 +153,13 @@ ${FRAGMENT}
       incoming_payment_resolved_at: this.resolvedAt,
       incoming_payment_amount: CurrencyAmountToJson(this.amount),
       incoming_payment_transaction_hash: this.transactionHash,
+      incoming_payment_is_uma: this.isUma,
       incoming_payment_destination: { id: this.destinationId },
       incoming_payment_payment_request:
         { id: this.paymentRequestId } ?? undefined,
       incoming_payment_uma_post_transaction_data:
         this.umaPostTransactionData?.map((e) => PostTransactionDataToJson(e)),
+      incoming_payment_is_internal_payment: this.isInternalPayment,
     };
   }
 }
@@ -163,7 +172,9 @@ export const IncomingPaymentFromJson = (obj: any): IncomingPayment => {
     TransactionStatus[obj["incoming_payment_status"]] ??
       TransactionStatus.FUTURE_VALUE,
     CurrencyAmountFromJson(obj["incoming_payment_amount"]),
+    obj["incoming_payment_is_uma"],
     obj["incoming_payment_destination"].id,
+    obj["incoming_payment_is_internal_payment"],
     "IncomingPayment",
     obj["incoming_payment_resolved_at"],
     obj["incoming_payment_transaction_hash"],
@@ -191,6 +202,7 @@ fragment IncomingPaymentFragment on IncomingPayment {
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
     incoming_payment_transaction_hash: transaction_hash
+    incoming_payment_is_uma: is_uma
     incoming_payment_destination: destination {
         id
     }
@@ -209,6 +221,7 @@ fragment IncomingPaymentFragment on IncomingPayment {
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
     }
+    incoming_payment_is_internal_payment: is_internal_payment
 }`;
 
 export default IncomingPayment;

@@ -1,5 +1,9 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+/**
+ * The unique identifier of the Invoice that should be cancelled. The invoice is supposed to be
+ * open, not settled and not expired. *
+ */
 interface CancelInvoiceInput {
   invoiceId: string;
 }

@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface CreateUmaInvitationOutput {
+  /** The created invitation in the form of a string identifier. **/
   invitationId: string;
 }
 

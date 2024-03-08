@@ -3,11 +3,6 @@
 import { type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
-import type ChannelSnapshot from "./ChannelSnapshot.js";
-import {
-  ChannelSnapshotFromJson,
-  ChannelSnapshotToJson,
-} from "./ChannelSnapshot.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import {
   CurrencyAmountFromJson,
@@ -66,7 +61,7 @@ class OutgoingPaymentAttempt implements Entity {
      **/
     public readonly fees?: CurrencyAmount | undefined,
     /** The channel snapshot at the time the outgoing payment attempt was made. **/
-    public readonly channelSnapshot?: ChannelSnapshot | undefined,
+    public readonly channelSnapshotId?: string | undefined,
   ) {
     autoBind(this);
   }
@@ -171,9 +166,8 @@ ${FRAGMENT}
         ? CurrencyAmountToJson(this.fees)
         : undefined,
       outgoing_payment_attempt_outgoing_payment: { id: this.outgoingPaymentId },
-      outgoing_payment_attempt_channel_snapshot: this.channelSnapshot
-        ? ChannelSnapshotToJson(this.channelSnapshot)
-        : undefined,
+      outgoing_payment_attempt_channel_snapshot:
+        { id: this.channelSnapshotId } ?? undefined,
     };
   }
 }
@@ -202,11 +196,7 @@ export const OutgoingPaymentAttemptFromJson = (
     !!obj["outgoing_payment_attempt_fees"]
       ? CurrencyAmountFromJson(obj["outgoing_payment_attempt_fees"])
       : undefined,
-    !!obj["outgoing_payment_attempt_channel_snapshot"]
-      ? ChannelSnapshotFromJson(
-          obj["outgoing_payment_attempt_channel_snapshot"],
-        )
-      : undefined,
+    obj["outgoing_payment_attempt_channel_snapshot"]?.id ?? undefined,
   );
 };
 
@@ -241,51 +231,7 @@ fragment OutgoingPaymentAttemptFragment on OutgoingPaymentAttempt {
         id
     }
     outgoing_payment_attempt_channel_snapshot: channel_snapshot {
-        __typename
-        channel_snapshot_channel: channel {
-            id
-        }
-        channel_snapshot_timestamp: timestamp
-        channel_snapshot_local_balance: local_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        channel_snapshot_local_unsettled_balance: local_unsettled_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        channel_snapshot_local_channel_reserve: local_channel_reserve {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        channel_snapshot_remote_balance: remote_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
-        channel_snapshot_remote_unsettled_balance: remote_unsettled_balance {
-            __typename
-            currency_amount_original_value: original_value
-            currency_amount_original_unit: original_unit
-            currency_amount_preferred_currency_unit: preferred_currency_unit
-            currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
-            currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
-        }
+        id
     }
 }`;
 

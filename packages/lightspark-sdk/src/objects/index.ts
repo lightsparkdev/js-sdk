@@ -7,6 +7,10 @@ export { default as AccountToTransactionsConnection } from "./AccountToTransacti
 export { default as AccountToWalletsConnection } from "./AccountToWalletsConnection.js";
 export { default as AccountToWithdrawalRequestsConnection } from "./AccountToWithdrawalRequestsConnection.js";
 export { default as ApiToken, getApiTokenQuery } from "./ApiToken.js";
+export {
+  default as AuditLogActor,
+  getAuditLogActorQuery,
+} from "./AuditLogActor.js";
 export { default as Balances } from "./Balances.js";
 export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
 export { default as BlockchainBalance } from "./BlockchainBalance.js";
@@ -22,7 +26,10 @@ export {
   default as ChannelOpeningTransaction,
   getChannelOpeningTransactionQuery,
 } from "./ChannelOpeningTransaction.js";
-export { default as ChannelSnapshot } from "./ChannelSnapshot.js";
+export {
+  default as ChannelSnapshot,
+  getChannelSnapshotQuery,
+} from "./ChannelSnapshot.js";
 export { default as ChannelStatus } from "./ChannelStatus.js";
 export { default as ChannelToTransactionsConnection } from "./ChannelToTransactionsConnection.js";
 export { default as ClaimUmaInvitationInput } from "./ClaimUmaInvitationInput.js";
@@ -72,6 +79,8 @@ export {
 } from "./IncomingPaymentAttempt.js";
 export { default as IncomingPaymentAttemptStatus } from "./IncomingPaymentAttemptStatus.js";
 export { default as IncomingPaymentToAttemptsConnection } from "./IncomingPaymentToAttemptsConnection.js";
+export { default as IncomingPaymentsForInvoiceQueryInput } from "./IncomingPaymentsForInvoiceQueryInput.js";
+export { default as IncomingPaymentsForInvoiceQueryOutput } from "./IncomingPaymentsForInvoiceQueryOutput.js";
 export { default as Invoice, getInvoiceQuery } from "./Invoice.js";
 export { default as InvoiceData } from "./InvoiceData.js";
 export { default as InvoiceType } from "./InvoiceType.js";
@@ -96,6 +105,7 @@ export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeT
 export { default as LightsparkNodeToDailyLiquidityForecastsConnection } from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
 export { default as LightsparkNodeWithOSK } from "./LightsparkNodeWithOSK.js";
 export { default as LightsparkNodeWithRemoteSigning } from "./LightsparkNodeWithRemoteSigning.js";
+export { default as MultiSigAddressValidationParameters } from "./MultiSigAddressValidationParameters.js";
 export { default as Node, getNodeQuery } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";

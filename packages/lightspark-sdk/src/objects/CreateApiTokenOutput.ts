@@ -41,6 +41,7 @@ fragment CreateApiTokenOutputFragment on CreateApiTokenOutput {
         api_token_client_id: client_id
         api_token_name: name
         api_token_permissions: permissions
+        api_token_is_deleted: is_deleted
     }
     create_api_token_output_client_secret: client_secret
 }`;

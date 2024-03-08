@@ -15,6 +15,8 @@ export enum WithdrawalRequestStatus {
   IN_PROGRESS = "IN_PROGRESS",
 
   SUCCESSFUL = "SUCCESSFUL",
+
+  PARTIALLY_SUCCESSFUL = "PARTIALLY_SUCCESSFUL",
 }
 
 export default WithdrawalRequestStatus;

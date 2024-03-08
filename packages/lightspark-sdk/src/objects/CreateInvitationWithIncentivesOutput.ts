@@ -1,6 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface CreateInvitationWithIncentivesOutput {
+  /** The created invitation in the form of a string identifier. **/
   invitationId: string;
 }
 
