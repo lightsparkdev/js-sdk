@@ -1,7 +1,5 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Maybe } from "@lightsparkdev/core";
-
 export const capitalize = (str: string): string => {
   if (str.length === 0) {
     return str;
@@ -20,17 +18,6 @@ export const makeEnumPretty = (
     formatted[0] = capitalize(formatted[0]);
   }
   return formatted.join(" ");
-};
-
-// Keep the first and optionally last characters of a long string with
-// elispses in the middle.
-export const elide = (
-  s: Maybe<string>,
-  first: number,
-  last?: number,
-): Maybe<string> => {
-  if (s === undefined || s === null) return s;
-  return s.substring(0, first) + "..." + s.substring(s.length - (last ?? 0));
 };
 
 export function removeChars(
@@ -65,4 +52,41 @@ export function removeLeadingZeros(value: string): string {
   }
 
   return value;
+}
+
+export type ElideArgs =
+  | number
+  | {
+      maxChars: number;
+      ellipsisPosition?: "start" | "middle" | "end" | number;
+    };
+
+export function elide(value: string, elideArgs: ElideArgs = 5): string {
+  const args =
+    typeof elideArgs === "number"
+      ? { maxChars: elideArgs, ellipsisPosition: "middle" }
+      : elideArgs;
+  let displayValue = value;
+  if (value.length > args.maxChars) {
+    if (typeof args.ellipsisPosition === "number") {
+      displayValue = `${value.substr(
+        0,
+        args.ellipsisPosition,
+      )}...${value.substr(value.length - args.ellipsisPosition, value.length)}`;
+    } else if (args.ellipsisPosition === "start") {
+      displayValue = `...${value.substr(
+        value.length - args.maxChars,
+        value.length,
+      )}`;
+    } else if (args.ellipsisPosition === "middle") {
+      const half = Math.floor(args.maxChars / 2);
+      displayValue = `${value.substr(0, half)}...${value.substr(
+        value.length - half,
+        value.length,
+      )}`;
+    } else {
+      displayValue = `${value.substr(0, args.maxChars)}...`;
+    }
+  }
+  return displayValue;
 }
