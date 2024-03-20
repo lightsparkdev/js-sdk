@@ -4,7 +4,7 @@ import { createUmaServer } from "./src/server.js";
 import UmaConfig from "./src/UmaConfig.js";
 import { AccountTokenAuthProvider, LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import DemoUserService from "./src/demo/DemoUserService.js";
-import { InMemoryPublicKeyCache } from "@uma-sdk/core";
+import { InMemoryNonceValidator, InMemoryPublicKeyCache } from "@uma-sdk/core";
 import InMemorySendingVaspRequestCache from "./src/demo/InMemorySendingVaspRequestCache.js";
 import DemoInternalLedgerService from "./src/demo/DemoInternalLedgerService.js";
 import DemoComplianceService from "./src/demo/DemoComplianceService.js";
@@ -40,6 +40,7 @@ const app = createUmaServer(
   userService,
   new DemoInternalLedgerService(config, userService, lightsparkClient),
   new DemoComplianceService(config, lightsparkClient),
+  new InMemoryNonceValidator(Date.now() - 1000 * 60 * 60 * 6),
 );
 
 describe("Test server routes", () => {
