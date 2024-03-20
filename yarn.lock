@@ -3972,7 +3972,7 @@ __metadata:
     dotenv: ^16.3.1
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
-    jose: ^4.14.4
+    jose: ^4.15.5
     jsonwebtoken: ^9.0.1
     nodemon: ^2.0.22
     prettier: 3.0.3
@@ -4410,7 +4410,7 @@ __metadata:
     dotenv: ^16.3.1
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
-    jose: ^4.14.4
+    jose: ^4.15.5
     jsonwebtoken: ^9.0.1
     nodemon: ^2.0.22
     prettier: 3.0.3
@@ -14759,10 +14759,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jose@npm:^4.14.4":
-  version: 4.15.4
-  resolution: "jose@npm:4.15.4"
-  checksum: dccad91cb3357f36423774a0b89ad830dd84b31090de65cd139b85488439f16a00f8c59c0773825e8a1adb0dd9d13ad725ad66e6ea33880ecb3959bb99e1ea5b
+"jose@npm:^4.15.5":
+  version: 4.15.5
+  resolution: "jose@npm:4.15.5"
+  checksum: 7dde76447c7707bd4b448f914b216f3858e701aa83f00447434252461af5b9e159dcbffb88badea3f9616739526763581267c9560622f0a058df8d68c86d7f79
   languageName: node
   linkType: hard
 
