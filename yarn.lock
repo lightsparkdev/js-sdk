@@ -4343,7 +4343,7 @@ __metadata:
     "@lightsparkdev/tsconfig": 0.0.1
     "@types/chalk": ^2.2.0
     "@types/node": ^20.2.5
-    "@uma-sdk/core": ^0.8.1
+    "@uma-sdk/core": ^0.8.2
     chalk: ^5.3.0
     commander: ^11.0.0
     eslint: ^8.3.0
@@ -4370,7 +4370,7 @@ __metadata:
     "@types/express": ^4.17.21
     "@types/supertest": ^2.0.14
     "@types/uuid": ^9.0.7
-    "@uma-sdk/core": ^0.8.1
+    "@uma-sdk/core": ^0.8.2
     express: ^4.18.2
     jest: ^29.6.2
     nodemon: ^2.0.22
@@ -6667,14 +6667,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uma-sdk/core@npm:^0.8.1":
-  version: 0.8.1
-  resolution: "@uma-sdk/core@npm:0.8.1"
+"@uma-sdk/core@npm:^0.8.2":
+  version: 0.8.2
+  resolution: "@uma-sdk/core@npm:0.8.2"
   dependencies:
     eciesjs: ^0.4.4
     secp256k1: ^5.0.0
     zod: ^3.22.2
-  checksum: 2895af2e95d3a2b58097d65a46bdc0b329cf0c7af72d839a94782eead4fe4587570c5491e5bb1bbbfaa24d72eb26f2d962cc438fd6ae8d47e7181bd99297007a
+  checksum: ded3d1a84829bec69f2b7b24da4467ef7ed97928d3aa50c297343fff0e278be5d4db3c3f11c9c13779d8f4c0dc1a4228d3fb360a83b05427ddb21cd565ed53d1
   languageName: node
   linkType: hard
 
