@@ -6,7 +6,7 @@
   "scripts": {
     "start": "./start.sh",
     "build": "yarn tsc",
-    "start:docker": "node dist/src/startServer.js",
+    "start:docker": "node dist/startServer.js",
     "test:start": "./test.sh start",
     "test": "./test.sh test"
   },
