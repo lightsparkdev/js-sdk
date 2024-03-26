@@ -324,7 +324,7 @@ const ModalContent = styled.div<{
 }>`
   ${overflowAutoWithoutScrollbars}
   ${standardContentInset.smCSS}
-  ${standardBorderRadius(16)}
+  ${(props) => (props.ghost ? "" : standardBorderRadius(16))}
   ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;
   transition: width 0.25s ease-in;
