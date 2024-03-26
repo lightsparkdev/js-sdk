@@ -1,5 +1,5 @@
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
-import { InMemoryPublicKeyCache } from "@uma-sdk/core";
+import { InMemoryPublicKeyCache, NonceValidator } from "@uma-sdk/core";
 import bodyParser from "body-parser";
 import express from "express";
 import ComplianceService from "./ComplianceService.js";
@@ -19,6 +19,7 @@ export const createUmaServer = (
   userService: UserService,
   ledgerService: InternalLedgerService,
   complianceService: ComplianceService,
+  nonceCache: NonceValidator,
 ): {
   listen: (
     port: number,
@@ -39,6 +40,7 @@ export const createUmaServer = (
     userService,
     ledgerService,
     complianceService,
+    nonceCache,
   );
   sendingVasp.registerRoutes(app);
   const receivingVasp = new ReceivingVasp(
@@ -47,6 +49,7 @@ export const createUmaServer = (
     pubKeyCache,
     userService,
     complianceService,
+    nonceCache,
   );
   receivingVasp.registerRoutes(app);
 

@@ -25,6 +25,7 @@ export default class ReceivingVasp {
     private readonly pubKeyCache: uma.PublicKeyCache,
     private readonly userService: UserService,
     private readonly complianceService: ComplianceService,
+    private readonly nonceCache: uma.NonceValidator,
   ) {}
 
   registerRoutes(app: Express): void {
@@ -136,6 +137,7 @@ export default class ReceivingVasp {
       const isSignatureValid = await uma.verifyUmaLnurlpQuerySignature(
         umaQuery,
         hexToBytes(pubKeys.signingPubKey),
+        this.nonceCache,
       );
       if (!isSignatureValid) {
         return {
@@ -235,6 +237,7 @@ export default class ReceivingVasp {
       const isSignatureValid = await uma.verifyPayReqSignature(
         payreq,
         hexToBytes(pubKeys.signingPubKey),
+        this.nonceCache,
       );
       if (!isSignatureValid) {
         return { httpStatus: 400, data: "Invalid payreq signature." };

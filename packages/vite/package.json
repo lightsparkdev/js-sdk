@@ -5,7 +5,7 @@
   "main": "./index.cjs",
   "type": "module",
   "dependencies": {
-    "vite": "^5.0.5",
+    "vite": "^5.1.6",
     "vite-plugin-svgr": "^3.2.0"
   },
   "engines": {

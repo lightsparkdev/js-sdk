@@ -35,6 +35,7 @@ export default class SendingVasp {
     private readonly userService: UserService,
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
+    private readonly nonceCache: uma.NonceValidator,
   ) {}
 
   registerRoutes(app: Express) {
@@ -193,6 +194,7 @@ export default class SendingVasp {
       const isSignatureValid = await uma.verifyUmaLnurlpResponseSignature(
         lnurlpResponse,
         hexToBytes(pubKeys.signingPubKey),
+        this.nonceCache,
       );
       if (!isSignatureValid) {
         return { httpStatus: 424, data: "Invalid UMA response signature." };

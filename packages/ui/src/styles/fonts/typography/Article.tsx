@@ -62,7 +62,8 @@ export const Article = styled.article`
     margin: ${Spacing["2xl"]} 0;
   }
 
-  img {
+  img,
+  video {
     margin-top: ${Spacing.md};
     margin-bottom: ${Spacing.md};
   }
