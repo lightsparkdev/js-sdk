@@ -39,10 +39,10 @@ export const getCredentialsFromEnvOrThrow = (): EnvCredentials => {
     );
   }
 
-  const apiTokenClientId = env[RequiredCredentials.ClientId]!;
-  const apiTokenClientSecret = env[RequiredCredentials.ClientSecret]!;
+  const apiTokenClientId = env[RequiredCredentials.ClientId];
+  const apiTokenClientSecret = env[RequiredCredentials.ClientSecret];
   const bitcoinNetwork = getBitcoinNetworkOrThrow(
-    env[RequiredCredentials.BitcoinNetwork]! as BitcoinNetwork,
+    env[RequiredCredentials.BitcoinNetwork] as BitcoinNetwork,
   );
   const testNodePassword = "1234!@#$";
   const baseUrl = env["LIGHTSPARK_BASE_URL"] || "api.lightspark.com";

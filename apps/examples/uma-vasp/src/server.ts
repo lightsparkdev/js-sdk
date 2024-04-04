@@ -1,5 +1,5 @@
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
-import { InMemoryPublicKeyCache, NonceValidator } from "@uma-sdk/core";
+import { getPubKeyResponse, InMemoryPublicKeyCache, NonceValidator } from "@uma-sdk/core";
 import bodyParser from "body-parser";
 import express from "express";
 import ComplianceService from "./ComplianceService.js";
@@ -54,10 +54,10 @@ export const createUmaServer = (
   receivingVasp.registerRoutes(app);
 
   app.get("/.well-known/lnurlpubkey", (req, res) => {
-    res.send({
-      signingPubKey: config.umaSigningPubKeyHex,
-      encryptionPubKey: config.umaEncryptionPubKeyHex,
-    });
+    res.send(getPubKeyResponse({
+      signingCertChainPem: config.umaSigningCertChain,
+      encryptionCertChainPem: config.umaEncryptionCertChain,
+    }).toJsonString());
   });
 
   app.post("/api/uma/utxoCallback", (req, res) => {

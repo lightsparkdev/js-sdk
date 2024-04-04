@@ -7,11 +7,12 @@ import {
 import * as uma from "@uma-sdk/core";
 import { Express } from "express";
 import ComplianceService from "./ComplianceService.js";
-import { errorMessage } from "./errors.js";
+import { SATS_CURRENCY } from "./currencies.js";
 import {
   fullUrlForRequest,
   isDomainLocalhost,
   sendResponse,
+  hostNameWithPort,
 } from "./networking/expressAdapters.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
 import UmaConfig from "./UmaConfig.js";
@@ -64,8 +65,28 @@ export default class ReceivingVasp {
       return { httpStatus: 404, data: "User not found." };
     }
 
-    if (uma.isUmaLnurlpQuery(requestUrl)) {
-      return this.handleUmaLnurlp(requestUrl, user);
+    let lnurlpRequest: uma.LnurlpRequest;
+    try {
+      lnurlpRequest = uma.parseLnurlpRequest(requestUrl);
+    } catch (e: any) {
+      if (e instanceof uma.UnsupportedVersionError) {
+        // For unsupported versions, return a 412 "Precondition Failed" as per the spec.
+        return {
+          httpStatus: 412,
+          data: {
+            supportedMajorVersions: e.supportedMajorVersions,
+            unsupportedVersion: e.unsupportedVersion,
+          },
+        };
+      }
+      return {
+        httpStatus: 500,
+        data: new Error("Invalid lnurlp Query", { cause: e }),
+      };
+    }
+
+    if (uma.isLnurlpRequestForUma(lnurlpRequest)) {
+      return this.handleUmaLnurlp(requestUrl, lnurlpRequest, user);
     }
 
     // Fall back to normal LNURLp.
@@ -85,31 +106,18 @@ export default class ReceivingVasp {
 
   private async handleUmaLnurlp(
     requestUrl: URL,
+    umaQuery: uma.LnurlpRequest,
     user: User,
   ): Promise<HttpResponse> {
-    let umaQuery: uma.LnurlpRequest;
-    try {
-      umaQuery = uma.parseLnurlpRequest(requestUrl);
-    } catch (e: any) {
-      if (e instanceof uma.UnsupportedVersionError) {
-        // For unsupported versions, return a 412 "Precondition Failed" as per the spec.
-        return {
-          httpStatus: 412,
-          data: {
-            supportedMajorVersions: e.supportedMajorVersions,
-            unsupportedVersion: e.unsupportedVersion,
-          },
-        };
-      }
+    if (!uma.isLnurlpRequestForUma(umaQuery)) {
       return {
-        httpStatus: 500,
-        data: new Error("Invalid UMA Query", { cause: e }),
+        httpStatus: 400,
+        data: "Invalid UMA query.",
       };
     }
-
     if (
       !this.complianceService.shouldAcceptTransactionFromVasp(
-        umaQuery.vaspDomain,
+        umaQuery.vaspDomain!,
         umaQuery.receiverAddress,
       )
     ) {
@@ -123,7 +131,7 @@ export default class ReceivingVasp {
     try {
       pubKeys = await uma.fetchPublicKeyForVasp({
         cache: this.pubKeyCache,
-        vaspDomain: umaQuery.vaspDomain,
+        vaspDomain: umaQuery.vaspDomain!,
       });
     } catch (e) {
       console.error(e);
@@ -134,11 +142,7 @@ export default class ReceivingVasp {
     }
 
     try {
-      const isSignatureValid = await uma.verifyUmaLnurlpQuerySignature(
-        umaQuery,
-        hexToBytes(pubKeys.signingPubKey),
-        this.nonceCache,
-      );
+      const isSignatureValid = await uma.verifyUmaLnurlpQuerySignature(umaQuery, pubKeys, this.nonceCache);
       if (!isSignatureValid) {
         return {
           httpStatus: 500,
@@ -163,7 +167,7 @@ export default class ReceivingVasp {
     }
 
     const [minSendableSats, maxSendableSats] =
-      await this.userService.getReceivableSatsRangeForUser(user.id);
+      await this.userService.getReceivableMsatsRangeForUser(user.id);
 
     try {
       const response = await uma.getLnurlpResponse({
@@ -183,7 +187,7 @@ export default class ReceivingVasp {
         },
         currencyOptions: currencyPrefs,
       });
-      return { httpStatus: 200, data: response };
+      return { httpStatus: 200, data: response.toJsonSchemaObject() };
     } catch (e) {
       console.error(e);
       return {
@@ -205,7 +209,8 @@ export default class ReceivingVasp {
 
     let payreq: uma.PayRequest;
     try {
-      payreq = uma.parsePayRequest(requestBody);
+      console.log(`Parsing payreq: ${requestBody}`);
+      payreq = uma.PayRequest.fromJson(requestBody);
     } catch (e) {
       console.error("Failed to parse pay req", e);
       return {
@@ -213,14 +218,21 @@ export default class ReceivingVasp {
         data: new Error("Invalid UMA pay request.", { cause: e }),
       };
     }
-    console.log(`Parsed payreq: ${JSON.stringify(payreq, null, 2)}`);
+    console.log(`Parsed payreq: ${JSON.stringify(payreq.toJsonSchemaObject(), null, 2)}`);
+    if (!payreq.isUma()) {
+      return { httpStatus: 400, data: "Invalid UMA payreq." };
+    }
+
+    if (!payreq.payerData!.identifier) {
+      return { httpStatus: 400, data: "Payer identifier is missing" };
+    }
 
     let pubKeys: uma.PubKeyResponse;
     try {
       pubKeys = await uma.fetchPublicKeyForVasp({
         cache: this.pubKeyCache,
         vaspDomain: uma.getVaspDomainFromUmaAddress(
-          payreq.payerData.identifier,
+          payreq.payerData!.identifier,
         ),
       });
     } catch (e) {
@@ -234,11 +246,7 @@ export default class ReceivingVasp {
     console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
 
     try {
-      const isSignatureValid = await uma.verifyPayReqSignature(
-        payreq,
-        hexToBytes(pubKeys.signingPubKey),
-        this.nonceCache,
-      );
+      const isSignatureValid = await uma.verifyPayReqSignature(payreq, pubKeys, this.nonceCache);
       if (!isSignatureValid) {
         return { httpStatus: 400, data: "Invalid payreq signature." };
       }
@@ -251,7 +259,14 @@ export default class ReceivingVasp {
     }
 
     console.log(`Verified payreq signature.`);
+    return this.handlePayReq(payreq, user, requestUrl);
+  }
 
+  private async handlePayReq(
+    payreq: uma.PayRequest,
+    user: User,
+    requestUrl: URL,
+  ): Promise<HttpResponse> {
     const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
       user.id,
     );
@@ -262,41 +277,68 @@ export default class ReceivingVasp {
         data: "Failed to fetch currency preferences.",
       };
     }
-    const currency = currencyPrefs.find((c) => c.code === payreq.currency);
-    if (!currency) {
-      console.error(`Invalid currency: ${payreq.currency}`);
+    let receivingCurrency = currencyPrefs.find(
+      (c) => c.code === payreq.receivingCurrencyCode,
+    );
+    if (payreq.receivingCurrencyCode && !receivingCurrency) {
+      console.error(`Invalid currency: ${payreq.receivingCurrencyCode}`);
       return {
         httpStatus: 400,
-        data: `Invalid currency. This user does not accept ${payreq.currency}.`,
+        data: `Invalid currency. This user does not accept ${payreq.receivingCurrencyCode}.`,
       };
+    } else if (!payreq.receivingCurrencyCode) {
+      receivingCurrency = SATS_CURRENCY;
+    } else if (!receivingCurrency) {
+      // This can't actually happen, but TypeScript doesn't know that.
+      return { httpStatus: 400, data: "Invalid currency." };
     }
 
-    if (
-      payreq.amount < currency.minSendable ||
-      payreq.amount > currency.maxSendable
-    ) {
+    const isSendingAmountMsats = !payreq.sendingAmountCurrencyCode;
+    const [minSendableSats, maxSendableSats] =
+      await this.userService.getReceivableMsatsRangeForUser(user.id);
+    const isCurrencyAmountInBounds = isSendingAmountMsats
+      ? payreq.amount >= minSendableSats && payreq.amount / 1000 <= maxSendableSats
+      : payreq.amount >= receivingCurrency.minSendable &&
+        payreq.amount <= receivingCurrency.maxSendable;
+    if (!isCurrencyAmountInBounds) {
       return {
         httpStatus: 400,
-        data: `Invalid amount. This user only accepts between ${currency.minSendable} and ${currency.maxSendable} ${currency.code}.`,
+        data:
+          `Invalid amount. This user only accepts between ${receivingCurrency.minSendable} ` +
+          `and ${receivingCurrency.maxSendable} ${receivingCurrency.code}.`,
       };
     }
 
     // TODO(Jeremy): Move this to the currency service.
-    const receiverFeesMillisats = 0;
-    const amountMsats =
-      payreq.amount * currency.multiplier + receiverFeesMillisats;
-    const shouldTransact = await this.complianceService.preScreenTransaction(
-      payreq.payerData.identifier,
-      user.id,
-      amountMsats,
-      payreq.payerData.compliance.nodePubKey,
-      payreq.payerData.compliance.utxos ?? [],
-    );
-    if (!shouldTransact) {
+    if (
+      payreq.sendingAmountCurrencyCode &&
+      payreq.sendingAmountCurrencyCode !== "SAT" &&
+      payreq.sendingAmountCurrencyCode !== receivingCurrency.code
+    ) {
       return {
-        httpStatus: 403,
-        data: "This transaction is too risky.",
+        httpStatus: 400,
+        data: `Invalid sending currency. Cannot convert from ${payreq.sendingAmountCurrencyCode}.`,
       };
+    }
+    const receiverFeesMillisats = 0;
+    const amountMsats = isSendingAmountMsats
+      ? payreq.amount
+      : payreq.amount * receivingCurrency.multiplier + receiverFeesMillisats;
+    const isUmaRequest = payreq.isUma();
+    if (isUmaRequest) {
+      const shouldTransact = await this.complianceService.preScreenTransaction(
+        payreq.payerData.identifier!,
+        user.id,
+        amountMsats,
+        payreq.payerData.compliance?.nodePubKey ?? undefined,
+        payreq.payerData.compliance?.utxos ?? [],
+      );
+      if (!shouldTransact) {
+        return {
+          httpStatus: 403,
+          data: "This transaction is too risky.",
+        };
+      }
     }
 
     // 3 minutes invoice expiration to avoid big fluctuations in exchange rate.
@@ -317,22 +359,36 @@ export default class ReceivingVasp {
         return invoice?.data.encodedPaymentRequest;
       },
     };
+    const payeeData = this.getPayeeData(
+      payreq.requestedPayeeData,
+      user,
+      requestUrl,
+    );
 
     let response: uma.PayReqResponse;
     try {
       response = await uma.getPayReqResponse({
-        conversionRate: currency.multiplier,
-        currencyCode: currency.code,
-        currencyDecimals: currency.decimals,
+        request: payreq,
+        conversionRate: receivingCurrency.multiplier,
+        receivingCurrencyCode: receivingCurrency.code,
+        receivingCurrencyDecimals: receivingCurrency.decimals,
         invoiceCreator: umaInvoiceCreator,
         metadata: this.getEncodedMetadata(requestUrl, user),
-        query: payreq,
         receiverChannelUtxos: [],
         receiverFeesMillisats: receiverFeesMillisats,
-        receiverNodePubKey: await this.getReceiverNodePubKey(),
-        utxoCallback: this.getUtxoCallback(requestUrl, txId),
+        receiverNodePubKey: isUmaRequest
+          ? await this.getReceiverNodePubKey()
+          : undefined,
+        utxoCallback: isUmaRequest
+          ? this.getUtxoCallback(requestUrl, txId)
+          : undefined,
+        payeeData: payeeData,
+        receivingVaspPrivateKey: isUmaRequest
+          ? this.config.umaSigningPrivKey()
+          : undefined,
+        payeeIdentifier: `$${user.umaUserName}@${hostNameWithPort(requestUrl)}`,
       });
-      return { httpStatus: 200, data: response };
+      return { httpStatus: 200, data: response.toJsonSchemaObject() };
     } catch (e) {
       console.log(`Failed to generate UMA response: ${e}`);
       console.error(e);
@@ -355,31 +411,17 @@ export default class ReceivingVasp {
       return { httpStatus: 404, data: "User not found." };
     }
 
-    const amountMsats = parseInt(
-      requestUrl.searchParams.get("amount") as string,
-    );
-    if (!amountMsats) {
+    let request: uma.PayRequest;
+    try {
+      request = uma.PayRequest.fromUrlSearchParams(requestUrl.searchParams);
+    } catch (e) {
       return {
         httpStatus: 400,
-        data: errorMessage("Missing amount query parameter."),
+        data: "Invalid pay request: " + e,
       };
     }
 
-    const invoice = await this.lightsparkClient.createLnurlInvoice(
-      this.config.nodeID,
-      amountMsats,
-      this.getEncodedMetadata(requestUrl, user),
-    );
-    if (!invoice) {
-      return {
-        httpStatus: 500,
-        data: errorMessage("Invoice creation failed."),
-      };
-    }
-    return {
-      httpStatus: 200,
-      data: { pr: invoice.data.encodedPaymentRequest, routes: [] },
-    };
+    return this.handlePayReq(request, user, requestUrl);
   }
 
   private getEncodedMetadata(requestUrl: URL, user: User): string {
@@ -419,5 +461,19 @@ export default class ReceivingVasp {
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
     return `${requestUrl.protocol}//${requestUrl.hostname}${path}`;
+  }
+
+  private getPayeeData(
+    options: uma.CounterPartyDataOptions | undefined,
+    user: User,
+    requestUrl: URL,
+  ) {
+    const name = options?.name?.mandatory ? user.umaUserName : undefined;
+    const email = options?.email?.mandatory ? user.emailAddress : undefined;
+    return {
+      name: name,
+      email: email,
+      identifier: `${user.umaUserName}@${requestUrl.hostname}`,
+    };
   }
 }

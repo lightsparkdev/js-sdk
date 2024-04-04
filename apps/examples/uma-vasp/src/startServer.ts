@@ -2,7 +2,7 @@ import {
   AccountTokenAuthProvider,
   LightsparkClient,
 } from "@lightsparkdev/lightspark-sdk";
-import { InMemoryNonceValidator, InMemoryPublicKeyCache } from "@uma-sdk/core";
+import { InMemoryPublicKeyCache, InMemoryNonceValidator } from "@uma-sdk/core";
 import UmaConfig from "./UmaConfig.js";
 import DemoComplianceService from "./demo/DemoComplianceService.js";
 import DemoInternalLedgerService from "./demo/DemoInternalLedgerService.js";
@@ -19,6 +19,8 @@ const lightsparkClient = new LightsparkClient(
 );
 const userService = new DemoUserService();
 
+const twoDaysAgo = new Date();
+twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 const umaServer = createUmaServer(
   config,
   lightsparkClient,
@@ -27,7 +29,7 @@ const umaServer = createUmaServer(
   userService,
   new DemoInternalLedgerService(config, userService, lightsparkClient),
   new DemoComplianceService(config, lightsparkClient),
-  new InMemoryNonceValidator(Date.now() - 1000 * 60 * 60 * 6),
+  new InMemoryNonceValidator(twoDaysAgo.getTime()),
 );
 
 let port = 8080;
