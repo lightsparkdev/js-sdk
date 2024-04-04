@@ -1,5 +1,13 @@
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
-import { getPubKeyResponse, InMemoryPublicKeyCache, NonceValidator } from "@uma-sdk/core";
+import {
+  fetchPublicKeyForVasp,
+  getPubKeyResponse,
+  parsePostTransactionCallback,
+  verifyPostTransactionCallbackSignature,
+  InMemoryPublicKeyCache,
+  PubKeyResponse,
+  NonceValidator
+} from "@uma-sdk/core";
 import bodyParser from "body-parser";
 import express from "express";
 import ComplianceService from "./ComplianceService.js";
@@ -60,7 +68,38 @@ export const createUmaServer = (
     }).toJsonString());
   });
 
-  app.post("/api/uma/utxoCallback", (req, res) => {
+  app.post("/api/uma/utxoCallback", async (req, res) => {
+    const postTransactionCallback = parsePostTransactionCallback(req.body);
+
+    let pubKeys: PubKeyResponse;
+    try {
+      pubKeys = await fetchPublicKeyForVasp({
+        cache: pubKeyCache,
+        vaspDomain: postTransactionCallback.vaspDomain,
+      });
+    } catch (e) {
+      console.error(e);
+      return {
+        httpStatus: 500,
+        data: new Error("Failed to fetch public key.", { cause: e }),
+      };
+    }
+
+    console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
+
+    try {
+      const isSignatureValid = await verifyPostTransactionCallbackSignature(postTransactionCallback, pubKeys, nonceCache);
+      if (!isSignatureValid) {
+        return { httpStatus: 400, data: "Invalid post transaction callback signature." };
+      }
+    } catch (e) {
+      console.error(e);
+      return {
+        httpStatus: 500,
+        data: new Error("Invalid post transaction callback signature.", { cause: e }),
+      };
+    }
+
     console.log(`Received UTXO callback for ${req.query.txid}`);
     console.log(`  ${req.body}`);
     res.send("ok");

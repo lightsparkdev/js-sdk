@@ -751,7 +751,7 @@ export default class SendingVasp {
       return { httpStatus: 500, data: "Error paying invoice." };
     }
 
-    await this.sendPostTransactionCallback(payment, payReqData);
+    await this.sendPostTransactionCallback(payment, payReqData, requestUrl);
 
     const nodePubKey = (await this.getLightsparkNode()).publicKey;
     await this.complianceService.registerTransactionMonitoring(
@@ -841,6 +841,7 @@ export default class SendingVasp {
   private async sendPostTransactionCallback(
     payment: OutgoingPayment,
     payReqData: SendingVaspPayReqData,
+    requestUrl: URL,
   ) {
     if (!payReqData.utxoCallback || payReqData.utxoCallback === "") {
       return;
@@ -853,13 +854,18 @@ export default class SendingVasp {
             .preferredCurrencyValueRounded,
         };
       }) ?? [];
+    const postTransactionCallback = await uma.getPostTransactionCallback({
+      utxos: utxos,
+      vaspDomain: this.getSendingVaspDomain(requestUrl),
+      signingPrivateKey: this.config.umaSigningPrivKey(),
+    });
     try {
       const postTxResponse = await fetch(payReqData.utxoCallback, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ utxos }),
+        body: JSON.stringify(postTransactionCallback),
       });
       if (!postTxResponse.ok) {
         console.error(
