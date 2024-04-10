@@ -30,6 +30,7 @@ export { LightboxImage } from "./LightboxImage.js";
 export { LightsparkProvider } from "./LightsparkProvider.js";
 export { Loading, LoadingWrapper } from "./Loading.js";
 export { Modal } from "./Modal.js";
+export { PageSectionNav } from "./PageSection/PageSectionNav.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { SecretContainer } from "./SecretContainer.js";
@@ -38,6 +39,7 @@ export {
   type StatusIndicatorColors,
   type StatusIndicatorProps,
 } from "./StatusIndicator.js";
+export { TextButton } from "./TextButton.js";
 export {
   TextIconAligner,
   type TextIconAlignerProps,
