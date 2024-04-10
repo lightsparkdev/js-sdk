@@ -23,6 +23,7 @@ export { Collapsible } from "./Collapsible.js";
 export { CommandKey } from "./CommandKey.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount.js";
+export { Dropdown } from "./Dropdown.js";
 export { GradientCardHeader } from "./GradientCardHeader.js";
 export { Icon, IconContainer } from "./Icon.js";
 export { LightTooltip } from "./LightTooltip.js";
@@ -30,6 +31,21 @@ export { LightboxImage } from "./LightboxImage.js";
 export { LightsparkProvider } from "./LightsparkProvider.js";
 export { Loading, LoadingWrapper } from "./Loading.js";
 export { Modal } from "./Modal.js";
+export {
+  PageSection,
+  PageSectionBox,
+  PageSectionBoxActionColumn,
+  PageSectionBoxActionRow,
+  PageSectionBoxColumn,
+  PageSectionBoxDescription,
+  PageSectionBoxRow,
+  PageSectionBoxTitle,
+  PageSectionRow,
+  PageSectionRowSubSection,
+  PageSectionSubheading,
+  StyledPageSectionBox,
+  type PageSectionProps,
+} from "./PageSection/PageSection.js";
 export { PageSectionNav } from "./PageSection/PageSectionNav.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
