@@ -27,7 +27,8 @@ export type ButtonProps<RoutesType extends string> = {
   id?: string | undefined;
   to?: RoutesType | undefined;
   hash?: string | undefined;
-  href?: string;
+  href?: string | undefined;
+  hrefFilename?: string | undefined;
   toParams?: RouteParams | undefined;
   primary?: boolean | undefined;
   ghost?: boolean | undefined;
@@ -183,6 +184,7 @@ export function Button<RoutesType extends string>({
   id,
   hash,
   href,
+  hrefFilename,
   toParams,
   onClick,
   icon,
@@ -281,7 +283,12 @@ export function Button<RoutesType extends string>({
   }
 
   return href ? (
-    <ButtonHrefLink {...commonProps} href={href} target="_blank">
+    <ButtonHrefLink
+      {...commonProps}
+      href={href}
+      download={hrefFilename}
+      target="_blank"
+    >
       {content}
     </ButtonHrefLink>
   ) : (
@@ -322,6 +329,7 @@ const buttonStyle = ({
 }: StyledButtonProps & { theme: Theme }) => css`
   display: inline-flex;
   opacity: ${disabled && !isLoading ? 0.2 : 1};
+  ${disabled ? "pointer-events: none;" : ""}
   transition: opacity 0.2s;
   position: relative;
 

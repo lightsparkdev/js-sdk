@@ -16,12 +16,27 @@ import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { select } from "../utils/emotion.js";
 import { toReactNodes } from "../utils/toReactNodes.js";
-import { Button } from "./Button.js";
+import { Button, ButtonSelector } from "./Button.js";
 import { Icon } from "./Icon.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type ModalProps = {
+type SubmitLinkWithRoute<RoutesType extends string> = {
+  to: RoutesType;
+};
+
+type SubmitLinkWithHref = {
+  href: string;
+  filename?: string;
+};
+
+function isSubmitLinkWithHref<RoutesType extends string>(
+  submitLink: SubmitLinkWithRoute<RoutesType> | SubmitLinkWithHref | undefined,
+): submitLink is SubmitLinkWithHref {
+  return Boolean(submitLink && "href" in submitLink);
+}
+
+type ModalProps<RoutesType extends string> = {
   visible: boolean;
   onClose: () => void;
   title?: string;
@@ -35,6 +50,11 @@ type ModalProps = {
   submitDisabled?: boolean;
   submitLoading?: boolean;
   submitText?: string;
+  submitLink?:
+    | {
+        to: RoutesType;
+      }
+    | SubmitLinkWithHref;
   children?: React.ReactNode;
   /* most of the time this is an Element but not in the case of Select - it
    * just extends .focus method: */
@@ -47,7 +67,7 @@ type ModalProps = {
   progressBar?: ProgressBarProps;
 };
 
-export function Modal({
+export function Modal<RoutesType extends string>({
   visible,
   title,
   description,
@@ -61,13 +81,14 @@ export function Modal({
   submitDisabled,
   submitLoading,
   submitText,
+  submitLink,
   cancelText = "Cancel",
   firstFocusRef,
   nonDismissable = false,
   autoFocus = true,
   width = 460,
   progressBar,
-}: ModalProps) {
+}: ModalProps<RoutesType>) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
@@ -180,6 +201,9 @@ export function Modal({
     }
   }
 
+  const linkIsHref = isSubmitLinkWithHref(submitLink);
+  const linkIsRoute = !linkIsHref && submitLink;
+
   const modalContent = (
     <Fragment>
       <ModalOverlay ref={overlayRef} />
@@ -228,7 +252,14 @@ export function Modal({
                     primary
                     text={submitText ?? "Continue"}
                     loading={submitLoading}
-                    type="submit"
+                    to={linkIsRoute ? submitLink.to : undefined}
+                    href={linkIsHref ? submitLink.href : undefined}
+                    hrefFilename={linkIsHref ? submitLink.filename : undefined}
+                    /* If submit button is a link we should not attempt to submit the form and
+                       should call onClick instead for onSubmit side-effects: */
+                    type={submitLink ? "button" : "submit"}
+                    /* The form element handles submit events when submit button is not a link: */
+                    onClick={submitLink ? onSubmit : undefined}
                   />
                 )}
                 {isSm && !cancelHidden && (
@@ -304,14 +335,14 @@ const ModalButtonRow = styled.div`
   ${bp.minSm(`display: flex;`)}
   gap: 10px;
 
-  button {
+  ${ButtonSelector()} {
     width: 50%;
     ${bp.sm(`
       width: 100%;
     `)}
   }
 
-  button:last-of-type {
+  ${ButtonSelector("", `:last-of-type`)} {
     ${bp.sm(`
       margin-top: 16px;
     `)}
