@@ -6894,6 +6894,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@wojtekmaj/react-daterange-picker@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@wojtekmaj/react-daterange-picker@npm:5.5.0"
+  dependencies:
+    clsx: ^2.0.0
+    make-event-props: ^1.6.0
+    prop-types: ^15.6.0
+    react-calendar: ^4.6.0
+    react-date-picker: ^10.5.0
+    react-fit: ^1.7.0
+  peerDependencies:
+    "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 18804a67e515d63ce767dd56bc71da853109e9bc7a53626fe639a7705e596415fb5204dc15e706ebdf5782e1bd39bb06333d36d16b440dec7a8a68fbc4e46f07
+  languageName: node
+  linkType: hard
+
 "@wry/caches@npm:^1.0.0":
   version: 1.0.1
   resolution: "@wry/caches@npm:1.0.1"
@@ -14812,6 +14833,7 @@ __metadata:
     "@changesets/cli": ^2.27.1
     "@manypkg/cli": ^0.21.0
     "@octokit/auth-action": ^4.0.1
+    "@wojtekmaj/react-daterange-picker": ^5.5.0
     octokit: ^3.1.2
     react-datetime-picker: ^5.6.0
     rehype-autolink-headings: ^7.0.0
