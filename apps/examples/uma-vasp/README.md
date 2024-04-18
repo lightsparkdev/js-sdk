@@ -12,9 +12,7 @@ in your account's [API config page](https://app.lightspark.com/api-config).
 1. Find your node credentials (`LIGHTSPARK_UMA_NODE_ID`, `LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD`)
 in your account's [API config page](https://app.lightspark.com/api-config).
 
-1. Create a secp256k1 keypair to use as your encryption keys (`LIGHTSPARK_UMA_ENCRYPTION_PUBKEY`, `LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY`)
-and signing keys (`LIGHTSPARK_UMA_SIGNING_PUBKEY`, `LIGHTSPARK_UMA_SIGNING_PRIVKEY`). For information on generating these,
-see [our docs](https://docs.uma.me/uma-standard/keys-authentication-encryption).
+1. Create a secp256k1 private key to use as your encryption private key (`LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY`) and use this private key to wrap the corresponding encryption public key in an X.509 Certificate (`LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN`). Similarly for signing, create a secp256k1 private key to use as your signing private key (`LIGHTSPARK_UMA_SIGNING_PRIVKEY`) and use this private key to wrap the corresponding signing public key in an X.509 Certificate (`LIGHTSPARK_UMA_SIGNING_CERT_CHAIN`). You may choose to use the same keypair for encryption and signing. For information on generating these, see [our docs](https://docs.uma.me/uma-standard/keys-authentication-encryption).
 
 To run locally on your machine, from the `uma-vasp` directory, run:
 
@@ -38,8 +36,10 @@ LIGHTSPARK_UMA_NODE_ID=<your node ID> \
 LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD=<your node ID password> \
 LIGHTSPARK_UMA_RECEIVER_USER=bob \
 LIGHTSPARK_UMA_RECEIVER_USER_PASSWORD=pa55w0rd \
+LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN=<pem-encoded x509 certificate chain containing encryption pubkey> \
 LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<encryption public key hex> \
 LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<encryption private key hex> \
+LIGHTSPARK_UMA_SIGNING_CERT_CHAIN=<pem-encoded x509 certificate chain containing signing pubkey> \
 LIGHTSPARK_UMA_SIGNING_PUBKEY=<signing public key hex> \
 LIGHTSPARK_UMA_SIGNING_PRIVKEY=<signing private key hex> \
 yarn start
@@ -61,8 +61,10 @@ LIGHTSPARK_API_TOKEN_CLIENT_ID=<your lightspark API token client ID from https:/
 LIGHTSPARK_API_TOKEN_CLIENT_SECRET=<your lightspark API token client secret from https://app.lightspark.com/api-config>
 LIGHTSPARK_UMA_NODE_ID=<your lightspark node ID. ex: LightsparkNodeWithOSKLND:018b24d0-1c45-f96b-0000-1ed0328b72cc>
 LIGHTSPARK_UMA_RECEIVER_USER=<receiver UMA>
+LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN=<pem-encoded x509 certificate chain containing encryption pubkey>
 LIGHTSPARK_UMA_ENCRYPTION_PUBKEY=<hex-encoded encryption pubkey>
 LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY=<hex-encoded encryption privkey>
+LIGHTSPARK_UMA_SIGNING_CERT_CHAIN=<pem-encoded x509 certificate chain containing signing pubkey>
 LIGHTSPARK_UMA_SIGNING_PUBKEY=<hex-encoded signing pubkey>
 LIGHTSPARK_UMA_SIGNING_PRIVKEY=<hex-encoded signing privkey>
 
