@@ -15,8 +15,9 @@ import "prismjs/themes/prism-tomorrow.css";
 import { useLayoutEffect } from "react";
 import type { StylesConfig } from "react-select";
 import Select from "react-select";
-import { colors, themeOr } from "../styles/colors.js";
+import { colors } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
+import { themeOr } from "../styles/themes.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 

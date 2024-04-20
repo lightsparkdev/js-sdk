@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@emotion/react";
-import { themes } from "@lightsparkdev/ui/styles/colors";
+import { themes } from "@lightsparkdev/ui/styles/themes";
 import { GlobalStyles } from "@lightsparkdev/ui/styles/global";
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -103,7 +103,7 @@ export const Article = styled.article`
   code:not([class|="language"]) {
     ${({ theme }) =>
       getTypographyString(theme.typography[theme.app].Code[TokenSize.Medium])}
-    background: ${colors.uma.blue90};
+    background: ${colors.grayBlue94};
     padding: ${Spacing["4xs"]} ${Spacing["2xs"]};
     margin: ${Spacing["4xs"]};
     border-radius: 4px;

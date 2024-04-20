@@ -20,17 +20,12 @@ import {
 } from "../router.js";
 import { bp } from "../styles/breakpoints.js";
 import {
-  colors,
-  themeOr,
-  type ThemeProp,
-  type WithTheme,
-} from "../styles/colors.js";
-import {
   overlaySurface,
   standardBorderRadius,
   standardFocusOutline,
 } from "../styles/common.js";
 import { smHeaderLogoMarginLeft } from "../styles/constants.js";
+import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
 import { Icon } from "./Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -454,7 +449,7 @@ const DropdownButton = styled(UnstyledButton)`
 type DropdownItemStyleProps = WithTheme<{ selected?: boolean }>;
 
 const dropdownItemStyle = ({ selected, theme }: DropdownItemStyleProps) => `
-  background-color: ${selected ? colors.primary : "transparent"};
+  background-color: ${selected ? theme.primary : "transparent"};
   box-sizing: border-box;
   cursor: pointer;
   display: flex;

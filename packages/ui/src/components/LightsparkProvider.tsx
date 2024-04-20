@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@emotion/react";
-import { themes } from "../styles/colors.js";
 import { GlobalStyles } from "../styles/global.js";
+import { themes } from "../styles/themes.js";
 
 type LightsparkProviderProps = {
   children: React.ReactNode;

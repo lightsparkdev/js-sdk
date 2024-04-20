@@ -2,7 +2,6 @@
 import styled from "@emotion/styled";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { bp, useBreakpoints } from "../styles/breakpoints.js";
-import { themeOr } from "../styles/colors.js";
 import {
   cardBorderRadiusPx,
   darkGradientBg,
@@ -11,6 +10,7 @@ import {
   standardCardShadow,
   standardContentInset,
 } from "../styles/common.js";
+import { themeOr } from "../styles/themes.js";
 import { Heading } from "../styles/type.js";
 import {
   flexCenter,

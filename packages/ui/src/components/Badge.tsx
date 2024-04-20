@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
-import { colors, isLight } from "../styles/colors.js";
+import { colors } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
 import { LabelModerate } from "../styles/fonts/typography/LabelModerate.js";
 import { TokenSize } from "../styles/fonts/typographyTokens.js";
+import { isLight } from "../styles/themes.js";
 
 type BadgeColor = "neutral" | "error";
 

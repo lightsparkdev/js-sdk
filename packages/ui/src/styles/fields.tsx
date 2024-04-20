@@ -1,8 +1,8 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
-import { colors, themeOr, type ThemeProp, type WithTheme } from "./colors.js";
 import { standardBorderRadius, subtext } from "./common.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
 import { z } from "./z-index.js";
 
 export const maxFieldWidth = "100%";
@@ -35,7 +35,7 @@ export const inputBlockStyle = ({
   cursor: pointer;
   padding: 52.5px;
   ${hasError
-    ? `border-style: solid; border-color: ${colors.danger}; border-width: 2px;`
+    ? `border-style: solid; border-color: ${theme.danger}; border-width: 2px;`
     : hasValue
     ? `border-style: solid; border-color: ${theme.info};`
     : `border-style: dashed;`}

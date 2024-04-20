@@ -2,13 +2,8 @@ import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { bp } from "./breakpoints.js";
-import {
-  colors,
-  darkGradient,
-  themeOr,
-  type ThemeProp,
-  type WithTheme,
-} from "./colors.js";
+import { colors, darkGradient } from "./colors.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
 
 export const rootFontSizePx = 12;
 export const rootFontSizeRems = rootFontSizePx / 16;
