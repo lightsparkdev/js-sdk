@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { colors } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
 import { isLight } from "../styles/themes.js";
-import { TokenSize } from "../styles/tokens/typography.js";
 import { LabelModerate } from "../styles/typography/LabelModerate.js";
 
 type BadgeColor = "neutral" | "error";
@@ -18,7 +17,7 @@ export function Badge({ text, color, ml = 0, mr = 0 }: BadgeProps) {
   const labelColor = color === "error" ? "#D80027" : colors.black;
   return text ? (
     <StyledBadge color={color} ml={ml}>
-      <LabelModerate size={TokenSize.Small} color={labelColor}>
+      <LabelModerate size="Small" color={labelColor}>
         {text}
       </LabelModerate>
     </StyledBadge>

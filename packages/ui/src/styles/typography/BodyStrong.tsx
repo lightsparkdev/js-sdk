@@ -2,19 +2,18 @@
 
 import styled from "@emotion/styled";
 import { colors } from "../colors.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+} from "../tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
-  size?: TokenSize;
+  size?: TokenSizeKey;
   color?: string | undefined;
 }
 
-export const BodyStrong = ({
-  children,
-  color,
-  size = TokenSize.Medium,
-}: Props) => {
+export const BodyStrong = ({ children, color, size = "Medium" }: Props) => {
   return (
     <StyledBodyStrong size={size} color={color}>
       {children}
@@ -31,8 +30,6 @@ export const StyledBodyStrong = styled.span<Props>`
   display: block;
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size
-      ? getTypographyString(theme.typography[theme.app]["Body Strong"][size])
-      : "";
+    return size ? getTypographyString(theme, "Body Strong", size) : "";
   }}
 `;

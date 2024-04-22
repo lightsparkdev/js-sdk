@@ -3,14 +3,17 @@
 import styled from "@emotion/styled";
 import { select } from "../../utils/emotion.js";
 import { colors } from "../colors.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+} from "../tokens/typography.js";
 
 export const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Element = (typeof ELEMENTS)[number];
 
 interface Props {
   children: React.ReactNode;
-  size?: TokenSize;
+  size?: TokenSizeKey;
   element?: Element;
   color?: string | undefined;
 }
@@ -18,7 +21,7 @@ interface Props {
 export const Display = ({
   children,
   color,
-  size = TokenSize.Medium,
+  size = "Medium",
   element = "h1",
 }: Props) => {
   return (
@@ -31,9 +34,7 @@ export const Display = ({
 const StyledDisplay = styled.span<Props>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size
-      ? getTypographyString(theme.typography[theme.app].Display[size])
-      : "";
+    return size ? getTypographyString(theme, "Display", size) : "";
   }}
 `;
 

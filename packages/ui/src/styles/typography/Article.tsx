@@ -5,7 +5,7 @@ import { select } from "../../utils/emotion.js";
 import { colors } from "../colors.js";
 import { standardBorderRadius } from "../common.js";
 import { Spacing } from "../tokens/spacing.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import { getTypographyString } from "../tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../utils.js";
 import { StyledBody } from "./Body.js";
 import { StyledCode } from "./Code.js";
@@ -74,10 +74,7 @@ export const Article = styled.article`
 
   *:not(${ALL_HEADLINE_SELECTORS},${select(StyledTitle)},${select(StyledCode)})
     > a {
-    ${({ theme }) =>
-      getTypographyString(
-        theme.typography[theme.app]["Label Strong"][TokenSize.Large],
-      )}
+    ${({ theme }) => getTypographyString(theme, "Label Strong", "Large")}
     font-size: inherit;
     color: ${({ theme }) => theme.link};
   }
@@ -93,16 +90,14 @@ export const Article = styled.article`
   }
 
   li {
-    ${({ theme }) =>
-      getTypographyString(theme.typography[theme.app].Body[TokenSize.Medium])}
+    ${({ theme }) => getTypographyString(theme, "Body", "Medium")}
     :not(:last-child) {
       margin-bottom: ${Spacing["3xs"]};
     }
   }
 
   code:not([class|="language"]) {
-    ${({ theme }) =>
-      getTypographyString(theme.typography[theme.app].Code[TokenSize.Medium])}
+    ${({ theme }) => getTypographyString(theme, "Code", "Medium")}
     background: ${colors.grayBlue94};
     padding: ${Spacing["4xs"]} ${Spacing["2xs"]};
     margin: ${Spacing["4xs"]};
@@ -119,8 +114,7 @@ export const Article = styled.article`
   // Must match specificity of prismjs to get proper line height!
   pre[class|="language"],
   code[class|="language"] {
-    ${({ theme }) =>
-      getTypographyString(theme.typography[theme.app].Code[TokenSize.Small])}
+    ${({ theme }) => getTypographyString(theme, "Code", "Small")}
 
     ${overflowAutoWithoutScrollbars}
   }

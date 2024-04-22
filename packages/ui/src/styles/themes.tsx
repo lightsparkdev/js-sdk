@@ -3,16 +3,23 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
 import { colors, darkGradient, hcNeutralFromBg } from "./colors.js";
-import { App, getTypography } from "./tokens/typography.js";
+import {
+  TypographyGroup,
+  getTypography,
+  type FontFamilies,
+} from "./tokens/typography.js";
 
 export enum Themes {
   Light = "light",
   Dark = "dark",
+  UmameDocsLight = "umameDocsLight",
+  UmameDocsDark = "umameDocsDark",
+  BridgeLight = "bridgeLight",
+  BridgeDark = "bridgeDark",
 }
 
 interface BaseTheme {
   type: Themes;
-  app: App;
   bg: string;
   smBg: string;
   c05Neutral: string;
@@ -73,7 +80,6 @@ function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
 
 const lightBaseTheme: BaseTheme = {
   type: Themes.Light,
-  app: App.Lightspark,
   bg: colors.white,
   smBg: colors.white,
   c05Neutral: colors.gray95,
@@ -102,14 +108,13 @@ const lightBaseTheme: BaseTheme = {
   secondary: colors.secondary,
   success: colors.success,
   text: colors.black,
-  typography: getTypography(),
+  typography: getTypography(TypographyGroup.Lightspark),
   vlcNeutral: colors.gray95,
   warning: colors.warning,
 };
 
 const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,
-  app: App.Lightspark,
   bg: colors.black,
   smBg: colors.black,
   c05Neutral: colors.gray5,
@@ -138,7 +143,7 @@ const darkBaseTheme: BaseTheme = {
   secondary: colors.secondary,
   success: colors.success,
   text: colors.white,
-  typography: getTypography(),
+  typography: getTypography(TypographyGroup.Lightspark),
   vlcNeutral: colors.gray20,
   warning: colors.warning,
 };
@@ -175,13 +180,14 @@ const darkTheme = extend(darkBaseTheme, {
   }),
 });
 
-const umaLightTheme = extend(lightTheme, {
-  app: App.UmaDocs,
+const umameDocsLightTheme = extend(lightTheme, {
+  type: Themes.UmameDocsLight,
   bg: colors.gray98,
   smBg: colors.gray98,
   secondary: colors.grayBlue43,
   text: colors.grayBlue9,
   link: colors.blue39,
+  typography: getTypography(TypographyGroup.UmameDocs),
   content: extendBase(lightBaseTheme, {
     bg: colors.gray98,
     smBg: colors.gray98,
@@ -195,28 +201,32 @@ const umaLightTheme = extend(lightTheme, {
   }),
 });
 
-/** Allows setting typography in cases where a custom font is needed.
- * Setting custom fonts should only be necessary for next fonts. */
-export const themeWithTypography = (
-  theme: Theme,
-  typography: ReturnType<typeof getTypography>,
-) => {
-  return extendBase(theme, { typography });
-};
+const bridgeLightTheme = extend(lightTheme, {
+  type: Themes.BridgeLight,
+  typography: getTypography(TypographyGroup.Bridge),
+});
 
-export const themes: {
-  light: LightsparkTheme;
-  dark: LightsparkTheme;
-  uma: {
-    light: LightsparkTheme;
+const bridgeDarkTheme = extend(darkTheme, {
+  type: Themes.BridgeLight,
+  typography: getTypography(TypographyGroup.Bridge),
+});
+
+export const themes = {
+  [Themes.Light]: lightTheme,
+  [Themes.Dark]: darkTheme,
+  [Themes.UmameDocsLight]: umameDocsLightTheme,
+  [Themes.UmameDocsDark]: umameDocsLightTheme,
+  [Themes.BridgeLight]: bridgeLightTheme,
+  [Themes.BridgeDark]: bridgeDarkTheme,
+} as const;
+
+/* Next has generated font names so we need to update them at runtime: */
+export function setFonts(theme: Theme, fontFamilies: FontFamilies) {
+  return {
+    ...theme,
+    typography: getTypography(theme.typography.group, fontFamilies),
   };
-} = {
-  light: lightTheme,
-  dark: darkTheme,
-  uma: {
-    light: umaLightTheme,
-  },
-};
+}
 
 export const isDark = (theme: Theme) => theme.type === Themes.Dark;
 export const isLight = (theme: Theme) => theme.type === Themes.Light;

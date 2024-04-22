@@ -4,14 +4,17 @@ import styled from "@emotion/styled";
 import React from "react";
 import { select } from "../../utils/emotion.js";
 import { colors } from "../colors.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+} from "../tokens/typography.js";
 
 export const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Heading = (typeof HEADINGS)[number];
 
 export interface HeadlineProps {
   children: React.ReactNode;
-  size?: TokenSize;
+  size?: TokenSizeKey;
   heading?: Heading;
   color?: string | undefined;
 }
@@ -91,7 +94,7 @@ const toKebabCase = (str: string) => {
 export const Headline = ({
   children,
   color,
-  size = TokenSize.Medium,
+  size = "Medium",
   heading = "h1",
 }: HeadlineProps) => {
   const id = toKebabCase(getHeaderId(children as React.ReactElement));
@@ -105,17 +108,13 @@ export const Headline = ({
 const StyledHeadline = styled.span<HeadlineProps>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size
-      ? getTypographyString(theme.typography[theme.app].Headline[size])
-      : "";
+    return size ? getTypographyString(theme, "Headline", size) : "";
   }}
 
   * {
     color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
     ${({ theme, size }) => {
-      return size
-        ? getTypographyString(theme.typography[theme.app].Headline[size])
-        : "";
+      return size ? getTypographyString(theme, "Headline", size) : "";
     }}
   }
 `;

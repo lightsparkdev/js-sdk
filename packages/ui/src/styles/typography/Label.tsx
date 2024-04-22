@@ -2,15 +2,18 @@
 
 import styled from "@emotion/styled";
 import { colors } from "../colors.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+} from "../tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
-  size?: TokenSize;
+  size?: TokenSizeKey;
   color?: string | undefined;
 }
 
-export const Label = ({ children, color, size = TokenSize.Medium }: Props) => {
+export const Label = ({ children, color, size = "Medium" }: Props) => {
   return (
     <StyledLabel size={size} color={color}>
       {children}
@@ -21,9 +24,7 @@ export const Label = ({ children, color, size = TokenSize.Medium }: Props) => {
 export const StyledLabel = styled.label<Props>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size
-      ? getTypographyString(theme.typography[theme.app].Label[size])
-      : "";
+    return size ? getTypographyString(theme, "Label", size) : "";
   }}
   cursor: inherit;
 `;

@@ -1,7 +1,13 @@
-export enum App {
+import { type Theme } from "@emotion/react";
+import { bp } from "../breakpoints.js";
+
+export enum TypographyGroup {
   Lightspark = "Lightspark",
-  UmaDocs = "UmaDocs",
+  UmameDocs = "UmameDocs",
+  Bridge = "Bridge",
 }
+
+export type TypographyTokenGroups = ReturnType<typeof getTypography>;
 
 const FONT_FAMILIES = {
   main: "Montserrat",
@@ -9,7 +15,21 @@ const FONT_FAMILIES = {
 };
 
 const LINE_HEIGHTS = {
-  [App.UmaDocs]: {
+  [TypographyGroup.Lightspark]: {
+    "7xl": "72px",
+    "6xl": "60px",
+    "5xl": "44px",
+    "4xl": "40px",
+    "3xl": "36px",
+    "2xl": "32px",
+    xl: "28px",
+    lg: "24px",
+    md: "20px",
+    sm: "18px",
+    xs: "16px",
+    "2xs": "14px",
+  },
+  [TypographyGroup.UmameDocs]: {
     "5xl": "72px",
     "4xl": "60px",
     "3xl": "44px",
@@ -21,15 +41,11 @@ const LINE_HEIGHTS = {
     xs: "20px",
     "2xs": "16px",
   },
-  [App.Lightspark]: {
-    "7xl": "72px",
-    "6xl": "60px",
-    "5xl": "44px",
-    "4xl": "40px",
-    "3xl": "36px",
+  [TypographyGroup.Bridge]: {
+    "3xl": "48px",
     "2xl": "32px",
-    xl: "28px",
-    lg: "24px",
+    xl: "24px",
+    lg: "22px",
     md: "20px",
     sm: "18px",
     xs: "16px",
@@ -50,20 +66,7 @@ const FONT_WEIGHTS = {
 };
 
 const FONT_SIZE = {
-  [App.UmaDocs]: {
-    "2xs": "11px",
-    xs: "12px",
-    sm: "14px",
-    md: "16px",
-    lg: "20px",
-    xl: "24px",
-    "2xl": "28px",
-    "3xl": "32px",
-    "4xl": "36px",
-    "5xl": "48px",
-    "6xl": "64px",
-  },
-  [App.Lightspark]: {
+  [TypographyGroup.Lightspark]: {
     "2xs": "10px",
     xs: "12px",
     sm: "14px",
@@ -76,21 +79,52 @@ const FONT_SIZE = {
     "5xl": "48px",
     "6xl": "64px",
   },
+  [TypographyGroup.UmameDocs]: {
+    "2xs": "11px",
+    xs: "12px",
+    sm: "14px",
+    md: "16px",
+    lg: "20px",
+    xl: "24px",
+    "2xl": "28px",
+    "3xl": "32px",
+    "4xl": "36px",
+    "5xl": "48px",
+    "6xl": "64px",
+  },
+  [TypographyGroup.Bridge]: {
+    "2xs": "11px",
+    xs: "12px",
+    sm: "13px",
+    md: "14px",
+    lg: "15px",
+    xl: "16px",
+    "2xl": "18px",
+    "3xl": "22px",
+    "4xl": "24px",
+    "5xl": "32px",
+  },
 };
 
 const LETTER_SPACING = {
-  [App.UmaDocs]: {
-    tight: "-.02em",
-    normal: "0",
-    loose: ".1em",
-  },
-  [App.Lightspark]: {
+  [TypographyGroup.Lightspark]: {
     "tight-max": "-4%",
     "tight-high": "-3%",
     "tight-medium": "-2%",
     "tight-low": "-0.5%",
     normal: "0",
     "loose-max": "1.44px",
+  },
+  [TypographyGroup.UmameDocs]: {
+    tight: "-.02em",
+    normal: "0",
+    loose: ".1em",
+  },
+  [TypographyGroup.Bridge]: {
+    "tight-high": "-.04em",
+    "tight-low": "-.02em",
+    "tight-medium": "-.03em",
+    normal: "0em",
   },
 };
 
@@ -119,825 +153,2094 @@ export interface FontFamilies {
   code: string;
 }
 
-interface Token {
-  "font-family": string;
-  "font-weight": string;
-  "line-height": string;
-  "font-size": string;
-  "letter-spacing": string;
-  "paragraph-spacing": string;
-  "paragraph-indent": string;
-  "text-case": string;
-  "text-decoration": string;
-}
+export const TokenSize = {
+  Large: "Large",
+  Mlarge: "Mlarge",
+  Medium: "Medium",
+  Schmedium: "Schmedium",
+  Small: "Small",
+  ExtraSmall: "ExtraSmall",
+} as const;
+export type TokenSizeKey = (typeof TokenSize)[keyof typeof TokenSize];
 
-export enum TokenSize {
-  Large = "Large",
-  Medium = "Medium",
-  Small = "Small",
-}
+const TypographyType = {
+  Display: "Display",
+  Headline: "Headline",
+  Title: "Title",
+  Body: "Body",
+  BodyStrong: "Body Strong",
+  Label: "Label",
+  LabelModerate: "Label Moderate",
+  LabelStrong: "Label Strong",
+  Overline: "Overline",
+  Code: "Code",
+  CodeStrong: "Code Strong",
+} as const;
+type TypographyTypeKey = (typeof TypographyType)[keyof typeof TypographyType];
 
-export const getTypography = (customFontFamilies?: FontFamilies) => {
-  const fontFamilies = customFontFamilies ?? FONT_FAMILIES;
+type TypographyTokens = {
+  fontFamily: string;
+  fontWeight: string;
+  lineHeight: string;
+  fontSize: string;
+  letterSpacing: string;
+  paragraphSpacing: string;
+  paragraphIndent: string;
+  textCase: string;
+  textDecoration: string;
+};
+
+type TypographyTypes = {
+  [key in TypographyGroup]: {
+    Mobile: {
+      [key in TypographyTypeKey]?: {
+        [key in TokenSizeKey]?: TypographyTokens;
+      };
+    };
+    Desktop: {
+      [key in TypographyTypeKey]?: {
+        [key in TokenSizeKey]?: TypographyTokens;
+      };
+    };
+  };
+};
+
+function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
   return {
-    fontFamilies,
-    lineHeights: LINE_HEIGHTS,
-    fontWeights: FONT_WEIGHTS,
-    fontSize: FONT_SIZE,
-    letterSpacing: LETTER_SPACING,
-    textCase: TEXT_CASE,
-    textDecoration: TEXT_DECORATION,
-    paragraphIndent: PARAGRAPH_INDENT,
-    paragraphSpacing: PARAGRAPH_SPACING,
-    [App.Lightspark]: {
-      Display: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["7xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["6xl"]}`,
-          "letter-spacing": "-2.56px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+    [TypographyGroup.Lightspark]: {
+      Mobile: {
+        [TypographyType.Display]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["7xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["6xl"]}`,
+            letterSpacing: "-2.56px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["6xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["5xl"]}`,
+            letterSpacing: "-1.92px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["4xl"]}`,
+            letterSpacing: "-1.44px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["6xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["5xl"]}`,
-          "letter-spacing": "-1.92px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["3xl"]}`,
+            letterSpacing: "-.96px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xl"]}`,
+            letterSpacing: "-.84px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xl}`,
+            letterSpacing: "-.72px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["5xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["4xl"]}`,
-          "letter-spacing": "-1.44px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.4px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.32x",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.28px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Body]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.08px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.BodyStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.08px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelModerate]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Overline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "1.92px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "1.68px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "1.44px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Code]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.CodeStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
-      Headline: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["4xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["3xl"]}`,
-          "letter-spacing": "-.96px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+      Desktop: {
+        [TypographyType.Display]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["7xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["6xl"]}`,
+            letterSpacing: "-2.56px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["6xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["5xl"]}`,
+            letterSpacing: "-1.92px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["4xl"]}`,
+            letterSpacing: "-1.44px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["3xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["2xl"]}`,
-          "letter-spacing": "-.84px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["3xl"]}`,
+            letterSpacing: "-.96px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xl"]}`,
+            letterSpacing: "-.84px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xl}`,
+            letterSpacing: "-.72px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["2xl"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xl}`,
-          "letter-spacing": "-.72px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.4px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.32x",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.28px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-      },
-      Title: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xl}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].lg}`,
-          "letter-spacing": "-.4px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Body]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.08px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": "-.32x",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.BodyStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: "-.08px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.28px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-      },
-      Body: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xl}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].lg}`,
-          "letter-spacing": "-.08px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.LabelModerate]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": "-.07px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.LabelStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "-.07px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "-.06px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xs"]}`,
+            letterSpacing: "-.05px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.06px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Overline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: "1.92px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: "1.68px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: "1.44px",
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-      },
-      "Body Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xl}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].lg}`,
-          "letter-spacing": "-.08px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Code]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": "-.07px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.06px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      Label: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.07px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
-          "letter-spacing": "-.06px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["2xs"]}`,
-          "letter-spacing": "-.05px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Label Moderate": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.07px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
-          "letter-spacing": "-.06px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["2xs"]}`,
-          "letter-spacing": "-.05px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Label Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "-.07px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
-          "letter-spacing": "-.06px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.Lightspark]["2xs"]}`,
-          "letter-spacing": "-.05px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      Overline: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": "1.92px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": "1.68px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
-          "letter-spacing": "1.44px",
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      Code: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xl}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].lg}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Code Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].lg}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].md}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.Lightspark].xs}`,
-          "font-size": `${FONT_SIZE[App.Lightspark].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.Lightspark].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[0]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.CodeStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
     },
-    [App.UmaDocs]: {
-      Display: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["5xl"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["6xl"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+    [TypographyGroup.UmameDocs]: {
+      Mobile: {
+        [TypographyType.Display]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["6xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["5xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["4xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["4xl"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["5xl"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["3xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xl}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["3xl"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["4xl"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].lg}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Body]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.BodyStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelModerate]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Overline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Code]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.CodeStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
-      Headline: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xl"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["3xl"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[16]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+      Desktop: {
+        [TypographyType.Display]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["6xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["5xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["4xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xl}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["2xl"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[16]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["3xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xl}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].lg}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xl}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].tight}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING[16]}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].lg}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Body]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.BodyStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelModerate]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.LabelStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Overline]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.uppercase}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.Code]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+        },
+        [TypographyType.CodeStrong]: {
+          [TokenSize.Large]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.code}`,
+            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.UmameDocs].normal
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
-      Title: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].md}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].lg}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+    },
+    [TypographyGroup.Bridge]: {
+      Mobile: {
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["3xl"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-high"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].lg}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xl"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xl}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-medium"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Mlarge]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].lg}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Schmedium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-      },
-      Body: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Medium}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Body Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      Label: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.SemiBold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["2xs"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Label Moderate": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["2xs"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Body]: {
+          [TokenSize.Medium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Schmedium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].sm}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.ExtraSmall]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].xs}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
-      "Label Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+      Desktop: {
+        [TypographyType.Headline]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["5xl"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-high"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Title]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["4xl"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-high"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs]["2xs"]}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Body]: {
+          [TokenSize.Medium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xl}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.ExtraSmall]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xs}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING["16"]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
-      },
-      Overline: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.main}`,
-          "font-weight": `${FONT_WEIGHTS.main.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs]["2xs"]}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].loose}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.uppercase}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      Code: {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Regular}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].xs}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-      },
-      "Code Strong": {
-        [TokenSize.Large]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].md}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Medium]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].sm}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
-        },
-        [TokenSize.Small]: {
-          "font-family": `${fontFamilies.code}`,
-          "font-weight": `${FONT_WEIGHTS.code.Bold}`,
-          "line-height": `${LINE_HEIGHTS[App.UmaDocs].sm}`,
-          "font-size": `${FONT_SIZE[App.UmaDocs].xs}`,
-          "letter-spacing": `${LETTER_SPACING[App.UmaDocs].normal}`,
-          "paragraph-spacing": `${PARAGRAPH_SPACING.default}`,
-          "paragraph-indent": `${PARAGRAPH_INDENT[0]}`,
-          "text-case": `${TEXT_CASE.none}`,
-          "text-decoration": `${TEXT_DECORATION.none}`,
+        [TypographyType.Label]: {
+          [TokenSize.Large]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xl"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-medium"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Medium]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].xl}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].xl}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.Small]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge].md}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge].md}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Bridge]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
         },
       },
     },
   };
-};
+}
 
-export const getTypographyString = (token: Token) => {
-  return Object.entries(token)
+export function getTypography(
+  typographyGroup: TypographyGroup,
+  customFontFamilies?: FontFamilies,
+) {
+  const fontFamilies = customFontFamilies ?? FONT_FAMILIES;
+  return {
+    group: typographyGroup,
+    fontFamilies,
+    lineHeights: LINE_HEIGHTS[typographyGroup],
+    fontWeights: FONT_WEIGHTS,
+    fontSize: FONT_SIZE[typographyGroup],
+    letterSpacing: LETTER_SPACING[typographyGroup],
+    textCase: TEXT_CASE,
+    textDecoration: TEXT_DECORATION,
+    paragraphIndent: PARAGRAPH_INDENT,
+    paragraphSpacing: PARAGRAPH_SPACING,
+    types: getTypographyTypes(fontFamilies)[typographyGroup],
+  };
+}
+
+function mayTokensToStyles(tokens: Record<string, string>) {
+  return Object.entries(tokens)
     .map((entry) => {
-      // Transform any non-css token properties into valid css.
+      // Transform tokens into valid css.
       switch (entry[0]) {
-        case "paragraph-indent":
+        case "fontFamily":
+          return `font-family: ${entry[1]};`;
+        case "fontWeight":
+          return `font-weight: ${entry[1]};`;
+        case "lineHeight":
+          return `line-height: ${entry[1]};`;
+        case "fontSize":
+          return `font-size: ${entry[1]};`;
+        case "letterSpacing":
+          return `letter-spacing: ${entry[1]};`;
+        case "textDecoration":
+          return `text-decoration: ${entry[1]};`;
+        case "paragraphSpacing":
+          /** Better to set context aware margin styles in
+           * parent Article container, skip for now: */
+          return "";
+        case "paragraphIndent":
           return `text-indent: ${entry[1]};`;
-        case "text-case":
+        case "textCase":
           return `text-transform: ${entry[1]};`;
         default:
           return `${entry[0]}: ${entry[1]};`;
       }
     })
     .join("");
+}
+
+const defaultTokens = {
+  fontFamily: FONT_FAMILIES.main,
+  fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+  lineHeight: LINE_HEIGHTS[TypographyGroup.Lightspark].sm,
+  fontSize: FONT_SIZE[TypographyGroup.Lightspark].sm,
+  letterSpacing: LETTER_SPACING[TypographyGroup.Lightspark].normal,
+  paragraphSpacing: PARAGRAPH_SPACING.default,
+  paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+  textCase: TEXT_CASE.none,
+  textDecoration: TEXT_DECORATION.none,
+};
+
+export const getTypographyString = (
+  theme: Theme,
+  typographyType: TypographyTypeKey,
+  size: TokenSizeKey,
+) => {
+  const mobileTokenGroups = theme.typography.types["Mobile"];
+  const desktopTokenGroups = theme.typography.types["Desktop"];
+  const mobileTokenSizes = mobileTokenGroups[typographyType];
+  const desktopTokenSizes = desktopTokenGroups[typographyType];
+  let mobileTokens = mobileTokenSizes?.[size];
+  let desktopTokens = desktopTokenSizes?.[size];
+
+  if (!mobileTokens || !desktopTokens) {
+    /* It's okay for a TypographyGroup to not have tokens defined for every possible
+       typography type but if a component tries to use the style we should log an error
+       since we don't have styles defined for this scenario. Developer should reach out
+       to design for new tokens or use a typography type that exists in the theme. */
+    console.error(
+      "Attempted to use a typography type that does not exist in the current theme. Falling back to default tokens.",
+    );
+    mobileTokens = defaultTokens;
+    desktopTokens = defaultTokens;
+  }
+
+  return `
+    ${mayTokensToStyles(desktopTokens)}
+    ${bp.sm(mayTokensToStyles(mobileTokens))}
+  `;
 };

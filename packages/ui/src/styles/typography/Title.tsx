@@ -2,11 +2,14 @@
 
 import styled from "@emotion/styled";
 import { colors } from "../colors.js";
-import { getTypographyString, TokenSize } from "../tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+} from "../tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
-  size?: TokenSize;
+  size?: TokenSizeKey;
   color?: string | undefined;
   block?: boolean;
 }
@@ -14,7 +17,7 @@ interface Props {
 export const Title = ({
   children,
   color,
-  size = TokenSize.Medium,
+  size = "Medium",
   block = false,
 }: Props) => {
   return (
@@ -28,8 +31,6 @@ export const StyledTitle = styled.span<Props>`
   ${({ block }) => (block ? "display: block;" : "")}
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size
-      ? getTypographyString(theme.typography[theme.app].Title[size])
-      : "";
+    return size ? getTypographyString(theme, "Title", size) : "";
   }}
 `;
