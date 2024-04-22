@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import {
   getTypographyString,
   type TokenSizeKey,
-} from "../tokens/typography.js";
+} from "../../styles/tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;

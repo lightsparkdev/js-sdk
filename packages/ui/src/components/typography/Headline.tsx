@@ -2,15 +2,15 @@
 
 import styled from "@emotion/styled";
 import React from "react";
-import { select } from "../../utils/emotion.js";
-import { colors } from "../colors.js";
+import { colors } from "../../styles/colors.js";
 import {
   getTypographyString,
   type TokenSizeKey,
-} from "../tokens/typography.js";
+} from "../../styles/tokens/typography.js";
+import { select } from "../../utils/emotion.js";
 
-export const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
-type Heading = (typeof HEADINGS)[number];
+export const headlineElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+type Heading = (typeof headlineElements)[number];
 
 export interface HeadlineProps {
   children: React.ReactNode;
@@ -123,4 +123,6 @@ export function headlineSelector(heading: Heading) {
   return `${heading}${select(StyledHeadline)}`;
 }
 
-export const ALL_HEADLINE_SELECTORS = HEADINGS.map(headlineSelector).join(",");
+export const ALL_HEADLINE_SELECTORS = headlineElements
+  .map(headlineSelector)
+  .join(",");

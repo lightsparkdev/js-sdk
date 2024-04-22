@@ -1,12 +1,9 @@
 "use client";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import {
-  Headline,
-  type HeadlineProps,
-} from "../../styles/typography/Headline.js";
 import { select } from "../../utils/emotion.js";
 import { Icon } from "../Icon.js";
+import { Headline, type HeadlineProps } from "../typography/index.js";
 
 export const AnchorLinkHeader = (props: HeadlineProps) => {
   const theme = useTheme();

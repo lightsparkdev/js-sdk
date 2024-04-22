@@ -1,11 +1,11 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../colors.js";
+import { colors } from "../../styles/colors.js";
 import {
   getTypographyString,
   type TokenSizeKey,
-} from "../tokens/typography.js";
+} from "../../styles/tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
@@ -13,18 +13,18 @@ interface Props {
   color?: string | undefined;
 }
 
-export const Label = ({ children, color, size = "Medium" }: Props) => {
+export const Overline = ({ children, color, size = "Medium" }: Props) => {
   return (
-    <StyledLabel size={size} color={color}>
+    <StyledOverline size={size} color={color}>
       {children}
-    </StyledLabel>
+    </StyledOverline>
   );
 };
 
-export const StyledLabel = styled.label<Props>`
+export const StyledOverline = styled.span<Props>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Label", size) : "";
+    return size ? getTypographyString(theme, "Overline", size) : "";
   }}
   cursor: inherit;
 `;

@@ -10,6 +10,7 @@
     "./components": "./dist/components/index.js",
     "./components/*": "./dist/components/*.js",
     "./components/": "./dist/components/",
+    "./components/typography": "./dist/components/typography/index.js",
     "./hooks/*": "./dist/hooks/*.js",
     "./hooks": "./dist/hooks/index.js",
     "./icons": "./dist/icons/index.js",

@@ -1,11 +1,11 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../colors.js";
+import { colors } from "../../styles/colors.js";
 import {
   getTypographyString,
   type TokenSizeKey,
-} from "../tokens/typography.js";
+} from "../../styles/tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
@@ -13,25 +13,25 @@ interface Props {
   color?: string | undefined;
 }
 
-export const LabelStrong = ({ children, color, size = "Medium" }: Props) => {
+export const LabelModerate = ({ children, color, size = "Medium" }: Props) => {
   return (
-    <StyledLabelStrong size={size} color={color}>
+    <StyledLabelModerate size={size} color={color}>
       {children}
-    </StyledLabelStrong>
+    </StyledLabelModerate>
   );
 };
 
-export const StyledLabelStrong = styled.label<Props>`
+export const StyledLabelModerate = styled.label<Props>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Label Strong", size) : "";
+    return size ? getTypographyString(theme, "Label Moderate", size) : "";
   }}
   cursor: inherit;
 
   * {
     color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
     ${({ theme, size }) => {
-      return size ? getTypographyString(theme, "Label Strong", size) : "";
+      return size ? getTypographyString(theme, "Label Moderate", size) : "";
     }}
   }
 `;

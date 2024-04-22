@@ -1,12 +1,12 @@
 "use client";
 import styled from "@emotion/styled";
 import { StyledContentTable } from "../../components/ContentTable.js";
+import { colors } from "../../styles/colors.js";
+import { standardBorderRadius } from "../../styles/common.js";
+import { Spacing } from "../../styles/tokens/spacing.js";
+import { getTypographyString } from "../../styles/tokens/typography.js";
+import { overflowAutoWithoutScrollbars } from "../../styles/utils.js";
 import { select } from "../../utils/emotion.js";
-import { colors } from "../colors.js";
-import { standardBorderRadius } from "../common.js";
-import { Spacing } from "../tokens/spacing.js";
-import { getTypographyString } from "../tokens/typography.js";
-import { overflowAutoWithoutScrollbars } from "../utils.js";
 import { StyledBody } from "./Body.js";
 import { StyledCode } from "./Code.js";
 import { displaySelector } from "./Display.js";

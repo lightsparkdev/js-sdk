@@ -1,20 +1,20 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { select } from "../../utils/emotion.js";
-import { colors } from "../colors.js";
+import { colors } from "../../styles/colors.js";
 import {
   getTypographyString,
   type TokenSizeKey,
-} from "../tokens/typography.js";
+} from "../../styles/tokens/typography.js";
+import { select } from "../../utils/emotion.js";
 
-export const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
-type Element = (typeof ELEMENTS)[number];
+export const displayElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
+type DisplayElement = (typeof displayElements)[number];
 
 interface Props {
   children: React.ReactNode;
   size?: TokenSizeKey;
-  element?: Element;
+  element?: DisplayElement;
   color?: string | undefined;
 }
 
@@ -38,6 +38,6 @@ const StyledDisplay = styled.span<Props>`
   }}
 `;
 
-export function displaySelector(element: Element) {
+export function displaySelector(element: DisplayElement) {
   return `${element}${select(StyledDisplay)}`;
 }
