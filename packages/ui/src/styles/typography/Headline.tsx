@@ -2,14 +2,14 @@
 
 import styled from "@emotion/styled";
 import React from "react";
-import { select } from "../../../utils/emotion.js";
-import { colors } from "../../colors.js";
-import { getTypographyString, TokenSize } from "../typographyTokens.js";
+import { select } from "../../utils/emotion.js";
+import { colors } from "../colors.js";
+import { getTypographyString, TokenSize } from "../tokens/typography.js";
 
 export const HEADINGS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Heading = (typeof HEADINGS)[number];
 
-export interface Props {
+export interface HeadlineProps {
   children: React.ReactNode;
   size?: TokenSize;
   heading?: Heading;
@@ -93,7 +93,7 @@ export const Headline = ({
   color,
   size = TokenSize.Medium,
   heading = "h1",
-}: Props) => {
+}: HeadlineProps) => {
   const id = toKebabCase(getHeaderId(children as React.ReactElement));
   return (
     <StyledHeadline as={heading} id={id} size={size} color={color}>
@@ -102,7 +102,7 @@ export const Headline = ({
   );
 };
 
-const StyledHeadline = styled.span<Props>`
+const StyledHeadline = styled.span<HeadlineProps>`
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
     return size

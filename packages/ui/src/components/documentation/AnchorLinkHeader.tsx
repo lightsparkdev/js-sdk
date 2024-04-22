@@ -3,12 +3,12 @@ import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import {
   Headline,
-  type Props,
-} from "../../styles/fonts/typography/Headline.js";
+  type HeadlineProps,
+} from "../../styles/typography/Headline.js";
 import { select } from "../../utils/emotion.js";
 import { Icon } from "../Icon.js";
 
-export const AnchorLinkHeader = (props: Props) => {
+export const AnchorLinkHeader = (props: HeadlineProps) => {
   const theme = useTheme();
   return (
     <StyledAnchorLinkHeader {...props}>

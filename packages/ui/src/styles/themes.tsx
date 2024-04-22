@@ -3,7 +3,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
 import { colors, darkGradient, hcNeutralFromBg } from "./colors.js";
-import { App, getTypography } from "./fonts/typographyTokens.js";
+import { App, getTypography } from "./tokens/typography.js";
 
 export enum Themes {
   Light = "light",

@@ -1,7 +1,7 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { getTypographyString, TokenSize } from "../typographyTokens.js";
+import { getTypographyString, TokenSize } from "../tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;

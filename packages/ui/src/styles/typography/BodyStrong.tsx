@@ -1,8 +1,8 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../../colors.js";
-import { getTypographyString, TokenSize } from "../typographyTokens.js";
+import { colors } from "../colors.js";
+import { getTypographyString, TokenSize } from "../tokens/typography.js";
 
 interface Props {
   children: React.ReactNode;
@@ -10,11 +10,15 @@ interface Props {
   color?: string | undefined;
 }
 
-export const Body = ({ children, color, size = TokenSize.Medium }: Props) => {
+export const BodyStrong = ({
+  children,
+  color,
+  size = TokenSize.Medium,
+}: Props) => {
   return (
-    <StyledBody size={size} color={color}>
+    <StyledBodyStrong size={size} color={color}>
       {children}
-    </StyledBody>
+    </StyledBodyStrong>
   );
 };
 
@@ -23,12 +27,12 @@ export const Body = ({ children, color, size = TokenSize.Medium }: Props) => {
  * so we need to use a span and set it display: block to mimic a paragraph
  * element.
  */
-export const StyledBody = styled.span<Props>`
+export const StyledBodyStrong = styled.span<Props>`
   display: block;
   color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
   ${({ theme, size }) => {
     return size
-      ? getTypographyString(theme.typography[theme.app].Body[size])
+      ? getTypographyString(theme.typography[theme.app]["Body Strong"][size])
       : "";
   }}
 `;

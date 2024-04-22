@@ -1,9 +1,9 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { select } from "../../../utils/emotion.js";
-import { colors } from "../../colors.js";
-import { getTypographyString, TokenSize } from "../typographyTokens.js";
+import { select } from "../../utils/emotion.js";
+import { colors } from "../colors.js";
+import { getTypographyString, TokenSize } from "../tokens/typography.js";
 
 export const ELEMENTS = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Element = (typeof ELEMENTS)[number];
