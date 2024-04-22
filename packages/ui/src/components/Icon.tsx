@@ -11,6 +11,10 @@ type IconMap = {
 
 const iconMap: IconMap = {};
 
+// const icons = import.meta.glob("./icons/*.tsx");
+
+// console.log("icons", icons);
+
 async function loadIcon(iconName: string) {
   let IconComp: Component;
   try {

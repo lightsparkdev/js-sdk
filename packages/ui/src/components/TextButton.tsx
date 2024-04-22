@@ -59,7 +59,7 @@ export function TextButton<RoutesType extends string>({
           ? {
               name: leftIcon.name,
               color: leftIcon.color || defaultIconColor,
-              lg: leftIcon.lg,
+              width: leftIcon.width,
             }
           : null
       }
@@ -69,7 +69,7 @@ export function TextButton<RoutesType extends string>({
           ? {
               name: rightIconProp.name,
               color: rightIconProp.color || defaultIconColor,
-              lg: rightIconProp.lg,
+              width: rightIconProp.width,
             }
           : null
       }

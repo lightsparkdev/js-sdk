@@ -52,7 +52,7 @@ export function Collapsible({
     setIsOpen(open);
   }, [open]);
 
-  const iconName = hamburger ? (isOpen ? "Close" : "StackedLines") : "Down";
+  const iconName = hamburger ? (isOpen ? "Close" : "StackedLines") : "Chevron";
   // This is a one-off because the close svg is much larger in comparison to
   // the designs
   const iconWidth = iconName === "Close" ? 12 : 14;

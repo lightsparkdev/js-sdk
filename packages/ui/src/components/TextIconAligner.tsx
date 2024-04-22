@@ -3,8 +3,11 @@ import { Icon } from "./Icon.js";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
-const marginPx = [6, 12] as const;
+const marginPx = [4, 6, 8, 10, 12] as const;
 type MarginPx = (typeof marginPx)[number];
+
+const width = [12, 14, 16] as const;
+type Width = (typeof width)[number];
 
 export type TextIconAlignerProps = {
   text: string;
@@ -12,7 +15,7 @@ export type TextIconAlignerProps = {
     | {
         name: string;
         color?: string;
-        lg?: boolean | undefined;
+        width?: Width | undefined;
         ml?: MarginPx | undefined;
       }
     | undefined
@@ -21,7 +24,7 @@ export type TextIconAlignerProps = {
     | {
         name: string;
         color?: string;
-        lg?: boolean | undefined;
+        width?: Width | undefined;
         mr?: MarginPx | undefined;
       }
     | undefined
@@ -38,7 +41,7 @@ export function TextIconAligner({
   const leftIconNode = leftIcon ? (
     <Icon
       name={leftIcon.name}
-      width={leftIcon.lg ? 16 : 12}
+      width={leftIcon.width ? leftIcon.width : 12}
       mr={leftIcon.mr || 6}
       color={leftIcon.color}
     />
@@ -46,7 +49,7 @@ export function TextIconAligner({
   const rightIconNode = rightIcon ? (
     <Icon
       name={rightIcon.name}
-      width={rightIcon.lg ? 16 : 12}
+      width={rightIcon.width ? rightIcon.width : 12}
       ml={rightIcon.ml || 6}
       color={rightIcon.color}
     />

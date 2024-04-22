@@ -17,14 +17,13 @@ import StreamingDemoAccountCredentials from "./auth/StreamingDemoCredentials";
 import VideoProgressCache from "./background/VideoProgressCache";
 import { clearStorageKeepingInstanceId } from "./common/storage";
 import { findActiveStreamingDemoTabs } from "./common/streamingTabs";
-import CirclePlusIcon from "./components/CirclePlusIcon";
 import CurrencyAmountElement from "./components/CurrencyAmount";
 import CurrencyAmountRaw from "./components/CurrencyAmountRaw";
-import LeftArrow from "./components/LeftArrow";
 import { LoadingSpinner } from "./components/Loading";
 import StreamingTransactionChip from "./components/StreamingTransactionChip";
 import TransactionRow from "./components/TransactionRow";
 import { getWalletClient } from "./lightsparkClientProvider";
+import { Icon } from "@lightsparkdev/ui/components";
 
 enum Screen {
   Balance,
@@ -224,7 +223,7 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
     return (
       <div className="header">
         <button onClick={() => setScreen(Screen.Balance)}>
-          <LeftArrow />
+          <Icon name="LeftArrow" width={16} />
         </button>
         <HeaderBackText>Transactions</HeaderBackText>
       </div>
@@ -341,7 +340,7 @@ function LoginScreen(props: {
       <CreateWalletButton onClick={createWallet} disabled={isLoading}>
         {!isLoading ? (
           <span style={{ marginInlineEnd: "8px", height: "13px" }}>
-            <CirclePlusIcon />
+            <Icon name="CirclePlus" width={12} />
           </span>
         ) : (
           <></>
