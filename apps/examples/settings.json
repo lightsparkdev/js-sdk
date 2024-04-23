@@ -13,5 +13,8 @@
   },
   "umaVasp": {
     "port": 3104
+  },
+  "uiTestApp": {
+    "port": 3105
   }
 }

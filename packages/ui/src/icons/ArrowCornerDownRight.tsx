@@ -1,6 +1,6 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-function ArrowCornerDownRight() {
+export function ArrowCornerDownRight() {
   return (
     <svg
       width="100%"
@@ -18,5 +18,3 @@ function ArrowCornerDownRight() {
     </svg>
   );
 }
-
-export default ArrowCornerDownRight;

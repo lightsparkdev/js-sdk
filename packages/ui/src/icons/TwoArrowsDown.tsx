@@ -16,5 +16,3 @@ export function TwoArrowsDown() {
     </svg>
   );
 }
-
-export default TwoArrowsDown;

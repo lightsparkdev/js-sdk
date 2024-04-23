@@ -4,7 +4,7 @@ import { useTheme } from "@emotion/react";
 import { nanoid } from "nanoid";
 import { useRef } from "react";
 
-function KotlinTwoTone() {
+export function KotlinTwoTone() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
@@ -39,5 +39,3 @@ function KotlinTwoTone() {
     </svg>
   );
 }
-
-export default KotlinTwoTone;

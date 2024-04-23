@@ -1,37 +1,13 @@
 import styled from "@emotion/styled";
-import { useLayoutEffect, useState } from "react";
+import * as icons from "../icons/index.js";
 import { rootFontSizePx } from "../styles/common.js";
 import { isString } from "../utils/strings.js";
 
-type Component = () => JSX.Element;
-
-type IconMap = {
-  [key: string]: Component;
-};
-
-const iconMap: IconMap = {};
-
-// const icons = import.meta.glob("./icons/*.tsx");
-
-// console.log("icons", icons);
-
-async function loadIcon(iconName: string) {
-  let IconComp: Component;
-  try {
-    ({ default: IconComp } = (await import(
-      /* webpackMode: "eager" */
-      // this can't be a variable only, needs to have some string constraints:
-      `./icons/${iconName}.js`
-    )) as { default: Component });
-  } catch (e) {
-    throw new Error(`Icon ${iconName} not found`);
-  }
-  iconMap[iconName] = IconComp;
-}
+export type IconName = keyof typeof icons;
 
 type IconProps = {
   className?: string;
-  name: string;
+  name: IconName;
   width: number;
   mr?: number;
   ml?: number;
@@ -47,25 +23,13 @@ export function Icon({
   tutorialStep,
   mr = 0,
   ml = 0,
-  verticalAlign = "middle",
   color = undefined,
+  verticalAlign = "middle",
 }: IconProps) {
-  const [, setLoading] = useState(false);
+  const IconComponent = icons[name] || null;
 
-  const IconComponent = iconMap[name] || null;
-
-  useLayoutEffect(() => {
-    void (async () => {
-      if (!iconMap[name]) {
-        setLoading(true);
-        await loadIcon(name);
-        setLoading(false);
-      }
-    })();
-  }, [name]);
-
-  // Assume width is px relative to the root font size but specify in ems to
-  // preserve scale for larger font sizes
+  /** Assume width is px relative to the root font size but specify
+   * in ems to preserve scale for larger font sizes */
   const w = parseFloat((width / rootFontSizePx).toFixed(2));
   const mrRems = parseFloat((mr / rootFontSizePx).toFixed(2));
   const mlRems = parseFloat((ml / rootFontSizePx).toFixed(2));

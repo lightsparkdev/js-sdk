@@ -1,5 +1,3 @@
-// import { CodeInput } from "@lightsparkdev/private-ui/src/components/CodeInput/CodeInput";
-// import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { toReactNodes } from "../toReactNodes";

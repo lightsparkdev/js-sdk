@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function Lock() {
+export function Lock() {
   return (
     <svg
       width="100%"
@@ -21,5 +21,3 @@ function Lock() {
     </svg>
   );
 }
-
-export default Lock;

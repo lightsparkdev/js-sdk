@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-const Code = () => {
+export function Code() {
   return (
     <svg
       width="100%"
@@ -17,6 +17,4 @@ const Code = () => {
       />
     </svg>
   );
-};
-
-export default Code;
+}

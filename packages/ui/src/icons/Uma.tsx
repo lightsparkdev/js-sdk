@@ -1,4 +1,4 @@
-function Uma() {
+export function Uma() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -20,5 +20,3 @@ function Uma() {
     </svg>
   );
 }
-
-export default Uma;

@@ -14,5 +14,3 @@ export function CircleCheckOutline() {
     </svg>
   );
 }
-
-export default CircleCheckOutline;

@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function SemiCircleOverlap() {
+export function SemiCircleOverlap() {
   return (
     <svg
       width="100%"
@@ -23,5 +23,3 @@ function SemiCircleOverlap() {
     </svg>
   );
 }
-
-export default SemiCircleOverlap;

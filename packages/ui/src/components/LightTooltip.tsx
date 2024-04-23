@@ -30,7 +30,6 @@ export function LightTooltip(props: TooltipProps) {
   }, []);
 
   const theme = useTheme();
-  console.log("LightTooltip.tsx: tooltipProps:", props);
 
   return nodeReady && nodeRef.current
     ? ReactDOM.createPortal(

@@ -9,7 +9,7 @@ import { colors } from "../styles/colors.js";
 import { getFocusOutline } from "../styles/common.js";
 import { themeOr, type WithTheme } from "../styles/themes.js";
 import { select } from "../utils/emotion.js";
-import { Icon } from "./Icon.js";
+import { Icon, type IconName } from "./Icon.js";
 import { LightTooltip } from "./LightTooltip.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -34,7 +34,7 @@ export type ButtonProps<RoutesType extends string> = {
   primary?: boolean | undefined;
   ghost?: boolean | undefined;
   size?: ButtonSize;
-  icon?: string;
+  icon?: IconName;
   iconSide?: IconSide;
   loading?: boolean | undefined;
   onClick?: (() => void) | undefined;

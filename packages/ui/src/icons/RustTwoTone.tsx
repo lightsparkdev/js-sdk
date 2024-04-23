@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function RustTwoTone() {
+export function RustTwoTone() {
   return (
     <svg
       width="100%"
@@ -25,5 +25,3 @@ function RustTwoTone() {
     </svg>
   );
 }
-
-export default RustTwoTone;

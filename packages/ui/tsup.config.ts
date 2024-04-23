@@ -1,6 +1,6 @@
 import { copy } from "esbuild-plugin-copy";
-import svgr from "esbuild-plugin-svgr";
 import { defineConfig } from "tsup";
+import { svgr } from "./esbuild-svgr-plugin";
 
 export default defineConfig({
   entry: [

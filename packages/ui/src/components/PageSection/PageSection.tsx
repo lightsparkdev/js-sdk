@@ -15,7 +15,7 @@ import { select } from "../../utils/emotion.js";
 import { toReactNodes } from "../../utils/toReactNodes.js";
 import { Badge, badgeVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
-import { Icon } from "../Icon.js";
+import { Icon, type IconName } from "../Icon.js";
 import { Loading } from "../Loading.js";
 import { TextButton } from "../TextButton.js";
 import { UnstyledButton } from "../UnstyledButton.js";
@@ -132,7 +132,7 @@ type PageSectionBoxActionProps<RoutesType extends string> = {
     | undefined;
   icon?:
     | {
-        name: string;
+        name: IconName;
         onClick: () => void;
       }
     | undefined

@@ -20,7 +20,8 @@ const config: JestConfigWithTsJest = {
   moduleNameMapper: {
     "^.+\\.(css|svg|png)$": "identity-obj-proxy",
     /* ts-jest doesn't support .js imports which are required for making imports work in
-       the published ui package. See issue https://bit.ly/3TF1uSS */
+       the published ui package. See issue https://bit.ly/3TF1uSS. Also appears to rewrite
+       files in node_modules which can lead to weird resolution errors. Use with caution */
     "(.+)\\.js": "$1",
   },
   setupFiles: ["<rootDir>/jest/setup.ts"],

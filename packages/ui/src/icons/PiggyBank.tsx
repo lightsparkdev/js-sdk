@@ -27,5 +27,3 @@ export function PiggyBank() {
     </svg>
   );
 }
-
-export default PiggyBank;

@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { notNullUndefined } from "@lightsparkdev/core";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
-import { IconContainer } from "../Icon.js";
+import { IconContainer, type IconName } from "../Icon.js";
 import { TextButton } from "../TextButton.js";
 import { pageSectionScrollOffset } from "./constants.js";
 
@@ -49,7 +49,7 @@ const StyledPageSectionNavItem = styled.li`
 `;
 
 type ListItemProps = {
-  leftIcon: string;
+  leftIcon: IconName;
   label: string;
   sectionId: string | null;
 };

@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function Monitor() {
+export function Monitor() {
   return (
     <svg
       width="100%"
@@ -33,5 +33,3 @@ function Monitor() {
     </svg>
   );
 }
-
-export default Monitor;

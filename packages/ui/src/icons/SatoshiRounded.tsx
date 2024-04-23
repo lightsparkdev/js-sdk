@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function SatoshiRounded() {
+export function SatoshiRounded() {
   return (
     <svg
       viewBox="0 0 12 16"
@@ -41,5 +41,3 @@ function SatoshiRounded() {
     </svg>
   );
 }
-
-export default SatoshiRounded;

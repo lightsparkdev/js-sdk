@@ -3,7 +3,7 @@
 import { nanoid } from "nanoid";
 import { useRef } from "react";
 
-function FlutterTwoTone() {
+export function FlutterTwoTone() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
@@ -38,5 +38,3 @@ function FlutterTwoTone() {
     </svg>
   );
 }
-
-export default FlutterTwoTone;

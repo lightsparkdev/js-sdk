@@ -7,10 +7,10 @@ export { Code, StyledCode } from "./Code.js";
 export { Display, displayElements, displaySelector } from "./Display.js";
 export {
   Headline,
-  HeadlineProps,
   getHeadlineText,
   headlineElements,
   headlineSelector,
+  type HeadlineProps,
 } from "./Headline.js";
 export { Label, StyledLabel } from "./Label.js";
 export { LabelModerate, StyledLabelModerate } from "./LabelModerate.js";

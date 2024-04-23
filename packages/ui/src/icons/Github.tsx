@@ -1,4 +1,4 @@
-function Github() {
+export function Github() {
   return (
     <svg
       width="100%"
@@ -13,5 +13,3 @@ function Github() {
     </svg>
   );
 }
-
-export default Github;

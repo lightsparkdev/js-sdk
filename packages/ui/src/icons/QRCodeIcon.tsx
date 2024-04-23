@@ -2,7 +2,7 @@
 import { nanoid } from "nanoid";
 import { useRef } from "react";
 
-function QRCodeIcon() {
+export function QRCodeIcon() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
@@ -72,5 +72,3 @@ function QRCodeIcon() {
     </svg>
   );
 }
-
-export default QRCodeIcon;

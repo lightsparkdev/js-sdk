@@ -1,8 +1,7 @@
 {
   "extends": "../tsconfig/react-package.json",
   "compilerOptions": {
-    "rootDir": "src",
-    "types": ["vite/client"]
+    "rootDir": "src"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["**/tests", "node_modules", "dist"]

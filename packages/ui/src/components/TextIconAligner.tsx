@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Icon } from "./Icon.js";
+import { Icon, type IconName } from "./Icon.js";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
@@ -13,7 +13,7 @@ export type TextIconAlignerProps = {
   text: string;
   rightIcon?:
     | {
-        name: string;
+        name: IconName;
         color?: string;
         width?: Width | undefined;
         ml?: MarginPx | undefined;
@@ -22,7 +22,7 @@ export type TextIconAlignerProps = {
     | null;
   leftIcon?:
     | {
-        name: string;
+        name: IconName;
         color?: string;
         width?: Width | undefined;
         mr?: MarginPx | undefined;

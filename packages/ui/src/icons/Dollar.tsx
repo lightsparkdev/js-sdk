@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function Dollar() {
+export function Dollar() {
   return (
     <svg
       width="100%"
@@ -18,5 +18,3 @@ function Dollar() {
     </svg>
   );
 }
-
-export default Dollar;

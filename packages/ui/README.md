@@ -11,7 +11,7 @@ $ npm install @lightsparkdev/ui
 ```
 
 ```jsx
-import { LightsparkProvider, Button } from "@lightsparkdev/ui/components";
+import { LightsparkProvider, Button } from "@lightsparkdev/ui/src/components";
 
 function App() {
   return (

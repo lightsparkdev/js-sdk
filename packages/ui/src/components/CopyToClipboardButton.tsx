@@ -4,7 +4,7 @@ import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
 import { nanoid } from "nanoid";
 import React, { useState } from "react";
-import { Icon } from "./Icon.js";
+import { Icon, type IconName } from "./Icon.js";
 import { LightTooltip } from "./LightTooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
@@ -16,7 +16,7 @@ type Props = {
   buttonCSS?: CSSObject;
   ml?: number;
   place?: "top" | "bottom" | "left" | "right";
-  icon?: string;
+  icon?: IconName;
   id?: string;
 };
 

@@ -1,6 +1,6 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-function Sort() {
+export function Sort() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -18,5 +18,3 @@ function Sort() {
     </svg>
   );
 }
-
-export default Sort;

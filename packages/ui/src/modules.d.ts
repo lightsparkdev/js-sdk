@@ -60,6 +60,10 @@ declare module "*.svg" {
     React.SVGProps<SVGSVGElement> & { title?: string }
   >;
 
+  export default ReactComponent;
+}
+
+declare module "*?url" {
   const src: string;
   export default src;
 }

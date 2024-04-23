@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "moduleResolution": "bundler",
+    "types": ["jest", "@testing-library/jest-dom", "node"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

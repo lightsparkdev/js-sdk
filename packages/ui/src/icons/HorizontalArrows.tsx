@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-const HorizontalArrows = () => {
+export function HorizontalArrows() {
   return (
     <svg
       width="100%"
@@ -24,6 +24,4 @@ const HorizontalArrows = () => {
       />
     </svg>
   );
-};
-
-export default HorizontalArrows;
+}

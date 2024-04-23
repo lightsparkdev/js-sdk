@@ -15,5 +15,3 @@ export function CircleCheck() {
     </svg>
   );
 }
-
-export default CircleCheck;
