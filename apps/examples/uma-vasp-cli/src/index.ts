@@ -101,6 +101,26 @@ const sendPayment = async (options: OptionValues) => {
     : Math.round(parseFloat(amountStr) * Math.pow(10, currencyChoice.decimals));
 
   if (lockSendingAmount) {
+    if (amount < lnurlpResponse.minSendableSats) {
+      throw new Error(
+        `Amount must be greater than ${lnurlpResponse.minSendableSats} sats`,
+      );
+    }
+
+    if (amount > lnurlpResponse.maxSendableSats) {
+      throw new Error(
+        `Amount must be less than ${lnurlpResponse.maxSendableSats} sats`,
+      );
+    }
+
+    console.log(`\nSending ${amount} sats to ${receiverUma}...`);
+
+    console.log(
+      `The estimated ${currencyChoice.code} amount is ${
+        (amount * 1000) / currencyChoice.multiplier
+      }`,
+    );
+  } else {
     if (amount < currencyChoice.minSendable) {
       throw new Error(
         `Amount must be greater than ${currencyChoice.minSendable} ${currencyChoice.code}`,
@@ -120,26 +140,6 @@ const sendPayment = async (options: OptionValues) => {
     console.log(
       `The estimated SAT amount is ${
         (amount * currencyChoice.multiplier) / 1000
-      }`,
-    );
-  } else {
-    if (amount < lnurlpResponse.minSendableSats) {
-      throw new Error(
-        `Amount must be greater than ${lnurlpResponse.minSendableSats} sats`,
-      );
-    }
-
-    if (amount > lnurlpResponse.maxSendableSats) {
-      throw new Error(
-        `Amount must be less than ${lnurlpResponse.maxSendableSats} sats`,
-      );
-    }
-
-    console.log(`\nSending ${amount} sats to ${receiverUma}...`);
-
-    console.log(
-      `The estimated ${currencyChoice.code} amount is ${
-        (amount * 1000) / currencyChoice.multiplier
       }`,
     );
   }
