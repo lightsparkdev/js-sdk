@@ -9,7 +9,6 @@ import {
   getLightsparkNodeQuery,
 } from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
-import { LnurlpResponse, getMajorVersion } from "@uma-sdk/core";
 import { Express, Request } from "express";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
@@ -127,12 +126,20 @@ export default class SendingVasp {
       };
     }
 
-    const lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
-      isSubjectToTravelRule: true,
-      receiverAddress: receiverUmaAddress,
-      signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: this.getSendingVaspDomain(requestUrl),
-    });
+    let lnurlpRequestUrl: URL;
+    if (receiverUmaAddress.startsWith("$")) {
+      lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
+        isSubjectToTravelRule: true,
+        receiverAddress: receiverUmaAddress,
+        signingPrivateKey: this.config.umaSigningPrivKey(),
+        senderVaspDomain: this.getSendingVaspDomain(requestUrl),
+      });
+    } else {
+      const nonUmaLnurlpRequest: uma.LnurlpRequest = {
+        receiverAddress: receiverUmaAddress
+      };
+      lnurlpRequestUrl = uma.encodeToUrl(nonUmaLnurlpRequest)
+    }
 
     console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
 
@@ -255,7 +262,7 @@ export default class SendingVasp {
   }
 
   private async handleAsNonUmaLnurlpResponse(
-    lnurlpResponse: LnurlpResponse,
+    lnurlpResponse: uma.LnurlpResponse,
     receiverId: string,
     receivingVaspDomain: string,
   ): Promise<HttpResponse> {
@@ -308,12 +315,15 @@ export default class SendingVasp {
     );
     const isUma = initialRequestData.lnurlpResponse.isUma();
 
-    const payerProfile = this.getPayerProfile(
-      user,
-      initialRequestData.lnurlpResponse.payerData!,
-      this.getSendingVaspDomain(requestUrl),
-      isUma,
-    );
+    let payerProfile: PayerProfile | null = null;
+    if (initialRequestData.lnurlpResponse.payerData) {
+      payerProfile = this.getPayerProfile(
+        user,
+        initialRequestData.lnurlpResponse.payerData,
+        this.getSendingVaspDomain(requestUrl),
+        isUma,
+      );
+    }
 
     if (!isUma) {
       const msatsParam = requestUrl.searchParams.get("isAmountInMsats");
@@ -324,6 +334,10 @@ export default class SendingVasp {
         msatsParam,
         receivingCurrencyCode,
       );
+    }
+
+    if (!payerProfile) {
+      return { httpStatus: 400, data: "Missing payerData" };
     }
 
     if (!receivingCurrencyCode || typeof receivingCurrencyCode !== "string") {
@@ -407,7 +421,7 @@ export default class SendingVasp {
           email: { mandatory: false },
         },
         umaMajorVersion: initialRequestData.lnurlpResponse.umaVersion
-          ? getMajorVersion(initialRequestData.lnurlpResponse.umaVersion)
+          ? uma.getMajorVersion(initialRequestData.lnurlpResponse.umaVersion)
           : 1,
       });
     } catch (e) {
@@ -535,7 +549,7 @@ export default class SendingVasp {
   private async handleNonUmaPayReq(
     initialRequestData: SendingVaspInitialRequestData,
     amount: number,
-    payerProfile: PayerProfile,
+    payerProfile: PayerProfile | null,
     sendingCurrencyCode: string | null,
     receivingCurrencyCode: string | null,
   ): Promise<HttpResponse> {
@@ -550,8 +564,8 @@ export default class SendingVasp {
       if (receivingCurrencyCode) {
         url.searchParams.append("convert", receivingCurrencyCode);
       }
-      if (payerProfile.identifier || payerProfile.email || payerProfile.name) {
-        url.searchParams.append("payerdata", JSON.stringify(payerProfile));
+      if (payerProfile && (payerProfile.identifier || payerProfile.email || payerProfile.name)) {
+        url.searchParams.append("payerData", JSON.stringify(payerProfile));
       }
       response = await fetch(url.toString(), {
         method: "GET",
