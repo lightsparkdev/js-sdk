@@ -38,3 +38,4 @@ else
 fi
 
 echo $build_cmd && eval $build_cmd && echo $start_cmd && eval $start_cmd
+
