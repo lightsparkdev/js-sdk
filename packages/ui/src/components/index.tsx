@@ -39,7 +39,7 @@ export { Dropdown } from "./Dropdown.js";
 export { FileInput, StyledFileInput } from "./FileInput.js";
 export { GradientCardHeader } from "./GradientCardHeader.js";
 export { Icon, IconContainer, type IconName } from "./Icon.js";
-export { LightTooltip } from "./LightTooltip.js";
+export { InfoIconTooltip } from "./InfoIconTooltip.js";
 export { LightboxImage } from "./LightboxImage.js";
 export { LightsparkProvider } from "./LightsparkProvider.js";
 export { Loading, LoadingWrapper } from "./Loading.js";
@@ -79,4 +79,5 @@ export {
   type TextInputProps,
 } from "./TextInput.js";
 export { Toggle, ToggleContainer } from "./Toggle.js";
+export { Tooltip } from "./Tooltip.js";
 export { UnstyledButton } from "./UnstyledButton.js";

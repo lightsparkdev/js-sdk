@@ -6,9 +6,16 @@ import { Link } from "../router.js";
 export const ToReactNodesTypes = {
   Link: "link",
 } as const;
+
 export type ToReactNodesArg<RoutesType extends string> =
   | string
-  | { type: typeof ToReactNodesTypes.Link; text: string; to: RoutesType };
+  | {
+      type: typeof ToReactNodesTypes.Link;
+      text: string;
+      to?: RoutesType;
+      externalLink?: string;
+    };
+
 export type ToReactNodesArgs<RoutesType extends string> =
   | ToReactNodesArg<RoutesType>
   | ToReactNodesArg<RoutesType>[];
@@ -36,11 +43,24 @@ export function toReactNodes<RoutesType extends string>(
         </Fragment>
       );
     } else if (node.type === ToReactNodesTypes.Link) {
-      return (
-        <Link<RoutesType> to={node.to} key={`link-${i}`}>
-          {node.text}
-        </Link>
-      );
+      if (node.to) {
+        return (
+          <Link<RoutesType> to={node.to} key={`link-${i}`}>
+            {node.text}
+          </Link>
+        );
+      } else if (node.externalLink) {
+        return (
+          <a
+            href={node.externalLink}
+            key={`link-${i}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {node.text}
+          </a>
+        );
+      }
     }
 
     return null;

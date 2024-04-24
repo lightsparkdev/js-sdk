@@ -2,16 +2,16 @@ import { css } from "@emotion/css";
 import { useTheme, type Theme } from "@emotion/react";
 import React, { useEffect, useRef, type ComponentProps } from "react";
 import ReactDOM from "react-dom";
-import { Tooltip } from "react-tooltip";
+import { Tooltip as ReactTooltip } from "react-tooltip";
 import { overlaySurface } from "../styles/common.js";
 import { z } from "../styles/z-index.js";
 
-type TooltipProps = Omit<ComponentProps<typeof Tooltip>, "id"> & {
+type TooltipProps = Omit<ComponentProps<typeof ReactTooltip>, "id"> & {
   /* Make 3rd party types compatible with our undefined rule: */
   id?: string | undefined;
 };
 
-export function LightTooltip(props: TooltipProps) {
+export function Tooltip(props: TooltipProps) {
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [nodeReady, setNodeReady] = React.useState(false);
 
@@ -33,7 +33,7 @@ export function LightTooltip(props: TooltipProps) {
 
   return nodeReady && nodeRef.current
     ? ReactDOM.createPortal(
-        <Tooltip
+        <ReactTooltip
           {...props}
           id={props.id || ""}
           content={props.content || ""}
@@ -41,7 +41,6 @@ export function LightTooltip(props: TooltipProps) {
           border="0.05rem solid rgba(0, 0, 0, 0.1)"
           className={styles({ theme })}
           variant="light"
-          delayShow={180}
         />,
         nodeRef.current,
       )
@@ -49,13 +48,15 @@ export function LightTooltip(props: TooltipProps) {
 }
 
 const styles = ({ theme }: { theme: Theme }) => css`
-  font-size: "10px",
-  color: ${theme.c2Neutral};
+  font-size: "10px";
+  color: ${theme.c8Neutral} !important;
   border-radius: 8px !important;
   padding: 16px !important;
   z-index: ${z.tooltip};
   ${overlaySurface({ theme, important: true })};
 
   max-width: 260px;
-  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.10), 0px 4px 8px 0px rgba(0, 0, 0, 0.08) !important;
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    0px 4px 8px 0px rgba(0, 0, 0, 0.08) !important;
 `;

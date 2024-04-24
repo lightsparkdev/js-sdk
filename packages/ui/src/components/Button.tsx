@@ -10,8 +10,8 @@ import { getFocusOutline } from "../styles/common.js";
 import { themeOr, type WithTheme } from "../styles/themes.js";
 import { select } from "../utils/emotion.js";
 import { Icon, type IconName } from "./Icon.js";
-import { LightTooltip } from "./LightTooltip.js";
 import { Loading } from "./Loading.js";
+import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 const ButtonSizes = ["sm", "md", "lg"] as const;
@@ -242,7 +242,7 @@ export function Button<RoutesType extends string>({
         {iconSide === "right" && currentIcon}
       </div>
       {tooltipText ? (
-        <LightTooltip id={tooltipId.current} content={tooltipText} />
+        <Tooltip id={tooltipId.current} content={tooltipText} />
       ) : null}
     </Fragment>
   );

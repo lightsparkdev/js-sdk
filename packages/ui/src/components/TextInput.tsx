@@ -19,8 +19,8 @@ import {
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer, type IconName } from "./Icon.js";
-import { LightTooltip } from "./LightTooltip.js";
 import { ToggleContainer } from "./Toggle.js";
+import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type TextInputStyle = "primary" | "secondary";
@@ -179,11 +179,7 @@ export function TextInput(props: TextInputProps) {
         tooltipId={hintTooltipId}
       />
       {props.hintTooltip ? (
-        <LightTooltip
-          id={hintTooltipId}
-          content={props.hintTooltip}
-          place="right"
-        />
+        <Tooltip id={hintTooltipId} content={props.hintTooltip} place="right" />
       ) : null}
     </InputContainer>
   );
