@@ -23,12 +23,7 @@ export function InfoIconTooltip<RoutesType extends string>({
       >
         <Icon name="Info" width={12} ml={4} />
       </div>
-      <Tooltip
-        delayHide={100000}
-        id={id}
-        render={() => contentNodes}
-        clickable
-      />
+      <Tooltip id={id} render={() => contentNodes} clickable />
     </Fragment>
   );
 }
