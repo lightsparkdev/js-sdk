@@ -62,6 +62,7 @@ export {
 export { PageSectionNav } from "./PageSection/PageSectionNav.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
+export { Radio } from "./Radio.js";
 export { SecretContainer } from "./SecretContainer.js";
 export {
   StatusIndicator,
