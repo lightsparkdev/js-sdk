@@ -45,6 +45,7 @@ export const colors = {
   grayBlue94: "#EBEEF2",
   grayBlue96: "#F2F5F7",
   // purple
+  purple43: "#820AD1",
   purple55: "#8B38DE",
   // yellow
   primary,
@@ -53,7 +54,7 @@ export const colors = {
   danger: "#FD2C0F",
   // neutral
   secondary: neutral.black,
-};
+} as const;
 
 export function hcNeutralFromBg(
   bgHex: string,

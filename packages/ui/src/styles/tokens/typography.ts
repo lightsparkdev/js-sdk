@@ -163,7 +163,7 @@ export const TokenSize = {
 } as const;
 export type TokenSizeKey = (typeof TokenSize)[keyof typeof TokenSize];
 
-const TypographyType = {
+export const TypographyType = {
   Display: "Display",
   Headline: "Headline",
   Title: "Title",
@@ -176,7 +176,8 @@ const TypographyType = {
   Code: "Code",
   CodeStrong: "Code Strong",
 } as const;
-type TypographyTypeKey = (typeof TypographyType)[keyof typeof TypographyType];
+export type TypographyTypeKey =
+  (typeof TypographyType)[keyof typeof TypographyType];
 
 type TypographyTokens = {
   fontFamily: string;

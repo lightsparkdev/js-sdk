@@ -1,4 +1,5 @@
 export { Badge, type BadgeProps } from "./Badge.js";
+export { Banner, type BannerProps } from "./Banner/Banner.js";
 export {
   Button,
   ButtonSelector,
