@@ -1,23 +1,36 @@
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useResizeObserver } from "../../hooks/useResizeObserver.js";
 import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
+import { getColor, type ThemeOrColorKey } from "../../styles/themes.js";
+import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { z } from "../../styles/z-index.js";
+import { type NewRoutesType } from "../../types/index.js";
+import { type ToNonTypographicReactNodesArgs } from "../../utils/toNonTypographicReactNodes.js";
 import { TextIconAligner } from "../TextIconAligner.js";
-import {
-  bannerHeight,
-  bannerTiming,
-  lineHeightPx,
-  vPaddingPx,
-} from "./constants.js";
+import { renderTypography } from "../typography/renderTypography.js";
+import { bannerTiming } from "./constants.js";
 
-export type BannerProps<RoutesType extends string> = {
-  text: string | null;
-  to?: RoutesType | null | undefined;
-  color?: keyof typeof colors | undefined;
-  stepDuration?: number;
+type AllowedBannerTypographyTypes = "Display" | "Body";
+
+export type BannerProps = {
+  ref?: React.RefObject<HTMLDivElement>;
+  content?: ToNonTypographicReactNodesArgs | undefined;
+  typography?:
+    | {
+        type?: AllowedBannerTypographyTypes;
+        size?: TokenSizeKey;
+        color?: ThemeOrColorKey;
+      }
+    | undefined;
+  to?: NewRoutesType | null | undefined;
+  color?: ThemeOrColorKey | undefined;
+  bgProgressDuration?: number | undefined;
   offsetTop?: number;
+  maxMdContentJustify?: "center" | "left";
+  onHeightChange?: (height: number) => void;
   image?:
     | {
         src: string;
@@ -25,57 +38,92 @@ export type BannerProps<RoutesType extends string> = {
     | undefined;
 };
 
-export function Banner<RoutesType extends string>({
-  text,
+export function Banner({
+  content,
+  typography,
   to,
-  stepDuration,
+  bgProgressDuration,
   color = "blue43",
+  maxMdContentJustify,
   offsetTop = 0,
+  onHeightChange,
   image,
-}: BannerProps<RoutesType>) {
+}: BannerProps) {
   const [width, setWidth] = useState(70);
+  const resizeProps = useMemo(() => ["height" as const], []);
+  const { ref, rect } = useResizeObserver(resizeProps);
 
   useEffect(() => {
-    if (stepDuration) {
+    if (bgProgressDuration) {
       setTimeout(() => {
         setWidth(100);
       }, 0);
     }
-  }, [stepDuration]);
+  }, [bgProgressDuration]);
 
-  const innerContent = text ? (
-    <BannerInnerContent isVisible={Boolean(text)}>
-      {to ? (
-        <Link<RoutesType> to={to}>
-          <TextIconAligner text={text} rightIcon={{ name: "RightArrow" }} />
+  useEffect(() => {
+    console.log("rect.height", rect?.height);
+
+    if (onHeightChange && typeof rect?.height === "number") {
+      onHeightChange(rect.height);
+    }
+  }, [onHeightChange, rect?.height]);
+
+  let contentNode = null;
+  if (content) {
+    if (to) {
+      contentNode = (
+        <Link<NewRoutesType> to={to}>
+          <TextIconAligner
+            typography={typography}
+            content={content}
+            rightIcon={{ name: "RightArrow" }}
+          />
         </Link>
-      ) : (
-        <div>{text}</div>
-      )}
+      );
+    } else {
+      contentNode = renderTypography(typography?.type || "Body", {
+        content,
+        size: typography?.size || "Small",
+        color: typography?.color || "white",
+      });
+    }
+  }
+
+  const innerContent = content ? (
+    <BannerInnerContent
+      isVisible={Boolean(content)}
+      maxMdContentJustify={maxMdContentJustify || "center"}
+    >
+      {contentNode}
     </BannerInnerContent>
   ) : null;
 
   return (
     <StyledBanner
-      color={colors[color]}
-      isVisible={Boolean(text)}
+      colorProp={color}
+      isVisible={Boolean(content)}
       offsetTop={offsetTop}
       hasImage={Boolean(image)}
+      ref={ref}
     >
       {innerContent}
       {image && <StyledBannerImage src={image.src} />}
-      {stepDuration && (
+      {bgProgressDuration && (
         <BannerGradientBg
-          stepDuration={stepDuration}
+          duration={bgProgressDuration}
           width={width}
-          isVisible={Boolean(text)}
+          isVisible={Boolean(content)}
         />
       )}
     </StyledBanner>
   );
 }
 
-const BannerInnerContent = styled.div<{ isVisible: boolean }>`
+const BannerInnerContent = styled.div<{
+  isVisible: boolean;
+  maxMdContentJustify: BannerProps["maxMdContentJustify"];
+}>`
   & > * {
     position: relative;
     z-index: 1;
@@ -83,19 +131,21 @@ const BannerInnerContent = styled.div<{ isVisible: boolean }>`
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
-    padding: ${({ isVisible }) =>
-      isVisible ? `${vPaddingPx}px 17.5px` : "0px"};
-    line-height: ${lineHeightPx}px;
+    padding: ${({ isVisible }) => (isVisible ? `13px 17.5px` : "0px")};
     transition: all ${bannerTiming};
-    height: ${({ isVisible }) => (isVisible ? bannerHeight : "0")}px;
+    height: ${({ isVisible }) => (isVisible ? "auto" : "0px")};
+
+    ${({ maxMdContentJustify }) =>
+      bp.maxMd(
+        maxMdContentJustify ? `justify-content: ${maxMdContentJustify};` : "",
+      )};
   }
 `;
 
 const imageRightOffset = 20;
 
 const StyledBanner = styled.div<{
-  color: string | undefined;
+  colorProp: ThemeOrColorKey | undefined;
   isVisible: boolean;
   offsetTop: number;
   hasImage: boolean;
@@ -107,11 +157,10 @@ const StyledBanner = styled.div<{
   z-index: ${z.notificationBanner};
   color: ${colors.white};
   font-weight: 500;
-  background-color: ${({ color }) => color || colors.blue43};
+  background-color: ${({ colorProp, theme }) =>
+    colorProp ? getColor(theme, colorProp) : colors.blue43};
   ${({ hasImage }) =>
-    hasImage
-      ? `padding-right: ${imageRightOffset + lineHeightPx + vPaddingPx * 2}px;`
-      : ""}
+    hasImage ? `padding-right: ${imageRightOffset * 2}px;` : ""}
 
   ${bp.sm(`
     z-index: ${z.smBanner};
@@ -119,7 +168,7 @@ const StyledBanner = styled.div<{
 `;
 
 type BannerGradientBgProps = {
-  stepDuration: number;
+  duration: number;
   width: number;
   isVisible: boolean;
 };
@@ -141,9 +190,9 @@ const BannerGradientBg = styled.div<BannerGradientBgProps>`
   );
 
   transition: all ${bannerTiming};
-  height: ${({ isVisible }) => (isVisible ? bannerHeight : "0")}px;
+  height: ${({ isVisible }) => (isVisible ? "auto" : "0")}px;
 
-  transition: width ${({ stepDuration }) => stepDuration}s
+  transition: width ${({ duration }) => duration}s
     cubic-bezier(0.33, 0.54, 0.47, 0.87);
 `;
 
@@ -154,4 +203,5 @@ const StyledBannerImage = styled.img`
   bottom: 0;
   margin: auto;
   margin-right: ${imageRightOffset}px;
+  z-index: 1;
 `;

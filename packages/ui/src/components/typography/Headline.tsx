@@ -2,7 +2,7 @@
 
 import styled from "@emotion/styled";
 import React from "react";
-import { colors } from "../../styles/colors.js";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import {
   getTypographyString,
   type TokenSizeKey,
@@ -11,13 +11,6 @@ import { select } from "../../utils/emotion.js";
 
 export const headlineElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type Heading = (typeof headlineElements)[number];
-
-export interface HeadlineProps {
-  children: React.ReactNode;
-  size?: TokenSizeKey;
-  heading?: Heading;
-  color?: string | undefined;
-}
 
 type ReactNodeWithChildren = React.ReactElement<{
   children: React.ReactNode;
@@ -91,6 +84,13 @@ const toKebabCase = (str: string) => {
   return str.replaceAll(" ", "-").toLowerCase();
 };
 
+type HeadlineProps = {
+  children: React.ReactNode;
+  size?: TokenSizeKey;
+  heading?: Heading;
+  color?: FontColorKey | undefined;
+};
+
 export const Headline = ({
   children,
   color,
@@ -99,23 +99,27 @@ export const Headline = ({
 }: HeadlineProps) => {
   const id = toKebabCase(getHeaderId(children as React.ReactElement));
   return (
-    <StyledHeadline as={heading} id={id} size={size} color={color}>
+    <StyledHeadline as={heading} id={id} size={size} colorProp={color}>
       {children}
     </StyledHeadline>
   );
 };
 
-const StyledHeadline = styled.span<HeadlineProps>`
-  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-  ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Headline", size) : "";
-  }}
+type StyledHeadlineProps = {
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+  children: React.ReactNode;
+  size: TokenSizeKey;
+};
+
+const StyledHeadline = styled.span<StyledHeadlineProps>`
+  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
+  ${({ theme, size }) => getTypographyString(theme, "Headline", size)}
 
   * {
-    color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-    ${({ theme, size }) => {
-      return size ? getTypographyString(theme, "Headline", size) : "";
-    }}
+    color: ${({ theme, colorProp }) =>
+      getFontColor(theme, colorProp, "inherit")};
+    ${({ theme, size }) => getTypographyString(theme, "Headline", size)}
   }
 `;
 

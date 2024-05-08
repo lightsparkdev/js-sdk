@@ -1,5 +1,4 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { gql } from "@apollo/client";
 import styled from "@emotion/styled";
 import type {
   CurrencyAmountArg,
@@ -12,6 +11,7 @@ import {
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
+import { gql } from "graphql-tag";
 import { Icon } from "./Icon.js";
 
 type CurrencyAmountProps = {

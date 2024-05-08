@@ -10,7 +10,6 @@ export {
   getHeadlineText,
   headlineElements,
   headlineSelector,
-  type HeadlineProps,
 } from "./Headline.js";
 export { Label, StyledLabel } from "./Label.js";
 export { LabelModerate, StyledLabelModerate } from "./LabelModerate.js";

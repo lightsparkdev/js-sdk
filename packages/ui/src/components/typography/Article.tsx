@@ -1,10 +1,15 @@
 "use client";
 import styled from "@emotion/styled";
+import { type ReactNode } from "react";
 import { StyledContentTable } from "../../components/ContentTable.js";
 import { colors } from "../../styles/colors.js";
 import { standardBorderRadius } from "../../styles/common.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
-import { getTypographyString } from "../../styles/tokens/typography.js";
+import {
+  getTypographyString,
+  type TokenSizeKey,
+  type TypographyTypeKey,
+} from "../../styles/tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../../styles/utils.js";
 import { select } from "../../utils/emotion.js";
 import { StyledBody } from "./Body.js";
@@ -13,7 +18,33 @@ import { displaySelector } from "./Display.js";
 import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./Headline.js";
 import { StyledTitle } from "./Title.js";
 
-export const Article = styled.article`
+type ArticleProps = {
+  defaultTypography?: {
+    type: TypographyTypeKey;
+    size: TokenSizeKey;
+  };
+  children: ReactNode;
+};
+
+export function Article({ defaultTypography, children }: ArticleProps) {
+  return (
+    <StyledArticle
+      type={defaultTypography?.type || "Body"}
+      size={defaultTypography?.size || "Medium"}
+    >
+      {children}
+    </StyledArticle>
+  );
+}
+
+type StyledArticleProps = {
+  type: TypographyTypeKey;
+  size: TokenSizeKey;
+};
+
+export const StyledArticle = styled.article<StyledArticleProps>`
+  ${({ theme, type, size }) => getTypographyString(theme, type, size)}
+
   ${displaySelector("h1")} {
     margin: 0;
   }

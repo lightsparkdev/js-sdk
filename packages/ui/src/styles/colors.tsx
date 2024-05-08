@@ -25,7 +25,12 @@ export const darkGradient =
 
 const primary = "#FFF14E";
 
-export const colors = {
+/**
+ * In general human readable colors are represented as
+ * [colorName][colorLightness 1-100][alpha 1-100]. For example:
+ * red with 42 lightness and 10 alpha is red4210.
+ */
+const baseColors = {
   ...neutral,
   // green
   success: "#17C27C",
@@ -47,6 +52,8 @@ export const colors = {
   // purple
   purple43: "#820AD1",
   purple55: "#8B38DE",
+  // red
+  red42a10: "#D800271A",
   // yellow
   primary,
   warning: primary,
@@ -55,6 +62,17 @@ export const colors = {
   // neutral
   secondary: neutral.black,
 } as const;
+
+/* We only want `as const` to affect keys, the values should be widened to strings: */
+export const colors = baseColors as {
+  [K in keyof typeof baseColors]: string;
+};
+
+export type ColorKey = keyof typeof colors;
+
+export function isColorKey(key: string): key is ColorKey {
+  return key in colors;
+}
 
 export function hcNeutralFromBg(
   bgHex: string,

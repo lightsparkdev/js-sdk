@@ -71,15 +71,13 @@ export {
   type StatusIndicatorProps,
 } from "./StatusIndicator.js";
 export { TextButton } from "./TextButton.js";
-export {
-  TextIconAligner,
-  type TextIconAlignerProps,
-} from "./TextIconAligner.js";
+export { TextIconAligner } from "./TextIconAligner.js";
 export {
   TextInput,
   TextInputHalfRow,
   type TextInputProps,
 } from "./TextInput.js";
+export { Toasts, type ToastsProps } from "./Toasts.js";
 export { Toggle, ToggleContainer } from "./Toggle.js";
 export { Tooltip } from "./Tooltip.js";
 export { UnstyledButton } from "./UnstyledButton.js";

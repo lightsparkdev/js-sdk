@@ -54,7 +54,7 @@ const StyledCheckbox = styled.input<{ checked: boolean; disabled: boolean }>`
   background-color: ${({ theme, checked }) =>
     checked ? theme.info : theme.bg};
   background-image: ${({ checked }) =>
-    checked ? `url('${CheckmarkUrl}');` : "none;"}
+    checked ? `url("${CheckmarkUrl}");` : "none;"}
   background-repeat: no-repeat;
   background-position: center;
   background-size: 9px auto;

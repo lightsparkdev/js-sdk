@@ -1,28 +1,29 @@
 import type { Theme } from "@emotion/react";
-import { css, useTheme } from "@emotion/react";
+import { css } from "@emotion/react";
 import styled from "@emotion/styled";
+import { type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { getFocusOutline } from "../styles/common.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
-import {
-  TextIconAligner,
-  type TextIconAlignerProps,
-} from "./TextIconAligner.js";
+import { TextIconAligner } from "./TextIconAligner.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-export type TextButtonProps<RoutesType extends string> =
-  TextIconAlignerProps & {
-    disabled?: boolean;
-    to?: RoutesType | undefined;
-    href?: string;
-    elide?: ElideArgs;
-    toParams?: RouteParams | undefined;
-    onClick?: (() => void) | undefined;
-    mt?: number;
-    ml?: number;
-    padding?: string;
-    iconMatchTextColor?: boolean;
-  };
+export type TextButtonProps<RoutesType extends string> = Omit<
+  ComponentProps<typeof TextIconAligner>,
+  "content"
+> & {
+  disabled?: boolean;
+  to?: RoutesType | undefined;
+  href?: string;
+  elide?: ElideArgs;
+  toParams?: RouteParams | undefined;
+  onClick?: (() => void) | undefined;
+  mt?: number;
+  ml?: number;
+  padding?: string;
+  iconMatchTextColor?: boolean;
+  text: string;
+};
 
 export function TextButton<RoutesType extends string>({
   text: textProp,
@@ -39,7 +40,6 @@ export function TextButton<RoutesType extends string>({
   padding = "0",
   iconMatchTextColor = false,
 }: TextButtonProps<RoutesType>) {
-  const theme = useTheme();
   const text = elideArgs ? elide(textProp, elideArgs) : textProp;
 
   let rightIconProp = rightIcon;
@@ -49,7 +49,7 @@ export function TextButton<RoutesType extends string>({
     };
   }
 
-  const defaultIconColor = iconMatchTextColor ? "inherit" : theme.mcNeutral;
+  const defaultIconColor = iconMatchTextColor ? undefined : "mcNeutral";
 
   const content = (
     <TextIconAligner
@@ -63,7 +63,8 @@ export function TextButton<RoutesType extends string>({
             }
           : null
       }
-      text={text}
+      content={text}
+      typography={{ size: "ExtraSmall" }}
       rightIcon={
         rightIconProp
           ? {

@@ -1,30 +1,39 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../../styles/colors.js";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import {
   getTypographyString,
   type TokenSizeKey,
 } from "../../styles/tokens/typography.js";
 
-interface Props {
+export type OverlineProps = {
   children: React.ReactNode;
   size?: TokenSizeKey;
-  color?: string | undefined;
-}
+  color?: FontColorKey | undefined;
+};
 
-export const Overline = ({ children, color, size = "Medium" }: Props) => {
+export const Overline = ({
+  children,
+  color,
+  size = "Medium",
+}: OverlineProps) => {
   return (
-    <StyledOverline size={size} color={color}>
+    <StyledOverline size={size} colorProp={color}>
       {children}
     </StyledOverline>
   );
 };
 
-export const StyledOverline = styled.span<Props>`
-  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-  ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Overline", size) : "";
-  }}
+type StyledOverlineProps = {
+  children: React.ReactNode;
+  size: TokenSizeKey;
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+};
+
+export const StyledOverline = styled.span<StyledOverlineProps>`
+  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
+  ${({ theme, size }) => getTypographyString(theme, "Overline", size)}
   cursor: inherit;
 `;

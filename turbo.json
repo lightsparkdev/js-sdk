@@ -44,7 +44,8 @@
     },
     "start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     },
     "test": {
       "dependsOn": ["^build"]
@@ -55,7 +56,9 @@
     "test:integration": {
       "dependsOn": ["^build"]
     },
-    "types": {},
+    "types": {
+      "dependsOn": ["^build"]
+    },
     "types:watch": {
       "cache": false,
       "persistent": true

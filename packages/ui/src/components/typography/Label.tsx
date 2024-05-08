@@ -1,30 +1,35 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../../styles/colors.js";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import {
   getTypographyString,
   type TokenSizeKey,
 } from "../../styles/tokens/typography.js";
 
-interface Props {
+type LabelProps = {
   children: React.ReactNode;
   size?: TokenSizeKey;
-  color?: string | undefined;
-}
+  color?: FontColorKey | undefined;
+};
 
-export const Label = ({ children, color, size = "Medium" }: Props) => {
+export const Label = ({ children, color, size = "Medium" }: LabelProps) => {
   return (
-    <StyledLabel size={size} color={color}>
+    <StyledLabel size={size} colorProp={color}>
       {children}
     </StyledLabel>
   );
 };
 
-export const StyledLabel = styled.label<Props>`
-  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-  ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Label", size) : "";
-  }}
+type StyledLabelProps = {
+  children: React.ReactNode;
+  size: TokenSizeKey;
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+};
+
+export const StyledLabel = styled.label<StyledLabelProps>`
+  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
+  ${({ theme, size }) => getTypographyString(theme, "Label", size)}
   cursor: inherit;
 `;

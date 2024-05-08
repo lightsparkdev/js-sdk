@@ -115,7 +115,7 @@ export function Pill({
             </UnstyledButton>
           )}
           {!loading && icon && !onDeleteMouseDown && (
-            <Icon name={icon} width={16.1} color={colors.white} />
+            <Icon name={icon} width={16.1} color="white" />
           )}
         </PillIconContainer>
       )}

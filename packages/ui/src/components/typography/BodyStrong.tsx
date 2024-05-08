@@ -1,35 +1,50 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../../styles/colors.js";
+import { type ReactNode } from "react";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import {
   getTypographyString,
   type TokenSizeKey,
 } from "../../styles/tokens/typography.js";
+import {
+  toNonTypographicReactNodes,
+  type ToNonTypographicReactNodesArgs,
+} from "../../utils/toNonTypographicReactNodes.js";
 
-interface Props {
-  children: React.ReactNode;
+type BodyStrongProps = {
+  content?: ToNonTypographicReactNodesArgs | undefined | null;
+  /* children must be a string. use content prop for more complex content */
+  children?: string | undefined | null;
   size?: TokenSizeKey;
-  color?: string | undefined;
-}
+  color?: FontColorKey | undefined;
+};
 
-export const BodyStrong = ({ children, color, size = "Medium" }: Props) => {
+export const BodyStrong = ({
+  content,
+  children,
+  color,
+  size = "Medium",
+}: BodyStrongProps) => {
+  let reactNodes: ReactNode = children || null;
+  if (content) {
+    reactNodes = toNonTypographicReactNodes(content);
+  }
   return (
-    <StyledBodyStrong size={size} color={color}>
-      {children}
+    <StyledBodyStrong size={size} colorProp={color}>
+      {reactNodes}
     </StyledBodyStrong>
   );
 };
 
-/**
- * Images rendered by the markdown renderer are wrapped in a paragraph tag,
- * so we need to use a span and set it display: block to mimic a paragraph
- * element.
- */
-export const StyledBodyStrong = styled.span<Props>`
-  display: block;
-  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-  ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Body Strong", size) : "";
-  }}
+type StyledBodyStrongProps = {
+  children: ReactNode;
+  size: TokenSizeKey;
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+};
+
+export const StyledBodyStrong = styled.span<StyledBodyStrongProps>`
+  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
+  ${({ theme, size }) => getTypographyString(theme, "Body Strong", size)};
 `;

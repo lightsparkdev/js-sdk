@@ -157,7 +157,7 @@ function PageSectionBoxAction<RoutesType extends string>({
   ) : icon ? (
     <div>
       <UnstyledButton onClick={icon.onClick}>
-        <Icon name={icon.name} width={12} color={theme.mcNeutral} />
+        <Icon name={icon.name} width={12} color="mcNeutral" />
       </UnstyledButton>
     </div>
   ) : dropdownItems ? (

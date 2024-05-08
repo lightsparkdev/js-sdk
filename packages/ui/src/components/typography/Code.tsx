@@ -6,16 +6,16 @@ import {
   type TokenSizeKey,
 } from "../../styles/tokens/typography.js";
 
-interface Props {
+export type CodeProps = {
   children: React.ReactNode;
   size?: TokenSizeKey;
-}
+};
 
-export const Code = ({ children, size = "Medium" }: Props) => {
+export const Code = ({ children, size = "Medium" }: CodeProps) => {
   return <StyledCode size={size}>{children}</StyledCode>;
 };
 
-export const StyledCode = styled.div<Props>`
+export const StyledCode = styled.div<CodeProps>`
   ${({ theme, size }) => {
     return size ? getTypographyString(theme, "Code", size) : "";
   }}

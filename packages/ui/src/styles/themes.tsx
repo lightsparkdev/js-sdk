@@ -1,8 +1,15 @@
 import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
+import { omit } from "lodash-es";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
-import { colors, darkGradient, hcNeutralFromBg } from "./colors.js";
+import {
+  colors,
+  darkGradient,
+  hcNeutralFromBg,
+  isColorKey,
+  type ColorKey,
+} from "./colors.js";
 import {
   TypographyGroup,
   getTypography,
@@ -18,38 +25,86 @@ export enum Themes {
   BridgeDark = "bridgeDark",
 }
 
-interface BaseTheme {
-  type: Themes;
-  bg: string;
-  smBg: string;
-  c05Neutral: string;
-  c1Neutral: string;
-  c15Neutral: string;
-  c2Neutral: string;
-  c3Neutral: string;
-  c4Neutral: string;
-  c5Neutral: string;
-  c6Neutral: string;
-  c7Neutral: string;
-  c8Neutral: string;
-  c9Neutral: string;
-  danger: string;
-  hcNeutral: string;
-  hcNeutralFromBg: (hex: string) => string;
-  info: string;
-  lcNeutral: string;
-  link: string;
-  mcNeutral: string;
-  onInfoText: string;
-  onPrimaryText: string;
-  onSuccessText: string;
-  primary: string;
-  secondary: string;
-  success: string;
-  text: string;
-  typography: ReturnType<typeof getTypography>;
-  vlcNeutral: string;
-  warning: string;
+const baseTheme = {
+  // base type should be Themes but default to Light
+  type: Themes.Light as Themes,
+  bg: colors.white,
+  smBg: colors.white,
+  c05Neutral: colors.gray95,
+  c1Neutral: colors.gray90,
+  c15Neutral: colors.gray85,
+  c2Neutral: colors.gray80,
+  c3Neutral: colors.gray70,
+  c4Neutral: colors.gray60,
+  c5Neutral: colors.gray50,
+  c6Neutral: colors.gray40,
+  c7Neutral: colors.gray30,
+  c8Neutral: colors.gray20,
+  c9Neutral: colors.gray10,
+  danger: colors.danger,
+  hcNeutral: colors.black,
+  hcNeutralFromBg: (bgHex: string) =>
+    hcNeutralFromBg(bgHex, colors.black, colors.white),
+  info: colors.blue43,
+  lcNeutral: colors.gray80,
+  link: colors.blue43,
+  mcNeutral: colors.gray40,
+  onInfoText: colors.white,
+  onPrimaryText: colors.black,
+  onSuccessText: colors.white,
+  primary: colors.primary,
+  secondary: colors.secondary,
+  success: colors.success,
+  text: colors.black,
+  typography: getTypography(TypographyGroup.Lightspark),
+  vlcNeutral: colors.gray95,
+  warning: colors.warning,
+};
+
+type BaseTheme = typeof baseTheme;
+
+const baseThemeColors = omit(baseTheme, [
+  "type",
+  "typography",
+  "hcNeutralFromBg",
+]);
+type ThemeColorKey = keyof typeof baseThemeColors;
+
+export function isThemeColorKey(key: unknown): key is ThemeColorKey {
+  return Boolean(key && typeof key === "string" && key in baseThemeColors);
+}
+
+export type SurfaceThemeColorKey = [keyof LightsparkSurfaces, ThemeColorKey];
+
+export type ThemeOrColorKey = ThemeColorKey | ColorKey | SurfaceThemeColorKey; // to select a sub-surface color
+export type FontColorKey = ThemeOrColorKey | "inherit";
+
+export function getColor(
+  theme: LightsparkTheme,
+  key?: ThemeOrColorKey | undefined,
+) {
+  if (key && isThemeColorKey(key)) {
+    return theme[key];
+  } else if (key && Array.isArray(key)) {
+    const [surface, colorKey] = key;
+    const surfaceTheme = theme[surface];
+    const color = surfaceTheme[colorKey];
+    return color;
+  } else if (key && isColorKey(key)) {
+    return colors[key];
+  }
+  return theme.text;
+}
+
+export function getFontColor(
+  theme: LightsparkTheme,
+  key?: FontColorKey | undefined,
+  defaultColor: ThemeColorKey | "inherit" = "inherit",
+) {
+  if (key === "inherit" || (!key && defaultColor === "inherit")) {
+    return "inherit";
+  }
+  return getColor(theme, key);
 }
 
 type LightsparkSurfaces = {
@@ -78,40 +133,7 @@ function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
   } as BaseTheme;
 }
 
-const lightBaseTheme: BaseTheme = {
-  type: Themes.Light,
-  bg: colors.white,
-  smBg: colors.white,
-  c05Neutral: colors.gray95,
-  c1Neutral: colors.gray90,
-  c15Neutral: colors.gray85,
-  c2Neutral: colors.gray80,
-  c3Neutral: colors.gray70,
-  c4Neutral: colors.gray60,
-  c5Neutral: colors.gray50,
-  c6Neutral: colors.gray40,
-  c7Neutral: colors.gray30,
-  c8Neutral: colors.gray20,
-  c9Neutral: colors.gray10,
-  danger: colors.danger,
-  hcNeutral: colors.black,
-  hcNeutralFromBg: (bgHex) =>
-    hcNeutralFromBg(bgHex, colors.black, colors.white),
-  info: colors.blue43,
-  lcNeutral: colors.gray80,
-  link: colors.blue43,
-  mcNeutral: colors.gray40,
-  onInfoText: colors.white,
-  onPrimaryText: colors.black,
-  onSuccessText: colors.white,
-  primary: colors.primary,
-  secondary: colors.secondary,
-  success: colors.success,
-  text: colors.black,
-  typography: getTypography(TypographyGroup.Lightspark),
-  vlcNeutral: colors.gray95,
-  warning: colors.warning,
-};
+const lightBaseTheme: BaseTheme = baseTheme;
 
 const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,

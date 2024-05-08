@@ -1,10 +1,9 @@
 import styled from "@emotion/styled";
 import { LabelModerate } from "../components/typography/index.js";
-import { colors } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
-import { isLight } from "../styles/themes.js";
+import { getColor, isLight } from "../styles/themes.js";
 
-type BadgeColor = "neutral" | "error";
+type BadgeColor = "text" | "danger";
 
 export type BadgeProps = {
   text?: string | undefined;
@@ -14,10 +13,9 @@ export type BadgeProps = {
 };
 
 export function Badge({ text, color, ml = 0, mr = 0 }: BadgeProps) {
-  const labelColor = color === "error" ? "#D80027" : colors.black;
   return text ? (
     <StyledBadge color={color} ml={ml}>
-      <LabelModerate size="Small" color={labelColor}>
+      <LabelModerate size="Small" color={color}>
         {text}
       </LabelModerate>
     </StyledBadge>
@@ -30,8 +28,8 @@ const StyledBadge = styled.span<{ color: BadgeColor | undefined; ml: number }>`
   ${({ ml }) => (ml === 0 ? "" : `margin-left: ${ml}px;`)}
   padding: ${badgeVPadding}px 6px;
   background-color: ${({ theme, color }) => {
-    if (color === "error") {
-      return "#D800271A";
+    if (color === "danger") {
+      return getColor(theme, "red42a10");
     } else {
       return isLight(theme) ? theme.c05Neutral : theme.c15Neutral;
     }

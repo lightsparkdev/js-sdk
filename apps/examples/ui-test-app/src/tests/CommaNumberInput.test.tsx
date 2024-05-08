@@ -15,7 +15,6 @@ function render(renderElement: ReactElement) {
   });
 }
 
-// write a test for the CommaNumberInput component
 describe("CommaNumberInput", () => {
   const defaultOnChange = () => {};
   test("should not add commas to numbers less than 1000", () => {

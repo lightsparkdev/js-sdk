@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import * as icons from "../icons/index.js";
 import { rootFontSizePx } from "../styles/common.js";
+import { getFontColor, type FontColorKey } from "../styles/themes.js";
 import { isString } from "../utils/strings.js";
 
 export type IconName = keyof typeof icons;
@@ -12,7 +13,7 @@ type IconProps = {
   mr?: number;
   ml?: number;
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
-  color?: string | undefined;
+  color?: FontColorKey | undefined;
   tutorialStep?: number;
 };
 
@@ -58,7 +59,7 @@ type IconContainerProps = {
   mr: number;
   ml: number;
   verticalAlign: string | number;
-  fontColor?: string | undefined;
+  fontColor?: FontColorKey | undefined;
 };
 
 export const IconContainer = styled.span<IconContainerProps>`
@@ -75,9 +76,9 @@ export const IconContainer = styled.span<IconContainerProps>`
   vertical-align: ${({ verticalAlign }) =>
     isString(verticalAlign) ? verticalAlign : `${verticalAlign}em`};
 
-  ${({ fontColor }) => `
+  ${({ theme, fontColor }) => `
     & svg {
-      color: ${fontColor || "inherit"};
+      color: ${getFontColor(theme, fontColor, "inherit")};
     }
   `}
 `;

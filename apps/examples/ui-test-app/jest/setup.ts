@@ -1,5 +1,7 @@
 /* Import node libs to polyfill browser objects */
 import crypto from "crypto";
+import ResizeObserver from "resize-observer-polyfill";
+
 import { TextDecoder, TextEncoder } from "util";
 
 Object.defineProperties(global.self, {
@@ -17,3 +19,5 @@ Object.defineProperties(global.self, {
     value: TextDecoder,
   },
 });
+
+global.ResizeObserver = ResizeObserver;

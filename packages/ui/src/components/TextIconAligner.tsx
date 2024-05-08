@@ -1,5 +1,11 @@
 /** @jsxImportSource @emotion/react */
+import { type ThemeOrColorKey } from "../styles/themes.js";
+import { type TokenSizeKey } from "../styles/tokens/typography.js";
+import { type ToNonTypographicReactNodesArgs } from "../utils/toNonTypographicReactNodes.js";
 import { Icon, type IconName } from "./Icon.js";
+import { renderTypography } from "./typography/renderTypography.js";
+
+type AllowedTextIconAlignerTypographyTypes = "Display" | "Body" | "Body Strong";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
@@ -9,12 +15,19 @@ type MarginPx = (typeof marginPx)[number];
 const width = [12, 14, 16] as const;
 type Width = (typeof width)[number];
 
-export type TextIconAlignerProps = {
-  text: string;
+type TextIconAlignerProps = {
+  content?: ToNonTypographicReactNodesArgs | undefined;
+  typography?:
+    | {
+        type?: AllowedTextIconAlignerTypographyTypes;
+        size?: TokenSizeKey;
+        color?: ThemeOrColorKey;
+      }
+    | undefined;
   rightIcon?:
     | {
         name: IconName;
-        color?: string;
+        color?: ThemeOrColorKey | undefined;
         width?: Width | undefined;
         ml?: MarginPx | undefined;
       }
@@ -23,7 +36,7 @@ export type TextIconAlignerProps = {
   leftIcon?:
     | {
         name: IconName;
-        color?: string;
+        color?: ThemeOrColorKey | undefined;
         width?: Width | undefined;
         mr?: MarginPx | undefined;
       }
@@ -33,11 +46,18 @@ export type TextIconAlignerProps = {
 };
 
 export function TextIconAligner({
-  text,
+  content,
+  typography,
   rightIcon,
   leftIcon,
   onClick,
 }: TextIconAlignerProps) {
+  const nodes = renderTypography(typography?.type || "Body", {
+    content,
+    size: typography?.size || "Small",
+    color: typography?.color || "inherit",
+  });
+
   const leftIconNode = leftIcon ? (
     <Icon
       name={leftIcon.name}
@@ -65,7 +85,7 @@ export function TextIconAligner({
       onClick={onClick}
     >
       {leftIconNode}
-      {text}
+      {nodes}
       {rightIconNode}
     </span>
   );

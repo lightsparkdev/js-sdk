@@ -1,37 +1,45 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { colors } from "../../styles/colors.js";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import {
   getTypographyString,
   type TokenSizeKey,
 } from "../../styles/tokens/typography.js";
 
-interface Props {
+export type LabelModerateProps = {
   children: React.ReactNode;
   size?: TokenSizeKey;
-  color?: string | undefined;
-}
+  color?: FontColorKey | undefined;
+};
 
-export const LabelModerate = ({ children, color, size = "Medium" }: Props) => {
+export const LabelModerate = ({
+  children,
+  color,
+  size = "Medium",
+}: LabelModerateProps) => {
   return (
-    <StyledLabelModerate size={size} color={color}>
+    <StyledLabelModerate size={size} colorProp={color}>
       {children}
     </StyledLabelModerate>
   );
 };
 
-export const StyledLabelModerate = styled.label<Props>`
-  color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-  ${({ theme, size }) => {
-    return size ? getTypographyString(theme, "Label Moderate", size) : "";
-  }}
+type StyledLabelModerateProps = {
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+  children: React.ReactNode;
+  size: TokenSizeKey;
+};
+
+export const StyledLabelModerate = styled.label<StyledLabelModerateProps>`
+  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
+  ${({ theme, size }) => getTypographyString(theme, "Label Moderate", size)}
   cursor: inherit;
 
   * {
-    color: ${({ theme, color }) => `${color || theme.text || colors.black}`};
-    ${({ theme, size }) => {
-      return size ? getTypographyString(theme, "Label Moderate", size) : "";
-    }}
+    color: ${({ theme, colorProp }) =>
+      getFontColor(theme, colorProp, "inherit")};
+    ${({ theme, size }) => getTypographyString(theme, "Label Moderate", size)}
   }
 `;

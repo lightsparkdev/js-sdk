@@ -1,6 +1,7 @@
+import { toReactNodes } from "@lightsparkdev/ui/utils/toReactNodes";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { toReactNodes } from "../toReactNodes";
+import { TestAppRoutes } from "../types";
 
 describe("toReactNodes", () => {
   it("renders the expected output for a single string", () => {
@@ -17,14 +18,17 @@ describe("toReactNodes", () => {
   });
 
   it("renders the expected output for a single link", () => {
-    const result = toReactNodes({ type: "link", text: "Test", to: "/test" });
+    const result = toReactNodes({
+      text: "Test",
+      to: TestAppRoutes.PageOne,
+    });
     const { asFragment } = render(<BrowserRouter>{result}</BrowserRouter>);
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <a
           class="css-0"
-          href="/test"
+          href="/test-app-page-one"
         >
           Test
         </a>
@@ -93,7 +97,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes([
       "test1\n",
       "test2\n",
-      { type: "link", text: "Test", to: "/test" },
+      { text: "Test", to: TestAppRoutes.PageOne },
       "\n",
       "test3",
     ]);
@@ -107,7 +111,7 @@ describe("toReactNodes", () => {
         <br />
         <a
           class="css-0"
-          href="/test"
+          href="/test-app-page-one"
         >
           Test
         </a>
@@ -121,8 +125,8 @@ describe("toReactNodes", () => {
     const result = toReactNodes([
       "test1\n",
       "test2\n",
-      { type: "link", text: "Test", to: "/test" },
-      { type: "link", text: "Test 2", to: "/test-2" },
+      { text: "Test", to: TestAppRoutes.PageOne },
+      { text: "Test 2", to: TestAppRoutes.PageTwo },
       "\n",
       "test3",
     ]);
@@ -136,13 +140,13 @@ describe("toReactNodes", () => {
         <br />
         <a
           class="css-0"
-          href="/test"
+          href="/test-app-page-one"
         >
           Test
         </a>
         <a
           class="css-0"
-          href="/test-2"
+          href="/test-app-page-two"
         >
           Test 2
         </a>
@@ -150,5 +154,17 @@ describe("toReactNodes", () => {
         test3
       </DocumentFragment>
     `);
+  });
+
+  it("should have type errors when arguments do not match inferred types", () => {
+    toReactNodes([
+      {
+        /* @ts-expect-error `/testsf` is not a valid TestAppRoutes */
+        to: "/testsf",
+        text: "Hello",
+        /* @ts-expect-error `contnt` is not a valid prop for the Display component */
+        typography: { type: "Display", props: { contnt: "Something" } },
+      },
+    ]);
   });
 });
