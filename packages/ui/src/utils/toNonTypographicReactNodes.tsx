@@ -5,9 +5,13 @@
 
 import { isObject } from "lodash-es";
 import { nanoid } from "nanoid";
+// import NextLinkModule from "next/link.js";
 import { Fragment, type ReactNode } from "react";
 import { Link } from "../router.js";
 import { type NewRoutesType } from "../types/index.js";
+import { NextLink } from "./NextLink.js";
+
+// const NextLink = NextLinkModule.default;
 
 export type LinkNode = {
   text: string;
@@ -17,6 +21,11 @@ export type LinkNode = {
 export type ExternalLinkNode = {
   text: string;
   externalLink: string | undefined;
+};
+
+export type NextLinkNode = {
+  nextHref: string;
+  text: string;
 };
 
 export type TextNode = {
@@ -33,6 +42,12 @@ function isExternalLinkNode(node: unknown): node is ExternalLinkNode {
   );
 }
 
+function isNextLinkNode(node: unknown): node is NextLinkNode {
+  return Boolean(
+    node && isObject(node) && "text" in node && "nextHref" in node,
+  );
+}
+
 function isTextNode(node: unknown): node is TextNode {
   return Boolean(node && isObject(node) && "text" in node);
 }
@@ -41,6 +56,7 @@ type ToNonTypographicReactNodesArg =
   | string
   | LinkNode
   | ExternalLinkNode
+  | NextLinkNode
   | TextNode;
 
 export type ToNonTypographicReactNodesArgs =
@@ -75,6 +91,17 @@ export function toNonTypographicReactNodes(
         >
           {node.text}
         </a>
+      );
+    } else if (isNextLinkNode(node)) {
+      const isExternal = node.nextHref.startsWith("http");
+      return (
+        <Fragment key={`next-link-${i}`}>
+          <NextLink
+            href={node.nextHref}
+            text={node.text}
+            target={isExternal ? "_blank" : undefined}
+          />
+        </Fragment>
       );
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;

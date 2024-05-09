@@ -10,6 +10,7 @@ import {
   toNonTypographicReactNodes,
   type ExternalLinkNode,
   type LinkNode,
+  type NextLinkNode,
   type TextNode,
 } from "./toNonTypographicReactNodes.js";
 
@@ -17,7 +18,8 @@ type ToReactNodesArg<T extends TypographyTypeKey> =
   | string
   | (LinkNode & { typography?: RenderTypographyArgs<T> })
   | (ExternalLinkNode & { typography?: RenderTypographyArgs<T> })
-  | (TextNode & { typography?: RenderTypographyArgs<T> });
+  | (TextNode & { typography?: RenderTypographyArgs<T> })
+  | (NextLinkNode & { typography?: RenderTypographyArgs<T> });
 
 export type ToReactNodesArgs<T extends TypographyTypeKey> =
   | ToReactNodesArg<T>

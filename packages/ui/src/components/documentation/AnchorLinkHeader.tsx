@@ -1,19 +1,20 @@
 "use client";
 import styled from "@emotion/styled";
-import { omit } from "lodash-es";
 import { type ComponentProps } from "react";
 import { type FontColorKey } from "../../styles/themes.js";
 import { select } from "../../utils/emotion.js";
 import { Icon } from "../Icon.js";
-import { Headline } from "../typography/index.js";
+import { DocsHeadline } from "./DocsHeadline.js";
 
-export const AnchorLinkHeader = (props: ComponentProps<typeof Headline>) => {
+export const AnchorLinkHeader = (
+  props: ComponentProps<typeof DocsHeadline>,
+) => {
   return (
-    <StyledAnchorLinkHeader {...omit(props, "color")} colorProp={props.color}>
-      <Headline {...props}>
+    <StyledAnchorLinkHeader colorProp={props.color}>
+      <DocsHeadline {...props}>
         {props.children}
         <IconWrapper name="AnchorLink" color={props.color} width={0} />
-      </Headline>
+      </DocsHeadline>
     </StyledAnchorLinkHeader>
   );
 };

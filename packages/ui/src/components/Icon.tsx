@@ -1,3 +1,5 @@
+"use client";
+
 import styled from "@emotion/styled";
 import * as icons from "../icons/index.js";
 import { rootFontSizePx } from "../styles/common.js";

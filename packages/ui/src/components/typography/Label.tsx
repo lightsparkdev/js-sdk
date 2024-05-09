@@ -2,11 +2,9 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { getFontColor, type FontColorKey } from "../../styles/themes.js";
-import {
-  getTypographyString,
-  type TokenSizeKey,
-} from "../../styles/tokens/typography.js";
+import { applyTypography } from "../../styles/applyTypography.js";
+import { type FontColorKey } from "../../styles/themes.js";
+import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import {
   toNonTypographicReactNodes,
   type ToNonTypographicReactNodesArgs,
@@ -45,7 +43,7 @@ type StyledLabelProps = {
 };
 
 export const StyledLabel = styled.label<StyledLabelProps>`
-  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
-  ${({ theme, size }) => getTypographyString(theme, "Label", size)}
+  ${({ theme, size, colorProp }) =>
+    applyTypography(theme, "Label", size, colorProp)}
   cursor: inherit;
 `;

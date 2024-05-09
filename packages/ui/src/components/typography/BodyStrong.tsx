@@ -2,11 +2,9 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { getFontColor, type FontColorKey } from "../../styles/themes.js";
-import {
-  getTypographyString,
-  type TokenSizeKey,
-} from "../../styles/tokens/typography.js";
+import { applyTypography } from "../../styles/applyTypography.js";
+import { type FontColorKey } from "../../styles/themes.js";
+import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import {
   toNonTypographicReactNodes,
   type ToNonTypographicReactNodesArgs,
@@ -18,6 +16,7 @@ type BodyStrongProps = {
   children?: string | undefined | null;
   size?: TokenSizeKey;
   color?: FontColorKey | undefined;
+  block?: boolean | undefined;
 };
 
 export const BodyStrong = ({
@@ -25,13 +24,14 @@ export const BodyStrong = ({
   children,
   color,
   size = "Medium",
+  block = false,
 }: BodyStrongProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledBodyStrong size={size} colorProp={color}>
+    <StyledBodyStrong size={size} colorProp={color} block={block}>
       {reactNodes}
     </StyledBodyStrong>
   );
@@ -42,9 +42,11 @@ type StyledBodyStrongProps = {
   size: TokenSizeKey;
   /* color is an inherent html prop so we need to use colorProp instead */
   colorProp?: FontColorKey | undefined;
+  block: boolean;
 };
 
 export const StyledBodyStrong = styled.span<StyledBodyStrongProps>`
-  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
-  ${({ theme, size }) => getTypographyString(theme, "Body Strong", size)};
+  ${({ theme, size, colorProp }) =>
+    applyTypography(theme, "Body Strong", size, colorProp)}
+  display: ${({ block }) => (block ? "block" : "inline")};
 `;

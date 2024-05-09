@@ -2,11 +2,9 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { getFontColor, type FontColorKey } from "../../styles/themes.js";
-import {
-  getTypographyString,
-  type TokenSizeKey,
-} from "../../styles/tokens/typography.js";
+import { applyTypography } from "../../styles/applyTypography.js";
+import { type FontColorKey } from "../../styles/themes.js";
+import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { select } from "../../utils/emotion.js";
 import {
   toNonTypographicReactNodes,
@@ -51,8 +49,8 @@ type StyledDisplayProps = {
 };
 
 const StyledDisplay = styled.span<StyledDisplayProps>`
-  color: ${({ theme, colorProp }) => getFontColor(theme, colorProp, "inherit")};
-  ${({ theme, size }) => getTypographyString(theme, "Display", size)}
+  ${({ theme, size, colorProp }) =>
+    applyTypography(theme, "Display", size, colorProp)}
 `;
 
 export function displaySelector(element: DisplayElement) {
