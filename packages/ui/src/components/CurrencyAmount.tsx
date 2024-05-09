@@ -22,6 +22,7 @@ type CurrencyAmountProps = {
   ml?: number;
   includeEstimatedIndicator?: boolean;
   showSubSatDigits?: boolean;
+  btcFullPrecision?: boolean | undefined;
 };
 
 export function CurrencyAmount({
@@ -33,6 +34,9 @@ export function CurrencyAmount({
   /* Product has voted to hide msats from end users.
      showSubSatDigits should only be used in ops tools: */
   showSubSatDigits = false,
+  /* Product prefers 4 precision for BTC in most cases.
+     In a few places full precision is preferred:  */
+  btcFullPrecision = false,
   ml = 0,
 }: CurrencyAmountProps) {
   const unit = displayUnit;
@@ -50,11 +54,10 @@ export function CurrencyAmount({
       1,
       true,
     );
-  } else if (showSubSatDigits) {
-    formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: CurrencyUnit.SATOSHI },
-      3,
-    );
+  } else if (displayUnit === CurrencyUnit.BITCOIN && btcFullPrecision) {
+    formattedNumber = formatCurrencyStr({ value: Number(value), unit }, 8);
+  } else if (displayUnit === CurrencyUnit.SATOSHI && showSubSatDigits) {
+    formattedNumber = formatCurrencyStr({ value: Number(value), unit }, 3);
   }
 
   if (showUnits) {
