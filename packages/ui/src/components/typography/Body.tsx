@@ -52,5 +52,5 @@ type StyledBodyProps = {
 export const StyledBody = styled.span<StyledBodyProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Body", size, colorProp)}
-  display: ${({ block }) => (block ? "block" : "inline")};
+  ${({ block }) => (block ? "display: block;" : "")}
 `;

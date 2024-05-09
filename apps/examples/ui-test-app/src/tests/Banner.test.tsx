@@ -25,8 +25,28 @@ describe("Banner", () => {
             "Hello",
             /* @ts-expect-error `/exasdmple` is not a valid TestAppRoute */
             { text: "World", to: "/exasdmple" },
-            { text: "!" },
-            { text: "!", to: TestAppRoutes.PageOne },
+            {
+              text: "!",
+              typography: {
+                type: "Body",
+                props: {
+                  children: "Hello",
+                  /* @ts-expect-error `cosdlor` is not a valid prop for Body component */
+                  cosdlor: "white",
+                },
+              },
+            },
+            {
+              text: "!",
+              to: TestAppRoutes.PageOne,
+              typography: {
+                type: "Body",
+                props: {
+                  children: "Hello",
+                  color: "white",
+                },
+              },
+            },
             { text: "sdkfjn", externalLink: "https://example.com" },
           ]}
           color="blue43"

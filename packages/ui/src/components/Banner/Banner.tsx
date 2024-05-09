@@ -5,50 +5,56 @@ import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
 import { getColor, type ThemeOrColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
+import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import { z } from "../../styles/z-index.js";
 import { type NewRoutesType } from "../../types/index.js";
-import { type ToNonTypographicReactNodesArgs } from "../../utils/toNonTypographicReactNodes.js";
-import { TextIconAligner } from "../TextIconAligner.js";
-import { renderTypography } from "../typography/renderTypography.js";
+import {
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../../utils/toReactNodes.js";
+import { Icon, type IconName } from "../Icon.js";
 import { bannerTiming } from "./constants.js";
 
-type AllowedBannerTypographyTypes = "Display" | "Body";
+type MaxMdContentJustify = "center" | "left";
 
-export type BannerProps = {
+export type BannerProps<T extends TypographyTypeKey> = {
   ref?: React.RefObject<HTMLDivElement>;
-  content?: ToNonTypographicReactNodesArgs | undefined;
-  typography?:
-    | {
-        type?: AllowedBannerTypographyTypes;
-        size?: TokenSizeKey;
-        color?: ThemeOrColorKey;
-      }
-    | undefined;
+  content?: ToReactNodesArgs<T> | undefined;
   to?: NewRoutesType | null | undefined;
   color?: ThemeOrColorKey | undefined;
   bgProgressDuration?: number | undefined;
+  borderProgress?: number | undefined;
   offsetTop?: number;
-  maxMdContentJustify?: "center" | "left";
+  maxMdContentJustify?: MaxMdContentJustify;
   onHeightChange?: (height: number) => void;
-  image?:
+  rightIcon?:
     | {
-        src: string;
+        name: IconName;
+        width?: number;
+        color?: ThemeOrColorKey;
+      }
+    | undefined;
+  leftIcon?:
+    | {
+        name: IconName;
+        width?: number;
+        color?: ThemeOrColorKey;
       }
     | undefined;
 };
 
-export function Banner({
+export function Banner<T extends TypographyTypeKey>({
   content,
-  typography,
   to,
-  bgProgressDuration,
-  color = "blue43",
+  color,
   maxMdContentJustify,
   offsetTop = 0,
   onHeightChange,
-  image,
-}: BannerProps) {
+  rightIcon,
+  leftIcon,
+  bgProgressDuration,
+  borderProgress,
+}: BannerProps<T>) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
   const { ref, rect } = useResizeObserver(resizeProps);
@@ -62,8 +68,6 @@ export function Banner({
   }, [bgProgressDuration]);
 
   useEffect(() => {
-    console.log("rect.height", rect?.height);
-
     if (onHeightChange && typeof rect?.height === "number") {
       onHeightChange(rect.height);
     }
@@ -71,22 +75,19 @@ export function Banner({
 
   let contentNode = null;
   if (content) {
+    const contentNodes = toReactNodes(content);
+
     if (to) {
       contentNode = (
         <Link<NewRoutesType> to={to}>
-          <TextIconAligner
-            typography={typography}
-            content={content}
-            rightIcon={{ name: "RightArrow" }}
-          />
+          <BannerFlexInnerContent>
+            {contentNodes}
+            <Icon name="RightArrow" width={12} ml={6} />
+          </BannerFlexInnerContent>
         </Link>
       );
     } else {
-      contentNode = renderTypography(typography?.type || "Body", {
-        content,
-        size: typography?.size || "Small",
-        color: typography?.color || "white",
-      });
+      contentNode = contentNodes;
     }
   }
 
@@ -104,11 +105,31 @@ export function Banner({
       colorProp={color}
       isVisible={Boolean(content)}
       offsetTop={offsetTop}
-      hasImage={Boolean(image)}
+      hasIcon={Boolean(rightIcon)}
       ref={ref}
+      borderProgress={borderProgress}
     >
+      {leftIcon && (
+        <BannerIcon>
+          <Icon
+            name={leftIcon.name}
+            width={leftIcon.width || 16}
+            color={leftIcon.color}
+            ml={16}
+          />
+        </BannerIcon>
+      )}
       {innerContent}
-      {image && <StyledBannerImage src={image.src} />}
+      {rightIcon && (
+        <BannerIcon>
+          <Icon
+            name={rightIcon.name}
+            width={rightIcon.width || 16}
+            color={rightIcon.color}
+            mr={16}
+          />
+        </BannerIcon>
+      )}
       {bgProgressDuration && (
         <BannerGradientBg
           duration={bgProgressDuration}
@@ -122,16 +143,14 @@ export function Banner({
 
 const BannerInnerContent = styled.div<{
   isVisible: boolean;
-  maxMdContentJustify: BannerProps["maxMdContentJustify"];
+  maxMdContentJustify: MaxMdContentJustify;
 }>`
+  padding: ${({ isVisible }) => (isVisible ? `13px 17.5px` : "0px")};
+  text-align: center;
   & > * {
     position: relative;
     z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
-    padding: ${({ isVisible }) => (isVisible ? `13px 17.5px` : "0px")};
     transition: all ${bannerTiming};
     height: ${({ isVisible }) => (isVisible ? "auto" : "0px")};
 
@@ -148,7 +167,8 @@ const StyledBanner = styled.div<{
   colorProp: ThemeOrColorKey | undefined;
   isVisible: boolean;
   offsetTop: number;
-  hasImage: boolean;
+  hasIcon: boolean;
+  borderProgress: number | undefined;
 }>`
   position: fixed;
   left: 0;
@@ -158,9 +178,37 @@ const StyledBanner = styled.div<{
   color: ${colors.white};
   font-weight: 500;
   background-color: ${({ colorProp, theme }) =>
-    colorProp ? getColor(theme, colorProp) : colors.blue43};
-  ${({ hasImage }) =>
-    hasImage ? `padding-right: ${imageRightOffset * 2}px;` : ""}
+    colorProp ? getColor(theme, colorProp) : "none"};
+  display: flex;
+  justify-content: ${({ hasIcon }) => (hasIcon ? "space-between" : "center")};
+  align-items: center;
+
+  ${({ borderProgress }) => {
+    if (typeof borderProgress === "number") {
+      return `
+        &:before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #C1C5CD;
+        }
+        &:after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: ${borderProgress}%;
+          height: 2px;
+          background-color: #2B66C2;
+          transition: width 0.3s ease-in;
+        }
+      `;
+    }
+    return "";
+  }}
 
   ${bp.sm(`
     z-index: ${z.smBanner};
@@ -196,12 +244,12 @@ const BannerGradientBg = styled.div<BannerGradientBgProps>`
     cubic-bezier(0.33, 0.54, 0.47, 0.87);
 `;
 
-const StyledBannerImage = styled.img`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  margin-right: ${imageRightOffset}px;
-  z-index: 1;
+const BannerIcon = styled.div`
+  right: ${imageRightOffset}px;
+`;
+
+const BannerFlexInnerContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
