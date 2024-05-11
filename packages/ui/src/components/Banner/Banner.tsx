@@ -145,6 +145,7 @@ const BannerInnerContent = styled.div<{
   isVisible: boolean;
   maxMdContentJustify: MaxMdContentJustify;
 }>`
+  z-index: 1;
   padding: ${({ isVisible }) => (isVisible ? `13px 17.5px` : "0px")};
   text-align: center;
   & > * {
