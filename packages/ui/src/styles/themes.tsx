@@ -19,6 +19,8 @@ import {
 export enum Themes {
   Light = "light",
   Dark = "dark",
+  LightsparkDocsLight = "lightsparkDocsLight",
+  LightsparkDocsDark = "lightsparkDocsDark",
   UmameDocsLight = "umameDocsLight",
   UmameDocsDark = "umameDocsDark",
   BridgeLight = "bridgeLight",
@@ -223,19 +225,34 @@ const umameDocsLightTheme = extend(lightTheme, {
   }),
 });
 
-const bridgeLightTheme = extend(lightTheme, {
+const lightsparkDocsLightTheme = extend(lightTheme, {
   type: Themes.BridgeLight,
   typography: getTypography(TypographyGroup.Bridge),
 });
 
-const bridgeDarkTheme = extend(darkTheme, {
+const lightsparkDocsDarkTheme = extend(darkTheme, {
+  type: Themes.BridgeDark,
+  typography: getTypography(TypographyGroup.Bridge),
+});
+
+const bridgeLightTheme = extend(lightTheme, {
   type: Themes.BridgeLight,
+  typography: getTypography(TypographyGroup.Bridge),
+  bg: colors.gray98,
+  text: colors.grayBlue9,
+  secondary: colors.grayBlue43,
+});
+
+const bridgeDarkTheme = extend(darkTheme, {
+  type: Themes.BridgeDark,
   typography: getTypography(TypographyGroup.Bridge),
 });
 
 export const themes = {
   [Themes.Light]: lightTheme,
   [Themes.Dark]: darkTheme,
+  [Themes.LightsparkDocsLight]: lightsparkDocsLightTheme,
+  [Themes.LightsparkDocsDark]: lightsparkDocsDarkTheme,
   [Themes.UmameDocsLight]: umameDocsLightTheme,
   [Themes.UmameDocsDark]: umameDocsLightTheme,
   [Themes.BridgeLight]: bridgeLightTheme,

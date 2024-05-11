@@ -9,11 +9,11 @@ import { isString } from "../utils/strings.js";
 export type IconName = keyof typeof icons;
 
 type IconProps = {
-  className?: string;
+  className?: string | undefined;
   name: IconName;
   width: number;
-  mr?: number;
-  ml?: number;
+  mr?: number | undefined;
+  ml?: number | undefined;
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
   color?: FontColorKey | undefined;
   tutorialStep?: number;

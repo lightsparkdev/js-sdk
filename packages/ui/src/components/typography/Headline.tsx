@@ -21,8 +21,8 @@ type HeadlineProps = {
   size?: TokenSizeKey;
   color?: FontColorKey | undefined;
   heading?: Heading;
-  block?: boolean;
   id?: string | undefined;
+  display?: "flex" | "block";
 };
 
 export const Headline = ({
@@ -32,13 +32,20 @@ export const Headline = ({
   children,
   heading = "h1",
   id,
+  display = "block",
 }: HeadlineProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledHeadline as={heading} id={id} size={size} colorProp={color}>
+    <StyledHeadline
+      as={heading}
+      id={id}
+      size={size}
+      colorProp={color}
+      displayProp={display}
+    >
       {reactNodes}
     </StyledHeadline>
   );
@@ -49,9 +56,16 @@ type StyledHeadlineProps = {
   colorProp?: FontColorKey | undefined;
   children: ReactNode;
   size: TokenSizeKey;
+  displayProp: "flex" | "block";
 };
 
 export const StyledHeadline = styled.span<StyledHeadlineProps>`
+  &:first-child {
+    margin-top: 0;
+  }
+
+  display: ${({ displayProp }) => displayProp};
+
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Headline", size, colorProp)}
 `;

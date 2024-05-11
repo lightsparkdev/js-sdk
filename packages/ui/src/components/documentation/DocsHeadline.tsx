@@ -82,7 +82,13 @@ export const DocsHeadline = ({
 }: DocsHeadlineProps) => {
   const id = toKebabCase(getHeaderId(children as React.ReactElement));
   return (
-    <StyledHeadline as={heading} id={id} size={size} colorProp={color}>
+    <StyledHeadline
+      as={heading}
+      id={id}
+      size={size}
+      colorProp={color}
+      displayProp="block"
+    >
       {children}
     </StyledHeadline>
   );

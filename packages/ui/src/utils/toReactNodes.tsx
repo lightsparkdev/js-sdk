@@ -9,6 +9,7 @@ import { type TypographyTypeKey } from "../styles/tokens/typography.js";
 import {
   toNonTypographicReactNodes,
   type ExternalLinkNode,
+  type IconNode,
   type LinkNode,
   type NextLinkNode,
   type TextNode,
@@ -19,7 +20,8 @@ type ToReactNodesArg<T extends TypographyTypeKey> =
   | (LinkNode & { typography?: RenderTypographyArgs<T> })
   | (ExternalLinkNode & { typography?: RenderTypographyArgs<T> })
   | (TextNode & { typography?: RenderTypographyArgs<T> })
-  | (NextLinkNode & { typography?: RenderTypographyArgs<T> });
+  | (NextLinkNode & { typography?: RenderTypographyArgs<T> })
+  | IconNode;
 
 export type ToReactNodesArgs<T extends TypographyTypeKey> =
   | ToReactNodesArg<T>
@@ -39,7 +41,7 @@ export function toReactNodes<T extends TypographyTypeKey>(
     let content: ReactNode;
     if (
       typeof node !== "string" &&
-      node.typography &&
+      "typography" in node &&
       node.typography.type &&
       node.typography.props
     ) {

@@ -7,6 +7,7 @@ import { isObject } from "lodash-es";
 import { nanoid } from "nanoid";
 // import NextLinkModule from "next/link.js";
 import { Fragment, type ReactNode } from "react";
+import { Icon, type IconName } from "../components/Icon.js";
 import { Link } from "../router.js";
 import { type NewRoutesType } from "../types/index.js";
 import { NextLink } from "./NextLink.js";
@@ -26,6 +27,12 @@ export type ExternalLinkNode = {
 export type NextLinkNode = {
   nextHref: string;
   text: string;
+};
+
+export type IconNode = {
+  icon: IconName;
+  width?: number;
+  ml?: number;
 };
 
 export type TextNode = {
@@ -48,6 +55,10 @@ function isNextLinkNode(node: unknown): node is NextLinkNode {
   );
 }
 
+function isIconNode(node: unknown): node is IconNode {
+  return Boolean(node && isObject(node) && "icon" in node);
+}
+
 function isTextNode(node: unknown): node is TextNode {
   return Boolean(node && isObject(node) && "text" in node);
 }
@@ -57,6 +68,7 @@ type ToNonTypographicReactNodesArg =
   | LinkNode
   | ExternalLinkNode
   | NextLinkNode
+  | IconNode
   | TextNode;
 
 export type ToNonTypographicReactNodesArgs =
@@ -102,6 +114,15 @@ export function toNonTypographicReactNodes(
             target={isExternal ? "_blank" : undefined}
           />
         </Fragment>
+      );
+    } else if (isIconNode(node)) {
+      content = (
+        <Icon
+          name={node.icon}
+          key={`icon-${i}`}
+          width={node.width || 12}
+          ml={node.ml}
+        />
       );
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;
