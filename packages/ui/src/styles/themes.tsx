@@ -3,6 +3,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import merge from "deepmerge";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
+import { buttonsThemeBase, defaultButtonsTheme } from "./buttons.js";
 import {
   colors,
   darkGradient,
@@ -14,7 +15,6 @@ import {
   TypographyGroup,
   getTypography,
   type FontFamilies,
-  type TokenSizeKey,
 } from "./tokens/typography.js";
 
 export enum Themes {
@@ -59,112 +59,13 @@ const baseThemeColors = {
   warning: colors.warning,
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
-
-export type SurfaceThemeColorKey = [keyof LightsparkSurfaces, ThemeColorKey];
-
-export type ThemeOrColorKey = ThemeColorKey | ColorKey | SurfaceThemeColorKey; // to select a sub-surface color
-export type FontColorKey = ThemeOrColorKey | "inherit";
 export const themeOrColorKeyValues = [
   ...Object.keys(baseThemeColors),
   ...Object.keys(colors),
 ] as const;
 
-export type PaddingYKey = "short" | "regular";
-export type PaddingY = number | { [key in PaddingYKey]: number };
-
-export const buttonBorderRadiuses = [8, 32] as const;
-export type ButtonBorderRadius = (typeof buttonBorderRadiuses)[number];
-export const allowedButtonTypographyTypes = [
-  "Display",
-  "Body",
-  "Body Strong",
-] as const;
-export type AllowedButtonTypographyTypes =
-  (typeof allowedButtonTypographyTypes)[number];
-
-export const buttonsThemeBase = {
-  defaultSize: "Small" as TokenSizeKey,
-  defaultTypography: "Body Strong" as AllowedButtonTypographyTypes,
-  defaultBorderRadius: 32 as ButtonBorderRadius,
-  defaultBorderWidth: 1,
-  defaultBackgroundColor: "bg" as BackgroundColorKeyArg,
-  defaultBorderColor: "bg" as BackgroundColorKeyArg,
-  defaultHoverBackgroundColor: "bg" as BackgroundColorKeyArg,
-  defaultHoverBorderColor: "bg" as BackgroundColorKeyArg,
-  defaultPaddingsY: {
-    ExtraSmall: 4,
-    Small: {
-      short: 8,
-      regular: 12,
-    } as PaddingY,
-    Schmedium: 12,
-    Medium: 12,
-    Mlarge: 12,
-    Large: 12,
-  },
-  kinds: {},
-};
-export type ButtonsThemeKey = keyof typeof buttonsThemeBase;
-
-type BackgroundColorKey = ThemeOrColorKey | "transparent";
-type BackgroundColorKeyArg =
-  | BackgroundColorKey
-  | [BackgroundColorKey, BackgroundColorKey];
-
-export function isBackgroundColorKey(key: unknown): key is BackgroundColorKey {
-  return key === "transparent" || isThemeOrColorKey(key);
-}
-
-export function isBackgroundColorKeyTuple(
-  key: unknown,
-): key is [BackgroundColorKey, BackgroundColorKey] {
-  return (
-    Array.isArray(key) &&
-    key.length === 2 &&
-    isBackgroundColorKey(key[0]) &&
-    isBackgroundColorKey(key[1])
-  );
-}
-
-type ButtonKindsProps = Record<string, Partial<typeof buttonsThemeBase>>;
-
-const defaultButtonsTheme = {
-  ...buttonsThemeBase,
-  kinds: {
-    primary: {
-      ...buttonsThemeBase,
-      defaultBorderWidth: 0,
-      defaultBackgroundColor: "c9Neutral",
-      defaultBorderColor: "c9Neutral",
-      defaultHoverBackgroundColor: "c8Neutral",
-      defaultHoverBorderColor: "c8Neutral",
-    },
-    ghost: {
-      ...buttonsThemeBase,
-      defaultBackgroundColor: "transparent",
-      defaultBorderWidth: 0,
-      defaultHoverBackgroundColor: "transparent",
-      defaultHoverBorderColor: "transparent",
-      defaultPaddingsY: {
-        ExtraSmall: 0,
-        Small: 0,
-        Schmedium: 0,
-        Medium: 0,
-        Mlarge: 0,
-        Large: 0,
-      },
-    },
-    secondary: {
-      defaultBackgroundColor: ["bg", "c1Neutral"],
-      defaultBorderColor: ["gray90", "gray20"],
-      defaultHoverBackgroundColor: ["bg", "c1Neutral"],
-      defaultHoverBorderColor: ["gray90", "gray20"],
-    },
-    blue39: {
-      defaultBorderColor: "blue39",
-    },
-  } as ButtonKindsProps,
-};
+export type SurfaceThemeColorKey = [keyof LightsparkSurfaces, ThemeColorKey];
+export type ThemeOrColorKey = ThemeColorKey | ColorKey | SurfaceThemeColorKey; // to select a sub-surface color
 
 const baseTheme = {
   ...baseThemeColors,
@@ -178,70 +79,6 @@ const baseTheme = {
 
 type BaseTheme = typeof baseTheme;
 
-export function isThemeColorKey(key: unknown): key is ThemeColorKey {
-  return Boolean(key && typeof key === "string" && key in baseThemeColors);
-}
-
-export function isThemeOrColorKey(key: unknown): key is ThemeOrColorKey {
-  return Boolean(
-    typeof key === "string" &&
-      (isThemeColorKey(key) ||
-        isColorKey(key) ||
-        (Array.isArray(key) && key.length === 2 && isThemeColorKey(key[1]))),
-  );
-}
-
-export function getColor(
-  theme: LightsparkTheme,
-  key?: ThemeOrColorKey | undefined,
-) {
-  if (key && isThemeColorKey(key)) {
-    return theme[key];
-  } else if (key && Array.isArray(key)) {
-    const [surface, colorKey] = key;
-    const surfaceTheme = theme[surface];
-    const color = surfaceTheme[colorKey];
-    return color;
-  } else if (key && isColorKey(key)) {
-    return colors[key];
-  }
-  return theme.text;
-}
-
-export function getFontColor(
-  theme: LightsparkTheme,
-  key?: FontColorKey | undefined,
-  defaultColor: ThemeColorKey | "inherit" = "inherit",
-) {
-  if (key === "inherit" || (!key && defaultColor === "inherit")) {
-    return "inherit";
-  }
-  return getColor(theme, key);
-}
-
-export function getBackgroundColor(
-  theme: LightsparkTheme,
-  key?: BackgroundColorKeyArg | undefined,
-  defaultColor: BackgroundColorKeyArg = "transparent",
-) {
-  if (isBackgroundColorKeyTuple(key)) {
-    key = isLight(theme) ? key[0] : key[1];
-  }
-  if (isBackgroundColorKeyTuple(defaultColor)) {
-    defaultColor = isLight(theme) ? defaultColor[0] : defaultColor[1];
-  }
-
-  if (key === "transparent") {
-    return "transparent";
-  } else if (!key) {
-    if (defaultColor === "transparent") {
-      return "transparent";
-    }
-    return getColor(theme, defaultColor);
-  }
-  return getColor(theme, key);
-}
-
 type LightsparkSurfaces = {
   header: BaseTheme;
   nav: BaseTheme; // eg nav bar
@@ -252,20 +89,6 @@ export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
   export interface Theme extends LightsparkTheme {}
-}
-
-function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
-  return {
-    ...obj,
-    ...rest,
-  } as LightsparkTheme;
-}
-
-function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
-  return {
-    ...obj,
-    ...rest,
-  } as LightsparkTheme;
 }
 
 const lightBaseTheme: BaseTheme = baseTheme;
@@ -392,7 +215,10 @@ const bridgeBaseSettings = {
     code: "Monaco",
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypography: "Title",
+    defaultSize: "Medium",
     defaultBorderRadius: 8,
+    defaultBorderWidth: 0,
     kinds: {
       primary: {
         defaultBackgroundColor: "blue39",
@@ -402,6 +228,7 @@ const bridgeBaseSettings = {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",
         defaultBorderColor: "grayBlue80",
+        defaultBorderWidth: 1,
       },
     },
   }),
@@ -431,12 +258,112 @@ export const themes = {
   [Themes.BridgeDark]: bridgeDarkTheme,
 } as const;
 
+function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
+  return {
+    ...obj,
+    ...rest,
+  } as LightsparkTheme;
+}
+
+function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
+  return {
+    ...obj,
+    ...rest,
+  } as LightsparkTheme;
+}
+
 /* Next has generated font names so we need to update them at runtime: */
 export function setFonts(theme: Theme, fontFamilies: FontFamilies) {
   return {
     ...theme,
     typography: getTypography(theme.typography.group, fontFamilies),
   };
+}
+
+export function isThemeColorKey(key: unknown): key is ThemeColorKey {
+  return Boolean(key && typeof key === "string" && key in baseThemeColors);
+}
+
+export function isThemeOrColorKey(key: unknown): key is ThemeOrColorKey {
+  return Boolean(
+    typeof key === "string" &&
+      (isThemeColorKey(key) ||
+        isColorKey(key) ||
+        (Array.isArray(key) && key.length === 2 && isThemeColorKey(key[1]))),
+  );
+}
+
+export function getColor(
+  theme: LightsparkTheme,
+  key?: ThemeOrColorKey | undefined,
+) {
+  if (key && isThemeColorKey(key)) {
+    return theme[key];
+  } else if (key && Array.isArray(key)) {
+    const [surface, colorKey] = key;
+    const surfaceTheme = theme[surface];
+    const color = surfaceTheme[colorKey];
+    return color;
+  } else if (key && isColorKey(key)) {
+    return colors[key];
+  }
+  return theme.text;
+}
+
+export type FontColorKey = ThemeOrColorKey | "inherit";
+
+export function getFontColor(
+  theme: LightsparkTheme,
+  key?: FontColorKey | undefined,
+  defaultColor: ThemeColorKey | "inherit" = "inherit",
+) {
+  if (key === "inherit" || (!key && defaultColor === "inherit")) {
+    return "inherit";
+  }
+  return getColor(theme, key);
+}
+
+export type BackgroundColorKey = ThemeOrColorKey | "transparent";
+export type BackgroundColorKeyArg =
+  | BackgroundColorKey
+  | [BackgroundColorKey, BackgroundColorKey];
+
+export function isBackgroundColorKey(key: unknown): key is BackgroundColorKey {
+  return key === "transparent" || isThemeOrColorKey(key);
+}
+
+export function isBackgroundColorKeyTuple(
+  key: unknown,
+): key is [BackgroundColorKey, BackgroundColorKey] {
+  return (
+    Array.isArray(key) &&
+    key.length === 2 &&
+    isBackgroundColorKey(key[0]) &&
+    isBackgroundColorKey(key[1])
+  );
+}
+
+export function getBackgroundColor(
+  theme: LightsparkTheme,
+  key?: BackgroundColorKeyArg | undefined,
+  defaultColor: BackgroundColorKeyArg = "transparent",
+) {
+  if (isBackgroundColorKeyTuple(key)) {
+    key = isLight(theme) ? key[0] : key[1];
+  }
+  if (isBackgroundColorKeyTuple(defaultColor)) {
+    defaultColor = isLight(theme) ? defaultColor[0] : defaultColor[1];
+  }
+
+  if (key === "transparent") {
+    return "transparent";
+  } else if (!key) {
+    if (defaultColor === "transparent") {
+      return "transparent";
+    }
+    return getColor(theme, defaultColor);
+  }
+  return getColor(theme, key);
 }
 
 export const isDark = (theme: Theme) =>

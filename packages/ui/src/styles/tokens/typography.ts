@@ -22,13 +22,13 @@ const LINE_HEIGHTS = {
     "5xl": "44px",
     "4xl": "40px",
     "3xl": "36px",
+    "2xs": "14px",
     "2xl": "32px",
-    xl: "28px",
     lg: "24px",
     md: "20px",
     sm: "18px",
+    xl: "28px",
     xs: "16px",
-    "2xs": "14px",
   },
   [TypographyGroup.LightsparkDocs]: {
     "7xl": "72px",
@@ -36,35 +36,39 @@ const LINE_HEIGHTS = {
     "5xl": "44px",
     "4xl": "40px",
     "3xl": "36px",
+    "2xs": "14px",
     "2xl": "32px",
-    xl: "28px",
     lg: "24px",
     md: "20px",
     sm: "18px",
+    xl: "28px",
     xs: "16px",
-    "2xs": "14px",
   },
   [TypographyGroup.UmameDocs]: {
     "5xl": "72px",
     "4xl": "60px",
     "3xl": "44px",
+    "2xs": "16px",
     "2xl": "40px",
-    xl: "36px",
     lg: "32px",
     md: "28px",
     sm: "24px",
+    xl: "36px",
     xs: "20px",
-    "2xs": "16px",
   },
   [TypographyGroup.Bridge]: {
-    "3xl": "48px",
-    "2xl": "32px",
-    xl: "24px",
+    "8xl": "72px",
+    "7xl": "60px",
+    "6xl": "44px",
+    "5xl": "40px",
+    "4xl": "36px",
+    "3xl": "32px",
+    "2xl": "28px",
     lg: "22px",
     md: "20px",
     sm: "18px",
+    xl: "24px",
     xs: "16px",
-    "2xs": "14px",
   },
 };
 
@@ -124,14 +128,15 @@ const FONT_SIZE = {
   [TypographyGroup.Bridge]: {
     "2xs": "11px",
     xs: "12px",
-    sm: "13px",
     md: "14px",
-    lg: "15px",
-    xl: "16px",
-    "2xl": "18px",
-    "3xl": "22px",
-    "4xl": "24px",
-    "5xl": "32px",
+    lg: "16px",
+    xl: "20px",
+    "2xl": "24px",
+    "3xl": "28px",
+    "4xl": "32px",
+    "5xl": "36px",
+    "6xl": "48px",
+    "7xl": "64px",
   },
 };
 
@@ -158,10 +163,8 @@ const LETTER_SPACING = {
     loose: ".1em",
   },
   [TypographyGroup.Bridge]: {
-    "tight-high": "-.04em",
-    "tight-low": "-.02em",
-    "tight-medium": "-.03em",
-    normal: "0em",
+    tight: "-2%",
+    normal: "0%",
   },
 };
 
@@ -2801,10 +2804,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["5xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["6xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["8xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["7xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2812,10 +2815,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["4xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["5xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["7xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["6xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2823,10 +2826,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["3xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["4xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["6xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["5xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2836,10 +2839,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["3xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["4xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2847,10 +2850,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xl}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["3xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2858,10 +2861,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].lg}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xl}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2871,12 +2874,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].md}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].lg}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2884,12 +2885,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["lg"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2897,12 +2896,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2911,13 +2908,11 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Body]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["lg"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2925,12 +2920,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Medium}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["lg"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2938,53 +2931,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Medium}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.BodyStrong]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["sm"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -2993,39 +2943,33 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Label]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3034,39 +2978,33 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.LabelModerate]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3076,12 +3014,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3089,12 +3025,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3102,129 +3036,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.Overline]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.Code]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.CodeStrong]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3236,10 +3051,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["5xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["6xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["8xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["7xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3247,10 +3062,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["4xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["5xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["7xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["6xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3258,10 +3073,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["3xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["4xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["6xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["5xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3271,10 +3086,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xl"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["3xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["5xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["4xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3282,10 +3097,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xl}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xl"]}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["4xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["3xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3293,10 +3108,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].lg}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xl}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].tight}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING[16]}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["3xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].tight}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3306,12 +3121,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].md}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].lg}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["2xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xl"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3319,12 +3132,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["lg"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3332,12 +3143,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3346,13 +3155,11 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Body]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xl"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["lg"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3360,12 +3167,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Medium}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["lg"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3373,53 +3178,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Medium}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.BodyStrong]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["sm"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3428,39 +3190,33 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Label]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3469,39 +3225,33 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.LabelModerate]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3511,12 +3261,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3524,12 +3272,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3537,129 +3283,10 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs]["2xs"]}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.Overline]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs]["2xs"]}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${LETTER_SPACING[TypographyGroup.UmameDocs].loose}`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.uppercase}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.Code]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Regular}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].xs}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-        },
-        [TypographyType.CodeStrong]: {
-          [TokenSize.Large]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].md}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Medium]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].sm}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
-            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
-            textCase: `${TEXT_CASE.none}`,
-            textDecoration: `${TEXT_DECORATION.none}`,
-          },
-          [TokenSize.Small]: {
-            fontFamily: `${fontFamilies.code}`,
-            fontWeight: `${FONT_WEIGHTS.code.Bold}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmameDocs].sm}`,
-            fontSize: `${FONT_SIZE[TypographyGroup.UmameDocs].xs}`,
-            letterSpacing: `${
-              LETTER_SPACING[TypographyGroup.UmameDocs].normal
-            }`,
-            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Bridge]["xs"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Bridge]["2xs"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Bridge].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3752,7 +3379,7 @@ export const getTypographyString = (
        since we don't have styles defined for this scenario. Developer should reach out
        to design for new tokens or use a typography type that exists in the theme. */
     console.error(
-      "Attempted to use a typography type that does not exist in the current theme. Falling back to default tokens.",
+      `Attempted to use a typography type "${typographyType}" that does not exist in the current theme. Falling back to default tokens.`,
     );
     mobileTokens = defaultTokens;
     desktopTokens = defaultTokens;

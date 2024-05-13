@@ -6,14 +6,16 @@ import { uniqueId } from "lodash-es";
 import { Fragment, useRef } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { applyTypography } from "../styles/applyTypography.js";
-import { getFocusOutline } from "../styles/common.js";
 import {
-  getBackgroundColor,
-  isThemeOrColorKey,
   type AllowedButtonTypographyTypes,
   type ButtonBorderRadius,
   type ButtonsThemeKey,
   type PaddingYKey,
+} from "../styles/buttons.js";
+import { getFocusOutline } from "../styles/common.js";
+import {
+  getBackgroundColor,
+  isThemeOrColorKey,
   type ThemeOrColorKey,
   type WithTheme,
 } from "../styles/themes.js";
@@ -265,7 +267,7 @@ export function Button<RoutesType extends string>(
   const tooltipId = useRef(uniqueId());
 
   const buttonTypography = {
-    type: typography?.type || theme.buttons.defaultTypography || "Body",
+    type: typography?.type || theme.buttons.defaultTypography,
     size,
     color: typography?.color || getDefaultTextColor({ kind, theme }),
   };
