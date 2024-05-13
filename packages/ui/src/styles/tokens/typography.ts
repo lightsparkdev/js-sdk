@@ -403,7 +403,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.BodyStrong]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
             letterSpacing: "-.08px",
@@ -414,7 +414,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
             letterSpacing: "-.07px",
@@ -425,11 +425,24 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
             letterSpacing: "-.06px",
             paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.ExtraSmall]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -815,7 +828,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.BodyStrong]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].xl}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].lg}`,
             letterSpacing: "-.08px",
@@ -826,7 +839,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].lg}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].md}`,
             letterSpacing: "-.07px",
@@ -837,11 +850,24 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].md}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].sm}`,
             letterSpacing: "-.06px",
             paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+          },
+          [TokenSize.ExtraSmall]: {
+            fontFamily: fontFamilies.main,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark].sm}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["xs"]}`,
+            letterSpacing: `${
+              LETTER_SPACING[TypographyGroup.Lightspark]["tight-low"]
+            }`,
+            paragraphSpacing: `${PARAGRAPH_SPACING.default}`,
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
@@ -3732,8 +3758,10 @@ export const getTypographyString = (
     desktopTokens = defaultTokens;
   }
 
-  return `
+  const typographyStr = `
     ${mayTokensToStyles(desktopTokens)}
     ${bp.sm(mayTokensToStyles(mobileTokens))}
   `;
+
+  return typographyStr;
 };

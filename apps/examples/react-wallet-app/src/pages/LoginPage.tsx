@@ -67,7 +67,7 @@ const LoginPage = () => {
           onChange={(e) => setJwt(e.target.value)}
         />
       </Label>
-      <Button primary onClick={handleLogin} text="Login" />
+      <Button kind="primary" onClick={handleLogin} text="Login" />
 
       <Description>
         Alternatively, use our demo jwt server with a user name and password.
@@ -99,7 +99,7 @@ const LoginPage = () => {
         />
       </Label>
       <Button
-        primary
+        kind="primary"
         onClick={() => {
           void generateDemoTokens();
         }}

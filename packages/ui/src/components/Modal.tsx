@@ -248,8 +248,8 @@ export function Modal<RoutesType extends string>({
                 )}
                 {onSubmit && (
                   <Button
+                    kind="primary"
                     disabled={submitDisabled}
-                    primary
                     text={submitText ?? "Continue"}
                     loading={submitLoading}
                     to={linkIsRoute ? submitLink.to : undefined}

@@ -1,28 +1,52 @@
 /** @jsxImportSource @emotion/react */
 import type { Theme } from "@emotion/react";
-import { css } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { uniqueId } from "lodash-es";
-import { Fragment, useRef, type ReactNode } from "react";
+import { Fragment, useRef } from "react";
 import { Link, type RouteParams } from "../router.js";
-import { colors } from "../styles/colors.js";
+import { applyTypography } from "../styles/applyTypography.js";
 import { getFocusOutline } from "../styles/common.js";
-import { themeOr, type WithTheme } from "../styles/themes.js";
+import {
+  getBackgroundColor,
+  isThemeOrColorKey,
+  type AllowedButtonTypographyTypes,
+  type ButtonBorderRadius,
+  type ButtonsThemeKey,
+  type PaddingYKey,
+  type ThemeOrColorKey,
+  type WithTheme,
+} from "../styles/themes.js";
+import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
 import { select } from "../utils/emotion.js";
 import { Icon, type IconName } from "./Icon.js";
 import { Loading } from "./Loading.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
-
-const ButtonSizes = ["sm", "md", "lg"] as const;
-type ButtonSize = (typeof ButtonSizes)[number];
+import { renderTypography } from "./typography/renderTypography.js";
 
 type IconSide = "left" | "right";
 
+export const buttonKinds = [
+  "secondary",
+  "primary",
+  "ghost",
+  "green33",
+  "purple55",
+  "blue43",
+  "blue39",
+  "danger",
+] as const;
+export type ButtonKind = (typeof buttonKinds)[number];
+
 export type ButtonProps<RoutesType extends string> = {
-  backgroundColor?: string | undefined;
-  color?: string | undefined;
-  hoverColor?: string | undefined;
+  kind?: ButtonKind | undefined;
+  typography?: {
+    type?: AllowedButtonTypographyTypes;
+    color?: ThemeOrColorKey;
+  };
+  size?: TokenSizeKey;
+  paddingY?: PaddingYKey | undefined;
   text?: string | undefined;
   disabled?: boolean | undefined;
   id?: string | undefined;
@@ -31,9 +55,6 @@ export type ButtonProps<RoutesType extends string> = {
   href?: string | undefined;
   hrefFilename?: string | undefined;
   toParams?: RouteParams | undefined;
-  primary?: boolean | undefined;
-  ghost?: boolean | undefined;
-  size?: ButtonSize;
   icon?: IconName;
   iconSide?: IconSide;
   loading?: boolean | undefined;
@@ -42,185 +63,240 @@ export type ButtonProps<RoutesType extends string> = {
   ml?: number;
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
-  blue?: boolean | undefined;
   newTab?: boolean;
   tooltipText?: string;
   zIndex?: number | undefined;
+  borderRadius?: ButtonBorderRadius | undefined;
 };
 
-type PrimaryProps = WithTheme<{
-  color?: string | undefined;
-  backgroundColor?: string | undefined;
-  primary: boolean;
-  blue: boolean;
-  ghost?: boolean | undefined;
+type ButtonWithThemeProps = WithTheme<{
+  kind: ButtonKind;
 }>;
 
 type PaddingProps = {
-  size: ButtonSize;
+  paddingY: number;
+  size: TokenSizeKey;
   iconSide?: IconSide | undefined;
-  iconWidth?: number;
-  text?: string | undefined;
-  ghost: boolean;
   isRound: boolean;
+  kind: ButtonKind;
 };
 
-type BorderProps = {
-  ghost?: boolean;
-};
-
-function getTextColor({ color, theme, primary, blue }: PrimaryProps) {
-  if (color) {
-    return color;
+function getDefaultTextColor({ kind }: ButtonWithThemeProps) {
+  switch (kind) {
+    case "blue43":
+    case "green33":
+    case "purple55":
+    case "danger":
+      return "white";
+    case "blue39":
+      return "gray98";
+    case "primary": {
+      return "bg";
+    }
+    default:
+      return "text";
   }
-  if (blue) {
-    return colors.white;
-  }
-  if (primary) {
-    const color = theme.hcNeutralFromBg(theme.hcNeutral);
-    return color;
-  }
-  return theme.text;
 }
-
-function getBackgroundColor({
-  backgroundColor,
-  theme,
-  primary,
-  blue,
-  ghost,
-}: PrimaryProps) {
-  if (ghost) {
-    return "none";
-  }
-  if (backgroundColor) {
-    return backgroundColor;
-  }
-  if (blue) {
-    return colors.blue43;
-  }
-  if (primary) {
-    return themeOr(theme.c9Neutral, colors.white)({ theme });
-  }
-  return themeOr(colors.white, theme.c1Neutral)({ theme });
-}
-
-const paddingsY = {
-  lg: 14,
-  md: 9,
-  sm: 6,
-} as const;
 
 const roundPaddingsX = {
-  lg: 19,
-  md: 14,
-  sm: 10,
+  [TokenSize.ExtraSmall]: 10,
+  [TokenSize.Small]: 10,
+  [TokenSize.Schmedium]: 10,
+  [TokenSize.Medium]: 14,
+  [TokenSize.Mlarge]: 19,
+  [TokenSize.Large]: 19,
 } as const;
 
 const paddingsX = {
-  lg: 24,
-  md: 18,
-  sm: 16,
+  [TokenSize.ExtraSmall]: 16,
+  [TokenSize.Small]: 24,
+  [TokenSize.Schmedium]: 24,
+  [TokenSize.Medium]: 24,
+  [TokenSize.Mlarge]: 24,
+  [TokenSize.Large]: 24,
 } as const;
 
-function getPaddingX({
-  size,
-  ghost,
-  isRound,
-}: {
-  size: ButtonSize;
-  ghost?: boolean;
-  isRound: boolean;
-}) {
-  return ghost ? 0 : isRound ? roundPaddingsX[size] : paddingsX[size];
+function getPaddingX(size: TokenSizeKey, kind: ButtonKind, isRound: boolean) {
+  return kind === "ghost"
+    ? 0
+    : isRound
+    ? roundPaddingsX[size]
+    : paddingsX[size];
 }
 
-function getPadding({
-  iconWidth,
-  size,
-  ghost,
-  iconSide,
-  isRound,
-}: PaddingProps) {
-  const paddingY = ghost ? 0 : paddingsY[size];
-  const paddingX = getPaddingX({ size, ghost, isRound });
-  const paddingForIcon = iconWidth && !ghost ? iconWidth : 0;
+function getPadding({ paddingY, kind, size, iconSide, isRound }: PaddingProps) {
+  const paddingX = getPaddingX(size, kind, isRound);
+  const paddingForIcon = 0;
   return `${paddingY}px ${
     paddingX + (iconSide === "right" ? paddingForIcon : 0)
   }px ${paddingY}px ${paddingX + (iconSide === "left" ? paddingForIcon : 0)}px`;
 }
 
-function getBorder({ ghost }: BorderProps) {
-  if (ghost) {
-    return "none";
+function resolveBackgroundColorKey(
+  theme: Theme,
+  kind: ButtonKind,
+  defaultKey:
+    | "defaultBackgroundColor"
+    | "defaultHoverBackgroundColor"
+    | "defaultBorderColor"
+    | "defaultHoverBorderColor",
+) {
+  const defaultBackgroundColorKey = theme.buttons.kinds[kind]?.[defaultKey];
+  let backgroundColorKey = defaultBackgroundColorKey;
+  if (!backgroundColorKey && isThemeOrColorKey(kind)) {
+    backgroundColorKey = kind;
   }
-  return "1px solid";
+
+  const defaultBackgroundColor = theme.buttons[defaultKey];
+  const backgroundColor = getBackgroundColor(
+    theme,
+    backgroundColorKey,
+    defaultBackgroundColor,
+  );
+
+  return backgroundColor;
 }
 
-function getInnerBorderColor({
-  backgroundColor,
-  theme,
-  primary,
-  blue,
-}: PrimaryProps) {
-  if (primary || blue || backgroundColor) {
-    return getBackgroundColor({
-      backgroundColor,
-      theme,
-      primary,
-      blue,
-    });
-  }
-  return themeOr(colors.gray90, colors.gray20)({ theme });
+function resolveProp<T, K extends ButtonsThemeKey>(
+  prop: T,
+  kind: ButtonKind,
+  defaultKey: K,
+  theme: Theme,
+) {
+  return (
+    /** props may be unset for a given kind but theme defaults always exist,
+     * so this will always resolve a value: */
+    prop || theme.buttons.kinds[kind]?.[defaultKey] || theme.buttons[defaultKey]
+  );
 }
 
-export function Button<RoutesType extends string>({
-  backgroundColor,
-  color,
-  hoverColor,
-  primary = false,
-  ghost = false,
-  text,
-  to,
-  id,
-  hash,
-  href,
-  hrefFilename,
-  toParams,
-  onClick,
-  icon,
-  iconSide = "left",
-  loading = false,
-  fullWidth = false,
-  disabled = false,
-  size = "lg",
-  mt = 0,
-  ml = 0,
-  type = "button",
-  blue = false,
-  newTab = false,
-  zIndex = undefined,
-  tooltipText,
-}: ButtonProps<RoutesType>) {
+function resolveProps<RoutesType extends string>(
+  props: ButtonProps<RoutesType>,
+  theme: Theme,
+) {
+  const {
+    kind = "secondary",
+    size: sizeProp,
+    paddingY: paddingYType = "regular",
+    borderRadius,
+    ...rest
+  } = props;
+
+  const size = resolveProp(sizeProp, kind, "defaultSize", theme);
+  const defaultPaddingsY = resolveProp(null, kind, "defaultPaddingsY", theme);
+  const defaultPaddingY = defaultPaddingsY[size];
+
+  const backgroundColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultBackgroundColor",
+  );
+
+  const borderWidth = resolveProp(null, kind, "defaultBorderWidth", theme);
+  const borderColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultBorderColor",
+  );
+  const hoverBackgroundColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultHoverBackgroundColor",
+  );
+  const hoverBorderColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultHoverBorderColor",
+  );
+
+  return {
+    ...rest,
+    kind,
+    size,
+    paddingY:
+      typeof defaultPaddingY === "number"
+        ? defaultPaddingY
+        : defaultPaddingY[paddingYType],
+    borderRadius: resolveProp(borderRadius, kind, "defaultBorderRadius", theme),
+    backgroundColor,
+    borderWidth,
+    borderColor,
+    hoverBackgroundColor,
+    hoverBorderColor,
+  };
+}
+
+export function Button<RoutesType extends string>(
+  props: ButtonProps<RoutesType>,
+) {
+  const theme = useTheme();
+  const {
+    kind,
+    typography,
+    size,
+    paddingY,
+    text,
+    to,
+    id,
+    hash,
+    href,
+    hrefFilename,
+    toParams,
+    onClick,
+    icon,
+    backgroundColor,
+    borderWidth,
+    borderColor,
+    hoverBackgroundColor,
+    hoverBorderColor,
+    iconSide = "left",
+    loading = false,
+    fullWidth = false,
+    disabled = false,
+    mt = 0,
+    ml = 0,
+    type = "button",
+    newTab = false,
+    zIndex = undefined,
+    tooltipText,
+    borderRadius,
+  } = resolveProps(props, theme);
+
   const tooltipId = useRef(uniqueId());
-  const iconMarginRight = 6;
-  const iconSize = size === "lg" ? 16 : 12;
+
+  const buttonTypography = {
+    type: typography?.type || theme.buttons.defaultTypography || "Body",
+    size,
+    color: typography?.color || getDefaultTextColor({ kind, theme }),
+  };
+
+  const iconSize = size === "ExtraSmall" ? 12 : 16;
   let currentIcon = null;
   if (loading) {
     currentIcon = (
-      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text} size={size}>
+      <ButtonIcon
+        iconSide={iconSide}
+        text={text}
+        typography={buttonTypography}
+        kind={kind}
+      >
         <Loading size={iconSize} center={false} />
       </ButtonIcon>
     );
   } else if (icon) {
     currentIcon = (
-      <ButtonIcon ghost={ghost} iconSide={iconSide} text={text} size={size}>
+      <ButtonIcon
+        iconSide={iconSide}
+        text={text}
+        typography={buttonTypography}
+        kind={kind}
+      >
         <Icon name={icon} width={iconSize} />
       </ButtonIcon>
     );
   }
 
-  const content: ReactNode = (
+  const content = (
     <Fragment>
       <div
         {...(tooltipText ? { "data-tooltip-id": tooltipId.current } : {})}
@@ -228,6 +304,7 @@ export function Button<RoutesType extends string>({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          gap: "8px",
         }}
       >
         {iconSide === "left" && currentIcon}
@@ -237,7 +314,11 @@ export function Button<RoutesType extends string>({
             overflow: "hidden",
           }}
         >
-          {text}
+          {renderTypography(buttonTypography.type, {
+            content: text,
+            color: buttonTypography.color,
+            size: buttonTypography.size,
+          })}
         </div>
         {iconSide === "right" && currentIcon}
       </div>
@@ -251,19 +332,19 @@ export function Button<RoutesType extends string>({
 
   const commonProps = {
     id,
-    backgroundColor,
-    color,
-    hoverColor,
+    kind,
     type,
-    size,
+    typography: buttonTypography,
     onClick,
-    primary,
-    ghost,
     fullWidth,
-    blue,
     iconSide,
+    paddingY,
+    backgroundColor,
+    borderWidth,
+    borderColor,
+    hoverBackgroundColor,
+    hoverBorderColor,
     isRound: isSingleCharRoundButton,
-    iconWidth: currentIcon ? iconSize + iconMarginRight : 0,
     isLoading: loading,
     disabled: disabled || loading,
     css: {
@@ -272,6 +353,7 @@ export function Button<RoutesType extends string>({
     },
     newTab,
     text,
+    borderRadius,
     zIndex,
   };
 
@@ -297,108 +379,108 @@ export function Button<RoutesType extends string>({
   );
 }
 
-type StyledButtonProps = ButtonProps<string> & {
+type StyledButtonProps = {
+  paddingY: number;
+  kind: ButtonKind;
   isLoading: boolean;
-  blue: boolean;
-  primary: boolean;
-  ghost: boolean;
-  iconWidth: number;
   isRound: boolean;
-  size: ButtonSize;
+  typography: {
+    type: AllowedButtonTypographyTypes;
+    size: TokenSizeKey;
+    color: ThemeOrColorKey;
+  };
   disabled: boolean;
   fullWidth: boolean;
+  backgroundColor: string;
+  borderWidth: number;
+  borderColor: string;
+  hoverBackgroundColor: string;
+  hoverBorderColor: string;
   css: { marginTop: string | undefined; marginLeft: string | undefined };
+  borderRadius: ButtonBorderRadius;
+  iconSide: IconSide;
+  zIndex: number | undefined;
 };
 
 const buttonStyle = ({
-  color,
-  backgroundColor,
-  hoverColor,
+  paddingY,
+  kind,
   theme,
-  primary,
-  ghost,
   disabled,
   isLoading,
-  size,
+  typography,
   fullWidth,
-  iconWidth,
-  blue,
-  text,
   zIndex,
   iconSide,
+  borderWidth,
+  borderColor,
   isRound,
-}: StyledButtonProps & { theme: Theme }) => css`
-  display: inline-flex;
-  opacity: ${disabled && !isLoading ? 0.2 : 1};
-  ${disabled ? "pointer-events: none;" : ""}
-  transition: opacity 0.2s;
-  position: relative;
+  borderRadius,
+  backgroundColor,
+  hoverBackgroundColor,
+  hoverBorderColor,
+}: StyledButtonProps & { theme: Theme }) => {
+  return css`
+    display: inline-flex;
+    opacity: ${disabled && !isLoading ? 0.2 : 1};
+    ${disabled ? "pointer-events: none;" : ""}
+    transition: opacity 0.2s;
+    position: relative;
 
-  ${zIndex && `z-index: ${zIndex};`}
+    ${zIndex && `z-index: ${zIndex};`}
 
-  color: ${getTextColor({ color, theme, primary, blue })};
-  font-size: ${["lg", "md"].includes(size) ? "14px" : "12px"};
-  font-weight: 600;
+    ${applyTypography(
+      theme,
+      typography.type,
+      typography.size,
+      typography.color,
+    )}
 
   &:focus-visible {
-    outline: ${getFocusOutline({ theme })};
-  }
-
-  width: ${fullWidth ? "100%" : "fit-content"};
-
-  & > * {
-    width: 100%;
-    text-align: center;
-    white-space: nowrap;
-    background-color: ${getBackgroundColor({
-      backgroundColor,
-      theme,
-      primary,
-      blue,
-      ghost,
-    })};
-    border: ${getBorder({ ghost })};
-    border-color: ${getInnerBorderColor({
-      backgroundColor,
-      theme,
-      primary,
-      blue,
-    })};
-    border-radius: ${isRound ? "100%" : "32px"};
-    padding: ${getPadding({
-      size,
-      iconWidth,
-      text,
-      ghost,
-      iconSide,
-      isRound,
-    })};
-    color: ${getTextColor({ color, theme, primary, blue })};
-    transition:
-      background-color 0.2s ease-out,
-      border-color 0.2s ease-out;
-
-    &:hover {
-      ${hoverColor && ghost
-        ? ""
-        : `background-color: ${hoverColor}; border-color: ${hoverColor};`}
+      outline: ${getFocusOutline({ theme })};
     }
-  }
-`;
+
+    width: ${fullWidth ? "100%" : "fit-content"};
+
+    & > * {
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      background-color: ${backgroundColor};
+      border: ${borderWidth}px solid;
+      border-color: ${borderColor};
+      border-radius: ${isRound ? "100%" : `${borderRadius}px`};
+      padding: ${getPadding({
+        paddingY,
+        kind,
+        size: typography.size,
+        iconSide,
+        isRound,
+      })};
+      transition:
+        background-color 0.2s ease-out,
+        border-color 0.2s ease-out;
+
+      &:hover {
+        background-color: ${hoverBackgroundColor};
+        border-color: ${hoverBorderColor};
+      }
+    }
+  `;
+};
 
 interface ButtonIconProps {
-  ghost: boolean;
+  typography: {
+    size: TokenSizeKey;
+  };
   iconSide?: IconSide | undefined;
   text?: string | undefined;
-  size: ButtonSize;
+  kind: ButtonKind;
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
-  ${(props) => (props.ghost ? "" : "position: absolute;")}
-  ${({ iconSide, ghost, text, size }) =>
-    `${iconSide}: ${
-      ghost && text ? 0 : getPaddingX({ size, ghost, isRound: false })
-    }px;`}
+  ${({ iconSide, kind, typography }) =>
+    `${iconSide}: ${getPaddingX(typography.size, kind, false)}px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`

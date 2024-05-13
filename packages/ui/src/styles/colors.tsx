@@ -37,9 +37,9 @@ const baseColors = {
   green33: "#179257",
   // blue
   blue43: "#145BC6",
-  blue48: "#0048F7",
   blue22: "#0E2E60",
   blue39: "#0068C9",
+  blue37: "#21529c",
   blue58: "#28BFFF",
   // less than 50% saturated blue
   grayBlue9: "#16171A",

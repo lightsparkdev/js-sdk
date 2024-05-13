@@ -51,7 +51,7 @@ const LoginPage = () => {
   return (
     <Container>
       <Description>Log into your Lightspark account to continue</Description>
-      <Button text="Login" primary onClick={handleLogin} />
+      <Button text="Login" kind="primary" onClick={handleLogin} />
     </Container>
   );
 };

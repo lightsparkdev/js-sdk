@@ -14,6 +14,8 @@ import {
 export const headlineElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 export type Heading = (typeof headlineElements)[number];
 
+type AllowedDisplay = "flex" | "block" | "inline-flex";
+
 type HeadlineProps = {
   content?: ToNonTypographicReactNodesArgs | undefined | null;
   /* children must be a string. use content prop for more complex content */
@@ -22,7 +24,7 @@ type HeadlineProps = {
   color?: FontColorKey | undefined;
   heading?: Heading;
   id?: string | undefined;
-  display?: "flex" | "block";
+  display?: AllowedDisplay;
 };
 
 export const Headline = ({
@@ -56,13 +58,12 @@ type StyledHeadlineProps = {
   colorProp?: FontColorKey | undefined;
   children: ReactNode;
   size: TokenSizeKey;
-  displayProp: "flex" | "block";
+  displayProp: AllowedDisplay;
 };
 
 export const StyledHeadline = styled.span<StyledHeadlineProps>`
-  &:first-child {
-    margin-top: 0;
-  }
+  /* Margins should always be set in display contexts eg Article */
+  margin: 0;
 
   display: ${({ displayProp }) => displayProp};
 
