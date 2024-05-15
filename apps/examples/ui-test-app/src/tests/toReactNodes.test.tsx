@@ -1,4 +1,7 @@
-import { toReactNodes } from "@lightsparkdev/ui/utils/toReactNodes";
+import {
+  setReactNodesTypography,
+  toReactNodes,
+} from "@lightsparkdev/ui/utils/toReactNodes";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
@@ -164,6 +167,161 @@ describe("toReactNodes", () => {
         text: "Hello",
         /* @ts-expect-error `contnt` is not a valid prop for the Display component */
         typography: { type: "Display", props: { contnt: "Something" } },
+      },
+    ]);
+  });
+
+  it("should correctly add typography to nontypographic nodes", () => {
+    const stringNode = "Some string that should have typography applied";
+    const linkNode = {
+      text: "Some link node that should have typography applied",
+      to: TestAppRoutes.PageOne,
+    };
+    const iconNode = { icon: "LogoBolt" as const };
+    const externalLinkNode = {
+      text: "Some external link node that should have typography applied",
+      externalLink: "https://www.google.com",
+    };
+    const nextLinkNode = {
+      text: "Some next link node that should have typography applied",
+      nextHref: "https://www.google.com",
+    };
+    const textNode = {
+      text: "Some text node that should have typography applied",
+    };
+
+    const nodes = setReactNodesTypography(
+      [
+        stringNode,
+        linkNode,
+        iconNode,
+        externalLinkNode,
+        nextLinkNode,
+        textNode,
+      ],
+      {
+        link: { type: "Body" },
+        externalLink: { type: "Body" },
+        text: { type: "Body", props: { size: "Large" } },
+        nextLink: { type: "Body" },
+      },
+    );
+
+    expect(nodes).toEqual([
+      {
+        text: stringNode,
+        typography: { type: "Body", props: { size: "Large" } },
+      },
+      {
+        ...linkNode,
+        typography: { type: "Body" },
+      },
+      iconNode,
+      {
+        ...externalLinkNode,
+        typography: { type: "Body" },
+      },
+      {
+        ...nextLinkNode,
+        typography: { type: "Body" },
+      },
+      {
+        ...textNode,
+        typography: { type: "Body", props: { size: "Large" } },
+      },
+    ]);
+  });
+
+  it("should correctly change the typography of typographic nodes", () => {
+    const stringNode = "Some string that should have typography applied";
+    const linkNode = {
+      text: "Some link node that should have typography applied",
+      to: TestAppRoutes.PageOne,
+      typography: { type: "Display", props: { size: "Medium" } },
+    };
+    const iconNode = { icon: "LogoBolt" as const };
+    const externalLinkNode = {
+      text: "Some external link node that should have typography applied",
+      externalLink: "https://www.google.com",
+      typography: { type: "Title", props: { size: "Small" } },
+    };
+    const nextLinkNode = {
+      text: "Some next link node that should have typography applied",
+      nextHref: "https://www.google.com",
+      typography: { type: "Display", props: { size: "Large" } },
+    };
+    const textNode = {
+      text: "Some text node that should have typography applied",
+      typography: { type: "Label", props: { size: "Small" } },
+    };
+
+    const nodes = setReactNodesTypography(
+      [
+        stringNode,
+        linkNode,
+        iconNode,
+        externalLinkNode,
+        nextLinkNode,
+        textNode,
+      ],
+      {
+        link: { type: "Body" },
+        externalLink: { type: "Body" },
+        text: { type: "Body", props: { size: "Large" } },
+        nextLink: { type: "Body" },
+      },
+    );
+
+    expect(nodes).toEqual([
+      {
+        text: stringNode,
+        typography: { type: "Body", props: { size: "Large" } },
+      },
+      {
+        ...linkNode,
+        typography: { type: "Body" },
+      },
+      iconNode,
+      {
+        ...externalLinkNode,
+        typography: { type: "Body" },
+      },
+      {
+        ...nextLinkNode,
+        typography: { type: "Body" },
+      },
+      {
+        ...textNode,
+        typography: { type: "Body", props: { size: "Large" } },
+      },
+    ]);
+  });
+
+  it("should not change the typography of typographic nodes when no override is provided for the node type", () => {
+    const stringNode = "Some string that should have typography applied";
+    const linkNode = {
+      text: "Some link node that should have typography applied",
+      to: TestAppRoutes.PageOne,
+      typography: { type: "Display", props: { size: "Medium" } },
+    };
+    const textNode = {
+      text: "Some text node that should have typography applied",
+      typography: { type: "Label", props: { size: "Small" } },
+    };
+
+    const nodes = setReactNodesTypography([stringNode, linkNode, textNode], {
+      link: { type: "Body", props: { size: "Large" } },
+    });
+
+    expect(nodes).toEqual([
+      stringNode,
+      {
+        ...linkNode,
+        typography: { type: "Body", props: { size: "Large" } },
+      },
+      {
+        ...textNode,
+        typography: { type: "Label", props: { size: "Small" } },
       },
     ]);
   });

@@ -39,28 +39,37 @@ export type TextNode = {
   text: string;
 };
 
-function isLinkNode(node: unknown): node is LinkNode {
+export function isLinkNode(node: unknown): node is LinkNode {
   return Boolean(node && isObject(node) && "text" in node && "to" in node);
 }
 
-function isExternalLinkNode(node: unknown): node is ExternalLinkNode {
+export function isExternalLinkNode(node: unknown): node is ExternalLinkNode {
   return Boolean(
     node && isObject(node) && "text" in node && "externalLink" in node,
   );
 }
 
-function isNextLinkNode(node: unknown): node is NextLinkNode {
+export function isNextLinkNode(node: unknown): node is NextLinkNode {
   return Boolean(
     node && isObject(node) && "text" in node && "nextHref" in node,
   );
 }
 
-function isIconNode(node: unknown): node is IconNode {
+export function isIconNode(node: unknown): node is IconNode {
   return Boolean(node && isObject(node) && "icon" in node);
 }
 
-function isTextNode(node: unknown): node is TextNode {
-  return Boolean(node && isObject(node) && "text" in node);
+export function isTextNode(node: unknown): node is TextNode {
+  return Boolean(
+    /* Exclude other nodes by ensuring `text` is the only property: */
+    node &&
+      isObject(node) &&
+      "text" in node &&
+      !isLinkNode(node) &&
+      !isExternalLinkNode(node) &&
+      !isNextLinkNode(node) &&
+      !isIconNode(node),
+  );
 }
 
 type ToNonTypographicReactNodesArg =

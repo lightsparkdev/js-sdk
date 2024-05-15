@@ -34,6 +34,7 @@ export const Body = ({
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
+
   return (
     <StyledBody size={size} colorProp={color} block={block} as={tag}>
       {reactNodes}
