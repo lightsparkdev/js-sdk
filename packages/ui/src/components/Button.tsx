@@ -57,7 +57,7 @@ export type ButtonProps<RoutesType extends string> = {
   href?: string | undefined;
   hrefFilename?: string | undefined;
   toParams?: RouteParams | undefined;
-  icon?: IconName;
+  icon?: IconName | undefined;
   iconSide?: IconSide;
   loading?: boolean | undefined;
   onClick?: (() => void) | undefined;
