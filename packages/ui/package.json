@@ -23,7 +23,6 @@
     "./utils": "./dist/utils/index.js",
     "./static/": "./dist/static/",
     "./router": "./dist/router.js",
-    "./src/": "./src/",
     "./src/components": "./src/components/index.js",
     "./src/components/*": "./src/components/*.js",
     "./src/components/typography": "./src/components/typography/index.js",

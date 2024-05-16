@@ -27,6 +27,7 @@ export const buttonsThemeBase = {
   defaultBorderColor: "bg" as BackgroundColorKeyArg,
   defaultHoverBackgroundColor: "bg" as BackgroundColorKeyArg,
   defaultHoverBorderColor: "bg" as BackgroundColorKeyArg,
+  defaultOutlineOffset: 1,
   defaultPaddingsY: {
     ExtraSmall: 4,
     Small: {

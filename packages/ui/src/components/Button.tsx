@@ -439,8 +439,10 @@ const buttonStyle = ({
       typography.color,
     )}
 
-  &:focus-visible {
+    &:focus-visible {
       outline: ${getFocusOutline({ theme })};
+      /* Slightly different offset for buttons so the outline is visible: */
+      outline-offset: 0px;
     }
 
     width: ${fullWidth ? "100%" : "fit-content"};
