@@ -1,6 +1,7 @@
 "use client";
 
 import styled from "@emotion/styled";
+import { invertFillColor, invertStrokeColor } from "../icons/constants.js";
 import * as icons from "../icons/index.js";
 import { rootFontSizePx } from "../styles/common.js";
 import { getFontColor, type FontColorKey } from "../styles/themes.js";
@@ -78,9 +79,30 @@ export const IconContainer = styled.span<IconContainerProps>`
   vertical-align: ${({ verticalAlign }) =>
     isString(verticalAlign) ? verticalAlign : `${verticalAlign}em`};
 
-  ${({ theme, fontColor }) => `
+  ${({ theme, fontColor }) => {
+    const color = getFontColor(theme, fontColor, "inherit");
+    return `
     & svg {
       color: ${getFontColor(theme, fontColor, "inherit")};
+
+      /* 
+        Provide a way for an SVG to invert relative to a specified color for
+        dark mode support. Ideally we would just use filters, which works in
+        Chrome even if the color is not specified, but doesn't work at all for
+        SVG paths in Safari:
+        filter: invert(100%); -webkit-filter: invert(100%);
+
+        Instead we'll need a class for fills and a class for strokes. Icons
+        that need inverted colors should use these classes on their paths.
+      */
+
+      .${invertFillColor} {
+        fill: ${fontColor ? theme.hcNeutralFromBg(color) : "currentColor"};
+      }
+      .${invertStrokeColor} {
+        stroke: ${fontColor ? theme.hcNeutralFromBg(color) : "currentColor"};
+      }
     }
-  `}
+  `;
+  }}
 `;

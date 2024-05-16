@@ -266,10 +266,11 @@ export function Button<RoutesType extends string>(
 
   const tooltipId = useRef(uniqueId());
 
+  const fontColor = typography?.color || getDefaultTextColor({ kind, theme });
   const buttonTypography = {
     type: typography?.type || theme.buttons.defaultTypography,
     size,
-    color: typography?.color || getDefaultTextColor({ kind, theme }),
+    color: fontColor,
   };
 
   const iconSize = size === "ExtraSmall" ? 12 : 16;
@@ -293,7 +294,7 @@ export function Button<RoutesType extends string>(
         typography={buttonTypography}
         kind={kind}
       >
-        <Icon name={icon} width={iconSize} />
+        <Icon name={icon} width={iconSize} color={fontColor} />
       </ButtonIcon>
     );
   }
