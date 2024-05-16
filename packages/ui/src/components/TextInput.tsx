@@ -52,7 +52,7 @@ export type TextInputProps = {
   placeholder?: string;
   inputRef?: Ref<HTMLInputElement>;
   id?: string;
-  type?: string | undefined;
+  type?: "text" | "password" | "hidden" | undefined;
   value: string;
   onClickIcon?: () => void;
   testId?: string;
