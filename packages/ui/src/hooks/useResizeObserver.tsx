@@ -50,12 +50,7 @@ export function useResizeObserver<K extends keyof ResizeProperties>(
         resizeProperties &&
         resizeProperties.length > 0
       ) {
-        resizeObserver.current = new ResizeObserver((entries) => {
-          /* See https://mzl.la/3WEF8m1 and https://bit.ly/3UHS9IS for explanation
-             ResizeObserver was sometimes throwing an uncaught error in Cypress
-             `ResizeObserver loop completed with undelivered notifications` */
-          setTimeout(() => onResize(entries), 0);
-        });
+        resizeObserver.current = new ResizeObserver(onResize);
         resizeObserver.current.observe(node);
       }
     },
