@@ -4,18 +4,25 @@ import type {
   ClipboardEvent,
   CompositionEvent,
   KeyboardEvent,
-  Ref,
+  RefCallback,
+  RefObject,
   SyntheticEvent,
 } from "react";
 import React, { useState } from "react";
+import { applyTypography } from "../styles/applyTypography.js";
 import { standardBorderRadius } from "../styles/common.js";
 import {
   InputSubtext,
+  defaultTextInputTypography,
   inputSpacingPx,
-  textInputColor,
   textInputPlaceholderColor,
   textInputStyle,
 } from "../styles/fields.js";
+import { type ThemeOrColorKey } from "../styles/themes.js";
+import {
+  type TokenSizeKey,
+  type TypographyTypeKey,
+} from "../styles/tokens/typography.js";
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer, type IconName } from "./Icon.js";
@@ -23,7 +30,7 @@ import { ToggleContainer } from "./Toggle.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type TextInputStyle = "primary" | "secondary";
+const selectLeftOffset = 10;
 
 export type TextInputProps = {
   disabled?: boolean;
@@ -50,7 +57,8 @@ export type TextInputProps = {
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => void;
   placeholder?: string;
-  inputRef?: Ref<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement>;
+  inputRefCb?: RefCallback<HTMLInputElement>;
   id?: string;
   type?: "text" | "password" | "hidden" | undefined;
   value: string;
@@ -65,12 +73,38 @@ export type TextInputProps = {
   label?: string;
   rightButtonText?: string | undefined;
   onRightButtonClick?: () => void;
-  style?: TextInputStyle;
+  typography?:
+    | {
+        size?: TokenSizeKey;
+        color?: ThemeOrColorKey;
+        type?: TypographyTypeKey;
+      }
+    | undefined;
+  select?:
+    | {
+        options: { value: string; label: string }[];
+        value: string;
+        onChange: (value: string) => void;
+        /* A specified width is required to ensure left input padding is correct */
+        width: number;
+      }
+    | undefined;
 };
 
 export function TextInput(props: TextInputProps) {
   const [focused, setFocused] = useState(false);
-  // const style: TextInputStyle = props.style || "primary";
+
+  const inputRef = props.inputRef || React.createRef<HTMLInputElement>();
+  /* props.inputRefCb should have priority if provided: */
+  const ref = props.inputRefCb || inputRef;
+  if (props.inputRefCb && !props.inputRef) {
+    console.warn("TextInput: inputRef should be provided with inputRefCb.");
+  }
+
+  const typography = {
+    ...defaultTextInputTypography,
+    ...props.typography,
+  };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Enter" && props.onEnter) {
@@ -82,6 +116,14 @@ export function TextInput(props: TextInputProps) {
 
   /* Default to right side icon if not specified: */
   const isIconRight = Boolean(props.icon && props.icon.side !== "left");
+
+  let paddingLeftPx: number | undefined;
+  if (Boolean(props.icon && !isIconRight)) {
+    paddingLeftPx = 28;
+  } else if (props.select && typeof props.select.width === "number") {
+    paddingLeftPx = selectLeftOffset + props.select.width + 5;
+  }
+
   let input = (
     <Input
       disabled={Boolean(props.disabled)}
@@ -114,14 +156,15 @@ export function TextInput(props: TextInputProps) {
       id={props.id}
       onPaste={props.onPaste}
       placeholder={props.placeholder}
-      ref={props.inputRef}
+      ref={ref}
       name={props.name}
       type={props.type || "text"}
       value={props.value}
-      paddingLeftPx={Boolean(props.icon && !isIconRight) ? 28 : undefined}
+      paddingLeftPx={paddingLeftPx}
       paddingRightPx={isIconRight ? 28 : undefined}
       hasError={hasError}
       data-test-id={props.testId}
+      typography={typography}
       autoComplete={
         props.autoComplete === "off" ? "new-password" : props.autoComplete
       }
@@ -144,6 +187,7 @@ export function TextInput(props: TextInputProps) {
           isIconRight={isIconRight}
           focused={focused}
           hasValue={Boolean(props.value)}
+          colorProp={typography.color}
         >
           <Icon name={props.icon.name} width={props.icon.width || 12} />
         </TextInputIconContainer>
@@ -153,6 +197,7 @@ export function TextInput(props: TextInputProps) {
             isIconRight={true}
             hasValue={Boolean(props.value)}
             focused={focused}
+            colorProp={typography.color}
           >
             <RightButton onClick={props.onRightButtonClick}>
               {props.rightButtonText}
@@ -167,11 +212,30 @@ export function TextInput(props: TextInputProps) {
     ? `${props.id || "input"}-hint-tooltip`
     : undefined;
 
+  const { select } = props;
+
   return (
     <InputContainer>
       {props.label ? (
         <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
       ) : null}
+      {select && (
+        <TextInputSelect
+          value={select.value}
+          widthProp={select.width}
+          typography={typography}
+          onChange={(event) => {
+            select.onChange(event.target.value);
+            inputRef.current?.focus();
+          }}
+        >
+          {select.options.map((option) => (
+            <option value={option.value} key={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </TextInputSelect>
+      )}
       {input}
       <InputSubtext
         text={props.error || props.hint}
@@ -190,6 +254,26 @@ TextInput.defaultProps = {
   autoComplete: undefined,
   hint: null,
 };
+
+const TextInputSelect = styled.select<{
+  widthProp: number;
+  typography: {
+    type: TypographyTypeKey;
+    size: TokenSizeKey;
+    color: ThemeOrColorKey;
+  };
+}>`
+  ${({ typography, theme }) =>
+    applyTypography(theme, typography.type, typography.size, typography.color)}
+  position: absolute;
+  z-index: ${z.textInput + 1};
+  border: none;
+  background-color: transparent;
+  top: 0;
+  left: ${selectLeftOffset}px;
+  height: 48px;
+  width: ${({ widthProp }) => `${widthProp}px`};
+`;
 
 interface WithIconProps {
   hasError: boolean;
@@ -214,6 +298,7 @@ interface TextInputIconContainerProps {
   isIconRight: boolean;
   focused: boolean;
   hasValue: boolean;
+  colorProp: ThemeOrColorKey;
 }
 
 const TextInputIconContainer = styled.div<TextInputIconContainerProps>`
@@ -227,10 +312,8 @@ const TextInputIconContainer = styled.div<TextInputIconContainerProps>`
   align-items: center;
   margin: 0 12px;
   cursor: ${({ onClick }) => (onClick ? "pointer" : "auto")};
-  color: ${({ focused, hasValue, theme }) =>
-    focused || hasValue
-      ? textInputColor({ theme })
-      : textInputPlaceholderColor({ theme })};
+  color: ${({ focused, hasValue, theme, colorProp }) =>
+    focused || hasValue ? colorProp : textInputPlaceholderColor({ theme })};
 `;
 
 interface InputProps {
@@ -238,6 +321,11 @@ interface InputProps {
   disabled: boolean;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
+  typography: {
+    size: TokenSizeKey;
+    color: ThemeOrColorKey;
+    type: TypographyTypeKey;
+  };
 }
 
 const Input = styled.input<InputProps>`
