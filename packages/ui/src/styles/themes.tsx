@@ -199,13 +199,13 @@ const umameDocsDarkTheme = extend(darkTheme, {
 });
 
 const lightsparkDocsLightTheme = extend(lightTheme, {
-  type: Themes.BridgeLight,
-  typography: getTypography(TypographyGroup.Bridge),
+  type: Themes.LightsparkDocsLight,
+  typography: getTypography(TypographyGroup.LightsparkDocs),
 });
 
 const lightsparkDocsDarkTheme = extend(darkTheme, {
-  type: Themes.BridgeDark,
-  typography: getTypography(TypographyGroup.Bridge),
+  type: Themes.LightsparkDocsDark,
+  typography: getTypography(TypographyGroup.LightsparkDocs),
 });
 
 const bridgeBaseSettings = {
@@ -239,6 +239,7 @@ const bridgeLightTheme = extend(lightTheme, {
   ...bridgeBaseSettings,
   type: Themes.BridgeLight,
   bg: colors.gray98,
+  smBg: colors.gray98,
   text: colors.grayBlue9,
   secondary: colors.grayBlue43,
 });
