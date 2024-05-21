@@ -32,6 +32,7 @@ export type BannerProps<T extends TypographyTypeKey> = {
         name: IconName;
         width?: number;
         color?: ThemeOrColorKey;
+        to?: NewRoutesType;
       }
     | undefined;
   leftIcon?:
@@ -39,6 +40,7 @@ export type BannerProps<T extends TypographyTypeKey> = {
         name: IconName;
         width?: number;
         color?: ThemeOrColorKey;
+        to?: NewRoutesType;
       }
     | undefined;
 };
@@ -100,6 +102,24 @@ export function Banner<T extends TypographyTypeKey>({
     </BannerInnerContent>
   ) : null;
 
+  const leftIconNode = leftIcon ? (
+    <Icon
+      name={leftIcon.name}
+      width={leftIcon.width || 16}
+      color={leftIcon.color}
+      ml={16}
+    />
+  ) : null;
+
+  const rightIconNode = rightIcon ? (
+    <Icon
+      name={rightIcon.name}
+      width={rightIcon.width || 16}
+      color={rightIcon.color}
+      mr={16}
+    />
+  ) : null;
+
   return (
     <StyledBanner
       colorProp={color}
@@ -111,23 +131,21 @@ export function Banner<T extends TypographyTypeKey>({
     >
       {leftIcon && (
         <BannerIcon>
-          <Icon
-            name={leftIcon.name}
-            width={leftIcon.width || 16}
-            color={leftIcon.color}
-            ml={16}
-          />
+          {leftIcon.to ? (
+            <Link<NewRoutesType> to={leftIcon.to}>{leftIconNode}</Link>
+          ) : (
+            leftIconNode
+          )}
         </BannerIcon>
       )}
       {innerContent}
       {rightIcon && (
         <BannerIcon>
-          <Icon
-            name={rightIcon.name}
-            width={rightIcon.width || 16}
-            color={rightIcon.color}
-            mr={16}
-          />
+          {rightIcon.to ? (
+            <Link<NewRoutesType> to={rightIcon.to}>{rightIconNode}</Link>
+          ) : (
+            rightIconNode
+          )}
         </BannerIcon>
       )}
       {bgProgressDuration && (
