@@ -38,8 +38,9 @@ export type TextInputProps = {
   icon?:
     | {
         name: IconName;
-        width?: 12 | 16;
+        width?: 8 | 12 | 16;
         side?: "left" | "right";
+        offset?: "small" | "large";
       }
     | undefined;
   maxLength?: number;
@@ -116,10 +117,15 @@ export function TextInput(props: TextInputProps) {
 
   /* Default to right side icon if not specified: */
   const isIconRight = Boolean(props.icon && props.icon.side !== "left");
+  const iconWidth = props.icon?.width || 12;
+  /* Where the icon center should be regardless of width */
+  const iconCenterOffset = props.icon?.offset === "large" ? 26 : 18;
+  const iconOffset = iconCenterOffset - iconWidth / 2;
+  const iconTextOffset = iconCenterOffset === 18 ? 4 : 14;
 
   let paddingLeftPx: number | undefined;
-  if (Boolean(props.icon && !isIconRight)) {
-    paddingLeftPx = 28;
+  if (props.icon && !isIconRight) {
+    paddingLeftPx = iconOffset + iconWidth + iconTextOffset;
   } else if (props.select && typeof props.select.width === "number") {
     paddingLeftPx = selectLeftOffset + props.select.width + 5;
   }
@@ -178,6 +184,7 @@ export function TextInput(props: TextInputProps) {
       }}
     />
   );
+
   if (props.icon) {
     input = (
       <WithIcon hasError={hasError} withFocus={focused}>
@@ -185,16 +192,18 @@ export function TextInput(props: TextInputProps) {
         <TextInputIconContainer
           onClick={props.onClickIcon ? props.onClickIcon : () => {}}
           isIconRight={isIconRight}
+          iconOffset={iconOffset}
           focused={focused}
           hasValue={Boolean(props.value)}
           colorProp={typography.color}
         >
-          <Icon name={props.icon.name} width={props.icon.width || 12} />
+          <Icon name={props.icon.name} width={iconWidth} />
         </TextInputIconContainer>
         {isIconRight ? null : <>{input}</>}
         {props.rightButtonText && (
           <TextInputIconContainer
             isIconRight={true}
+            iconOffset={iconOffset}
             hasValue={Boolean(props.value)}
             focused={focused}
             colorProp={typography.color}
@@ -299,18 +308,19 @@ interface TextInputIconContainerProps {
   focused: boolean;
   hasValue: boolean;
   colorProp: ThemeOrColorKey;
+  iconOffset: number;
 }
 
 const TextInputIconContainer = styled.div<TextInputIconContainerProps>`
   position: absolute;
   z-index: ${z.textInput + 1};
-  ${({ isIconRight }) => (isIconRight ? "right" : "left")}: 0;
+  ${({ isIconRight, iconOffset }) =>
+    isIconRight ? `right: ${iconOffset}px` : `left: ${iconOffset}px`};
   top: 0;
   bottom: 0;
   height: 100%;
   display: flex;
   align-items: center;
-  margin: 0 12px;
   cursor: ${({ onClick }) => (onClick ? "pointer" : "auto")};
   color: ${({ focused, hasValue, theme, colorProp }) =>
     focused || hasValue ? colorProp : textInputPlaceholderColor({ theme })};

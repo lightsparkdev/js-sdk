@@ -31,6 +31,7 @@ export { Copy } from "./Copy.js";
 export { CreditCard } from "./CreditCard.js";
 export { DeleteIcon } from "./DeleteIcon.js";
 export { Dollar } from "./Dollar.js";
+export { DollarManrope } from "./DollarManrope.js";
 export { DotGrid1x3Horizontal } from "./DotGrid1x3Horizontal.js";
 export { Download } from "./Download.js";
 export { ExclamationPoint } from "./ExclamationPoint.js";
