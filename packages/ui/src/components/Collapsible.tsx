@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { standardBorderRadius } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
-import { Icon } from "./Icon.js";
+import { Icon, type IconName } from "./Icon.js";
 
 type CollapsibleProps = {
   children: React.ReactNode;
@@ -12,7 +12,8 @@ type CollapsibleProps = {
   color?: string;
   open?: boolean | undefined;
   handleToggle?: (open: boolean) => void | undefined;
-  hamburger?: boolean | undefined;
+  openIcon?: IconName | undefined;
+  closeIcon?: IconName | undefined;
   /**
    * Opens the collapsible to full screen height if true.
    */
@@ -34,7 +35,8 @@ export function Collapsible({
   color,
   open,
   handleToggle,
-  hamburger,
+  openIcon,
+  closeIcon,
   full,
   buttonTextElement,
   contentIndent = true,
@@ -52,7 +54,8 @@ export function Collapsible({
     setIsOpen(open);
   }, [open]);
 
-  const iconName = hamburger ? (isOpen ? "Close" : "StackedLines") : "Chevron";
+  const iconName =
+    openIcon && closeIcon ? (isOpen ? closeIcon : openIcon) : "Chevron";
   // This is a one-off because the close svg is much larger in comparison to
   // the designs
   const iconWidth = iconName === "Close" ? 12 : 14;
@@ -68,7 +71,10 @@ export function Collapsible({
     <StyledCollapsible className={className}>
       <StyledCollapsibleButton onClick={handleClick}>
         {textElement}
-        <IconContainer isOpen={isOpen} hamburger={hamburger}>
+        <IconContainer
+          isOpen={isOpen}
+          useCustomIcon={openIcon !== undefined && closeIcon !== undefined}
+        >
           <Icon width={iconWidth} name={iconName} />
         </IconContainer>
       </StyledCollapsibleButton>
@@ -98,10 +104,10 @@ export const StyledCollapsibleButton = styled.button`
 
 const IconContainer = styled.div<{
   isOpen?: boolean | undefined;
-  hamburger?: boolean | undefined;
+  useCustomIcon?: boolean | undefined;
 }>`
   ${(props) => {
-    if (props.hamburger) {
+    if (props.useCustomIcon) {
       return;
     }
     return props.isOpen

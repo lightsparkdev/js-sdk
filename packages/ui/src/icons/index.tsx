@@ -61,6 +61,7 @@ export { Logo } from "./Logo.js";
 export { LogoBolt } from "./LogoBolt.js";
 export { LogoOnCircle } from "./LogoOnCircle.js";
 export { MagicWand } from "./MagicWand.js";
+export { Minus } from "./Minus.js";
 export { Monitor } from "./Monitor.js";
 export { NodeAdd } from "./NodeAdd.js";
 export { NotEye } from "./NotEye.js";
