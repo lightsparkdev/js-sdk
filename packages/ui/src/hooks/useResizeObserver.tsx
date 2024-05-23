@@ -32,12 +32,15 @@ export function useResizeObserver<K extends keyof ResizeProperties>(
 
   const onResize = useCallback(
     (entries: ResizeObserverEntry[]) => {
-      if (mounted.current) {
-        const changedRect = entries[0].contentRect;
-        setRect(changedRect);
-      } else if (resizeObserver.current) {
-        resizeObserver.current.disconnect();
-      }
+      /* First observation may occur before mounted effect runs - move to bottom of the stack: */
+      setTimeout(() => {
+        if (mounted.current) {
+          const changedRect = entries[0].contentRect;
+          setRect(changedRect);
+        } else if (resizeObserver.current) {
+          resizeObserver.current.disconnect();
+        }
+      }, 0);
     },
     [setRect],
   );
