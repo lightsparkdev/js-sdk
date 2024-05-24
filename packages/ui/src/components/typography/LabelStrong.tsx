@@ -2,9 +2,9 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/applyTypography.js";
 import { type FontColorKey } from "../../styles/themes.js";
 import { type TokenSizeKey } from "../../styles/tokens/typography.js";
+import { applyTypography } from "../../styles/typography.js";
 import {
   toNonTypographicReactNodes,
   type ToNonTypographicReactNodesArgs,
@@ -16,6 +16,7 @@ export type LabelStrongProps = {
   children?: string | undefined | null;
   size?: TokenSizeKey;
   color?: FontColorKey | undefined;
+  block?: boolean | undefined;
 };
 
 export const LabelStrong = ({
@@ -23,13 +24,14 @@ export const LabelStrong = ({
   color,
   size = "Medium",
   children,
+  block = false,
 }: LabelStrongProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledLabelStrong size={size} colorProp={color}>
+    <StyledLabelStrong size={size} colorProp={color} block={block}>
       {reactNodes}
     </StyledLabelStrong>
   );
@@ -40,10 +42,12 @@ type StyledLabelStrongProps = {
   colorProp?: FontColorKey | undefined;
   children: React.ReactNode;
   size: TokenSizeKey;
+  block: boolean;
 };
 
 export const StyledLabelStrong = styled.label<StyledLabelStrongProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label Strong", size, colorProp)}
+  ${({ block }) => (block ? "display: block;" : "")}
   cursor: inherit;
 `;

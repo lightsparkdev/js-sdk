@@ -1,18 +1,9 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
-import { applyTypography } from "./applyTypography.js";
 import { standardBorderRadius, subtext } from "./common.js";
-import {
-  themeOr,
-  type ThemeOrColorKey,
-  type ThemeProp,
-  type WithTheme,
-} from "./themes.js";
-import {
-  type TokenSizeKey,
-  type TypographyTypeKey,
-} from "./tokens/typography.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
+import { applyTypography, type SimpleTypographyProps } from "./typography.js";
 import { z } from "./z-index.js";
 
 export const maxFieldWidth = "100%";
@@ -99,13 +90,7 @@ export const textInputStyle = ({
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
-  typography?:
-    | {
-        size?: TokenSizeKey;
-        color?: ThemeOrColorKey;
-        type?: TypographyTypeKey;
-      }
-    | undefined;
+  typography?: SimpleTypographyProps | undefined;
 }>) => css`
   border-radius: ${textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.bg};

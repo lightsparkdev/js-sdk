@@ -2,9 +2,9 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/applyTypography.js";
 import { type FontColorKey } from "../../styles/themes.js";
 import { type TokenSizeKey } from "../../styles/tokens/typography.js";
+import { applyTypography } from "../../styles/typography.js";
 import { select } from "../../utils/emotion.js";
 import {
   toNonTypographicReactNodes,

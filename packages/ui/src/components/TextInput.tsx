@@ -9,7 +9,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import React, { useState } from "react";
-import { applyTypography } from "../styles/applyTypography.js";
 import { standardBorderRadius } from "../styles/common.js";
 import {
   InputSubtext,
@@ -18,11 +17,12 @@ import {
   textInputPlaceholderColor,
   textInputStyle,
 } from "../styles/fields.js";
-import { type ThemeOrColorKey } from "../styles/themes.js";
+import { getFontColor, type FontColorKey } from "../styles/themes.js";
 import {
-  type TokenSizeKey,
-  type TypographyTypeKey,
-} from "../styles/tokens/typography.js";
+  applyTypography,
+  type RequiredSimpleTypographyProps,
+  type SimpleTypographyProps,
+} from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer, type IconName } from "./Icon.js";
@@ -74,13 +74,7 @@ export type TextInputProps = {
   label?: string;
   rightButtonText?: string | undefined;
   onRightButtonClick?: () => void;
-  typography?:
-    | {
-        size?: TokenSizeKey;
-        color?: ThemeOrColorKey;
-        type?: TypographyTypeKey;
-      }
-    | undefined;
+  typography?: SimpleTypographyProps | undefined;
   select?:
     | {
         options: { value: string; label: string }[];
@@ -105,7 +99,7 @@ export function TextInput(props: TextInputProps) {
   const typography = {
     ...defaultTextInputTypography,
     ...props.typography,
-  };
+  } as RequiredSimpleTypographyProps;
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Enter" && props.onEnter) {
@@ -266,11 +260,7 @@ TextInput.defaultProps = {
 
 const TextInputSelect = styled.select<{
   widthProp: number;
-  typography: {
-    type: TypographyTypeKey;
-    size: TokenSizeKey;
-    color: ThemeOrColorKey;
-  };
+  typography: RequiredSimpleTypographyProps;
 }>`
   ${({ typography, theme }) =>
     applyTypography(theme, typography.type, typography.size, typography.color)}
@@ -307,7 +297,7 @@ interface TextInputIconContainerProps {
   isIconRight: boolean;
   focused: boolean;
   hasValue: boolean;
-  colorProp: ThemeOrColorKey;
+  colorProp: FontColorKey;
   iconOffset: number;
 }
 
@@ -323,7 +313,9 @@ const TextInputIconContainer = styled.div<TextInputIconContainerProps>`
   align-items: center;
   cursor: ${({ onClick }) => (onClick ? "pointer" : "auto")};
   color: ${({ focused, hasValue, theme, colorProp }) =>
-    focused || hasValue ? colorProp : textInputPlaceholderColor({ theme })};
+    focused || hasValue
+      ? getFontColor(theme, colorProp)
+      : textInputPlaceholderColor({ theme })};
 `;
 
 interface InputProps {
@@ -331,11 +323,7 @@ interface InputProps {
   disabled: boolean;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
-  typography: {
-    size: TokenSizeKey;
-    color: ThemeOrColorKey;
-    type: TypographyTypeKey;
-  };
+  typography: RequiredSimpleTypographyProps;
 }
 
 const Input = styled.input<InputProps>`

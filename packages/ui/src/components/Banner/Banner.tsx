@@ -12,7 +12,7 @@ import {
   toReactNodes,
   type ToReactNodesArgs,
 } from "../../utils/toReactNodes.js";
-import { Icon, type IconName } from "../Icon.js";
+import { Icon } from "../Icon.js";
 import { bannerTiming } from "./constants.js";
 
 type MaxMdContentJustify = "center" | "left";
@@ -27,22 +27,16 @@ export type BannerProps<T extends TypographyTypeKey> = {
   offsetTop?: number;
   maxMdContentJustify?: MaxMdContentJustify;
   onHeightChange?: (height: number) => void;
-  rightIcon?:
-    | {
-        name: IconName;
-        width?: number;
-        color?: ThemeOrColorKey;
-        to?: NewRoutesType;
-      }
-    | undefined;
-  leftIcon?:
-    | {
-        name: IconName;
-        width?: number;
-        color?: ThemeOrColorKey;
-        to?: NewRoutesType;
-      }
-    | undefined;
+  minHeight?: number | "auto" | undefined;
+  hPadding?: number | undefined;
+  right?: {
+    content: ToReactNodesArgs<T> | undefined;
+    to?: NewRoutesType | undefined;
+  };
+  left?: {
+    content: ToReactNodesArgs<T> | undefined;
+    to?: NewRoutesType | undefined;
+  };
 };
 
 export function Banner<T extends TypographyTypeKey>({
@@ -52,10 +46,12 @@ export function Banner<T extends TypographyTypeKey>({
   maxMdContentJustify,
   offsetTop = 0,
   onHeightChange,
-  rightIcon,
-  leftIcon,
+  right,
+  left,
   bgProgressDuration,
   borderProgress,
+  minHeight = 0,
+  hPadding = 0,
 }: BannerProps<T>) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
@@ -97,57 +93,39 @@ export function Banner<T extends TypographyTypeKey>({
     <BannerInnerContent
       isVisible={Boolean(content)}
       maxMdContentJustify={maxMdContentJustify || "center"}
+      minHeight={minHeight}
     >
       {contentNode}
     </BannerInnerContent>
   ) : null;
 
-  const leftIconNode = leftIcon ? (
-    <Icon
-      name={leftIcon.name}
-      width={leftIcon.width || 16}
-      color={leftIcon.color}
-      ml={16}
-    />
+  let leftNodes = left?.content ? (
+    <SideContent>{toReactNodes(left.content)}</SideContent>
   ) : null;
+  if (leftNodes && left?.to) {
+    leftNodes = <Link<NewRoutesType> to={left.to}>{leftNodes}</Link>;
+  }
 
-  const rightIconNode = rightIcon ? (
-    <Icon
-      name={rightIcon.name}
-      width={rightIcon.width || 16}
-      color={rightIcon.color}
-      mr={16}
-    />
+  let rightNodes = right?.content ? (
+    <SideContent>{toReactNodes(right.content)}</SideContent>
   ) : null;
+  if (rightNodes && right?.to) {
+    rightNodes = <Link<NewRoutesType> to={right.to}>{rightNodes}</Link>;
+  }
 
   return (
     <StyledBanner
       colorProp={color}
       isVisible={Boolean(content)}
       offsetTop={offsetTop}
-      hasIcon={Boolean(rightIcon)}
+      hasSideContent={Boolean(right || left)}
       ref={ref}
       borderProgress={borderProgress}
+      hPadding={hPadding}
     >
-      {leftIcon && (
-        <BannerIcon>
-          {leftIcon.to ? (
-            <Link<NewRoutesType> to={leftIcon.to}>{leftIconNode}</Link>
-          ) : (
-            leftIconNode
-          )}
-        </BannerIcon>
-      )}
+      {leftNodes}
       {innerContent}
-      {rightIcon && (
-        <BannerIcon>
-          {rightIcon.to ? (
-            <Link<NewRoutesType> to={rightIcon.to}>{rightIconNode}</Link>
-          ) : (
-            rightIconNode
-          )}
-        </BannerIcon>
-      )}
+      {rightNodes}
       {bgProgressDuration && (
         <BannerGradientBg
           duration={bgProgressDuration}
@@ -159,19 +137,31 @@ export function Banner<T extends TypographyTypeKey>({
   );
 }
 
+const SideContent = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const BannerInnerContent = styled.div<{
   isVisible: boolean;
   maxMdContentJustify: MaxMdContentJustify;
+  minHeight: number | "auto";
 }>`
   z-index: 1;
-  padding: ${({ isVisible }) => (isVisible ? `13px 17.5px` : "0px")};
+  padding: ${({ isVisible }) => (isVisible ? `0px 17.5px` : "0px")};
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: ${({ minHeight }) =>
+    typeof minHeight === "number" ? `${minHeight}px` : "auto"};
+
   & > * {
     position: relative;
     z-index: 1;
     width: 100%;
-    transition: all ${bannerTiming};
-    height: ${({ isVisible }) => (isVisible ? "auto" : "0px")};
 
     ${({ maxMdContentJustify }) =>
       bp.maxMd(
@@ -180,14 +170,13 @@ const BannerInnerContent = styled.div<{
   }
 `;
 
-const imageRightOffset = 20;
-
 const StyledBanner = styled.div<{
   colorProp: ThemeOrColorKey | undefined;
   isVisible: boolean;
   offsetTop: number;
-  hasIcon: boolean;
+  hasSideContent: boolean;
   borderProgress: number | undefined;
+  hPadding: number;
 }>`
   position: fixed;
   left: 0;
@@ -199,8 +188,10 @@ const StyledBanner = styled.div<{
   background-color: ${({ colorProp, theme }) =>
     colorProp ? getColor(theme, colorProp) : "none"};
   display: flex;
-  justify-content: ${({ hasIcon }) => (hasIcon ? "space-between" : "center")};
+  justify-content: ${({ hasSideContent }) =>
+    hasSideContent ? "space-between" : "center"};
   align-items: center;
+  padding: ${({ hPadding }) => `0 ${hPadding}px`};
 
   ${({ borderProgress }) => {
     if (typeof borderProgress === "number") {
@@ -208,11 +199,16 @@ const StyledBanner = styled.div<{
         &:before {
           content: "";
           position: absolute;
-          bottom: 0;
           left: 0;
           width: 100%;
-          height: 2px;
           background-color: #C1C5CD;
+          top: 0;
+          height: 4px;
+          ${bp.sm(`
+            height: 2px;
+            top: initial;
+            bottom: 0;
+          `)}
         }
         &:after {
           content: "";
@@ -220,9 +216,15 @@ const StyledBanner = styled.div<{
           bottom: 0;
           left: 0;
           width: ${borderProgress}%;
-          height: 2px;
           background-color: #2B66C2;
           transition: width 0.3s ease-in;
+          top: 0;
+          height: 4px;
+          ${bp.sm(`
+            height: 2px;
+            top: initial;
+            bottom: 0;
+          `)}
         }
       `;
     }
@@ -261,10 +263,6 @@ const BannerGradientBg = styled.div<BannerGradientBgProps>`
 
   transition: width ${({ duration }) => duration}s
     cubic-bezier(0.33, 0.54, 0.47, 0.87);
-`;
-
-const BannerIcon = styled.div`
-  right: ${imageRightOffset}px;
 `;
 
 const BannerFlexInnerContent = styled.div`

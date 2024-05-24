@@ -42,3 +42,6 @@ export function notNullUndefined<TValue>(
 
 /* Make specific properties on object optional: */
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+/* Opposite of Partial - make all keys required with NonNullable values */
+export type Complete<T> = { [P in keyof T]-?: NonNullable<T[P]> };

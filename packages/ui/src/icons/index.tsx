@@ -73,6 +73,7 @@ export { Plus } from "./Plus.js";
 export { PythonTwoTone } from "./PythonTwoTone.js";
 export { QRCodeIcon } from "./QRCodeIcon.js";
 export { QuestionCircle } from "./QuestionCircle.js";
+export { QuestionCircleStrong } from "./QuestionCircleStrong.js";
 export { ReactTwoTone } from "./ReactTwoTone.js";
 export { Recycling } from "./Recycling.js";
 export { Restart } from "./Restart.js";

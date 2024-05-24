@@ -9,6 +9,7 @@ import { nanoid } from "nanoid";
 import { Fragment, type ReactNode } from "react";
 import { Icon, type IconName } from "../components/Icon.js";
 import { Link } from "../router.js";
+import { type FontColorKey } from "../styles/themes.js";
 import { type NewRoutesType } from "../types/index.js";
 import { NextLink } from "./NextLink.js";
 
@@ -33,6 +34,8 @@ export type IconNode = {
   icon: IconName;
   width?: number;
   ml?: number;
+  mr?: number;
+  color?: FontColorKey;
 };
 
 export type TextNode = {
@@ -131,6 +134,8 @@ export function toNonTypographicReactNodes(
           key={`icon-${i}`}
           width={node.width || 12}
           ml={node.ml}
+          mr={node.mr}
+          color={node.color}
         />
       );
     } else if (typeof node === "string" || isTextNode(node)) {

@@ -5,11 +5,7 @@ import {
   type CountryCode,
 } from "libphonenumber-js";
 import { useCallback, useState, type ComponentProps } from "react";
-import { type ThemeOrColorKey } from "../styles/themes.js";
-import {
-  type TokenSizeKey,
-  type TypographyTypeKey,
-} from "../styles/tokens/typography.js";
+import { type SimpleTypographyProps } from "../styles/typography.js";
 import { countryCodesToNames } from "../utils/countryCodesToNames.js";
 import { TextInput } from "./TextInput.js";
 
@@ -43,13 +39,7 @@ export type PhoneInputOnChangeArg = {
 type PhoneInputProps = {
   pxPerChar?: number;
   onChange?: ({ number, formatted, isValid }: PhoneInputOnChangeArg) => void;
-  typography?:
-    | {
-        type?: TypographyTypeKey;
-        size?: TokenSizeKey;
-        color?: ThemeOrColorKey;
-      }
-    | undefined;
+  typography?: SimpleTypographyProps | undefined;
 };
 
 export function PhoneInput({

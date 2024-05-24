@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import { type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { getFocusOutline } from "../styles/common.js";
+import { type SimpleTypographyProps } from "../styles/typography.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
 import { TextIconAligner } from "./TextIconAligner.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -20,9 +21,11 @@ export type TextButtonProps<RoutesType extends string> = Omit<
   onClick?: (() => void) | undefined;
   mt?: number;
   ml?: number;
+  mr?: number;
   padding?: string;
   iconMatchTextColor?: boolean;
   text: string;
+  typography?: SimpleTypographyProps | undefined;
 };
 
 export function TextButton<RoutesType extends string>({
@@ -37,8 +40,10 @@ export function TextButton<RoutesType extends string>({
   disabled = false,
   mt = 0,
   ml = 0,
+  mr = 0,
   padding = "0",
   iconMatchTextColor = false,
+  typography,
 }: TextButtonProps<RoutesType>) {
   const text = elideArgs ? elide(textProp, elideArgs) : textProp;
 
@@ -64,7 +69,7 @@ export function TextButton<RoutesType extends string>({
           : null
       }
       content={text}
-      typography={{ size: "ExtraSmall" }}
+      typography={{ size: "ExtraSmall", ...typography }}
       rightIcon={
         rightIconProp
           ? {
@@ -85,6 +90,7 @@ export function TextButton<RoutesType extends string>({
     css: {
       marginTop: mt ? `${mt}px` : undefined,
       marginLeft: ml ? `${ml}px` : undefined,
+      marginRight: mr ? `${mr}px` : undefined,
     },
   };
 

@@ -5,7 +5,6 @@ import styled from "@emotion/styled";
 import { uniqueId } from "lodash-es";
 import { Fragment, useRef } from "react";
 import { Link, type RouteParams } from "../router.js";
-import { applyTypography } from "../styles/applyTypography.js";
 import {
   type AllowedButtonTypographyTypes,
   type ButtonBorderRadius,
@@ -20,6 +19,7 @@ import {
   type WithTheme,
 } from "../styles/themes.js";
 import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
+import { applyTypography } from "../styles/typography.js";
 import { select } from "../utils/emotion.js";
 import { Icon, type IconName } from "./Icon.js";
 import { Loading } from "./Loading.js";

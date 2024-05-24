@@ -3422,9 +3422,15 @@ export const getTypographyString = (
        typography type but if a component tries to use the style we should log an error
        since we don't have styles defined for this scenario. Developer should reach out
        to design for new tokens or use a typography type that exists in the theme. */
-    console.error(
-      `Attempted to use a typography type "${typographyType}" that does not exist in the current theme. Falling back to default tokens.`,
-    );
+    if (!mobileTokenSizes || !desktopTokenSizes) {
+      console.error(
+        `Attempted to use a typography type "${typographyType}" that does not exist in the current theme. Falling back to default tokens.`,
+      );
+    } else {
+      console.error(
+        `Attempted to use a typography size "${size}" that does not exist for typography type "${typographyType}" in the current theme. Falling back to default tokens.`,
+      );
+    }
     mobileTokens = defaultTokens;
     desktopTokens = defaultTokens;
   }

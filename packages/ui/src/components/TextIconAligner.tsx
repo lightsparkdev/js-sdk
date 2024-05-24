@@ -1,11 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { type ThemeOrColorKey } from "../styles/themes.js";
-import { type TokenSizeKey } from "../styles/tokens/typography.js";
+import { type SimpleTypographyProps } from "../styles/typography.js";
 import { type ToNonTypographicReactNodesArgs } from "../utils/toNonTypographicReactNodes.js";
 import { Icon, type IconName } from "./Icon.js";
 import { renderTypography } from "./typography/renderTypography.js";
-
-type AllowedTextIconAlignerTypographyTypes = "Display" | "Body" | "Body Strong";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
@@ -13,22 +11,16 @@ const marginPx = [4, 6, 8, 10, 12] as const;
 type MarginPx = (typeof marginPx)[number];
 
 const width = [12, 14, 16] as const;
-type Width = (typeof width)[number];
+export type TextIconAlignerIconWidth = (typeof width)[number];
 
 type TextIconAlignerProps = {
   content?: ToNonTypographicReactNodesArgs | undefined;
-  typography?:
-    | {
-        type?: AllowedTextIconAlignerTypographyTypes;
-        size?: TokenSizeKey;
-        color?: ThemeOrColorKey;
-      }
-    | undefined;
+  typography?: SimpleTypographyProps | undefined;
   rightIcon?:
     | {
         name: IconName;
         color?: ThemeOrColorKey | undefined;
-        width?: Width | undefined;
+        width?: TextIconAlignerIconWidth | undefined;
         ml?: MarginPx | undefined;
       }
     | undefined
@@ -37,7 +29,7 @@ type TextIconAlignerProps = {
     | {
         name: IconName;
         color?: ThemeOrColorKey | undefined;
-        width?: Width | undefined;
+        width?: TextIconAlignerIconWidth | undefined;
         mr?: MarginPx | undefined;
       }
     | undefined
