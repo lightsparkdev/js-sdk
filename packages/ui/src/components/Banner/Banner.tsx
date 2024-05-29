@@ -24,6 +24,7 @@ export type BannerProps<T extends TypographyTypeKey> = {
   color?: ThemeOrColorKey | undefined;
   bgProgressDuration?: number | undefined;
   borderProgress?: number | undefined;
+  borderColor?: ThemeOrColorKey | undefined;
   offsetTop?: number;
   maxMdContentJustify?: MaxMdContentJustify;
   onHeightChange?: (height: number) => void;
@@ -46,6 +47,7 @@ export function Banner<T extends TypographyTypeKey>({
   borderProgress,
   minHeight = 0,
   hPadding = 0,
+  borderColor,
 }: BannerProps<T>) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
@@ -96,6 +98,7 @@ export function Banner<T extends TypographyTypeKey>({
   return (
     <StyledBanner
       colorProp={color}
+      borderColor={borderColor}
       isVisible={Boolean(content)}
       offsetTop={offsetTop}
       hasSideContent={Boolean(right || left)}
@@ -151,6 +154,7 @@ const StyledBanner = styled.div<{
   hasSideContent: boolean;
   borderProgress: number | undefined;
   hPadding: number;
+  borderColor: ThemeOrColorKey | undefined;
 }>`
   position: fixed;
   left: 0;
@@ -166,6 +170,10 @@ const StyledBanner = styled.div<{
     hasSideContent ? "space-between" : "center"};
   align-items: center;
   padding: ${({ hPadding }) => `0 ${hPadding}px`};
+  ${({ borderColor, theme }) =>
+    borderColor
+      ? `border-bottom: 1px solid ${getColor(theme, borderColor)};`
+      : ""}
 
   ${({ borderProgress }) => {
     if (typeof borderProgress === "number") {
