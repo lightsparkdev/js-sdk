@@ -1,13 +1,12 @@
 "use client";
 
 import styled from "@emotion/styled";
-import { invertFillColor, invertStrokeColor } from "../icons/constants.js";
-import * as icons from "../icons/index.js";
-import { rootFontSizePx } from "../styles/common.js";
-import { getFontColor, type FontColorKey } from "../styles/themes.js";
-import { isString } from "../utils/strings.js";
-
-export type IconName = keyof typeof icons;
+import { invertFillColor, invertStrokeColor } from "../../icons/constants.js";
+import * as icons from "../../icons/index.js";
+import { rootFontSizePx } from "../../styles/common.js";
+import { getFontColor, type FontColorKey } from "../../styles/themes.js";
+import { isString } from "../../utils/strings.js";
+import type { IconName } from "./types.js";
 
 type IconProps = {
   className?: string | undefined;

@@ -2,6 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import merge from "deepmerge";
+import { type IconName } from "../components/Icon/types.js";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
 import { buttonsThemeBase, defaultButtonsTheme } from "./buttons.js";
 import {
@@ -75,6 +76,7 @@ const baseTheme = {
   hcNeutralFromBg: (bgHex: string) =>
     hcNeutralFromBg(bgHex, colors.black, colors.white),
   buttons: defaultButtonsTheme,
+  loading: "LoadingSpinner" as IconName,
 };
 
 type BaseTheme = typeof baseTheme;
@@ -127,6 +129,7 @@ const darkBaseTheme: BaseTheme = {
   vlcNeutral: colors.gray20,
   warning: colors.warning,
   buttons: defaultButtonsTheme,
+  loading: "LoadingSpinner",
 };
 
 const lightTheme = extend(lightBaseTheme, {
@@ -238,6 +241,7 @@ const bridgeBaseSettings = {
 const bridgeLightTheme = extend(lightTheme, {
   ...bridgeBaseSettings,
   type: Themes.BridgeLight,
+  loading: "UmaBridgeLoading",
   bg: colors.gray98,
   smBg: colors.gray98,
   text: colors.grayBlue9,

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { Fragment, useRef, useState } from "react";
 import { InputSubtext, inputBlockStyle } from "../styles/fields.js";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 import { Pill } from "./Pill.js";
 
 type FileInputProps = {

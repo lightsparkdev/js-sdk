@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { type ComponentProps } from "react";
 import { type FontColorKey } from "../../styles/themes.js";
 import { select } from "../../utils/emotion.js";
-import { Icon } from "../Icon.js";
+import { Icon } from "../Icon/Icon.js";
 import { DocsHeadline } from "./DocsHeadline.js";
 
 export const AnchorLinkHeader = (

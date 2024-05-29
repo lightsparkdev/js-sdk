@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { standardBorderRadius } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
-import { Icon, type IconName } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 
 type CollapsibleProps = {
   children: React.ReactNode;

@@ -2,7 +2,8 @@
 import { type ThemeOrColorKey } from "../styles/themes.js";
 import { type SimpleTypographyProps } from "../styles/typography.js";
 import { type ToNonTypographicReactNodesArgs } from "../utils/toNonTypographicReactNodes.js";
-import { Icon, type IconName } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { renderTypography } from "./typography/renderTypography.js";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs

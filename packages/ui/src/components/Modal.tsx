@@ -17,7 +17,7 @@ import { z } from "../styles/z-index.js";
 import { select } from "../utils/emotion.js";
 import { toReactNodes } from "../utils/toReactNodes.js";
 import { Button, ButtonSelector } from "./Button.js";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 

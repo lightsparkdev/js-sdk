@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 
 type Column<Key extends string = string> = {
   key: Key;

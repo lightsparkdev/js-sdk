@@ -21,7 +21,8 @@ import {
 import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
 import { applyTypography } from "../styles/typography.js";
 import { select } from "../utils/emotion.js";
-import { Icon, type IconName } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { Loading } from "./Loading.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";

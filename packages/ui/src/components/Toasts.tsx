@@ -9,7 +9,7 @@ import { type TypographyTypeKey } from "../styles/tokens/typography.js";
 import { extend, flexCenter, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { toReactNodes, type ToReactNodesArgs } from "../utils/toReactNodes.js";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type ToastQueueArg<T extends TypographyTypeKey> = {

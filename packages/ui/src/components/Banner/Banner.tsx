@@ -12,7 +12,7 @@ import {
   toReactNodes,
   type ToReactNodesArgs,
 } from "../../utils/toReactNodes.js";
-import { Icon } from "../Icon.js";
+import { Icon } from "../Icon/Icon.js";
 import { bannerTiming } from "./constants.js";
 
 type MaxMdContentJustify = "center" | "left";

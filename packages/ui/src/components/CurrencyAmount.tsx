@@ -12,7 +12,7 @@ import {
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
 import { gql } from "graphql-tag";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;

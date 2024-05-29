@@ -27,7 +27,8 @@ import {
 import { smHeaderLogoMarginLeft } from "../styles/constants.js";
 import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
-import { Icon, type IconName } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type DropdownItemGetProps<RoutesType extends string> = WithTheme<{

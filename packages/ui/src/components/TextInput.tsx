@@ -25,7 +25,8 @@ import {
 } from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
-import { Icon, IconContainer, type IconName } from "./Icon.js";
+import { Icon, IconContainer } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { ToggleContainer } from "./Toggle.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";

@@ -4,7 +4,8 @@ import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
 import { nanoid } from "nanoid";
 import React, { useState } from "react";
-import { Icon, type IconName } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
