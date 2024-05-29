@@ -36,6 +36,7 @@ export {
 export { CommandKey } from "./CommandKey.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount.js";
+export { Drawer } from "./Drawer.js";
 export { Dropdown } from "./Dropdown.js";
 export { FileInput, StyledFileInput } from "./FileInput.js";
 export { GradientCardHeader } from "./GradientCardHeader.js";

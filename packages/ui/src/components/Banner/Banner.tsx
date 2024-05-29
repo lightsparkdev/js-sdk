@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useResizeObserver } from "../../hooks/useResizeObserver.js";
 import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
@@ -29,14 +29,8 @@ export type BannerProps<T extends TypographyTypeKey> = {
   onHeightChange?: (height: number) => void;
   minHeight?: number | "auto" | undefined;
   hPadding?: number | undefined;
-  right?: {
-    content: ToReactNodesArgs<T> | undefined;
-    to?: NewRoutesType | undefined;
-  };
-  left?: {
-    content: ToReactNodesArgs<T> | undefined;
-    to?: NewRoutesType | undefined;
-  };
+  right?: ReactNode | undefined;
+  left?: ReactNode | undefined;
 };
 
 export function Banner<T extends TypographyTypeKey>({
@@ -99,20 +93,6 @@ export function Banner<T extends TypographyTypeKey>({
     </BannerInnerContent>
   ) : null;
 
-  let leftNodes = left?.content ? (
-    <SideContent>{toReactNodes(left.content)}</SideContent>
-  ) : null;
-  if (leftNodes && left?.to) {
-    leftNodes = <Link<NewRoutesType> to={left.to}>{leftNodes}</Link>;
-  }
-
-  let rightNodes = right?.content ? (
-    <SideContent>{toReactNodes(right.content)}</SideContent>
-  ) : null;
-  if (rightNodes && right?.to) {
-    rightNodes = <Link<NewRoutesType> to={right.to}>{rightNodes}</Link>;
-  }
-
   return (
     <StyledBanner
       colorProp={color}
@@ -123,9 +103,9 @@ export function Banner<T extends TypographyTypeKey>({
       borderProgress={borderProgress}
       hPadding={hPadding}
     >
-      {leftNodes}
+      {left}
       {innerContent}
-      {rightNodes}
+      {right}
       {bgProgressDuration && (
         <BannerGradientBg
           duration={bgProgressDuration}
@@ -136,12 +116,6 @@ export function Banner<T extends TypographyTypeKey>({
     </StyledBanner>
   );
 }
-
-const SideContent = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-`;
 
 const BannerInnerContent = styled.div<{
   isVisible: boolean;

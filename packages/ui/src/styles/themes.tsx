@@ -228,6 +228,20 @@ const bridgeBaseSettings = {
         defaultBackgroundColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
       },
+      ghost: {
+        defaultBackgroundColor: "transparent",
+        defaultBorderWidth: 0,
+        defaultHoverBackgroundColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+        defaultPaddingsY: {
+          ExtraSmall: 0,
+          Small: 0,
+          Schmedium: 0,
+          Medium: 0,
+          Mlarge: 0,
+          Large: 0,
+        },
+      },
       secondary: {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",

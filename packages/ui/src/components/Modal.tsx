@@ -12,14 +12,19 @@ import {
   standardContentInset,
   standardFocusOutline,
 } from "../styles/common.js";
-import { overflowAutoWithoutScrollbars, pxToRems } from "../styles/utils.js";
+import { Spacing } from "../styles/tokens/spacing.js";
+import { TokenSize } from "../styles/tokens/typography.js";
+import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { select } from "../utils/emotion.js";
-import { toReactNodes } from "../utils/toReactNodes.js";
+import { toReactNodes, type ToReactNodesArgs } from "../utils/toReactNodes.js";
 import { Button, ButtonSelector } from "./Button.js";
+import { Drawer } from "./Drawer.js";
 import { Icon } from "./Icon/Icon.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+import { Body } from "./typography/Body.js";
+import { Headline, headlineSelector } from "./typography/Headline.js";
 
 type SubmitLinkWithRoute<RoutesType extends string> = {
   to: RoutesType;
@@ -39,8 +44,8 @@ function isSubmitLinkWithHref<RoutesType extends string>(
 type ModalProps<RoutesType extends string> = {
   visible: boolean;
   onClose: () => void;
-  title?: string;
-  description?: string | undefined;
+  title?: ToReactNodesArgs;
+  description?: ToReactNodesArgs;
   cancelText?: string | undefined;
   cancelDisabled?: boolean;
   cancelHidden?: boolean;
@@ -62,9 +67,14 @@ type ModalProps<RoutesType extends string> = {
   /* This should always be true for accessibility purposes unless you are
    * managing focus in a child component */
   autoFocus?: boolean;
+  smDrawer?: boolean;
   nonDismissable?: boolean;
   width?: 460 | 600;
   progressBar?: ProgressBarProps;
+  /** Determines if buttons are laid out horizontally or vertically */
+  buttonLayout?: "horizontal" | "vertical";
+  /** Allows placing extra buttons in the same button layout */
+  extraActions?: React.ReactNode;
 };
 
 export function Modal<RoutesType extends string>({
@@ -84,10 +94,13 @@ export function Modal<RoutesType extends string>({
   submitLink,
   cancelText = "Cancel",
   firstFocusRef,
+  smDrawer,
   nonDismissable = false,
   autoFocus = true,
   width = 460,
   progressBar,
+  buttonLayout = "horizontal",
+  extraActions,
 }: ModalProps<RoutesType>) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
@@ -99,7 +112,6 @@ export function Modal<RoutesType extends string>({
   const modalContainerRef = useRef<null | HTMLDivElement>(null);
   const bp = useBreakpoints();
   const isSm = bp.current(Breakpoints.sm);
-  const formattedDescription = description ? toReactNodes(description) : null;
 
   useEffect(() => {
     if (visible !== visibleChangedRef.current) {
@@ -181,8 +193,8 @@ export function Modal<RoutesType extends string>({
     }
   }, [visible, visibleChanged, ref, autoFocus]);
 
-  function onClickCloseButton(event: React.MouseEvent) {
-    event.stopPropagation();
+  function onClickCloseButton(event?: React.MouseEvent) {
+    event?.stopPropagation();
     onClose();
   }
 
@@ -204,82 +216,124 @@ export function Modal<RoutesType extends string>({
   const linkIsHref = isSubmitLinkWithHref(submitLink);
   const linkIsRoute = !linkIsHref && submitLink;
 
+  const buttonContent = (
+    <>
+      {extraActions}
+      {!isSm && !cancelHidden && (
+        <Button
+          disabled={cancelDisabled}
+          onClick={onClickCancel}
+          text={cancelText}
+        />
+      )}
+      {onSubmit && (
+        <Button
+          kind="primary"
+          disabled={submitDisabled}
+          text={submitText ?? "Continue"}
+          loading={submitLoading}
+          to={linkIsRoute ? submitLink.to : undefined}
+          href={linkIsHref ? submitLink.href : undefined}
+          hrefFilename={linkIsHref ? submitLink.filename : undefined}
+          /* If submit button is a link we should not attempt to submit the form and
+                    should call onClick instead for onSubmit side-effects: */
+          type={submitLink ? "button" : "submit"}
+          /* The form element handles submit events when submit button is not a link: */
+          onClick={submitLink ? onSubmit : undefined}
+        />
+      )}
+      {isSm && !cancelHidden && <Button onClick={onClose} text={cancelText} />}
+    </>
+  );
+
+  let titleContent: React.ReactNode | null = null;
+  if (title) {
+    if (typeof title === "string") {
+      titleContent = (
+        <Headline heading="h4" size={TokenSize.Small}>
+          {title}
+        </Headline>
+      );
+    } else {
+      titleContent = toReactNodes(title);
+    }
+  }
+
+  let descriptionContent: React.ReactNode | null = null;
+  if (description) {
+    if (typeof description === "string") {
+      descriptionContent = (
+        <Description>
+          <Body size={"ExtraSmall"} content={description} />
+        </Description>
+      );
+    } else {
+      descriptionContent = toReactNodes(description);
+    }
+  }
+
   const modalContent = (
     <Fragment>
-      <ModalOverlay ref={overlayRef} />
-      <ModalContainer
-        aria-modal
-        aria-hidden
-        tabIndex={-1}
-        role="dialog"
-        ref={modalContainerRef}
-      >
-        <ModalContent width={width} ghost={ghost}>
-          {!firstFocusRef && (
-            <DefaultFocusTarget ref={defaultFirstFocusRefCb} />
-          )}
-          {!(nonDismissable || ghost) && (
-            <CloseButton onClick={onClickCloseButton} type="button">
-              <Icon name="Close" width={9} />
-            </CloseButton>
-          )}
-          <ModalContentInner ghost={ghost}>
-            {progressBar ? (
-              <div css={{ marginBottom: "20px" }}>
-                <ProgressBar
-                  progressPercentage={progressBar.progressPercentage}
-                  isSm={progressBar.isSm}
-                />
-              </div>
-            ) : null}
-            {title ? <h4>{title}</h4> : null}
-            {formattedDescription ? (
-              <Description>{formattedDescription}</Description>
-            ) : null}
-            <div>{children}</div>
-            {onSubmit || onCancel ? (
-              <ModalButtonRow>
-                {!isSm && !cancelHidden && (
-                  <Button
-                    disabled={cancelDisabled}
-                    onClick={onClickCancel}
-                    text={cancelText}
-                  />
-                )}
-                {onSubmit && (
-                  <Button
-                    kind="primary"
-                    disabled={submitDisabled}
-                    text={submitText ?? "Continue"}
-                    loading={submitLoading}
-                    to={linkIsRoute ? submitLink.to : undefined}
-                    href={linkIsHref ? submitLink.href : undefined}
-                    hrefFilename={linkIsHref ? submitLink.filename : undefined}
-                    /* If submit button is a link we should not attempt to submit the form and
-                       should call onClick instead for onSubmit side-effects: */
-                    type={submitLink ? "button" : "submit"}
-                    /* The form element handles submit events when submit button is not a link: */
-                    onClick={submitLink ? onSubmit : undefined}
-                  />
-                )}
-                {isSm && !cancelHidden && (
-                  <Button onClick={onClose} text={cancelText} />
-                )}
-              </ModalButtonRow>
-            ) : null}
-          </ModalContentInner>
-        </ModalContent>
-      </ModalContainer>
+      {progressBar ? (
+        <div css={{ marginBottom: "20px" }}>
+          <ProgressBar
+            progressPercentage={progressBar.progressPercentage}
+            isSm={progressBar.isSm}
+          />
+        </div>
+      ) : null}
+      {titleContent}
+      {descriptionContent}
+      {children}
+      {onSubmit || onCancel ? (
+        buttonLayout === "horizontal" ? (
+          <ModalButtonRow>{buttonContent}</ModalButtonRow>
+        ) : (
+          <ModalButtonColumn>{buttonContent}</ModalButtonColumn>
+        )
+      ) : null}
     </Fragment>
   );
 
+  let content: React.ReactNode;
+  if (smDrawer && isSm) {
+    content = (
+      <Drawer onClose={() => onClickCloseButton()} closeButton>
+        {modalContent}
+      </Drawer>
+    );
+  } else {
+    content = (
+      <Fragment>
+        <ModalOverlay ref={overlayRef} />
+        <ModalContainer
+          aria-modal
+          aria-hidden
+          tabIndex={-1}
+          role="dialog"
+          ref={modalContainerRef}
+        >
+          <ModalContent width={width} ghost={ghost}>
+            {!firstFocusRef && (
+              <DefaultFocusTarget ref={defaultFirstFocusRefCb} />
+            )}
+            {!(nonDismissable || ghost) && (
+              <CloseButtonContainer>
+                <CloseButton onClick={onClickCloseButton} type="button">
+                  <Icon name="Close" width={9} />
+                </CloseButton>
+              </CloseButtonContainer>
+            )}
+            <ModalContentInner ghost={ghost}>{modalContent}</ModalContentInner>
+          </ModalContent>
+        </ModalContainer>
+      </Fragment>
+    );
+  }
+
   return visible && nodeReady && nodeRef.current
     ? ReactDOM.createPortal(
-        onSubmit ? (
-          <form onSubmit={onSubmitForm}>{modalContent}</form>
-        ) : (
-          modalContent
-        ),
+        onSubmit ? <form onSubmit={onSubmitForm}>{content}</form> : content,
         nodeRef.current,
       )
     : null;
@@ -300,7 +354,6 @@ const ModalOverlay = styled.div`
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
 `;
 
 const ModalContainer = styled.div`
@@ -331,7 +384,7 @@ const Description = styled.div`
 `;
 
 const ModalButtonRow = styled.div`
-  margin-top: 32px;
+  margin-top: ${Spacing.lg};
   ${bp.minSm(`display: flex;`)}
   gap: 10px;
 
@@ -341,12 +394,18 @@ const ModalButtonRow = styled.div`
       width: 100%;
     `)}
   }
+`;
 
-  ${ButtonSelector("", `:last-of-type`)} {
-    ${bp.sm(`
-      margin-top: 16px;
-    `)}
+const ModalButtonColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${Spacing.xs};
+
+  ${ButtonSelector()} {
+    width: 100%;
   }
+
+  margin-top: ${Spacing.lg};
 `;
 
 const ModalContent = styled.div<{
@@ -365,14 +424,19 @@ const ModalContent = styled.div<{
   position: absolute;
   ${(props) => (props.ghost ? "" : "padding: 16px 16px 40px;")}
 
-  h4 {
+  ${headlineSelector("h4")} { {
     margin: 0;
-    font-weight: 800;
-    font-size: ${pxToRems(21)};
     & + *:not(${select(Description)}) {
       margin-top: ${contentTopMarginPx}px;
     }
   }
+`;
+
+const CloseButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: flex-end;
 `;
 
 const CloseButton = styled(UnstyledButton)`

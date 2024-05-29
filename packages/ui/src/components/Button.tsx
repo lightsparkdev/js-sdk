@@ -312,18 +312,20 @@ export function Button<RoutesType extends string>(
         }}
       >
         {iconSide === "left" && currentIcon}
-        <div
-          css={{
-            textOverflow: "ellipsis",
-            overflow: "hidden",
-          }}
-        >
-          {renderTypography(buttonTypography.type, {
-            content: text,
-            color: buttonTypography.color,
-            size: buttonTypography.size,
-          })}
-        </div>
+        {text && (
+          <div
+            css={{
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+            }}
+          >
+            {renderTypography(buttonTypography.type, {
+              content: text,
+              color: buttonTypography.color,
+              size: buttonTypography.size,
+            })}
+          </div>
+        )}
         {iconSide === "right" && currentIcon}
       </div>
       {tooltipText ? (
