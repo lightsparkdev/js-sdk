@@ -26,7 +26,7 @@ import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
 import { Headline, headlineSelector } from "./typography/Headline.js";
 
-interface ExtraAction {
+export interface ExtraAction {
   /** Determines the placement relative to the submission/cancel buttons. */
   placement: "above" | "below";
   content: React.ReactNode;
