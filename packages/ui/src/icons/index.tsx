@@ -10,6 +10,7 @@ export { ArrowCornerDownRight } from "./ArrowCornerDownRight.js";
 export { ArrowDown } from "./ArrowDown.js";
 export { ArrowUp } from "./ArrowUp.js";
 export { ArrowUpRightCircleFill } from "./ArrowUpRightCircleFill.js";
+export { Bank } from "./Bank.js";
 export { BitcoinB } from "./BitcoinB.js";
 export { BitcoinBOnRoundedSquare } from "./BitcoinBOnRoundedSquare.js";
 export { CameraCapture } from "./CameraCapture.js";
