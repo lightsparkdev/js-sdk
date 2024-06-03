@@ -412,7 +412,7 @@ const ModalButtonRow = styled.div`
 const ModalButtonColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${Spacing.xs};
+  gap: ${Spacing.sm};
 
   ${ButtonSelector()} {
     width: 100%;
