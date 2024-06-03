@@ -31,7 +31,6 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.0.22",
-    "@lightsparkdev/gql": "*",
     "@lightsparkdev/ui": "0.0.13",
     "@wojtekmaj/react-datetimerange-picker": "^5.5.0",
     "@zxing/browser": "^0.1.1",
