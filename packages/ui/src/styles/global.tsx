@@ -80,6 +80,11 @@ export const globalComponentStyles = ({ theme }: ThemeProp) => css`
   strong {
     font-weight: 700;
   }
+
+  // Recaptcha badge invisibility
+  .grecaptcha-badge {
+    visibility: hidden;
+  }
 `;
 
 export function GlobalStyles() {
