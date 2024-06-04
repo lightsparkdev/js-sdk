@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/ui-test-app",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Lightspark UI components",
   "author": "Lightspark Inc.",
   "main": "./dist/index.js",
@@ -31,8 +31,8 @@
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@lightsparkdev/core": "1.0.22",
-    "@lightsparkdev/ui": "0.0.13",
+    "@lightsparkdev/core": "1.1.0",
+    "@lightsparkdev/ui": "1.0.0",
     "@wojtekmaj/react-datetimerange-picker": "^5.5.0",
     "@zxing/browser": "^0.1.1",
     "@zxing/library": "^0.19.2",

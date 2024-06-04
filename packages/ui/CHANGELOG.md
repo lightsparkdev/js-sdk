@@ -1,5 +1,42 @@
 # @lightsparkdev/ui
 
+## 1.0.0
+
+### Major Changes
+
+- fda487d: - Move PageSectionNav to new UI component (#9971)
+  - Move all PageSection components and Dropdown to public UI (#9979)
+  - Allow Modal submit to be a link (#10066)
+  - Move themes to own file. Simplify colors (#10167)
+  - Move typography and tokens (#10172)
+  - Improve theme typography tokens and add bridge tokens (#10189)
+  - Move typography to components (#10178)
+  - Update dependencies
+
+### Patch Changes
+
+- fda487d: - Remove unused icons (#10179)
+  - Preload icons (#10182)
+  - Fix invalid color string (#10231)
+  - Add ChevronLeft icon (#10198)
+  - Add InfoIconTooltip component and improve Tooltip (#10236)
+  - Add Radio component (#10350)
+  - Typography and theme improvements (#10331)
+  - Add Banner component (#10262)
+  - Consolidate specifying full precision for currencies (#1095)
+  - Add NextLink as a ToReactNode type (#10432)
+  - Button improvements (#10507)
+  - Update to latest typography tokens (#10536)
+  - Add transformGQLName (#10592)
+  - ToReactNodes improvements and tests (#10562)
+  - Add icons (#10572)
+  - Provide icon color inversion when color is specified (#10630)
+  - Add PhoneInput component (#10702)
+  - Add useDebounce hook (#10741)
+  - Add common Drawer component, optionally use in Modal (#10819)
+- Updated dependencies [fda487d]
+  - @lightsparkdev/core@1.1.0
+
 ## 0.0.13
 
 ### Patch Changes
