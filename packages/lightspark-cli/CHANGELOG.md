@@ -1,13 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.0.49
-
-### Patch Changes
-
-- Updated dependencies [fda487d]
-  - @lightsparkdev/core@1.1.0
-  - @lightsparkdev/lightspark-sdk@1.5.13
-
 ## 0.0.48
 
 ### Patch Changes

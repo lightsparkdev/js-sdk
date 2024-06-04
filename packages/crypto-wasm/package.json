@@ -12,7 +12,7 @@
     "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail"
   },
   "devDependencies": {
-    "@lightsparkdev/core": "1.1.0",
+    "@lightsparkdev/core": "1.0.22",
     "jest": "^29.6.2",
     "ts-jest": "^29.1.1"
   },
