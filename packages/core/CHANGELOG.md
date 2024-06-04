@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.1.0
+
+### Minor Changes
+
+- fda487d: - Move formatCurrencyStr options into an object (#1095)
+  - Compress requests with deflate (#10512)
+
 ## 1.0.22
 
 ### Patch Changes
