@@ -1,5 +1,4 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import GlobalErrorBoundary from "@lightsparkdev/private-ui/src/components/GlobalErrorBoundary";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Root } from "./Root";
@@ -11,9 +10,7 @@ function init() {
 
   root.render(
     <React.StrictMode>
-      <GlobalErrorBoundary>
-        <Root />
-      </GlobalErrorBoundary>
+      <Root />
     </React.StrictMode>,
   );
 }
