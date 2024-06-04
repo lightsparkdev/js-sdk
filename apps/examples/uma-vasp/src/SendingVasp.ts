@@ -136,9 +136,9 @@ export default class SendingVasp {
       });
     } else {
       const nonUmaLnurlpRequest: uma.LnurlpRequest = {
-        receiverAddress: receiverUmaAddress
+        receiverAddress: receiverUmaAddress,
       };
-      lnurlpRequestUrl = uma.encodeToUrl(nonUmaLnurlpRequest)
+      lnurlpRequestUrl = uma.encodeToUrl(nonUmaLnurlpRequest);
     }
 
     console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
@@ -564,7 +564,10 @@ export default class SendingVasp {
       if (receivingCurrencyCode) {
         url.searchParams.append("convert", receivingCurrencyCode);
       }
-      if (payerProfile && (payerProfile.identifier || payerProfile.email || payerProfile.name)) {
+      if (
+        payerProfile &&
+        (payerProfile.identifier || payerProfile.email || payerProfile.name)
+      ) {
         url.searchParams.append("payerData", JSON.stringify(payerProfile));
       }
       response = await fetch(url.toString(), {
@@ -864,8 +867,10 @@ export default class SendingVasp {
       payment.umaPostTransactionData?.map((d) => {
         return {
           utxo: d.utxo,
-          amount: convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI)
-            .preferredCurrencyValueRounded,
+          amountMsats: convertCurrencyAmount(
+            d.amount,
+            CurrencyUnit.MILLISATOSHI,
+          ).preferredCurrencyValueRounded,
         };
       }) ?? [];
     const postTransactionCallback = await uma.getPostTransactionCallback({
