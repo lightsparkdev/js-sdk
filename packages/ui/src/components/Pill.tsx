@@ -3,7 +3,8 @@ import styled from "@emotion/styled";
 import { useEffect, useRef } from "react";
 import { colors } from "../styles/colors.js";
 import { flexCenter } from "../styles/utils.js";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { Loading } from "./Loading.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
@@ -17,7 +18,7 @@ type PillProps = {
   onDeleteFromKeyboard?: () => void;
   text: string;
   loading?: boolean;
-  icon?: string;
+  icon?: IconName;
   cursor?: "pointer" | "text";
   isEditing?: boolean;
   onChangeTextInput?: (newValue: string) => void;
@@ -115,7 +116,7 @@ export function Pill({
             </UnstyledButton>
           )}
           {!loading && icon && !onDeleteMouseDown && (
-            <Icon name={icon} width={16.1} color={colors.white} />
+            <Icon name={icon} width={16.1} color="white" />
           )}
         </PillIconContainer>
       )}

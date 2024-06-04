@@ -382,35 +382,54 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
   return "Unsupported CurrencyUnit";
 };
 
+const defaultOptions = {
+  /* undefined indicates to use default precision for unit defined below */
+  precision: undefined,
+  compact: false,
+  showBtcSymbol: false,
+};
+
+type FormatCurrencyStrOptions = {
+  /* undefined indicates to use default precision for unit defined below */
+  precision?: number | "full" | undefined;
+  compact?: boolean | undefined;
+  showBtcSymbol?: boolean | undefined;
+};
+
 export function formatCurrencyStr(
   amount: CurrencyAmountArg,
-  maxFractionDigits?: number,
-  compact?: boolean,
-  showBtcSymbol = false,
-  options: Intl.NumberFormatOptions = {},
+  options?: FormatCurrencyStrOptions,
 ) {
+  const { precision, compact, showBtcSymbol } = {
+    ...defaultOptions,
+    ...options,
+  };
+
   const currencyAmount = getCurrencyAmount(amount);
   let { value: num } = currencyAmount;
   const { unit } = currencyAmount;
 
-  /**
-   * Currencies should always be represented in the smallest unit, e.g.
-   * cents for USD:
-   */
+  /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
   if (unit === CurrencyUnit.USD) {
     num = num / 100;
   }
 
-  function getDefaultMaxFractionDigits(defaultDigits: number) {
-    return typeof maxFractionDigits === "undefined"
-      ? compact
-        ? 1
-        : defaultDigits
-      : maxFractionDigits;
+  function getDefaultMaxFractionDigits(
+    defaultDigits: number,
+    fullPrecisionDigits: number,
+  ) {
+    let digits = defaultDigits;
+    if (precision === "full") {
+      digits = fullPrecisionDigits;
+    } else if (typeof precision === "number") {
+      digits = precision;
+    } else if (compact) {
+      digits = 1;
+    }
+    return digits;
   }
 
-  // Symbol handled by toLocaleString for USD.
-  // These rely on the LightsparkIcons font
+  /* Symbol handled by toLocaleString for USD. These rely on the LightsparkIcons font: */
   const symbol = !showBtcSymbol
     ? ""
     : unit === CurrencyUnit.BITCOIN
@@ -423,35 +442,41 @@ export function formatCurrencyStr(
 
   switch (unit) {
     case CurrencyUnit.BITCOIN:
+      /* In most cases product prefers 4 precision digtis for BTC. In a few places
+         full precision (8 digits) are preferred, e.g. for a transaction details page: */
       return `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(4),
-        ...options,
+        maximumFractionDigits: getDefaultMaxFractionDigits(4, 8),
+      })}`;
+    case CurrencyUnit.SATOSHI:
+      /* In most cases product prefers hiding sub sat precision (msats). In a few
+         places full precision (3 digits) are preferred, e.g. for Lightning fees
+         paid on a transaction details page: */
+      return `${symbol}${num.toLocaleString(currentLocale, {
+        notation: compact ? ("compact" as const) : undefined,
+        maximumFractionDigits: getDefaultMaxFractionDigits(0, 3),
       })}`;
     case CurrencyUnit.MILLISATOSHI:
-    case CurrencyUnit.SATOSHI:
     case CurrencyUnit.MICROBITCOIN:
     case CurrencyUnit.MILLIBITCOIN:
     case CurrencyUnit.NANOBITCOIN:
     default:
       return `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(0),
-        ...options,
+        maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
     case CurrencyUnit.USD:
       return num.toLocaleString(currentLocale, {
         style: "currency",
         currency: defaultCurrencyCode,
         notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(2),
-        ...options,
+        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
       });
   }
 }
 
 export function separateCurrencyStrParts(currencyStr: string) {
-  // split the currency string into the symbol and the amount
+  /* split the currency string into the symbol and the amount */
   const symbol = currencyStr.replace(/[0-9\s\u00a0.,]/g, "");
   const amount = currencyStr.replace(/[^\d.,-]/g, "");
   return { symbol, amount };
@@ -467,8 +492,7 @@ export function localeToCurrencySymbol(locale: string) {
     maximumFractionDigits: 0,
   }).format(0);
 
-  // Remove numeric and non-breaking space characters to extract the currency
-  // symbol
+  /* Remove numeric and non-breaking space characters to extract the currency symbol */
   const { symbol } = separateCurrencyStrParts(formatted);
   return symbol;
 }

@@ -16,5 +16,3 @@ export function CentralArrowShareRight() {
     </svg>
   );
 }
-
-export default CentralArrowShareRight;

@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function Checkmark() {
+export function Checkmark() {
   return (
     <svg
       width="100%"
@@ -17,5 +17,3 @@ function Checkmark() {
     </svg>
   );
 }
-
-export default Checkmark;

@@ -16,5 +16,3 @@ export function ArrowDown() {
     </svg>
   );
 }
-
-export default ArrowDown;

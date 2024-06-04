@@ -1,14 +1,13 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { nanoid } from "nanoid";
-import { useRef } from "react";
 
-const LoadingSpinner = () => {
+import { useId } from "react";
+
+export function LoadingSpinner() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
    */
-  const idRef = useRef(nanoid());
-  const id = idRef.current;
+  const id = useId();
 
   return (
     <svg
@@ -138,6 +137,4 @@ const LoadingSpinner = () => {
       </defs>
     </svg>
   );
-};
-
-export default LoadingSpinner;
+}

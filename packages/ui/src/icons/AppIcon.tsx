@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function AppIcon() {
+export function AppIcon() {
   return (
     <svg
       width="100%"
@@ -47,5 +47,3 @@ function AppIcon() {
     </svg>
   );
 }
-
-export default AppIcon;

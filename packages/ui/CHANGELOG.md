@@ -50,8 +50,8 @@
 
 ### Patch Changes
 
-- df7bd3f: - Updates to LightTooltip
-- 20fb70b: - Add Badge, FileInput, LightTooltip, Pill
+- df7bd3f: - Updates to Tooltip
+- 20fb70b: - Add Badge, FileInput, Tooltip, Pill
   - Single character Button should be round
   - Allow "divider" in ButtonRow
 - Updated dependencies [20fb70b]

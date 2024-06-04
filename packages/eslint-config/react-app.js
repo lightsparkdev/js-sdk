@@ -66,8 +66,6 @@ module.exports = {
               "ButtonProps",
               "ButtonRow",
               "ButtonRowContainer",
-              "CardForm",
-              "CardFormTextWithLink",
               "Dropdown",
               "Table",
               "TableCell",

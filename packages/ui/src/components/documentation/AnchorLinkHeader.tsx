@@ -1,25 +1,20 @@
 "use client";
-import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import {
-  Headline,
-  type Props,
-} from "../../styles/fonts/typography/Headline.js";
+import { type ComponentProps } from "react";
+import { type FontColorKey } from "../../styles/themes.js";
 import { select } from "../../utils/emotion.js";
-import { Icon } from "../Icon.js";
+import { Icon } from "../Icon/Icon.js";
+import { DocsHeadline } from "./DocsHeadline.js";
 
-export const AnchorLinkHeader = (props: Props) => {
-  const theme = useTheme();
+export const AnchorLinkHeader = (
+  props: ComponentProps<typeof DocsHeadline>,
+) => {
   return (
-    <StyledAnchorLinkHeader {...props}>
-      <Headline {...props}>
+    <StyledAnchorLinkHeader colorProp={props.color}>
+      <DocsHeadline {...props}>
         {props.children}
-        <IconWrapper
-          name="AnchorLink"
-          color={props.color || theme.text}
-          width={0}
-        />
-      </Headline>
+        <IconWrapper name="AnchorLink" color={props.color} width={0} />
+      </DocsHeadline>
     </StyledAnchorLinkHeader>
   );
 };
@@ -38,7 +33,13 @@ const IconWrapper = styled(Icon)`
   }
 `;
 
-const StyledAnchorLinkHeader = styled.div`
+type StyledAnchorLinkHeaderProps = {
+  children: React.ReactNode;
+  /* color is an inherent html prop so we need to use colorProp instead */
+  colorProp?: FontColorKey | undefined;
+};
+
+const StyledAnchorLinkHeader = styled.div<StyledAnchorLinkHeaderProps>`
   display: flex;
   flex-direction: row;
   align-items: center;

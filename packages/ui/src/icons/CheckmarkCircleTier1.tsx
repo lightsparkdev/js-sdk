@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function CheckmarkCircleTier1() {
+export function CheckmarkCircleTier1() {
   return (
     <svg
       width="100%"
@@ -17,5 +17,3 @@ function CheckmarkCircleTier1() {
     </svg>
   );
 }
-
-export default CheckmarkCircleTier1;

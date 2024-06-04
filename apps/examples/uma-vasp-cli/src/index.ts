@@ -2,7 +2,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 import { confirm, input, password, select } from "@inquirer/prompts";
-import { type CurrencyAmount } from "@lightsparkdev/lightspark-sdk";
 import { type Currency } from "@uma-sdk/core";
 import chalk from "chalk";
 import type { OptionValues } from "commander";
@@ -14,11 +13,18 @@ const sendPayment = async (options: OptionValues) => {
     chalk.yellowBright.bold("\n⚡️ Welcome to the UMA VASP CLI! ⚡️\n"),
   );
 
-  let { endpoint, receiverUma, sendingUser, sendingPassword } = options as {
+  let {
+    endpoint,
+    receiverUma,
+    sendingUser,
+    sendingPassword,
+    lockSendingAmount,
+  } = options as {
     endpoint: string;
     receiverUma: string;
     sendingUser: string | undefined;
     sendingPassword: string | undefined;
+    lockSendingAmount: boolean | undefined;
   };
   if (!endpoint) {
     endpoint = process.env.UMA_VASP_ENDPOINT || "";
@@ -61,7 +67,7 @@ const sendPayment = async (options: OptionValues) => {
       "\n",
     );
     currencyChoice = await select({
-      message: "What currency do you want to send?",
+      message: "What currency do you want the receiver to receive?",
       choices: lnurlpResponse.receiverCurrencies.map((c) => {
         return { value: c, name: `${c.name} (${c.code})` };
       }),
@@ -70,8 +76,18 @@ const sendPayment = async (options: OptionValues) => {
     console.log(`\n${receiverUma} can only receive ${currencyChoice.code}.\n`);
   }
 
+  if (lockSendingAmount === undefined) {
+    lockSendingAmount = !(await confirm({
+      message:
+        "Do you want to lock the amount the receiver receives (y) or the amount you're sending?",
+      default: true,
+    }));
+  }
+
+  const amountCurrencyCode = lockSendingAmount ? "sats" : currencyChoice.code;
+
   const amountStr = await input({
-    message: `How much ${currencyChoice.code} do you want to send?`,
+    message: `How much ${amountCurrencyCode} do you want to send?`,
     validate: (value) => {
       try {
         return !Number.isNaN(parseFloat(value));
@@ -80,48 +96,72 @@ const sendPayment = async (options: OptionValues) => {
       }
     },
   });
-  const amount = Math.round(
-    parseFloat(amountStr) * Math.pow(10, currencyChoice.decimals),
-  );
-  if (amount < currencyChoice.minSendable) {
-    throw new Error(
-      `Amount must be greater than ${currencyChoice.minSendable} ${currencyChoice.code}`,
-    );
-  }
-  if (amount > currencyChoice.maxSendable) {
-    throw new Error(
-      `Amount must be less than ${currencyChoice.maxSendable} ${currencyChoice.code}`,
-    );
-  }
+  const amount = lockSendingAmount
+    ? Math.round(parseFloat(amountStr) * 1000)
+    : Math.round(parseFloat(amountStr) * Math.pow(10, currencyChoice.decimals));
 
-  console.log(
-    `\nSending ${amount / Math.pow(10, currencyChoice.decimals)} ${
-      currencyChoice.code
-    } to ${receiverUma}...`,
-  );
-  console.log(
-    `The estimated SAT amount is ${
-      (amount * currencyChoice.multiplier) / 1000
-    }`,
-  );
+  if (lockSendingAmount) {
+    if (amount < lnurlpResponse.minSendableSats) {
+      throw new Error(
+        `Amount must be greater than ${lnurlpResponse.minSendableSats} sats`,
+      );
+    }
+
+    if (amount > lnurlpResponse.maxSendableSats) {
+      throw new Error(
+        `Amount must be less than ${lnurlpResponse.maxSendableSats} sats`,
+      );
+    }
+
+    console.log(`\nSending ${amount} sats to ${receiverUma}...`);
+
+    console.log(
+      `The estimated ${currencyChoice.code} amount is ${
+        (amount * 1000) / currencyChoice.multiplier
+      }`,
+    );
+  } else {
+    if (amount < currencyChoice.minSendable) {
+      throw new Error(
+        `Amount must be greater than ${currencyChoice.minSendable} ${currencyChoice.code}`,
+      );
+    }
+    if (amount > currencyChoice.maxSendable) {
+      throw new Error(
+        `Amount must be less than ${currencyChoice.maxSendable} ${currencyChoice.code}`,
+      );
+    }
+
+    console.log(
+      `\nSending ${amount / Math.pow(10, currencyChoice.decimals)} ${
+        currencyChoice.code
+      } to ${receiverUma}...`,
+    );
+    console.log(
+      `The estimated SAT amount is ${
+        (amount * currencyChoice.multiplier) / 1000
+      }`,
+    );
+  }
 
   const payreqResponse = await fetchPayreq(
     endpoint,
     lnurlpResponse.callbackUuid,
     amount,
     currencyChoice.code,
+    lockSendingAmount,
     sendingUser,
     sendingPassword,
   );
 
   console.log(`\nPayreq details:`);
-  console.log(`- Amount: ${JSON.stringify(payreqResponse.amount, null, 2)}`);
+  console.log(
+    `- Amount: ${payreqResponse.amountReceivingCurrency} ${currencyChoice.code} (${payreqResponse.amountMsats} mSAT)`,
+  );
   console.log(
     `- Exchange rate: ${payreqResponse.conversionRate} mSAT per ${currencyChoice.code}`,
   );
-  console.log(
-    `- Exchange fees: ${payreqResponse.exchangeFeesMillisatoshi} mSAT\n`,
-  );
+  console.log(`- Exchange fees: ${payreqResponse.exchangeFeesMsats} mSAT\n`);
   const shouldPay = await confirm({
     message: "Do you want to complete payment? (y/n)",
     default: true,
@@ -189,11 +229,12 @@ const fetchPayreq = async (
   callbackUuid: string,
   amount: number,
   currency: string,
+  isAmountInMsats: boolean,
   sendingUsername: string | undefined,
   sendingUserPassword: string | undefined,
 ) => {
   const response = await fetch(
-    `${endpoint}/api/umapayreq/${callbackUuid}?amount=${amount}&currencyCode=${currency}`,
+    `${endpoint}/api/umapayreq/${callbackUuid}?amount=${amount}&receivingCurrencyCode=${currency}&isAmountInMsats=${isAmountInMsats}`,
     getAuthOptions(sendingUsername, sendingUserPassword),
   );
   if (!response.ok) {
@@ -203,10 +244,11 @@ const fetchPayreq = async (
     senderCurrencies: Currency[];
     callbackUuid: string;
     encodedInvoice: string;
-    amount: CurrencyAmount;
+    amountMsats: number;
+    amountReceivingCurrency: number;
     conversionRate: number;
-    exchangeFeesMillisatoshi: number;
-    currencyCode: string;
+    exchangeFeesMsats: number;
+    receivingCurrencyCode: string;
   };
 
   return payreq;
@@ -279,6 +321,11 @@ const getAuthOptions = (
     .option(
       "-p, --sending-password  <value>",
       "The password of the sending user if the sending vasp requires one.",
+      undefined,
+    )
+    .option(
+      "-l, --lock-sending-amount",
+      "Lock the amount you're sending instead of the amount the receiver receives.",
       undefined,
     )
     .action((options: OptionValues) => {

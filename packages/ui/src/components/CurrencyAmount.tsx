@@ -1,5 +1,4 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { gql } from "@apollo/client";
 import styled from "@emotion/styled";
 import type {
   CurrencyAmountArg,
@@ -12,7 +11,8 @@ import {
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
-import { Icon } from "./Icon.js";
+import { gql } from "graphql-tag";
+import { Icon } from "./Icon/Icon.js";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
@@ -21,7 +21,7 @@ type CurrencyAmountProps = {
   showUnits?: boolean;
   ml?: number;
   includeEstimatedIndicator?: boolean;
-  showSubSatDigits?: boolean;
+  fullPrecision?: boolean | undefined;
 };
 
 export function CurrencyAmount({
@@ -30,9 +30,7 @@ export function CurrencyAmount({
   shortNumber = false,
   showUnits = false,
   includeEstimatedIndicator = false,
-  /* Product has voted to hide msats from end users.
-     showSubSatDigits should only be used in ops tools: */
-  showSubSatDigits = false,
+  fullPrecision = false,
   ml = 0,
 }: CurrencyAmountProps) {
   const unit = displayUnit;
@@ -47,13 +45,12 @@ export function CurrencyAmount({
   if (shortNumber) {
     formattedNumber = formatCurrencyStr(
       { value: Number(value), unit },
-      1,
-      true,
+      { precision: 1, compact: true },
     );
-  } else if (showSubSatDigits) {
+  } else if (fullPrecision) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: CurrencyUnit.SATOSHI },
-      3,
+      { value: Number(value), unit },
+      { precision: "full" },
     );
   }
 

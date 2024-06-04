@@ -4,7 +4,7 @@ import { createUmaServer } from "./src/server.js";
 import UmaConfig from "./src/UmaConfig.js";
 import { AccountTokenAuthProvider, LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import DemoUserService from "./src/demo/DemoUserService.js";
-import { InMemoryPublicKeyCache } from "@uma-sdk/core";
+import { InMemoryNonceValidator, InMemoryPublicKeyCache, getPubKeyResponse } from "@uma-sdk/core";
 import InMemorySendingVaspRequestCache from "./src/demo/InMemorySendingVaspRequestCache.js";
 import DemoInternalLedgerService from "./src/demo/DemoInternalLedgerService.js";
 import DemoComplianceService from "./src/demo/DemoComplianceService.js";
@@ -16,8 +16,10 @@ declare global {
       LIGHTSPARK_API_TOKEN_CLIENT_SECRET: string;
       LIGHTSPARK_UMA_NODE_ID: string;
       LIGHTSPARK_UMA_RECEIVER_USER: string;
+      LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN: string;
       LIGHTSPARK_UMA_ENCRYPTION_PUBKEY: string;
       LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY: string;
+      LIGHTSPARK_UMA_SIGNING_CERT_CHAIN: string;
       LIGHTSPARK_UMA_SIGNING_PUBKEY: string;
       LIGHTSPARK_UMA_SIGNING_PRIVKEY: string;
       LIGHTSPARK_EXAMPLE_BASE_URL: string;
@@ -40,6 +42,7 @@ const app = createUmaServer(
   userService,
   new DemoInternalLedgerService(config, userService, lightsparkClient),
   new DemoComplianceService(config, lightsparkClient),
+  new InMemoryNonceValidator(Date.now() - 1000 * 60 * 60 * 6),
 );
 
 describe("Test server routes", () => {
@@ -59,9 +62,9 @@ describe("Test server routes", () => {
     const response = await request.get("/.well-known/lnurlpubkey").send();
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({
-      signingPubKey: process.env.LIGHTSPARK_UMA_SIGNING_PUBKEY,
-      encryptionPubKey: process.env.LIGHTSPARK_UMA_ENCRYPTION_PUBKEY,
-    });
+    expect(response.text).toEqual(getPubKeyResponse({
+      signingCertChainPem: process.env.LIGHTSPARK_UMA_SIGNING_CERT_CHAIN,
+      encryptionCertChainPem: process.env.LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN,
+    }).toJsonString());
   });
 });

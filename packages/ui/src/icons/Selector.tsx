@@ -1,6 +1,6 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-function Selector() {
+export function Selector() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -26,5 +26,3 @@ function Selector() {
     </svg>
   );
 }
-
-export default Selector;

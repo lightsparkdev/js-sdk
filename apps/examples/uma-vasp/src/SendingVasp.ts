@@ -1,4 +1,4 @@
-import { convertCurrencyAmount, hexToBytes } from "@lightsparkdev/core";
+import { convertCurrencyAmount } from "@lightsparkdev/core";
 import {
   CurrencyUnit,
   InvoiceData,
@@ -19,12 +19,13 @@ import SendingVaspRequestCache, {
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
+import { SATS_CURRENCY } from "./currencies.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
 import {
   fullUrlForRequest,
+  hostNameWithPort,
   sendResponse,
 } from "./networking/expressAdapters.js";
-import { NonUmaLnurlpResponseSchema } from "./rawLnurl.js";
 
 export default class SendingVasp {
   constructor(
@@ -35,6 +36,7 @@ export default class SendingVasp {
     private readonly userService: UserService,
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
+    private readonly nonceCache: uma.NonceValidator,
   ) {}
 
   registerRoutes(app: Express) {
@@ -124,12 +126,20 @@ export default class SendingVasp {
       };
     }
 
-    const lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
-      isSubjectToTravelRule: true,
-      receiverAddress: receiverUmaAddress,
-      signingPrivateKey: this.config.umaSigningPrivKey(),
-      senderVaspDomain: this.getSendingVaspDomain(requestUrl),
-    });
+    let lnurlpRequestUrl: URL;
+    if (receiverUmaAddress.startsWith("$")) {
+      lnurlpRequestUrl = await uma.getSignedLnurlpRequestUrl({
+        isSubjectToTravelRule: true,
+        receiverAddress: receiverUmaAddress,
+        signingPrivateKey: this.config.umaSigningPrivKey(),
+        senderVaspDomain: this.getSendingVaspDomain(requestUrl),
+      });
+    } else {
+      const nonUmaLnurlpRequest: uma.LnurlpRequest = {
+        receiverAddress: receiverUmaAddress,
+      };
+      lnurlpRequestUrl = uma.encodeToUrl(nonUmaLnurlpRequest);
+    }
 
     console.log(`Making lnurlp request: ${lnurlpRequestUrl}`);
 
@@ -167,19 +177,19 @@ export default class SendingVasp {
     let lnurlpResponse: uma.LnurlpResponse;
     const responseJson = await response.text();
     try {
-      lnurlpResponse = uma.parseLnurlpResponse(responseJson);
+      lnurlpResponse = uma.LnurlpResponse.fromJson(responseJson);
     } catch (e) {
-      console.error("Couldn't parse as uma. Trying raw lnurl.", e);
-      const response = await this.handleAsNonUmaLnurlpResponse(
-        responseJson,
+      console.error("Error parsing lnurlp response.", e, responseJson);
+      return { httpStatus: 424, data: `Error parsing Lnurlp response. ${e}` };
+    }
+
+    if (!lnurlpResponse.isUma()) {
+      console.log("Couldn't parse as uma. Trying raw lnurl.");
+      return await this.handleAsNonUmaLnurlpResponse(
+        lnurlpResponse,
         receiverId,
         receivingVaspDomain,
       );
-      if (!response) {
-        console.error("Error parsing lnurlp response.", e);
-        return { httpStatus: 424, data: `Error parsing Lnurlp response. ${e}` };
-      }
-      return response;
     }
 
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
@@ -192,7 +202,8 @@ export default class SendingVasp {
     try {
       const isSignatureValid = await uma.verifyUmaLnurlpResponseSignature(
         lnurlpResponse,
-        hexToBytes(pubKeys.signingPubKey),
+        pubKeys,
+        this.nonceCache,
       );
       if (!isSignatureValid) {
         return { httpStatus: 424, data: "Invalid UMA response signature." };
@@ -251,50 +262,25 @@ export default class SendingVasp {
   }
 
   private async handleAsNonUmaLnurlpResponse(
-    responseJson: string,
+    lnurlpResponse: uma.LnurlpResponse,
     receiverId: string,
     receivingVaspDomain: string,
-  ): Promise<HttpResponse | null> {
-    const response = JSON.parse(responseJson);
-    if (response.status === "ERROR") {
-      console.error("Error fetching Lnurlp request.", response.reason);
-      return null;
-    }
-    if (response.tag !== "payRequest") {
-      return null;
-    }
-
-    try {
-      const lnurlResponse = NonUmaLnurlpResponseSchema.parse(responseJson);
-      const callbackUuid = this.requestCache.saveNonUmaLnurlpResponseData(
-        lnurlResponse,
-        receiverId,
-        receivingVaspDomain,
-      );
-      return {
-        httpStatus: 200,
-        data: {
-          receiverCurrencies: [
-            {
-              symbol: "sat",
-              code: "SAT",
-              name: "Satoshis",
-              maxSendable: 10_000_000_000,
-              minSendable: 1,
-              multiplier: 1000,
-              displayDecimals: 0,
-            },
-          ],
-          callbackUuid: callbackUuid,
-          maxSendSats: lnurlResponse.maxSendable,
-          minSendSats: lnurlResponse.minSendable,
-          receiverKycStatus: uma.KycStatus.NotVerified,
-        },
-      };
-    } catch (e) {
-      console.error("Failed to parse as non-UMA lnurlp response.", e);
-      return null;
-    }
+  ): Promise<HttpResponse> {
+    const callbackUuid = this.requestCache.saveLnurlpResponseData(
+      lnurlpResponse,
+      receiverId,
+      receivingVaspDomain,
+    );
+    return {
+      httpStatus: 200,
+      data: {
+        receiverCurrencies: lnurlpResponse.currencies || [SATS_CURRENCY],
+        callbackUuid: callbackUuid,
+        maxSendSats: lnurlpResponse.maxSendable,
+        minSendSats: lnurlpResponse.minSendable,
+        receiverKycStatus: uma.KycStatus.NotVerified,
+      },
+    };
   }
 
   private async handleClientUmaPayreq(
@@ -322,24 +308,53 @@ export default class SendingVasp {
     }
 
     if (!initialRequestData.lnurlpResponse) {
-      if (!initialRequestData.nonUmaLnurlpResponse) {
-        return { httpStatus: 400, data: "Invalid callbackUuid" };
-      }
-      return await this.handleNonUmaPayReq(initialRequestData, amount);
+      return { httpStatus: 400, data: "Invalid callbackUuid" };
+    }
+    const receivingCurrencyCode = requestUrl.searchParams.get(
+      "receivingCurrencyCode",
+    );
+    const isUma = initialRequestData.lnurlpResponse.isUma();
+
+    let payerProfile: PayerProfile | null = null;
+    if (initialRequestData.lnurlpResponse.payerData) {
+      payerProfile = this.getPayerProfile(
+        user,
+        initialRequestData.lnurlpResponse.payerData,
+        this.getSendingVaspDomain(requestUrl),
+        isUma,
+      );
     }
 
-    const recievingCurrencyCode = requestUrl.searchParams.get("currencyCode");
-    if (!recievingCurrencyCode || typeof recievingCurrencyCode !== "string") {
+    if (!isUma) {
+      const msatsParam = requestUrl.searchParams.get("isAmountInMsats");
+      return await this.handleNonUmaPayReq(
+        initialRequestData,
+        amount,
+        payerProfile,
+        msatsParam,
+        receivingCurrencyCode,
+      );
+    }
+
+    if (!payerProfile) {
+      return { httpStatus: 400, data: "Missing payerData" };
+    }
+
+    if (!receivingCurrencyCode || typeof receivingCurrencyCode !== "string") {
       return { httpStatus: 400, data: "Missing currencyCode" };
     }
-    const selectedCurrency = initialRequestData.lnurlpResponse.currencies.find(
-      (c) => c.code === recievingCurrencyCode,
-    );
+    const selectedCurrency = (
+      initialRequestData.lnurlpResponse.currencies || []
+    ).find((c) => c.code === receivingCurrencyCode);
     if (selectedCurrency === undefined) {
       return { httpStatus: 400, data: "Currency code not supported" };
     }
 
-    const amountValueMillisats = selectedCurrency.multiplier * amount;
+    const msatsParam = requestUrl.searchParams.get("isAmountInMsats");
+    const isAmountInMsats = msatsParam?.toLocaleLowerCase() === "true";
+    const amountValueMillisats = isAmountInMsats
+      ? amount
+      : selectedCurrency.multiplier * amount;
     const sendingCurrencyCode =
       requestUrl.searchParams.get("sendingCurrency") ?? "SAT";
     const sendingCurrency = (
@@ -365,34 +380,34 @@ export default class SendingVasp {
     let pubKeys = await this.fetchPubKeys(
       initialRequestData.receivingVaspDomain,
     );
-    if (!pubKeys)
+    if (!pubKeys) {
       return {
         httpStatus: 424,
         data: "Error fetching receiving vasp public key.",
       };
+    }
 
-    const payerProfile = this.getPayerProfile(
-      user,
-      initialRequestData.lnurlpResponse.payerData,
-      this.getSendingVaspDomain(requestUrl),
-    );
     const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
       user.id,
-      payerProfile.identifier,
+      payerProfile.identifier!,
       `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
       amountValueMillisats,
     );
     const node = await this.getLightsparkNode();
     const utxoCallback = this.getUtxoCallback(requestUrl, "1234abcd");
 
+    console.log(`Generating payreq for ${amountValueMillisats} msats.`);
+    console.log(`  isAmountInMsats: ${isAmountInMsats}`);
+    console.log(`  amount: ${amount}`);
     let payReq: uma.PayRequest;
     try {
       payReq = await uma.getPayRequest({
-        receiverEncryptionPubKey: hexToBytes(pubKeys.encryptionPubKey),
+        receiverEncryptionPubKey: pubKeys.getEncryptionPubKey(),
         sendingVaspPrivateKey: this.config.umaSigningPrivKey(),
-        currencyCode: recievingCurrencyCode,
-        amount,
-        payerIdentifier: payerProfile.identifier,
+        receivingCurrencyCode: receivingCurrencyCode,
+        isAmountInReceivingCurrency: !isAmountInMsats,
+        amount: amount,
+        payerIdentifier: payerProfile.identifier!,
         payerKycStatus: user.kycStatus,
         utxoCallback,
         trInfo,
@@ -400,13 +415,23 @@ export default class SendingVasp {
         payerNodePubKey: node.publicKey ?? "",
         payerName: payerProfile.name,
         payerEmail: payerProfile.email,
+        requestedPayeeData: {
+          // Compliance and Identifier are mandatory fields added automatically.
+          name: { mandatory: false },
+          email: { mandatory: false },
+        },
+        umaMajorVersion: initialRequestData.lnurlpResponse.umaVersion
+          ? uma.getMajorVersion(initialRequestData.lnurlpResponse.umaVersion)
+          : 1,
       });
     } catch (e) {
       console.error("Error generating payreq.", e);
       return { httpStatus: 500, data: "Error generating payreq." };
     }
 
-    console.log(`Sending payreq: ${JSON.stringify(payReq, null, 2)}`);
+    console.log(
+      `Sending payreq: ${JSON.stringify(payReq.toJsonSchemaObject(), null, 2)}`,
+    );
     let response: globalThis.Response;
     try {
       response = await fetch(initialRequestData.lnurlpResponse.callback, {
@@ -414,7 +439,7 @@ export default class SendingVasp {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payReq),
+        body: payReq.toJsonString(),
       });
     } catch (e) {
       return { httpStatus: 500, data: "Error sending payreq." };
@@ -427,19 +452,53 @@ export default class SendingVasp {
     let payResponse: uma.PayReqResponse;
     const bodyText = await response.text();
     try {
-      payResponse = await uma.parsePayReqResponse(bodyText);
+      payResponse = await uma.PayReqResponse.fromJson(bodyText);
     } catch (e) {
       console.error("Error parsing payreq response. Raw response: " + bodyText);
       console.error("Error:", e);
       return { httpStatus: 424, data: "Error parsing payreq response." };
     }
 
+    if (!payResponse.isUma()) {
+      console.log("Received non-uma response for uma payreq.");
+      return {
+        httpStatus: 424,
+        data: "Received non-uma response for uma payreq.",
+      };
+    }
+
+    try {
+      if (payReq.umaMajorVersion !== 0) {
+        const isSignatureValid = await uma.verifyPayReqResponseSignature(
+          payResponse,
+          payerProfile.identifier!,
+          `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
+          pubKeys,
+          this.nonceCache,
+        );
+        if (!isSignatureValid) {
+          return {
+            httpStatus: 424,
+            data: "Invalid payreq response signature.",
+          };
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      return {
+        httpStatus: 424,
+        data: new Error("Invalid payreq response signature.", { cause: e }),
+      };
+    }
+
+    console.log(`Verified payreq response signature.`);
+
     const shouldTransact = await this.complianceService.preScreenTransaction(
-      payerProfile.identifier,
+      payerProfile.identifier!,
       `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
       amountValueMillisats,
-      payResponse.compliance.nodePubKey,
-      payResponse.compliance.utxos,
+      payResponse.payeeData?.compliance?.nodePubKey ?? undefined,
+      payResponse.payeeData?.compliance?.utxos ?? [],
     );
     if (!shouldTransact) {
       return {
@@ -460,12 +519,17 @@ export default class SendingVasp {
       (await this.userService.getCurrencyPreferencesForUser(user.id)) ?? [];
 
     const newCallbackUuid = this.requestCache.savePayReqData(
-      payerProfile.identifier,
+      payerProfile.identifier!,
       payResponse.pr,
       utxoCallback,
       invoice,
       senderCurrencies,
     );
+
+    const amountMsats = convertCurrencyAmount(
+      invoice.amount,
+      CurrencyUnit.MILLISATOSHI,
+    ).preferredCurrencyValueRounded;
 
     return {
       httpStatus: 200,
@@ -473,11 +537,11 @@ export default class SendingVasp {
         senderCurrencies: senderCurrencies ?? [],
         callbackUuid: newCallbackUuid,
         encodedInvoice: payResponse.pr,
-        amount: invoice.amount,
-        conversionRate: payResponse.paymentInfo.multiplier,
-        exchangeFeesMillisatoshi:
-          payResponse.paymentInfo.exchangeFeesMillisatoshi,
-        currencyCode: payResponse.paymentInfo.currencyCode,
+        amountMsats: amountMsats,
+        amountReceivingCurrency: payResponse.converted!.amount,
+        conversionRate: payResponse.converted!.multiplier,
+        exchangeFeesMsats: payResponse.converted!.fee,
+        receivingCurrencyCode: payResponse.converted!.currencyCode,
       },
     };
   }
@@ -485,15 +549,27 @@ export default class SendingVasp {
   private async handleNonUmaPayReq(
     initialRequestData: SendingVaspInitialRequestData,
     amount: number,
+    payerProfile: PayerProfile | null,
+    sendingCurrencyCode: string | null,
+    receivingCurrencyCode: string | null,
   ): Promise<HttpResponse> {
-    const nonUmaLnurlpResponse = initialRequestData.nonUmaLnurlpResponse;
-    if (!nonUmaLnurlpResponse) {
-      throw new Error("Called handleNonUmaPayReq with UMA response.");
-    }
     let response: globalThis.Response;
     try {
-      const url = new URL(nonUmaLnurlpResponse.callback);
-      url.searchParams.append("amount", amount.toString());
+      const url = new URL(initialRequestData.lnurlpResponse.callback);
+      if (sendingCurrencyCode) {
+        url.searchParams.append("amount", `${amount}.${sendingCurrencyCode}`);
+      } else {
+        url.searchParams.append("amount", amount.toString());
+      }
+      if (receivingCurrencyCode) {
+        url.searchParams.append("convert", receivingCurrencyCode);
+      }
+      if (
+        payerProfile &&
+        (payerProfile.identifier || payerProfile.email || payerProfile.name)
+      ) {
+        url.searchParams.append("payerData", JSON.stringify(payerProfile));
+      }
       response = await fetch(url.toString(), {
         method: "GET",
         headers: {
@@ -518,8 +594,15 @@ export default class SendingVasp {
         data: `Error on pay request. reason: ${responseJson.reason}`,
       };
     }
+    let payreqResponse: uma.PayReqResponse;
+    try {
+      payreqResponse = uma.PayReqResponse.fromJson(responseText);
+    } catch (e) {
+      console.error("Error parsing payreq response.", e);
+      return { httpStatus: 424, data: "Error parsing payreq response." };
+    }
 
-    const encodedInvoice = responseJson.pr;
+    const encodedInvoice = payreqResponse.pr;
 
     let invoice: InvoiceData;
     try {
@@ -530,7 +613,7 @@ export default class SendingVasp {
     }
 
     const newCallbackUuid = this.requestCache.savePayReqData(
-      "", // TODO(Jeremy): Parse LUD-18 payerdata for this.
+      payreqResponse.payeeData?.identifier ?? "",
       encodedInvoice,
       "", // No utxo callback for non-UMA lnurl.
       invoice,
@@ -542,10 +625,10 @@ export default class SendingVasp {
       data: {
         callbackUuid: newCallbackUuid,
         encodedInvoice: encodedInvoice,
-        amount: invoice.amount,
-        conversionRate: 1,
-        exchangeFeesMillisatoshi: 0,
-        currencyCode: "mSAT",
+        amount: payreqResponse.converted?.amount ?? invoice.amount,
+        conversionRate: payreqResponse.converted?.multiplier ?? 1000,
+        exchangeFeesMillisatoshi: payreqResponse.converted?.fee ?? 0,
+        currencyCode: receivingCurrencyCode ?? "SAT",
       },
     };
   }
@@ -659,7 +742,7 @@ export default class SendingVasp {
         amountMsats,
         sendingCurrencyAmount,
         sendingCurrency.code,
-        paymentId,
+        paymentId!,
       );
       payment = await this.waitForPaymentCompletion(paymentResult);
       await this.ledgerService.recordOutgoingTransactionSucceeded(
@@ -668,7 +751,7 @@ export default class SendingVasp {
         amountMsats,
         sendingCurrencyAmount,
         sendingCurrency.code,
-        paymentId,
+        paymentId!,
       );
     } catch (e) {
       console.error("Error paying invoice.", e);
@@ -685,7 +768,7 @@ export default class SendingVasp {
       return { httpStatus: 500, data: "Error paying invoice." };
     }
 
-    await this.sendPostTransactionCallback(payment, payReqData);
+    await this.sendPostTransactionCallback(payment, payReqData, requestUrl);
 
     const nodePubKey = (await this.getLightsparkNode()).publicKey;
     await this.complianceService.registerTransactionMonitoring(
@@ -723,15 +806,19 @@ export default class SendingVasp {
    */
   private getPayerProfile(
     user: User,
-    requiredPayerData: uma.PayerDataOptions,
+    requiredPayerData: uma.CounterPartyDataOptions,
     vaspDomain: string,
-  ) {
+    isUma: boolean,
+  ): PayerProfile {
     return {
       name: requiredPayerData.name?.mandatory ? user.name ?? "" : undefined,
       email: requiredPayerData.email?.mandatory
         ? user.emailAddress ?? ""
         : undefined,
-      identifier: `$${user.umaUserName}@${vaspDomain}`,
+      identifier:
+        isUma || !!requiredPayerData.identifier
+          ? `$${user.umaUserName}@${vaspDomain}`
+          : undefined,
     };
   }
 
@@ -771,6 +858,7 @@ export default class SendingVasp {
   private async sendPostTransactionCallback(
     payment: OutgoingPayment,
     payReqData: SendingVaspPayReqData,
+    requestUrl: URL,
   ) {
     if (!payReqData.utxoCallback || payReqData.utxoCallback === "") {
       return;
@@ -779,17 +867,24 @@ export default class SendingVasp {
       payment.umaPostTransactionData?.map((d) => {
         return {
           utxo: d.utxo,
-          amount: convertCurrencyAmount(d.amount, CurrencyUnit.MILLISATOSHI)
-            .preferredCurrencyValueRounded,
+          amountMsats: convertCurrencyAmount(
+            d.amount,
+            CurrencyUnit.MILLISATOSHI,
+          ).preferredCurrencyValueRounded,
         };
       }) ?? [];
+    const postTransactionCallback = await uma.getPostTransactionCallback({
+      utxos: utxos,
+      vaspDomain: this.getSendingVaspDomain(requestUrl),
+      signingPrivateKey: this.config.umaSigningPrivKey(),
+    });
     try {
       const postTxResponse = await fetch(payReqData.utxoCallback, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ utxos }),
+        body: JSON.stringify(postTransactionCallback),
       });
       if (!postTxResponse.ok) {
         console.error(
@@ -850,9 +945,8 @@ export default class SendingVasp {
   }
 }
 
-const hostNameWithPort = (requestUrl: URL) => {
-  const port = requestUrl.port;
-  const portString =
-    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
-  return `${requestUrl.hostname}${portString}`;
+type PayerProfile = {
+  name?: string;
+  email?: string;
+  identifier?: string;
 };

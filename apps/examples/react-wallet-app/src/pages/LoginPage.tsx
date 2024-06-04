@@ -30,14 +30,19 @@ const LoginPage = () => {
 
   const generateDemoTokens = async () => {
     const { token: jwt, accountId: jwtServerAccountId } = await fetch(
-      `${jwtServerUrl.replace(/\/$/, "")}/getJwt?userId=${userName}&password=${password}`,
+      `${jwtServerUrl.replace(
+        /\/$/,
+        ""
+      )}/getJwt?userId=${userName}&password=${password}`,
       {
         method: "GET",
         headers: {
           "ngrok-skip-browser-warning": "true",
-        }
+        },
       }
-    ).then((res) => res.json() as Promise<{ token: string, accountId: string }>);
+    ).then(
+      (res) => res.json() as Promise<{ token: string; accountId: string }>
+    );
     await auth.login(jwtServerAccountId, jwt);
     navigate(Routes.Dashboard);
   };
@@ -62,7 +67,7 @@ const LoginPage = () => {
           onChange={(e) => setJwt(e.target.value)}
         />
       </Label>
-      <Button primary onClick={handleLogin} text="Login" />
+      <Button kind="primary" onClick={handleLogin} text="Login" />
 
       <Description>
         Alternatively, use our demo jwt server with a user name and password.
@@ -94,7 +99,7 @@ const LoginPage = () => {
         />
       </Label>
       <Button
-        primary
+        kind="primary"
         onClick={() => {
           void generateDemoTokens();
         }}

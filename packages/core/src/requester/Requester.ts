@@ -137,7 +137,7 @@ class Requester {
       }
     }
     const operation = operationMatch[2];
-    let bodyData: BodyData = {
+    const payload: BodyData = {
       query: queryPayload,
       variables,
       operationName: operation,
@@ -149,15 +149,21 @@ class Requester {
       "Content-Type": "application/json",
       "X-Lightspark-SDK": sdkUserAgent,
       "User-Agent": browserUserAgent || sdkUserAgent,
+      "X-GraphQL-Operation": operation,
     };
-    const headers = skipAuth
+    const headers: { [key: string]: string } = skipAuth
       ? baseHeaders
       : await this.authProvider.addAuthHeaders(baseHeaders);
-    bodyData = await this.addSigningDataIfNeeded(
-      bodyData,
+    let bodyData = await this.addSigningDataIfNeeded(
+      payload,
       headers,
       signingNodeId,
     );
+
+    if (bodyData.length > 1024 && typeof CompressionStream != "undefined") {
+      bodyData = await compress(bodyData);
+      headers["Content-Encoding"] = "deflate";
+    }
 
     let urlWithProtocol = this.baseUrl;
     if (
@@ -177,7 +183,7 @@ class Requester {
     const response = await fetch(url, {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(bodyData),
+      body: bodyData,
     });
     if (!response.ok) {
       throw new LightsparkException(
@@ -214,9 +220,16 @@ class Requester {
     headers: { [key: string]: string },
     signingNodeId: string | undefined,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
-  ): Promise<BodyData> {
+  ): Promise<Uint8Array> {
+    let TextEncoderImpl;
+    if (typeof TextEncoder === "undefined") {
+      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
+    } else {
+      TextEncoderImpl = TextEncoder;
+    }
+
     if (!signingNodeId) {
-      return queryPayload;
+      return new TextEncoderImpl().encode(JSON.stringify(queryPayload));
     }
 
     const query = queryPayload.query;
@@ -241,12 +254,6 @@ class Requester {
       );
     }
 
-    let TextEncoderImpl;
-    if (typeof TextEncoder === "undefined") {
-      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
-    } else {
-      TextEncoderImpl = TextEncoder;
-    }
     const encodedPayload = new TextEncoderImpl().encode(
       JSON.stringify(payload),
     );
@@ -258,8 +265,22 @@ class Requester {
       v: "1",
       signature: encodedSignedPayload,
     });
-    return payload;
+    return encodedPayload;
   }
+}
+
+async function compress(data: Uint8Array): Promise<Uint8Array> {
+  const stream = new Blob([data]).stream();
+  const compressedStream = stream.pipeThrough(new CompressionStream("deflate"));
+  const reader = compressedStream.getReader();
+  const chunks = [];
+  let done, value;
+  while (!done) {
+    ({ done, value } = await reader.read()); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    chunks.push(value);
+  }
+  const blob = new Blob(chunks);
+  return new Uint8Array(await blob.arrayBuffer());
 }
 
 export default Requester;

@@ -2,7 +2,7 @@
 
 import { useTheme } from "@emotion/react";
 
-function GoTwoTone() {
+export function GoTwoTone() {
   const theme = useTheme();
   return (
     <svg
@@ -43,5 +43,3 @@ function GoTwoTone() {
     </svg>
   );
 }
-
-export default GoTwoTone;

@@ -1,6 +1,5 @@
 import { InvoiceData } from "@lightsparkdev/lightspark-sdk";
 import { Currency, LnurlpResponse } from "@uma-sdk/core";
-import { NonUmaLnurlpResponse } from "./rawLnurl.js";
 
 /**
  * A simple in-memory cache for data that needs to be remembered between calls to VASP1. In practice, this would be
@@ -19,12 +18,6 @@ export default interface SendingVaspRequestCache {
     receivingVaspDomain: string,
   ): string;
 
-  saveNonUmaLnurlpResponseData(
-    nonUmaLnurlpResponse: NonUmaLnurlpResponse,
-    receiverId: string,
-    receivingVaspDomain: string,
-  ): string;
-
   savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
@@ -38,8 +31,7 @@ export default interface SendingVaspRequestCache {
  * This is the data that we cache for the initial Lnurlp request.
  */
 export interface SendingVaspInitialRequestData {
-  lnurlpResponse?: LnurlpResponse | undefined;
-  nonUmaLnurlpResponse?: NonUmaLnurlpResponse | undefined;
+  lnurlpResponse: LnurlpResponse;
   receiverId: string;
   receivingVaspDomain: string;
 }

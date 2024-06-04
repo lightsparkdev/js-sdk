@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-const Sidebar = () => {
+export function Sidebar() {
   return (
     <svg
       width="100%"
@@ -17,6 +17,4 @@ const Sidebar = () => {
       />
     </svg>
   );
-};
-
-export default Sidebar;
+}

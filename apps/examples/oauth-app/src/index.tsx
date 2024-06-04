@@ -7,7 +7,7 @@ import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 import { Root } from "./Root";
 import { ThemeProvider } from "@emotion/react";
-import { themes } from "@lightsparkdev/ui/styles/colors";
+import { themes } from "@lightsparkdev/ui/styles/themes";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement

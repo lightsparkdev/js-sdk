@@ -17,6 +17,13 @@ export const isDomainLocalhost = (domain: string) => {
   );
 };
 
+export const hostNameWithPort = (requestUrl: URL) => {
+  const port = requestUrl.port;
+  const portString =
+    port === "80" || port === "443" || port === "" ? "" : `:${port}`;
+  return `${requestUrl.hostname}${portString}`;
+};
+
 export const sendResponse = (
   expressResponse: Response,
   httpResponse: HttpResponse,

@@ -1,8 +1,9 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
-import { colors, themeOr, type ThemeProp, type WithTheme } from "./colors.js";
 import { standardBorderRadius, subtext } from "./common.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
+import { applyTypography, type SimpleTypographyProps } from "./typography.js";
 import { z } from "./z-index.js";
 
 export const maxFieldWidth = "100%";
@@ -35,7 +36,7 @@ export const inputBlockStyle = ({
   cursor: pointer;
   padding: 52.5px;
   ${hasError
-    ? `border-style: solid; border-color: ${colors.danger}; border-width: 2px;`
+    ? `border-style: solid; border-color: ${theme.danger}; border-width: 2px;`
     : hasValue
     ? `border-style: solid; border-color: ${theme.info};`
     : `border-style: dashed;`}
@@ -43,7 +44,6 @@ export const inputBlockStyle = ({
 
 export const textInputPlaceholderColor = ({ theme }: ThemeProp) =>
   theme.c4Neutral;
-export const textInputColor = ({ theme }: ThemeProp) => theme.text;
 export const textInputFontWeight = 600;
 export const textInputBorderRadiusPx = 8;
 export const textInputPaddingPx = 12;
@@ -64,11 +64,16 @@ const textInputActiveStyles = ({
 }>) => css`
   border-color: ${textInputBorderColorFocused({ theme })};
   border-width: 2px;
-  color: ${textInputColor({ theme })};
   padding: ${textInputPaddingPx - 1}px;
   ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
   ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
 `;
+
+export const defaultTextInputTypography = {
+  type: "Body",
+  size: "Small",
+  color: "text",
+} as const;
 
 export const textInputStyle = ({
   theme,
@@ -77,6 +82,7 @@ export const textInputStyle = ({
   hasError,
   paddingLeftPx,
   paddingRightPx,
+  typography,
 }: WithTheme<{
   // In some cases we want to show an active state when another element is focused.
   active?: boolean | undefined;
@@ -84,6 +90,7 @@ export const textInputStyle = ({
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
+  typography?: SimpleTypographyProps | undefined;
 }>) => css`
   border-radius: ${textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.bg};
@@ -106,11 +113,14 @@ export const textInputStyle = ({
   border-color: ${hasError ? theme.danger : textInputBorderColor({ theme })};
   line-height: 22px;
   outline: none;
-  /* Use low contrast by default. Some fields, eg login, need high contrast simply
-     because of quirks with default autofill styles. Clicking in to an autofilled value
-     does not change the color of the text, it just uses the default field color */
-  color: ${textInputColor({ theme })};
-  font-size: 14px;
+
+  ${applyTypography(
+    theme,
+    typography?.type || defaultTextInputTypography.type,
+    typography?.size || defaultTextInputTypography.size,
+    typography?.color || defaultTextInputTypography.color,
+  )}
+
   width: ${fieldWidth};
   max-width: ${maxFieldWidth};
   text-overflow: ellipsis;

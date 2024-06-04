@@ -1,16 +1,14 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
 import { useTheme } from "@emotion/react";
-import { nanoid } from "nanoid";
-import { useRef } from "react";
+import { useId } from "react";
 
-function JavaScriptTwoTone() {
+export function JavaScriptTwoTone() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
    */
-  const idRef = useRef(nanoid());
-  const id = idRef.current;
+  const id = useId();
   const theme = useTheme();
 
   return (
@@ -54,5 +52,3 @@ function JavaScriptTwoTone() {
     </svg>
   );
 }
-
-export default JavaScriptTwoTone;

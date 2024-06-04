@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function WalletSDKIcon() {
+export function WalletSDKIcon() {
   return (
     <svg
       width="36"
@@ -24,5 +24,3 @@ function WalletSDKIcon() {
     </svg>
   );
 }
-
-export default WalletSDKIcon;

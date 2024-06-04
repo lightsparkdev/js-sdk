@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function GraphQLTwoTone() {
+export function GraphQLTwoTone() {
   return (
     <svg
       width="100%"
@@ -71,5 +71,3 @@ function GraphQLTwoTone() {
     </svg>
   );
 }
-
-export default GraphQLTwoTone;

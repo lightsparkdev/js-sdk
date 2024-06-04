@@ -1,6 +1,6 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-function Terminal() {
+export function Terminal() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -19,5 +19,3 @@ function Terminal() {
     </svg>
   );
 }
-
-export default Terminal;

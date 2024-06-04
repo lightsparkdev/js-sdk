@@ -67,6 +67,11 @@ module.exports.buildConfig = ({
           changeOrigin: true,
           ws: true,
         },
+        "/graphql/bridge": {
+          target: proxyTarget,
+          changeOrigin: true,
+          ws: true,
+        },
         "/clientlogs": {
           target: proxyTarget,
           changeOrigin: true,

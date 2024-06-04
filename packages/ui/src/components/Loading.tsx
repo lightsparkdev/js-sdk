@@ -1,5 +1,6 @@
+import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Icon } from "./Icon.js";
+import { Icon } from "./Icon/Icon.js";
 
 type Props = {
   center?: boolean;
@@ -18,10 +19,11 @@ export function Loading({
   size = defaultProps.size,
   ml = defaultProps.ml,
 }: Props) {
+  const theme = useTheme();
   return (
     <LoadingWrapper center={center} ml={ml}>
       <Rotate>
-        <Icon name="LoadingSpinner" width={size} />
+        <Icon name={theme.loading} width={size} />
       </Rotate>
     </LoadingWrapper>
   );

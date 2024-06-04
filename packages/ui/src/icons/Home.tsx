@@ -15,5 +15,3 @@ export function Home() {
     </svg>
   );
 }
-
-export default Home;

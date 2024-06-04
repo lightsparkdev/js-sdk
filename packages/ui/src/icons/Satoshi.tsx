@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function Satoshi() {
+export function Satoshi() {
   return (
     <svg
       width="100%"
@@ -24,5 +24,3 @@ function Satoshi() {
     </svg>
   );
 }
-
-export default Satoshi;

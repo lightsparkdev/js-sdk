@@ -46,7 +46,7 @@ function DashboardPage() {
       <div>
         <Header>
           <Button
-            primary
+            kind="primary"
             text="Sign out"
             onClick={() => {
               auth.signout().catch((err) => {

@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function ArrowCircleTier1() {
+export function ArrowCircleTier1() {
   return (
     <svg
       width="100%"
@@ -16,5 +16,3 @@ function ArrowCircleTier1() {
     </svg>
   );
 }
-
-export default ArrowCircleTier1;

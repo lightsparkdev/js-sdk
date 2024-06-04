@@ -10,6 +10,7 @@
     "./components": "./dist/components/index.js",
     "./components/*": "./dist/components/*.js",
     "./components/": "./dist/components/",
+    "./components/typography": "./dist/components/typography/index.js",
     "./hooks/*": "./dist/hooks/*.js",
     "./hooks": "./dist/hooks/index.js",
     "./icons": "./dist/icons/index.js",
@@ -21,7 +22,22 @@
     "./utils/*": "./dist/utils/*.js",
     "./utils": "./dist/utils/index.js",
     "./static/": "./dist/static/",
-    "./router": "./dist/router.js"
+    "./router": "./dist/router.js",
+    "./src/components": "./src/components/index.js",
+    "./src/components/*": "./src/components/*.js",
+    "./src/components/typography": "./src/components/typography/index.js",
+    "./src/hooks/*": "./src/hooks/*.js",
+    "./src/hooks": "./src/hooks/index.js",
+    "./src/icons": "./src/icons/index.js",
+    "./src/icons/*": "./src/icons/*.js",
+    "./src/styles/*": "./src/styles/*.js",
+    "./src/styles/fonts.css": "./src/styles/fonts.css",
+    "./src/types/*": "./src/types/*.js",
+    "./src/types": "./src/types/index.js",
+    "./src/utils/*": "./src/utils/*.js",
+    "./src/utils": "./src/utils/index.js",
+    "./src/static/": "./src/static/",
+    "./src/router": "./src/router.js"
   },
   "scripts": {
     "build-tsup": "tsup --dts",
@@ -34,28 +50,35 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw . -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
-    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test": "echo \"ui package tests are located in apps/examples/ui-test-app\"",
     "types": "yarn tsc",
     "types:watch": "tsc-absolute --watch"
   },
   "dependencies": {
-    "@apollo/client": "^3.7.11",
     "@emotion/css": "^11.11.0",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.0.22",
+    "@rollup/plugin-url": "^8.0.2",
     "@simbathesailor/use-what-changed": "^2.0.0",
+    "@svgr/core": "^8.1.0",
+    "deepmerge": "^4.3.1",
     "gql": "^1.1.2",
+    "graphql-tag": "^2.12.6",
+    "libphonenumber-js": "^1.11.1",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
+    "next": "^13.4.19",
     "prismjs": "^1.29.0",
     "react": "^18.2.0",
+    "react-device-detect": "^2.2.3",
     "react-dom": "^18.1.0",
     "react-router-dom": "6.11.2",
     "react-select": "^5.4.0",
     "react-tooltip": "^5.10.1"
   },
   "devDependencies": {
+    "@emotion/babel-plugin": "^11.11.0",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
     "@svgr/plugin-jsx": "^8.1.0",
@@ -80,6 +103,16 @@
     "tsc-absolute": "^1.0.1",
     "tsup": "^7.2.0",
     "typescript": "^5.0.0"
+  },
+  "madge": {
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      },
+      "tsx": {
+        "skipTypeImports": true
+      }
+    }
   },
   "files": [
     "dist/*",

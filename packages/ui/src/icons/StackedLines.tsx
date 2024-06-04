@@ -15,5 +15,3 @@ export function StackedLines() {
     </svg>
   );
 }
-
-export default StackedLines;

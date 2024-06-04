@@ -1,7 +1,7 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import { useTheme } from "@emotion/react";
 
-function DeleteIcon() {
+export function DeleteIcon() {
   const theme = useTheme();
   return (
     <svg
@@ -28,5 +28,3 @@ function DeleteIcon() {
     </svg>
   );
 }
-
-export default DeleteIcon;

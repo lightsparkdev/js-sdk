@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-const Person = () => {
+export function Person() {
   return (
     <svg
       width="100%"
@@ -22,6 +22,4 @@ const Person = () => {
       />
     </svg>
   );
-};
-
-export default Person;
+}

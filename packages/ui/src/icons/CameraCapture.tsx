@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-function CameraCapture() {
+export function CameraCapture() {
   return (
     <svg
       width="68"
@@ -50,5 +50,3 @@ function CameraCapture() {
     </svg>
   );
 }
-
-export default CameraCapture;

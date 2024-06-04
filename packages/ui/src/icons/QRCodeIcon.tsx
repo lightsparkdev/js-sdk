@@ -1,14 +1,13 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
-import { nanoid } from "nanoid";
-import { useRef } from "react";
 
-function QRCodeIcon() {
+import { useId } from "react";
+
+export function QRCodeIcon() {
   /**
    * unique id is required per instance to prevent interferring ids breaking
    * icon styles
    */
-  const idRef = useRef(nanoid());
-  const id = idRef.current;
+  const id = useId();
 
   return (
     <svg
@@ -72,5 +71,3 @@ function QRCodeIcon() {
     </svg>
   );
 }
-
-export default QRCodeIcon;

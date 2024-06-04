@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-const Close = () => {
+export function Close() {
   return (
     <svg
       width="100%"
@@ -16,6 +16,4 @@ const Close = () => {
       />
     </svg>
   );
-};
-
-export default Close;
+}

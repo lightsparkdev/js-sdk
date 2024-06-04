@@ -6,7 +6,7 @@ import {
 } from "@lightsparkdev/wallet-sdk";
 import { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import CurrencyAmount from "./CurrencyAmount";
+import { CurrencyAmount } from "@lightsparkdev/ui/components/CurrencyAmount";
 
 const Dashboard = ({
   data,

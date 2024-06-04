@@ -1,8 +1,4 @@
-import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
-import { css, useTheme } from "@emotion/react";
-import { Breakpoints, useBreakpoints } from "./breakpoints.js";
-import { App, getTypography } from "./fonts/typographyTokens.js";
 
 const neutral = {
   black: "#000000",
@@ -14,50 +10,54 @@ const neutral = {
   gray30: "#4D4D4D",
   gray40: "#666666",
   gray50: "#808080",
+  gray57: "#8B8E98",
   gray60: "#999999",
   gray70: "#B3B3B3",
   gray80: "#CCCCCC",
   gray85: "#D9D9D9",
   gray90: "#E6E6E6",
+  gray91: "#171717",
   gray95: "#F2F2F2",
+  gray98: "#F9F9F9",
   white: "#FFFFFF",
-};
-
-const uma = {
-  background: "#F9F9F9",
-  black: "#16171A",
-  blue: "#0068C9",
-  blue50: "#C0C9D6",
-  blue80: "#DCE2EA",
-  blue90: "#EBEEF2",
-  blue95: "#F2F5F7",
-  grey300: "#DEDFE4",
-  secondary: "#686A72",
-  stroke: "#C0C9D6",
-  strokeProminent: "#9BA7B9",
-  fill: "#EBEEF2",
 };
 
 export const darkGradient =
   "#1d1d1d linear-gradient(180deg, #090909 63.08%, #1d1d1d 100.52%)";
 
-export enum Themes {
-  Light = "light",
-  Dark = "dark",
-}
-
 const primary = "#FFF14E";
 
-export const colors = {
+/**
+ * In general human readable colors are represented as
+ * [colorName][colorLightness 1-100][alpha 1-100]. For example:
+ * red with 42 lightness and 10 alpha is red4210.
+ */
+const baseColors = {
   ...neutral,
-  uma,
   // green
   success: "#17C27C",
+  green33: "#179257",
   // blue
   blue43: "#145BC6",
   blue22: "#0E2E60",
+  blue39: "#0068C9",
+  blue37: "#21529c",
   blue58: "#28BFFF",
-  blue95: "#EBEEF2",
+  // less than 50% saturated blue
+  grayBlue9: "#16171A",
+  grayBlue32: "#4F5156",
+  grayBlue43: "#686A72",
+  grayBlue45: "#676F80",
+  grayBlue67: "#9BA7B9",
+  grayBlue80: "#C0C9D6",
+  grayBlue88: "#DEDFE4",
+  grayBlue94: "#EBEEF2",
+  grayBlue96: "#F2F5F7",
+  // purple
+  purple43: "#820AD1",
+  purple55: "#8B38DE",
+  // red
+  red42a10: "#D800271A",
   // yellow
   primary,
   warning: primary,
@@ -65,74 +65,24 @@ export const colors = {
   danger: "#FD2C0F",
   // neutral
   secondary: neutral.black,
-  // billing
-  tier1: "#179257",
-  tier2: "#8B38DE",
-  tier3: "#0048F7",
+} as const;
+
+/* We only want `as const` to affect keys, the values should be widened to strings: */
+export const colors = baseColors as {
+  [K in keyof typeof baseColors]: string;
 };
 
-interface BaseTheme {
-  type: Themes;
-  app: App;
-  bg: string;
-  smBg: string;
-  c05Neutral: string;
-  c1Neutral: string;
-  c15Neutral: string;
-  c2Neutral: string;
-  c3Neutral: string;
-  c4Neutral: string;
-  c5Neutral: string;
-  c6Neutral: string;
-  c7Neutral: string;
-  c8Neutral: string;
-  c9Neutral: string;
-  danger: string;
-  hcNeutral: string;
-  hcNeutralFromBg: (hex: string) => string;
-  info: string;
-  lcNeutral: string;
-  link: string;
-  mcNeutral: string;
-  onInfoText: string;
-  onPrimaryText: string;
-  onSuccessText: string;
-  primary: string;
-  secondary: string;
-  success: string;
-  text: string;
-  typography: ReturnType<typeof getTypography>;
-  vlcNeutral: string;
-  warning: string;
+export type ColorKey = keyof typeof colors;
+
+export function isColorKey(key: string): key is ColorKey {
+  return key in colors;
 }
 
-type LightsparkSurfaces = {
-  header: BaseTheme;
-  nav: BaseTheme; // eg nav bar
-  content: BaseTheme; // eg main contener
-  controls: BaseTheme; // eg secondary nav
-};
-export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
-
-declare module "@emotion/react" {
-  export interface Theme extends LightsparkTheme {}
-}
-
-function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
-  return {
-    ...obj,
-    ...rest,
-  } as LightsparkTheme;
-}
-
-function extendBase(obj: BaseTheme, rest: Partial<BaseTheme>) {
-  return {
-    ...obj,
-    ...rest,
-  } as BaseTheme;
-}
-
-function hcNeutralFromBg(bgHex: string, defaultHex: string, altHex: string) {
+export function hcNeutralFromBg(
+  bgHex: string,
+  defaultHex: string,
+  altHex: string,
+) {
   const bgRGB = hexToRGB(bgHex);
   const hcRGB = hexToRGB(defaultHex);
   if (!bgRGB || !hcRGB) return defaultHex;
@@ -141,185 +91,6 @@ function hcNeutralFromBg(bgHex: string, defaultHex: string, altHex: string) {
     return altHex;
   }
   return defaultHex;
-}
-
-const lightBaseTheme: BaseTheme = {
-  type: Themes.Light,
-  app: App.Lightspark,
-  bg: colors.white,
-  smBg: colors.white,
-  c05Neutral: neutral.gray95,
-  c1Neutral: neutral.gray90,
-  c15Neutral: neutral.gray85,
-  c2Neutral: neutral.gray80,
-  c3Neutral: neutral.gray70,
-  c4Neutral: neutral.gray60,
-  c5Neutral: neutral.gray50,
-  c6Neutral: neutral.gray40,
-  c7Neutral: neutral.gray30,
-  c8Neutral: neutral.gray20,
-  c9Neutral: neutral.gray10,
-  danger: colors.danger,
-  hcNeutral: colors.black,
-  hcNeutralFromBg: (bgHex) =>
-    hcNeutralFromBg(bgHex, colors.black, colors.white),
-  info: colors.blue43,
-  lcNeutral: neutral.gray80,
-  link: colors.blue43,
-  mcNeutral: neutral.gray40,
-  onInfoText: colors.white,
-  onPrimaryText: colors.black,
-  onSuccessText: colors.white,
-  primary: colors.primary,
-  secondary: colors.secondary,
-  success: colors.success,
-  text: colors.black,
-  typography: getTypography(),
-  vlcNeutral: neutral.gray95,
-  warning: colors.warning,
-};
-
-const darkBaseTheme: BaseTheme = {
-  type: Themes.Dark,
-  app: App.Lightspark,
-  bg: colors.black,
-  smBg: colors.black,
-  c05Neutral: neutral.gray5,
-  c1Neutral: neutral.gray10,
-  c15Neutral: neutral.gray15,
-  c2Neutral: neutral.gray20,
-  c3Neutral: neutral.gray30,
-  c4Neutral: neutral.gray40,
-  c5Neutral: neutral.gray50,
-  c6Neutral: neutral.gray60,
-  c7Neutral: neutral.gray70,
-  c8Neutral: neutral.gray80,
-  c9Neutral: neutral.gray90,
-  danger: colors.danger,
-  hcNeutral: colors.white,
-  hcNeutralFromBg: (bgHex) =>
-    hcNeutralFromBg(bgHex, colors.white, colors.black),
-  info: colors.white,
-  lcNeutral: neutral.gray40,
-  link: colors.blue43,
-  mcNeutral: neutral.gray60,
-  onInfoText: colors.white,
-  onPrimaryText: colors.black,
-  onSuccessText: colors.white,
-  primary: colors.primary,
-  secondary: colors.secondary,
-  success: colors.success,
-  text: colors.white,
-  typography: getTypography(),
-  vlcNeutral: neutral.gray20,
-  warning: colors.warning,
-};
-
-const lightTheme = extend(lightBaseTheme, {
-  header: extendBase(lightBaseTheme, {
-    text: colors.gray60,
-  }),
-  nav: extendBase(lightBaseTheme, {
-    text: colors.gray10,
-    secondary: colors.gray40,
-  }),
-  content: extendBase(lightBaseTheme, {
-    bg: colors.white,
-    smBg: colors.white,
-  }),
-  controls: extendBase(lightBaseTheme, {
-    bg: neutral.gray95,
-    smBg: neutral.gray95,
-    text: neutral.gray60,
-    secondary: colors.secondary,
-  }),
-});
-
-const darkTheme = extend(darkBaseTheme, {
-  header: extendBase(darkBaseTheme, {}),
-  nav: extendBase(darkBaseTheme, {}),
-  content: extendBase(darkBaseTheme, {}),
-  controls: extendBase(darkBaseTheme, {
-    bg: neutral.gray40,
-    smBg: neutral.gray40,
-    text: neutral.white,
-    secondary: colors.secondary,
-  }),
-});
-
-const umaLightTheme = extend(lightTheme, {
-  app: App.UmaDocs,
-  bg: uma.background,
-  smBg: uma.background,
-  secondary: uma.secondary,
-  text: uma.black,
-  link: uma.blue,
-  content: extendBase(lightBaseTheme, {
-    bg: uma.background,
-    smBg: uma.background,
-    text: uma.black,
-    secondary: uma.secondary,
-  }),
-  controls: extendBase(lightBaseTheme, {
-    text: uma.black,
-    secondary: uma.secondary,
-    bg: uma.blue90,
-  }),
-});
-
-/**
- * Allows setting typography in cases where a custom font is needed.
- * Setting custom fonts should only be necessary for next fonts.
- */
-export const themeWithTypography = (
-  theme: Theme,
-  typography: ReturnType<typeof getTypography>,
-) => {
-  return extendBase(theme, { typography });
-};
-
-export const themes: {
-  light: LightsparkTheme;
-  dark: LightsparkTheme;
-  uma: {
-    light: LightsparkTheme;
-  };
-} = {
-  light: lightTheme,
-  dark: darkTheme,
-  uma: {
-    light: umaLightTheme,
-  },
-};
-
-export const isDark = (theme: Theme) => theme.type === Themes.Dark;
-export const isLight = (theme: Theme) => theme.type === Themes.Light;
-export const themeOr =
-  (lightValue: string, darkValue: string) =>
-  ({ theme }: { theme: Theme }) => {
-    return isLight(theme) ? lightValue : darkValue;
-  };
-
-export function ifLight(style: CSSInterpolation) {
-  return function ({ theme }: { theme: LightsparkTheme }) {
-    if (theme.type === Themes.Light) {
-      return css`
-        ${style}
-      `;
-    }
-    return "";
-  };
-}
-
-export function ifDark(style: CSSInterpolation) {
-  return function ({ theme }: { theme: LightsparkTheme }) {
-    if (theme.type === Themes.Dark) {
-      return css`
-        ${style}
-      `;
-    }
-    return "";
-  };
 }
 
 /* https://bit.ly/3WUawKh */
@@ -364,16 +135,6 @@ export function hexToRGB(hex: string) {
 export function hexToRGBAStr(hex: string, alpha: number) {
   const rgb = hexToRGB(hex);
   return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
-}
-
-export function useThemeBg() {
-  const theme = useTheme();
-  const bp = useBreakpoints();
-  const isSm = bp.current(Breakpoints.sm);
-  if (isDark(theme)) {
-    return darkGradient;
-  }
-  return isSm ? theme.smBg : theme.bg;
 }
 
 export type ThemeProp = {

@@ -16,4 +16,3 @@ export function Clock() {
     </svg>
   );
 }
-export default Clock;

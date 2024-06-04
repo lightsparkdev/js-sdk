@@ -120,8 +120,11 @@ module.exports = {
       env: {
         node: true,
       },
-      excludedFiles: ["**/src/**/*"],
       extends: ["eslint:recommended"],
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
     },
   ],
 };

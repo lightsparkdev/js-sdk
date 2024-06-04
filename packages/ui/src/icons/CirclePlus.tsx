@@ -10,5 +10,3 @@ export function CirclePlus() {
     </svg>
   );
 }
-
-export default CirclePlus;

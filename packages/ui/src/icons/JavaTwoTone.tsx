@@ -2,7 +2,7 @@
 
 import { useTheme } from "@emotion/react";
 
-function JavaTwoTone() {
+export function JavaTwoTone() {
   const theme = useTheme();
   return (
     <svg width="100%" viewBox="0 0 25 24" fill="none">
@@ -18,5 +18,3 @@ function JavaTwoTone() {
     </svg>
   );
 }
-
-export default JavaTwoTone;

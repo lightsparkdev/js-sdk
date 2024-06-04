@@ -33,7 +33,7 @@ const Dashboard = ({ data }: { data: WalletDashboard }) => {
       <ActionsBar>
         <Button
           text="Send Payment"
-          primary
+          kind="primary"
           // mt={isSm ? 0 : 24}
           // loading={sendingPayment}
           // onClick={onSubmit}

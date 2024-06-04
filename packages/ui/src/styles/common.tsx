@@ -2,13 +2,8 @@ import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { bp } from "./breakpoints.js";
-import {
-  colors,
-  darkGradient,
-  themeOr,
-  type ThemeProp,
-  type WithTheme,
-} from "./colors.js";
+import { colors, darkGradient } from "./colors.js";
+import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
 
 export const rootFontSizePx = 12;
 export const rootFontSizeRems = rootFontSizePx / 16;
@@ -60,7 +55,7 @@ function buildStandardContentInset(
 
 export const standardContentInset = buildStandardContentInset(16, 24, 32);
 
-const standardBorderRadiusPx = [0, 4, 8, 12, 16] as const;
+const standardBorderRadiusPx = [0, 4, 8, 12, 16, 18] as const;
 type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
 export const cardBorderRadiusPx = 16;
 
@@ -78,6 +73,16 @@ export const standardCardShadow = css`
   box-shadow:
     0px 4px 10px 0px rgba(0, 0, 0, 0.08),
     0px 8px 24px 0px rgba(0, 0, 0, 0.04);
+`;
+
+export const standardCardShadowHard = css`
+  box-shadow:
+    0px 24px 24px -12px rgba(0, 0, 0, 0.06),
+    0px 12px 12px -6px rgba(0, 0, 0, 0.06),
+    0px 6px 6px -3px rgba(0, 0, 0, 0.06),
+    0px 3px 3px -1.5px rgba(0, 0, 0, 0.06),
+    0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+    0px 0px 0px 1px rgba(0, 0, 0, 0.06);
 `;
 
 export const pageBorderRadiusPx = 16;

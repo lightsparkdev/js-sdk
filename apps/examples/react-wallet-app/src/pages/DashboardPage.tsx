@@ -103,7 +103,7 @@ function DashboardPage() {
         <Header>
           <Button
             text="Sign out"
-            primary
+            kind="primary"
             onClick={() => {
               void (async () => {
                 await auth.logout();
@@ -130,7 +130,7 @@ const DeployWallet = ({
   return (
     <div>
       <h1>Wallet not yet deployed. Status: {status}</h1>
-      <Button primary onClick={onDeploy} text="Deploy Wallet" />
+      <Button kind="primary" onClick={onDeploy} text="Deploy Wallet" />
     </div>
   );
 };
@@ -145,7 +145,7 @@ const InitializeWallet = ({
   return (
     <div>
       <h1>Wallet not yet initialized. Status: {status}</h1>
-      <Button primary onClick={onInitialize} text="Initialize Wallet" />
+      <Button kind="primary" onClick={onInitialize} text="Initialize Wallet" />
     </div>
   );
 };

@@ -2,8 +2,8 @@
 
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import { themeOr } from "../styles/colors.js";
 import { standardBorderRadius } from "../styles/common.js";
+import { themeOr } from "../styles/themes.js";
 
 export type ProgressBarProps = {
   background?: string | undefined;

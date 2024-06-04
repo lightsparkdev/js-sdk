@@ -2,7 +2,7 @@
 
 import { useTheme } from "@emotion/react";
 
-function SwiftTwoTone() {
+export function SwiftTwoTone() {
   const theme = useTheme();
   return (
     <svg
@@ -29,5 +29,3 @@ function SwiftTwoTone() {
     </svg>
   );
 }
-
-export default SwiftTwoTone;
