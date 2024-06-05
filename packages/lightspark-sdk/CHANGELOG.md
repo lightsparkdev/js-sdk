@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.5.14
+
+### Patch Changes
+
+- b855251: - Update to latest in remote signing wasm
+- Updated dependencies [b855251]
+  - @lightsparkdev/crypto-wasm@0.1.4
+
 ## 1.5.13
 
 ### Patch Changes

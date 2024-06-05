@@ -1,5 +1,12 @@
 # @lightsparkdev/remote-signing-server
 
+## 0.0.31
+
+### Patch Changes
+
+- Updated dependencies [b855251]
+  - @lightsparkdev/lightspark-sdk@1.5.14
+
 ## 0.0.30
 
 ### Patch Changes
