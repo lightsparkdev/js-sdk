@@ -104,7 +104,7 @@ export const Drawer = (props: Props) => {
 };
 
 const Background = styled.div<{ isOpen: boolean; fractionVisible: number }>`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -133,7 +133,7 @@ const DrawerContainer = styled.div<{
   totalDeltaY: number;
   grabbing: boolean;
 }>`
-  position: absolute;
+  position: fixed;
   width: 100%;
   background-color: ${({ theme }) => theme.bg};
   right: 0;
