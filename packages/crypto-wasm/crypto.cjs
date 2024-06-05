@@ -3,35 +3,6 @@ imports['__wbindgen_placeholder__'] = module.exports;
 let wasm;
 const { TextDecoder, TextEncoder } = require(`util`);
 
-const heap = new Array(128).fill(undefined);
-
-heap.push(undefined, null, true, false);
-
-function getObject(idx) { return heap[idx]; }
-
-let heap_next = heap.length;
-
-function dropObject(idx) {
-    if (idx < 132) return;
-    heap[idx] = heap_next;
-    heap_next = idx;
-}
-
-function takeObject(idx) {
-    const ret = getObject(idx);
-    dropObject(idx);
-    return ret;
-}
-
-function addHeapObject(obj) {
-    if (heap_next === heap.length) heap.push(heap.length + 1);
-    const idx = heap_next;
-    heap_next = heap[idx];
-
-    heap[idx] = obj;
-    return idx;
-}
-
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
 cachedTextDecoder.decode();
@@ -48,6 +19,35 @@ function getUint8Memory0() {
 function getStringFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+}
+
+const heap = new Array(128).fill(undefined);
+
+heap.push(undefined, null, true, false);
+
+let heap_next = heap.length;
+
+function addHeapObject(obj) {
+    if (heap_next === heap.length) heap.push(heap.length + 1);
+    const idx = heap_next;
+    heap_next = heap[idx];
+
+    heap[idx] = obj;
+    return idx;
+}
+
+function getObject(idx) { return heap[idx]; }
+
+function dropObject(idx) {
+    if (idx < 132) return;
+    heap[idx] = heap_next;
+    heap_next = idx;
+}
+
+function takeObject(idx) {
+    const ret = getObject(idx);
+    dropObject(idx);
+    return ret;
 }
 
 let cachedInt32Memory0 = null;
@@ -115,6 +115,7 @@ function passStringToWasm0(arg, malloc, realloc) {
         const ret = encodeString(arg, view);
 
         offset += ret.written;
+        ptr = realloc(ptr, len, offset, 1) >>> 0;
     }
 
     WASM_VECTOR_LEN = offset;
@@ -150,7 +151,7 @@ function addBorrowedObject(obj) {
 * @param {string} webhook_secret
 * @param {Uint8Array} master_seed_bytes
 * @param {any} validation
-* @returns {RemoteSigningResponseWasm}
+* @returns {RemoteSigningResponseWasm | undefined}
 */
 module.exports.wasm_handle_remote_signing_webhook_event = function(webhook_data, webhook_signature, webhook_secret, master_seed_bytes, validation) {
     try {
@@ -170,7 +171,7 @@ module.exports.wasm_handle_remote_signing_webhook_event = function(webhook_data,
         if (r2) {
             throw takeObject(r1);
         }
-        return RemoteSigningResponseWasm.__wrap(r0);
+        return r0 === 0 ? undefined : RemoteSigningResponseWasm.__wrap(r0);
     } finally {
         wasm.__wbindgen_add_to_stack_pointer(16);
         heap[stack_pointer++] = undefined;
@@ -187,9 +188,10 @@ function handleError(f, args) {
 /**
 */
 module.exports.Network = Object.freeze({ Bitcoin:0,"0":"Bitcoin",Testnet:1,"1":"Testnet",Regtest:2,"2":"Regtest", });
-/**
-*/
-module.exports.RemoteSigningError = Object.freeze({ WebhookParsingError:0,"0":"WebhookParsingError",WebhookSignatureError:1,"1":"WebhookSignatureError",SignerCreationError:2,"2":"SignerCreationError",RemoteSigningHandlerError:3,"3":"RemoteSigningHandlerError", });
+
+const InvoiceSignatureFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_invoicesignature_free(ptr >>> 0));
 /**
 */
 class InvoiceSignature {
@@ -198,14 +200,14 @@ class InvoiceSignature {
         ptr = ptr >>> 0;
         const obj = Object.create(InvoiceSignature.prototype);
         obj.__wbg_ptr = ptr;
-
+        InvoiceSignatureFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        InvoiceSignatureFinalization.unregister(this);
         return ptr;
     }
 
@@ -223,7 +225,7 @@ class InvoiceSignature {
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var v1 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v1;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -238,6 +240,10 @@ class InvoiceSignature {
     }
 }
 module.exports.InvoiceSignature = InvoiceSignature;
+
+const LightsparkSignerFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_lightsparksigner_free(ptr >>> 0));
 /**
 */
 class LightsparkSigner {
@@ -246,14 +252,14 @@ class LightsparkSigner {
         ptr = ptr >>> 0;
         const obj = Object.create(LightsparkSigner.prototype);
         obj.__wbg_ptr = ptr;
-
+        LightsparkSignerFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        LightsparkSignerFinalization.unregister(this);
         return ptr;
     }
 
@@ -263,7 +269,7 @@ class LightsparkSigner {
     }
     /**
     * @param {Seed} seed
-    * @param {number} network
+    * @param {Network} network
     * @returns {LightsparkSigner}
     */
     static new(seed, network) {
@@ -284,7 +290,7 @@ class LightsparkSigner {
     }
     /**
     * @param {Uint8Array} seed
-    * @param {number} network
+    * @param {Network} network
     * @returns {LightsparkSigner}
     */
     static from_bytes(seed, network) {
@@ -365,8 +371,8 @@ class LightsparkSigner {
     * @param {Uint8Array} message
     * @param {string} derivation_path
     * @param {boolean} is_raw
-    * @param {Uint8Array | undefined} add_tweak
-    * @param {Uint8Array | undefined} mul_tweak
+    * @param {Uint8Array | undefined} [add_tweak]
+    * @param {Uint8Array | undefined} [mul_tweak]
     * @returns {Uint8Array}
     */
     derive_key_and_sign(message, derivation_path, is_raw, add_tweak, mul_tweak) {
@@ -389,7 +395,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v5 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v5;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -413,7 +419,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v2;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -438,7 +444,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v2;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -463,7 +469,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v2;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -479,7 +485,7 @@ class LightsparkSigner {
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var v1 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v1;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -503,7 +509,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v2;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -527,7 +533,7 @@ class LightsparkSigner {
                 throw takeObject(r2);
             }
             var v2 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v2;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -637,6 +643,10 @@ class LightsparkSigner {
     }
 }
 module.exports.LightsparkSigner = LightsparkSigner;
+
+const MnemonicFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_mnemonic_free(ptr >>> 0));
 /**
 */
 class Mnemonic {
@@ -645,14 +655,14 @@ class Mnemonic {
         ptr = ptr >>> 0;
         const obj = Object.create(Mnemonic.prototype);
         obj.__wbg_ptr = ptr;
-
+        MnemonicFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        MnemonicFinalization.unregister(this);
         return ptr;
     }
 
@@ -741,6 +751,10 @@ class Mnemonic {
     }
 }
 module.exports.Mnemonic = Mnemonic;
+
+const RemoteSigningResponseWasmFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_remotesigningresponsewasm_free(ptr >>> 0));
 /**
 */
 class RemoteSigningResponseWasm {
@@ -749,14 +763,14 @@ class RemoteSigningResponseWasm {
         ptr = ptr >>> 0;
         const obj = Object.create(RemoteSigningResponseWasm.prototype);
         obj.__wbg_ptr = ptr;
-
+        RemoteSigningResponseWasmFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        RemoteSigningResponseWasmFinalization.unregister(this);
         return ptr;
     }
 
@@ -820,6 +834,10 @@ class RemoteSigningResponseWasm {
     }
 }
 module.exports.RemoteSigningResponseWasm = RemoteSigningResponseWasm;
+
+const SeedFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_seed_free(ptr >>> 0));
 /**
 */
 class Seed {
@@ -828,14 +846,14 @@ class Seed {
         ptr = ptr >>> 0;
         const obj = Object.create(Seed.prototype);
         obj.__wbg_ptr = ptr;
-
+        SeedFinalization.register(obj, obj.__wbg_ptr, obj);
         return obj;
     }
 
     __destroy_into_raw() {
         const ptr = this.__wbg_ptr;
         this.__wbg_ptr = 0;
-
+        SeedFinalization.unregister(this);
         return ptr;
     }
 
@@ -872,7 +890,7 @@ class Seed {
             var r0 = getInt32Memory0()[retptr / 4 + 0];
             var r1 = getInt32Memory0()[retptr / 4 + 1];
             var v1 = getArrayU8FromWasm0(r0, r1).slice();
-            wasm.__wbindgen_free(r0, r1 * 1);
+            wasm.__wbindgen_free(r0, r1 * 1, 1);
             return v1;
         } finally {
             wasm.__wbindgen_add_to_stack_pointer(16);
@@ -880,6 +898,11 @@ class Seed {
     }
 }
 module.exports.Seed = Seed;
+
+module.exports.__wbindgen_error_new = function(arg0, arg1) {
+    const ret = new Error(getStringFromWasm0(arg0, arg1));
+    return addHeapObject(ret);
+};
 
 module.exports.__wbindgen_object_drop_ref = function(arg0) {
     takeObject(arg0);
@@ -903,12 +926,7 @@ module.exports.__wbindgen_object_clone_ref = function(arg0) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbindgen_error_new = function(arg0, arg1) {
-    const ret = new Error(getStringFromWasm0(arg0, arg1));
-    return addHeapObject(ret);
-};
-
-module.exports.__wbg_crypto_c48a774b022d20ac = function(arg0) {
+module.exports.__wbg_crypto_566d7465cdbb6b7a = function(arg0) {
     const ret = getObject(arg0).crypto;
     return addHeapObject(ret);
 };
@@ -919,17 +937,17 @@ module.exports.__wbindgen_is_object = function(arg0) {
     return ret;
 };
 
-module.exports.__wbg_process_298734cf255a885d = function(arg0) {
+module.exports.__wbg_process_dc09a8c7d59982f6 = function(arg0) {
     const ret = getObject(arg0).process;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_versions_e2e78e134e3e5d01 = function(arg0) {
+module.exports.__wbg_versions_d98c6400c6ca2bd8 = function(arg0) {
     const ret = getObject(arg0).versions;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_node_1cd7a5d853dbea79 = function(arg0) {
+module.exports.__wbg_node_caaf83d002149bd5 = function(arg0) {
     const ret = getObject(arg0).node;
     return addHeapObject(ret);
 };
@@ -939,12 +957,12 @@ module.exports.__wbindgen_is_string = function(arg0) {
     return ret;
 };
 
-module.exports.__wbg_msCrypto_bcb970640f50a1e8 = function(arg0) {
+module.exports.__wbg_msCrypto_0b84745e9245cdf6 = function(arg0) {
     const ret = getObject(arg0).msCrypto;
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_require_8f08ceecec0f4fee = function() { return handleError(function () {
+module.exports.__wbg_require_94a9da52636aacbf = function() { return handleError(function () {
     const ret = module.require;
     return addHeapObject(ret);
 }, arguments) };
@@ -959,11 +977,11 @@ module.exports.__wbindgen_string_new = function(arg0, arg1) {
     return addHeapObject(ret);
 };
 
-module.exports.__wbg_getRandomValues_37fa2ca9e4e07fab = function() { return handleError(function (arg0, arg1) {
+module.exports.__wbg_getRandomValues_260cc23a41afad9a = function() { return handleError(function (arg0, arg1) {
     getObject(arg0).getRandomValues(getObject(arg1));
 }, arguments) };
 
-module.exports.__wbg_randomFillSync_dc1e9a60c158336d = function() { return handleError(function (arg0, arg1) {
+module.exports.__wbg_randomFillSync_290977693942bf03 = function() { return handleError(function (arg0, arg1) {
     getObject(arg0).randomFillSync(takeObject(arg1));
 }, arguments) };
 
