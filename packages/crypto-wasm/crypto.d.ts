@@ -6,23 +6,15 @@
 * @param {string} webhook_secret
 * @param {Uint8Array} master_seed_bytes
 * @param {any} validation
-* @returns {RemoteSigningResponseWasm}
+* @returns {RemoteSigningResponseWasm | undefined}
 */
-export function wasm_handle_remote_signing_webhook_event(webhook_data: Uint8Array, webhook_signature: string, webhook_secret: string, master_seed_bytes: Uint8Array, validation: any): RemoteSigningResponseWasm;
+export function wasm_handle_remote_signing_webhook_event(webhook_data: Uint8Array, webhook_signature: string, webhook_secret: string, master_seed_bytes: Uint8Array, validation: any): RemoteSigningResponseWasm | undefined;
 /**
 */
 export enum Network {
   Bitcoin = 0,
   Testnet = 1,
   Regtest = 2,
-}
-/**
-*/
-export enum RemoteSigningError {
-  WebhookParsingError = 0,
-  WebhookSignatureError = 1,
-  SignerCreationError = 2,
-  RemoteSigningHandlerError = 3,
 }
 /**
 */
@@ -43,16 +35,16 @@ export class LightsparkSigner {
   free(): void;
 /**
 * @param {Seed} seed
-* @param {number} network
+* @param {Network} network
 * @returns {LightsparkSigner}
 */
-  static new(seed: Seed, network: number): LightsparkSigner;
+  static new(seed: Seed, network: Network): LightsparkSigner;
 /**
 * @param {Uint8Array} seed
-* @param {number} network
+* @param {Network} network
 * @returns {LightsparkSigner}
 */
-  static from_bytes(seed: Uint8Array, network: number): LightsparkSigner;
+  static from_bytes(seed: Uint8Array, network: Network): LightsparkSigner;
 /**
 * @returns {string}
 */
@@ -66,8 +58,8 @@ export class LightsparkSigner {
 * @param {Uint8Array} message
 * @param {string} derivation_path
 * @param {boolean} is_raw
-* @param {Uint8Array | undefined} add_tweak
-* @param {Uint8Array | undefined} mul_tweak
+* @param {Uint8Array | undefined} [add_tweak]
+* @param {Uint8Array | undefined} [mul_tweak]
 * @returns {Uint8Array}
 */
   derive_key_and_sign(message: Uint8Array, derivation_path: string, is_raw: boolean, add_tweak?: Uint8Array, mul_tweak?: Uint8Array): Uint8Array;
