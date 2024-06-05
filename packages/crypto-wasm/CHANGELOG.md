@@ -1,5 +1,11 @@
 # @lightsparkdev/crypto-wasm
 
+## 0.1.4
+
+### Patch Changes
+
+- b855251: - Update to latest in remote signing wasm
+
 ## 0.1.3
 
 ### Patch Changes

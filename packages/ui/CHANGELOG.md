@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.0.1
+
+### Patch Changes
+
+- b855251: - Make Drawer fixed position
+
 ## 1.0.0
 
 ### Major Changes
