@@ -234,7 +234,7 @@ export function Modal<RoutesType extends string>({
           text={cancelText}
         />
       )}
-      {onSubmit && (
+      {(onSubmit || submitLink) && (
         <Button
           kind="primary"
           disabled={submitDisabled}
@@ -298,7 +298,7 @@ export function Modal<RoutesType extends string>({
       {titleContent}
       {descriptionContent}
       {children}
-      {onSubmit || onCancel ? (
+      {onSubmit || onCancel || submitLink ? (
         buttonLayout === "horizontal" ? (
           <ModalButtonRow>{buttonContent}</ModalButtonRow>
         ) : (
