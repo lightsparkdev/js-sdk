@@ -93,8 +93,6 @@ export { default as Withdrawal, getWithdrawalQuery } from "./Withdrawal.js";
 export { default as WithdrawalFeeEstimateInput } from "./WithdrawalFeeEstimateInput.js";
 export { default as WithdrawalFeeEstimateOutput } from "./WithdrawalFeeEstimateOutput.js";
 export { default as WithdrawalMode } from "./WithdrawalMode.js";
-export {
-  default as WithdrawalRequest,
-  getWithdrawalRequestQuery,
-} from "./WithdrawalRequest.js";
+export { default as WithdrawalRequest } from "./WithdrawalRequest.js";
 export { default as WithdrawalRequestStatus } from "./WithdrawalRequestStatus.js";
+export { default as WithdrawalRequestToWithdrawalsConnection } from "./WithdrawalRequestToWithdrawalsConnection.js";

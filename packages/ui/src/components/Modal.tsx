@@ -1,7 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 
-import type { MutableRefObject } from "react";
+import type { ComponentProps, MutableRefObject } from "react";
 import React, { Fragment, useEffect, useLayoutEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useLiveRef } from "../hooks/useLiveRef.js";
@@ -21,6 +21,7 @@ import { toReactNodes, type ToReactNodesArgs } from "../utils/toReactNodes.js";
 import { Button, ButtonSelector } from "./Button.js";
 import { Drawer } from "./Drawer.js";
 import { Icon } from "./Icon/Icon.js";
+import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
@@ -47,9 +48,12 @@ function isSubmitLinkWithHref<RoutesType extends string>(
   return Boolean(submitLink && "href" in submitLink);
 }
 
+type TopContent = ComponentProps<typeof IconWithCircleBackground>;
+
 type ModalProps<RoutesType extends string> = {
   visible: boolean;
   onClose: () => void;
+  topContent?: TopContent | undefined;
   title?: ToReactNodesArgs;
   description?: ToReactNodesArgs;
   cancelText?: string | undefined;
@@ -85,6 +89,7 @@ type ModalProps<RoutesType extends string> = {
 
 export function Modal<RoutesType extends string>({
   visible,
+  topContent,
   title,
   description,
   children,
@@ -234,7 +239,7 @@ export function Modal<RoutesType extends string>({
           text={cancelText}
         />
       )}
-      {onSubmit && (
+      {(onSubmit || submitLink) && (
         <Button
           kind="primary"
           disabled={submitDisabled}
@@ -285,6 +290,15 @@ export function Modal<RoutesType extends string>({
     }
   }
 
+  let topContentNode = null;
+  if (topContent) {
+    topContentNode = (
+      <div css={{ marginBottom: Spacing["xl"] }}>
+        <IconWithCircleBackground {...topContent} />
+      </div>
+    );
+  }
+
   const modalContent = (
     <Fragment>
       {progressBar ? (
@@ -295,10 +309,11 @@ export function Modal<RoutesType extends string>({
           />
         </div>
       ) : null}
+      {topContentNode}
       {titleContent}
       {descriptionContent}
       {children}
-      {onSubmit || onCancel ? (
+      {onSubmit || onCancel || submitLink ? (
         buttonLayout === "horizontal" ? (
           <ModalButtonRow>{buttonContent}</ModalButtonRow>
         ) : (

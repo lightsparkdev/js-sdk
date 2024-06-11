@@ -11,6 +11,14 @@ import type AccountToWithdrawalRequestsConnection from "./AccountToWithdrawalReq
 import { ApiTokenFromJson, ApiTokenToJson } from "./ApiToken.js";
 import { ChannelFromJson } from "./Channel.js";
 import {
+  ChannelClosingTransactionFromJson,
+  ChannelClosingTransactionToJson,
+} from "./ChannelClosingTransaction.js";
+import {
+  ChannelOpeningTransactionFromJson,
+  ChannelOpeningTransactionToJson,
+} from "./ChannelOpeningTransaction.js";
+import {
   CurrencyAmountFromJson,
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
@@ -40,6 +48,8 @@ import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsCon
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 import type WalletToWithdrawalRequestsConnection from "./WalletToWithdrawalRequestsConnection.js";
 import { WithdrawalRequestFromJson } from "./WithdrawalRequest.js";
+import type WithdrawalRequestToChannelClosingTransactionsConnection from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
+import type WithdrawalRequestToChannelOpeningTransactionsConnection from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
 
 interface Connection {
   /**
@@ -240,6 +250,46 @@ export const ConnectionFromJson = (obj: any): Connection => {
       ),
       typename: "WalletToWithdrawalRequestsConnection",
     } as WalletToWithdrawalRequestsConnection;
+  }
+  if (
+    obj["__typename"] ==
+    "WithdrawalRequestToChannelClosingTransactionsConnection"
+  ) {
+    return {
+      count:
+        obj[
+          "withdrawal_request_to_channel_closing_transactions_connection_count"
+        ],
+      pageInfo: PageInfoFromJson(
+        obj[
+          "withdrawal_request_to_channel_closing_transactions_connection_page_info"
+        ],
+      ),
+      entities: obj[
+        "withdrawal_request_to_channel_closing_transactions_connection_entities"
+      ].map((e) => ChannelClosingTransactionFromJson(e)),
+      typename: "WithdrawalRequestToChannelClosingTransactionsConnection",
+    } as WithdrawalRequestToChannelClosingTransactionsConnection;
+  }
+  if (
+    obj["__typename"] ==
+    "WithdrawalRequestToChannelOpeningTransactionsConnection"
+  ) {
+    return {
+      count:
+        obj[
+          "withdrawal_request_to_channel_opening_transactions_connection_count"
+        ],
+      pageInfo: PageInfoFromJson(
+        obj[
+          "withdrawal_request_to_channel_opening_transactions_connection_page_info"
+        ],
+      ),
+      entities: obj[
+        "withdrawal_request_to_channel_opening_transactions_connection_entities"
+      ].map((e) => ChannelOpeningTransactionFromJson(e)),
+      typename: "WithdrawalRequestToChannelOpeningTransactionsConnection",
+    } as WithdrawalRequestToChannelOpeningTransactionsConnection;
   }
   throw new LightsparkException(
     "DeserializationError",
@@ -462,6 +512,44 @@ export const ConnectionToJson = (obj: Connection): any => {
       ),
       wallet_to_withdrawal_requests_connection_entities:
         walletToWithdrawalRequestsConnection.entities.map((e) => e.toJson()),
+    };
+  }
+  if (
+    obj.typename == "WithdrawalRequestToChannelClosingTransactionsConnection"
+  ) {
+    const withdrawalRequestToChannelClosingTransactionsConnection =
+      obj as WithdrawalRequestToChannelClosingTransactionsConnection;
+    return {
+      __typename: "WithdrawalRequestToChannelClosingTransactionsConnection",
+      withdrawal_request_to_channel_closing_transactions_connection_count:
+        withdrawalRequestToChannelClosingTransactionsConnection.count,
+      withdrawal_request_to_channel_closing_transactions_connection_page_info:
+        PageInfoToJson(
+          withdrawalRequestToChannelClosingTransactionsConnection.pageInfo,
+        ),
+      withdrawal_request_to_channel_closing_transactions_connection_entities:
+        withdrawalRequestToChannelClosingTransactionsConnection.entities.map(
+          (e) => ChannelClosingTransactionToJson(e),
+        ),
+    };
+  }
+  if (
+    obj.typename == "WithdrawalRequestToChannelOpeningTransactionsConnection"
+  ) {
+    const withdrawalRequestToChannelOpeningTransactionsConnection =
+      obj as WithdrawalRequestToChannelOpeningTransactionsConnection;
+    return {
+      __typename: "WithdrawalRequestToChannelOpeningTransactionsConnection",
+      withdrawal_request_to_channel_opening_transactions_connection_count:
+        withdrawalRequestToChannelOpeningTransactionsConnection.count,
+      withdrawal_request_to_channel_opening_transactions_connection_page_info:
+        PageInfoToJson(
+          withdrawalRequestToChannelOpeningTransactionsConnection.pageInfo,
+        ),
+      withdrawal_request_to_channel_opening_transactions_connection_entities:
+        withdrawalRequestToChannelOpeningTransactionsConnection.entities.map(
+          (e) => ChannelOpeningTransactionToJson(e),
+        ),
     };
   }
   throw new LightsparkException(
@@ -690,6 +778,34 @@ fragment ConnectionFragment on Connection {
             page_info_end_cursor: end_cursor
         }
         wallet_to_withdrawal_requests_connection_entities: entities {
+            id
+        }
+    }
+    ... on WithdrawalRequestToChannelClosingTransactionsConnection {
+        __typename
+        withdrawal_request_to_channel_closing_transactions_connection_count: count
+        withdrawal_request_to_channel_closing_transactions_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        withdrawal_request_to_channel_closing_transactions_connection_entities: entities {
+            id
+        }
+    }
+    ... on WithdrawalRequestToChannelOpeningTransactionsConnection {
+        __typename
+        withdrawal_request_to_channel_opening_transactions_connection_count: count
+        withdrawal_request_to_channel_opening_transactions_connection_page_info: page_info {
+            __typename
+            page_info_has_next_page: has_next_page
+            page_info_has_previous_page: has_previous_page
+            page_info_start_cursor: start_cursor
+            page_info_end_cursor: end_cursor
+        }
+        withdrawal_request_to_channel_opening_transactions_connection_entities: entities {
             id
         }
     }

@@ -54,10 +54,7 @@ interface OnChainTransaction {
   /** The hash of this transaction, so it can be uniquely identified on the Lightning Network. **/
   transactionHash?: string | undefined;
 
-  /**
-   * The fees that were paid by the wallet sending the transaction to commit it to the Bitcoin
-   * blockchain.
-   **/
+  /** The fees that were paid by the node for this transaction. **/
   fees?: CurrencyAmount | undefined;
 
   /**

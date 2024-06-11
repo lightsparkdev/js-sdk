@@ -8,6 +8,10 @@ export enum KeyType {
   FUTURE_VALUE = "FUTURE_VALUE",
 
   RSA_OAEP = "RSA_OAEP",
+
+  ELLIPTIC_CURVE = "ELLIPTIC_CURVE",
+
+  ED25519 = "ED25519",
 }
 
 export default KeyType;

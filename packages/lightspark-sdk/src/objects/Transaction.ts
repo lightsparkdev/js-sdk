@@ -183,6 +183,7 @@ export const TransactionFromJson = (obj: any): Transaction => {
         PostTransactionDataFromJson(e),
       ),
       obj["outgoing_payment_payment_preimage"],
+      obj["outgoing_payment_idempotency_key"],
     );
   }
   if (obj["__typename"] == "RoutingTransaction") {
@@ -380,6 +381,7 @@ export const TransactionToJson = (obj: Transaction): any => {
         ),
       outgoing_payment_payment_preimage: outgoingPayment.paymentPreimage,
       outgoing_payment_is_internal_payment: outgoingPayment.isInternalPayment,
+      outgoing_payment_idempotency_key: outgoingPayment.idempotencyKey,
     };
   }
   if (obj.typename == "RoutingTransaction") {
@@ -915,6 +917,7 @@ fragment TransactionFragment on Transaction {
         }
         outgoing_payment_payment_preimage: payment_preimage
         outgoing_payment_is_internal_payment: is_internal_payment
+        outgoing_payment_idempotency_key: idempotency_key
     }
     ... on RoutingTransaction {
         __typename

@@ -3,6 +3,7 @@ const childProcess = require("child_process");
 const path = require("path");
 const { defineConfig } = require("vite");
 const svgr = require("vite-plugin-svgr").default;
+const { visualizer } = require("rollup-plugin-visualizer");
 
 const currentCommit = childProcess
   .execSync("git rev-parse HEAD")
@@ -17,9 +18,18 @@ module.exports.buildConfig = ({
   base = basename,
   dirname,
   rollupOptions,
+  chunks = {"/node_modules/": "vendor"},
   proxyTarget = "http://127.0.0.1:5000",
-}) =>
-  defineConfig({
+}) => {
+  function manualChunks(id) {
+    for (const [path, name] of Object.entries(chunks)) {
+      if (id.includes(path)) {
+        return name;
+      }
+    }
+  }
+
+  return defineConfig({
     base,
     define: {
       __CURRENT_COMMIT__: `"${currentCommit}"`,
@@ -41,6 +51,7 @@ module.exports.buildConfig = ({
       svgr({
         exportAsDefault: true,
       }),
+      visualizer(),
     ],
     server: {
       port,
@@ -84,7 +95,7 @@ module.exports.buildConfig = ({
       include: ["@lightsparkdev/crypto-wasm"],
     },
     build: {
-      rollupOptions,
+      rollupOptions: {output: {manualChunks}, ...rollupOptions},
       assetsDir: "static",
       commonjsOptions: {
         include: [/@lightsparkdev\/crypto-wasm/, /node_modules/],
@@ -96,3 +107,4 @@ module.exports.buildConfig = ({
       },
     },
   });
+}

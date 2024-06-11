@@ -373,6 +373,7 @@ fragment OutgoingPaymentsForInvoiceQueryOutputFragment on OutgoingPaymentsForInv
         }
         outgoing_payment_payment_preimage: payment_preimage
         outgoing_payment_is_internal_payment: is_internal_payment
+        outgoing_payment_idempotency_key: idempotency_key
     }
 }`;
 

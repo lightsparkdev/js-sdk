@@ -219,28 +219,30 @@ const bridgeBaseSettings = {
     code: "Monaco",
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
-    defaultTypography: "Title",
+    defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 8,
     defaultBorderWidth: 0,
+    defaultPaddingsY: {
+      ExtraSmall: 14,
+      Small: 14,
+      Schmedium: 14,
+      Medium: 14,
+      Mlarge: 14,
+      Large: 14,
+    },
     kinds: {
       primary: {
+        defaultColor: "bg",
         defaultBackgroundColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
       },
       ghost: {
+        defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
         defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
-        defaultPaddingsY: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
       },
       secondary: {
         defaultBackgroundColor: "transparent",

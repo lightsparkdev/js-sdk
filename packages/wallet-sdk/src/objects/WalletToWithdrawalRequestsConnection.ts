@@ -3,10 +3,7 @@
 import type PageInfo from "./PageInfo.js";
 import { PageInfoFromJson, PageInfoToJson } from "./PageInfo.js";
 import type WithdrawalRequest from "./WithdrawalRequest.js";
-import {
-  WithdrawalRequestFromJson,
-  WithdrawalRequestToJson,
-} from "./WithdrawalRequest.js";
+import { WithdrawalRequestFromJson } from "./WithdrawalRequest.js";
 
 interface WalletToWithdrawalRequestsConnection {
   /**
@@ -49,7 +46,7 @@ export const WalletToWithdrawalRequestsConnectionToJson = (
       obj.pageInfo,
     ),
     wallet_to_withdrawal_requests_connection_entities: obj.entities.map((e) =>
-      WithdrawalRequestToJson(e),
+      e.toJson(),
     ),
   };
 };

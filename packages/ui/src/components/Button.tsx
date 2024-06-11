@@ -8,6 +8,7 @@ import { Link, type RouteParams } from "../router.js";
 import {
   type AllowedButtonTypographyTypes,
   type ButtonBorderRadius,
+  type ButtonTypographyArgs,
   type ButtonsThemeKey,
   type PaddingYKey,
 } from "../styles/buttons.js";
@@ -16,7 +17,6 @@ import {
   getBackgroundColor,
   isThemeOrColorKey,
   type ThemeOrColorKey,
-  type WithTheme,
 } from "../styles/themes.js";
 import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
 import { applyTypography } from "../styles/typography.js";
@@ -44,10 +44,7 @@ export type ButtonKind = (typeof buttonKinds)[number];
 
 export type ButtonProps<RoutesType extends string> = {
   kind?: ButtonKind | undefined;
-  typography?: {
-    type?: AllowedButtonTypographyTypes;
-    color?: ThemeOrColorKey;
-  };
+  typography?: ButtonTypographyArgs | undefined;
   size?: TokenSizeKey;
   paddingY?: PaddingYKey | undefined;
   text?: string | undefined;
@@ -72,10 +69,6 @@ export type ButtonProps<RoutesType extends string> = {
   borderRadius?: ButtonBorderRadius | undefined;
 };
 
-type ButtonWithThemeProps = WithTheme<{
-  kind: ButtonKind;
-}>;
-
 type PaddingProps = {
   paddingY: number;
   size: TokenSizeKey;
@@ -83,23 +76,6 @@ type PaddingProps = {
   isRound: boolean;
   kind: ButtonKind;
 };
-
-function getDefaultTextColor({ kind }: ButtonWithThemeProps) {
-  switch (kind) {
-    case "blue43":
-    case "green33":
-    case "purple55":
-    case "danger":
-      return "white";
-    case "blue39":
-      return "gray98";
-    case "primary": {
-      return "bg";
-    }
-    default:
-      return "text";
-  }
-}
 
 const roundPaddingsX = {
   [TokenSize.ExtraSmall]: 10,
@@ -182,6 +158,7 @@ function resolveProps<RoutesType extends string>(
     size: sizeProp,
     paddingY: paddingYType = "regular",
     borderRadius,
+    typography: typographyProp,
     ...rest
   } = props;
 
@@ -212,10 +189,20 @@ function resolveProps<RoutesType extends string>(
     "defaultHoverBorderColor",
   );
 
+  const typography = {
+    type:
+      typographyProp?.type ||
+      resolveProp(null, kind, "defaultTypographyType", theme),
+    color:
+      typographyProp?.color || resolveProp(null, kind, "defaultColor", theme),
+    size,
+  };
+
   return {
     ...rest,
     kind,
     size,
+    typography,
     paddingY:
       typeof defaultPaddingY === "number"
         ? defaultPaddingY
@@ -267,13 +254,6 @@ export function Button<RoutesType extends string>(
 
   const tooltipId = useRef(uniqueId());
 
-  const fontColor = typography?.color || getDefaultTextColor({ kind, theme });
-  const buttonTypography = {
-    type: typography?.type || theme.buttons.defaultTypography,
-    size,
-    color: fontColor,
-  };
-
   const iconSize = size === "ExtraSmall" ? 12 : 16;
   let currentIcon = null;
   if (loading) {
@@ -281,7 +261,7 @@ export function Button<RoutesType extends string>(
       <ButtonIcon
         iconSide={iconSide}
         text={text}
-        typography={buttonTypography}
+        typography={typography}
         kind={kind}
       >
         <Loading size={iconSize} center={false} />
@@ -292,10 +272,10 @@ export function Button<RoutesType extends string>(
       <ButtonIcon
         iconSide={iconSide}
         text={text}
-        typography={buttonTypography}
+        typography={typography}
         kind={kind}
       >
-        <Icon name={icon} width={iconSize} color={fontColor} />
+        <Icon name={icon} width={iconSize} color={typography.color} />
       </ButtonIcon>
     );
   }
@@ -319,10 +299,10 @@ export function Button<RoutesType extends string>(
               overflow: "hidden",
             }}
           >
-            {renderTypography(buttonTypography.type, {
+            {renderTypography(typography.type, {
               content: text,
-              color: buttonTypography.color,
-              size: buttonTypography.size,
+              color: typography.color,
+              size,
             })}
           </div>
         )}
@@ -340,7 +320,7 @@ export function Button<RoutesType extends string>(
     id,
     kind,
     type,
-    typography: buttonTypography,
+    typography,
     onClick,
     fullWidth,
     iconSide,

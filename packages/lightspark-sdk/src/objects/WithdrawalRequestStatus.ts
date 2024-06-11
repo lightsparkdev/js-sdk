@@ -8,6 +8,8 @@ export enum WithdrawalRequestStatus {
    */
   FUTURE_VALUE = "FUTURE_VALUE",
 
+  CREATING = "CREATING",
+
   CREATED = "CREATED",
 
   FAILED = "FAILED",

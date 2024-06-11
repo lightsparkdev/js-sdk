@@ -78,10 +78,11 @@ export function isColorKey(key: string): key is ColorKey {
   return key in colors;
 }
 
+/* Return white or black based on contrast from provided background */
 export function hcNeutralFromBg(
   bgHex: string,
-  defaultHex: string,
-  altHex: string,
+  defaultHex = colors.black,
+  altHex = colors.white,
 ) {
   const bgRGB = hexToRGB(bgHex);
   const hcRGB = hexToRGB(defaultHex);
