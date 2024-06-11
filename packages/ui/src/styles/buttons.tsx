@@ -1,5 +1,5 @@
 /* type outside bracket is needed to pass madge for some reason: */
-import type { BackgroundColorKeyArg } from "./themes.js";
+import type { BackgroundColorKeyArg, ThemeOrColorKey } from "./themes.js";
 import { type TokenSizeKey } from "./tokens/typography.js";
 
 export type PaddingYKey = "short" | "regular";
@@ -18,9 +18,15 @@ export const allowedButtonTypographyTypes = [
 export type AllowedButtonTypographyTypes =
   (typeof allowedButtonTypographyTypes)[number];
 
+export type ButtonTypographyArgs = {
+  type?: AllowedButtonTypographyTypes;
+  color?: ThemeOrColorKey;
+};
+
 export const buttonsThemeBase = {
   defaultSize: "Small" as TokenSizeKey,
-  defaultTypography: "Body Strong" as AllowedButtonTypographyTypes,
+  defaultTypographyType: "Body Strong" as AllowedButtonTypographyTypes,
+  defaultColor: "text" as ThemeOrColorKey,
   defaultBorderRadius: 32 as ButtonBorderRadius,
   defaultBorderWidth: 1,
   defaultBackgroundColor: "bg" as BackgroundColorKeyArg,
@@ -52,6 +58,7 @@ export const defaultButtonsTheme = {
   ...buttonsThemeBase,
   kinds: {
     primary: {
+      defaultColor: "bg",
       defaultBorderWidth: 0,
       defaultBackgroundColor: "c9Neutral",
       defaultBorderColor: "c9Neutral",
@@ -80,6 +87,19 @@ export const defaultButtonsTheme = {
     },
     blue39: {
       defaultBorderColor: "blue39",
+      defaultColor: "gray98",
+    },
+    blue43: {
+      defaultColor: "white",
+    },
+    green33: {
+      defaultColor: "white",
+    },
+    purple55: {
+      defaultColor: "white",
+    },
+    danger: {
+      defaultColor: "white",
     },
   } as ButtonKindsProps,
 };
