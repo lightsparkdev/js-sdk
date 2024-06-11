@@ -43,10 +43,12 @@ import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
+import { InvoiceForPaymentHash } from "./graphql/InvoiceForPaymentHash.js";
 import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
 import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
+import { OutgoingPaymentsForPaymentHash } from "./graphql/OutgoingPaymentsForPaymentHash.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
@@ -1419,6 +1421,66 @@ class LightsparkClient {
           return null;
         }
         return UmaInvitationFromJson(responseJson.uma_invitation_by_code);
+      },
+    });
+  }
+
+  /**
+   * Fetches a created invoice by its payment hash.
+   *
+   * @param paymentHash
+   * @returns The invoice if there is one corresponding to the payment hash, or null if no invoice exists with that payment hash.
+   */
+  public async invoiceForPaymentHash(
+    paymentHash: string,
+  ): Promise<Invoice | null> {
+    return await this.executeRawQuery({
+      queryPayload: InvoiceForPaymentHash,
+      variables: {
+        payment_hash: paymentHash,
+      },
+      constructObject: (responseJson: {
+        invoice_for_payment_hash: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.invoice_for_payment_hash ||
+          !responseJson.invoice_for_payment_hash.invoice
+        ) {
+          return null;
+        }
+        return InvoiceFromJson(responseJson.invoice_for_payment_hash.invoice);
+      },
+    });
+  }
+
+  /**
+   * Fetches outgoing payments for a given payment hash if there are any.
+   *
+   * @param paymentHash
+   * @param statuses Filter to only include payments with the given statuses. If not provided, all statuses are included.
+   */
+  public async outgoingPaymentsForPaymentHash(
+    paymentHash: string,
+    statuses: TransactionStatus[] | undefined = undefined,
+  ): Promise<OutgoingPayment[]> {
+    return await this.executeRawQuery({
+      queryPayload: OutgoingPaymentsForPaymentHash,
+      variables: {
+        payment_hash: paymentHash,
+        statuses: statuses,
+      },
+      constructObject: (responseJson: {
+        outgoing_payments_for_payment_hash: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.outgoing_payments_for_payment_hash ||
+          !responseJson.outgoing_payments_for_payment_hash.payments
+        ) {
+          return [];
+        }
+        return responseJson.outgoing_payments_for_payment_hash.payments.map(
+          (payment) => OutgoingPaymentFromJson(payment),
+        );
       },
     });
   }

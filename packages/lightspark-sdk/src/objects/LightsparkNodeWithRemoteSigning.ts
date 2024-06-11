@@ -154,15 +154,17 @@ query FetchNodeToAddressesConnection($entity_id: ID!, $first: Int, $types: [Node
   public async getChannels(
     client: LightsparkClient,
     first: number | undefined = undefined,
-    statuses: ChannelStatus[] | undefined = undefined,
     after: string | undefined = undefined,
+    beforeDate: string | undefined = undefined,
+    afterDate: string | undefined = undefined,
+    statuses: ChannelStatus[] | undefined = undefined,
   ): Promise<LightsparkNodeToChannelsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $statuses: [ChannelStatus!], $after: String) {
+query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $after: String, $before_date: DateTime, $after_date: DateTime, $statuses: [ChannelStatus!]) {
     entity(id: $entity_id) {
         ... on LightsparkNodeWithRemoteSigning {
-            channels(, first: $first, statuses: $statuses, after: $after) {
+            channels(, first: $first, after: $after, before_date: $before_date, after_date: $after_date, statuses: $statuses) {
                 __typename
                 lightspark_node_to_channels_connection_count: count
                 lightspark_node_to_channels_connection_page_info: page_info {
@@ -274,8 +276,10 @@ query FetchLightsparkNodeToChannelsConnection($entity_id: ID!, $first: Int, $sta
       variables: {
         entity_id: this.id,
         first: first,
-        statuses: statuses,
         after: after,
+        before_date: beforeDate,
+        after_date: afterDate,
+        statuses: statuses,
       },
       constructObject: (json) => {
         const connection = json["entity"]["channels"];

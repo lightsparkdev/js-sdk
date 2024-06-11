@@ -10,7 +10,7 @@ export enum TransactionStatus {
    * Clients should support unknown values as more of them could be added without notice.
    */
   FUTURE_VALUE = "FUTURE_VALUE",
-  /** Transaction succeeded.. **/
+  /** Transaction succeeded. **/
   SUCCESS = "SUCCESS",
   /** Transaction failed. **/
   FAILED = "FAILED",

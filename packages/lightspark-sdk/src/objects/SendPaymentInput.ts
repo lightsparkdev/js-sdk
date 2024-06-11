@@ -18,6 +18,12 @@ interface SendPaymentInput {
    * msats. *
    */
   maximumFeesMsats: number;
+
+  /**
+   * The idempotency key of the request. The same result will be returned for the same
+   * idempotency key. *
+   */
+  idempotencyKey?: string | undefined;
 }
 
 export const SendPaymentInputFromJson = (obj: any): SendPaymentInput => {
@@ -27,6 +33,7 @@ export const SendPaymentInputFromJson = (obj: any): SendPaymentInput => {
     timeoutSecs: obj["send_payment_input_timeout_secs"],
     amountMsats: obj["send_payment_input_amount_msats"],
     maximumFeesMsats: obj["send_payment_input_maximum_fees_msats"],
+    idempotencyKey: obj["send_payment_input_idempotency_key"],
   } as SendPaymentInput;
 };
 export const SendPaymentInputToJson = (obj: SendPaymentInput): any => {
@@ -36,6 +43,7 @@ export const SendPaymentInputToJson = (obj: SendPaymentInput): any => {
     send_payment_input_timeout_secs: obj.timeoutSecs,
     send_payment_input_amount_msats: obj.amountMsats,
     send_payment_input_maximum_fees_msats: obj.maximumFeesMsats,
+    send_payment_input_idempotency_key: obj.idempotencyKey,
   };
 };
 

@@ -77,6 +77,8 @@ class OutgoingPayment implements LightningTransaction, Transaction, Entity {
     public readonly umaPostTransactionData?: PostTransactionData[] | undefined,
     /** The preimage of the payment. **/
     public readonly paymentPreimage?: string | undefined,
+    /** The idempotency key of the payment. **/
+    public readonly idempotencyKey?: string | undefined,
   ) {
     autoBind(this);
   }
@@ -192,6 +194,7 @@ ${FRAGMENT}
         this.umaPostTransactionData?.map((e) => PostTransactionDataToJson(e)),
       outgoing_payment_payment_preimage: this.paymentPreimage,
       outgoing_payment_is_internal_payment: this.isInternalPayment,
+      outgoing_payment_idempotency_key: this.idempotencyKey,
     };
   }
 }
@@ -228,6 +231,7 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
       PostTransactionDataFromJson(e),
     ),
     obj["outgoing_payment_payment_preimage"],
+    obj["outgoing_payment_idempotency_key"],
   );
 };
 
@@ -576,6 +580,7 @@ fragment OutgoingPaymentFragment on OutgoingPayment {
     }
     outgoing_payment_payment_preimage: payment_preimage
     outgoing_payment_is_internal_payment: is_internal_payment
+    outgoing_payment_idempotency_key: idempotency_key
 }`;
 
 export default OutgoingPayment;

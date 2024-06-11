@@ -142,8 +142,10 @@ interface LightsparkNode {
   getChannels(
     client: LightsparkClient,
     first?: number | undefined,
-    statuses?: ChannelStatus[] | undefined,
     after?: string | undefined,
+    beforeDate?: string | undefined,
+    afterDate?: string | undefined,
+    statuses?: ChannelStatus[] | undefined,
   ): Promise<LightsparkNodeToChannelsConnection>;
 
   getDailyLiquidityForecasts(

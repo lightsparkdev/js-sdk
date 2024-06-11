@@ -11,10 +11,7 @@ import { TransactionFromJson, TransactionToJson } from "./Transaction.js";
 import type WalletToPaymentRequestsConnection from "./WalletToPaymentRequestsConnection.js";
 import type WalletToTransactionsConnection from "./WalletToTransactionsConnection.js";
 import type WalletToWithdrawalRequestsConnection from "./WalletToWithdrawalRequestsConnection.js";
-import {
-  WithdrawalRequestFromJson,
-  WithdrawalRequestToJson,
-} from "./WithdrawalRequest.js";
+import { WithdrawalRequestFromJson } from "./WithdrawalRequest.js";
 
 interface Connection {
   /**
@@ -116,9 +113,7 @@ export const ConnectionToJson = (obj: Connection): any => {
         walletToWithdrawalRequestsConnection.pageInfo,
       ),
       wallet_to_withdrawal_requests_connection_entities:
-        walletToWithdrawalRequestsConnection.entities.map((e) =>
-          WithdrawalRequestToJson(e),
-        ),
+        walletToWithdrawalRequestsConnection.entities.map((e) => e.toJson()),
     };
   }
   throw new LightsparkException(

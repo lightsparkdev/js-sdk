@@ -557,6 +557,7 @@ query FetchWalletToTransactionsConnection($entity_id: ID!, $first: Int, $after: 
                         }
                         outgoing_payment_payment_preimage: payment_preimage
                         outgoing_payment_is_internal_payment: is_internal_payment
+                        outgoing_payment_idempotency_key: idempotency_key
                     }
                     ... on RoutingTransaction {
                         __typename
@@ -1092,6 +1093,14 @@ query FetchWalletToWithdrawalRequestsConnection($entity_id: ID!, $first: Int, $a
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                     }
+                    withdrawal_request_total_fees: total_fees {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
                     withdrawal_request_bitcoin_address: bitcoin_address
                     withdrawal_request_withdrawal_mode: withdrawal_mode
                     withdrawal_request_status: status
@@ -1099,6 +1108,7 @@ query FetchWalletToWithdrawalRequestsConnection($entity_id: ID!, $first: Int, $a
                     withdrawal_request_withdrawal: withdrawal {
                         id
                     }
+                    withdrawal_request_idempotency_key: idempotency_key
                 }
             }
         }

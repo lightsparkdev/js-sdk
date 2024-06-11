@@ -1251,6 +1251,7 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
                         }
                         outgoing_payment_payment_preimage: payment_preimage
                         outgoing_payment_is_internal_payment: is_internal_payment
+                        outgoing_payment_idempotency_key: idempotency_key
                     }
                     ... on RoutingTransaction {
                         __typename
@@ -1704,15 +1705,16 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
     bitcoinNetworks: BitcoinNetwork[] | undefined = undefined,
     statuses: WithdrawalRequestStatus[] | undefined = undefined,
     nodeIds: string[] | undefined = undefined,
+    idempotencyKeys: string[] | undefined = undefined,
     afterDate: string | undefined = undefined,
     beforeDate: string | undefined = undefined,
   ): Promise<AccountToWithdrawalRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $bitcoin_networks: [BitcoinNetwork!], $statuses: [WithdrawalRequestStatus!], $node_ids: [ID!], $after_date: DateTime, $before_date: DateTime) {
+query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $bitcoin_networks: [BitcoinNetwork!], $statuses: [WithdrawalRequestStatus!], $node_ids: [ID!], $idempotency_keys: [String!], $after_date: DateTime, $before_date: DateTime) {
     current_account {
         ... on Account {
-            withdrawal_requests(, first: $first, after: $after, bitcoin_networks: $bitcoin_networks, statuses: $statuses, node_ids: $node_ids, after_date: $after_date, before_date: $before_date) {
+            withdrawal_requests(, first: $first, after: $after, bitcoin_networks: $bitcoin_networks, statuses: $statuses, node_ids: $node_ids, idempotency_keys: $idempotency_keys, after_date: $after_date, before_date: $before_date) {
                 __typename
                 account_to_withdrawal_requests_connection_count: count
                 account_to_withdrawal_requests_connection_page_info: page_info {
@@ -1759,6 +1761,14 @@ query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $b
                         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                     }
+                    withdrawal_request_total_fees: total_fees {
+                        __typename
+                        currency_amount_original_value: original_value
+                        currency_amount_original_unit: original_unit
+                        currency_amount_preferred_currency_unit: preferred_currency_unit
+                        currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
+                        currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
+                    }
                     withdrawal_request_bitcoin_address: bitcoin_address
                     withdrawal_request_withdrawal_mode: withdrawal_mode
                     withdrawal_request_status: status
@@ -1766,6 +1776,7 @@ query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $b
                     withdrawal_request_withdrawal: withdrawal {
                         id
                     }
+                    withdrawal_request_idempotency_key: idempotency_key
                 }
             }
         }
@@ -1778,6 +1789,7 @@ query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $b
         bitcoin_networks: bitcoinNetworks,
         statuses: statuses,
         node_ids: nodeIds,
+        idempotency_keys: idempotencyKeys,
         after_date: afterDate,
         before_date: beforeDate,
       },

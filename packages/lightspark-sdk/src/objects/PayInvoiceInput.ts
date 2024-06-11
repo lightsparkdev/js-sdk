@@ -21,6 +21,12 @@ interface PayInvoiceInput {
    * invoice amount is zero.
    **/
   amountMsats?: number | undefined;
+
+  /**
+   * The idempotency key of the request. The same result will be returned for the same
+   * idempotency key. *
+   */
+  idempotencyKey?: string | undefined;
 }
 
 export const PayInvoiceInputFromJson = (obj: any): PayInvoiceInput => {
@@ -30,6 +36,7 @@ export const PayInvoiceInputFromJson = (obj: any): PayInvoiceInput => {
     timeoutSecs: obj["pay_invoice_input_timeout_secs"],
     maximumFeesMsats: obj["pay_invoice_input_maximum_fees_msats"],
     amountMsats: obj["pay_invoice_input_amount_msats"],
+    idempotencyKey: obj["pay_invoice_input_idempotency_key"],
   } as PayInvoiceInput;
 };
 export const PayInvoiceInputToJson = (obj: PayInvoiceInput): any => {
@@ -39,6 +46,7 @@ export const PayInvoiceInputToJson = (obj: PayInvoiceInput): any => {
     pay_invoice_input_timeout_secs: obj.timeoutSecs,
     pay_invoice_input_maximum_fees_msats: obj.maximumFeesMsats,
     pay_invoice_input_amount_msats: obj.amountMsats,
+    pay_invoice_input_idempotency_key: obj.idempotencyKey,
   };
 };
 

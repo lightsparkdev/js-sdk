@@ -63,6 +63,8 @@ export { default as DeleteApiTokenInput } from "./DeleteApiTokenInput.js";
 export { default as DeleteApiTokenOutput } from "./DeleteApiTokenOutput.js";
 export { default as Deposit, getDepositQuery } from "./Deposit.js";
 export { default as Entity } from "./Entity.js";
+export { default as FailHtlcsInput } from "./FailHtlcsInput.js";
+export { default as FailHtlcsOutput } from "./FailHtlcsOutput.js";
 export { default as FeeEstimate } from "./FeeEstimate.js";
 export { default as FundNodeInput } from "./FundNodeInput.js";
 export { default as FundNodeOutput } from "./FundNodeOutput.js";
@@ -83,6 +85,8 @@ export { default as IncomingPaymentsForInvoiceQueryInput } from "./IncomingPayme
 export { default as IncomingPaymentsForInvoiceQueryOutput } from "./IncomingPaymentsForInvoiceQueryOutput.js";
 export { default as Invoice, getInvoiceQuery } from "./Invoice.js";
 export { default as InvoiceData } from "./InvoiceData.js";
+export { default as InvoiceForPaymentHashInput } from "./InvoiceForPaymentHashInput.js";
+export { default as InvoiceForPaymentHashOutput } from "./InvoiceForPaymentHashOutput.js";
 export { default as InvoiceType } from "./InvoiceType.js";
 export { default as LightningFeeEstimateForInvoiceInput } from "./LightningFeeEstimateForInvoiceInput.js";
 export { default as LightningFeeEstimateForNodeInput } from "./LightningFeeEstimateForNodeInput.js";
@@ -110,6 +114,7 @@ export { default as Node, getNodeQuery } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";
 export { default as NodeToAddressesConnection } from "./NodeToAddressesConnection.js";
+export { default as OnChainFeeTarget } from "./OnChainFeeTarget.js";
 export {
   default as OnChainTransaction,
   getOnChainTransactionQuery,
@@ -118,9 +123,13 @@ export { default as OutgoingPayment } from "./OutgoingPayment.js";
 export { default as OutgoingPaymentAttempt } from "./OutgoingPaymentAttempt.js";
 export { default as OutgoingPaymentAttemptStatus } from "./OutgoingPaymentAttemptStatus.js";
 export { default as OutgoingPaymentAttemptToHopsConnection } from "./OutgoingPaymentAttemptToHopsConnection.js";
+export { default as OutgoingPaymentForIdempotencyKeyInput } from "./OutgoingPaymentForIdempotencyKeyInput.js";
+export { default as OutgoingPaymentForIdempotencyKeyOutput } from "./OutgoingPaymentForIdempotencyKeyOutput.js";
 export { default as OutgoingPaymentToAttemptsConnection } from "./OutgoingPaymentToAttemptsConnection.js";
 export { default as OutgoingPaymentsForInvoiceQueryInput } from "./OutgoingPaymentsForInvoiceQueryInput.js";
 export { default as OutgoingPaymentsForInvoiceQueryOutput } from "./OutgoingPaymentsForInvoiceQueryOutput.js";
+export { default as OutgoingPaymentsForPaymentHashQueryInput } from "./OutgoingPaymentsForPaymentHashQueryInput.js";
+export { default as OutgoingPaymentsForPaymentHashQueryOutput } from "./OutgoingPaymentsForPaymentHashQueryOutput.js";
 export { default as PageInfo } from "./PageInfo.js";
 export { default as PayInvoiceInput } from "./PayInvoiceInput.js";
 export { default as PayInvoiceOutput } from "./PayInvoiceOutput.js";
@@ -197,3 +206,4 @@ export { default as WithdrawalRequest } from "./WithdrawalRequest.js";
 export { default as WithdrawalRequestStatus } from "./WithdrawalRequestStatus.js";
 export { default as WithdrawalRequestToChannelClosingTransactionsConnection } from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
 export { default as WithdrawalRequestToChannelOpeningTransactionsConnection } from "./WithdrawalRequestToChannelOpeningTransactionsConnection.js";
+export { default as WithdrawalRequestToWithdrawalsConnection } from "./WithdrawalRequestToWithdrawalsConnection.js";
