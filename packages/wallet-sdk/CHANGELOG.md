@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.13
+
+### Patch Changes
+
+- 5b0016e: - Add InvoiceForPaymentHash and OutgoingPaymentsForPaymentHash
+  - Regenerate SDK objects from graphql
+
 ## 0.12.12
 
 ### Patch Changes
