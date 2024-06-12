@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.6.0
+
+### Minor Changes
+
+- 5b0016e: - Add InvoiceForPaymentHash and OutgoingPaymentsForPaymentHash
+  - Regenerate SDK objects from graphql
+
 ## 1.5.14
 
 ### Patch Changes

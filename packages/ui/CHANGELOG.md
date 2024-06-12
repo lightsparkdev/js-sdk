@@ -1,5 +1,12 @@
 # @lightsparkdev/ui
 
+## 1.0.2
+
+### Patch Changes
+
+- 5b0016e: - Make default typography themeable for Button
+- 5b0016e: - Add useDocumentTitle effect
+
 ## 1.0.1
 
 ### Patch Changes
