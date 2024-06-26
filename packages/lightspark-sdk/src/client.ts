@@ -588,6 +588,9 @@ class LightsparkClient {
    *     h-tag (SHA256 purpose of payment) of the resulting Bolt 11 invoice. See
    *     [this spec](https://github.com/lnurl/luds/blob/luds/06.md#pay-to-static-qrnfclink) for details.
    * @param expirySecs The number of seconds until the invoice expires. Defaults to 3600 (1 hour).
+   * @param signingPrivateKey The receiver's signing private key. Used to hash the receiver identifier.
+   * @param receiverIdentifier Optional identifier of the receiver. If provided, this will be hashed using a
+   *     monthly-rotated seed and used for anonymized analysis.
    * @returns An Invoice object representing the generated invoice.
    */
   public async createUmaInvoice(
@@ -595,14 +598,33 @@ class LightsparkClient {
     amountMsats: number,
     metadata: string,
     expirySecs: number | undefined = undefined,
+    signingPrivateKey: Uint8Array | undefined = undefined,
+    receiverIdentifier: string | undefined = undefined,
   ): Promise<Invoice | undefined> {
     const metadataHash = await createSha256Hash(metadata, true);
-    const variables = {
+    let receiverHash: string | undefined = undefined;
+    if (receiverIdentifier !== undefined) {
+      if (signingPrivateKey == undefined) {
+        throw new LightsparkException(
+          "CreateUmaInvoiceError",
+          "Receiver identifier provided without signing private key",
+        );
+      }
+      receiverHash = await this.hashUmaIdentifier(
+        receiverIdentifier,
+        signingPrivateKey,
+      );
+    }
+
+    const variables: Record<string, string | number> = {
       node_id: nodeId,
       amount_msats: amountMsats,
       metadata_hash: metadataHash,
       expiry_secs: expirySecs !== undefined ? expirySecs : 3600,
     };
+    if (receiverHash !== undefined) {
+      variables.receiver_hash = receiverHash;
+    }
     const response = await this.requester.makeRawRequest(
       CreateUmaInvoice,
       variables,
@@ -851,6 +873,9 @@ class LightsparkClient {
    * @param amountMsats The amount to pay in msats for a zero-amount invoice. Defaults to the full amount of the
    *     invoice. NOTE: This parameter can only be passed for a zero-amount
    *     invoice. Otherwise, the call will fail.
+   * @param signingPrivateKey The sender's signing private key. Used to hash the sender identifier.
+   * @param senderIdentifier Optional identifier of the sender. If provided, this will be hashed using a
+   *     monthly-rotated seed and used for anonymized analysis.
    * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
    */
   public async payUmaInvoice(
@@ -859,10 +884,27 @@ class LightsparkClient {
     maximumFeesMsats: number,
     timeoutSecs: number = 60,
     amountMsats: number | undefined = undefined,
+    signingPrivateKey: Uint8Array | undefined = undefined,
+    senderIdentifier: string | undefined = undefined,
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
     }
+
+    let senderHash: string | undefined = undefined;
+    if (senderIdentifier !== undefined) {
+      if (signingPrivateKey == undefined) {
+        throw new LightsparkException(
+          "PayUmaInvoiceError",
+          "Sender identifier provided without signing private key",
+        );
+      }
+      senderHash = await this.hashUmaIdentifier(
+        senderIdentifier,
+        signingPrivateKey,
+      );
+    }
+
     const variables: Record<string, string | number> = {
       node_id: payerNodeId,
       encoded_invoice: encodedInvoice,
@@ -871,6 +913,9 @@ class LightsparkClient {
     };
     if (amountMsats !== undefined) {
       variables.amount_msats = amountMsats;
+    }
+    if (senderHash !== undefined) {
+      variables.sender_hash = senderHash;
     }
     const response = await this.requester.makeRawRequest(
       PayUmaInvoice,
@@ -1494,6 +1539,22 @@ class LightsparkClient {
       );
     }
     return await createSha256Hash(e164PhoneNumber, true);
+  }
+
+  public async hashUmaIdentifier(
+    identifier: string,
+    signingPrivateKey: Uint8Array,
+  ): Promise<string> {
+    const now = this.getUtcDateTime();
+    const input =
+      identifier +
+      `${now.getUTCMonth() + 1}-${now.getUTCFullYear()}` +
+      signingPrivateKey.toString();
+    return await createSha256Hash(input, true);
+  }
+
+  getUtcDateTime(): Date {
+    return new Date();
   }
 
   /**
