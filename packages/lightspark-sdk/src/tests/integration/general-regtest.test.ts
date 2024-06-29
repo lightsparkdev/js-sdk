@@ -586,6 +586,9 @@ describe(p1SuiteName, () => {
         nodeId,
         1000,
         metadata,
+        undefined,
+        Buffer.from("key"),
+        "$bob@vasp2.com",
       );
       expect(umaInvoice?.status).toEqual(PaymentRequestStatus.OPEN);
     },

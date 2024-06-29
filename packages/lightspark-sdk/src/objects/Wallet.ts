@@ -1109,6 +1109,7 @@ query FetchWalletToWithdrawalRequestsConnection($entity_id: ID!, $first: Int, $a
                         id
                     }
                     withdrawal_request_idempotency_key: idempotency_key
+                    withdrawal_request_initiator: initiator
                 }
             }
         }

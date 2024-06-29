@@ -27,11 +27,10 @@ import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
 import { Headline, headlineSelector } from "./typography/Headline.js";
 
-export interface ExtraAction {
+type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */
   placement: "above" | "below";
-  content: React.ReactNode;
-}
+};
 
 type SubmitLinkWithRoute<RoutesType extends string> = {
   to: RoutesType;
@@ -41,6 +40,9 @@ type SubmitLinkWithHref = {
   href: string;
   filename?: string;
 };
+
+// Styles for the modal when below the sm breakpoint
+type SmKind = "drawer" | "fullscreen" | "default";
 
 function isSubmitLinkWithHref<RoutesType extends string>(
   submitLink: SubmitLinkWithRoute<RoutesType> | SubmitLinkWithHref | undefined,
@@ -77,14 +79,15 @@ type ModalProps<RoutesType extends string> = {
   /* This should always be true for accessibility purposes unless you are
    * managing focus in a child component */
   autoFocus?: boolean;
-  smDrawer?: boolean;
+  smKind?: SmKind;
+  top?: number;
   nonDismissable?: boolean;
   width?: 460 | 600;
   progressBar?: ProgressBarProps;
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";
   /** Allows placing extra buttons in the same button layout */
-  extraActions?: ExtraAction[];
+  extraActions?: ExtraAction[] | undefined;
 };
 
 export function Modal<RoutesType extends string>({
@@ -105,7 +108,8 @@ export function Modal<RoutesType extends string>({
   submitLink,
   cancelText = "Cancel",
   firstFocusRef,
-  smDrawer,
+  smKind = "default",
+  top,
   nonDismissable = false,
   autoFocus = true,
   width = 460,
@@ -231,7 +235,9 @@ export function Modal<RoutesType extends string>({
     <>
       {extraActions
         ?.filter((action) => action.placement === "above")
-        .map((action) => action.content)}
+        .map(({ placement, text, ...rest }, i) => (
+          <Button key={text || `no-text-${i}`} text={text} {...rest} />
+        ))}
       {!isSm && !cancelHidden && (
         <Button
           disabled={cancelDisabled}
@@ -258,7 +264,9 @@ export function Modal<RoutesType extends string>({
       {isSm && !cancelHidden && <Button onClick={onClose} text={cancelText} />}
       {extraActions
         ?.filter((action) => action.placement === "below")
-        .map((action) => action.content)}
+        .map(({ placement, text, ...rest }, i) => (
+          <Button key={text || `no-text-${i}`} text={text} {...rest} />
+        ))}
     </>
   );
 
@@ -324,7 +332,7 @@ export function Modal<RoutesType extends string>({
   );
 
   let content: React.ReactNode;
-  if (smDrawer && isSm) {
+  if (smKind === "drawer" && isSm) {
     content = (
       <Drawer onClose={() => onClickCloseButton()} closeButton>
         {modalContent}
@@ -333,15 +341,18 @@ export function Modal<RoutesType extends string>({
   } else {
     content = (
       <Fragment>
-        <ModalOverlay ref={overlayRef} />
+        {!(smKind === "fullscreen" && bp.isSm()) ? (
+          <ModalOverlay ref={overlayRef} />
+        ) : null}
         <ModalContainer
           aria-modal
           aria-hidden
           tabIndex={-1}
           role="dialog"
           ref={modalContainerRef}
+          top={top || (smKind === "default" ? standardContentInset.smPx : 0)}
         >
-          <ModalContent width={width} ghost={ghost}>
+          <ModalContent width={width} ghost={ghost} smKind={smKind}>
             {!firstFocusRef && (
               <DefaultFocusTarget ref={defaultFirstFocusRefCb} />
             )}
@@ -384,7 +395,7 @@ const ModalOverlay = styled.div`
   background: rgba(0, 0, 0, 0.5);
 `;
 
-const ModalContainer = styled.div`
+const ModalContainer = styled.div<{ top: number }>`
   pointer-events: none;
   position: fixed;
   top: 0;
@@ -399,7 +410,7 @@ const ModalContainer = styled.div`
   justify-content: center;
   align-items: center;
   color: ${({ theme }) => theme.text};
-  padding-top: ${standardContentInset.smPx}px;
+  ${(props) => `top: ${props.top}px;`}
 `;
 
 const contentTopMarginPx = 24;
@@ -438,18 +449,29 @@ const ModalButtonColumn = styled.div`
 
 const ModalContent = styled.div<{
   width: number;
+  smKind: SmKind;
   ghost?: boolean | undefined;
 }>`
-  ${overflowAutoWithoutScrollbars}
-  ${standardContentInset.smCSS}
-  ${(props) => (props.ghost ? "" : standardBorderRadius(16))}
-  ${(props) => (props.ghost ? "" : overlaySurface)}
   pointer-events: auto;
   transition: width 0.25s ease-in;
-  width: ${(props) => props.width}px;
-  max-width: 100%;
-  max-height: 100%;
-  position: absolute;
+
+  ${({ theme, smKind, ghost }) =>
+    ghost ? "" : overlaySurface({ theme, border: smKind !== "fullscreen" })}
+  ${overflowAutoWithoutScrollbars}
+  ${(props) =>
+    props.smKind === "fullscreen" && bp.isSm()
+      ? `
+    width: 100%;
+    height: 100%;
+  `
+      : `
+    ${props.ghost ? "" : standardBorderRadius(16)}
+    ${standardContentInset.smCSS.styles}
+    width: ${props.width}px;
+    max-width: 100%;
+    max-height: 100%;
+    position: absolute;
+  `}
   ${(props) => (props.ghost ? "" : "padding: 16px 16px 40px;")}
 
   ${headlineSelector("h4")} { {

@@ -8,6 +8,8 @@ interface CreateUmaInvoiceInput {
   metadataHash: string;
 
   expirySecs?: number | undefined;
+
+  receiverHash?: string | undefined;
 }
 
 export const CreateUmaInvoiceInputFromJson = (
@@ -18,6 +20,7 @@ export const CreateUmaInvoiceInputFromJson = (
     amountMsats: obj["create_uma_invoice_input_amount_msats"],
     metadataHash: obj["create_uma_invoice_input_metadata_hash"],
     expirySecs: obj["create_uma_invoice_input_expiry_secs"],
+    receiverHash: obj["create_uma_invoice_input_receiver_hash"],
   } as CreateUmaInvoiceInput;
 };
 export const CreateUmaInvoiceInputToJson = (
@@ -28,6 +31,7 @@ export const CreateUmaInvoiceInputToJson = (
     create_uma_invoice_input_amount_msats: obj.amountMsats,
     create_uma_invoice_input_metadata_hash: obj.metadataHash,
     create_uma_invoice_input_expiry_secs: obj.expirySecs,
+    create_uma_invoice_input_receiver_hash: obj.receiverHash,
   };
 };
 

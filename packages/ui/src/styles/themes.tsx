@@ -58,6 +58,7 @@ const baseThemeColors = {
   text: colors.black,
   vlcNeutral: colors.gray95,
   warning: colors.warning,
+  inputBackground: colors.white,
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
 export const themeOrColorKeyValues = [
@@ -130,6 +131,7 @@ const darkBaseTheme: BaseTheme = {
   warning: colors.warning,
   buttons: defaultButtonsTheme,
   loading: "LoadingSpinner",
+  inputBackground: colors.black,
 };
 
 const lightTheme = extend(lightBaseTheme, {
@@ -171,6 +173,7 @@ const umameDocsLightTheme = extend(lightTheme, {
   secondary: colors.grayBlue43,
   text: colors.grayBlue9,
   link: colors.blue39,
+  inputBackground: colors.white,
   typography: getTypography(TypographyGroup.UmameDocs, {
     main: "Manrope",
     code: "Monaco",
@@ -262,6 +265,7 @@ const bridgeLightTheme = extend(lightTheme, {
   smBg: colors.gray98,
   text: colors.grayBlue9,
   secondary: colors.grayBlue43,
+  inputBackground: colors.white,
 });
 
 const bridgeDarkTheme = extend(darkTheme, {

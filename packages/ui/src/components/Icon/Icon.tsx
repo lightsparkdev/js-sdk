@@ -81,7 +81,7 @@ export const IconContainer = styled.span<IconContainerProps>`
   ${({ theme, fontColor }) => {
     const color = getFontColor(theme, fontColor, "inherit");
     return `
-    & svg {
+    svg, path {
       color: ${getFontColor(theme, fontColor, "inherit")};
 
       /* 

@@ -9,6 +9,7 @@ export const PayUmaInvoice = `
     $timeout_secs: Int!
     $maximum_fees_msats: Long!
     $amount_msats: Long
+    $sender_hash: String = null
   ) {
     pay_uma_invoice(
       input: {
@@ -17,6 +18,7 @@ export const PayUmaInvoice = `
         timeout_secs: $timeout_secs
         maximum_fees_msats: $maximum_fees_msats
         amount_msats: $amount_msats
+        sender_hash: $sender_hash
       }
     ) {
       payment {

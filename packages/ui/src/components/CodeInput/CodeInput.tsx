@@ -80,6 +80,9 @@ export function CodeInput({
         inputRefs.current[ref.id] = createRef();
         inputRefs.current[ref.id].current = ref;
         if (ref.id === getInputId(0) && autoFocus) {
+          /* In insecure contexts iOS will focus the field but does not
+             automatically open the keyboard. localhost and
+             deployed https environments will open the keyboard. */
           ref.focus();
         }
       }

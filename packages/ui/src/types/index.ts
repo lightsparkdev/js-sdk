@@ -20,7 +20,7 @@ export interface LightsparkWindow extends Window {
   /* google tag manager. assume always defined, from index.html: */
   dataLayer: unknown[];
   /* Google Recaptcha adds a global window property, so assume always defined from index.html */
-  grecaptcha: {
+  grecaptcha?: {
     enterprise: {
       ready(cb: unknown): unknown;
       execute(sk: string, cb: unknown): Promise<string>;

@@ -7,12 +7,14 @@ mutation CreateUmaInvoice(
   $amount_msats: Long!
   $metadata_hash: String!
   $expiry_secs: Int = null
+  $receiver_hash: String = null
 ) {
   create_uma_invoice(input: {
       node_id: $node_id
       amount_msats: $amount_msats
       metadata_hash: $metadata_hash
       expiry_secs: $expiry_secs
+      receiver_hash: $receiver_hash
   }) {
       invoice {
           ...InvoiceFragment

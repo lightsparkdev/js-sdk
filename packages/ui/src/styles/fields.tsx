@@ -93,7 +93,7 @@ export const textInputStyle = ({
   typography?: SimpleTypographyProps | undefined;
 }>) => css`
   border-radius: ${textInputBorderRadiusPx}px;
-  background-color: ${disabled ? theme.vlcNeutral : theme.bg};
+  background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;
   font-weight: ${textInputFontWeight};
