@@ -27,11 +27,10 @@ import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
 import { Headline, headlineSelector } from "./typography/Headline.js";
 
-export interface ExtraAction {
+type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */
   placement: "above" | "below";
-  content: React.ReactNode;
-}
+};
 
 type SubmitLinkWithRoute<RoutesType extends string> = {
   to: RoutesType;
@@ -88,7 +87,7 @@ type ModalProps<RoutesType extends string> = {
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";
   /** Allows placing extra buttons in the same button layout */
-  extraActions?: ExtraAction[];
+  extraActions?: ExtraAction[] | undefined;
 };
 
 export function Modal<RoutesType extends string>({
@@ -236,7 +235,9 @@ export function Modal<RoutesType extends string>({
     <>
       {extraActions
         ?.filter((action) => action.placement === "above")
-        .map((action) => action.content)}
+        .map(({ placement, text, ...rest }, i) => (
+          <Button key={text || `no-text-${i}`} text={text} {...rest} />
+        ))}
       {!isSm && !cancelHidden && (
         <Button
           disabled={cancelDisabled}
@@ -263,7 +264,9 @@ export function Modal<RoutesType extends string>({
       {isSm && !cancelHidden && <Button onClick={onClose} text={cancelText} />}
       {extraActions
         ?.filter((action) => action.placement === "below")
-        .map((action) => action.content)}
+        .map(({ placement, text, ...rest }, i) => (
+          <Button key={text || `no-text-${i}`} text={text} {...rest} />
+        ))}
     </>
   );
 
