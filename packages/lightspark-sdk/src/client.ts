@@ -20,6 +20,7 @@ import {
   Requester,
   SigningKeyType,
   StubAuthProvider,
+  bytesToHex,
   createSha256Hash,
   pollUntil,
 } from "@lightsparkdev/core";
@@ -1549,7 +1550,7 @@ class LightsparkClient {
     const input =
       identifier +
       `${now.getUTCMonth() + 1}-${now.getUTCFullYear()}` +
-      signingPrivateKey.toString();
+      bytesToHex(signingPrivateKey);
     return await createSha256Hash(input, true);
   }
 
