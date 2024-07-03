@@ -162,6 +162,7 @@ const DrawerContainer = styled.div<{
   grabbing: boolean;
 }>`
   position: fixed;
+  max-height: 100dvh;
   width: 100%;
   background-color: ${({ theme }) => theme.bg};
   right: 0;
@@ -172,6 +173,7 @@ const DrawerContainer = styled.div<{
   display: flex;
   flex-direction: column;
   padding: ${Spacing["6xl"]} ${Spacing.xl} ${Spacing["2xl"]} ${Spacing.xl};
+  overflow-y: scroll;
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
   ${(props) =>
