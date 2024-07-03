@@ -334,7 +334,11 @@ export function Modal<RoutesType extends string>({
   let content: React.ReactNode;
   if (smKind === "drawer" && isSm) {
     content = (
-      <Drawer onClose={() => onClickCloseButton()} closeButton>
+      <Drawer
+        onClose={() => onClickCloseButton()}
+        closeButton
+        nonDismissable={nonDismissable}
+      >
         {modalContent}
       </Drawer>
     );

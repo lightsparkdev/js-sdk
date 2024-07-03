@@ -12,6 +12,7 @@ interface Props {
   onClose?: () => void;
   grabber?: boolean;
   closeButton?: boolean;
+  nonDismissable?: boolean;
 }
 
 export const Drawer = (props: Props) => {
@@ -23,6 +24,10 @@ export const Drawer = (props: Props) => {
   const drawerContainerRef = useRef<null | HTMLDivElement>(null);
 
   const handleClose = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setIsOpen(false);
 
     setTimeout(() => {
@@ -33,6 +38,10 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchMove = (event: React.TouchEvent) => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     if (lastY === null) {
       setLastY(event.touches[0].clientY);
     } else {
@@ -54,10 +63,18 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchStart = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setGrabbing(true);
   };
 
   const handleTouchEnd = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setGrabbing(false);
     if (fractionVisible < 0.8) {
       handleClose();
@@ -82,12 +99,12 @@ export const Drawer = (props: Props) => {
         grabbing={grabbing}
         ref={drawerContainerRef}
       >
-        {props.grabber && (
+        {props.grabber && !props.nonDismissable && (
           <Grabber onClick={handleClose}>
             <GrabberBar />
           </Grabber>
         )}
-        {props.closeButton && (
+        {props.closeButton && !props.nonDismissable && (
           <CloseButtonContainer>
             <Button
               onClick={handleClose}
