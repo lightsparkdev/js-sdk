@@ -88,6 +88,8 @@ type ModalProps<RoutesType extends string> = {
   buttonLayout?: "horizontal" | "vertical";
   /** Allows placing extra buttons in the same button layout */
   extraActions?: ExtraAction[] | undefined;
+  /** Displays a back button at the top of the modal which calls this function */
+  handleBack?: () => void;
 };
 
 export function Modal<RoutesType extends string>({
@@ -116,6 +118,7 @@ export function Modal<RoutesType extends string>({
   progressBar,
   buttonLayout = "horizontal",
   extraActions,
+  handleBack,
 }: ModalProps<RoutesType>) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
@@ -338,6 +341,7 @@ export function Modal<RoutesType extends string>({
         onClose={() => onClickCloseButton()}
         closeButton
         nonDismissable={nonDismissable}
+        handleBack={handleBack}
       >
         {modalContent}
       </Drawer>
@@ -360,12 +364,19 @@ export function Modal<RoutesType extends string>({
             {!firstFocusRef && (
               <DefaultFocusTarget ref={defaultFirstFocusRefCb} />
             )}
-            {!(nonDismissable || ghost) && (
-              <CloseButtonContainer>
-                <CloseButton onClick={onClickCloseButton} type="button">
-                  <Icon name="Close" width={9} />
-                </CloseButton>
-              </CloseButtonContainer>
+            {!ghost && (
+              <ModalNavigation>
+                {handleBack && (
+                  <BackButton onClick={handleBack}>
+                    <Icon name="ChevronLeft" width={16} />
+                  </BackButton>
+                )}
+                {!nonDismissable && (
+                  <CloseButton onClick={onClickCloseButton} type="button">
+                    <Icon name="Close" width={9} />
+                  </CloseButton>
+                )}
+              </ModalNavigation>
             )}
             <ModalContentInner ghost={ghost}>{modalContent}</ModalContentInner>
           </ModalContent>
@@ -486,17 +497,24 @@ const ModalContent = styled.div<{
   }
 `;
 
-const CloseButtonContainer = styled.div`
-  display: flex;
-  flex-direction: row;
+const ModalNavigation = styled.div`
+  display: grid;
+  grid-auto-flow: column;
   width: 100%;
-  justify-content: flex-end;
+`;
+
+const BackButton = styled(UnstyledButton)`
+  ${standardFocusOutline}
+  width: 24px;
+  height: 24px;
+  justify-self: flex-start;
 `;
 
 const CloseButton = styled(UnstyledButton)`
   ${standardFocusOutline}
   width: 24px;
   height: 24px;
+  justify-self: flex-end;
 `;
 
 const ModalContentInner = styled.div<{ ghost?: boolean | undefined }>`

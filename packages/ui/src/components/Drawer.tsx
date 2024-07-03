@@ -3,9 +3,12 @@
 import styled from "@emotion/styled";
 import { useRef, useState } from "react";
 import { colors } from "../styles/colors.js";
+import { standardFocusOutline } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { z } from "../styles/z-index.js";
 import { Button } from "./Button.js";
+import { Icon } from "./Icon/Icon.js";
+import { UnstyledButton } from "./UnstyledButton.js";
 
 interface Props {
   children?: React.ReactNode;
@@ -13,6 +16,7 @@ interface Props {
   grabber?: boolean;
   closeButton?: boolean;
   nonDismissable?: boolean;
+  handleBack?: (() => void) | undefined;
 }
 
 export const Drawer = (props: Props) => {
@@ -104,14 +108,21 @@ export const Drawer = (props: Props) => {
             <GrabberBar />
           </Grabber>
         )}
+        {props.handleBack && (
+          <BackButtonContainer>
+            <Button
+              onClick={props.handleBack}
+              icon="ChevronLeft"
+              kind="ghost"
+              size="Small"
+            />
+          </BackButtonContainer>
+        )}
         {props.closeButton && !props.nonDismissable && (
           <CloseButtonContainer>
-            <Button
-              onClick={handleClose}
-              icon="Close"
-              kind="ghost"
-              size="ExtraSmall"
-            ></Button>
+            <CloseButton onClick={handleClose} type="button">
+              <Icon name="Close" width={12} />
+            </CloseButton>
           </CloseButtonContainer>
         )}
         {props.children}
@@ -220,6 +231,25 @@ const CloseButtonContainer = styled.div`
   * > * {
     line-height: 14px;
   }
+`;
+
+const CloseButton = styled(UnstyledButton)`
+  ${standardFocusOutline}
+  width: 24px;
+  height: 24px;
+  justify-self: flex-end;
+`;
+
+const BackButtonContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  border-radius: 50%;
+  padding: ${Spacing.xs};
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
 `;
 
 const GrabberBar = styled.div`
