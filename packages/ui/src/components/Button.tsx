@@ -106,9 +106,13 @@ function getPaddingX(size: TokenSizeKey, kind: ButtonKind, isRound: boolean) {
 function getPadding({ paddingY, kind, size, iconSide, isRound }: PaddingProps) {
   const paddingX = getPaddingX(size, kind, isRound);
   const paddingForIcon = 0;
-  return `${paddingY}px ${
-    paddingX + (iconSide === "right" ? paddingForIcon : 0)
-  }px ${paddingY}px ${paddingX + (iconSide === "left" ? paddingForIcon : 0)}px`;
+  return kind === "ghost"
+    ? 0
+    : `${paddingY}px ${
+        paddingX + (iconSide === "right" ? paddingForIcon : 0)
+      }px ${paddingY}px ${
+        paddingX + (iconSide === "left" ? paddingForIcon : 0)
+      }px`;
 }
 
 function resolveBackgroundColorKey(

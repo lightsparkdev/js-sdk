@@ -195,6 +195,10 @@ const CloseButtonContainer = styled.div`
   border-radius: 50%;
   background-color: ${colors.grayBlue94};
   padding: ${Spacing.xs};
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
 
   * > * {
     line-height: 14px;
