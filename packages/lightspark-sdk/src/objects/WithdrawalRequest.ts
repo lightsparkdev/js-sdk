@@ -9,6 +9,7 @@ import {
   CurrencyAmountToJson,
 } from "./CurrencyAmount.js";
 import type Entity from "./Entity.js";
+import RequestInitiator from "./RequestInitiator.js";
 import WithdrawalMode from "./WithdrawalMode.js";
 import WithdrawalRequestStatus from "./WithdrawalRequestStatus.js";
 import type WithdrawalRequestToChannelClosingTransactionsConnection from "./WithdrawalRequestToChannelClosingTransactionsConnection.js";
@@ -55,6 +56,8 @@ class WithdrawalRequest implements Entity {
     public readonly withdrawalMode: WithdrawalMode,
     /** The current status of this withdrawal request. **/
     public readonly status: WithdrawalRequestStatus,
+    /** The initiator of the withdrawal. **/
+    public readonly initiator: RequestInitiator,
     /** The typename of the object **/
     public readonly typename: string,
     /**
@@ -320,6 +323,7 @@ ${FRAGMENT}
       withdrawal_request_completed_at: this.completedAt,
       withdrawal_request_withdrawal: { id: this.withdrawalId } ?? undefined,
       withdrawal_request_idempotency_key: this.idempotencyKey,
+      withdrawal_request_initiator: this.initiator,
     };
   }
 }
@@ -336,6 +340,8 @@ export const WithdrawalRequestFromJson = (obj: any): WithdrawalRequest => {
       WithdrawalMode.FUTURE_VALUE,
     WithdrawalRequestStatus[obj["withdrawal_request_status"]] ??
       WithdrawalRequestStatus.FUTURE_VALUE,
+    RequestInitiator[obj["withdrawal_request_initiator"]] ??
+      RequestInitiator.FUTURE_VALUE,
     "WithdrawalRequest",
     !!obj["withdrawal_request_estimated_amount"]
       ? CurrencyAmountFromJson(obj["withdrawal_request_estimated_amount"])
@@ -406,6 +412,7 @@ fragment WithdrawalRequestFragment on WithdrawalRequest {
         id
     }
     withdrawal_request_idempotency_key: idempotency_key
+    withdrawal_request_initiator: initiator
 }`;
 
 export default WithdrawalRequest;

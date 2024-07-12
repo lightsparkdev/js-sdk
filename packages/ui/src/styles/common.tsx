@@ -2,7 +2,7 @@ import type { Theme } from "@emotion/react";
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { bp } from "./breakpoints.js";
-import { colors, darkGradient } from "./colors.js";
+import { darkGradient } from "./colors.js";
 import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
 
 export const rootFontSizePx = 12;
@@ -153,10 +153,11 @@ export const overlaySurfaceBorderColor = ({
 export const overlaySurface = ({
   theme,
   important = false,
-}: WithTheme<{ important?: boolean }>) => css`
-  background-color: ${themeOr(colors.white, theme.c1Neutral)({ theme })}
+  border = true,
+}: WithTheme<{ important?: boolean; border?: boolean }>) => css`
+  background-color: ${themeOr(theme.bg, theme.c1Neutral)({ theme })}
     ${important ? "!important" : ""};
-  border: 0.5px solid ${important ? "!important" : ""};
+  ${border ? `border: 0.5px solid ${important ? "!important" : ""};` : ""}
   ${overlaySurfaceBorderColor({ theme, important })};
   ${themeOr(
     `box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1) ${

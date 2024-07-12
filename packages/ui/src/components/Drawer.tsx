@@ -3,15 +3,20 @@
 import styled from "@emotion/styled";
 import { useRef, useState } from "react";
 import { colors } from "../styles/colors.js";
+import { standardFocusOutline } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { z } from "../styles/z-index.js";
 import { Button } from "./Button.js";
+import { Icon } from "./Icon/Icon.js";
+import { UnstyledButton } from "./UnstyledButton.js";
 
 interface Props {
   children?: React.ReactNode;
   onClose?: () => void;
   grabber?: boolean;
   closeButton?: boolean;
+  nonDismissable?: boolean;
+  handleBack?: (() => void) | undefined;
 }
 
 export const Drawer = (props: Props) => {
@@ -23,6 +28,10 @@ export const Drawer = (props: Props) => {
   const drawerContainerRef = useRef<null | HTMLDivElement>(null);
 
   const handleClose = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setIsOpen(false);
 
     setTimeout(() => {
@@ -33,6 +42,10 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchMove = (event: React.TouchEvent) => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     if (lastY === null) {
       setLastY(event.touches[0].clientY);
     } else {
@@ -54,10 +67,18 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchStart = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setGrabbing(true);
   };
 
   const handleTouchEnd = () => {
+    if (props.nonDismissable) {
+      return;
+    }
+
     setGrabbing(false);
     if (fractionVisible < 0.8) {
       handleClose();
@@ -82,19 +103,26 @@ export const Drawer = (props: Props) => {
         grabbing={grabbing}
         ref={drawerContainerRef}
       >
-        {props.grabber && (
+        {props.grabber && !props.nonDismissable && (
           <Grabber onClick={handleClose}>
             <GrabberBar />
           </Grabber>
         )}
-        {props.closeButton && (
-          <CloseButtonContainer>
+        {props.handleBack && (
+          <BackButtonContainer>
             <Button
-              onClick={handleClose}
-              icon="Close"
+              onClick={props.handleBack}
+              icon="ChevronLeft"
               kind="ghost"
-              size="ExtraSmall"
-            ></Button>
+              size="Small"
+            />
+          </BackButtonContainer>
+        )}
+        {props.closeButton && !props.nonDismissable && (
+          <CloseButtonContainer>
+            <CloseButton onClick={handleClose} type="button">
+              <Icon name="Close" width={12} />
+            </CloseButton>
           </CloseButtonContainer>
         )}
         {props.children}
@@ -134,6 +162,7 @@ const DrawerContainer = styled.div<{
   grabbing: boolean;
 }>`
   position: fixed;
+  max-height: 100dvh;
   width: 100%;
   background-color: ${({ theme }) => theme.bg};
   right: 0;
@@ -144,6 +173,7 @@ const DrawerContainer = styled.div<{
   display: flex;
   flex-direction: column;
   padding: ${Spacing["6xl"]} ${Spacing.xl} ${Spacing["2xl"]} ${Spacing.xl};
+  overflow-y: scroll;
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
   ${(props) =>
@@ -195,10 +225,33 @@ const CloseButtonContainer = styled.div`
   border-radius: 50%;
   background-color: ${colors.grayBlue94};
   padding: ${Spacing.xs};
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
 
   * > * {
     line-height: 14px;
   }
+`;
+
+const CloseButton = styled(UnstyledButton)`
+  ${standardFocusOutline}
+  width: 24px;
+  height: 24px;
+  justify-self: flex-end;
+`;
+
+const BackButtonContainer = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  border-radius: 50%;
+  padding: ${Spacing.xs};
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
 `;
 
 const GrabberBar = styled.div`

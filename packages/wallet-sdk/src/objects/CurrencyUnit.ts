@@ -18,7 +18,7 @@ export enum CurrencyUnit {
    */
   SATOSHI = "SATOSHI",
   /**
-   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible. *
+   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible.
    */
   MILLISATOSHI = "MILLISATOSHI",
   /** United States Dollar. **/

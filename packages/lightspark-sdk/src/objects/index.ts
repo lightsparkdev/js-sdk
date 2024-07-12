@@ -152,6 +152,7 @@ export { default as ReleaseChannelPerCommitmentSecretOutput } from "./ReleaseCha
 export { default as ReleasePaymentPreimageInput } from "./ReleasePaymentPreimageInput.js";
 export { default as ReleasePaymentPreimageOutput } from "./ReleasePaymentPreimageOutput.js";
 export { default as RemoteSigningSubEventType } from "./RemoteSigningSubEventType.js";
+export { default as RequestInitiator } from "./RequestInitiator.js";
 export { default as RequestWithdrawalInput } from "./RequestWithdrawalInput.js";
 export { default as RequestWithdrawalOutput } from "./RequestWithdrawalOutput.js";
 export { default as RichText } from "./RichText.js";

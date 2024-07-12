@@ -19,6 +19,7 @@ import { NextLink } from "./NextLink.js";
 export type LinkNode = {
   text: string;
   to: NewRoutesType | undefined;
+  newTab?: boolean;
 };
 
 export type ExternalLinkNode = {
@@ -102,6 +103,7 @@ export function toNonTypographicReactNodes(
         <Link<NewRoutesType>
           to={node.to}
           key={`link-${i}-${node.text.substr(0, 10)}`}
+          newTab={!!node.newTab}
         >
           {node.text}
         </Link>
