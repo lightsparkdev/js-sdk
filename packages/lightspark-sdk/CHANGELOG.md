@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.7.0
+
+### Minor Changes
+
+- e647962: - Add extra params to createUmaInvoice and payUmaInvoice for analytics.
+  - Regenerate SDK objects from graphql
+
 ## 1.6.0
 
 ### Minor Changes

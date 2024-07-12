@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.14
+
+### Patch Changes
+
+- e647962: - Add extra params to createUmaInvoice and payUmaInvoice for analytics.
+  - Regenerate SDK objects from graphql
+
 ## 0.12.13
 
 ### Patch Changes
