@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.0.3
+
+### Patch Changes
+
+- e647962: Updates to Button, CodeInput, Drawer, Icon, Modal, Video
+
 ## 1.0.2
 
 ### Patch Changes
