@@ -96,7 +96,7 @@ const sdkVersion = packageJson.version;
  *    new CustomJwtAuthProvider(new InMemoryTokenStorage()),
  * );
  * const encodedInvoice = await lightsparkClient.createInvoice(
- *   { value: 100, unit: CurrencyUnit.SATOSHI },
+ *   100000,
  *   "Whasssupppp",
  *   InvoiceType.AMP,
  * );

@@ -33,7 +33,8 @@ You can then use the client to make API calls. For example, to create an invoice
 
 ```typescript
 const encodedInvoice = await lightsparkClient.createInvoice({
-  amount: { value: 100, unit: CurrencyUnit.SATOSHI },
+  nodeId: RECEIVING_NODE_ID,
+  amountMsats: 100000,
   memo: "Whasssupppp",
   type: InvoiceType.AMP,
 });
