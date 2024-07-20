@@ -352,7 +352,7 @@ export default class ReceivingVasp {
     // anonymized analysis.
     const enableAnalytics = true;
     const umaInvoiceCreator = {
-      createUmaInvoice: async (amountMsats: number, metadata: string) => {
+      createUmaInvoice: async (amountMsats: number, metadata: string, receiverIdentifier: string | undefined) => {
         console.log(`Creating invoice for ${amountMsats} msats.`);
         const invoice = await this.lightsparkClient.createUmaInvoice(
           this.config.nodeID,
@@ -360,7 +360,7 @@ export default class ReceivingVasp {
           metadata,
           expirationTimeSec,
           enableAnalytics ? this.config.umaSigningPrivKey() : undefined,
-          enableAnalytics ? payeeIdentifier : undefined,
+          enableAnalytics ? receiverIdentifier : undefined,
         );
         console.log(`Created invoice: ${invoice?.id}`);
         return invoice?.data.encodedPaymentRequest;
