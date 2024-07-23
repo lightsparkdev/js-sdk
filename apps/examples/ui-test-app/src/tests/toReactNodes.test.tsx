@@ -1,4 +1,5 @@
 import {
+  setDefaultReactNodesTypography,
   setReactNodesTypography,
   toReactNodes,
 } from "@lightsparkdev/ui/utils/toReactNodes";
@@ -298,7 +299,7 @@ describe("toReactNodes", () => {
   });
 
   it("should not change the typography of typographic nodes when no override is provided for the node type", () => {
-    const stringNode = "Some string that should have typography applied";
+    const stringNode = "Some string that should not have typography applied";
     const linkNode = {
       text: "Some link node that should have typography applied",
       to: TestAppRoutes.PageOne,
@@ -318,6 +319,46 @@ describe("toReactNodes", () => {
       {
         ...linkNode,
         typography: { type: "Body", props: { size: "Large" } },
+      },
+      {
+        ...textNode,
+        typography: { type: "Label", props: { size: "Small" } },
+      },
+    ]);
+  });
+
+  it("setDefaultReactNodesTypography should change the typography of nodes except nodes with existing typography (when replaceExistingTypography is false)", () => {
+    const stringNode =
+      "Some string that should have default typography applied";
+    const linkNode = {
+      text: "Some link node that should have default typography applied",
+      to: TestAppRoutes.PageOne,
+    };
+    const textNode = {
+      text: "Some text node that should keep existing typography",
+      typography: { type: "Label", props: { size: "Small" } },
+    };
+
+    const defaultTypography = {
+      type: "Body",
+      props: { size: "Large" },
+    } as const;
+    const nodes = setDefaultReactNodesTypography(
+      [stringNode, linkNode, textNode],
+      {
+        link: defaultTypography,
+        text: defaultTypography,
+      },
+    );
+
+    expect(nodes).toEqual([
+      {
+        text: stringNode,
+        typography: defaultTypography,
+      },
+      {
+        ...linkNode,
+        typography: defaultTypography,
       },
       {
         ...textNode,

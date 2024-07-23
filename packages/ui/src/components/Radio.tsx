@@ -2,9 +2,9 @@
 
 import styled from "@emotion/styled";
 
-import { Label } from "@lightsparkdev/ui/src/components/typography";
-import { Spacing } from "@lightsparkdev/ui/src/styles/tokens/spacing";
 import React, { useState } from "react";
+import { Spacing } from "../styles/tokens/spacing.js";
+import { Label } from "./typography/Label.js";
 
 interface RadioOption<Option extends string> {
   label: Option;

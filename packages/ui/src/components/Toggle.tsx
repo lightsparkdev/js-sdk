@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
-import { UnstyledButton } from "@lightsparkdev/ui/src/components/UnstyledButton";
-import { colors } from "@lightsparkdev/ui/src/styles/colors";
-import { standardLineHeightEms } from "@lightsparkdev/ui/src/styles/common";
-import { themeOr } from "@lightsparkdev/ui/src/styles/themes";
+import { colors } from "../styles/colors.js";
+import { standardLineHeightEms } from "../styles/common.js";
+import { themeOr } from "../styles/themes.js";
+import { UnstyledButton } from "./UnstyledButton.js";
 
 type ToggleProps = {
   on: boolean;
