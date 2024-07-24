@@ -308,7 +308,7 @@ export function Modal<T extends TypographyTypeKey>({
   let topContentNode = null;
   if (topContent) {
     topContentNode = (
-      <div css={{ marginBottom: Spacing["xl"] }}>
+      <div css={{ marginBottom: Spacing.px.xl }}>
         <IconWithCircleBackground {...topContent} />
       </div>
     );
@@ -435,14 +435,14 @@ const ModalContainer = styled.div<{ top: number }>`
 const contentTopMarginPx = 24;
 const Description = styled.div`
   color: ${({ theme }) => theme.mcNeutral};
-  margin-top: ${Spacing.sm};
+  margin-top: ${Spacing.px.sm};
   & + * {
     margin-top: ${contentTopMarginPx}px;
   }
 `;
 
 const ModalButtonRow = styled.div`
-  margin-top: ${Spacing.lg};
+  margin-top: ${Spacing.px.lg};
   ${bp.minSm(`display: flex;`)}
   gap: 10px;
 
@@ -457,13 +457,13 @@ const ModalButtonRow = styled.div`
 const ModalButtonColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${Spacing.sm};
+  gap: ${Spacing.px.sm};
 
   ${ButtonSelector()} {
     width: 100%;
   }
 
-  margin-top: ${Spacing.lg};
+  margin-top: ${Spacing.px.lg};
 `;
 
 const ModalContent = styled.div<{

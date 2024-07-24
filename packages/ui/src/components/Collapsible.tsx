@@ -161,9 +161,9 @@ export const CollapsingContainer = styled.div<{
 `;
 
 const InnerPadding = styled.div<{ contentIndent?: boolean | undefined }>`
-  padding: ${Spacing["3xs"]} 0 ${Spacing["3xs"]}
-    ${(props) => (props.contentIndent ? Spacing.md : "0")};
-  gap: ${Spacing["4xs"]};
+  padding: ${Spacing.px["3xs"]} 0 ${Spacing.px["3xs"]}
+    ${(props) => (props.contentIndent ? Spacing.px.md : "0")};
+  gap: ${Spacing.px["4xs"]};
   display: flex;
   flex-direction: column;
 `;

@@ -54,7 +54,7 @@ const RadioContainer = styled.div`
 const RadioRow = styled.label`
   display: flex;
   align-items: center;
-  gap: ${Spacing.sm};
+  gap: ${Spacing.px.sm};
 `;
 
 const RadioInput = styled.input``;
