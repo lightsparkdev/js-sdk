@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.7.1
+
+### Patch Changes
+
+- 1028e1c: - Version update on UMA demo vasp
+  - Remove default param on PayUmaInvoice mutation
+
 ## 1.7.0
 
 ### Minor Changes

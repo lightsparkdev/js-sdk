@@ -1,5 +1,12 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.12.15
+
+### Patch Changes
+
+- 1028e1c: - Version update on UMA demo vasp
+  - Remove default param on PayUmaInvoice mutation
+
 ## 0.12.14
 
 ### Patch Changes

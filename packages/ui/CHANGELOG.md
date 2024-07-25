@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.0.4
+
+### Patch Changes
+
+- 1028e1c: Adds numbers to Spacing in addition to px values, setDefaultReactNodesTypography
+
 ## 1.0.3
 
 ### Patch Changes

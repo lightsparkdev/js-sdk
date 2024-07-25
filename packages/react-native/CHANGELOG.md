@@ -1,5 +1,12 @@
 # @lightsparkdev/react-native
 
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies [1028e1c]
+  - @lightsparkdev/wallet-sdk@0.12.15
+
 ## 0.3.14
 
 ### Patch Changes
