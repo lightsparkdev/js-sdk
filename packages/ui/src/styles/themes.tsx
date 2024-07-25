@@ -58,7 +58,6 @@ const baseThemeColors = {
   text: colors.black,
   vlcNeutral: colors.gray95,
   warning: colors.warning,
-  inputBackground: colors.white,
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
 export const themeOrColorKeyValues = [
@@ -76,7 +75,12 @@ const baseTheme = {
   typography: getTypography(TypographyGroup.Lightspark),
   hcNeutralFromBg: (bgHex: string) =>
     hcNeutralFromBg(bgHex, colors.black, colors.white),
+
   buttons: defaultButtonsTheme,
+  badge: {
+    bg: "c05Neutral" as ThemeOrColorKey,
+  },
+  inputBackground: colors.white,
   loading: "LoadingSpinner" as IconName,
 };
 
@@ -129,9 +133,13 @@ const darkBaseTheme: BaseTheme = {
   typography: getTypography(TypographyGroup.Lightspark),
   vlcNeutral: colors.gray20,
   warning: colors.warning,
+
   buttons: defaultButtonsTheme,
   loading: "LoadingSpinner",
   inputBackground: colors.black,
+  badge: {
+    bg: "c15Neutral",
+  },
 };
 
 const lightTheme = extend(lightBaseTheme, {
@@ -255,6 +263,9 @@ const bridgeBaseSettings = {
       },
     },
   }),
+  badge: {
+    bg: "grayBlue94",
+  } as const,
 };
 
 const bridgeLightTheme = extend(lightTheme, {

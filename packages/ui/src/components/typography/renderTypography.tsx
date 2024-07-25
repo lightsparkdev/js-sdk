@@ -1,4 +1,4 @@
-import { type ComponentProps } from "react";
+import React, { type ComponentProps } from "react";
 import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import { Body } from "./Body.js";
 import { BodyStrong } from "./BodyStrong.js";
@@ -22,14 +22,12 @@ export const typographyMap = {
   "Label Strong": LabelStrong,
   Overline: Overline,
   Code: Code,
-  "Code Strong": () => <div>Unimplemented</div>,
+  "Code Strong": Code,
 } as const;
 
-export type RenderTypographyArgs<
-  T extends TypographyTypeKey = TypographyTypeKey,
-> = {
+export type RenderTypographyArgs<T extends TypographyTypeKey> = {
   type: T;
-  props?: ComponentProps<(typeof typographyMap)[T]>;
+  props: ComponentProps<(typeof typographyMap)[T]>;
 };
 
 export const renderTypography = <T extends TypographyTypeKey>(
@@ -37,7 +35,6 @@ export const renderTypography = <T extends TypographyTypeKey>(
   props: ComponentProps<(typeof typographyMap)[T]>,
 ) => {
   const TypographyComponent = typographyMap[type];
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- see https://bit.ly/3WdmdhT - rare case
-  where we need `any` to enable more complete type checking on props arg for callers to this function */
-  return <TypographyComponent {...(props as any)} />;
+  const { children, ...rest } = props;
+  return React.createElement(TypographyComponent, rest, children);
 };

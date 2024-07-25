@@ -346,14 +346,21 @@ export default class ReceivingVasp {
     // In a real implementation, this would be the txId for your own internal
     // tracking in post-transaction hooks.
     const txId = "1234";
+    const payeeIdentifier = `$${user.umaUserName}@${hostNameWithPort(requestUrl)}`;
+    // Controls whether UMA analytics will be enabled. If `true`, the receiver
+    // identifier will be hashed using a monthly-rotated seed and used for
+    // anonymized analysis.
+    const enableAnalytics = true;
     const umaInvoiceCreator = {
-      createUmaInvoice: async (amountMsats: number, metadata: string) => {
+      createUmaInvoice: async (amountMsats: number, metadata: string, receiverIdentifier: string | undefined) => {
         console.log(`Creating invoice for ${amountMsats} msats.`);
         const invoice = await this.lightsparkClient.createUmaInvoice(
           this.config.nodeID,
           amountMsats,
           metadata,
           expirationTimeSec,
+          enableAnalytics ? this.config.umaSigningPrivKey() : undefined,
+          enableAnalytics ? receiverIdentifier : undefined,
         );
         console.log(`Created invoice: ${invoice?.id}`);
         return invoice?.data.encodedPaymentRequest;
@@ -386,7 +393,7 @@ export default class ReceivingVasp {
         receivingVaspPrivateKey: isUmaRequest
           ? this.config.umaSigningPrivKey()
           : undefined,
-        payeeIdentifier: `$${user.umaUserName}@${hostNameWithPort(requestUrl)}`,
+        payeeIdentifier: payeeIdentifier,
       });
       return { httpStatus: 200, data: response.toJsonSchemaObject() };
     } catch (e) {

@@ -112,7 +112,7 @@ const sdkVersion = packageJson.version;
  * );
  * const encodedInvoice = await lightsparkClient.createInvoice(
  *   RECEIVING_NODE_ID,
- *   { value: 100, unit: CurrencyUnit.SATOSHI },
+ *   100000,
  *   "Whasssupppp",
  *   InvoiceType.AMP,
  * );

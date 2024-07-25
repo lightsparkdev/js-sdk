@@ -169,10 +169,11 @@ const DrawerContainer = styled.div<{
   bottom: 0;
   transform: translateY(${(props) => `${props.totalDeltaY}px`});
   z-index: ${z.modalContainer};
-  border-radius: ${Spacing.lg} ${Spacing.lg} 0 0;
+  border-radius: ${Spacing.px.lg} ${Spacing.px.lg} 0 0;
   display: flex;
   flex-direction: column;
-  padding: ${Spacing["6xl"]} ${Spacing.xl} ${Spacing["2xl"]} ${Spacing.xl};
+  padding: ${Spacing.px["6xl"]} ${Spacing.px.xl} ${Spacing.px["2xl"]}
+    ${Spacing.px.xl};
   overflow-y: scroll;
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
@@ -209,7 +210,7 @@ const Grabber = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: ${Spacing.lg};
+  height: ${Spacing.px.lg};
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -224,7 +225,7 @@ const CloseButtonContainer = styled.div`
   right: 20px;
   border-radius: 50%;
   background-color: ${colors.grayBlue94};
-  padding: ${Spacing.xs};
+  padding: ${Spacing.px.xs};
   height: 30px;
   width: 30px;
   display: flex;
@@ -247,7 +248,7 @@ const BackButtonContainer = styled.div`
   top: 20px;
   left: 20px;
   border-radius: 50%;
-  padding: ${Spacing.xs};
+  padding: ${Spacing.px.xs};
   height: 30px;
   width: 30px;
   display: flex;

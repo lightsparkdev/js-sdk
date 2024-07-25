@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
-import { Flex, Icon } from "@lightsparkdev/ui/src/components";
-import { getColor } from "@lightsparkdev/ui/src/styles/themes";
+import { getColor } from "../styles/themes.js";
+import { Flex } from "./Flex.js";
+import { Icon } from "./Icon/Icon.js";
 
 type IconWithCircleBackgroundProps = {
   iconName?: "WarningSign" | "Envelope" | "Bank";

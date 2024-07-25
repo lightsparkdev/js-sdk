@@ -13,9 +13,13 @@ import {
   standardFocusOutline,
 } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
-import { TokenSize } from "../styles/tokens/typography.js";
+import {
+  TokenSize,
+  type TypographyTypeKey,
+} from "../styles/tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
+import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
 import { toReactNodes, type ToReactNodesArgs } from "../utils/toReactNodes.js";
 import { Button, ButtonSelector } from "./Button.js";
@@ -32,8 +36,8 @@ type ExtraAction = ComponentProps<typeof Button> & {
   placement: "above" | "below";
 };
 
-type SubmitLinkWithRoute<RoutesType extends string> = {
-  to: RoutesType;
+type SubmitLinkWithRoute = {
+  to: NewRoutesType;
 };
 
 type SubmitLinkWithHref = {
@@ -44,20 +48,20 @@ type SubmitLinkWithHref = {
 // Styles for the modal when below the sm breakpoint
 type SmKind = "drawer" | "fullscreen" | "default";
 
-function isSubmitLinkWithHref<RoutesType extends string>(
-  submitLink: SubmitLinkWithRoute<RoutesType> | SubmitLinkWithHref | undefined,
+function isSubmitLinkWithHref(
+  submitLink: SubmitLinkWithRoute | SubmitLinkWithHref | undefined,
 ): submitLink is SubmitLinkWithHref {
   return Boolean(submitLink && "href" in submitLink);
 }
 
 type TopContent = ComponentProps<typeof IconWithCircleBackground>;
 
-type ModalProps<RoutesType extends string> = {
+type ModalProps<T extends TypographyTypeKey> = {
   visible: boolean;
   onClose: () => void;
   topContent?: TopContent | undefined;
-  title?: ToReactNodesArgs;
-  description?: ToReactNodesArgs;
+  title?: ToReactNodesArgs<T>;
+  description?: ToReactNodesArgs<T>;
   cancelText?: string | undefined;
   cancelDisabled?: boolean;
   cancelHidden?: boolean;
@@ -69,7 +73,7 @@ type ModalProps<RoutesType extends string> = {
   submitText?: string;
   submitLink?:
     | {
-        to: RoutesType;
+        to: NewRoutesType;
       }
     | SubmitLinkWithHref;
   children?: React.ReactNode;
@@ -92,7 +96,7 @@ type ModalProps<RoutesType extends string> = {
   handleBack?: () => void;
 };
 
-export function Modal<RoutesType extends string>({
+export function Modal<T extends TypographyTypeKey>({
   visible,
   topContent,
   title,
@@ -119,7 +123,7 @@ export function Modal<RoutesType extends string>({
   buttonLayout = "horizontal",
   extraActions,
   handleBack,
-}: ModalProps<RoutesType>) {
+}: ModalProps<T>) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
@@ -304,7 +308,7 @@ export function Modal<RoutesType extends string>({
   let topContentNode = null;
   if (topContent) {
     topContentNode = (
-      <div css={{ marginBottom: Spacing["xl"] }}>
+      <div css={{ marginBottom: Spacing.px.xl }}>
         <IconWithCircleBackground {...topContent} />
       </div>
     );
@@ -431,14 +435,14 @@ const ModalContainer = styled.div<{ top: number }>`
 const contentTopMarginPx = 24;
 const Description = styled.div`
   color: ${({ theme }) => theme.mcNeutral};
-  margin-top: ${Spacing.sm};
+  margin-top: ${Spacing.px.sm};
   & + * {
     margin-top: ${contentTopMarginPx}px;
   }
 `;
 
 const ModalButtonRow = styled.div`
-  margin-top: ${Spacing.lg};
+  margin-top: ${Spacing.px.lg};
   ${bp.minSm(`display: flex;`)}
   gap: 10px;
 
@@ -453,13 +457,13 @@ const ModalButtonRow = styled.div`
 const ModalButtonColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${Spacing.sm};
+  gap: ${Spacing.px.sm};
 
   ${ButtonSelector()} {
     width: 100%;
   }
 
-  margin-top: ${Spacing.lg};
+  margin-top: ${Spacing.px.lg};
 `;
 
 const ModalContent = styled.div<{

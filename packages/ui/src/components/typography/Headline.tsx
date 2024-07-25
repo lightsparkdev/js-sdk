@@ -20,7 +20,7 @@ type HeadlineProps = {
   content?: ToNonTypographicReactNodesArgs | undefined | null;
   /* children must be a string. use content prop for more complex content */
   children?: string | undefined | null;
-  size?: TokenSizeKey;
+  size?: TokenSizeKey | undefined;
   color?: FontColorKey | undefined;
   heading?: Heading;
   id?: string | undefined;

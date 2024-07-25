@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { standardLineHeightEms } from "@lightsparkdev/ui/src/styles/common";
 import CheckmarkUrl from "../static/images/Checkmark.svg?url";
+import { standardLineHeightEms } from "../styles/common.js";
 
 export type CheckboxProps = {
   checked: boolean;

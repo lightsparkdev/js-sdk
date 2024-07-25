@@ -13,7 +13,7 @@ import { standardBorderColor } from "../../styles/fields.js";
 import { Heading, headingWithDefaults } from "../../styles/type.js";
 import { select } from "../../utils/emotion.js";
 import { toReactNodes } from "../../utils/toReactNodes.js";
-import { Badge, badgeVPadding } from "../Badge.js";
+import { Badge, badgeSmVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
@@ -216,7 +216,7 @@ export const PageSectionBoxActionRow = <RoutesType extends string>({
           <div>
             <PageSectionBoxTitle>
               {title}
-              {titleBadge ? <Badge text={titleBadge} ml={4} /> : null}
+              {titleBadge ? <Badge content={titleBadge} ml={4} /> : null}
             </PageSectionBoxTitle>
             {description ? (
               <PageSectionBoxDescription>
@@ -372,7 +372,7 @@ export const PageSectionBoxTitle = styled.div<{ lg?: boolean }>`
   font-size: ${({ lg }) => (lg ? 14 : 12)}px;
   font-weight: 600;
   line-height: ${({ lg }) =>
-    standardLineHeightEms * (lg ? 14 : 12) + badgeVPadding * 2}px;
+    standardLineHeightEms * (lg ? 14 : 12) + badgeSmVPadding * 2}px;
 `;
 
 export const PageSectionBoxDescription = styled.div`

@@ -1,5 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
+import { isObject } from "lodash-es";
 import { Fragment, type ReactNode } from "react";
 import {
   renderTypography,
@@ -21,11 +22,18 @@ import {
   type ToNonTypographicReactNodesArgs,
 } from "./toNonTypographicReactNodes.js";
 
+type RenderTypographyArgsOptionalProps<T extends TypographyTypeKey> = Omit<
+  RenderTypographyArgs<T>,
+  "props"
+> & {
+  props?: RenderTypographyArgs<T>["props"];
+};
+
 type TypographicReactNodes<T extends TypographyTypeKey> =
-  | (LinkNode & { typography?: RenderTypographyArgs<T> })
-  | (ExternalLinkNode & { typography?: RenderTypographyArgs<T> })
-  | (TextNode & { typography?: RenderTypographyArgs<T> })
-  | (NextLinkNode & { typography?: RenderTypographyArgs<T> });
+  | (LinkNode & { typography?: RenderTypographyArgsOptionalProps<T> })
+  | (ExternalLinkNode & { typography?: RenderTypographyArgsOptionalProps<T> })
+  | (TextNode & { typography?: RenderTypographyArgsOptionalProps<T> })
+  | (NextLinkNode & { typography?: RenderTypographyArgsOptionalProps<T> });
 
 type ToReactNodesArg<T extends TypographyTypeKey> =
   | string
@@ -55,16 +63,17 @@ export function toReactNodes<T extends TypographyTypeKey>(
     } else if (
       typeof node !== "string" &&
       "typography" in node &&
-      node.typography.type &&
-      node.typography.props
+      node.typography.type
     ) {
+      const props =
+        node.typography.props ||
+        ({} as NonNullable<RenderTypographyArgs<T>["props"]>);
+
       content = (
         <Fragment key={`typography-${i}-${node.text.substr(0, 10)}`}>
           {renderTypography(
             node.typography.type,
-            Object.assign(node.typography.props, {
-              content: node,
-            }),
+            Object.assign(props, { content: node }),
           )}
         </Fragment>
       );
@@ -84,17 +93,18 @@ const setReactNodesTypographyMapTypes = [
   "text",
   "nextLink",
 ] as const;
+
 type SetReactNodesTypographyMapType =
   (typeof setReactNodesTypographyMapTypes)[number];
+
 type SetReactNodesTypographyMap<T extends TypographyTypeKey> = {
-  [nodeType in SetReactNodesTypographyMapType]?: RenderTypographyArgs<T>;
+  [nodeType in SetReactNodesTypographyMapType]?: RenderTypographyArgsOptionalProps<T>;
 };
 
 export function setReactNodesTypography<T extends TypographyTypeKey>(
-  nodesArg:
-    | ToReactNodesArgs<TypographyTypeKey> // The initial typography is unimportant since we'll replace it, so it doesn't need to be generic
-    | ToNonTypographicReactNodesArgs,
+  nodesArg: ToReactNodesArgs<T> | ToNonTypographicReactNodesArgs,
   nodesTypographyMap: SetReactNodesTypographyMap<T>,
+  replaceExistingTypography = true,
 ) {
   const nodes = Array.isArray(nodesArg) ? nodesArg : [nodesArg];
 
@@ -108,32 +118,41 @@ export function setReactNodesTypography<T extends TypographyTypeKey>(
           typography: nodesTypographyMap.text,
         };
       }
-    } else if (isLinkNode(node)) {
+    } else if (!node) {
+      return node;
+    }
+
+    const useExistingTypography =
+      !replaceExistingTypography && isObject(node) && "typography" in node
+        ? node.typography
+        : undefined;
+
+    if (isLinkNode(node)) {
       if (nodesTypographyMap.link) {
         return {
           ...node,
-          typography: nodesTypographyMap.link,
+          typography: useExistingTypography || nodesTypographyMap.link,
         };
       }
     } else if (isExternalLinkNode(node)) {
       if (nodesTypographyMap.externalLink) {
         return {
           ...node,
-          typography: nodesTypographyMap.externalLink,
+          typography: useExistingTypography || nodesTypographyMap.externalLink,
         };
       }
     } else if (isNextLinkNode(node)) {
       if (nodesTypographyMap.nextLink) {
         return {
           ...node,
-          typography: nodesTypographyMap.nextLink,
+          typography: useExistingTypography || nodesTypographyMap.nextLink,
         };
       }
     } else if (isTextNode(node)) {
       if (nodesTypographyMap.text) {
         return {
           ...node,
-          typography: nodesTypographyMap.text,
+          typography: useExistingTypography || nodesTypographyMap.text,
         };
       }
     }
@@ -161,4 +180,14 @@ export function toReactNodesWithTypographyMap<T extends TypographyTypeKey>(
 
   const nodes = toReactNodes(nodesWithTypography);
   return nodes;
+}
+
+/* Set typography on react nodes without replacing existing existing typography already set
+   on the nodes. In this way we are just setting a "default" typography which is useful for
+   several components while still allowing downstream instances to override as needed. */
+export function setDefaultReactNodesTypography<T extends TypographyTypeKey>(
+  nodesArg: ToReactNodesArgs<T> | ToNonTypographicReactNodesArgs,
+  nodesTypographyMap: SetReactNodesTypographyMap<T>,
+) {
+  return setReactNodesTypography(nodesArg, nodesTypographyMap, false);
 }
