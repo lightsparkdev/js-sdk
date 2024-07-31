@@ -52,6 +52,8 @@ export const PaymentRequestFromJson = (obj: any): PaymentRequest => {
       amountPaid: !!obj["invoice_amount_paid"]
         ? CurrencyAmountFromJson(obj["invoice_amount_paid"])
         : undefined,
+      isUma: obj["invoice_is_uma"],
+      isLnurl: obj["invoice_is_lnurl"],
     } as Invoice;
   }
   throw new LightsparkException(
@@ -72,6 +74,8 @@ export const PaymentRequestToJson = (obj: PaymentRequest): any => {
       invoice_amount_paid: invoice.amountPaid
         ? CurrencyAmountToJson(invoice.amountPaid)
         : undefined,
+      invoice_is_uma: invoice.isUma,
+      invoice_is_lnurl: invoice.isLnurl,
     };
   }
   throw new LightsparkException(
@@ -388,6 +392,8 @@ fragment PaymentRequestFragment on PaymentRequest {
             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
         }
+        invoice_is_uma: is_uma
+        invoice_is_lnurl: is_lnurl
     }
 }`;
 

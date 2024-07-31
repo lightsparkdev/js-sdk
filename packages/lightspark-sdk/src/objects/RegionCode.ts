@@ -505,6 +505,8 @@ export enum RegionCode {
   ZM = "ZM",
   /** The code representing the country of Zimbabwe. **/
   ZW = "ZW",
+  /** The code representing a fake region for testing. **/
+  NN = "NN",
 }
 
 export default RegionCode;
