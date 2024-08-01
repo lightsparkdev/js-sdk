@@ -1,5 +1,17 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.13.0
+
+### Minor Changes
+
+- c17a851: - Fix error where constructObject can reference properties from non-object argument type
+  - Regenerate SDKs
+
+### Patch Changes
+
+- Updated dependencies [c17a851]
+  - @lightsparkdev/core@1.2.0
+
 ## 0.12.15
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.0
+
+### Minor Changes
+
+- c17a851: - Fix error where constructObject can reference properties from non-object argument type
+  - Regenerate SDKs
+
+### Patch Changes
+
+- Updated dependencies [c17a851]
+  - @lightsparkdev/core@1.2.0
+
 ## 1.7.1
 
 ### Patch Changes
