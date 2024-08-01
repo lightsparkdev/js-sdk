@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.0.5
+
+### Patch Changes
+
+- c17a851: - Update colors
+- Updated dependencies [c17a851]
+  - @lightsparkdev/core@1.2.0
+
 ## 1.0.4
 
 ### Patch Changes

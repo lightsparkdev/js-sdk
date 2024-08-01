@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.2.0
+
+### Minor Changes
+
+- c17a851: - Update types. Non-public constructObject can return null
+
 ## 1.1.0
 
 ### Minor Changes
