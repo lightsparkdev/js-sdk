@@ -107,7 +107,7 @@ query GetGraphNode($id: ID!) {
 ${FRAGMENT}    
 `,
       variables: { id },
-      constructObject: (data: any) =>
+      constructObject: (data: unknown) =>
         data && typeof data === "object" && "entity" in data
           ? GraphNodeFromJson(data.entity)
           : null,

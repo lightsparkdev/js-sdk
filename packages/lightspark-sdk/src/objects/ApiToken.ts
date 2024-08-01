@@ -94,7 +94,7 @@ query GetApiToken($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
+    constructObject: (data: unknown) =>
       data && typeof data === "object" && "entity" in data
         ? ApiTokenFromJson(data.entity)
         : null,

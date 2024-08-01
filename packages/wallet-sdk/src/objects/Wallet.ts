@@ -479,8 +479,8 @@ query GetWallet {
 ${FRAGMENT}    
 `,
       variables: {},
-      constructObject: (data: any) =>
-        data && typeof data === "object" && "entity" in data
+      constructObject: (data: unknown) =>
+        data && typeof data === "object" && "current_wallet" in data
           ? WalletFromJson(data.current_wallet)
           : null,
     };

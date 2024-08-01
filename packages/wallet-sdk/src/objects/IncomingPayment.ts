@@ -113,7 +113,7 @@ query GetIncomingPayment($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
+    constructObject: (data: unknown) =>
       data && typeof data === "object" && "entity" in data
         ? IncomingPaymentFromJson(data.entity)
         : null,

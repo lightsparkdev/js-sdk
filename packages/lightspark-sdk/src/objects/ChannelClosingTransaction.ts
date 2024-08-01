@@ -163,7 +163,7 @@ query GetChannelClosingTransaction($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
+    constructObject: (data: unknown) =>
       data && typeof data === "object" && "entity" in data
         ? ChannelClosingTransactionFromJson(data.entity)
         : null,

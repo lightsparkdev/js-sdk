@@ -403,7 +403,7 @@ query GetOnChainTransaction($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
+    constructObject: (data: unknown) =>
       data && typeof data === "object" && "entity" in data
         ? OnChainTransactionFromJson(data.entity)
         : null,

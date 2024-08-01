@@ -58,7 +58,7 @@ query GetSignable($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
+    constructObject: (data: unknown) =>
       data && typeof data === "object" && "entity" in data
         ? SignableFromJson(data.entity)
         : null,

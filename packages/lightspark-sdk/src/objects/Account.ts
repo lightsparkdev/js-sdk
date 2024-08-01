@@ -1890,8 +1890,8 @@ query GetAccount {
 ${FRAGMENT}    
 `,
       variables: {},
-      constructObject: (data: any) =>
-        data && typeof data === "object" && "entity" in data
+      constructObject: (data: unknown) =>
+        data && typeof data === "object" && "current_account" in data
           ? AccountFromJson(data.current_account)
           : null,
     };

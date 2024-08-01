@@ -1181,7 +1181,7 @@ query GetWallet($id: ID!) {
 ${FRAGMENT}    
 `,
       variables: { id },
-      constructObject: (data: any) =>
+      constructObject: (data: unknown) =>
         data && typeof data === "object" && "entity" in data
           ? WalletFromJson(data.entity)
           : null,
