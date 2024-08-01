@@ -144,7 +144,10 @@ query GetNode($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => NodeFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? NodeFromJson(data.entity)
+        : null,
   };
 };
 

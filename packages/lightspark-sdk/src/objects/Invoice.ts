@@ -35,6 +35,18 @@ interface Invoice {
 
   /** The total amount that has been paid to this invoice. **/
   amountPaid?: CurrencyAmount | undefined;
+
+  /**
+   * Whether this invoice is an UMA invoice or not. NOTE: this field is only set if the invoice
+   * was created using the recommended `create_uma_invoice` function.
+   **/
+  isUma?: boolean | undefined;
+
+  /**
+   * Whether this invoice is an LNURL invoice or not. NOTE: this field is only set if the invoice
+   * was created using the recommended `create_lnurl_invoice` function.
+   **/
+  isLnurl?: boolean | undefined;
 }
 
 export const InvoiceFromJson = (obj: any): Invoice => {
@@ -50,6 +62,8 @@ export const InvoiceFromJson = (obj: any): Invoice => {
     amountPaid: !!obj["invoice_amount_paid"]
       ? CurrencyAmountFromJson(obj["invoice_amount_paid"])
       : undefined,
+    isUma: obj["invoice_is_uma"],
+    isLnurl: obj["invoice_is_lnurl"],
   } as Invoice;
 };
 export const InvoiceToJson = (obj: Invoice): any => {
@@ -63,6 +77,8 @@ export const InvoiceToJson = (obj: Invoice): any => {
     invoice_amount_paid: obj.amountPaid
       ? CurrencyAmountToJson(obj.amountPaid)
       : undefined,
+    invoice_is_uma: obj.isUma,
+    invoice_is_lnurl: obj.isLnurl,
   };
 };
 
@@ -372,6 +388,8 @@ fragment InvoiceFragment on Invoice {
         currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
         currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
     }
+    invoice_is_uma: is_uma
+    invoice_is_lnurl: is_lnurl
 }`;
 
 export const getInvoiceQuery = (id: string): Query<Invoice> => {
@@ -388,7 +406,10 @@ query GetInvoice($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => InvoiceFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? InvoiceFromJson(data.entity)
+        : null,
   };
 };
 

@@ -1676,6 +1676,8 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
+                        invoice_is_uma: is_uma
+                        invoice_is_lnurl: is_lnurl
                     }
                 }
             }
@@ -1888,7 +1890,10 @@ query GetAccount {
 ${FRAGMENT}    
 `,
       variables: {},
-      constructObject: (data: any) => AccountFromJson(data.current_account),
+      constructObject: (data: unknown) =>
+        data && typeof data === "object" && "current_account" in data
+          ? AccountFromJson(data.current_account)
+          : null,
     };
   }
 

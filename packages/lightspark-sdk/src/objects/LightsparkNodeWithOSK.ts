@@ -360,8 +360,10 @@ query GetLightsparkNodeWithOSK($id: ID!) {
 ${FRAGMENT}    
 `,
       variables: { id },
-      constructObject: (data: any) =>
-        LightsparkNodeWithOSKFromJson(data.entity),
+      constructObject: (data: unknown) =>
+        data && typeof data === "object" && "entity" in data
+          ? LightsparkNodeWithOSKFromJson(data.entity)
+          : null,
     };
   }
 

@@ -978,6 +978,8 @@ query FetchWalletToPaymentRequestsConnection($entity_id: ID!, $first: Int, $afte
                             currency_amount_preferred_currency_value_rounded: preferred_currency_value_rounded
                             currency_amount_preferred_currency_value_approx: preferred_currency_value_approx
                         }
+                        invoice_is_uma: is_uma
+                        invoice_is_lnurl: is_lnurl
                     }
                 }
             }
@@ -1179,7 +1181,10 @@ query GetWallet($id: ID!) {
 ${FRAGMENT}    
 `,
       variables: { id },
-      constructObject: (data: any) => WalletFromJson(data.entity),
+      constructObject: (data: unknown) =>
+        data && typeof data === "object" && "entity" in data
+          ? WalletFromJson(data.entity)
+          : null,
     };
   }
 

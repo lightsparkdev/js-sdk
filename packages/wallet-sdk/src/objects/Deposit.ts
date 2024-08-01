@@ -147,7 +147,10 @@ query GetDeposit($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => DepositFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? DepositFromJson(data.entity)
+        : null,
   };
 };
 

@@ -89,7 +89,10 @@ query GetAuditLogActor($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => AuditLogActorFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? AuditLogActorFromJson(data.entity)
+        : null,
   };
 };
 

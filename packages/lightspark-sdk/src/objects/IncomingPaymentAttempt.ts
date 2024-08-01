@@ -110,7 +110,10 @@ query GetIncomingPaymentAttempt($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => IncomingPaymentAttemptFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? IncomingPaymentAttemptFromJson(data.entity)
+        : null,
   };
 };
 

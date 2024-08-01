@@ -163,8 +163,10 @@ query GetChannelOpeningTransaction($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) =>
-      ChannelOpeningTransactionFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? ChannelOpeningTransactionFromJson(data.entity)
+        : null,
   };
 };
 

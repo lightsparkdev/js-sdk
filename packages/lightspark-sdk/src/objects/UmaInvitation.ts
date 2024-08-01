@@ -106,7 +106,10 @@ query GetUmaInvitation($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => UmaInvitationFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? UmaInvitationFromJson(data.entity)
+        : null,
   };
 };
 

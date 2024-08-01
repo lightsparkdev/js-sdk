@@ -1071,7 +1071,7 @@ class LightsparkClient {
    * @param query The `Query` to execute.
    * @returns A zen-observable that emits the result of the query when it changes.
    */
-  public subscribeToRawQuery<T>(query: Query<T>): Observable<T> {
+  public subscribeToRawQuery<T>(query: Query<T>): Observable<T | null> {
     return this.requester
       .subscribe(query.queryPayload, query.variables)
       .map((responseJson: any) => {

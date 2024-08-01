@@ -661,7 +661,10 @@ query GetLightsparkNode($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => LightsparkNodeFromJson(data.entity),
+    constructObject: (data: unknown) =>
+      data && typeof data === "object" && "entity" in data
+        ? LightsparkNodeFromJson(data.entity)
+        : null,
   };
 };
 

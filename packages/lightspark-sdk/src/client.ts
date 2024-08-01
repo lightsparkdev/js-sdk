@@ -139,7 +139,7 @@ class LightsparkClient {
    * @param authProvider The auth provider to use for authentication. Defaults to a stub auth provider.
    * For server-side
    *     use, you should use the `AccountTokenAuthProvider`.
-   * @param serverUrl The base URL of the server to connect to. Defaults to lightspark production.
+   * @param serverUrl The base URL for the Lightspark environment you want to connect to. Your API credentials determine whether you're in test mode or live mode. Typically, you won't need to set this parameter unless you want to connect to a different Lightspark environment than the default production environment.
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
    *     For React Native, you should use the `ReactNativeCrypto`
    *     implementation from `@lightsparkdev/react-native`.
