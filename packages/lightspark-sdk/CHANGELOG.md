@@ -1,5 +1,13 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.1
+
+### Patch Changes
+
+- b43609d: - Fix property null check
+- Updated dependencies [b43609d]
+  - @lightsparkdev/core@1.2.1
+
 ## 1.8.0
 
 ### Minor Changes

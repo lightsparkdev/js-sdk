@@ -1,5 +1,13 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.13.1
+
+### Patch Changes
+
+- b43609d: - Fix property null check
+- Updated dependencies [b43609d]
+  - @lightsparkdev/core@1.2.1
+
 ## 0.13.0
 
 ### Minor Changes
