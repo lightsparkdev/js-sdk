@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { isObject, type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type Balances from "./Balances.js";
@@ -480,7 +480,9 @@ ${FRAGMENT}
 `,
       variables: {},
       constructObject: (data: unknown) =>
-        data && typeof data === "object" && "current_wallet" in data
+        isObject(data) &&
+        "current_wallet" in data &&
+        isObject(data.current_wallet)
           ? WalletFromJson(data.current_wallet)
           : null,
     };

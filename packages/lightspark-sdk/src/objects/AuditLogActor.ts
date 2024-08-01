@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
+import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
 import type ApiToken from "./ApiToken.js";
 import Permission from "./Permission.js";
 
@@ -90,7 +90,7 @@ ${FRAGMENT}
 `,
     variables: { id },
     constructObject: (data: unknown) =>
-      data && typeof data === "object" && "entity" in data
+      isObject(data) && "entity" in data && isObject(data.entity)
         ? AuditLogActorFromJson(data.entity)
         : null,
   };

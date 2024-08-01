@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { isObject, type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type AccountToApiTokensConnection from "./AccountToApiTokensConnection.js";
@@ -1891,7 +1891,9 @@ ${FRAGMENT}
 `,
       variables: {},
       constructObject: (data: unknown) =>
-        data && typeof data === "object" && "current_account" in data
+        isObject(data) &&
+        "current_account" in data &&
+        isObject(data.current_account)
           ? AccountFromJson(data.current_account)
           : null,
     };

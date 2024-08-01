@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { type Query } from "@lightsparkdev/core";
+import { isObject, type Query } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
@@ -140,7 +140,7 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: unknown) =>
-        data && typeof data === "object" && "entity" in data
+        isObject(data) && "entity" in data && isObject(data.entity)
           ? IncomingPaymentFromJson(data.entity)
           : null,
     };
