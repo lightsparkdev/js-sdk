@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.2.1
+
+### Patch Changes
+
+- b43609d: - Add isObject
+
 ## 1.2.0
 
 ### Minor Changes

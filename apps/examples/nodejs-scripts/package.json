@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/nodejs-scripts",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "private": true,
   "description": "Example NodeJS scripts for Lightspark JS SDKs",
   "main": "index.js",
@@ -32,9 +32,9 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.2.0",
-    "@lightsparkdev/lightspark-sdk": "1.8.0",
-    "@lightsparkdev/wallet-sdk": "0.13.0",
+    "@lightsparkdev/core": "1.2.1",
+    "@lightsparkdev/lightspark-sdk": "1.8.1",
+    "@lightsparkdev/wallet-sdk": "0.13.1",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
     "lodash-es": "^4.17.21"
