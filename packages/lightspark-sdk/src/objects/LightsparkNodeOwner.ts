@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, type Query } from "@lightsparkdev/core";
+import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
 import Account from "./Account.js";
 import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import Wallet from "./Wallet.js";
@@ -155,7 +155,7 @@ ${FRAGMENT}
 `,
     variables: { id },
     constructObject: (data: unknown) =>
-      data && typeof data === "object" && "entity" in data
+      isObject(data) && "entity" in data && isObject(data.entity)
         ? LightsparkNodeOwnerFromJson(data.entity)
         : null,
   };
