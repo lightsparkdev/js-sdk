@@ -354,7 +354,9 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) =>
-        LightsparkNodeWithRemoteSigningFromJson(data.entity),
+        data && typeof data === "object" && "entity" in data
+          ? LightsparkNodeWithRemoteSigningFromJson(data.entity)
+          : null,
     };
   }
 

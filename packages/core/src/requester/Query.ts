@@ -11,7 +11,7 @@ type Query<T> = {
    * The function that will be called to construct the object from the
    * response. *
    */
-  constructObject: (rawData: any) => T; // eslint-disable-line @typescript-eslint/no-explicit-any -- LIG-3400
+  constructObject: (rawData: any) => T | null; // eslint-disable-line @typescript-eslint/no-explicit-any -- LIG-3400
 
   /** The id of the node that will be used to sign the query. **/
   signingNodeId?: string;

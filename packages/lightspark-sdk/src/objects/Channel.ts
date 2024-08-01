@@ -181,7 +181,10 @@ query GetChannel($id: ID!) {
 ${FRAGMENT}    
 `,
       variables: { id },
-      constructObject: (data: any) => ChannelFromJson(data.entity),
+      constructObject: (data: any) =>
+        data && typeof data === "object" && "entity" in data
+          ? ChannelFromJson(data.entity)
+          : null,
     };
   }
 

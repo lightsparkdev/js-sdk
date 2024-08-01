@@ -156,7 +156,9 @@ ${FRAGMENT}
 `,
     variables: { id },
     constructObject: (data: any) =>
-      ChannelClosingTransactionFromJson(data.entity),
+      data && typeof data === "object" && "entity" in data
+        ? ChannelClosingTransactionFromJson(data.entity)
+        : null,
   };
 };
 

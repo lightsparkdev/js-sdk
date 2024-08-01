@@ -154,7 +154,10 @@ query GetLightsparkNodeOwner($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => LightsparkNodeOwnerFromJson(data.entity),
+    constructObject: (data: any) =>
+      data && typeof data === "object" && "entity" in data
+        ? LightsparkNodeOwnerFromJson(data.entity)
+        : null,
   };
 };
 

@@ -406,7 +406,10 @@ query GetInvoice($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => InvoiceFromJson(data.entity),
+    constructObject: (data: any) =>
+      data && typeof data === "object" && "entity" in data
+        ? InvoiceFromJson(data.entity)
+        : null,
   };
 };
 

@@ -411,7 +411,10 @@ query GetPaymentRequest($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => PaymentRequestFromJson(data.entity),
+    constructObject: (data: any) =>
+      data && typeof data === "object" && "entity" in data
+        ? PaymentRequestFromJson(data.entity)
+        : null,
   };
 };
 

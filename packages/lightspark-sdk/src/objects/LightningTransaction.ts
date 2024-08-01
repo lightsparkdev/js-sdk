@@ -679,7 +679,10 @@ query GetLightningTransaction($id: ID!) {
 ${FRAGMENT}    
 `,
     variables: { id },
-    constructObject: (data: any) => LightningTransactionFromJson(data.entity),
+    constructObject: (data: any) =>
+      data && typeof data === "object" && "entity" in data
+        ? LightningTransactionFromJson(data.entity)
+        : null,
   };
 };
 

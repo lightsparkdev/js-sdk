@@ -144,7 +144,9 @@ ${FRAGMENT}
 `,
       variables: { id },
       constructObject: (data: any) =>
-        OutgoingPaymentAttemptFromJson(data.entity),
+        data && typeof data === "object" && "entity" in data
+          ? OutgoingPaymentAttemptFromJson(data.entity)
+          : null,
     };
   }
 
