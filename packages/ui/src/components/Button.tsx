@@ -52,8 +52,8 @@ export type ButtonProps<RoutesType extends string> = {
   id?: string | undefined;
   to?: RoutesType | undefined;
   hash?: string | undefined;
-  href?: string | undefined;
-  hrefFilename?: string | undefined;
+  externalLink?: string | undefined;
+  filename?: string | undefined;
   toParams?: RouteParams | undefined;
   icon?: IconName | undefined;
   iconSide?: IconSide;
@@ -233,8 +233,8 @@ export function Button<RoutesType extends string>(
     to,
     id,
     hash,
-    href,
-    hrefFilename,
+    externalLink,
+    filename,
     toParams,
     onClick,
     icon,
@@ -355,11 +355,11 @@ export function Button<RoutesType extends string>(
     );
   }
 
-  return href ? (
+  return externalLink ? (
     <ButtonHrefLink
       {...commonProps}
-      href={href}
-      download={hrefFilename}
+      href={externalLink}
+      download={filename}
       target="_blank"
     >
       {content}

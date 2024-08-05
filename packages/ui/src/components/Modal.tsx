@@ -259,10 +259,10 @@ export function Modal<T extends TypographyTypeKey>({
           text={submitText ?? "Continue"}
           loading={submitLoading}
           to={linkIsRoute ? submitLink.to : undefined}
-          href={linkIsHref ? submitLink.href : undefined}
-          hrefFilename={linkIsHref ? submitLink.filename : undefined}
+          externalLink={linkIsHref ? submitLink.href : undefined}
+          filename={linkIsHref ? submitLink.filename : undefined}
           /* If submit button is a link we should not attempt to submit the form and
-                    should call onClick instead for onSubmit side-effects: */
+             should call onClick instead for onSubmit side-effects: */
           type={submitLink ? "button" : "submit"}
           /* The form element handles submit events when submit button is not a link: */
           onClick={submitLink ? onSubmit : undefined}
