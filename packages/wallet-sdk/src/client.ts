@@ -1105,10 +1105,8 @@ class LightsparkClient {
     enabled: boolean,
     level: LoggingLevel = LoggingLevel.Info,
   ) {
-    coreLogger.setEnabled(enabled);
-    coreLogger.setLevel(level);
-    logger.setEnabled(enabled);
-    logger.setLevel(level);
+    coreLogger.setEnabled(enabled, level);
+    logger.setEnabled(enabled, level);
   }
 }
 
