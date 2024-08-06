@@ -22,6 +22,11 @@ export class Logger {
     this.loggingLevel = level;
   }
 
+  public setEnabled(enabled: boolean, level: LoggingLevel = LoggingLevel.Info) {
+    this.loggingEnabled = enabled;
+    this.loggingLevel = level;
+  }
+
   async updateLoggingEnabled(getLoggingEnabled: GetLoggingEnabled) {
     if (getLoggingEnabled) {
       this.loggingEnabled = await getLoggingEnabled();

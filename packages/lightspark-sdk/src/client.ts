@@ -3,26 +3,26 @@
 import autoBind from "auto-bind";
 import type Observable from "zen-observable";
 
-import type {
-  AuthProvider,
-  CryptoInterface,
-  KeyOrAliasType,
-  Maybe,
-  Query,
-  SigningKey,
-} from "@lightsparkdev/core";
 import {
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
+  LoggingLevel,
   NodeKeyCache,
   Requester,
   SigningKeyType,
   StubAuthProvider,
   bytesToHex,
+  logger as coreLogger,
   createSha256Hash,
   pollUntil,
+  type AuthProvider,
+  type CryptoInterface,
+  type KeyOrAliasType,
+  type Maybe,
+  type Query,
+  type SigningKey,
 } from "@lightsparkdev/core";
 import packageJson from "../package.json";
 import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
@@ -62,6 +62,7 @@ import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { WithdrawalFeeEstimate } from "./graphql/WithdrawalFeeEstimate.js";
 import { RiskRating, TransactionStatus } from "./index.js";
+import { logger } from "./logger.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -1570,6 +1571,22 @@ class LightsparkClient {
    */
   public executeRawQuery<T>(query: Query<T>): Promise<T | null> {
     return this.requester.executeQuery(query);
+  }
+
+  /**
+   * Enable logging for debugging purposes
+   *
+   * @param enabled Whether logging should be enabled.
+   * @param level The logging level to use.
+   * */
+  public setLoggingEnabled(
+    enabled: boolean,
+    level: LoggingLevel = LoggingLevel.Info,
+  ) {
+    coreLogger.setEnabled(enabled);
+    coreLogger.setLevel(level);
+    logger.setEnabled(enabled);
+    logger.setLevel(level);
   }
 }
 
