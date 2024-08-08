@@ -6,22 +6,25 @@ type Props = {
   center?: boolean;
   size?: number;
   ml?: number;
+  mt?: number;
 };
 
 const defaultProps = {
   size: 60,
   center: true,
   ml: 0,
+  mt: 0,
 };
 
 export function Loading({
   center = defaultProps.center,
   size = defaultProps.size,
   ml = defaultProps.ml,
+  mt = defaultProps.mt,
 }: Props) {
   const theme = useTheme();
   return (
-    <LoadingWrapper center={center} ml={ml}>
+    <LoadingWrapper center={center} ml={ml} mt={mt}>
       <Rotate>
         <Icon name={theme.loading} width={size} />
       </Rotate>
@@ -34,6 +37,7 @@ Loading.defaultProps = defaultProps;
 export const LoadingWrapper = styled.div<{
   center: boolean;
   ml: number;
+  mt: number;
 }>`
   flex-grow: 1;
   display: flex;
@@ -42,6 +46,7 @@ export const LoadingWrapper = styled.div<{
   text-align: center;
   width: 100%;
   margin-left: ${({ ml }) => ml}px;
+  margin-top: ${({ mt }) => mt}px;
 
   ${({ center }) =>
     center &&
