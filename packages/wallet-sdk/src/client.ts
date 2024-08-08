@@ -10,10 +10,12 @@ import {
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
+  LoggingLevel,
   NodeKeyCache,
   Requester,
   SigningKeyType,
   StubAuthProvider,
+  logger as coreLogger,
   pollUntil,
 } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
@@ -1091,6 +1093,20 @@ class LightsparkClient {
    */
   public executeRawQuery<T>(query: Query<T>): Promise<T | null> {
     return this.requester.executeQuery(query);
+  }
+
+  /**
+   * Enable logging for debugging purposes
+   *
+   * @param enabled Whether logging should be enabled.
+   * @param level The logging level to use.
+   * */
+  public setLoggingEnabled(
+    enabled: boolean,
+    level: LoggingLevel = LoggingLevel.Info,
+  ) {
+    coreLogger.setEnabled(enabled, level);
+    logger.setEnabled(enabled, level);
   }
 }
 

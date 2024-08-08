@@ -1,39 +1,42 @@
-import { useTheme } from "@emotion/react";
+import { useTheme, type Theme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { type LoadingThemeKey } from "../styles/themeDefaults/loading.js";
 import { Icon } from "./Icon/Icon.js";
+
+export const loadingKinds = ["primary", "secondary"] as const;
+export type LoadingKind = (typeof loadingKinds)[number];
 
 type Props = {
   center?: boolean;
   size?: number;
   ml?: number;
-};
-
-const defaultProps = {
-  size: 60,
-  center: true,
-  ml: 0,
+  mt?: number;
+  kind?: LoadingKind;
 };
 
 export function Loading({
-  center = defaultProps.center,
-  size = defaultProps.size,
-  ml = defaultProps.ml,
+  center = true,
+  size = 60,
+  ml = 0,
+  mt = 0,
+  kind = "primary",
 }: Props) {
   const theme = useTheme();
+  const iconName = resolveLoadingProp(null, kind, "defaultIconName", theme);
+
   return (
-    <LoadingWrapper center={center} ml={ml}>
+    <LoadingWrapper center={center} ml={ml} mt={mt}>
       <Rotate>
-        <Icon name={theme.loading} width={size} />
+        <Icon name={iconName} width={size} />
       </Rotate>
     </LoadingWrapper>
   );
 }
 
-Loading.defaultProps = defaultProps;
-
 export const LoadingWrapper = styled.div<{
   center: boolean;
   ml: number;
+  mt: number;
 }>`
   flex-grow: 1;
   display: flex;
@@ -42,6 +45,7 @@ export const LoadingWrapper = styled.div<{
   text-align: center;
   width: 100%;
   margin-left: ${({ ml }) => ml}px;
+  margin-top: ${({ mt }) => mt}px;
 
   ${({ center }) =>
     center &&
@@ -70,3 +74,16 @@ const Rotate = styled.div`
     }
   }
 `;
+
+function resolveLoadingProp<T, K extends LoadingThemeKey>(
+  prop: T,
+  kind: LoadingKind,
+  defaultKey: K,
+  theme: Theme,
+) {
+  return (
+    /** props may be unset for a given kind but theme defaults always exist,
+     * so this will always resolve a value: */
+    prop || theme.loading.kinds[kind]?.[defaultKey] || theme.loading[defaultKey]
+  );
+}

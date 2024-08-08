@@ -1,6 +1,6 @@
 /* type outside bracket is needed to pass madge for some reason: */
-import type { BackgroundColorKeyArg, ThemeOrColorKey } from "./themes.js";
-import { type TokenSizeKey } from "./tokens/typography.js";
+import type { BackgroundColorKeyArg, ThemeOrColorKey } from "../themes.js";
+import { type TokenSizeKey } from "../tokens/typography.js";
 
 export type PaddingYKey = "short" | "regular";
 export type PaddingY = number | { [key in PaddingYKey]: number };

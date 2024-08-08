@@ -42,6 +42,7 @@ export type IconNode = {
 
 export type TextNode = {
   text: string;
+  onClick?: () => void;
 };
 
 export function isLinkNode(node: unknown): node is LinkNode {
@@ -143,8 +144,9 @@ export function toNonTypographicReactNodes(
       );
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;
+      const key = `str-${i}-${text.substr(0, 10)}`;
       content = (
-        <Fragment key={`str-${i}-${text.substr(0, 10)}`}>
+        <Fragment key={key}>
           {text.split("\n").map((str, j, strArr) => (
             <Fragment key={`str-${i}-break-${j}`}>
               {str}
@@ -153,6 +155,17 @@ export function toNonTypographicReactNodes(
           ))}
         </Fragment>
       );
+      if (isTextNode(node) && "onClick" in node) {
+        content = (
+          <span
+            key={`onClick-span-${key}`}
+            onClick={node.onClick}
+            style={{ cursor: "pointer" }}
+          >
+            {content}
+          </span>
+        );
+      }
     }
 
     return content || null;

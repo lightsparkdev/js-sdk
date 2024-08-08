@@ -280,7 +280,7 @@ export const PageSectionBoxRow = styled.div`
 
 type PageSectionBoxProps<RoutesType extends string> = {
   action?: PageSectionBoxActionProps<RoutesType> | undefined;
-  description?: string;
+  description?: string | undefined;
   children?: React.ReactNode;
 };
 
@@ -398,7 +398,11 @@ export const PageSectionRow = styled.div`
   }
 `;
 
-export const PageSectionRowSubSection = styled.div`
+type PageSectionRowSubSectionProps = {
+  fullWidth?: boolean | undefined;
+};
+
+export const PageSectionRowSubSection = styled.div<PageSectionRowSubSectionProps>`
   box-sizing: border-box;
   width: 100%;
 
@@ -423,4 +427,6 @@ export const PageSectionRowSubSection = styled.div`
       margin-top: 0;
     }
   `)}
+
+  ${({ fullWidth }) => (fullWidth ? "width: 100% !important;" : "")}
 `;

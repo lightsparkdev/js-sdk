@@ -37,6 +37,7 @@ export type LinkProps<RoutesType extends string> = {
   to?: RoutesType | undefined;
   id?: string | undefined;
   externalLink?: ExternalLink | undefined;
+  filename?: string | undefined;
   onClick?: MouseEventHandler<HTMLAnchorElement> | undefined;
   params?: RouteParams | undefined;
   children?: React.ReactNode;
@@ -82,6 +83,7 @@ export function Link<RoutesType extends string>({
   to,
   id,
   externalLink,
+  filename,
   params,
   children,
   css,
@@ -118,6 +120,7 @@ export function Link<RoutesType extends string>({
       css={css}
       onClick={onClick}
       className={className}
+      download={filename}
       style={{ color: blue ? colors.blue43 : "inherit" }}
       target={newTab ? "_blank" : undefined}
       rel={newTab ? "noopener noreferrer" : undefined}

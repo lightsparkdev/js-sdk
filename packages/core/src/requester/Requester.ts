@@ -118,6 +118,13 @@ class Requester {
     skipAuth: boolean = false,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<any> {
+    logger.trace(`Requester.makeRawRequest args`, {
+      queryPayload,
+      variables,
+      signingNodeId,
+      skipAuth,
+    });
+
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
@@ -179,10 +186,11 @@ class Requester {
       url,
       operationName: operation,
       variables,
+      headers,
     });
     const response = await fetch(url, {
       method: "POST",
-      headers: headers,
+      headers,
       body: bodyData,
     });
     if (!response.ok) {
