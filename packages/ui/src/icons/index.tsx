@@ -106,6 +106,7 @@ export { TwoArrowsDown } from "./TwoArrowsDown.js";
 export { TwoArrowsUp } from "./TwoArrowsUp.js";
 export { Uma } from "./Uma.js";
 export { UmaBridgeLoading } from "./UmaBridgeLoading.js";
+export { UmaBridgeLoadingTransparent } from "./UmaBridgeLoadingTransparent.js";
 export { Upload } from "./Upload.js";
 export { WalletSDKIcon } from "./WalletSDKIcon.js";
 export { WarningSign } from "./WarningSign.js";

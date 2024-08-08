@@ -26,6 +26,7 @@ import { Button, ButtonSelector } from "./Button.js";
 import { Drawer } from "./Drawer.js";
 import { Icon } from "./Icon/Icon.js";
 import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
+import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
@@ -70,6 +71,7 @@ type ModalProps<T extends TypographyTypeKey> = {
   onCancel?: () => void;
   submitDisabled?: boolean;
   submitLoading?: boolean;
+  submitLoadingKind?: LoadingKind | undefined;
   submitText?: string;
   submitLink?:
     | {
@@ -110,6 +112,7 @@ export function Modal<T extends TypographyTypeKey>({
   onSubmit,
   submitDisabled,
   submitLoading,
+  submitLoadingKind,
   submitText,
   submitLink,
   cancelText = "Cancel",
@@ -258,6 +261,7 @@ export function Modal<T extends TypographyTypeKey>({
           disabled={submitDisabled}
           text={submitText ?? "Continue"}
           loading={submitLoading}
+          loadingKind={submitLoadingKind}
           to={linkIsRoute ? submitLink.to : undefined}
           externalLink={linkIsHref ? submitLink.href : undefined}
           filename={linkIsHref ? submitLink.filename : undefined}
