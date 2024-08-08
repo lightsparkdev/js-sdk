@@ -59,6 +59,7 @@ export { KotlinTwoTone } from "./KotlinTwoTone.js";
 export { LeftArrow } from "./LeftArrow.js";
 export { LightningOnRoundedSquare } from "./LightningOnRoundedSquare.js";
 export { LinkIcon } from "./LinkIcon.js";
+export { LoadingCircleLines } from "./LoadingCircleLines.js";
 export { LoadingSpinner } from "./LoadingSpinner.js";
 export { Lock } from "./Lock.js";
 export { Logo } from "./Logo.js";

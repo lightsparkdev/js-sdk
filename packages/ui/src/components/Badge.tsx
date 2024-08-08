@@ -64,7 +64,15 @@ export function Badge<T extends TypographyTypeKey>({
 
   return contentProp ? (
     <StyledBadge kind={kind} ml={ml} size={size} block={block}>
-      {icon ? <Icon name={icon.name} width={20} color={icon.color} /> : null}
+      {icon ? (
+        <Icon
+          name={icon.name}
+          width={20}
+          color={
+            icon.color ? icon.color : kind === "danger" ? "danger" : undefined
+          }
+        />
+      ) : null}
       <BadgeContent>{content}</BadgeContent>
     </StyledBadge>
   ) : null;
