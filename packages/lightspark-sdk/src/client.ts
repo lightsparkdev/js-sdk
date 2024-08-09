@@ -44,11 +44,13 @@ import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
+import { IncomingPaymentsForInvoice } from "./graphql/IncomingPaymentsForInvoice.js";
 import { InvoiceForPaymentHash } from "./graphql/InvoiceForPaymentHash.js";
 import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
 import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
+import { OutgoingPaymentsForInvoice } from "./graphql/OutgoingPaymentsForInvoice.js";
 import { OutgoingPaymentsForPaymentHash } from "./graphql/OutgoingPaymentsForPaymentHash.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
@@ -1527,6 +1529,70 @@ class LightsparkClient {
         }
         return responseJson.outgoing_payments_for_payment_hash.payments.map(
           (payment) => OutgoingPaymentFromJson(payment),
+        );
+      },
+    });
+  }
+
+  /**
+   * Fetches Outgoing payments for a given invoice if there are any.
+   *
+   * @param encodedInvoice encoded invoice associated with outgoing payment
+   * @param statuses Filter to only include payments with the given statuses. If not provided, all statuses are included.
+   */
+  public async outgoingPaymentsForInvoice(
+    encodedInvoice: string,
+    statuses: TransactionStatus[] | undefined = undefined,
+  ): Promise<OutgoingPayment[]> {
+    return await this.executeRawQuery({
+      queryPayload: OutgoingPaymentsForInvoice,
+      variables: {
+        encoded_invoice: encodedInvoice,
+        statuses: statuses,
+      },
+      constructObject: (responseJson: {
+        outgoing_payments_for_invoice: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.outgoing_payments_for_invoice ||
+          !responseJson.outgoing_payments_for_invoice.payments
+        ) {
+          return [];
+        }
+        return responseJson.outgoing_payments_for_invoice.payments.map(
+          (payment) => OutgoingPaymentFromJson(payment),
+        );
+      },
+    });
+  }
+
+  /**
+   * Fetches Incoming payments for a given invoice if there are any.
+   *
+   * @param invoiceId id of associated invoice
+   * @param statuses Filter to only include payments with the given statuses. If not provided, all statuses are included.
+   */
+  public async incomingPaymentsForInvoice(
+    invoiceId: string,
+    statuses: TransactionStatus[] | undefined = undefined,
+  ): Promise<IncomingPayment[]> {
+    return await this.executeRawQuery({
+      queryPayload: IncomingPaymentsForInvoice,
+      variables: {
+        invoice_id: invoiceId,
+        statuses: statuses,
+      },
+      constructObject: (responseJson: {
+        incoming_payments_for_invoice: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.incoming_payments_for_invoice ||
+          !responseJson.incoming_payments_for_invoice.payments
+        ) {
+          return [];
+        }
+        return responseJson.incoming_payments_for_invoice.payments.map(
+          (payment) => IncomingPaymentFromJson(payment),
         );
       },
     });
