@@ -11,7 +11,6 @@ import {
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
-import { gql } from "graphql-tag";
 import { Icon } from "./Icon/Icon.js";
 
 type CurrencyAmountProps = {
@@ -104,15 +103,3 @@ const StyledCurrencyAmount = styled.span<{ ml: number }>`
     "lnum" on;
   margin-left: ${({ ml }) => ml}px;
 `;
-
-CurrencyAmount.fragments = {
-  amount: gql`
-    fragment CurrencyAmount_amount on CurrencyAmount {
-      original_value
-      original_unit
-      preferred_currency_unit
-      preferred_currency_value_rounded
-      preferred_currency_value_approx
-    }
-  `,
-};
