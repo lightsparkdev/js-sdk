@@ -65,7 +65,7 @@ export type ButtonProps<RoutesType extends string> = {
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
-  tooltipText?: string;
+  tooltipText?: string | undefined;
   zIndex?: number | undefined;
   borderRadius?: ButtonBorderRadius | undefined;
 };
@@ -415,7 +415,6 @@ const buttonStyle = ({
   return css`
     display: inline-flex;
     opacity: ${disabled && !isLoading ? 0.2 : 1};
-    ${disabled ? "pointer-events: none;" : ""}
     transition: opacity 0.2s;
     position: relative;
 
