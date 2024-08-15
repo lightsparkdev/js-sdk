@@ -96,6 +96,8 @@ type ModalProps<T extends TypographyTypeKey> = {
   extraActions?: ExtraAction[] | undefined;
   /** Displays a back button at the top of the modal which calls this function */
   handleBack?: () => void;
+  /** The element to append the modal into. */
+  appendToElement?: HTMLElement;
 };
 
 export function Modal<T extends TypographyTypeKey>({
@@ -126,6 +128,7 @@ export function Modal<T extends TypographyTypeKey>({
   buttonLayout = "horizontal",
   extraActions,
   handleBack,
+  appendToElement,
 }: ModalProps<T>) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
@@ -147,18 +150,19 @@ export function Modal<T extends TypographyTypeKey>({
 
   useEffect(() => {
     prevFocusedElement.current = document.activeElement;
+    const elementToAppendTo = appendToElement ?? document.body;
     if (!nodeRef.current) {
       nodeRef.current = document.createElement("div");
-      document.body.appendChild(nodeRef.current);
+      elementToAppendTo.appendChild(nodeRef.current);
     }
     setNodeReady(true);
     return () => {
       if (nodeRef.current) {
-        document.body.removeChild(nodeRef.current);
+        elementToAppendTo.removeChild(nodeRef.current);
         nodeRef.current = null;
       }
     };
-  }, []);
+  }, [appendToElement]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
