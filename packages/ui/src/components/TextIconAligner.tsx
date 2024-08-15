@@ -1,10 +1,15 @@
 /** @jsxImportSource @emotion/react */
+import { type ReactNode } from "react";
 import { type ThemeOrColorKey } from "../styles/themes.js";
+import { type TypographyTypeKey } from "../styles/tokens/typography.js";
 import { type SimpleTypographyProps } from "../styles/typography.js";
-import { type ToNonTypographicReactNodesArgs } from "../utils/toNonTypographicReactNodes.js";
+import {
+  setDefaultReactNodesTypography,
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../utils/toReactNodes.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
-import { renderTypography } from "./typography/renderTypography.js";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
@@ -14,8 +19,8 @@ type MarginPx = (typeof marginPx)[number];
 const width = [12, 14, 16] as const;
 export type TextIconAlignerIconWidth = (typeof width)[number];
 
-type TextIconAlignerProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined;
+type TextIconAlignerProps<T extends TypographyTypeKey> = {
+  content?: ToReactNodesArgs<T> | undefined;
   typography?: SimpleTypographyProps | undefined;
   rightIcon?:
     | {
@@ -38,18 +43,36 @@ type TextIconAlignerProps = {
   onClick?: (() => void) | undefined;
 };
 
-export function TextIconAligner({
-  content,
-  typography,
+export function TextIconAligner<T extends TypographyTypeKey>({
+  content: contentProp,
+  typography: typographyProp,
   rightIcon,
   leftIcon,
   onClick,
-}: TextIconAlignerProps) {
-  const nodes = renderTypography(typography?.type || "Body", {
-    content,
-    size: typography?.size || "Small",
-    color: typography?.color || "inherit",
-  });
+}: TextIconAlignerProps<T>) {
+  const defaultTypography = {
+    type: typographyProp?.type || "Body",
+    props: {
+      size: typographyProp?.size || "Small",
+      color: typographyProp?.color || "text",
+    },
+  } as const;
+
+  const defaultTypographyMap = {
+    link: defaultTypography,
+    externalLink: defaultTypography,
+    text: defaultTypography,
+    nextLink: defaultTypography,
+  };
+
+  let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
+    contentProp,
+    defaultTypographyMap,
+  );
+
+  console.log(content);
+
+  content = toReactNodes(content);
 
   const leftIconNode = leftIcon ? (
     <Icon
@@ -78,7 +101,7 @@ export function TextIconAligner({
       onClick={onClick}
     >
       {leftIconNode}
-      {nodes}
+      {content}
       {rightIconNode}
     </span>
   );

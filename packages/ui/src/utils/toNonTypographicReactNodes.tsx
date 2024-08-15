@@ -149,7 +149,12 @@ export function toNonTypographicReactNodes(
         <Fragment key={key}>
           {text.split("\n").map((str, j, strArr) => (
             <Fragment key={`str-${i}-break-${j}`}>
-              {str}
+              {str.split("&nbsp;").map((strPart, k, strPartArr) => (
+                <Fragment key={`str-${i}-part-${k}`}>
+                  {strPart}
+                  {k < strPartArr.length - 1 && <>&nbsp;</>}
+                </Fragment>
+              ))}
               {j < strArr.length - 1 && <br />}
             </Fragment>
           ))}

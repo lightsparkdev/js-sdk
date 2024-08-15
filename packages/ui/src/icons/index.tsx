@@ -69,6 +69,7 @@ export { MagicWand } from "./MagicWand.js";
 export { Minus } from "./Minus.js";
 export { Monitor } from "./Monitor.js";
 export { NodeAdd } from "./NodeAdd.js";
+export { NonagonCheckmark } from "./NonagonCheckmark.js";
 export { NotEye } from "./NotEye.js";
 export { PaperPlane } from "./PaperPlane.js";
 export { Pencil } from "./Pencil.js";

@@ -42,7 +42,7 @@ type StyledLabelProps = {
   colorProp?: FontColorKey | undefined;
 };
 
-export const StyledLabel = styled.label<StyledLabelProps>`
+export const StyledLabel = styled.span<StyledLabelProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label", size, colorProp)}
   cursor: inherit;

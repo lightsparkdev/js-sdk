@@ -45,7 +45,7 @@ type StyledLabelStrongProps = {
   block: boolean;
 };
 
-export const StyledLabelStrong = styled.label<StyledLabelStrongProps>`
+export const StyledLabelStrong = styled.span<StyledLabelStrongProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label Strong", size, colorProp)}
   ${({ block }) => (block ? "display: block;" : "")}

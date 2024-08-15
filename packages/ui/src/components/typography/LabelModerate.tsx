@@ -42,7 +42,7 @@ type StyledLabelModerateProps = {
   size: TokenSizeKey;
 };
 
-export const StyledLabelModerate = styled.label<StyledLabelModerateProps>`
+export const StyledLabelModerate = styled.span<StyledLabelModerateProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label Moderate", size, colorProp)}
   cursor: inherit;

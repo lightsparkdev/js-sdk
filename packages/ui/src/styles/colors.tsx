@@ -51,6 +51,7 @@ const baseColors = {
   grayBlue45: "#676F80",
   grayBlue57: "#8B8E98",
   grayBlue67: "#9BA7B9",
+  grayBlue69: "#A6A9BA",
   grayBlue80: "#C0C9D6",
   grayBlue88: "#DEDFE4",
   grayBlue94: "#EBEEF2",
