@@ -29,6 +29,8 @@ export enum Themes {
   Dark = "dark",
   LightsparkDocsLight = "lightsparkDocsLight",
   LightsparkDocsDark = "lightsparkDocsDark",
+  UmaAuthSdkLight = "umaAuthSdkLight",
+  UmaAuthSdkDark = "umaAuthSdkDark",
   UmameDocsLight = "umameDocsLight",
   UmameDocsDark = "umameDocsDark",
   BridgeLight = "bridgeLight",
@@ -180,6 +182,124 @@ const darkTheme = extend(darkBaseTheme, {
   }),
 });
 
+const umaAuthSdkLightTheme = extend(lightTheme, {
+  type: Themes.UmaAuthSdkLight,
+  bg: colors.gray98,
+  smBg: colors.gray98,
+  secondary: colors.grayBlue43,
+  text: colors.grayBlue9,
+  link: colors.blue39,
+  inputBackground: colors.white,
+  typography: getTypography(TypographyGroup.UmaAuthSdk, {
+    main: "Manrope",
+    code: "Monaco",
+  }),
+  content: extendBase(lightBaseTheme, {
+    bg: colors.gray98,
+    smBg: colors.gray98,
+    text: colors.grayBlue9,
+    secondary: colors.grayBlue43,
+  }),
+  controls: extendBase(lightBaseTheme, {
+    text: colors.grayBlue9,
+    secondary: colors.grayBlue43,
+    bg: colors.grayBlue94,
+  }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypographyType: "Title",
+    defaultSize: "Medium",
+    defaultBorderRadius: 999,
+    defaultBorderWidth: 0,
+    defaultPaddingsY: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 16,
+      Medium: 16,
+      Mlarge: 16,
+      Large: 16,
+    },
+    kinds: {
+      primary: {
+        defaultColor: "bg",
+        defaultBackgroundColor: "blue39",
+        defaultHoverBackgroundColor: "blue37",
+      },
+      ghost: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultBorderWidth: 0,
+        defaultHoverBackgroundColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+      },
+      secondary: {
+        defaultBackgroundColor: "transparent",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultBorderColor: "grayBlue80",
+        defaultBorderWidth: 1,
+      },
+    },
+  }),
+});
+
+const umaAuthSdkDarkTheme = extend(darkTheme, {
+  type: Themes.UmaAuthSdkDark,
+  bg: colors.gray5,
+  smBg: colors.gray5,
+  secondary: colors.grayBlue57,
+  text: colors.gray98,
+  link: colors.blue39,
+  inputBackground: colors.gray5,
+  typography: getTypography(TypographyGroup.UmaAuthSdk, {
+    main: "Manrope",
+    code: "Monaco",
+  }),
+  content: extendBase(lightBaseTheme, {
+    bg: colors.gray5,
+    smBg: colors.gray5,
+    text: colors.grayBlue94,
+    secondary: colors.grayBlue43,
+  }),
+  controls: extendBase(lightBaseTheme, {
+    text: colors.grayBlue94,
+    secondary: colors.grayBlue43,
+    bg: colors.grayBlue9,
+  }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypographyType: "Title",
+    defaultSize: "Medium",
+    defaultBorderRadius: 999,
+    defaultBorderWidth: 0,
+    defaultPaddingsY: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 16,
+      Medium: 16,
+      Mlarge: 16,
+      Large: 16,
+    },
+    kinds: {
+      primary: {
+        defaultColor: "bg",
+        defaultBackgroundColor: "blue39",
+        defaultHoverBackgroundColor: "blue37",
+      },
+      ghost: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultBorderWidth: 0,
+        defaultHoverBackgroundColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+      },
+      secondary: {
+        defaultBackgroundColor: "transparent",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultBorderColor: "grayBlue80",
+        defaultBorderWidth: 1,
+      },
+    },
+  }),
+});
+
 const umameDocsLightTheme = extend(lightTheme, {
   type: Themes.UmameDocsLight,
   bg: colors.gray98,
@@ -305,6 +425,8 @@ export const themes = {
   [Themes.Dark]: darkTheme,
   [Themes.LightsparkDocsLight]: lightsparkDocsLightTheme,
   [Themes.LightsparkDocsDark]: lightsparkDocsDarkTheme,
+  [Themes.UmaAuthSdkLight]: umaAuthSdkLightTheme,
+  [Themes.UmaAuthSdkDark]: umaAuthSdkDarkTheme,
   [Themes.UmameDocsLight]: umameDocsLightTheme,
   [Themes.UmameDocsDark]: umameDocsDarkTheme,
   [Themes.BridgeLight]: bridgeLightTheme,
