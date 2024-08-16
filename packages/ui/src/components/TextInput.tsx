@@ -85,6 +85,7 @@ export type TextInputProps = {
         width: number;
       }
     | undefined;
+  borderRadius?: number;
 };
 
 export function TextInput(props: TextInputProps) {
@@ -177,6 +178,7 @@ export function TextInput(props: TextInputProps) {
           props.onBeforeInput(event);
         }
       }}
+      borderRadius={props.borderRadius}
     />
   );
 
@@ -325,6 +327,7 @@ interface InputProps {
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
   typography: RequiredSimpleTypographyProps;
+  borderRadius?: number | undefined;
 }
 
 const Input = styled.input<InputProps>`
