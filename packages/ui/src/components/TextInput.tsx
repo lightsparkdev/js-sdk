@@ -16,6 +16,7 @@ import {
   inputSpacingPx,
   textInputPlaceholderColor,
   textInputStyle,
+  type TextInputBorderRadius,
 } from "../styles/fields.js";
 import { getFontColor, type FontColorKey } from "../styles/themes.js";
 import {
@@ -85,7 +86,7 @@ export type TextInputProps = {
         width: number;
       }
     | undefined;
-  borderRadius?: number;
+  borderRadius?: TextInputBorderRadius | undefined;
 };
 
 export function TextInput(props: TextInputProps) {
@@ -327,7 +328,7 @@ interface InputProps {
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
   typography: RequiredSimpleTypographyProps;
-  borderRadius?: number | undefined;
+  borderRadius?: TextInputBorderRadius | undefined;
 }
 
 const Input = styled.input<InputProps>`

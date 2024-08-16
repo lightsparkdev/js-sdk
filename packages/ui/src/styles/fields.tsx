@@ -75,6 +75,8 @@ export const defaultTextInputTypography = {
   color: "text",
 } as const;
 
+export type TextInputBorderRadius = "round" | "default";
+
 export const textInputStyle = ({
   theme,
   active,
@@ -92,9 +94,11 @@ export const textInputStyle = ({
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
   typography?: SimpleTypographyProps | undefined;
-  borderRadius?: number | undefined;
+  borderRadius?: TextInputBorderRadius | undefined;
 }>) => css`
-  border-radius: ${borderRadius ?? textInputBorderRadiusPx}px;
+  border-radius: ${borderRadius === "round"
+    ? "999"
+    : textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;
