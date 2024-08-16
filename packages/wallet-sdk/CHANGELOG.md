@@ -1,5 +1,11 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.13.2
+
+### Patch Changes
+
+- 9d2f78a: - Enable setting logging level on client
+
 ## 0.13.1
 
 ### Patch Changes
