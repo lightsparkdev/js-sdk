@@ -5399,9 +5399,7 @@ __metadata:
     esbuild-plugin-svgr: ^2.1.0
     eslint: ^8.3.0
     eslint-watch: ^8.0.0
-    gql: ^1.1.2
     graphql: ^16.6.0
-    graphql-tag: ^2.12.6
     jest: ^29.6.2
     jest-environment-jsdom: ^29.6.4
     libphonenumber-js: ^1.11.1
@@ -14436,13 +14434,6 @@ __metadata:
     p-cancelable: ^3.0.0
     responselike: ^3.0.0
   checksum: 3c37f5d858aca2859f9932e7609d35881d07e7f2d44c039d189396f0656896af6c77c22f2c51c563f8918be483f60ff41e219de742ab4642d4b106711baccbd5
-  languageName: node
-  linkType: hard
-
-"gql@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "gql@npm:1.1.2"
-  checksum: 47e6e195827b58568ccfb8655b5983ef9b6d9c8bf63cc96e323b7274edf73cc939164f8bfbfbf65f89e182c29829a60b2397685993d7fad05e3d8abc0e22982f
   languageName: node
   linkType: hard
 

@@ -5,14 +5,14 @@ import styled from "@emotion/styled";
 import { uniqueId } from "lodash-es";
 import { Fragment, useRef } from "react";
 import { Link, type RouteParams } from "../router.js";
+import { getFocusOutline } from "../styles/common.js";
 import {
   type AllowedButtonTypographyTypes,
   type ButtonBorderRadius,
   type ButtonTypographyArgs,
   type ButtonsThemeKey,
   type PaddingYKey,
-} from "../styles/buttons.js";
-import { getFocusOutline } from "../styles/common.js";
+} from "../styles/themeDefaults/buttons.js";
 import {
   getBackgroundColor,
   isThemeOrColorKey,
@@ -23,7 +23,7 @@ import { applyTypography } from "../styles/typography.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
-import { Loading } from "./Loading.js";
+import { Loading, type LoadingKind } from "./Loading.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 import { renderTypography } from "./typography/renderTypography.js";
@@ -52,19 +52,20 @@ export type ButtonProps<RoutesType extends string> = {
   id?: string | undefined;
   to?: RoutesType | undefined;
   hash?: string | undefined;
-  href?: string | undefined;
-  hrefFilename?: string | undefined;
+  externalLink?: string | undefined;
+  filename?: string | undefined;
   toParams?: RouteParams | undefined;
   icon?: IconName | undefined;
   iconSide?: IconSide;
   loading?: boolean | undefined;
+  loadingKind?: LoadingKind | undefined;
   onClick?: (() => void) | undefined;
   mt?: number;
   ml?: number;
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
-  tooltipText?: string;
+  tooltipText?: string | undefined;
   zIndex?: number | undefined;
   borderRadius?: ButtonBorderRadius | undefined;
 };
@@ -233,8 +234,8 @@ export function Button<RoutesType extends string>(
     to,
     id,
     hash,
-    href,
-    hrefFilename,
+    externalLink,
+    filename,
     toParams,
     onClick,
     icon,
@@ -245,6 +246,7 @@ export function Button<RoutesType extends string>(
     hoverBorderColor,
     iconSide = "left",
     loading = false,
+    loadingKind = "primary",
     fullWidth = false,
     disabled = false,
     mt = 0,
@@ -268,7 +270,7 @@ export function Button<RoutesType extends string>(
         typography={typography}
         kind={kind}
       >
-        <Loading size={iconSize} center={false} />
+        <Loading size={iconSize} center={false} kind={loadingKind} />
       </ButtonIcon>
     );
   } else if (icon) {
@@ -355,11 +357,11 @@ export function Button<RoutesType extends string>(
     );
   }
 
-  return href ? (
+  return externalLink ? (
     <ButtonHrefLink
       {...commonProps}
-      href={href}
-      download={hrefFilename}
+      href={externalLink}
+      download={filename}
       target="_blank"
     >
       {content}
@@ -413,7 +415,6 @@ const buttonStyle = ({
   return css`
     display: inline-flex;
     opacity: ${disabled && !isLoading ? 0.2 : 1};
-    ${disabled ? "pointer-events: none;" : ""}
     transition: opacity 0.2s;
     position: relative;
 

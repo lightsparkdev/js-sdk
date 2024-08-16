@@ -174,7 +174,7 @@ const DrawerContainer = styled.div<{
   flex-direction: column;
   padding: ${Spacing.px["6xl"]} ${Spacing.px.xl} ${Spacing.px["2xl"]}
     ${Spacing.px.xl};
-  overflow-y: scroll;
+  overflow-y: auto;
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
   ${(props) =>

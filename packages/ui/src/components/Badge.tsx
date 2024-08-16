@@ -40,7 +40,7 @@ export function Badge<T extends TypographyTypeKey>({
   block = false,
   typography: typographyProp,
 }: BadgeProps<T>) {
-  const typography = {
+  const defaultTypography = {
     type: typographyProp?.type || "Label Moderate",
     props: {
       size: typographyProp?.size || "Small",
@@ -48,23 +48,31 @@ export function Badge<T extends TypographyTypeKey>({
     },
   } as const;
 
-  const typographyMap = {
-    link: typography,
-    externalLink: typography,
-    text: typography,
-    nextLink: typography,
+  const defaultTypographyMap = {
+    link: defaultTypography,
+    externalLink: defaultTypography,
+    text: defaultTypography,
+    nextLink: defaultTypography,
   };
 
   let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
     contentProp,
-    typographyMap,
+    defaultTypographyMap,
   );
 
   content = toReactNodes(content);
 
   return contentProp ? (
     <StyledBadge kind={kind} ml={ml} size={size} block={block}>
-      {icon ? <Icon name={icon.name} width={20} color={icon.color} /> : null}
+      {icon ? (
+        <Icon
+          name={icon.name}
+          width={20}
+          color={
+            icon.color ? icon.color : kind === "danger" ? "danger" : undefined
+          }
+        />
+      ) : null}
       <BadgeContent>{content}</BadgeContent>
     </StyledBadge>
   ) : null;

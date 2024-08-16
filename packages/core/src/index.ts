@@ -1,7 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 export { default as LightsparkException } from "./LightsparkException.js";
-export { Logger, LoggingLevel } from "./Logger.js";
+export { Logger, LoggingLevel, logger } from "./Logger.js";
 export {
   default as ServerEnvironment,
   apiDomainForEnvironment,

@@ -16,6 +16,10 @@ export default defineConfig({
   format: ["cjs", "esm"],
   dts: true,
   clean: true,
+  /* splitting must be manually specified for cjs splitting support, which is experimental. See
+     https://tsup.egoist.dev/#code-splitting. Without it the package size is 5x as large. Revisit
+     if some environments are discovered to not fully support the cjs splitting methods: */
+  splitting: true,
   external: ["react", "react-dom", "react-router-dom", "react-router"],
   esbuildPlugins: [
     svgr(),

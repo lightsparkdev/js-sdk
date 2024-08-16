@@ -12,7 +12,6 @@ export function FlutterTwoTone() {
   return (
     <svg
       id={`logo_vector-${id}`}
-      data-name="logo vector"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 300 371.14"
       width="100%"

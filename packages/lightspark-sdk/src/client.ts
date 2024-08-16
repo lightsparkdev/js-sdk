@@ -3,26 +3,26 @@
 import autoBind from "auto-bind";
 import type Observable from "zen-observable";
 
-import type {
-  AuthProvider,
-  CryptoInterface,
-  KeyOrAliasType,
-  Maybe,
-  Query,
-  SigningKey,
-} from "@lightsparkdev/core";
 import {
   DefaultCrypto,
   LightsparkAuthException,
   LightsparkException,
   LightsparkSigningException,
+  LoggingLevel,
   NodeKeyCache,
   Requester,
   SigningKeyType,
   StubAuthProvider,
   bytesToHex,
+  logger as coreLogger,
   createSha256Hash,
   pollUntil,
+  type AuthProvider,
+  type CryptoInterface,
+  type KeyOrAliasType,
+  type Maybe,
+  type Query,
+  type SigningKey,
 } from "@lightsparkdev/core";
 import packageJson from "../package.json";
 import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
@@ -44,11 +44,13 @@ import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
 import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
+import { IncomingPaymentsForInvoice } from "./graphql/IncomingPaymentsForInvoice.js";
 import { InvoiceForPaymentHash } from "./graphql/InvoiceForPaymentHash.js";
 import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
 import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
+import { OutgoingPaymentsForInvoice } from "./graphql/OutgoingPaymentsForInvoice.js";
 import { OutgoingPaymentsForPaymentHash } from "./graphql/OutgoingPaymentsForPaymentHash.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
@@ -62,6 +64,7 @@ import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { WithdrawalFeeEstimate } from "./graphql/WithdrawalFeeEstimate.js";
 import { RiskRating, TransactionStatus } from "./index.js";
+import { logger } from "./logger.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
 import BitcoinNetwork from "./objects/BitcoinNetwork.js";
@@ -1531,6 +1534,70 @@ class LightsparkClient {
     });
   }
 
+  /**
+   * Fetches Outgoing payments for a given invoice if there are any.
+   *
+   * @param encodedInvoice encoded invoice associated with outgoing payment
+   * @param statuses Filter to only include payments with the given statuses. If not provided, all statuses are included.
+   */
+  public async outgoingPaymentsForInvoice(
+    encodedInvoice: string,
+    statuses: TransactionStatus[] | undefined = undefined,
+  ): Promise<OutgoingPayment[]> {
+    return await this.executeRawQuery({
+      queryPayload: OutgoingPaymentsForInvoice,
+      variables: {
+        encoded_invoice: encodedInvoice,
+        statuses: statuses,
+      },
+      constructObject: (responseJson: {
+        outgoing_payments_for_invoice: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.outgoing_payments_for_invoice ||
+          !responseJson.outgoing_payments_for_invoice.payments
+        ) {
+          return [];
+        }
+        return responseJson.outgoing_payments_for_invoice.payments.map(
+          (payment) => OutgoingPaymentFromJson(payment),
+        );
+      },
+    });
+  }
+
+  /**
+   * Fetches Incoming payments for a given invoice if there are any.
+   *
+   * @param invoiceId id of associated invoice
+   * @param statuses Filter to only include payments with the given statuses. If not provided, all statuses are included.
+   */
+  public async incomingPaymentsForInvoice(
+    invoiceId: string,
+    statuses: TransactionStatus[] | undefined = undefined,
+  ): Promise<IncomingPayment[]> {
+    return await this.executeRawQuery({
+      queryPayload: IncomingPaymentsForInvoice,
+      variables: {
+        invoice_id: invoiceId,
+        statuses: statuses,
+      },
+      constructObject: (responseJson: {
+        incoming_payments_for_invoice: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        if (
+          !responseJson.incoming_payments_for_invoice ||
+          !responseJson.incoming_payments_for_invoice.payments
+        ) {
+          return [];
+        }
+        return responseJson.incoming_payments_for_invoice.payments.map(
+          (payment) => IncomingPaymentFromJson(payment),
+        );
+      },
+    });
+  }
+
   private async hashPhoneNumber(e164PhoneNumber: string): Promise<string> {
     const e164PhoneRegex = /^\+[1-9]\d{1,14}$/;
     if (!e164PhoneRegex.test(e164PhoneNumber)) {
@@ -1570,6 +1637,20 @@ class LightsparkClient {
    */
   public executeRawQuery<T>(query: Query<T>): Promise<T | null> {
     return this.requester.executeQuery(query);
+  }
+
+  /**
+   * Enable logging for debugging purposes
+   *
+   * @param enabled Whether logging should be enabled.
+   * @param level The logging level to use.
+   * */
+  public setLoggingEnabled(
+    enabled: boolean,
+    level: LoggingLevel = LoggingLevel.Info,
+  ) {
+    coreLogger.setEnabled(enabled, level);
+    logger.setEnabled(enabled, level);
   }
 }
 

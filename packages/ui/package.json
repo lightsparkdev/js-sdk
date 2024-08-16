@@ -63,8 +63,6 @@
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@svgr/core": "^8.1.0",
     "deepmerge": "^4.3.1",
-    "gql": "^1.1.2",
-    "graphql-tag": "^2.12.6",
     "libphonenumber-js": "^1.11.1",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",

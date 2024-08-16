@@ -2,9 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import merge from "deepmerge";
-import { type IconName } from "../components/Icon/types.js";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
-import { buttonsThemeBase, defaultButtonsTheme } from "./buttons.js";
 import {
   colors,
   darkGradient,
@@ -12,6 +10,14 @@ import {
   isColorKey,
   type ColorKey,
 } from "./colors.js";
+import {
+  buttonsThemeBase,
+  defaultButtonsTheme,
+} from "./themeDefaults/buttons.js";
+import {
+  defaultLoadingTheme,
+  loadingThemeBase,
+} from "./themeDefaults/loading.js";
 import {
   TypographyGroup,
   getTypography,
@@ -77,11 +83,11 @@ const baseTheme = {
     hcNeutralFromBg(bgHex, colors.black, colors.white),
 
   buttons: defaultButtonsTheme,
+  loading: defaultLoadingTheme,
   badge: {
     bg: "c05Neutral" as ThemeOrColorKey,
   },
   inputBackground: colors.white,
-  loading: "LoadingSpinner" as IconName,
 };
 
 type BaseTheme = typeof baseTheme;
@@ -135,7 +141,7 @@ const darkBaseTheme: BaseTheme = {
   warning: colors.warning,
 
   buttons: defaultButtonsTheme,
-  loading: "LoadingSpinner",
+  loading: defaultLoadingTheme,
   inputBackground: colors.black,
   badge: {
     bg: "c15Neutral",
@@ -263,6 +269,17 @@ const bridgeBaseSettings = {
       },
     },
   }),
+  loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
+    defaultIconName: "UmaBridgeLoading",
+    kinds: {
+      primary: {
+        defaultIconName: "UmaBridgeLoading",
+      },
+      secondary: {
+        defaultIconName: "UmaBridgeLoadingTransparent",
+      },
+    },
+  }),
   badge: {
     bg: "grayBlue94",
   } as const,
@@ -271,7 +288,6 @@ const bridgeBaseSettings = {
 const bridgeLightTheme = extend(lightTheme, {
   ...bridgeBaseSettings,
   type: Themes.BridgeLight,
-  loading: "UmaBridgeLoading",
   bg: colors.gray98,
   smBg: colors.gray98,
   text: colors.grayBlue9,
