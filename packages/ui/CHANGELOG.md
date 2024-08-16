@@ -1,5 +1,18 @@
 # @lightsparkdev/ui
 
+## 1.0.7
+
+### Patch Changes
+
+- 9d2f78a: - Add onClick option for textNodes
+  - Unify externalLink and filename props
+- 9d2f78a: [ui]
+  - remove gql and graphql-tag dependencies
+  - add appendToElement prop to Modal
+  - enable cjs code splitting to reduce package size
+  - unify externalLink and filename props
+- 9d2f78a: - Explicitly turn on experimental splitting support for CJS to reduce size of package from 25MB to 5MB
+
 ## 1.0.6
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.2
+
+### Patch Changes
+
+- 9d2f78a: - adds IncomingPaymentsForInvoice and OutgoingPaymentsForInvoice
+- 9d2f78a: - Enable setting logging level on client
+
 ## 1.8.1
 
 ### Patch Changes
