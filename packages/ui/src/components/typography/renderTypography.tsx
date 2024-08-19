@@ -1,4 +1,4 @@
-import React, { type ComponentProps } from "react";
+import React, { type ComponentProps, type ElementType } from "react";
 import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import { Body } from "./Body.js";
 import { BodyStrong } from "./BodyStrong.js";
@@ -34,7 +34,10 @@ export const renderTypography = <T extends TypographyTypeKey>(
   type: T,
   props: ComponentProps<(typeof typographyMap)[T]>,
 ) => {
-  const TypographyComponent = typographyMap[type];
+  /** props type is too wide, causing issues with overlapping different props types (e.g. `tag`), so
+   * we have to cast this to a generic ElementType to pass createElement types. We still have type
+   * saftey for specific component prop types via renderTypography args. */
+  const TypographyComponent = typographyMap[type] as ElementType;
   const { children, ...rest } = props;
   return React.createElement(TypographyComponent, rest, children);
 };

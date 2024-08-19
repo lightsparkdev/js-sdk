@@ -2,32 +2,29 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { type FontColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { applyTypography } from "../../styles/typography.js";
+import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
 import {
-  toNonTypographicReactNodes,
-  type ToNonTypographicReactNodesArgs,
-} from "../../utils/toNonTypographicReactNodes.js";
+  type CommonStyledTypographyProps,
+  type CommonTypographyProps,
+} from "./types.js";
+import { typographyStyles } from "./typographyStyles.js";
 
 type AllowedBodyTags = "span" | "p" | "pre" | "div";
 
-type BodyProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
-  /* children must be a string. use content prop for more complex content */
-  children?: string | undefined | null;
-  size?: TokenSizeKey | undefined;
-  color?: FontColorKey | undefined;
-  block?: boolean | undefined;
+type BodyProps = CommonTypographyProps & {
   tag?: AllowedBodyTags | undefined;
 };
 
 export const Body = ({
-  content,
-  color,
-  size = "Medium",
-  children,
   block = false,
+  children,
+  color,
+  content,
+  display,
+  hideOverflow = false,
+  id,
+  size = "Medium",
   tag = "span",
 }: BodyProps) => {
   let reactNodes: ReactNode = children || null;
@@ -36,22 +33,24 @@ export const Body = ({
   }
 
   return (
-    <StyledBody size={size} colorProp={color} block={block} as={tag}>
+    <StyledBody
+      as={tag}
+      block={block}
+      colorProp={color}
+      displayProp={display}
+      hideOverflow={hideOverflow}
+      id={id}
+      size={size}
+    >
       {reactNodes}
     </StyledBody>
   );
 };
 
-type StyledBodyProps = {
-  children: ReactNode;
-  size: TokenSizeKey;
-  /* color is an inherent html prop so we need to use colorProp instead */
-  colorProp?: FontColorKey | undefined;
-  block: boolean;
-};
+type StyledBodyProps = CommonStyledTypographyProps;
 
 export const StyledBody = styled.span<StyledBodyProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Body", size, colorProp)}
-  ${({ block }) => (block ? "display: block;" : "")}
+  ${typographyStyles}
 `;

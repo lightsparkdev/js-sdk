@@ -88,6 +88,8 @@ export const DocsHeadline = ({
       size={size}
       colorProp={color}
       displayProp="block"
+      hideOverflow={false}
+      block
     >
       {children}
     </StyledHeadline>

@@ -2,52 +2,49 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { type FontColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { applyTypography } from "../../styles/typography.js";
+import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
 import {
-  toNonTypographicReactNodes,
-  type ToNonTypographicReactNodesArgs,
-} from "../../utils/toNonTypographicReactNodes.js";
+  type CommonStyledTypographyProps,
+  type CommonTypographyProps,
+} from "./types.js";
+import { typographyStyles } from "./typographyStyles.js";
 
-export type LabelStrongProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
-  /* children must be a string. use content prop for more complex content */
-  children?: string | undefined | null;
-  size?: TokenSizeKey | undefined;
-  color?: FontColorKey | undefined;
-  block?: boolean | undefined;
-};
+export type LabelStrongProps = CommonTypographyProps;
 
 export const LabelStrong = ({
-  content,
-  color,
-  size = "Medium",
-  children,
   block = false,
+  children,
+  color,
+  content,
+  display,
+  hideOverflow = false,
+  id,
+  size = "Medium",
 }: LabelStrongProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledLabelStrong size={size} colorProp={color} block={block}>
+    <StyledLabelStrong
+      size={size}
+      colorProp={color}
+      block={block}
+      id={id}
+      hideOverflow={hideOverflow}
+      displayProp={display}
+    >
       {reactNodes}
     </StyledLabelStrong>
   );
 };
 
-type StyledLabelStrongProps = {
-  /* color is an inherent html prop so we need to use colorProp instead */
-  colorProp?: FontColorKey | undefined;
-  children: React.ReactNode;
-  size: TokenSizeKey;
-  block: boolean;
-};
+type StyledLabelStrongProps = CommonStyledTypographyProps;
 
 export const StyledLabelStrong = styled.span<StyledLabelStrongProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label Strong", size, colorProp)}
   ${({ block }) => (block ? "display: block;" : "")}
-  cursor: inherit;
+  ${typographyStyles}
 `;

@@ -2,39 +2,31 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { type FontColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { applyTypography } from "../../styles/typography.js";
 import { select } from "../../utils/emotion.js";
+import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
 import {
-  toNonTypographicReactNodes,
-  type ToNonTypographicReactNodesArgs,
-} from "../../utils/toNonTypographicReactNodes.js";
+  type CommonStyledTypographyProps,
+  type CommonTypographyProps,
+} from "./types.js";
 
 export const headlineElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 export type Heading = (typeof headlineElements)[number];
 
-type AllowedDisplay = "flex" | "block" | "inline-flex";
-
-type HeadlineProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
-  /* children must be a string. use content prop for more complex content */
-  children?: string | undefined | null;
-  size?: TokenSizeKey | undefined;
-  color?: FontColorKey | undefined;
-  heading?: Heading;
-  id?: string | undefined;
-  display?: AllowedDisplay;
+type HeadlineProps = CommonTypographyProps & {
+  heading?: Heading | undefined;
 };
 
 export const Headline = ({
-  content,
-  color,
-  size = "Medium",
+  block = false,
   children,
+  color,
+  content,
+  display,
   heading = "h1",
+  hideOverflow = false,
   id,
-  display = "block",
+  size = "Medium",
 }: HeadlineProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
@@ -43,30 +35,21 @@ export const Headline = ({
   return (
     <StyledHeadline
       as={heading}
-      id={id}
-      size={size}
+      block={block}
       colorProp={color}
       displayProp={display}
+      hideOverflow={hideOverflow}
+      id={id}
+      size={size}
     >
       {reactNodes}
     </StyledHeadline>
   );
 };
 
-type StyledHeadlineProps = {
-  /* color is an inherent html prop so we need to use colorProp instead */
-  colorProp?: FontColorKey | undefined;
-  children: ReactNode;
-  size: TokenSizeKey;
-  displayProp: AllowedDisplay;
-};
+type StyledHeadlineProps = CommonStyledTypographyProps;
 
 export const StyledHeadline = styled.span<StyledHeadlineProps>`
-  /* Margins should always be set in display contexts eg Article */
-  margin: 0;
-
-  display: ${({ displayProp }) => displayProp};
-
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Headline", size, colorProp)}
 `;

@@ -2,48 +2,48 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { type FontColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { applyTypography } from "../../styles/typography.js";
+import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
 import {
-  toNonTypographicReactNodes,
-  type ToNonTypographicReactNodesArgs,
-} from "../../utils/toNonTypographicReactNodes.js";
+  type CommonStyledTypographyProps,
+  type CommonTypographyProps,
+} from "./types.js";
+import { typographyStyles } from "./typographyStyles.js";
 
-type LabelProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
-  /* children must be a string. use content prop for more complex content */
-  children?: string | undefined | null;
-  size?: TokenSizeKey | undefined;
-  color?: FontColorKey | undefined;
-};
+type LabelProps = CommonTypographyProps;
 
 export const Label = ({
-  content,
-  color,
-  size = "Medium",
+  block = false,
   children,
+  color,
+  content,
+  display,
+  hideOverflow = false,
+  id,
+  size = "Medium",
 }: LabelProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledLabel size={size} colorProp={color}>
+    <StyledLabel
+      block={block}
+      colorProp={color}
+      displayProp={display}
+      hideOverflow={hideOverflow}
+      id={id}
+      size={size}
+    >
       {reactNodes}
     </StyledLabel>
   );
 };
 
-type StyledLabelProps = {
-  children: React.ReactNode;
-  size: TokenSizeKey;
-  /* color is an inherent html prop so we need to use colorProp instead */
-  colorProp?: FontColorKey | undefined;
-};
+type StyledLabelProps = CommonStyledTypographyProps;
 
 export const StyledLabel = styled.span<StyledLabelProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Label", size, colorProp)}
-  cursor: inherit;
+  ${typographyStyles}
 `;
