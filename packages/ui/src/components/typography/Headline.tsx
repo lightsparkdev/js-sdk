@@ -9,6 +9,7 @@ import {
   type CommonStyledTypographyProps,
   type CommonTypographyProps,
 } from "./types.js";
+import { typographyStyles } from "./typographyStyles.js";
 
 export const headlineElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 export type Heading = (typeof headlineElements)[number];
@@ -52,6 +53,7 @@ type StyledHeadlineProps = CommonStyledTypographyProps;
 export const StyledHeadline = styled.span<StyledHeadlineProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Headline", size, colorProp)}
+  ${typographyStyles}
 `;
 
 export function headlineSelector(heading: Heading) {
