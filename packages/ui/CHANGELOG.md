@@ -1,5 +1,16 @@
 # @lightsparkdev/ui
 
+## 1.0.8
+
+### Patch Changes
+
+- 8f5673d: - add borderRadius to TextInput
+  - allow any Modal width
+  - add themes for UMA Auth SDK
+  - consolidate typography props and styles
+  - add tertiary Button kind and theme prop
+  - fix missing Headline typography styles
+
 ## 1.0.7
 
 ### Patch Changes
