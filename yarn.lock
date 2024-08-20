@@ -5122,7 +5122,7 @@ __metadata:
     "@lightsparkdev/lightspark-sdk": 1.8.2
     "@lightsparkdev/oauth": "*"
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": 1.0.7
+    "@lightsparkdev/ui": 1.0.8
     "@types/jest": ^29.5.3
     "@types/node": ^20.2.5
     "@types/react": ^18.2.12
@@ -5198,7 +5198,7 @@ __metadata:
     "@lightsparkdev/core": 1.2.1
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/react-wallet": 0.7.18
-    "@lightsparkdev/ui": 1.0.7
+    "@lightsparkdev/ui": 1.0.8
     "@lightsparkdev/vite": 0.0.1
     "@lightsparkdev/wallet-sdk": 0.13.2
     "@types/lodash-es": ^4.17.6
@@ -5284,7 +5284,7 @@ __metadata:
     "@lightsparkdev/core": 1.2.1
     "@lightsparkdev/lightspark-sdk": 1.8.2
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": 1.0.7
+    "@lightsparkdev/ui": 1.0.8
     "@lightsparkdev/vite": "*"
     "@types/chrome": ^0.0.254
     "@types/jest": ^29.5.3
@@ -5329,7 +5329,7 @@ __metadata:
     "@lightsparkdev/core": 1.2.1
     "@lightsparkdev/eslint-config": "*"
     "@lightsparkdev/tsconfig": "*"
-    "@lightsparkdev/ui": 1.0.7
+    "@lightsparkdev/ui": 1.0.8
     "@lightsparkdev/vite": "*"
     "@simbathesailor/use-what-changed": ^2.0.0
     "@testing-library/jest-dom": ^6.1.2
@@ -5372,7 +5372,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ui@1.0.7, @lightsparkdev/ui@workspace:packages/ui":
+"@lightsparkdev/ui@1.0.8, @lightsparkdev/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ui@workspace:packages/ui"
   dependencies:
