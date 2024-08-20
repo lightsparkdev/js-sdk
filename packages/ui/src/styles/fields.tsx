@@ -75,6 +75,8 @@ export const defaultTextInputTypography = {
   color: "text",
 } as const;
 
+export type TextInputBorderRadius = "round" | "default";
+
 export const textInputStyle = ({
   theme,
   active,
@@ -83,6 +85,7 @@ export const textInputStyle = ({
   paddingLeftPx,
   paddingRightPx,
   typography,
+  borderRadius,
 }: WithTheme<{
   // In some cases we want to show an active state when another element is focused.
   active?: boolean | undefined;
@@ -91,8 +94,11 @@ export const textInputStyle = ({
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
   typography?: SimpleTypographyProps | undefined;
+  borderRadius?: TextInputBorderRadius | undefined;
 }>) => css`
-  border-radius: ${textInputBorderRadiusPx}px;
+  border-radius: ${borderRadius === "round"
+    ? "999"
+    : textInputBorderRadiusPx}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;

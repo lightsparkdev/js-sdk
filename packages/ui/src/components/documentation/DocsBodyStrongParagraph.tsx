@@ -11,17 +11,27 @@ import { StyledBodyStrong } from "../typography/BodyStrong.js";
 
 type DocsBodyStrongParagraphProps = PartialBy<
   ComponentProps<typeof StyledBodyStrong>,
-  "size" | "block"
+  "size" | "block" | "colorProp" | "displayProp" | "hideOverflow"
 >;
 
 export function DocsBodyStrongParagraph({
-  size = "Medium",
   block = false,
+  colorProp,
+  displayProp,
+  hideOverflow = false,
+  size = "Medium",
   ...rest
 }: DocsBodyStrongParagraphProps) {
   return (
     <StyledBodyStrongBlock>
-      <StyledBodyStrong {...rest} size={size} block={block} />
+      <StyledBodyStrong
+        {...rest}
+        block={block}
+        colorProp={colorProp}
+        displayProp={displayProp}
+        hideOverflow={hideOverflow}
+        size={size}
+      />
     </StyledBodyStrongBlock>
   );
 }

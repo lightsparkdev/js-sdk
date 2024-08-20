@@ -88,7 +88,7 @@ type ModalProps<T extends TypographyTypeKey> = {
   smKind?: SmKind;
   top?: number;
   nonDismissable?: boolean;
-  width?: 460 | 600;
+  width?: number;
   progressBar?: ProgressBarProps;
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";

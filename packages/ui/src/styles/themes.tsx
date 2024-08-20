@@ -29,6 +29,8 @@ export enum Themes {
   Dark = "dark",
   LightsparkDocsLight = "lightsparkDocsLight",
   LightsparkDocsDark = "lightsparkDocsDark",
+  UmaAuthSdkLight = "umaAuthSdkLight",
+  UmaAuthSdkDark = "umaAuthSdkDark",
   UmameDocsLight = "umameDocsLight",
   UmameDocsDark = "umameDocsDark",
   BridgeLight = "bridgeLight",
@@ -60,6 +62,7 @@ const baseThemeColors = {
   onSuccessText: colors.white,
   primary: colors.primary,
   secondary: colors.secondary,
+  tertiary: colors.black,
   success: colors.success,
   text: colors.black,
   vlcNeutral: colors.gray95,
@@ -134,6 +137,7 @@ const darkBaseTheme: BaseTheme = {
   onSuccessText: colors.white,
   primary: colors.primary,
   secondary: colors.secondary,
+  tertiary: colors.white,
   success: colors.success,
   text: colors.white,
   typography: getTypography(TypographyGroup.Lightspark),
@@ -177,6 +181,132 @@ const darkTheme = extend(darkBaseTheme, {
     smBg: colors.gray40,
     text: colors.white,
     secondary: colors.secondary,
+  }),
+});
+
+const umaAuthSdkLightTheme = extend(lightTheme, {
+  type: Themes.UmaAuthSdkLight,
+  bg: colors.gray98,
+  smBg: colors.gray98,
+  secondary: colors.grayBlue43,
+  tertiary: colors.grayBlue9,
+  text: colors.grayBlue9,
+  link: colors.blue39,
+  inputBackground: colors.white,
+  typography: getTypography(TypographyGroup.UmaAuthSdk, {
+    main: "Manrope",
+    code: "Monaco",
+  }),
+  content: extendBase(lightBaseTheme, {
+    bg: colors.gray98,
+    smBg: colors.gray98,
+    text: colors.grayBlue9,
+    secondary: colors.grayBlue43,
+  }),
+  controls: extendBase(lightBaseTheme, {
+    text: colors.grayBlue9,
+    secondary: colors.grayBlue43,
+    bg: colors.grayBlue94,
+  }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypographyType: "Title",
+    defaultSize: "Medium",
+    defaultBorderRadius: 999,
+    defaultBorderWidth: 0,
+    defaultPaddingsY: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 16,
+      Medium: 16,
+      Mlarge: 16,
+      Large: 16,
+    },
+    kinds: {
+      primary: {
+        defaultColor: "bg",
+        defaultBackgroundColor: "blue39",
+        defaultHoverBackgroundColor: "blue37",
+      },
+      ghost: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultBorderWidth: 0,
+        defaultHoverBackgroundColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+      },
+      secondary: {
+        defaultBackgroundColor: "grayBlue94",
+        defaultHoverBackgroundColor: "grayBlue80",
+        defaultBorderColor: "grayBlue80",
+      },
+      tertiary: {
+        defaultColor: "bg",
+        defaultHoverBackgroundColor: "grayBlue18",
+      },
+    },
+  }),
+});
+
+const umaAuthSdkDarkTheme = extend(darkTheme, {
+  type: Themes.UmaAuthSdkDark,
+  bg: colors.gray5,
+  smBg: colors.gray5,
+  secondary: colors.grayBlue57,
+  tertiary: colors.gray98,
+  text: colors.gray98,
+  link: colors.blue39,
+  inputBackground: colors.gray5,
+  typography: getTypography(TypographyGroup.UmaAuthSdk, {
+    main: "Manrope",
+    code: "Monaco",
+  }),
+  content: extendBase(lightBaseTheme, {
+    bg: colors.gray5,
+    smBg: colors.gray5,
+    text: colors.grayBlue94,
+    secondary: colors.grayBlue43,
+  }),
+  controls: extendBase(lightBaseTheme, {
+    text: colors.grayBlue94,
+    secondary: colors.grayBlue43,
+    bg: colors.grayBlue9,
+  }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypographyType: "Title",
+    defaultSize: "Medium",
+    defaultBorderRadius: 999,
+    defaultBorderWidth: 0,
+    defaultPaddingsY: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 16,
+      Medium: 16,
+      Mlarge: 16,
+      Large: 16,
+    },
+    kinds: {
+      primary: {
+        defaultColor: "bg",
+        defaultBackgroundColor: "blue39",
+        defaultHoverBackgroundColor: "blue37",
+      },
+      ghost: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultBorderWidth: 0,
+        defaultHoverBackgroundColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+      },
+      secondary: {
+        defaultBackgroundColor: "grayBlue80",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultBorderColor: "grayBlue80",
+      },
+      tertiary: {
+        defaultColor: "bg",
+        defaultHoverBackgroundColor: "grayBlue80",
+      },
+    },
   }),
 });
 
@@ -305,6 +435,8 @@ export const themes = {
   [Themes.Dark]: darkTheme,
   [Themes.LightsparkDocsLight]: lightsparkDocsLightTheme,
   [Themes.LightsparkDocsDark]: lightsparkDocsDarkTheme,
+  [Themes.UmaAuthSdkLight]: umaAuthSdkLightTheme,
+  [Themes.UmaAuthSdkDark]: umaAuthSdkDarkTheme,
   [Themes.UmameDocsLight]: umameDocsLightTheme,
   [Themes.UmameDocsDark]: umameDocsDarkTheme,
   [Themes.BridgeLight]: bridgeLightTheme,

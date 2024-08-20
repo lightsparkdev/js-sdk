@@ -2,55 +2,58 @@
 
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { type FontColorKey } from "../../styles/themes.js";
-import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { applyTypography } from "../../styles/typography.js";
 import { select } from "../../utils/emotion.js";
+import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
 import {
-  toNonTypographicReactNodes,
-  type ToNonTypographicReactNodesArgs,
-} from "../../utils/toNonTypographicReactNodes.js";
+  type CommonStyledTypographyProps,
+  type CommonTypographyProps,
+} from "./types.js";
+import { typographyStyles } from "./typographyStyles.js";
 
 export const displayElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
 type DisplayElement = (typeof displayElements)[number];
 
-export type DisplayProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
-  /* children must be a string. use content prop for more complex content */
-  children?: string | undefined | null;
-  size?: TokenSizeKey | undefined;
-  element?: DisplayElement;
-  color?: FontColorKey | undefined;
+export type DisplayProps = CommonTypographyProps & {
+  tag?: DisplayElement | undefined;
 };
 
 export const Display = ({
-  content,
+  block = false,
   children,
   color,
+  content,
+  display,
+  hideOverflow = false,
+  id,
   size = "Medium",
-  element = "h1",
+  tag = "h1",
 }: DisplayProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
     reactNodes = toNonTypographicReactNodes(content);
   }
   return (
-    <StyledDisplay as={element} size={size} colorProp={color}>
+    <StyledDisplay
+      as={tag}
+      block={block}
+      colorProp={color}
+      displayProp={display}
+      hideOverflow={hideOverflow}
+      id={id}
+      size={size}
+    >
       {reactNodes}
     </StyledDisplay>
   );
 };
 
-type StyledDisplayProps = {
-  children: ReactNode;
-  size: TokenSizeKey;
-  /* color is an inherent html prop so we need to use colorProp instead */
-  colorProp?: FontColorKey | undefined;
-};
+type StyledDisplayProps = CommonStyledTypographyProps;
 
 const StyledDisplay = styled.span<StyledDisplayProps>`
   ${({ theme, size, colorProp }) =>
     applyTypography(theme, "Display", size, colorProp)}
+  ${typographyStyles}
 `;
 
 export function displaySelector(element: DisplayElement) {
