@@ -501,7 +501,7 @@ const ModalContent = styled.div<{
   `}
   ${(props) => (props.ghost ? "" : "padding: 16px 16px 40px;")}
 
-  ${headlineSelector("h4")} { {
+  ${headlineSelector("h4")} {
     margin: 0;
     & + *:not(${select(Description)}) {
       margin-top: ${contentTopMarginPx}px;
