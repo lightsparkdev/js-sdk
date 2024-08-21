@@ -12,9 +12,6 @@ import { TextInput } from "./TextInput.js";
 const countries = getCountries();
 const defaultOptions = countries
   .map((countryCode) => {
-    if (countryCodesToNames[countryCode] === undefined) {
-      console.log("no name", countryCode);
-    }
     return {
       value: countryCode,
       label: `${getCountryCallingCode(countryCode)} (${

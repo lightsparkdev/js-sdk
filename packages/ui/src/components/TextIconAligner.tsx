@@ -70,8 +70,6 @@ export function TextIconAligner<T extends TypographyTypeKey>({
     defaultTypographyMap,
   );
 
-  console.log(content);
-
   content = toReactNodes(content);
 
   const leftIconNode = leftIcon ? (

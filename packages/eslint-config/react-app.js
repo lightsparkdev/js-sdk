@@ -67,8 +67,6 @@ module.exports = {
               "ButtonRow",
               "ButtonRowContainer",
               "Dropdown",
-              "Table",
-              "TableCell",
               "TextButton",
             ],
             message:

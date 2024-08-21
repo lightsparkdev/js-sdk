@@ -21,6 +21,7 @@ export {
   CardPageSubtitle,
 } from "./CardPage.js";
 export { Checkbox, CheckboxContainer, type CheckboxProps } from "./Checkbox.js";
+export { ClipboardTextField } from "./ClipboardTextField.js";
 export { CodeBlock, InlineCode, StyledCodeBlock } from "./CodeBlock.js";
 export {
   CodeInput,
@@ -36,6 +37,10 @@ export {
 export { CommandKey } from "./CommandKey.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount.js";
+export {
+  DataManagerTable,
+  type DataManagerTableProps,
+} from "./DataManagerTable/DataManagerTable.js";
 export { Drawer } from "./Drawer.js";
 export { Dropdown } from "./Dropdown.js";
 export { FileInput, StyledFileInput } from "./FileInput.js";
@@ -69,12 +74,22 @@ export { PhoneInput } from "./PhoneInput.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { Radio } from "./Radio.js";
+export { ReadClipboardButton } from "./ReadClipboardButton.js";
 export { SecretContainer } from "./SecretContainer.js";
+export { Select, StyledSelect } from "./Select.js";
 export {
   StatusIndicator,
   type StatusIndicatorColors,
   type StatusIndicatorProps,
 } from "./StatusIndicator.js";
+export {
+  Table,
+  type TableCell,
+  type TableColumnHeaderInfo,
+  type TableProps,
+} from "./Table/Table.js";
+export { TableEmptyState } from "./Table/TableEmptyState.js";
+export { TextArea } from "./TextArea.js";
 export { TextButton } from "./TextButton.js";
 export { TextIconAligner } from "./TextIconAligner.js";
 export {
