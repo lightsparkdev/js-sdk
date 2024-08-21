@@ -71,6 +71,7 @@ export { Monitor } from "./Monitor.js";
 export { NodeAdd } from "./NodeAdd.js";
 export { NonagonCheckmark } from "./NonagonCheckmark.js";
 export { NotEye } from "./NotEye.js";
+export { Notebook } from "./Notebook.js";
 export { PaperPlane } from "./PaperPlane.js";
 export { Pencil } from "./Pencil.js";
 export { Person } from "./Person.js";
