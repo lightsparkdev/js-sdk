@@ -18,6 +18,7 @@ const FONT_FAMILIES = {
 
 const LINE_HEIGHTS = {
   [TypographyGroup.Lightspark]: {
+    "8xl": "72px",
     "7xl": "72px",
     "6xl": "60px",
     "5xl": "44px",
@@ -32,6 +33,7 @@ const LINE_HEIGHTS = {
     xs: "16px",
   },
   [TypographyGroup.LightsparkDocs]: {
+    "8xl": "72px",
     "7xl": "72px",
     "6xl": "60px",
     "5xl": "44px",
@@ -46,6 +48,9 @@ const LINE_HEIGHTS = {
     xs: "16px",
   },
   [TypographyGroup.UmaAuthSdk]: {
+    "8xl": "72px",
+    "7xl": "72px",
+    "6xl": "72px",
     "5xl": "72px",
     "4xl": "60px",
     "3xl": "44px",
@@ -58,6 +63,9 @@ const LINE_HEIGHTS = {
     xs: "20px",
   },
   [TypographyGroup.UmameDocs]: {
+    "8xl": "72px",
+    "7xl": "72px",
+    "6xl": "72px",
     "5xl": "72px",
     "4xl": "60px",
     "3xl": "44px",
@@ -76,6 +84,7 @@ const LINE_HEIGHTS = {
     "5xl": "40px",
     "4xl": "36px",
     "3xl": "32px",
+    "2xs": "16px",
     "2xl": "28px",
     lg: "22px",
     md: "20px",
@@ -83,7 +92,15 @@ const LINE_HEIGHTS = {
     xl: "24px",
     xs: "16px",
   },
-};
+} as const;
+
+export type LineHeightKey = keyof (typeof LINE_HEIGHTS)[TypographyGroup];
+export const lineHeightKeys = Object.keys(
+  LINE_HEIGHTS.Lightspark,
+) as LineHeightKey[];
+export function getLineHeightFromKey(key: LineHeightKey, theme: Theme) {
+  return theme.typography.lineHeights[key];
+}
 
 const FONT_WEIGHTS = {
   main: {
@@ -4407,3 +4424,30 @@ export const getTypographyString = (
 
   return typographyStr;
 };
+
+export function getLineHeightForTypographyType(
+  type: TypographyTypeKey,
+  size: TokenSizeKey,
+  theme: Theme,
+) {
+  const desktopTokenGroups = theme.typography.types["Desktop"];
+  const desktopTokenSizes = desktopTokenGroups[type];
+
+  if (!desktopTokenSizes) {
+    console.error(
+      `getLineHeightForTypographyType: Attempted to use a typography type "${type}" that does not exist in the current theme. Falling back to default tokens.`,
+    );
+    return defaultTokens.lineHeight;
+  }
+
+  const desktopTokens = desktopTokenSizes[size];
+
+  if (!desktopTokens) {
+    console.error(
+      `getLineHeightForTypographyType: Attempted to use a typography size "${size}" that does not exist for typography type "${type}" in the current theme. Falling back to default tokens.`,
+    );
+    return defaultTokens.lineHeight;
+  }
+
+  return desktopTokens.lineHeight;
+}

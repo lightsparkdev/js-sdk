@@ -63,6 +63,7 @@ export function toReactNodes<T extends TypographyTypeKey>(
     } else if (
       typeof node !== "string" &&
       "typography" in node &&
+      node.typography &&
       node.typography.type
     ) {
       const props =
@@ -108,7 +109,7 @@ export function setReactNodesTypography<T extends TypographyTypeKey>(
 ) {
   const nodes = Array.isArray(nodesArg) ? nodesArg : [nodesArg];
 
-  const nodesWithTypography = nodes.map((node, i) => {
+  const nodesWithTypography = nodes.map((node) => {
     if (isIconNode(node)) {
       return node;
     } else if (typeof node === "string") {

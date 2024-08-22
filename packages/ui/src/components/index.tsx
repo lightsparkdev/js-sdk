@@ -70,6 +70,7 @@ export {
   type PageSectionProps,
 } from "./PageSection/PageSection.js";
 export { PageSectionNav } from "./PageSection/PageSectionNav.js";
+export { PendingValue } from "./PendingValue.js";
 export { PhoneInput } from "./PhoneInput.js";
 export { Pill } from "./Pill.js";
 export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
