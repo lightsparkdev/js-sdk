@@ -63,7 +63,7 @@ export function Badge<T extends TypographyTypeKey>({
   content = toReactNodes(content);
 
   return contentProp ? (
-    <StyledBadge kind={kind} ml={ml} size={size} block={block}>
+    <StyledBadge kind={kind} ml={ml} mr={mr} size={size} block={block}>
       {icon ? (
         <Icon
           name={icon.name}
@@ -81,6 +81,7 @@ export function Badge<T extends TypographyTypeKey>({
 type StyledBadgeProps = {
   kind: BadgeKind | undefined;
   ml: number;
+  mr: number;
   size: "sm" | "lg";
   block: boolean;
 };
@@ -91,6 +92,7 @@ const badgeSmHPadding = 6;
 const StyledBadge = styled.div<StyledBadgeProps>`
   ${({ size }) => standardBorderRadius(size === "sm" ? 4 : 12)}
   ${({ ml }) => (ml === 0 ? "" : `margin-left: ${ml}px;`)}
+  ${({ mr }) => (mr === 0 ? "" : `margin-right: ${mr}px;`)}
 
   display: ${({ block }) => (block ? "flex" : "inline-flex")};
   gap: ${({ size }) => (size === "sm" ? badgeSmHPadding : 12)}px;

@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { useClipboard } from "../hooks/useClipboard.js";
@@ -15,7 +16,7 @@ type ClipboardTextFieldProps = {
   maxLines?: number | undefined;
   elide?: ElideArgs | undefined;
   wordBreakAll?: boolean;
-  preFormat?: boolean;
+  tag?: "span" | "pre";
   iconSide?: "left" | "right";
   typography?: SimpleTypographyProps | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0];
@@ -28,7 +29,7 @@ export function ClipboardTextField({
   maxLines,
   elide: elideArgs,
   wordBreakAll = false,
-  preFormat = false,
+  tag = "span",
   iconSide = "left",
   typography,
   clipboardCallbacks,
@@ -38,15 +39,11 @@ export function ClipboardTextField({
   const addLineClamp = maxLines && maxLines > 1;
   const displayValue = elideArgs ? elide(value, elideArgs) : value;
 
-  let nodes = renderTypography(typography?.type || "Body", {
+  const nodes = renderTypography(typography?.type || "Body", {
     content: displayValue,
     size: typography?.size || "ExtraSmall",
     color: typography?.color || "inherit",
   });
-
-  if (preFormat) {
-    nodes = <pre>{nodes}</pre>;
-  }
 
   const baseValueCSS = {
     flex: 1,
@@ -97,7 +94,8 @@ export function ClipboardTextField({
     : baseContainerCSS;
 
   return canWriteToClipboard && value ? (
-    <span
+    <StyledClipboardTextField
+      as={tag}
       onClick={onClick}
       css={containerCSS}
       role="button"
@@ -111,8 +109,12 @@ export function ClipboardTextField({
       {icon && iconSide === "right" ? (
         <Icon name="Copy" width={16} ml={4} />
       ) : null}
-    </span>
+    </StyledClipboardTextField>
   ) : (
-    <div css={{ height: "15px" }}>{valueNode}</div>
+    <StyledClipboardTextField as={tag} css={containerCSS}>
+      {valueNode}
+    </StyledClipboardTextField>
   );
 }
+
+const StyledClipboardTextField = styled.span``;

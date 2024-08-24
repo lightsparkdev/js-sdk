@@ -93,7 +93,7 @@ export function CodeInput({
   const [inputState, setInputState] = useState<InputState>(
     Array(codeLength)
       .fill(0)
-      .reduce((acc, item, i) => {
+      .reduce((acc, _, i) => {
         return {
           ...acc,
           [getInputId(i)]: {
@@ -351,7 +351,7 @@ export function CodeInput({
             if (autofillValuesRef.current.length === codeLength) {
               const newState = Array(codeLength)
                 .fill(0)
-                .reduce((acc, item, i) => {
+                .reduce((acc, _, i) => {
                   return {
                     ...acc,
                     [getInputId(i)]: {
@@ -379,7 +379,7 @@ export function CodeInput({
              */
             const newState = Array(codeLength)
               .fill(0)
-              .reduce((acc, item, i) => {
+              .reduce((acc, _, i) => {
                 return {
                   ...acc,
                   [getInputId(i)]: {
