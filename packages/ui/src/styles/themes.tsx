@@ -44,6 +44,7 @@ const baseThemeColors = {
   c1Neutral: colors.gray90,
   c15Neutral: colors.gray85,
   c2Neutral: colors.gray80,
+  c25Neutral: colors.gray75,
   c3Neutral: colors.gray70,
   c4Neutral: colors.gray60,
   c5Neutral: colors.gray50,
@@ -117,6 +118,7 @@ const darkBaseTheme: BaseTheme = {
   c1Neutral: colors.gray10,
   c15Neutral: colors.gray15,
   c2Neutral: colors.gray20,
+  c25Neutral: colors.gray25,
   c3Neutral: colors.gray30,
   c4Neutral: colors.gray40,
   c5Neutral: colors.gray50,
@@ -557,6 +559,7 @@ export const isDark = (theme: Theme) =>
     Themes.BridgeDark,
     Themes.LightsparkDocsDark,
     Themes.UmameDocsDark,
+    Themes.UmaAuthSdkDark,
   ].includes(theme.type);
 export const isLight = (theme: Theme) =>
   [
@@ -564,11 +567,22 @@ export const isLight = (theme: Theme) =>
     Themes.BridgeLight,
     Themes.LightsparkDocsLight,
     Themes.UmameDocsLight,
+    Themes.UmaAuthSdkLight,
   ].includes(theme.type);
+
 export const themeOr =
   (lightValue: string, darkValue: string) =>
   ({ theme }: { theme: Theme }) => {
     return isLight(theme) ? lightValue : darkValue;
+  };
+
+export const themeOrWithKey =
+  (lightValue: ThemeOrColorKey, darkValue: ThemeOrColorKey) =>
+  ({ theme }: { theme: Theme }) => {
+    if (isLight(theme)) {
+      return getColor(theme, lightValue);
+    }
+    return getColor(theme, darkValue);
   };
 
 export function ifLight(style: CSSInterpolation) {

@@ -1,6 +1,7 @@
-import { css, keyframes } from "@emotion/react";
+import { css, keyframes, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
+import { themeOrWithKey, themes, type Themes } from "../styles/themes.js";
 import {
   getLineHeightForTypographyType,
   type LineHeightKey,
@@ -29,6 +30,7 @@ type PendingValueProps<T extends TypographyTypeKey> = {
   height?: LineHeightKey | undefined;
   typography?: SimpleTypographyProps;
   width?: number | undefined;
+  forceTheme?: Themes | undefined;
 };
 
 export function PendingValue<T extends TypographyTypeKey>({
@@ -36,12 +38,14 @@ export function PendingValue<T extends TypographyTypeKey>({
   content: contentProp,
   typography: typographyProp,
   width,
+  forceTheme,
 }: PendingValueProps<T>) {
   const defaultTypography = {
     type: typographyProp?.type || "Body",
     props: {
       size: typographyProp?.size || "Small",
       color: typographyProp?.color || "text",
+      hideOverflow: true,
     },
   } as const;
 
@@ -59,38 +63,63 @@ export function PendingValue<T extends TypographyTypeKey>({
 
   content = toReactNodes(content);
 
-  return contentProp ? (
-    content
-  ) : (
+  const nodes = (
     <StyledPendingValue
-      widthProp={width}
       typographyType={defaultTypography.type}
       typographySize={defaultTypography.props.size}
-      animate={animate}
-    />
+      widthProp={width}
+    >
+      <StyledPendingValueBg visible={!contentProp} animate={animate} />
+      <StyledPendingValueContent>{content}</StyledPendingValueContent>
+    </StyledPendingValue>
+  );
+  return forceTheme ? (
+    <ThemeProvider theme={themes[forceTheme]}>{nodes}</ThemeProvider>
+  ) : (
+    nodes
   );
 }
 
-export const StyledPendingValue = styled.div<{
-  widthProp: number | undefined;
+const StyledPendingValue = styled.div<{
   typographyType: TypographyTypeKey;
   typographySize: TokenSizeKey;
-  animate: boolean;
+  widthProp: number | undefined;
 }>`
-  border-radius: 999px;
-  max-width: 100%;
-  ${({ widthProp }) => (widthProp ? `width: ${widthProp}px;` : "")}
+  position: relative;
   height: ${({ typographyType, typographySize, theme }) =>
     getLineHeightForTypographyType(typographyType, typographySize, theme)};
-  background: ${({ theme }) => theme.c15Neutral};
 
-  ${({ theme }) => `
-    background: linear-gradient(
-      90deg,
-      ${theme.c15Neutral} 0%,
-      ${theme.c2Neutral} 50%,
-      ${theme.c15Neutral} 100%
-    );`}
+  ${({ widthProp }) => (widthProp ? `width: ${widthProp}px;` : "width: 100%;")}
+  max-width: 100%;
+`;
+
+export const StyledPendingValueContent = styled.div`
+  position: relative;
+  z-index: 1;
+`;
+
+const vSpacing = 2;
+
+export const StyledPendingValueBg = styled.div<{
+  animate: boolean;
+  visible: boolean;
+}>`
+  z-index: 0;
+  height: calc(100% - ${vSpacing * 2}px);
+  width: 100%;
+  position: absolute;
+  top: ${vSpacing}px;
+  border-radius: 999px;
+
+  ${({ visible }) => (visible ? "opacity: 1;" : "opacity: 0;")}
+  transition: opacity 0.01s ease;
+
+  background: linear-gradient(
+    90deg,
+    ${themeOrWithKey("c15Neutral", "c25Neutral")} 0%,
+    ${themeOrWithKey("c2Neutral", "c3Neutral")} 50%,
+    ${themeOrWithKey("c15Neutral", "c25Neutral")} 100%
+  );
 
   background-size: 200% 100%;
   background-position: 0% 0%;

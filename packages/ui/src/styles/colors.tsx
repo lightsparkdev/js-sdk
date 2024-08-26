@@ -12,6 +12,7 @@ const neutral = {
   gray50: "#808080",
   gray60: "#999999",
   gray70: "#B3B3B3",
+  gray75: "#BFBFBF",
   gray80: "#CCCCCC",
   gray85: "#D9D9D9",
   gray90: "#E6E6E6",

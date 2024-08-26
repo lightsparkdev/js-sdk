@@ -14,6 +14,8 @@ export const typographyStyles = ({
     margin: 0;
 
     ${displayValue ? `display: ${displayValue};` : ""}
-    ${hideOverflow ? "overflow: hidden; text-overflow: ellipsis;" : ""}
+    ${hideOverflow
+      ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+      : ""}
   `;
 };
