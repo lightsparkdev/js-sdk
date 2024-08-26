@@ -1,18 +1,26 @@
 import styled from "@emotion/styled";
+import { type ReactNode } from "react";
 import CheckmarkUrl from "../static/images/Checkmark.svg?url";
-import { standardLineHeightEms } from "../styles/common.js";
+import { type TypographyTypeKey } from "../styles/tokens/typography.js";
+import { type SimpleTypographyProps } from "../styles/typography.js";
+import {
+  setDefaultReactNodesTypography,
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../utils/toReactNodes.js";
 
-export type CheckboxProps = {
+export type CheckboxProps<T extends TypographyTypeKey> = {
   checked: boolean;
   onChange: (newValue: boolean) => void;
   id?: string;
-  label?: string;
+  label?: ToReactNodesArgs<T> | undefined;
   mt?: number;
   alignItems?: "center" | "flex-start";
   disabled?: boolean;
+  typography?: SimpleTypographyProps;
 };
 
-export function Checkbox({
+export function Checkbox<T extends TypographyTypeKey>({
   checked,
   onChange,
   id,
@@ -20,7 +28,30 @@ export function Checkbox({
   mt = 0,
   alignItems = "center",
   disabled = false,
-}: CheckboxProps) {
+  typography: typographyProp,
+}: CheckboxProps<T>) {
+  const defaultTypography = {
+    type: typographyProp?.type || "Body",
+    props: {
+      size: typographyProp?.size || "Medium",
+      color: typographyProp?.color || "text",
+    },
+  } as const;
+
+  const defaultTypographyMap = {
+    link: defaultTypography,
+    externalLink: defaultTypography,
+    text: defaultTypography,
+    nextLink: defaultTypography,
+  };
+
+  let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
+    label,
+    defaultTypographyMap,
+  );
+
+  content = toReactNodes(content);
+
   return (
     <CheckboxContainer mt={mt} alignItems={alignItems}>
       <StyledCheckbox
@@ -36,7 +67,7 @@ export function Checkbox({
           }
         }}
       />
-      {label && <CheckboxLabel htmlFor={id}>{label}</CheckboxLabel>}
+      {label && <CheckboxLabel htmlFor={id}>{content}</CheckboxLabel>}
     </CheckboxContainer>
   );
 }
@@ -66,7 +97,7 @@ export const CheckboxContainer = styled.span<{
   alignItems: string;
 }>`
   display: flex;
-  margin-top: ${({ mt }) => mt}px;
+  ${({ mt }) => (mt === 0 ? "" : `margin-top: ${mt}px;`)}
   align-items: ${({ alignItems }) => alignItems};
 
   & + & {
@@ -77,5 +108,4 @@ export const CheckboxContainer = styled.span<{
 const CheckboxLabel = styled.label`
   margin-left: 12px;
   cursor: pointer;
-  height: ${standardLineHeightEms}em;
 `;
