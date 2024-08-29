@@ -23,6 +23,7 @@ import {
   overflowAutoWithoutScrollbars,
 } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
+import { type ElideObjArgs } from "../../utils/strings.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
@@ -53,6 +54,8 @@ const isLinkCell = (value: unknown): value is LinkCell => {
 
 type ClipboardCell = ObjectCell & {
   canCopy: true;
+  maxChars?: ElideObjArgs["maxChars"] | undefined;
+  ellipsisPosition?: ElideObjArgs["ellipsisPosition"] | undefined;
 };
 const isClipboardCell = (value: unknown): value is ClipboardCell => {
   return isObjectCell(value) && "canCopy" in value;
@@ -231,8 +234,9 @@ export function Table<T extends Record<string, unknown>>({
             if (isMultilineCell(value)) {
               maxLines = 2;
             } else {
-              maxChars = 16;
+              maxChars = value.maxChars || 16;
             }
+            const ellipsisPosition = value.ellipsisPosition || "middle";
             return (
               <HoverableCellWrapper>
                 {icon}
@@ -242,7 +246,7 @@ export function Table<T extends Record<string, unknown>>({
                     maxChars
                       ? {
                           maxChars,
-                          ellipsisPosition: "middle",
+                          ellipsisPosition,
                         }
                       : undefined
                   }
