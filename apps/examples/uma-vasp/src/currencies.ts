@@ -1,15 +1,20 @@
 import { Currency } from "@uma-sdk/core";
 
+const Currencies = {
+  USD : "USD",
+  BRL : "BRL",
+  PHP : "PHP",
+  MXN : "MXN",
+  CAD : "CAD",
+  SAT : "SAT"
+} as const
 
+export type CurrencyType = typeof Currencies[keyof typeof Currencies];
 
-export type CurrencyType = "USD" | "SAT";
+const DECIMALS_PER_UNIT: Record<CurrencyType, number> = { USD: 2, SAT: 0, BRL: 2, MXN: 2, PHP: 2, CAD: 2 }
 
-type Currencies = Record<CurrencyType, Currency>;
-
-const DECIMALS_PER_UNIT = { USD: 2, SAT: 0, BRL: 2, MXN: 2, PHP: 2, CAD: 2 }
-
-const MSATS_PER_UNIT = {
-  USD: 22883.56,
+const MSATS_PER_UNIT: Record<CurrencyType, number> = {
+  USD : 22883.56,
   SAT: 1_000.0,
   BRL: 4608.84776960979,
   MXN: 1325.80831017669,
@@ -18,31 +23,75 @@ const MSATS_PER_UNIT = {
 };
 
 export const SATS_CURRENCY = new Currency(
-  "SAT",
+  Currencies.SAT,
   "Satoshis",
   "sat",
-  MSATS_PER_UNIT["SAT"],
+  MSATS_PER_UNIT[Currencies.SAT],
   1,
   100_000_000,
-  DECIMALS_PER_UNIT["SAT"],
+  DECIMALS_PER_UNIT[Currencies.SAT],
 );
 
-export const USD_CURRENCY = new Currency(
-  "USD",
+const USD_CURRENCY = new Currency(
+  Currencies.USD,
   "US Dollars",
   "$",
-  MSATS_PER_UNIT["USD"],
+  MSATS_PER_UNIT[Currencies.USD],
   1,
   10_000_000,
-  DECIMALS_PER_UNIT['USD']
+  DECIMALS_PER_UNIT[Currencies.USD]
 );
 
-export const CURRENCIES: Currencies = {
-  "USD": USD_CURRENCY,
-  "SAT": SATS_CURRENCY
+const BRL_CURRENCY = new Currency(
+  Currencies.BRL,
+  "Brazilian Real",
+  "R$",
+  MSATS_PER_UNIT[Currencies.BRL],
+  1,
+  10_000_000,
+  DECIMALS_PER_UNIT[Currencies.BRL],
+);
+
+const MXN_CURRENCY = new Currency(
+  Currencies.MXN,
+  "Mexican Peso",
+  "MX$",
+  MSATS_PER_UNIT[Currencies.MXN],
+  1,
+  10_000_000,
+  DECIMALS_PER_UNIT[Currencies.MXN],
+);
+
+const PHP_CURRENCY = new Currency(
+  Currencies.PHP,
+  "Philippine Peso",
+  "₱",
+  MSATS_PER_UNIT[Currencies.PHP],
+  1,
+  10_000_000,
+  DECIMALS_PER_UNIT[Currencies.PHP],
+);
+
+const CAD_CURRENCY = new Currency(
+  Currencies.CAD,
+  "Canadian Dollar",
+  "CA$",
+  MSATS_PER_UNIT[Currencies.CAD],
+  1,
+  10_000_000,
+  DECIMALS_PER_UNIT[Currencies.CAD],
+)
+
+export const CURRENCIES = {
+  USD: USD_CURRENCY,
+  SAT: SATS_CURRENCY,
+  CAD: CAD_CURRENCY,
+  BRL: BRL_CURRENCY,
+  PHP: PHP_CURRENCY,
+  MXN: MXN_CURRENCY
 };
 
-const validCurrencyTypes: Set<CurrencyType> = new Set(["USD", "SAT"]);
+const validCurrencyTypes: Set<CurrencyType> = new Set([Currencies.USD, Currencies.SAT]);
 
 // Type guard function to check if a string is a valid CurrencyType
 export function isCurrencyType(value: string): value is CurrencyType {
