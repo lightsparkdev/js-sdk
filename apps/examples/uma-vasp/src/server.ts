@@ -18,6 +18,7 @@ import SendingVaspRequestCache from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
 import UserService from "./UserService.js";
 import { errorMessage } from "./errors.js";
+import { fullUrlForRequest } from "./networking/expressAdapters.js";
 
 export const createUmaServer = (
   config: UmaConfig,
@@ -66,6 +67,16 @@ export const createUmaServer = (
       signingCertChainPem: config.umaSigningCertChain,
       encryptionCertChainPem: config.umaEncryptionCertChain,
     }).toJsonString());
+  });
+
+  app.get("/.well-known/uma-configuration", (req, res) => {
+    const reqUrl = fullUrlForRequest(req);
+    const reqBaseUrl = reqUrl.origin;
+    // TODO: Add UMA Auth implementation.
+    res.send({
+      uma_major_versions: [0, 1],
+      uma_request_endpoint: reqBaseUrl + "/api/uma/request_pay_invoice",
+    });
   });
 
   app.post("/api/uma/utxoCallback", async (req, res) => {
