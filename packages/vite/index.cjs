@@ -18,7 +18,7 @@ module.exports.buildConfig = ({
   base = basename,
   dirname,
   rollupOptions,
-  chunks = {"/node_modules/": "vendor"},
+  chunks = { "/node_modules/": "vendor" },
   proxyTarget = "http://127.0.0.1:5000",
 }) => {
   function manualChunks(id) {
@@ -87,6 +87,13 @@ module.exports.buildConfig = ({
           target: proxyTarget,
           changeOrigin: true,
         },
+        "/graphql/paycore-internal": {
+          target:
+            proxyTarget === "http://127.0.0.1:5000"
+              ? "http://127.0.0.1:5001"
+              : proxyTarget,
+          changeOrigin: true,
+        },
       },
     },
     /* see https://bit.ly/3EOx5ZM - workspace deps that need to be commonjs like @lightsparkdev/crypto-wasm
@@ -95,7 +102,7 @@ module.exports.buildConfig = ({
       include: ["@lightsparkdev/crypto-wasm"],
     },
     build: {
-      rollupOptions: {output: {manualChunks}, ...rollupOptions},
+      rollupOptions: { output: { manualChunks }, ...rollupOptions },
       assetsDir: "static",
       commonjsOptions: {
         include: [/@lightsparkdev\/crypto-wasm/, /node_modules/],
@@ -107,4 +114,4 @@ module.exports.buildConfig = ({
       },
     },
   });
-}
+};
