@@ -60,7 +60,7 @@ export type TextInputProps = {
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => void;
   placeholder?: string;
-  inputRef?: RefObject<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement> | undefined;
   inputRefCb?: RefCallback<HTMLInputElement>;
   id?: string;
   type?: "text" | "password" | "hidden" | undefined;
