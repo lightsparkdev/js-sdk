@@ -21,9 +21,9 @@ export default interface SendingVaspRequestCache {
   savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
-    utxoCallback: string,
-    invoiceData: InvoiceData,
-    senderCurrencies: Currency[],
+    utxoCallback: string | undefined,
+    invoiceData: InvoiceData | undefined,
+    senderCurrencies: Currency[] | undefined,
   ): string;
 }
 
@@ -42,7 +42,7 @@ export interface SendingVaspInitialRequestData {
 export interface SendingVaspPayReqData {
   receiverUmaAddress: string;
   encodedInvoice: string;
-  utxoCallback: string;
-  invoiceData: InvoiceData;
-  senderCurrencies: Currency[];
+  utxoCallback: string | undefined;
+  invoiceData: InvoiceData | undefined;
+  senderCurrencies: Currency[] | undefined;
 }

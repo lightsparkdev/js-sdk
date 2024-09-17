@@ -19,7 +19,7 @@ import SendingVaspRequestCache, {
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
-import { SATS_CURRENCY } from "./currencies.js";
+import { CURRENCIES, CurrencyType, isCurrencyType, SATS_CURRENCY } from "./currencies.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
 import {
   fullUrlForRequest,
@@ -37,7 +37,7 @@ export default class SendingVasp {
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
     private readonly nonceCache: uma.NonceValidator,
-  ) {}
+  ) { }
 
   registerRoutes(app: Express) {
     app.get("/api/umalookup/:receiver", async (req: Request, resp) => {
@@ -94,6 +94,51 @@ export default class SendingVasp {
         req.params.callbackUuid,
         fullUrlForRequest(req),
       );
+      sendResponse(resp, response);
+    });
+
+    app.post("/api/uma/pay_invoice", async (req, resp) => {
+      const user = await this.userService.getCallingUserFromRequest(
+        fullUrlForRequest(req),
+        req.headers,
+      );
+      if (!user) {
+        return sendResponse(resp, {
+          httpStatus: 401,
+          data: "Unauthorized. Check your credentials.",
+        });
+      }
+      const response = await this.handlePayInvoice(
+        user, fullUrlForRequest(req)
+      );
+      sendResponse(resp, response);
+    });
+
+    app.post("/api/uma/request_invoice_payment", async (req, resp) => {
+      let invoiceBech32Str;
+      try {
+        invoiceBech32Str = JSON.parse(req.body)["invoice"];
+      } catch (e) {
+        return sendResponse(resp, {
+          httpStatus: 500,
+          data: "Error. unable to parse uma invoice .",
+        });
+      }
+      if (!invoiceBech32Str || typeof invoiceBech32Str !== "string") {
+        return sendResponse(resp, {
+          httpStatus: 401,
+          data: "Error. Required invoice not provided.",
+        });
+      }
+      const invoice = uma.InvoiceSerializer.fromBech32(invoiceBech32Str);
+      if (!invoice.senderUma) {
+        return sendResponse(resp, {
+          httpStatus: 401,
+          data: "Error. Sender Uma not present on invoice.",
+        });
+      }
+
+      const response = await this.handleRequestPayInvoice(invoice, invoiceBech32Str);
       sendResponse(resp, response);
     });
   }
@@ -310,9 +355,11 @@ export default class SendingVasp {
     if (!initialRequestData.lnurlpResponse) {
       return { httpStatus: 400, data: "Invalid callbackUuid" };
     }
+
     const receivingCurrencyCode = requestUrl.searchParams.get(
       "receivingCurrencyCode",
     );
+    
     const isUma = initialRequestData.lnurlpResponse.isUma();
 
     let payerProfile: PayerProfile | null = null;
@@ -343,6 +390,7 @@ export default class SendingVasp {
     if (!receivingCurrencyCode || typeof receivingCurrencyCode !== "string") {
       return { httpStatus: 400, data: "Missing currencyCode" };
     }
+
     const selectedCurrency = (
       initialRequestData.lnurlpResponse.currencies || []
     ).find((c) => c.code === receivingCurrencyCode);
@@ -394,6 +442,7 @@ export default class SendingVasp {
       amountValueMillisats,
     );
     const node = await this.getLightsparkNode();
+    
     const utxoCallback = this.getUtxoCallback(requestUrl, "1234abcd");
 
     console.log(`Generating payreq for ${amountValueMillisats} msats.`);
@@ -546,6 +595,181 @@ export default class SendingVasp {
     };
   }
 
+  private async handleUmaPayReqInternal(
+    { callback, user, currency, receiverUma, amount, amountValueMillisats, isAmountInMsats, sendingUma, umaVersion, requestUrl, senderProfile: payerProfile, pubKeys }: {
+      callback: string, // initialRequestData.lnurlpResponse.callback,
+      user: User,
+      currency: uma.InvoiceCurrency,
+      receiverUma: string,
+      amount: number, // what about 
+      amountValueMillisats: number,
+      isAmountInMsats: boolean,
+      sendingUma: string, // payerprofile.identifier,
+      umaVersion: string, // initialRequestData.lnurlpResponse.umaVersion
+      requestUrl: URL,
+      senderProfile: PayerProfile,
+      pubKeys: uma.PubKeyResponse
+    }
+  ): Promise<HttpResponse> {
+    const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
+      user.id,
+      sendingUma,
+      receiverUma,
+      amountValueMillisats,
+    );
+    const node = await this.getLightsparkNode();
+    const utxoCallback = this.getUtxoCallback(requestUrl, "1234abcd");
+
+    console.log(`Generating payreq for ${amountValueMillisats} msats.`);
+    console.log(`  isAmountInMsats: ${isAmountInMsats}`);
+    console.log(`  amount: ${amount}`);
+    let payReq: uma.PayRequest;
+    try {
+      payReq = await uma.getPayRequest({
+        receiverEncryptionPubKey: pubKeys.getEncryptionPubKey(),
+        sendingVaspPrivateKey: this.config.umaSigningPrivKey(),
+        receivingCurrencyCode: currency.code,
+        isAmountInReceivingCurrency: !isAmountInMsats,
+        amount: amount,
+        payerIdentifier: receiverUma,
+        payerKycStatus: user.kycStatus,
+        utxoCallback,
+        trInfo,
+        payerUtxos: node.umaPrescreeningUtxos,
+        payerNodePubKey: node.publicKey ?? "",
+        payerName: payerProfile.name,
+        payerEmail: payerProfile.email,
+        requestedPayeeData: {
+          // Compliance and Identifier are mandatory fields added automatically.
+          name: { mandatory: false },
+          email: { mandatory: false },
+        },
+        umaMajorVersion: umaVersion // sending uma version?
+          ? uma.getMajorVersion(umaVersion)
+          : 1,
+      });
+    } catch (e) {
+      console.error("Error generating payreq.", e);
+      return { httpStatus: 500, data: "Error generating payreq." };
+    }
+
+    console.log(
+      `Sending payreq: ${JSON.stringify(payReq.toJsonSchemaObject(), null, 2)}`,
+    );
+    let response: globalThis.Response;
+    try {
+      response = await fetch(callback, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payReq.toJsonString(),
+      });
+    } catch (e) {
+      return { httpStatus: 500, data: "Error sending payreq." };
+    }
+
+    if (!response.ok || response.status !== 200) {
+      return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
+    }
+
+    let payResponse: uma.PayReqResponse;
+    const bodyText = await response.text();
+    try {
+      payResponse = await uma.PayReqResponse.fromJson(bodyText);
+    } catch (e) {
+      console.error("Error parsing payreq response. Raw response: " + bodyText);
+      console.error("Error:", e);
+      return { httpStatus: 424, data: "Error parsing payreq response." };
+    }
+
+    if (!payResponse.isUma()) {
+      console.log("Received non-uma response for uma payreq.");
+      return {
+        httpStatus: 424,
+        data: "Received non-uma response for uma payreq.",
+      };
+    }
+
+    try {
+      if (payReq.umaMajorVersion !== 0) {
+        const isSignatureValid = await uma.verifyPayReqResponseSignature(
+          payResponse,
+          sendingUma,
+          receiverUma,
+          pubKeys,
+          this.nonceCache,
+        );
+        if (!isSignatureValid) {
+          return {
+            httpStatus: 424,
+            data: "Invalid payreq response signature.",
+          };
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      return {
+        httpStatus: 424,
+        data: new Error("Invalid payreq response signature.", { cause: e }),
+      };
+    }
+
+    console.log(`Verified payreq response signature.`);
+
+    const shouldTransact = await this.complianceService.preScreenTransaction(
+      sendingUma,
+      receiverUma,
+      amountValueMillisats,
+      payResponse.payeeData?.compliance?.nodePubKey ?? undefined,
+      payResponse.payeeData?.compliance?.utxos ?? [],
+    );
+    if (!shouldTransact) {
+      return {
+        httpStatus: 424,
+        data: "Transaction not allowed due to risk rating.",
+      };
+    }
+
+    let invoice: InvoiceData;
+    try {
+      invoice = await this.lightsparkClient.decodeInvoice(payResponse.pr);
+    } catch (e) {
+      console.error("Error decoding invoice.", e);
+      return { httpStatus: 500, data: "Error decoding invoice." };
+    }
+
+    const senderCurrencies =
+      (await this.userService.getCurrencyPreferencesForUser(user.id)) ?? [];
+
+    const newCallbackUuid = this.requestCache.savePayReqData(
+      sendingUma,
+      payResponse.pr,
+      utxoCallback,
+      invoice,
+      senderCurrencies,
+    );
+
+    const amountMsats = convertCurrencyAmount(
+      invoice.amount, // not a number it's an objcet
+      CurrencyUnit.MILLISATOSHI,
+    ).preferredCurrencyValueRounded;
+
+    return {
+      httpStatus: 200,
+      data: {
+        senderCurrencies: senderCurrencies ?? [],
+        callbackUuid: newCallbackUuid,
+        encodedInvoice: payResponse.pr,
+        amountMsats: amountMsats,
+        amountReceivingCurrency: payResponse.converted!.amount,
+        conversionRate: payResponse.converted!.multiplier,
+        exchangeFeesMsats: payResponse.converted!.fee,
+        receivingCurrencyCode: payResponse.converted!.currencyCode,
+      },
+    };
+  }
+
   private async handleNonUmaPayReq(
     initialRequestData: SendingVaspInitialRequestData,
     amount: number,
@@ -666,7 +890,7 @@ export default class SendingVasp {
     }
 
     const payReqData = this.requestCache.getPayReqData(callbackUuid);
-    if (!payReqData) {
+    if (!payReqData || !payReqData?.invoiceData) {
       return { httpStatus: 400, data: "callbackUuid not found" };
     }
 
@@ -785,6 +1009,109 @@ export default class SendingVasp {
         didSucceed: payment.status === TransactionStatus.SUCCESS,
       },
     };
+  }
+
+  private async handlePayInvoice(user: User, requestUrl: URL) {
+    const invoiceStr = requestUrl.searchParams.get("invoice");
+    if (!invoiceStr) {
+      return { httpStatus: 422, data: "Missing argument: invoice" };
+    }
+    // payments can also be done via uuid of cached request
+    // by checking uma prefix, determine if invoiceStr is a bech32 encoded invoice.  
+    // if prefix not present, treat as uuid/ zod can parse this
+    let encodedInvoice;
+
+    if (!invoiceStr.startsWith("uma")) {
+      encodedInvoice = this.requestCache.getPayReqData(invoiceStr)?.encodedInvoice;
+    }
+    let invoice: uma.Invoice;
+    try {
+      invoice = uma.InvoiceSerializer.fromBech32(encodedInvoice ?? invoiceStr);
+    } catch (e) {
+      return { httpStatus: 500, data: "Cannot parse Invoice from invoice paramater" };
+    }
+
+    let payerPofile = this.getPayerProfile(
+      user,
+      invoice.requiredPayerData ?? {},
+      this.getSendingVaspDomain(requestUrl),
+      true)
+
+    const [, receivingVaspDomain] = invoice.receiverUma.split("@");
+    let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
+    if (!pubKeys)
+      return {
+        httpStatus: 424,
+        data: "Error fetching receiving vasp public key.",
+      };
+
+    const signatureVerified = uma.verifyUmaInvoiceSignature(invoice, pubKeys.getSigningPubKey());
+    if (!signatureVerified) {
+      return { httpStatus: 500, data: "Unable to verify invoice signature" };
+    }
+
+    // millisats
+    
+    if (!isCurrencyType(invoice.receivingCurrency.code)) {
+      return {
+        httpStatus: 500, data: `Invalid currency code ${invoice.receivingCurrency.code}`
+      };
+    }
+    const isAmountInMsats = invoice.receivingCurrency.code == SATS_CURRENCY.code;
+    const currency = CURRENCIES[invoice.receivingCurrency.code as CurrencyType]
+    const currencyInMsats = invoice.amount * currency.multiplier;
+
+    if (invoice.expiration < Date.now()) {
+      return { httpStatus: 500, data: "Unable to process expired invoice" };
+    }
+    
+    return this.handleUmaPayReqInternal({
+      callback: invoice.callback,
+      user: user,
+      currency: invoice.receivingCurrency,
+      receiverUma: invoice.receiverUma,
+      amount: invoice.amount,
+      amountValueMillisats: currencyInMsats, // todo
+      isAmountInMsats: isAmountInMsats, //todo
+      sendingUma: invoice.senderUma ?? `${user.umaUserName}:${this.getSendingVaspDomain(requestUrl)}`, //tdod
+      requestUrl: requestUrl,
+      senderProfile: payerPofile,
+      pubKeys: pubKeys,
+      umaVersion: invoice.umaVersion
+    });
+  }
+
+  private async handleRequestPayInvoice(
+    invoice: uma.Invoice,
+    encodedInvoice: string,
+  ): Promise<HttpResponse> {
+    const [, receivingVaspDomain] = invoice.receiverUma.split("@");
+    let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
+
+    if (!pubKeys) {
+      return {
+        httpStatus: 500,
+        data: "Error, unable to get receiving Vasp public signing key"
+      }
+    }
+    const verified = uma.verifyUmaInvoiceSignature(invoice, pubKeys.getSigningPubKey());
+    if (!verified) {
+      return {
+        httpStatus: 500,
+        data: "Error, unable to verify uma invoice"
+      };
+    }
+    // save request
+    this.requestCache.savePayReqData(
+      invoice.receiverUma,
+      encodedInvoice,
+      // invoice data / utxo callback / etc not required
+      undefined, undefined, undefined
+    )
+    // TODO push notification
+    return {
+      httpStatus: 200
+    }
   }
 
   private async checkInternalLedgerBalance(
@@ -911,7 +1238,7 @@ export default class SendingVasp {
       ) {
         throw new Error(
           "Node is an OSK, but no signing key password was provided in the config. " +
-            "Set the LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD environment variable",
+          "Set the LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD environment variable",
         );
       }
       return await this.lightsparkClient.loadNodeSigningKey(
@@ -927,7 +1254,7 @@ export default class SendingVasp {
     if (!remoteSigningMasterSeed) {
       throw new Error(
         "Node is a remote signing node, but no master seed was provided in the config. " +
-          "Set the LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED environment variable",
+        "Set the LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED environment variable",
       );
     }
     return await this.lightsparkClient.loadNodeSigningKey(this.config.nodeID, {

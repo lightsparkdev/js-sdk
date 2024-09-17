@@ -56,9 +56,9 @@ export default class InMemorySendingVaspRequestCache
   public savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
-    utxoCallback: string,
-    invoiceData: InvoiceData,
-    senderCurrencies: Currency[],
+    utxoCallback: string | undefined = undefined,
+    invoiceData: InvoiceData | undefined = undefined,
+    senderCurrencies: Currency[] | undefined = undefined,
   ): string {
     const uuid = uuidv4();
     this.payReqCache.set(uuid, {

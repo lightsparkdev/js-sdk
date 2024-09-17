@@ -536,9 +536,6 @@ export default class ReceivingVasp {
       return { httpStatus: 422, data: `Invalid target currency code: ${currencyCode}` };
     }
     const amount = z.coerce.number().parse(requestUrl.searchParams.get("amount"));
-    if (!amount) {
-      return { httpStatus: 422, data: `Error: must specify currency amount`};
-    }
     const { code, minSendable, maxSendable } = receivingCurrency ?? SATS_CURRENCY
     const isSendingAmountMsats = code === SATS_CURRENCY.code;
 
@@ -546,8 +543,7 @@ export default class ReceivingVasp {
       await this.userService.getReceivableMsatsRangeForUser(user.id);
     const isCurrencyAmountInBounds = isSendingAmountMsats
       ? amount >= minSendableSats && amount / 1000 <= maxSendableSats
-      : amount >= minSendable &&
-      amount <= maxSendable;
+      : amount >= minSendable && amount <= maxSendable;
     if (!isCurrencyAmountInBounds) {
       return {
         httpStatus: 400,
@@ -563,16 +559,25 @@ export default class ReceivingVasp {
     );
 
     const [, senderDomain] = senderUma.split("@");
-    const senderUrl = new URL(this.buildCallbackUrl(senderDomain, "/api/uma/request_pay_invoice"));
-    senderUrl.searchParams.append("invoice", bech32EncodedInvoice);
 
+    // Fetch the UMA configuration from the sender's domain
+    let umaRequestEndpoint: string;
+    try {
+      umaRequestEndpoint = await this.fetchUmaRequestEndpoint(senderDomain);
+    } catch (e) {
+      console.error("Error fetching UMA configuration:", e);
+      return { httpStatus: 500, data: "Error fetching UMA configuration." };
+    }
+
+    const senderUrl = new URL(umaRequestEndpoint);
     let response: globalThis.Response;
     try {
       response = await fetch(senderUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        }
+        },
+        body: JSON.stringify({"invoice":bech32EncodedInvoice})
       });
     } catch (e) {
       return { httpStatus: 500, data: "Error sending payreq." };
@@ -587,6 +592,16 @@ export default class ReceivingVasp {
     return {
       httpStatus: 200, data: response.body
     };
+  }
+
+  private async fetchUmaRequestEndpoint(domain: string): Promise<string> {
+    const umaConfigResponse = await fetch(`https://${domain}/.well-known/uma-configuration`);
+    if (!umaConfigResponse.ok) {
+      throw new Error(`HTTP error! status: ${umaConfigResponse.status}`);
+    }
+    const jsonResponse = await umaConfigResponse.json();
+    const umaConfiguration = jsonResponse as { uma_request_endpoint: string };
+    return umaConfiguration.uma_request_endpoint;
   }
 
   private async createUmaInvoiceBechEncoding(
@@ -622,7 +637,6 @@ export default class ReceivingVasp {
 
   private buildCallbackUrl(domain: string, path: string): string {
     const protocol = isDomainLocalhost(domain) ? "http" : "https";
-
     const callback = `${protocol}://${domain}${path}`;
     return callback;
   }
