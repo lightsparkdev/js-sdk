@@ -2,7 +2,7 @@ import {
   setDefaultReactNodesTypography,
   setReactNodesTypography,
   toReactNodes,
-} from "@lightsparkdev/ui/utils/toReactNodes";
+} from "@lightsparkdev/ui/utils/toReactNodes/toReactNodes";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
@@ -178,7 +178,7 @@ describe("toReactNodes", () => {
       text: "Some link node that should have typography applied",
       to: TestAppRoutes.PageOne,
     };
-    const iconNode = { icon: "LogoBolt" as const };
+    const iconNode = { icon: { name: "LogoBolt" as const } };
     const externalLinkNode = {
       text: "Some external link node that should have typography applied",
       externalLink: "https://www.google.com",
@@ -240,7 +240,7 @@ describe("toReactNodes", () => {
       to: TestAppRoutes.PageOne,
       typography: { type: "Display", props: { size: "Medium" } },
     };
-    const iconNode = { icon: "LogoBolt" as const };
+    const iconNode = { icon: { name: "LogoBolt" as const } };
     const externalLinkNode = {
       text: "Some external link node that should have typography applied",
       externalLink: "https://www.google.com",

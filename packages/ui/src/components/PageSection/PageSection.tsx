@@ -12,7 +12,7 @@ import {
 import { standardBorderColor } from "../../styles/fields.js";
 import { Heading, headingWithDefaults } from "../../styles/type.js";
 import { select } from "../../utils/emotion.js";
-import { toReactNodes } from "../../utils/toReactNodes.js";
+import { toReactNodes } from "../../utils/toReactNodes/toReactNodes.js";
 import { Badge, badgeSmVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";

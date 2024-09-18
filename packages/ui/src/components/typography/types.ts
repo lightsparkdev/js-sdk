@@ -1,12 +1,12 @@
 import { type ReactNode } from "react";
 import { type FontColorKey } from "../../styles/themes.js";
 import { type TokenSizeKey } from "../../styles/tokens/typography.js";
-import { type ToNonTypographicReactNodesArgs } from "../../utils/toNonTypographicReactNodes.js";
+import { type ToReactNodesBaseArgs } from "../../utils/toReactNodes/toReactNodesBase.js";
 
 export type AllowedDisplay = "flex" | "block" | "inline-flex";
 
 export type CommonTypographyProps = {
-  content?: ToNonTypographicReactNodesArgs | undefined | null;
+  content?: ToReactNodesBaseArgs | undefined | null;
   /* children must be a string. use content prop for more complex content */
   children?: string | undefined | null;
   size?: TokenSizeKey | undefined;

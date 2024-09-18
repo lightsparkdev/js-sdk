@@ -1,101 +1,48 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-/* toNonTypograhpicReactNodes is only for avoiding a circular dependency between typography
+/* ToReactNodesBaseArgs is only for avoiding a circular dependency between typography
    components and toReactNodes functionality. All other components should use toReactNodes.tsx */
 
-import { isObject } from "lodash-es";
 import { nanoid } from "nanoid";
 // import NextLinkModule from "next/link.js";
 import { Fragment, type ReactNode } from "react";
-import { Icon } from "../components/Icon/Icon.js";
-import { type IconName } from "../components/Icon/types.js";
-import { Link } from "../router.js";
-import { type FontColorKey } from "../styles/themes.js";
-import { type NewRoutesType } from "../types/index.js";
-import { NextLink } from "./NextLink.js";
+import { CurrencyAmount } from "../../components/CurrencyAmount.js";
+import { Icon } from "../../components/Icon/Icon.js";
+import { Link } from "../../router.js";
+import { type NewRoutesType } from "../../types/index.js";
+import { NextLink } from "../NextLink.js";
+import {
+  isCurrencyAmountNode,
+  isExternalLinkNode,
+  isIconNode,
+  isLinkNode,
+  isNextLinkNode,
+  isTextNode,
+  type CurrencyAmountNode,
+  type ExternalLinkNode,
+  type IconNode,
+  type LinkNode,
+  type NextLinkNode,
+  type TextNode,
+} from "./nodes.js";
 
 // const NextLink = NextLinkModule.default;
 
-export type LinkNode = {
-  text: string;
-  to: NewRoutesType | undefined;
-  newTab?: boolean;
-};
-
-export type ExternalLinkNode = {
-  text: string;
-  externalLink: string | undefined;
-};
-
-export type NextLinkNode = {
-  nextHref: string;
-  text: string;
-};
-
-export type IconNode = {
-  icon: IconName;
-  width?: number;
-  ml?: number;
-  mr?: number;
-  color?: FontColorKey;
-};
-
-export type TextNode = {
-  text: string;
-  onClick?: () => void;
-};
-
-export function isLinkNode(node: unknown): node is LinkNode {
-  return Boolean(node && isObject(node) && "text" in node && "to" in node);
-}
-
-export function isExternalLinkNode(node: unknown): node is ExternalLinkNode {
-  return Boolean(
-    node && isObject(node) && "text" in node && "externalLink" in node,
-  );
-}
-
-export function isNextLinkNode(node: unknown): node is NextLinkNode {
-  return Boolean(
-    node && isObject(node) && "text" in node && "nextHref" in node,
-  );
-}
-
-export function isIconNode(node: unknown): node is IconNode {
-  return Boolean(node && isObject(node) && "icon" in node);
-}
-
-export function isTextNode(node: unknown): node is TextNode {
-  return Boolean(
-    /* Exclude other nodes by ensuring `text` is the only property: */
-    node &&
-      isObject(node) &&
-      "text" in node &&
-      !isLinkNode(node) &&
-      !isExternalLinkNode(node) &&
-      !isNextLinkNode(node) &&
-      !isIconNode(node),
-  );
-}
-
-type ToNonTypographicReactNodesArg =
+type ToReactNodesBaseArg =
   | string
   | LinkNode
   | ExternalLinkNode
   | NextLinkNode
+  | TextNode
   | IconNode
-  | TextNode;
+  | CurrencyAmountNode;
 
-export type ToNonTypographicReactNodesArgs =
-  | ToNonTypographicReactNodesArg
-  | ToNonTypographicReactNodesArg[];
+export type ToReactNodesBaseArgs = ToReactNodesBaseArg | ToReactNodesBaseArg[];
 
-export function toNonTypographicReactNodes(
-  toNonTypographicReactNodesArg: ToNonTypographicReactNodesArgs,
-) {
-  const toReactNodesArray = Array.isArray(toNonTypographicReactNodesArg)
-    ? toNonTypographicReactNodesArg
-    : [toNonTypographicReactNodesArg];
+export function toReactNodesBase(toReactNodesBaseArg: ToReactNodesBaseArgs) {
+  const toReactNodesArray = Array.isArray(toReactNodesBaseArg)
+    ? toReactNodesBaseArg
+    : [toReactNodesBaseArg];
 
   const reactNodes = toReactNodesArray.map((node, i) => {
     let content: ReactNode;
@@ -133,14 +80,11 @@ export function toNonTypographicReactNodes(
       );
     } else if (isIconNode(node)) {
       content = (
-        <Icon
-          name={node.icon}
-          key={`icon-${i}`}
-          width={node.width || 12}
-          ml={node.ml}
-          mr={node.mr}
-          color={node.color}
-        />
+        <Icon key={`icon-${i}`} {...node.icon} width={node.icon.width || 12} />
+      );
+    } else if (isCurrencyAmountNode(node)) {
+      content = (
+        <CurrencyAmount key={`currency-amount-${i}`} {...node.currencyAmount} />
       );
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;

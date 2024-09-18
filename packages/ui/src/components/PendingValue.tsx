@@ -13,7 +13,7 @@ import {
   setDefaultReactNodesTypography,
   toReactNodes,
   type ToReactNodesArgs,
-} from "../utils/toReactNodes.js";
+} from "../utils/toReactNodes/toReactNodes.js";
 
 const bgPosition = keyframes`
   0% {

@@ -1,6 +1,9 @@
 import { Fragment } from "react";
 import { type TypographyTypeKey } from "../styles/tokens/typography.js";
-import { toReactNodes, type ToReactNodesArgs } from "../utils/toReactNodes.js";
+import {
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "./Icon/Icon.js";
 import { Tooltip } from "./Tooltip.js";
 

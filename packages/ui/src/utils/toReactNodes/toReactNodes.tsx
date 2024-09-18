@@ -5,40 +5,29 @@ import { Fragment, type ReactNode } from "react";
 import {
   renderTypography,
   type RenderTypographyArgs,
-} from "../components/typography/renderTypography.js";
-import { type TypographyTypeKey } from "../styles/tokens/typography.js";
+} from "../../components/typography/renderTypography.js";
+import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import {
   isExternalLinkNode,
-  isIconNode,
   isLinkNode,
   isNextLinkNode,
+  isNonTypographicReactNode,
   isTextNode,
-  toNonTypographicReactNodes,
-  type ExternalLinkNode,
+  type CurrencyAmountNode,
   type IconNode,
-  type LinkNode,
-  type NextLinkNode,
-  type TextNode,
-  type ToNonTypographicReactNodesArgs,
-} from "./toNonTypographicReactNodes.js";
-
-type RenderTypographyArgsOptionalProps<T extends TypographyTypeKey> = Omit<
-  RenderTypographyArgs<T>,
-  "props"
-> & {
-  props?: RenderTypographyArgs<T>["props"];
-};
-
-type TypographicReactNodes<T extends TypographyTypeKey> =
-  | (LinkNode & { typography?: RenderTypographyArgsOptionalProps<T> })
-  | (ExternalLinkNode & { typography?: RenderTypographyArgsOptionalProps<T> })
-  | (TextNode & { typography?: RenderTypographyArgsOptionalProps<T> })
-  | (NextLinkNode & { typography?: RenderTypographyArgsOptionalProps<T> });
+  type RenderTypographyArgsWithOptionalProps,
+  type TypographicReactNodes,
+} from "./nodes.js";
+import {
+  toReactNodesBase,
+  type ToReactNodesBaseArgs,
+} from "./toReactNodesBase.js";
 
 type ToReactNodesArg<T extends TypographyTypeKey> =
   | string
   | TypographicReactNodes<T>
   | IconNode
+  | CurrencyAmountNode
   | null
   | undefined;
 
@@ -79,7 +68,7 @@ export function toReactNodes<T extends TypographyTypeKey>(
         </Fragment>
       );
     } else {
-      content = toNonTypographicReactNodes(node);
+      content = toReactNodesBase(node);
     }
 
     return content || null;
@@ -99,18 +88,18 @@ type SetReactNodesTypographyMapType =
   (typeof setReactNodesTypographyMapTypes)[number];
 
 type SetReactNodesTypographyMap<T extends TypographyTypeKey> = {
-  [nodeType in SetReactNodesTypographyMapType]?: RenderTypographyArgsOptionalProps<T>;
+  [nodeType in SetReactNodesTypographyMapType]?: RenderTypographyArgsWithOptionalProps<T>;
 };
 
 export function setReactNodesTypography<T extends TypographyTypeKey>(
-  nodesArg: ToReactNodesArgs<T> | ToNonTypographicReactNodesArgs,
+  nodesArg: ToReactNodesArgs<T> | ToReactNodesBaseArgs,
   nodesTypographyMap: SetReactNodesTypographyMap<T>,
   replaceExistingTypography = true,
 ) {
   const nodes = Array.isArray(nodesArg) ? nodesArg : [nodesArg];
 
   const nodesWithTypography = nodes.map((node) => {
-    if (isIconNode(node)) {
+    if (isNonTypographicReactNode(node)) {
       return node;
     } else if (typeof node === "string") {
       if (nodesTypographyMap.text) {
@@ -187,7 +176,7 @@ export function toReactNodesWithTypographyMap<T extends TypographyTypeKey>(
    on the nodes. In this way we are just setting a "default" typography which is useful for
    several components while still allowing downstream instances to override as needed. */
 export function setDefaultReactNodesTypography<T extends TypographyTypeKey>(
-  nodesArg: ToReactNodesArgs<T> | ToNonTypographicReactNodesArgs,
+  nodesArg: ToReactNodesArgs<T> | ToReactNodesBaseArgs,
   nodesTypographyMap: SetReactNodesTypographyMap<T>,
 ) {
   return setReactNodesTypography(nodesArg, nodesTypographyMap, false);

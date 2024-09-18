@@ -11,7 +11,7 @@ import { type NewRoutesType } from "../../types/index.js";
 import {
   toReactNodes,
   type ToReactNodesArgs,
-} from "../../utils/toReactNodes.js";
+} from "../../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "../Icon/Icon.js";
 import { bannerTiming } from "./constants.js";
 

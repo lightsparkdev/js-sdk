@@ -7,7 +7,7 @@ import {
   setDefaultReactNodesTypography,
   toReactNodes,
   type ToReactNodesArgs,
-} from "../utils/toReactNodes.js";
+} from "../utils/toReactNodes/toReactNodes.js";
 
 export type CheckboxProps<T extends TypographyTypeKey> = {
   checked: boolean;
