@@ -75,7 +75,7 @@ export const createUmaServer = (
     // TODO: Add UMA Auth implementation.
     res.send({
       uma_major_versions: [0, 1],
-      uma_request_endpoint: reqBaseUrl + "/api/uma/request_pay_invoice",
+      uma_request_endpoint: reqBaseUrl + "/api/uma/request_invoice_payment",
     });
   });
 

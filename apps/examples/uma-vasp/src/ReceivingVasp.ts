@@ -444,64 +444,7 @@ export default class ReceivingVasp {
     user: User,
     requestUrl: URL,
   ): Promise<HttpResponse> {
-    if (!requestUrl.searchParams.get("amount")) {
-      return { httpStatus: 422, data: "missing parameter amount" };
-    }
-    
-    const currencyCode = requestUrl.searchParams.get("currencyCode");
-    const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
-      user.id,
-    );
-    if (!currencyPrefs) {
-      return {
-        httpStatus: 500,
-        data: "Failed to fetch currency preferences.",
-      };
-    }
-    let receivingCurrency = currencyPrefs.find(
-      (c) => c.code === currencyCode,
-    );
-    if (currencyCode && !receivingCurrency) {
-      console.error(`Invalid currency: ${currencyCode}`);
-      return {
-        httpStatus: 400,
-        data: `Invalid currency. This user does not accept ${currencyCode}.`,
-      };
-    } else if (!currencyCode) {
-      return { httpStatus: 422, data: `Invalid target currency code: ${currencyCode}` };
-    }
-
-    const { code, minSendable, maxSendable } = receivingCurrency ?? SATS_CURRENCY
-    const isSendingAmountMsats = code === SATS_CURRENCY.code;
-
-    const amount = z.coerce.number().parse(requestUrl.searchParams.get("amount"));
-    if (!amount) {
-      return { httpStatus: 422, data: `Error: must specify currency amount`};
-    }
-
-    const [minSendableSats, maxSendableSats] =
-      await this.userService.getReceivableMsatsRangeForUser(user.id);
-    const isCurrencyAmountInBounds = isSendingAmountMsats
-      ? amount >= minSendableSats && amount / 1000 <= maxSendableSats
-      : amount >= minSendable &&
-      amount <= maxSendable;
-    if (!isCurrencyAmountInBounds) {
-      return {
-        httpStatus: 400,
-        data:
-          `Invalid amount. This user only accepts between ${minSendable} ` +
-          `and ${maxSendable} ${code}.`,
-      };
-    }
-
-    const umaDomain = hostNameWithPort(requestUrl);
-
-    const bech32EncodedInvoice = await this.createUmaInvoiceBechEncoding(
-      user, amount, umaDomain, receivingCurrency ?? SATS_CURRENCY
-    );
-    return {
-      httpStatus: 200, data: bech32EncodedInvoice
-    };
+    return this.parseAndEncodeUmaInvoice(user, requestUrl, undefined);
   }
 
   private async handleUmaCreateAndSendInvoice(
@@ -512,58 +455,19 @@ export default class ReceivingVasp {
     if (!senderUma) {
       return { httpStatus: 422, data: "missing parameter senderUma" };
     }
-    
-    const currencyCode = requestUrl.searchParams.get("currencyCode");
-    const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
-      user.id,
+    const { httpStatus, data: bech32EncodedInvoice } = await this.parseAndEncodeUmaInvoice(
+      user, requestUrl, senderUma
     );
-    if (!currencyPrefs) {
-      return {
-        httpStatus: 500,
-        data: "Failed to fetch currency preferences.",
-      };
+    if (httpStatus !== 200) {
+      return { httpStatus, data: bech32EncodedInvoice };
     }
-    let receivingCurrency = currencyPrefs.find(
-      (c) => c.code === currencyCode,
-    );
-    if (currencyCode && !receivingCurrency) {
-      console.error(`Invalid currency: ${currencyCode}`);
-      return {
-        httpStatus: 400,
-        data: `Invalid currency. This user does not accept ${currencyCode}.`,
-      };
-    } else if (!currencyCode) {
-      return { httpStatus: 422, data: `Invalid target currency code: ${currencyCode}` };
-    }
-    const amount = z.coerce.number().parse(requestUrl.searchParams.get("amount"));
-    const { code, minSendable, maxSendable } = receivingCurrency ?? SATS_CURRENCY
-    const isSendingAmountMsats = code === SATS_CURRENCY.code;
-
-    const [minSendableSats, maxSendableSats] =
-      await this.userService.getReceivableMsatsRangeForUser(user.id);
-    const isCurrencyAmountInBounds = isSendingAmountMsats
-      ? amount >= minSendableSats && amount / 1000 <= maxSendableSats
-      : amount >= minSendable && amount <= maxSendable;
-    if (!isCurrencyAmountInBounds) {
-      return {
-        httpStatus: 400,
-        data:
-          `Invalid amount. This user only accepts between ${minSendable} ` +
-          `and ${maxSendable} ${code}.`,
-      };
-    }
-
-    const umaDomain = hostNameWithPort(requestUrl);
-    const bech32EncodedInvoice = await this.createUmaInvoiceBechEncoding(
-      user, amount, umaDomain, receivingCurrency ?? SATS_CURRENCY, senderUma
-    );
 
     const [, senderDomain] = senderUma.split("@");
 
     // Fetch the UMA configuration from the sender's domain
     let umaRequestEndpoint: string;
     try {
-      umaRequestEndpoint = await this.fetchUmaRequestEndpoint(senderDomain);
+      umaRequestEndpoint = await this.fetchUmaRequestEndpoint(requestUrl, senderDomain);
     } catch (e) {
       console.error("Error fetching UMA configuration:", e);
       return { httpStatus: 500, data: "Error fetching UMA configuration." };
@@ -585,7 +489,7 @@ export default class ReceivingVasp {
 
     if (response.status !== 200) {
       return {
-        httpStatus: 200, data: `Error: request pay invoice failed: ${response.text}`
+        httpStatus: 200, data: `Error: request pay invoice failed: ${response.statusText}`
       }
     }
 
@@ -594,8 +498,71 @@ export default class ReceivingVasp {
     };
   }
 
-  private async fetchUmaRequestEndpoint(domain: string): Promise<string> {
-    const umaConfigResponse = await fetch(`https://${domain}/.well-known/uma-configuration`);
+  private async parseAndEncodeUmaInvoice(
+    user: User,
+    requestUrl: URL,
+    senderUma: string | undefined
+    ): Promise<HttpResponse> {
+      const currencyCode = requestUrl.searchParams.get("currencyCode");
+      const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
+        user.id,
+      );
+      if (!currencyPrefs) {
+        return {
+          httpStatus: 500,
+          data: "Failed to fetch currency preferences.",
+        };
+      }
+      let receivingCurrency = currencyPrefs.find(
+        (c) => c.code === currencyCode,
+      );
+      if (currencyCode && !receivingCurrency) {
+        console.error(`Invalid currency: ${currencyCode}`);
+        return {
+          httpStatus: 400,
+          data: `Invalid currency. This user does not accept ${currencyCode}.`,
+        };
+      } else if (!currencyCode) {
+        return { httpStatus: 422, data: `Invalid target currency code: ${currencyCode}` };
+      }
+      const amountResult = z.coerce.number().safeParse(requestUrl.searchParams.get("amount"));
+      if (!amountResult.success) {
+        return {
+          httpStatus: 400,
+          data: "Invalid amount parameter.",
+        };
+      }
+      const amount = amountResult.data;
+      const { code, minSendable, maxSendable } = receivingCurrency ?? SATS_CURRENCY;
+      const isSendingAmountMsats = code === SATS_CURRENCY.code;
+      
+      const [minSendableSats, maxSendableSats] =
+        await this.userService.getReceivableMsatsRangeForUser(user.id);
+      const isCurrencyAmountInBounds = isSendingAmountMsats
+        ? amount >= minSendableSats && amount / 1000 <= maxSendableSats
+        : amount >= minSendable && amount <= maxSendable;
+      if (!isCurrencyAmountInBounds) {
+        return {
+          httpStatus: 400,
+          data:
+        `Invalid amount. This user only accepts between ${minSendable} ` +
+        `and ${maxSendable} ${code}.`,
+        };
+      }
+  
+      const umaDomain = hostNameWithPort(requestUrl);
+      const bech32EncodedInvoice = await this.createUmaInvoiceBechEncoding(
+        user, amount, umaDomain, receivingCurrency ?? SATS_CURRENCY, senderUma
+      );
+      return {
+        httpStatus: 200, data: bech32EncodedInvoice
+      };
+  }
+
+
+  private async fetchUmaRequestEndpoint(fullUrl: URL, domain: string): Promise<string> {
+    const protocol = isDomainLocalhost(fullUrl.hostname) ? "http" : "https";
+    const umaConfigResponse = await fetch(`http://${domain}/.well-known/uma-configuration`);
     if (!umaConfigResponse.ok) {
       throw new Error(`HTTP error! status: ${umaConfigResponse.status}`);
     }

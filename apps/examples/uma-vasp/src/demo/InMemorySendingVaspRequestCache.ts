@@ -39,6 +39,10 @@ export default class InMemorySendingVaspRequestCache
     return this.payReqCache.get(uuid);
   }
 
+  public getPendingPayReqs(): SendingVaspPayReqData[] {
+    return [...this.payReqCache.values()];
+  }
+
   public saveLnurlpResponseData(
     lnurlpResponse: LnurlpResponse,
     receiverId: string,
@@ -56,11 +60,12 @@ export default class InMemorySendingVaspRequestCache
   public savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
+    invoiceUUID: string | undefined,
     utxoCallback: string | undefined = undefined,
     invoiceData: InvoiceData | undefined = undefined,
     senderCurrencies: Currency[] | undefined = undefined,
   ): string {
-    const uuid = uuidv4();
+    const uuid = invoiceUUID ?? uuidv4();
     this.payReqCache.set(uuid, {
       receiverUmaAddress,
       encodedInvoice,
@@ -69,5 +74,11 @@ export default class InMemorySendingVaspRequestCache
       senderCurrencies,
     });
     return uuid;
+  }
+
+  public removePayReq(uuid: string): void {
+    if (this.payReqCache.has(uuid)) {
+      this.payReqCache.delete(uuid);
+    }
   }
 }

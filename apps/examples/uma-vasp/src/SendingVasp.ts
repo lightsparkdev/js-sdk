@@ -141,6 +141,14 @@ export default class SendingVasp {
       const response = await this.handleRequestPayInvoice(invoice, invoiceBech32Str);
       sendResponse(resp, response);
     });
+
+    app.get("/api/uma/pending_requests", async (req, resp) => {
+      const pendingRequests = this.requestCache.getPendingPayReqs();
+      sendResponse(resp, {
+        httpStatus: 200, data: pendingRequests
+      })
+
+    });
   }
 
   private async handleClientUmaLookup(
@@ -359,7 +367,7 @@ export default class SendingVasp {
     const receivingCurrencyCode = requestUrl.searchParams.get(
       "receivingCurrencyCode",
     );
-    
+
     const isUma = initialRequestData.lnurlpResponse.isUma();
 
     let payerProfile: PayerProfile | null = null;
@@ -450,24 +458,40 @@ export default class SendingVasp {
       umaVersion: umaVersion,
       requestUrl: requestUrl,
       senderProfile: payerProfile,
-      pubKeys: pubKeys
+      pubKeys: pubKeys,
+      invoiceUUID: undefined
     })
   }
 
   private async handleUmaPayReqInternal(
-    { callback, user, currencyCode, receiverUma, amount, amountValueMillisats, isAmountInMsats, sendingUma, umaVersion, requestUrl, senderProfile: payerProfile, pubKeys }: {
-      callback: string, // initialRequestData.lnurlpResponse.callback,
+    {
+      callback,
+      user,
+      currencyCode,
+      receiverUma,
+      amount,
+      amountValueMillisats,
+      isAmountInMsats,
+      sendingUma,
+      umaVersion,
+      requestUrl,
+      senderProfile: payerProfile,
+      pubKeys,
+      invoiceUUID
+    }: {
+      callback: string,
       user: User,
       currencyCode: CurrencyType,
       receiverUma: string,
-      amount: number, // what about 
+      amount: number,
       amountValueMillisats: number,
       isAmountInMsats: boolean,
-      sendingUma: string, // payerprofile.identifier,
-      umaVersion: string, // initialRequestData.lnurlpResponse.umaVersion
+      sendingUma: string,
+      umaVersion: string,
       requestUrl: URL,
       senderProfile: PayerProfile,
-      pubKeys: uma.PubKeyResponse
+      pubKeys: uma.PubKeyResponse,
+      invoiceUUID: string | undefined
     }
   ): Promise<HttpResponse> {
     const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
@@ -535,7 +559,7 @@ export default class SendingVasp {
     let payResponse: uma.PayReqResponse;
     const bodyText = await response.text();
     try {
-      payResponse = await uma.PayReqResponse.fromJson(bodyText);
+      payResponse = uma.PayReqResponse.fromJson(bodyText);
     } catch (e) {
       console.error("Error parsing payreq response. Raw response: " + bodyText);
       console.error("Error:", e);
@@ -604,6 +628,7 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       sendingUma,
       payResponse.pr,
+      invoiceUUID,
       utxoCallback,
       invoice,
       senderCurrencies,
@@ -698,6 +723,7 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       payreqResponse.payeeData?.identifier ?? "",
       encodedInvoice,
+      undefined, // no invoice id 
       "", // No utxo callback for non-UMA lnurl.
       invoice,
       [],
@@ -861,6 +887,8 @@ export default class SendingVasp {
       payment.umaPostTransactionData ?? [],
     );
 
+    // send payment was successful, remove key from cache
+    this.requestCache.removePayReq(callbackUuid);
     return {
       httpStatus: 200,
       data: {
@@ -879,7 +907,6 @@ export default class SendingVasp {
     // by checking uma prefix, determine if invoiceStr is a bech32 encoded invoice.  
     // if prefix not present, treat as uuid/ zod can parse this
     let encodedInvoice;
-
     if (!invoiceStr.startsWith("uma")) {
       encodedInvoice = this.requestCache.getPayReqData(invoiceStr)?.encodedInvoice;
     }
@@ -909,7 +936,6 @@ export default class SendingVasp {
       return { httpStatus: 500, data: "Unable to verify invoice signature" };
     }
 
-    // millisats
     if (!isCurrencyType(invoice.receivingCurrency.code)) {
       return {
         httpStatus: 500, data: `Invalid currency code ${invoice.receivingCurrency.code}`
@@ -931,12 +957,17 @@ export default class SendingVasp {
       amount: invoice.amount,
       amountValueMillisats: currencyInMsats, // todo
       isAmountInMsats: isAmountInMsats, //todo
-      sendingUma: invoice.senderUma ?? `$${user.umaUserName}@${this.getSendingVaspDomain(requestUrl)}`, //tdod
+      sendingUma: invoice.senderUma ?? this.formatUma(user.umaUserName, this.getSendingVaspDomain(requestUrl)),
       requestUrl: requestUrl,
       senderProfile: payerPofile,
       pubKeys: pubKeys,
-      umaVersion: invoice.umaVersion
+      umaVersion: invoice.umaVersion,
+      invoiceUUID: invoice.invoiceUUID
     });
+  }
+
+  private formatUma(umaUsername: string, umaDomain: string): string {
+    return `$${umaUsername}@${umaDomain}`;
   }
 
   private async handleRequestPayInvoice(
@@ -963,10 +994,12 @@ export default class SendingVasp {
     this.requestCache.savePayReqData(
       invoice.receiverUma,
       encodedInvoice,
+      invoice.invoiceUUID,
       // invoice data / utxo callback / etc not required
       undefined, undefined, undefined
     )
-    // TODO push notification
+    // In a real VASP, here you might push a notification to inform the sender that
+    // a new invoice has arrived.
     return {
       httpStatus: 200
     }
