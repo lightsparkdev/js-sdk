@@ -616,7 +616,7 @@ export default class ReceivingVasp {
     const expiration = Date.now() + (2 * 24 * 60 * 60 * 1000); // +2 days
 
     const invoice = await uma.createUmaInvoice({
-      receiverUma: `${user.umaUserName}@${umaDomain}`,
+      receiverUma: `$${user.umaUserName}@${umaDomain}`,
       invoiceUUID: uuidv4(),
       amount: amount,
       receivingCurrency: { code, name, symbol, decimals },

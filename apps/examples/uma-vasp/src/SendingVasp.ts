@@ -435,171 +435,30 @@ export default class SendingVasp {
       };
     }
 
-    const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
-      user.id,
-      payerProfile.identifier!,
-      `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
-      amountValueMillisats,
-    );
-    const node = await this.getLightsparkNode();
-    
-    const utxoCallback = this.getUtxoCallback(requestUrl, "1234abcd");
 
-    console.log(`Generating payreq for ${amountValueMillisats} msats.`);
-    console.log(`  isAmountInMsats: ${isAmountInMsats}`);
-    console.log(`  amount: ${amount}`);
-    let payReq: uma.PayRequest;
-    try {
-      payReq = await uma.getPayRequest({
-        receiverEncryptionPubKey: pubKeys.getEncryptionPubKey(),
-        sendingVaspPrivateKey: this.config.umaSigningPrivKey(),
-        receivingCurrencyCode: receivingCurrencyCode,
-        isAmountInReceivingCurrency: !isAmountInMsats,
-        amount: amount,
-        payerIdentifier: payerProfile.identifier!,
-        payerKycStatus: user.kycStatus,
-        utxoCallback,
-        trInfo,
-        payerUtxos: node.umaPrescreeningUtxos,
-        payerNodePubKey: node.publicKey ?? "",
-        payerName: payerProfile.name,
-        payerEmail: payerProfile.email,
-        requestedPayeeData: {
-          // Compliance and Identifier are mandatory fields added automatically.
-          name: { mandatory: false },
-          email: { mandatory: false },
-        },
-        umaMajorVersion: initialRequestData.lnurlpResponse.umaVersion
-          ? uma.getMajorVersion(initialRequestData.lnurlpResponse.umaVersion)
-          : 1,
-      });
-    } catch (e) {
-      console.error("Error generating payreq.", e);
-      return { httpStatus: 500, data: "Error generating payreq." };
-    }
+    const umaVersion = initialRequestData.lnurlpResponse.umaVersion ?? uma.getHighestSupportedVersionForMajorVersion(1);
 
-    console.log(
-      `Sending payreq: ${JSON.stringify(payReq.toJsonSchemaObject(), null, 2)}`,
-    );
-    let response: globalThis.Response;
-    try {
-      response = await fetch(initialRequestData.lnurlpResponse.callback, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: payReq.toJsonString(),
-      });
-    } catch (e) {
-      return { httpStatus: 500, data: "Error sending payreq." };
-    }
-
-    if (!response.ok || response.status !== 200) {
-      return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
-    }
-
-    let payResponse: uma.PayReqResponse;
-    const bodyText = await response.text();
-    try {
-      payResponse = await uma.PayReqResponse.fromJson(bodyText);
-    } catch (e) {
-      console.error("Error parsing payreq response. Raw response: " + bodyText);
-      console.error("Error:", e);
-      return { httpStatus: 424, data: "Error parsing payreq response." };
-    }
-
-    if (!payResponse.isUma()) {
-      console.log("Received non-uma response for uma payreq.");
-      return {
-        httpStatus: 424,
-        data: "Received non-uma response for uma payreq.",
-      };
-    }
-
-    try {
-      if (payReq.umaMajorVersion !== 0) {
-        const isSignatureValid = await uma.verifyPayReqResponseSignature(
-          payResponse,
-          payerProfile.identifier!,
-          `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
-          pubKeys,
-          this.nonceCache,
-        );
-        if (!isSignatureValid) {
-          return {
-            httpStatus: 424,
-            data: "Invalid payreq response signature.",
-          };
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      return {
-        httpStatus: 424,
-        data: new Error("Invalid payreq response signature.", { cause: e }),
-      };
-    }
-
-    console.log(`Verified payreq response signature.`);
-
-    const shouldTransact = await this.complianceService.preScreenTransaction(
-      payerProfile.identifier!,
-      `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
-      amountValueMillisats,
-      payResponse.payeeData?.compliance?.nodePubKey ?? undefined,
-      payResponse.payeeData?.compliance?.utxos ?? [],
-    );
-    if (!shouldTransact) {
-      return {
-        httpStatus: 424,
-        data: "Transaction not allowed due to risk rating.",
-      };
-    }
-
-    let invoice: InvoiceData;
-    try {
-      invoice = await this.lightsparkClient.decodeInvoice(payResponse.pr);
-    } catch (e) {
-      console.error("Error decoding invoice.", e);
-      return { httpStatus: 500, data: "Error decoding invoice." };
-    }
-
-    const senderCurrencies =
-      (await this.userService.getCurrencyPreferencesForUser(user.id)) ?? [];
-
-    const newCallbackUuid = this.requestCache.savePayReqData(
-      payerProfile.identifier!,
-      payResponse.pr,
-      utxoCallback,
-      invoice,
-      senderCurrencies,
-    );
-
-    const amountMsats = convertCurrencyAmount(
-      invoice.amount,
-      CurrencyUnit.MILLISATOSHI,
-    ).preferredCurrencyValueRounded;
-
-    return {
-      httpStatus: 200,
-      data: {
-        senderCurrencies: senderCurrencies ?? [],
-        callbackUuid: newCallbackUuid,
-        encodedInvoice: payResponse.pr,
-        amountMsats: amountMsats,
-        amountReceivingCurrency: payResponse.converted!.amount,
-        conversionRate: payResponse.converted!.multiplier,
-        exchangeFeesMsats: payResponse.converted!.fee,
-        receivingCurrencyCode: payResponse.converted!.currencyCode,
-      },
-    };
+    return this.handleUmaPayReqInternal({
+      callback: initialRequestData.lnurlpResponse.callback,
+      user: user,
+      currencyCode: receivingCurrencyCode as CurrencyType,
+      receiverUma: `${initialRequestData.receiverId}@${initialRequestData.receivingVaspDomain}`,
+      amount: amount,
+      amountValueMillisats: amountValueMillisats,
+      isAmountInMsats: isAmountInMsats,
+      sendingUma: payerProfile.identifier!,
+      umaVersion: umaVersion,
+      requestUrl: requestUrl,
+      senderProfile: payerProfile,
+      pubKeys: pubKeys
+    })
   }
 
   private async handleUmaPayReqInternal(
-    { callback, user, currency, receiverUma, amount, amountValueMillisats, isAmountInMsats, sendingUma, umaVersion, requestUrl, senderProfile: payerProfile, pubKeys }: {
+    { callback, user, currencyCode, receiverUma, amount, amountValueMillisats, isAmountInMsats, sendingUma, umaVersion, requestUrl, senderProfile: payerProfile, pubKeys }: {
       callback: string, // initialRequestData.lnurlpResponse.callback,
       user: User,
-      currency: uma.InvoiceCurrency,
+      currencyCode: CurrencyType,
       receiverUma: string,
       amount: number, // what about 
       amountValueMillisats: number,
@@ -628,10 +487,10 @@ export default class SendingVasp {
       payReq = await uma.getPayRequest({
         receiverEncryptionPubKey: pubKeys.getEncryptionPubKey(),
         sendingVaspPrivateKey: this.config.umaSigningPrivKey(),
-        receivingCurrencyCode: currency.code,
+        receivingCurrencyCode: currencyCode,
         isAmountInReceivingCurrency: !isAmountInMsats,
         amount: amount,
-        payerIdentifier: receiverUma,
+        payerIdentifier: sendingUma,
         payerKycStatus: user.kycStatus,
         utxoCallback,
         trInfo,
@@ -670,7 +529,7 @@ export default class SendingVasp {
     }
 
     if (!response.ok || response.status !== 200) {
-      return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
+      return { httpStatus: 424, data: `Payreq failed. ${response.status}, ${response.body}` };
     }
 
     let payResponse: uma.PayReqResponse;
@@ -1051,7 +910,6 @@ export default class SendingVasp {
     }
 
     // millisats
-    
     if (!isCurrencyType(invoice.receivingCurrency.code)) {
       return {
         httpStatus: 500, data: `Invalid currency code ${invoice.receivingCurrency.code}`
@@ -1064,16 +922,16 @@ export default class SendingVasp {
     if (invoice.expiration < Date.now()) {
       return { httpStatus: 500, data: "Unable to process expired invoice" };
     }
-    
+
     return this.handleUmaPayReqInternal({
       callback: invoice.callback,
       user: user,
-      currency: invoice.receivingCurrency,
+      currencyCode: invoice.receivingCurrency.code as CurrencyType,
       receiverUma: invoice.receiverUma,
       amount: invoice.amount,
       amountValueMillisats: currencyInMsats, // todo
       isAmountInMsats: isAmountInMsats, //todo
-      sendingUma: invoice.senderUma ?? `${user.umaUserName}:${this.getSendingVaspDomain(requestUrl)}`, //tdod
+      sendingUma: invoice.senderUma ?? `$${user.umaUserName}@${this.getSendingVaspDomain(requestUrl)}`, //tdod
       requestUrl: requestUrl,
       senderProfile: payerPofile,
       pubKeys: pubKeys,
@@ -1151,7 +1009,7 @@ export default class SendingVasp {
 
   private getUtxoCallback(requestUrl: URL, txId: String): string {
     const path = `/api/uma/utxoCallback?txId=${txId}`;
-    return `${requestUrl.protocol}//${requestUrl.hostname}${path}`;
+    return `${requestUrl.protocol}//${hostNameWithPort(requestUrl)}${path}`;
   }
 
   private async waitForPaymentCompletion(
