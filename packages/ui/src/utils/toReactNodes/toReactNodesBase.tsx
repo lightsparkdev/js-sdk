@@ -89,21 +89,20 @@ export function toReactNodesBase(toReactNodesBaseArg: ToReactNodesBaseArgs) {
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;
       const key = `str-${i}-${text.substr(0, 10)}`;
-      content = (
-        <Fragment key={key}>
-          {text.split("\n").map((str, j, strArr) => (
-            <Fragment key={`str-${i}-break-${j}`}>
-              {str.split("&nbsp;").map((strPart, k, strPartArr) => (
-                <Fragment key={`str-${i}-part-${k}`}>
+      content = text.split("\n").map((str, j, strArr) => (
+        /* Must use spans to avoid conditional Fragment rendering errors https://bit.ly/3zkHEEM */
+        <span key={`str-${i}-break-${j}`}>
+          {str.length
+            ? str.split("&nbsp;").map((strPart, k, strPartArr) => (
+                <span key={`str-${i}-part-${k}`}>
                   {strPart}
-                  {k < strPartArr.length - 1 && <>&nbsp;</>}
-                </Fragment>
-              ))}
-              {j < strArr.length - 1 && <br />}
-            </Fragment>
-          ))}
-        </Fragment>
-      );
+                  {k < strPartArr.length - 1 ? <span>&nbsp;</span> : null}
+                </span>
+              ))
+            : null}
+          {j < strArr.length - 1 ? <br /> : null}
+        </span>
+      ));
       if (isTextNode(node) && "onClick" in node) {
         content = (
           <span

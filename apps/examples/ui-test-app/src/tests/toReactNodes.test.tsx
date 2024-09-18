@@ -14,9 +14,17 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -46,11 +54,23 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -61,12 +81,26 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -77,7 +111,21 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1test2test3
+        <span>
+          <span>
+            test1
+          </span>
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -88,11 +136,25 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -109,18 +171,35 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
         <a
           class="css-0"
           href="/test-app-page-one"
         >
           Test
         </a>
-        <br />
-        test3
+        <span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -138,10 +217,20 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
         <a
           class="css-0"
           href="/test-app-page-one"
@@ -154,8 +243,15 @@ describe("toReactNodes", () => {
         >
           Test 2
         </a>
-        <br />
-        test3
+        <span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
