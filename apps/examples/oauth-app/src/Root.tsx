@@ -1,14 +1,14 @@
-import { Route, Routes } from "react-router-dom";
-import { MainRoutes } from "./routes";
+import { Route, Routes as RouterRoutes } from "react-router-dom";
+import { Routes } from "./routes";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 
 export function Root() {
   return (
-    <Routes>
-      <Route path={MainRoutes.Base} element={<DashboardPage />} />
-      <Route path={MainRoutes.Login} element={<LoginPage />} />
-      <Route path={MainRoutes.Oauth} element={<LoginPage />} />
-    </Routes>
+    <RouterRoutes>
+      <Route path={Routes.Base} element={<DashboardPage />} />
+      <Route path={Routes.Login} element={<LoginPage />} />
+      <Route path={Routes.Oauth} element={<LoginPage />} />
+    </RouterRoutes>
   );
 }

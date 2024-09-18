@@ -19,11 +19,7 @@ import {
   type TextInputBorderRadius,
 } from "../styles/fields.js";
 import { getFontColor, type FontColorKey } from "../styles/themes.js";
-import {
-  applyTypography,
-  type RequiredSimpleTypographyProps,
-  type SimpleTypographyProps,
-} from "../styles/typography.js";
+import { applyTypography } from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer } from "./Icon/Icon.js";
@@ -31,6 +27,10 @@ import { type IconName } from "./Icon/types.js";
 import { ToggleContainer } from "./Toggle.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+import {
+  type PartialSimpleTypographyProps,
+  type RequiredSimpleTypographyProps,
+} from "./typography/types.js";
 
 const selectLeftOffset = 10;
 
@@ -76,7 +76,7 @@ export type TextInputProps = {
   label?: string;
   rightButtonText?: string | undefined;
   onRightButtonClick?: () => void;
-  typography?: SimpleTypographyProps | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
   select?:
     | {
         options: { value: string; label: string }[];

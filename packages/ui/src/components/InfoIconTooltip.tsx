@@ -1,5 +1,4 @@
 import { Fragment } from "react";
-import { type TypographyTypeKey } from "../styles/tokens/typography.js";
 import {
   toReactNodes,
   type ToReactNodesArgs,
@@ -7,17 +6,17 @@ import {
 import { Icon } from "./Icon/Icon.js";
 import { Tooltip } from "./Tooltip.js";
 
-type InfoIconTooltipProps<T extends TypographyTypeKey> = {
+type InfoIconTooltipProps = {
   id: string;
-  content: ToReactNodesArgs<T>;
+  content: ToReactNodesArgs;
   verticalAlign?: "middle" | number;
 };
 
-export function InfoIconTooltip<T extends TypographyTypeKey>({
+export function InfoIconTooltip({
   id,
   content,
   verticalAlign = "middle",
-}: InfoIconTooltipProps<T>) {
+}: InfoIconTooltipProps) {
   const contentNodes = toReactNodes(content);
   return (
     <Fragment>

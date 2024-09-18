@@ -37,8 +37,7 @@
         "default": "./dist/env.js"
       },
       "module": "./dist/env.js",
-      "require": "./dist/env.cjs",
-      "default": "./dist/env.cjs"
+      "require": "./dist/env.cjs"
     },
     "./objects": {
       "types": "./dist/objects/index.d.ts",
@@ -107,9 +106,9 @@
     "prettier": "3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",
     "ts-jest": "^29.1.1",
-    "tsup": "^7.2.0",
+    "tsup": "^8.2.4",
     "typedoc": "^0.24.7",
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.2"
   },
   "engines": {
     "node": ">=18"

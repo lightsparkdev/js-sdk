@@ -3,35 +3,28 @@
 /* ToReactNodesBaseArgs is only for avoiding a circular dependency between typography
    components and toReactNodes functionality. All other components should use toReactNodes.tsx */
 
-import { nanoid } from "nanoid";
-// import NextLinkModule from "next/link.js";
-import { Fragment, type ReactNode } from "react";
+import { ensureArray } from "@lightsparkdev/core";
+import { type ReactElement } from "react";
 import { CurrencyAmount } from "../../components/CurrencyAmount.js";
 import { Icon } from "../../components/Icon/Icon.js";
 import { Link } from "../../router.js";
-import { type NewRoutesType } from "../../types/index.js";
 import { NextLink } from "../NextLink.js";
 import {
   isCurrencyAmountNode,
-  isExternalLinkNode,
   isIconNode,
   isLinkNode,
   isNextLinkNode,
   isTextNode,
   type CurrencyAmountNode,
-  type ExternalLinkNode,
   type IconNode,
   type LinkNode,
   type NextLinkNode,
   type TextNode,
 } from "./nodes.js";
 
-// const NextLink = NextLinkModule.default;
-
 type ToReactNodesBaseArg =
   | string
   | LinkNode
-  | ExternalLinkNode
   | NextLinkNode
   | TextNode
   | IconNode
@@ -40,69 +33,55 @@ type ToReactNodesBaseArg =
 export type ToReactNodesBaseArgs = ToReactNodesBaseArg | ToReactNodesBaseArg[];
 
 export function toReactNodesBase(toReactNodesBaseArg: ToReactNodesBaseArgs) {
-  const toReactNodesArray = Array.isArray(toReactNodesBaseArg)
-    ? toReactNodesBaseArg
-    : [toReactNodesBaseArg];
+  const toReactNodesArray = ensureArray(toReactNodesBaseArg);
 
   const reactNodes = toReactNodesArray.map((node, i) => {
-    let content: ReactNode;
+    /* For some nodes obtaining a stable key is not straightforward. Index will be used by default
+       but parents should provide an id for cases where index is not sufficient. */
     if (isLinkNode(node)) {
-      content = (
-        <Link<NewRoutesType>
-          to={node.to}
-          key={`link-${i}-${node.text.substr(0, 10)}`}
-          newTab={!!node.newTab}
-        >
-          {node.text}
-        </Link>
-      );
-    } else if (isExternalLinkNode(node)) {
-      content = (
-        <a
-          href={node.externalLink}
-          key={`link-${i}-${node.text.substr(0, 10)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {node.text}
-        </a>
-      );
+      return <Link key={`link-${i}-${node.link.id}`} {...node.link} />;
     } else if (isNextLinkNode(node)) {
-      const isExternal = node.nextHref.startsWith("http");
       return (
-        <Fragment key={`next-link-${i}`}>
-          <NextLink
-            href={node.nextHref}
-            text={node.text}
-            target={isExternal ? "_blank" : undefined}
-          />
-        </Fragment>
+        <NextLink
+          key={`next-link-${i}-${node.nextLink.id}`}
+          {...node.nextLink}
+        />
       );
     } else if (isIconNode(node)) {
-      content = (
-        <Icon key={`icon-${i}`} {...node.icon} width={node.icon.width || 12} />
+      return (
+        <Icon
+          key={`icon-${i}-${node.icon.id}`}
+          {...node.icon}
+          width={node.icon.width || 12}
+        />
       );
     } else if (isCurrencyAmountNode(node)) {
-      content = (
-        <CurrencyAmount key={`currency-amount-${i}`} {...node.currencyAmount} />
+      return (
+        <CurrencyAmount
+          key={`currency-amount-${i}-${node.currencyAmount.id}`}
+          {...node.currencyAmount}
+        />
       );
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;
+      /* text property is a sufficient key for both strings and text nodes due to minimal impl */
       const key = `str-${i}-${text.substr(0, 10)}`;
-      content = text.split("\n").map((str, j, strArr) => (
-        /* Must use spans to avoid conditional Fragment rendering errors https://bit.ly/3zkHEEM */
-        <span key={`str-${i}-break-${j}`}>
-          {str.length
-            ? str.split("&nbsp;").map((strPart, k, strPartArr) => (
-                <span key={`str-${i}-part-${k}`}>
-                  {strPart}
-                  {k < strPartArr.length - 1 ? <span>&nbsp;</span> : null}
-                </span>
-              ))
-            : null}
-          {j < strArr.length - 1 ? <br /> : null}
-        </span>
-      ));
+      let content: ReactElement | ReactElement[] = text
+        .split("\n")
+        .map((str, j, strArr) => (
+          /* Must use spans to avoid conditional Fragment rendering errors https://bit.ly/3zkHEEM */
+          <span key={`str-${i}-break-${j}`}>
+            {str.length
+              ? str.split("&nbsp;").map((strPart, k, strPartArr) => (
+                  <span key={`str-${i}-part-${k}`}>
+                    {strPart}
+                    {k < strPartArr.length - 1 ? <span>&nbsp;</span> : null}
+                  </span>
+                ))
+              : null}
+            {j < strArr.length - 1 ? <br /> : null}
+          </span>
+        ));
       if (isTextNode(node) && "onClick" in node) {
         content = (
           <span
@@ -114,10 +93,11 @@ export function toReactNodesBase(toReactNodesBaseArg: ToReactNodesBaseArgs) {
           </span>
         );
       }
+      return content;
     }
 
-    return content || null;
+    return null;
   });
 
-  return <Fragment key={nanoid()}>{reactNodes}</Fragment>;
+  return reactNodes;
 }

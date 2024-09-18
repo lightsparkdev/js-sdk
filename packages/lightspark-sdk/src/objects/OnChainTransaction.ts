@@ -192,8 +192,9 @@ export const OnChainTransactionToJson = (obj: OnChainTransaction): any => {
         channelClosingTransaction.destinationAddresses,
       channel_closing_transaction_num_confirmations:
         channelClosingTransaction.numConfirmations,
-      channel_closing_transaction_channel:
-        { id: channelClosingTransaction.channelId } ?? undefined,
+      channel_closing_transaction_channel: {
+        id: channelClosingTransaction.channelId,
+      },
     };
   }
   if (obj.typename == "ChannelOpeningTransaction") {
@@ -224,8 +225,9 @@ export const OnChainTransactionToJson = (obj: OnChainTransaction): any => {
         channelOpeningTransaction.destinationAddresses,
       channel_opening_transaction_num_confirmations:
         channelOpeningTransaction.numConfirmations,
-      channel_opening_transaction_channel:
-        { id: channelOpeningTransaction.channelId } ?? undefined,
+      channel_opening_transaction_channel: {
+        id: channelOpeningTransaction.channelId,
+      },
     };
   }
   if (obj.typename == "Deposit") {

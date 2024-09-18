@@ -13,23 +13,8 @@ module.exports = {
           {
             importNames: ["Link", "Navigate", "useNavigate"],
             message:
-              "Please use typesafe imports from components/router instead.",
+              "Please use typesafe imports from @lightsparkdev/ui/router instead.",
             name: "react-router-dom",
-          },
-          {
-            importNames: [
-              "Link",
-              "Navigate",
-              "useNavigate",
-              "useMatchRoutes",
-              "useFindMatchingRoute",
-              "useMatchRoute",
-              "useCurrentRoute",
-              "getRouteName",
-            ],
-            message:
-              "Please use typesafe imports from components/router instead.",
-            name: "@lightsparkdev/ui/router",
           },
           {
             importNames: ["default", "QRCodeSVG"],
@@ -53,24 +38,6 @@ module.exports = {
             ],
             message:
               "Please do not import services directly, use Services class to access.",
-          },
-          {
-            group: [
-              "@lightsparkdev/ui",
-              "@lightsparkdev/ui/**",
-              "@lightsparkdev/private-ui",
-              "@lightsparkdev/private-ui/**",
-            ],
-            importNames: [
-              "Button",
-              "ButtonProps",
-              "ButtonRow",
-              "ButtonRowContainer",
-              "Dropdown",
-              "TextButton",
-            ],
-            message:
-              "Please do not import typesafe route components directly, use bound versions from src/components/[COMPONENT] instead.",
           },
         ],
       },

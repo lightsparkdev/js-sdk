@@ -1199,7 +1199,7 @@ ${FRAGMENT}
         ? BalancesToJson(this.balances)
         : undefined,
       wallet_third_party_identifier: this.thirdPartyIdentifier,
-      wallet_account: { id: this.accountId } ?? undefined,
+      wallet_account: { id: this.accountId },
       wallet_status: this.status,
     };
   }

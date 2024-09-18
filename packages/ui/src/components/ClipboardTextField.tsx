@@ -2,11 +2,11 @@ import styled from "@emotion/styled";
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { useClipboard } from "../hooks/useClipboard.js";
-import { type SimpleTypographyProps } from "../styles/typography.js";
 import { extend, lineClamp as lineClampCSS } from "../styles/utils.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
 import { Icon } from "./Icon/Icon.js";
 import { renderTypography } from "./typography/renderTypography.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type ClipboardTextFieldProps = {
   value: string;
@@ -18,7 +18,7 @@ type ClipboardTextFieldProps = {
   wordBreakAll?: boolean;
   tag?: "span" | "pre";
   iconSide?: "left" | "right";
-  typography?: SimpleTypographyProps | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0];
 };
 

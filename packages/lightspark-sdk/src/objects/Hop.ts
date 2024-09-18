@@ -69,7 +69,7 @@ export const HopToJson = (obj: Hop): any => {
     hop_id: obj.id,
     hop_created_at: obj.createdAt,
     hop_updated_at: obj.updatedAt,
-    hop_destination: { id: obj.destinationId } ?? undefined,
+    hop_destination: { id: obj.destinationId },
     hop_index: obj.index,
     hop_public_key: obj.publicKey,
     hop_amount_to_forward: obj.amountToForward

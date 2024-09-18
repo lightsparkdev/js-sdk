@@ -2,29 +2,25 @@ import { isObject } from "lodash-es";
 import type { ComponentProps } from "react";
 import type { CurrencyAmount } from "../../components/CurrencyAmount.js";
 import type { Icon } from "../../components/Icon/Icon.js";
-import type { RenderTypographyArgs } from "../../components/typography/renderTypography.js";
-import type { TypographyTypeKey } from "../../styles/tokens/typography.js";
-import type { NewRoutesType } from "../../types/index.js";
+import { type TypographyPropsWithoutContent } from "../../components/typography/types.js";
+import type { Link } from "../../router.js";
+import type { NextLink } from "../NextLink.js";
 
 export type LinkNode = {
-  text: string;
-  to: NewRoutesType | undefined;
-  newTab?: boolean;
-};
-
-export type ExternalLinkNode = {
-  text: string;
-  externalLink: string | undefined;
+  /* Only content prop is allowed as a ToReactNodes LinkNode arg */
+  link: Omit<ComponentProps<typeof Link>, "children">;
 };
 
 export type NextLinkNode = {
-  text: string;
-  nextHref: string;
+  /* Only content prop is allowed as a ToReactNodes NextLinkNode arg */
+  nextLink: Omit<ComponentProps<typeof NextLink>, "children">;
 };
 
 export type TextNode = {
   text: string;
+  id?: string;
   onClick?: () => void;
+  typography?: TypographyPropsWithoutContent;
 };
 
 export type IconNode = {
@@ -37,19 +33,11 @@ export type CurrencyAmountNode = {
 };
 
 export function isLinkNode(node: unknown): node is LinkNode {
-  return Boolean(node && isObject(node) && "text" in node && "to" in node);
-}
-
-export function isExternalLinkNode(node: unknown): node is ExternalLinkNode {
-  return Boolean(
-    node && isObject(node) && "text" in node && "externalLink" in node,
-  );
+  return Boolean(node && isObject(node) && "link" in node);
 }
 
 export function isNextLinkNode(node: unknown): node is NextLinkNode {
-  return Boolean(
-    node && isObject(node) && "text" in node && "nextHref" in node,
-  );
+  return Boolean(node && isObject(node) && "nextLink" in node);
 }
 
 export function isIconNode(node: unknown): node is IconNode {
@@ -75,23 +63,14 @@ export function isTextNode(node: unknown): node is TextNode {
   );
 }
 
-export function isNonTypographicReactNode(
-  node: unknown,
-): node is IconNode | CurrencyAmountNode {
-  return isIconNode(node) || isCurrencyAmountNode(node);
-}
+export const link = (link: LinkNode["link"]): LinkNode => ({ link });
 
-export type RenderTypographyArgsWithOptionalProps<T extends TypographyTypeKey> =
-  Omit<RenderTypographyArgs<T>, "props"> & {
-    props?: RenderTypographyArgs<T>["props"];
-  };
+export const nextLink = (nextLink: NextLinkNode["nextLink"]): NextLinkNode => ({
+  nextLink,
+});
 
-export type NodeTypography<T extends TypographyTypeKey> = {
-  typography?: RenderTypographyArgsWithOptionalProps<T>;
-};
+export const currencyAmount = (
+  currencyAmount: ComponentProps<typeof CurrencyAmount>,
+): CurrencyAmountNode => ({ currencyAmount });
 
-export type TypographicReactNodes<T extends TypographyTypeKey> =
-  | (TextNode & NodeTypography<T>)
-  | (LinkNode & NodeTypography<T>)
-  | (ExternalLinkNode & NodeTypography<T>)
-  | (NextLinkNode & NodeTypography<T>);
+export const icon = (icon: IconNode["icon"]): IconNode => ({ icon });

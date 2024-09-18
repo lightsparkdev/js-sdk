@@ -77,7 +77,7 @@ export const LightsparkNodeOwnerToJson = (obj: LightsparkNodeOwner): any => {
         ? BalancesToJson(wallet.balances)
         : undefined,
       wallet_third_party_identifier: wallet.thirdPartyIdentifier,
-      wallet_account: { id: wallet.accountId } ?? undefined,
+      wallet_account: { id: wallet.accountId },
       wallet_status: wallet.status,
     };
   }

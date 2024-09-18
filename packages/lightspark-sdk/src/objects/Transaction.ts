@@ -271,8 +271,9 @@ export const TransactionToJson = (obj: Transaction): any => {
         channelClosingTransaction.destinationAddresses,
       channel_closing_transaction_num_confirmations:
         channelClosingTransaction.numConfirmations,
-      channel_closing_transaction_channel:
-        { id: channelClosingTransaction.channelId } ?? undefined,
+      channel_closing_transaction_channel: {
+        id: channelClosingTransaction.channelId,
+      },
     };
   }
   if (obj.typename == "ChannelOpeningTransaction") {
@@ -303,8 +304,9 @@ export const TransactionToJson = (obj: Transaction): any => {
         channelOpeningTransaction.destinationAddresses,
       channel_opening_transaction_num_confirmations:
         channelOpeningTransaction.numConfirmations,
-      channel_opening_transaction_channel:
-        { id: channelOpeningTransaction.channelId } ?? undefined,
+      channel_opening_transaction_channel: {
+        id: channelOpeningTransaction.channelId,
+      },
     };
   }
   if (obj.typename == "Deposit") {
@@ -341,8 +343,9 @@ export const TransactionToJson = (obj: Transaction): any => {
       incoming_payment_transaction_hash: incomingPayment.transactionHash,
       incoming_payment_is_uma: incomingPayment.isUma,
       incoming_payment_destination: { id: incomingPayment.destinationId },
-      incoming_payment_payment_request:
-        { id: incomingPayment.paymentRequestId } ?? undefined,
+      incoming_payment_payment_request: {
+        id: incomingPayment.paymentRequestId,
+      },
       incoming_payment_uma_post_transaction_data:
         incomingPayment.umaPostTransactionData?.map((e) =>
           PostTransactionDataToJson(e),
@@ -363,8 +366,7 @@ export const TransactionToJson = (obj: Transaction): any => {
       outgoing_payment_transaction_hash: outgoingPayment.transactionHash,
       outgoing_payment_is_uma: outgoingPayment.isUma,
       outgoing_payment_origin: { id: outgoingPayment.originId },
-      outgoing_payment_destination:
-        { id: outgoingPayment.destinationId } ?? undefined,
+      outgoing_payment_destination: { id: outgoingPayment.destinationId },
       outgoing_payment_fees: outgoingPayment.fees
         ? CurrencyAmountToJson(outgoingPayment.fees)
         : undefined,
@@ -397,10 +399,12 @@ export const TransactionToJson = (obj: Transaction): any => {
         routingTransaction.amount,
       ),
       routing_transaction_transaction_hash: routingTransaction.transactionHash,
-      routing_transaction_incoming_channel:
-        { id: routingTransaction.incomingChannelId } ?? undefined,
-      routing_transaction_outgoing_channel:
-        { id: routingTransaction.outgoingChannelId } ?? undefined,
+      routing_transaction_incoming_channel: {
+        id: routingTransaction.incomingChannelId,
+      },
+      routing_transaction_outgoing_channel: {
+        id: routingTransaction.outgoingChannelId,
+      },
       routing_transaction_fees: routingTransaction.fees
         ? CurrencyAmountToJson(routingTransaction.fees)
         : undefined,

@@ -1,7 +1,11 @@
 {
   "extends": "../tsconfig/react-package.json",
   "compilerOptions": {
-    "rootDir": "src"
+    "rootDir": "src",
+    "baseUrl": ".",
+    "noErrorTruncation": true,
+    "strict": true,
+    "alwaysStrict": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["**/tests", "node_modules", "dist"]

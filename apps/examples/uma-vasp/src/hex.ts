@@ -1,5 +1,6 @@
 export const hexToBytes = (hex: string): Uint8Array => {
-  return Buffer.from(hex, "hex");
+  const buffer = Buffer.from(hex, "hex");
+  return new Uint8Array(buffer);
 };
 
 export const bytesToHex = (bytes: Uint8Array): string => {

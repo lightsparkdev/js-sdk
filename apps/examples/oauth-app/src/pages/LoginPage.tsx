@@ -2,9 +2,9 @@ import styled from "@emotion/styled";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "src/auth/AuthProvider";
-import { Button } from "src/components/Button";
-import { useNavigate } from "src/components/router";
-import { MainRoutes } from "src/routes";
+import { Button } from "@lightsparkdev/ui/components";
+import { useNavigate } from "@lightsparkdev/ui/router";
+import { Routes, type RoutesType } from "src/routes";
 
 type LocationState =
   | {
@@ -20,13 +20,13 @@ const LoginPage = () => {
   useEffect(() => {
     if (window.location.search.includes("code")) {
       const queryString = window.location.search.substring(1); // includes '?'
-      navigate(MainRoutes.Oauth, { query: queryString });
+      navigate(Routes.Oauth, { query: queryString });
     }
     auth
       .checkAuth()
       .then((isAuthorized: boolean) => {
         if (isAuthorized) {
-          navigate(MainRoutes.Base);
+          navigate(Routes.Base);
         }
       })
       .catch((err) => {
@@ -44,7 +44,7 @@ const LoginPage = () => {
       // when they get to the protected page and click the back button, they
       // won't end up back on the login page, which is also really nice for the
       // user experience.
-      navigate(from as MainRoutes, undefined, { replace: true });
+      navigate(from as RoutesType, undefined, { replace: true });
     });
   }
 

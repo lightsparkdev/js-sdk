@@ -3,7 +3,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { uniqueId } from "lodash-es";
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { getFocusOutline } from "../styles/common.js";
 import {
@@ -20,6 +20,7 @@ import {
 } from "../styles/themes.js";
 import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
 import { applyTypography } from "../styles/typography.js";
+import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
@@ -43,7 +44,7 @@ export const buttonKinds = [
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
-export type ButtonProps<RoutesType extends string> = {
+export type ButtonProps = {
   kind?: ButtonKind | undefined;
   typography?: ButtonTypographyArgs | undefined;
   size?: TokenSizeKey;
@@ -51,7 +52,7 @@ export type ButtonProps<RoutesType extends string> = {
   text?: string | undefined;
   disabled?: boolean | undefined;
   id?: string | undefined;
-  to?: RoutesType | undefined;
+  to?: NewRoutesType | undefined;
   hash?: string | undefined;
   externalLink?: string | undefined;
   filename?: string | undefined;
@@ -155,10 +156,7 @@ function resolveProp<T, K extends ButtonsThemeKey>(
   );
 }
 
-function resolveProps<RoutesType extends string>(
-  props: ButtonProps<RoutesType>,
-  theme: Theme,
-) {
+function resolveProps(props: ButtonProps, theme: Theme) {
   const {
     kind = "secondary",
     size: sizeProp,
@@ -222,9 +220,7 @@ function resolveProps<RoutesType extends string>(
   };
 }
 
-export function Button<RoutesType extends string>(
-  props: ButtonProps<RoutesType>,
-) {
+export function Button(props: ButtonProps) {
   const theme = useTheme();
   const {
     kind,
@@ -480,7 +476,7 @@ const ButtonIcon = styled.div<ButtonIconProps>`
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`
   ${(props) => buttonStyle(props)}
 `;
-const ButtonLink = styled(Link)<StyledButtonProps>`
+const ButtonLink = styled(LinkWithoutTypography)<StyledButtonProps>`
   ${(props) => buttonStyle(props)}
 `;
 const ButtonHrefLink = styled.a<StyledButtonProps>`
@@ -491,3 +487,12 @@ export const ButtonSelector = (prepend = "", append = "") =>
   `${prepend}*:is(${select(StyledButton)}, ${select(ButtonLink)}, ${select(
     ButtonHrefLink,
   )})${append}`;
+
+type LinkWithoutTypographyProps = Omit<
+  ComponentProps<typeof Link>,
+  "typography"
+>;
+
+function LinkWithoutTypography(props: LinkWithoutTypographyProps) {
+  return <Link {...props} />;
+}

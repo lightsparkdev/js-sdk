@@ -5,9 +5,9 @@ import {
   type CountryCode,
 } from "libphonenumber-js";
 import { useCallback, useState, type ComponentProps } from "react";
-import { type SimpleTypographyProps } from "../styles/typography.js";
 import { countryCodesToNames } from "../utils/countryCodesToNames.js";
 import { TextInput } from "./TextInput.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 const countries = getCountries();
 const defaultOptions = countries
@@ -36,7 +36,7 @@ export type PhoneInputOnChangeArg = {
 type PhoneInputProps = {
   pxPerChar?: number;
   onChange?: ({ number, formatted, isValid }: PhoneInputOnChangeArg) => void;
-  typography?: SimpleTypographyProps | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
 };
 
 export function PhoneInput({

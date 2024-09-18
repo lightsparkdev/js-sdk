@@ -538,7 +538,7 @@ const generateNodeKeys = async (options: OptionValues) => {
 const generateSecp256k1Keypair = () => {
   let privateKey;
   do {
-    privateKey = randomBytes(32);
+    privateKey = new Uint8Array(randomBytes(32));
   } while (!secp256k1.privateKeyVerify(privateKey));
 
   const publicKey = secp256k1.publicKeyCreate(privateKey);

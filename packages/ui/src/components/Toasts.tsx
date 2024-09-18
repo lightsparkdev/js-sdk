@@ -5,7 +5,6 @@ import ReactDOM from "react-dom";
 import { colors } from "../styles/colors.js";
 import { standardContentInset } from "../styles/common.js";
 import { themeOr } from "../styles/themes.js";
-import { type TypographyTypeKey } from "../styles/tokens/typography.js";
 import { extend, flexCenter, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import {
@@ -15,20 +14,20 @@ import {
 import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type ToastQueueArg<T extends TypographyTypeKey> = {
-  text: ToReactNodesArgs<T>;
+type ToastQueueArg = {
+  text: ToReactNodesArgs;
   duration: number | null;
   id: string;
   expires: number;
 };
 
-type Toast<T extends TypographyTypeKey> = ToastQueueArg<T> & {
+type Toast = ToastQueueArg & {
   isActive: boolean;
   isHiding: boolean;
 };
 
-export type ToastsProps<T extends TypographyTypeKey> = {
-  queue: ToastQueueArg<T>[];
+export type ToastsProps = {
+  queue: ToastQueueArg[];
   onHide: (id: string) => void;
   fromTop?: number;
   stackDir?: "above" | "below";
@@ -41,7 +40,7 @@ type TimeoutRef = ReturnType<typeof setTimeout> | null;
 
 const firstDur = 0.3;
 
-export function Toasts<T extends TypographyTypeKey>({
+export function Toasts({
   queue,
   onHide,
   fromTop = 29,
@@ -49,10 +48,10 @@ export function Toasts<T extends TypographyTypeKey>({
   maxVisible = 3,
   removeExpiredAndNotVisible = true,
   dedupeConsecutive = true,
-}: ToastsProps<T>) {
+}: ToastsProps) {
   const queuedToastIds = useRef(new Set<string>());
-  const prevToastQueue = useRef<ToastQueueArg<T>[]>([]);
-  const [toastQueue, setToastQueue] = useState<Toast<T>[]>([]);
+  const prevToastQueue = useRef<ToastQueueArg[]>([]);
+  const [toastQueue, setToastQueue] = useState<Toast[]>([]);
   /* There should only ever be one autoHideTimeoutRef at a time: */
   const autoHideTimeoutRef = useRef<TimeoutRef>(null);
   /* Multiple hidingTimeoutRefs may exist if the user is manually hiding toasts: */
@@ -110,7 +109,7 @@ export function Toasts<T extends TypographyTypeKey>({
         return [...acc, toast];
       }
       return acc;
-    }, [] as ToastQueueArg<T>[]);
+    }, [] as ToastQueueArg[]);
     if (newToastQueueArgs.length) {
       const newToasts = newToastQueueArgs.reduce((acc, toast) => {
         if (dedupeConsecutive && acc.length) {
@@ -127,8 +126,8 @@ export function Toasts<T extends TypographyTypeKey>({
             isActive: true,
             isHiding: false,
           },
-        ] as Toast<T>[];
-      }, [] as Toast<T>[]);
+        ] as Toast[];
+      }, [] as Toast[]);
       setToastQueue((currentToastQueue) => {
         const currentToast = currentToastQueue[currentToastQueue.length - 1];
         if (

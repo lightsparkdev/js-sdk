@@ -1,26 +1,24 @@
 import styled from "@emotion/styled";
-import { type ReactNode } from "react";
 import CheckmarkUrl from "../static/images/Checkmark.svg?url";
-import { type TypographyTypeKey } from "../styles/tokens/typography.js";
-import { type SimpleTypographyProps } from "../styles/typography.js";
+import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
-  setDefaultReactNodesTypography,
   toReactNodes,
   type ToReactNodesArgs,
 } from "../utils/toReactNodes/toReactNodes.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
-export type CheckboxProps<T extends TypographyTypeKey> = {
+export type CheckboxProps = {
   checked: boolean;
   onChange: (newValue: boolean) => void;
   id?: string;
-  label?: ToReactNodesArgs<T> | undefined;
+  label?: ToReactNodesArgs | undefined;
   mt?: number;
   alignItems?: "center" | "flex-start";
   disabled?: boolean;
-  typography?: SimpleTypographyProps;
+  typography?: PartialSimpleTypographyProps;
 };
 
-export function Checkbox<T extends TypographyTypeKey>({
+export function Checkbox({
   checked,
   onChange,
   id,
@@ -29,28 +27,25 @@ export function Checkbox<T extends TypographyTypeKey>({
   alignItems = "center",
   disabled = false,
   typography: typographyProp,
-}: CheckboxProps<T>) {
+}: CheckboxProps) {
   const defaultTypography = {
     type: typographyProp?.type || "Body",
-    props: {
-      size: typographyProp?.size || "Medium",
-      color: typographyProp?.color || "text",
-    },
+    size: typographyProp?.size || "Medium",
+    color: typographyProp?.color || "text",
   } as const;
 
   const defaultTypographyMap = {
     link: defaultTypography,
-    externalLink: defaultTypography,
     text: defaultTypography,
     nextLink: defaultTypography,
   };
 
-  let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
+  const nodesWithTypography = setDefaultReactNodesTypography(
     label,
     defaultTypographyMap,
   );
 
-  content = toReactNodes(content);
+  const content = toReactNodes(nodesWithTypography);
 
   return (
     <CheckboxContainer mt={mt} alignItems={alignItems}>

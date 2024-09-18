@@ -13,10 +13,7 @@ import {
   standardFocusOutline,
 } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
-import {
-  TokenSize,
-  type TypographyTypeKey,
-} from "../styles/tokens/typography.js";
+import { TokenSize } from "../styles/tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
@@ -60,12 +57,12 @@ function isSubmitLinkWithHref(
 
 type TopContent = ComponentProps<typeof IconWithCircleBackground>;
 
-type ModalProps<T extends TypographyTypeKey> = {
+type ModalProps = {
   visible: boolean;
   onClose: () => void;
   topContent?: TopContent | undefined;
-  title?: ToReactNodesArgs<T>;
-  description?: ToReactNodesArgs<T>;
+  title?: ToReactNodesArgs;
+  description?: ToReactNodesArgs;
   cancelText?: string | undefined;
   cancelDisabled?: boolean;
   cancelHidden?: boolean;
@@ -103,7 +100,7 @@ type ModalProps<T extends TypographyTypeKey> = {
   appendToElement?: HTMLElement;
 };
 
-export function Modal<T extends TypographyTypeKey>({
+export function Modal({
   visible,
   topContent,
   title,
@@ -132,7 +129,7 @@ export function Modal<T extends TypographyTypeKey>({
   extraActions,
   handleBack,
   appendToElement,
-}: ModalProps<T>) {
+}: ModalProps) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
@@ -487,22 +484,27 @@ const ModalContent = styled.div<{
 
   ${({ theme, smKind, ghost }) =>
     ghost ? "" : overlaySurface({ theme, border: smKind !== "fullscreen" })}
+
   ${overflowAutoWithoutScrollbars}
-  ${(props) =>
-    props.smKind === "fullscreen" && bp.isSm()
-      ? `
-    width: 100%;
-    height: 100%;
-  `
-      : `
-    ${props.ghost ? "" : standardBorderRadius(16)}
-    ${standardContentInset.smCSS.styles}
-    width: ${props.width}px;
-    max-width: 100%;
-    max-height: 100%;
-    position: absolute;
+  ${standardContentInset.smCSS.styles}
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+
+  ${({ ghost, width }) => `
+    ${ghost ? "" : standardBorderRadius(16)}
+    width: ${width}px;
   `}
-  ${(props) => (props.ghost ? "" : "padding: 16px 16px 40px;")}
+
+  ${({ smKind }) =>
+    smKind === "fullscreen"
+      ? bp.sm(`
+          width: 100%;
+          height: 100%;
+        `)
+      : ""}
+
+  ${({ ghost }) => (ghost ? "" : "padding: 16px 16px 40px;")}
 
   ${headlineSelector("h4")} {
     margin: 0;

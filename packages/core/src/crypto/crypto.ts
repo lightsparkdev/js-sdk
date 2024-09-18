@@ -54,7 +54,8 @@ const getCrypto = () => {
             }
 
             const buffer = Buffer.from(array.buffer);
-            nodeCrypto.randomFillSync(buffer);
+            const view = new Uint8Array(buffer);
+            nodeCrypto.randomFillSync(view);
             return array;
           },
         }) as typeof crypto;

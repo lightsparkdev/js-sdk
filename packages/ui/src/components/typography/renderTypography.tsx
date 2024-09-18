@@ -1,43 +1,66 @@
-import React, { type ComponentProps, type ElementType } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ElementType,
+} from "react";
 import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
-import { Body } from "./Body.js";
-import { BodyStrong } from "./BodyStrong.js";
-import { Code } from "./Code.js";
-import { Display } from "./Display.js";
-import { Headline } from "./Headline.js";
-import { Label } from "./Label.js";
-import { LabelModerate } from "./LabelModerate.js";
-import { LabelStrong } from "./LabelStrong.js";
-import { Overline } from "./Overline.js";
-import { Title } from "./Title.js";
+import type { typographyMap } from "./typographyMap.js";
 
-export const typographyMap = {
-  Display: Display,
-  Headline: Headline,
-  Title: Title,
-  Body: Body,
-  "Body Strong": BodyStrong,
-  Label: Label,
-  "Label Moderate": LabelModerate,
-  "Label Strong": LabelStrong,
-  Overline: Overline,
-  Code: Code,
-  "Code Strong": Code,
-} as const;
+type TypographyMapType = typeof typographyMap;
 
 export type RenderTypographyArgs<T extends TypographyTypeKey> = {
   type: T;
-  props: ComponentProps<(typeof typographyMap)[T]>;
+  props: ComponentProps<TypographyMapType[T]>;
 };
 
+/* We need a dynamic module import here to avoid circular module dependencies between some
+   toReactNodes node types and typography components. Components will load and rerender if
+   necessary */
+const typographyMapModulePromise = import("./typographyMap.js");
+
 export const renderTypography = <T extends TypographyTypeKey>(
-  type: T,
-  props: ComponentProps<(typeof typographyMap)[T]>,
+  typographyType: T,
+  typographyProps: ComponentProps<TypographyMapType[T]>,
 ) => {
+  return React.createElement(RenderTypographyLoader, {
+    typographyType,
+    typographyProps,
+  });
+};
+
+type RenderTypographyLoaderProps = {
+  typographyType: TypographyTypeKey;
+  typographyProps: ComponentProps<TypographyMapType[TypographyTypeKey]>;
+};
+
+function RenderTypographyLoader({
+  typographyType,
+  typographyProps,
+}: RenderTypographyLoaderProps) {
+  const typographyMap = useRef<TypographyMapType | null>(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    void typographyMapModulePromise.then((typographyMapModule) => {
+      typographyMap.current = typographyMapModule.typographyMap;
+      setReady(true);
+    });
+  }, []);
+
+  if (!ready || !typographyMap.current) {
+    return null;
+  }
+
   /** props type is too wide, causing issues with overlapping different props types (e.g. `tag`), so
    * we have to cast this to a generic ElementType to pass createElement types. We still have type
    * saftey for specific component prop types via renderTypography args. */
-  const TypographyComponent = typographyMap[type] as ElementType;
-  const { children, ...rest } = props;
-  return React.createElement(TypographyComponent, rest, children);
-};
+  const TypographyComponent = typographyMap.current[
+    typographyType
+  ] as ElementType;
+
+  const { children } = typographyProps;
+
+  return React.createElement(TypographyComponent, typographyProps, children);
+}

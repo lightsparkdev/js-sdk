@@ -30,11 +30,11 @@ export {
   type OnSubmitCode,
 } from "./CodeInput/CodeInput.js";
 export { Collapsible, StyledCollapsible } from "./Collapsible.js";
+export { CommandKey } from "./CommandKey.js";
 export {
   CommaNumberInput,
   type CommaNumberInputProps,
 } from "./CommaNumberInput.js";
-export { CommandKey } from "./CommandKey.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount.js";
 export {

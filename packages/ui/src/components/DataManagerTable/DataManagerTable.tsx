@@ -163,7 +163,7 @@ export function DataManagerTable<
   );
 
   useEffect(() => {
-    setIsLoading(props.loading);
+    setIsLoading(Boolean(props.loading));
   }, [props.loading]);
 
   // When data is fetched, the nextPageCursor associated with the results changes.

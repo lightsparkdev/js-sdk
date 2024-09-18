@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { ensureArray } from "@lightsparkdev/core";
 import { Spacing } from "../../styles/tokens/spacing.js";
 import { Button } from "../Button.js";
 import Select from "../Select.js";
@@ -71,9 +72,7 @@ export const EnumFilter = ({
           options={options}
           onChange={(option) => {
             if (option) {
-              const optionValues = Array.isArray(option.value)
-                ? option.value
-                : [option.value];
+              const optionValues = ensureArray(option.value);
               let updatedAppliedValues: string[] = [];
               if (isMulti) {
                 updatedAppliedValues = state.appliedValues

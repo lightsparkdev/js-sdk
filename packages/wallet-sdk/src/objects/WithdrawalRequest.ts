@@ -170,7 +170,7 @@ ${FRAGMENT}
       withdrawal_request_bitcoin_address: this.bitcoinAddress,
       withdrawal_request_status: this.status,
       withdrawal_request_completed_at: this.completedAt,
-      withdrawal_request_withdrawal: { id: this.withdrawalId } ?? undefined,
+      withdrawal_request_withdrawal: { id: this.withdrawalId },
     };
   }
 }

@@ -4,19 +4,19 @@ import { standardContentInset } from "../styles/common.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { Button, type ButtonProps } from "./Button.js";
 
-export type ButtonRowProps<RoutesType extends string> = {
-  buttons: (ButtonProps<RoutesType> | "divider")[];
+export type ButtonRowProps = {
+  buttons: (ButtonProps | "divider")[];
   smSticky?: boolean;
   className?: string;
   headerHeight?: number;
 };
 
-export function ButtonRow<RoutesType extends string>({
+export function ButtonRow({
   buttons,
   className,
   smSticky = true,
   headerHeight = 0,
-}: ButtonRowProps<RoutesType>) {
+}: ButtonRowProps) {
   return (
     <ButtonRowContainer smSticky={smSticky} headerHeight={headerHeight}>
       <StyledButtonRow className={className}>
@@ -24,7 +24,7 @@ export function ButtonRow<RoutesType extends string>({
           button === "divider" ? (
             <ButtonRowDivider key={idx} />
           ) : (
-            <Button<RoutesType> key={idx} {...button} />
+            <Button key={idx} {...button} />
           ),
         )}
       </StyledButtonRow>

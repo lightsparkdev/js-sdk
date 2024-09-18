@@ -1,7 +1,7 @@
 import { useJwtAuth } from "@lightsparkdev/react-wallet";
+import { useNavigate } from "@lightsparkdev/ui/router";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useNavigate } from "src/components/router";
 import { Routes } from "src/routes";
 
 function RequireAuth({ children }: { children: JSX.Element }) {

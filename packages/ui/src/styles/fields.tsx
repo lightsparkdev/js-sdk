@@ -1,9 +1,10 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
+import { type PartialSimpleTypographyProps } from "../components/typography/types.js";
 import { standardBorderRadius, subtext } from "./common.js";
 import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
-import { applyTypography, type SimpleTypographyProps } from "./typography.js";
+import { applyTypography } from "./typography.js";
 import { z } from "./z-index.js";
 
 export const maxFieldWidth = "100%";
@@ -93,7 +94,7 @@ export const textInputStyle = ({
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
-  typography?: SimpleTypographyProps | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
 }>) => css`
   border-radius: ${borderRadius === "round"

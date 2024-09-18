@@ -103,7 +103,7 @@ export function Table<T extends Record<string, unknown>>({
   emptyState,
   clipboardCallbacks,
 }: TableProps<T>) {
-  const navigate = useNavigate<NewRoutesType>();
+  const navigate = useNavigate();
 
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
@@ -184,7 +184,7 @@ export function Table<T extends Record<string, unknown>>({
               </LinkClipboardCell>
             ) : value.to ? (
               <HoverableCellWrapper>
-                <Link<NewRoutesType>
+                <Link
                   to={value.to}
                   params={value.toParams}
                   onClick={(e) => {
@@ -214,7 +214,7 @@ export function Table<T extends Record<string, unknown>>({
               </HoverableLinkCell>
             ) : value.to ? (
               <HoverableCellWrapper>
-                <Link<NewRoutesType>
+                <Link
                   to={value.to}
                   params={value.toParams}
                   onClick={(e) => {
@@ -280,10 +280,7 @@ export function Table<T extends Record<string, unknown>>({
       if (onClickRowResult?.link || (onClickRowResult?.to && newTabKey)) {
         let link = onClickRowResult?.link;
         if (!link) {
-          link = replaceParams<NewRoutesType>(
-            onClickRowResult.to!,
-            onClickRowResult.params,
-          );
+          link = replaceParams(onClickRowResult.to!, onClickRowResult.params);
         }
         const target = newTabKey ? "_blank" : undefined;
         window.open(link, target);

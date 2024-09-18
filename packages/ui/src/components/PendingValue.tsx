@@ -1,6 +1,5 @@
 import { css, keyframes, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
-import { type ReactNode } from "react";
 import { themeOrWithKey, themes, type Themes } from "../styles/themes.js";
 import {
   getLineHeightForTypographyType,
@@ -8,12 +7,12 @@ import {
   type TokenSizeKey,
   type TypographyTypeKey,
 } from "../styles/tokens/typography.js";
-import { type SimpleTypographyProps } from "../styles/typography.js";
+import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
-  setDefaultReactNodesTypography,
   toReactNodes,
   type ToReactNodesArgs,
 } from "../utils/toReactNodes/toReactNodes.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 const bgPosition = keyframes`
   0% {
@@ -24,49 +23,46 @@ const bgPosition = keyframes`
   }
 `;
 
-type PendingValueProps<T extends TypographyTypeKey> = {
+type PendingValueProps = {
   animate?: boolean;
-  content?: ToReactNodesArgs<T> | undefined;
+  content?: ToReactNodesArgs | undefined;
   height?: LineHeightKey | undefined;
-  typography?: SimpleTypographyProps;
+  typography?: PartialSimpleTypographyProps;
   width?: number | undefined;
   forceTheme?: Themes | undefined;
 };
 
-export function PendingValue<T extends TypographyTypeKey>({
+export function PendingValue({
   animate = true,
   content: contentProp,
   typography: typographyProp,
   width,
   forceTheme,
-}: PendingValueProps<T>) {
+}: PendingValueProps) {
   const defaultTypography = {
     type: typographyProp?.type || "Body",
-    props: {
-      size: typographyProp?.size || "Small",
-      color: typographyProp?.color || "text",
-      hideOverflow: true,
-    },
+    size: typographyProp?.size || "Small",
+    color: typographyProp?.color || "text",
+    hideOverflow: true,
   } as const;
 
   const defaultTypographyMap = {
     link: defaultTypography,
-    externalLink: defaultTypography,
     text: defaultTypography,
     nextLink: defaultTypography,
   };
 
-  let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
+  const nodesWithTypography = setDefaultReactNodesTypography(
     contentProp,
     defaultTypographyMap,
   );
 
-  content = toReactNodes(content);
+  const content = toReactNodes(nodesWithTypography);
 
   const nodes = (
     <StyledPendingValue
       typographyType={defaultTypography.type}
-      typographySize={defaultTypography.props.size}
+      typographySize={defaultTypography.size}
       widthProp={width}
     >
       <StyledPendingValueBg visible={!contentProp} animate={animate} />
