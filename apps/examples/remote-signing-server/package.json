@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "clean": "rm -rf dist",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
     "lint:fix": "eslint --fix .",

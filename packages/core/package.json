@@ -58,7 +58,7 @@
   "scripts": {
     "build": "yarn tsc && tsup",
     "build:watch": "yarn build --watch --clean=false",
-    "clean": "rm -rf .turbo && rm -rf dist",
+    "clean": "rm -rf dist",
     "dev": "yarn build -- --watch",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",

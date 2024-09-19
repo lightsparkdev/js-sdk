@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module prepare",
-    "clean": "expo-module clean && rm -rf .turbo && rm -rf build",
+    "clean": "expo-module clean && rm -rf build",
     "dev": "expo-module build",
     "expo-module": "expo-module",
     "format:fix": "prettier src --write",

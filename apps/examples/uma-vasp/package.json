@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "./start.sh",
+    "clean": "rm -rf dist",
     "build": "yarn tsc",
     "start:docker": "node dist/startServer.js",
     "test:start": "./test.sh start",

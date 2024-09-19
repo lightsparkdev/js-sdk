@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "start": "./start.sh",
+    "clean": "rm -rf dist",
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",

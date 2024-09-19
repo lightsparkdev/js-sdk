@@ -11,7 +11,7 @@
   "scripts": {
     "build": "yarn tsc && yarn vite build",
     "circular-deps": "madge --circular --extensions ts,tsx src",
-    "clean": "rm -rf .turbo && rm -rf dist",
+    "clean": "rm -rf dist",
     "dev": "yarn build --watch",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
