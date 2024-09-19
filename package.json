@@ -43,15 +43,8 @@
     "@changesets/cli": "^2.27.1",
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
-    "@wojtekmaj/react-daterange-picker": "^5.5.0",
-    "add": "^2.0.6",
-    "octokit": "^4.0.2",
-    "react-confetti-explosion": "^2.1.2",
-    "react-datetime-picker": "^5.6.0",
     "ts-prune": "^0.10.3",
-    "turbo": "^1.13.3",
-    "unimported": "^1.29.2",
-    "yarn": "^1.22.22"
+    "turbo": "^1.13.3"
   },
   "engines": {
     "node": ">=18"
