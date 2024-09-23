@@ -83,6 +83,7 @@ export { QRCodeIcon } from "./QRCodeIcon.js";
 export { QuestionCircle } from "./QuestionCircle.js";
 export { QuestionCircleStrong } from "./QuestionCircleStrong.js";
 export { ReactTwoTone } from "./ReactTwoTone.js";
+export { ReceiptBill } from "./ReceiptBill.js";
 export { Recycling } from "./Recycling.js";
 export { Remove } from "./Remove.js";
 export { Restart } from "./Restart.js";

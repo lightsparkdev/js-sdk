@@ -4,7 +4,12 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 
 type IconWithCircleBackgroundProps = {
-  iconName?: "WarningSign" | "Envelope" | "Bank";
+  iconName?:
+    | "WarningSign"
+    | "Envelope"
+    | "Bank"
+    | "ReceiptBill"
+    | "ChevronLeft";
 };
 
 export function IconWithCircleBackground({
