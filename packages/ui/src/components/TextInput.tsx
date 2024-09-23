@@ -34,15 +34,22 @@ import {
 
 const selectLeftOffset = 10;
 
+export const iconSides = ["left", "right"] as const;
+export type IconSide = (typeof iconSides)[number];
+export const iconOffsets = ["small", "large"] as const;
+export type IconOffset = (typeof iconOffsets)[number];
+export const iconWidths = [8, 12, 16] as const;
+export type IconWidth = (typeof iconWidths)[number];
+
 export type TextInputProps = {
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   error?: string | undefined;
   icon?:
     | {
         name: IconName;
-        width?: 8 | 12 | 16;
-        side?: "left" | "right";
-        offset?: "small" | "large";
+        width?: IconWidth | undefined;
+        side?: IconSide | undefined;
+        offset?: IconOffset | undefined;
       }
     | undefined;
   maxLength?: number;
@@ -67,10 +74,15 @@ export type TextInputProps = {
   value: string;
   onClickIcon?: () => void;
   testId?: string;
-  autoComplete?: "off" | "new-password" | "current-password" | "username";
+  autoComplete?:
+    | "off"
+    | "new-password"
+    | "current-password"
+    | "username"
+    | undefined;
   onBeforeInput?: (e: CompositionEvent) => void;
   pattern?: string;
-  inputMode?: "numeric";
+  inputMode?: "numeric" | undefined;
   hint?: string | undefined;
   hintTooltip?: string | undefined;
   label?: string;
@@ -87,9 +99,24 @@ export type TextInputProps = {
       }
     | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
+  width?: "full" | "short" | undefined;
 };
 
-export function TextInput(props: TextInputProps) {
+function withDefaults(textInputProps: TextInputProps) {
+  return {
+    ...textInputProps,
+    width: textInputProps.width || "full",
+    type: textInputProps.type || "text",
+    disabled: Boolean(textInputProps.disabled),
+    typography: {
+      ...defaultTextInputTypography,
+      ...textInputProps.typography,
+    } as RequiredSimpleTypographyProps,
+  } as const;
+}
+
+export function TextInput(textInputProps: TextInputProps) {
+  const props = withDefaults(textInputProps);
   const [focused, setFocused] = useState(false);
 
   const inputRef = props.inputRef || React.createRef<HTMLInputElement>();
@@ -98,11 +125,6 @@ export function TextInput(props: TextInputProps) {
   if (props.inputRefCb && !props.inputRef) {
     console.warn("TextInput: inputRef should be provided with inputRefCb.");
   }
-
-  const typography = {
-    ...defaultTextInputTypography,
-    ...props.typography,
-  } as RequiredSimpleTypographyProps;
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Enter" && props.onEnter) {
@@ -119,68 +141,78 @@ export function TextInput(props: TextInputProps) {
   const iconCenterOffset = props.icon?.offset === "large" ? 26 : 18;
   const iconOffset = iconCenterOffset - iconWidth / 2;
   const iconTextOffset = iconCenterOffset === 18 ? 4 : 14;
+  const textInputWidth = props.width === "short" ? "250px" : "100%";
 
   let paddingLeftPx: number | undefined;
   if (props.icon && !isIconRight) {
     paddingLeftPx = iconOffset + iconWidth + iconTextOffset;
-  } else if (props.select && typeof props.select.width === "number") {
+  } else if (props.select) {
     paddingLeftPx = selectLeftOffset + props.select.width + 5;
   }
 
   let input = (
-    <Input
-      disabled={Boolean(props.disabled)}
-      maxLength={props.maxLength}
-      inputMode={props.inputMode}
-      pattern={props.pattern}
-      onBlur={() => {
-        setFocused(false);
-        if (props.onBlur) {
-          props.onBlur();
+    <InputContainer>
+      <Input
+        disabled={props.disabled}
+        maxLength={props.maxLength}
+        inputMode={props.inputMode}
+        pattern={props.pattern}
+        onBlur={() => {
+          setFocused(false);
+          if (props.onBlur) {
+            props.onBlur();
+          }
+        }}
+        onChange={(e) => {
+          // needed to prevent default chrome error message when in a form element
+          e.target.setCustomValidity("");
+          props.onChange(e.target.value, e);
+        }}
+        onFocus={() => {
+          setFocused(true);
+          if (props.onFocus) {
+            props.onFocus();
+          }
+        }}
+        onKeyDown={(e) => {
+          if (props.onKeyDown) {
+            props.onKeyDown(e.key, e);
+          }
+          handleKeyDown(e);
+        }}
+        id={props.id}
+        onPaste={props.onPaste}
+        placeholder={props.placeholder}
+        ref={ref}
+        name={props.name}
+        type={props.type}
+        value={props.value}
+        paddingLeftPx={paddingLeftPx}
+        paddingRightPx={isIconRight ? 28 : undefined}
+        hasError={hasError}
+        data-test-id={props.testId}
+        typography={props.typography}
+        autoComplete={
+          props.autoComplete === "off" ? "new-password" : props.autoComplete
         }
-      }}
-      onChange={(e) => {
-        // needed to prevent default chrome error message when in a form element
-        e.target.setCustomValidity("");
-        props.onChange(e.target.value, e);
-      }}
-      onFocus={() => {
-        setFocused(true);
-        if (props.onFocus) {
-          props.onFocus();
-        }
-      }}
-      onKeyDown={(e) => {
-        if (props.onKeyDown) {
-          props.onKeyDown(e.key, e);
-        }
-        handleKeyDown(e);
-      }}
-      id={props.id}
-      onPaste={props.onPaste}
-      placeholder={props.placeholder}
-      ref={ref}
-      name={props.name}
-      type={props.type || "text"}
-      value={props.value}
-      paddingLeftPx={paddingLeftPx}
-      paddingRightPx={isIconRight ? 28 : undefined}
-      hasError={hasError}
-      data-test-id={props.testId}
-      typography={typography}
-      autoComplete={
-        props.autoComplete === "off" ? "new-password" : props.autoComplete
-      }
-      onBeforeInput={(e: SyntheticEvent) => {
-        // more on the typings here - the default doesn't work for referencing
-        // event.data https://stackoverflow.com/a/68108756/9808766
-        if (props.onBeforeInput) {
-          const event = e as CompositionEvent;
-          props.onBeforeInput(event);
-        }
-      }}
-      borderRadius={props.borderRadius}
-    />
+        onBeforeInput={(e: SyntheticEvent) => {
+          // more on the typings here - the default doesn't work for referencing
+          // event.data https://stackoverflow.com/a/68108756/9808766
+          if (props.onBeforeInput) {
+            const event = e as CompositionEvent;
+            props.onBeforeInput(event);
+          }
+        }}
+        borderRadius={props.borderRadius}
+      />
+      {props.rightButtonText && (
+        <RightButtonAligner iconOffset={iconOffset}>
+          <RightButton onClick={props.onRightButtonClick}>
+            {props.rightButtonText}
+          </RightButton>
+        </RightButtonAligner>
+      )}
+    </InputContainer>
   );
 
   if (props.icon) {
@@ -193,24 +225,11 @@ export function TextInput(props: TextInputProps) {
           iconOffset={iconOffset}
           focused={focused}
           hasValue={Boolean(props.value)}
-          colorProp={typography.color}
+          colorProp={props.typography.color}
         >
           <Icon name={props.icon.name} width={iconWidth} />
         </TextInputIconContainer>
         {isIconRight ? null : <>{input}</>}
-        {props.rightButtonText && (
-          <TextInputIconContainer
-            isIconRight={true}
-            iconOffset={iconOffset}
-            hasValue={Boolean(props.value)}
-            focused={focused}
-            colorProp={typography.color}
-          >
-            <RightButton onClick={props.onRightButtonClick}>
-              {props.rightButtonText}
-            </RightButton>
-          </TextInputIconContainer>
-        )}
       </WithIcon>
     );
   }
@@ -222,7 +241,7 @@ export function TextInput(props: TextInputProps) {
   const { select } = props;
 
   return (
-    <InputContainer>
+    <StyledTextInput width={textInputWidth}>
       {props.label ? (
         <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
       ) : null}
@@ -230,7 +249,7 @@ export function TextInput(props: TextInputProps) {
         <TextInputSelect
           value={select.value}
           widthProp={select.width}
-          typography={typography}
+          typography={props.typography}
           onChange={(event) => {
             select.onChange(event.target.value);
             inputRef.current?.focus();
@@ -252,15 +271,9 @@ export function TextInput(props: TextInputProps) {
       {props.hintTooltip ? (
         <Tooltip id={hintTooltipId} content={props.hintTooltip} place="right" />
       ) : null}
-    </InputContainer>
+    </StyledTextInput>
   );
 }
-
-TextInput.defaultProps = {
-  disabled: false,
-  autoComplete: undefined,
-  hint: null,
-};
 
 const TextInputSelect = styled.select<{
   widthProp: number;
@@ -339,12 +352,22 @@ const Input = styled.input<InputProps>`
   &:-webkit-autofill:focus,
   &:-internal-autofill-selected,
   &:-internal-autofill-selected:focus {
-    background-color: ${({ theme, disabled }) => theme.bg} !important;
+    background-color: ${({ theme }) => theme.bg} !important;
     color: ${({ theme }) => theme.text} !important;
     transition:
       background-color 600000s 0s,
       color 600000s 0s !important;
   }
+`;
+
+const RightButtonAligner = styled.div<{ iconOffset: number }>`
+  position: absolute;
+  top: 0;
+  right: ${({ iconOffset }) => iconOffset}px;
+  z-index: ${z.textInput + 1};
+  bottom: 0;
+  display: flex;
+  align-items: center;
 `;
 
 const RightButton = styled(UnstyledButton)`
@@ -381,8 +404,8 @@ export const TextInputHalfRow = styled.div`
   }
 `;
 
-const InputContainer = styled.div`
-  width: 100%;
+const StyledTextInput = styled.div<{ width: string }>`
+  width: ${({ width }) => width};
   position: relative;
 
   /* eg forms, should be left consistent: */
@@ -400,4 +423,8 @@ const InputContainer = styled.div`
   & + ${ToggleContainer.toString()} {
     margin-top: ${inputSpacingPx}px;
   }
+`;
+
+const InputContainer = styled.div`
+  position: relative;
 `;
