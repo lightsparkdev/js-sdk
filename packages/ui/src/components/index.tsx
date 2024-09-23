@@ -77,6 +77,7 @@ export { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 export { Radio } from "./Radio.js";
 export { ReadClipboardButton } from "./ReadClipboardButton.js";
 export { SecretContainer } from "./SecretContainer.js";
+export { SecretInput, type SecretInputProps } from "./SecretInput.js";
 export { Select, StyledSelect } from "./Select.js";
 export {
   StatusIndicator,
