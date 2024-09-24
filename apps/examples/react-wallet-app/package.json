@@ -18,7 +18,7 @@
   "scripts": {
     "start": "yarn vite",
     "build": "yarn tsc && yarn vite build",
-    "clean": "rm -rf .turbo && rm -rf dist",
+    "clean": "rm -rf dist",
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
@@ -37,7 +37,7 @@
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
     "tsc-absolute": "^1.0.1",
-    "typescript": "^5.0.0",
+    "typescript": "^5.6.2",
     "vite": "^5.1.6"
   },
   "engines": {

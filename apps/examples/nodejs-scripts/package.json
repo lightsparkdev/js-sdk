@@ -5,6 +5,7 @@
   "description": "Example NodeJS scripts for Lightspark JS SDKs",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -rf dist",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
     "lint:fix": "eslint --fix .",
@@ -29,7 +30,7 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "tsc-absolute": "^1.0.1",
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.2"
   },
   "dependencies": {
     "@lightsparkdev/core": "1.2.1",

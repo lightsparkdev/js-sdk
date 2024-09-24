@@ -17,8 +17,7 @@ export const OutgoingPaymentForIdempotencyKeyOutputToJson = (
   obj: OutgoingPaymentForIdempotencyKeyOutput,
 ): any => {
   return {
-    outgoing_payment_for_idempotency_key_output_payment:
-      { id: obj.paymentId } ?? undefined,
+    outgoing_payment_for_idempotency_key_output_payment: { id: obj.paymentId },
   };
 };
 

@@ -11,7 +11,10 @@ import {
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
+import type { ReactNode } from "react";
 import { Icon } from "./Icon/Icon.js";
+import { renderTypography } from "./typography/renderTypography.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
@@ -19,8 +22,10 @@ type CurrencyAmountProps = {
   shortNumber?: boolean;
   showUnits?: boolean;
   ml?: number;
+  id?: string;
   includeEstimatedIndicator?: boolean;
   fullPrecision?: boolean | undefined;
+  typography?: PartialSimpleTypographyProps;
 };
 
 export function CurrencyAmount({
@@ -30,7 +35,9 @@ export function CurrencyAmount({
   showUnits = false,
   includeEstimatedIndicator = false,
   fullPrecision = false,
+  id,
   ml = 0,
+  typography,
 }: CurrencyAmountProps) {
   const unit = displayUnit;
 
@@ -57,11 +64,20 @@ export function CurrencyAmount({
     formattedNumber += ` ${shorttext(unit, value)}`;
   }
 
+  let content: string | ReactNode = formattedNumber;
+  if (typography && typography.type) {
+    content = renderTypography(typography.type, {
+      size: typography.size,
+      color: typography.color,
+      content: formattedNumber,
+    });
+  }
+
   return (
-    <StyledCurrencyAmount ml={ml}>
+    <StyledCurrencyAmount ml={ml} id={id}>
       {includeEstimatedIndicator && "Est. "}
       <CurrencyIcon unit={unit} />
-      {formattedNumber}
+      {content}
     </StyledCurrencyAmount>
   );
 }

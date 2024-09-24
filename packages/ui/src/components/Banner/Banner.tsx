@@ -5,21 +5,20 @@ import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
 import { getColor, type ThemeOrColorKey } from "../../styles/themes.js";
-import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import { z } from "../../styles/z-index.js";
 import { type NewRoutesType } from "../../types/index.js";
 import {
   toReactNodes,
   type ToReactNodesArgs,
-} from "../../utils/toReactNodes.js";
+} from "../../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "../Icon/Icon.js";
 import { bannerTiming } from "./constants.js";
 
 type MaxMdContentJustify = "center" | "left";
 
-export type BannerProps<T extends TypographyTypeKey> = {
+export type BannerProps = {
   ref?: React.RefObject<HTMLDivElement>;
-  content?: ToReactNodesArgs<T> | undefined;
+  content?: ToReactNodesArgs | undefined;
   to?: NewRoutesType | null | undefined;
   color?: ThemeOrColorKey | undefined;
   bgProgressDuration?: number | undefined;
@@ -34,7 +33,7 @@ export type BannerProps<T extends TypographyTypeKey> = {
   left?: ReactNode | undefined;
 };
 
-export function Banner<T extends TypographyTypeKey>({
+export function Banner({
   content,
   to,
   color,
@@ -48,7 +47,7 @@ export function Banner<T extends TypographyTypeKey>({
   minHeight = 0,
   hPadding = 0,
   borderColor,
-}: BannerProps<T>) {
+}: BannerProps) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
   const { ref, rect } = useResizeObserver(resizeProps);
@@ -73,7 +72,7 @@ export function Banner<T extends TypographyTypeKey>({
 
     if (to) {
       contentNode = (
-        <Link<NewRoutesType> to={to}>
+        <Link to={to}>
           <BannerFlexInnerContent>
             {contentNodes}
             <Icon name="RightArrow" width={12} ml={6} />

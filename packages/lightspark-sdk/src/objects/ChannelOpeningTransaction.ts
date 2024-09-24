@@ -109,7 +109,7 @@ export const ChannelOpeningTransactionToJson = (
     channel_opening_transaction_block_height: obj.blockHeight,
     channel_opening_transaction_destination_addresses: obj.destinationAddresses,
     channel_opening_transaction_num_confirmations: obj.numConfirmations,
-    channel_opening_transaction_channel: { id: obj.channelId } ?? undefined,
+    channel_opening_transaction_channel: { id: obj.channelId },
   };
 };
 

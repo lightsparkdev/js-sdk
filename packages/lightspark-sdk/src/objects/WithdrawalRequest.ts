@@ -324,7 +324,7 @@ ${FRAGMENT}
       withdrawal_request_withdrawal_mode: this.withdrawalMode,
       withdrawal_request_status: this.status,
       withdrawal_request_completed_at: this.completedAt,
-      withdrawal_request_withdrawal: { id: this.withdrawalId } ?? undefined,
+      withdrawal_request_withdrawal: { id: this.withdrawalId },
       withdrawal_request_idempotency_key: this.idempotencyKey,
       withdrawal_request_initiator: this.initiator,
     };

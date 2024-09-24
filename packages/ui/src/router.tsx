@@ -3,8 +3,8 @@
 import type { Theme } from "@emotion/react";
 import type { Interpolation } from "@emotion/styled";
 import { omit } from "lodash-es";
-import type { MouseEventHandler } from "react";
-import React, { useCallback } from "react";
+import type { MouseEventHandler, ReactNode } from "react";
+import { useCallback } from "react";
 import type { PathMatch } from "react-router-dom";
 import {
   Link as RLink,
@@ -14,7 +14,10 @@ import {
   useNavigate as useRNavigate,
   type NavigateOptions,
 } from "react-router-dom";
+import { renderTypography } from "./components/typography/renderTypography.js";
+import { type SimpleTypographyProps } from "./components/typography/types.js";
 import { colors } from "./styles/colors.js";
+import { type NewRoutesType } from "./types/index.js";
 import { isString } from "./utils/strings.js";
 /* eslint-enable no-restricted-imports */
 
@@ -33,25 +36,29 @@ export type RouteHash = string | null;
 
 export type ExternalLink = string;
 
-export type LinkProps<RoutesType extends string> = {
-  to?: RoutesType | undefined;
+export type LinkProps = {
+  to?: NewRoutesType | undefined;
   id?: string | undefined;
   externalLink?: ExternalLink | undefined;
   filename?: string | undefined;
   onClick?: MouseEventHandler<HTMLAnchorElement> | undefined;
   params?: RouteParams | undefined;
-  children?: React.ReactNode;
+  /* Link allows children for flexibility. text may alternatively passed in with a
+     specified typography, useful especially for toReactNodes contexts */
+  children?: ReactNode;
+  text?: string | undefined;
   css?: Interpolation<Theme>;
   className?: string;
   blue?: boolean;
-  newTab?: boolean;
+  newTab?: boolean | undefined;
   hash?: RouteHash | undefined;
+  typography?: SimpleTypographyProps | undefined;
 };
 
-export function replaceParams<RoutesType extends string>(
-  to: RoutesType,
-  params: LinkProps<RoutesType>["params"],
-): RoutesType {
+export function replaceParams(
+  to: NewRoutesType,
+  params: LinkProps["params"],
+): NewRoutesType {
   if (params) {
     let toWithParams = to;
     Object.entries(omit(params, "query")).forEach(([key, value]) => {
@@ -60,7 +67,7 @@ export function replaceParams<RoutesType extends string>(
           `Only 'query' may be an object. Route params must be a string, but '${key}' is not.`,
         );
       }
-      toWithParams = toWithParams.replace(`:${key}`, value) as RoutesType;
+      toWithParams = toWithParams.replace(`:${key}`, value) as NewRoutesType;
     });
     if (params.query) {
       let query = params.query;
@@ -69,7 +76,7 @@ export function replaceParams<RoutesType extends string>(
           .map(([key, value]) => `${key}${value ? `=${value}` : ""}`)
           .join("&");
       }
-      toWithParams = `${toWithParams}?${query}` as RoutesType;
+      toWithParams = `${toWithParams}?${query}` as NewRoutesType;
     }
     to = toWithParams;
   }
@@ -79,27 +86,30 @@ export function replaceParams<RoutesType extends string>(
 // If `to` contains an argument like :id, inlclude the value in params object
 // and it will be replaced automatically. This way route typesaftey is
 // preserved.
-export function Link<RoutesType extends string>({
+export function Link({
   to,
   id,
   externalLink,
   filename,
   params,
   children,
+  text,
   css,
   onClick,
   className,
   hash = null,
   blue = false,
-  newTab = false,
-}: LinkProps<RoutesType>) {
+  newTab: newTabProp,
+  typography,
+}: LinkProps) {
   if (!isString(to) && !externalLink && !onClick) {
     throw new Error(
       "Link must have either `to` or `externalLink` or `onClick` defined",
     );
   }
 
-  let toStr: RoutesType | string;
+  let toStr;
+  let newTab = Boolean(newTabProp);
   if (isString(to)) {
     toStr = replaceParams(to, params);
     toStr += hash ? `#${hash}` : "";
@@ -108,9 +118,23 @@ export function Link<RoutesType extends string>({
     if (!definedExternalLink.startsWith("http")) {
       throw new Error("Link's externalLink must start with http");
     }
+    if (newTabProp === undefined) {
+      newTab = true;
+    }
     toStr = definedExternalLink;
   } else {
     toStr = "#";
+  }
+
+  let content = children;
+  if (text) {
+    content = typography
+      ? renderTypography(typography.type, {
+          size: typography.size,
+          color: typography.color,
+          content: text,
+        })
+      : text;
   }
 
   return (
@@ -125,41 +149,38 @@ export function Link<RoutesType extends string>({
       target={newTab ? "_blank" : undefined}
       rel={newTab ? "noopener noreferrer" : undefined}
     >
-      {children}
+      {content}
     </RLink>
   );
 }
 
-type NavigateProps<RoutesType extends string> = Omit<
-  LinkProps<RoutesType>,
-  "children"
-> & {
-  to: RoutesType;
+type NavigateProps = Omit<LinkProps, "children"> & {
+  to: NewRoutesType;
   state?: unknown;
   replace?: boolean;
 };
 
-export function Navigate<RoutesType extends string>({
+export function Navigate({
   to,
   params,
   state,
   replace = false,
-}: NavigateProps<RoutesType>) {
+}: NavigateProps) {
   to = replaceParams(to, params);
   return <RNavigate to={to} state={state} replace={replace} />;
 }
 
-export function useNavigate<RoutesType extends string>() {
+export function useNavigate() {
   const navigate = useRNavigate();
   return useCallback(
     (
       // number eg -1 can be passed to navigate back
-      to: RoutesType | number,
-      params?: LinkProps<RoutesType>["params"],
+      to: NewRoutesType | number,
+      params?: LinkProps["params"],
       options?: NavigateOptions,
     ) => {
       if (typeof to === "string") {
-        to = replaceParams<RoutesType>(to, params);
+        to = replaceParams(to, params);
         // need a separate return here to satisfy router internal types
         return navigate(to, options);
       }
@@ -169,17 +190,15 @@ export function useNavigate<RoutesType extends string>() {
   );
 }
 
-export function useMatchRoutes<RoutesType extends string>(
-  routes: RoutesType[],
-): boolean {
+export function useMatchRoutes(routes: NewRoutesType[]): boolean {
   const location = useLocation();
   const doesMatch = routes.some((route) => matchPath(route, location.pathname));
   return doesMatch;
 }
 
-export function useFindMatchingRoute<RoutesType extends string>(
-  routes: RoutesType[],
-): RoutesType | undefined {
+export function useFindMatchingRoute(
+  routes: NewRoutesType[],
+): NewRoutesType | undefined {
   const location = useLocation();
   const matchingRoute = routes.find((route) =>
     matchPath(route, location.pathname),
@@ -187,20 +206,18 @@ export function useFindMatchingRoute<RoutesType extends string>(
   return matchingRoute;
 }
 
-export function useMatchRoute<RoutesType extends string>(
-  route: RoutesType,
-): PathMatch<string> | null {
+export function useMatchRoute(route: NewRoutesType): PathMatch<string> | null {
   const location = useLocation();
   return matchPath(route, location.pathname);
 }
 
-export function useCurrentRoute<RoutesType extends string>(): RoutesType {
+export function useCurrentRoute(): NewRoutesType {
   const location = useLocation();
-  return location.pathname as RoutesType;
+  return location.pathname as NewRoutesType;
 }
 
-export function getRouteName<RoutesType extends string>(
-  path: RoutesType,
+export function getRouteName(
+  path: NewRoutesType,
   routes: { [key: string]: string },
 ) {
   for (const routeName of Object.keys(routes)) {

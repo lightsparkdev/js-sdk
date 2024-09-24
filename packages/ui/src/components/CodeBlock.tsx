@@ -86,7 +86,7 @@ const codeSelectStyles: StylesConfig<OptionType> = {
       color: "#ffffff",
     },
   }),
-  indicatorSeparator: (styles) => ({
+  indicatorSeparator: () => ({
     display: "none",
   }),
   input: (styles) => ({

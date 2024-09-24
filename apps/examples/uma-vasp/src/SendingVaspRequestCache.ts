@@ -12,6 +12,8 @@ export default interface SendingVaspRequestCache {
 
   getPayReqData(uuid: string): SendingVaspPayReqData | undefined;
 
+  getPendingPayReqs(): SendingVaspPayReqData[];
+
   saveLnurlpResponseData(
     lnurlpResponse: LnurlpResponse,
     receiverId: string,
@@ -21,10 +23,13 @@ export default interface SendingVaspRequestCache {
   savePayReqData(
     receiverUmaAddress: string,
     encodedInvoice: string,
-    utxoCallback: string,
-    invoiceData: InvoiceData,
-    senderCurrencies: Currency[],
+    invoiceUUID: string | undefined,
+    utxoCallback: string | undefined,
+    invoiceData: InvoiceData | undefined,
+    senderCurrencies: Currency[] | undefined,
   ): string;
+
+  removePayReq(uuid: string): void;
 }
 
 /**
@@ -42,7 +47,7 @@ export interface SendingVaspInitialRequestData {
 export interface SendingVaspPayReqData {
   receiverUmaAddress: string;
   encodedInvoice: string;
-  utxoCallback: string;
-  invoiceData: InvoiceData;
-  senderCurrencies: Currency[];
+  utxoCallback: string | undefined;
+  invoiceData: InvoiceData | undefined;
+  senderCurrencies: Currency[] | undefined;
 }

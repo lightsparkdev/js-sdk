@@ -4,17 +4,18 @@ import styled from "@emotion/styled";
 import { type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
 import { getFocusOutline } from "../styles/common.js";
-import { type SimpleTypographyProps } from "../styles/typography.js";
+import { type NewRoutesType } from "../types/index.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
 import { TextIconAligner } from "./TextIconAligner.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
-export type TextButtonProps<RoutesType extends string> = Omit<
+export type TextButtonProps = Omit<
   ComponentProps<typeof TextIconAligner>,
   "content"
 > & {
   disabled?: boolean;
-  to?: RoutesType | undefined;
+  to?: NewRoutesType | undefined;
   href?: string;
   elide?: ElideArgs;
   toParams?: RouteParams | undefined;
@@ -25,10 +26,10 @@ export type TextButtonProps<RoutesType extends string> = Omit<
   padding?: string;
   iconMatchTextColor?: boolean;
   text: string;
-  typography?: SimpleTypographyProps | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
 };
 
-export function TextButton<RoutesType extends string>({
+export function TextButton({
   text: textProp,
   to,
   href,
@@ -44,7 +45,7 @@ export function TextButton<RoutesType extends string>({
   padding = "0",
   iconMatchTextColor = false,
   typography,
-}: TextButtonProps<RoutesType>) {
+}: TextButtonProps) {
   const text = elideArgs ? elide(textProp, elideArgs) : textProp;
 
   let rightIconProp = rightIcon;

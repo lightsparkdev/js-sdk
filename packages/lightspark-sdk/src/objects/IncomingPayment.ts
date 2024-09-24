@@ -158,8 +158,7 @@ ${FRAGMENT}
       incoming_payment_transaction_hash: this.transactionHash,
       incoming_payment_is_uma: this.isUma,
       incoming_payment_destination: { id: this.destinationId },
-      incoming_payment_payment_request:
-        { id: this.paymentRequestId } ?? undefined,
+      incoming_payment_payment_request: { id: this.paymentRequestId },
       incoming_payment_uma_post_transaction_data:
         this.umaPostTransactionData?.map((e) => PostTransactionDataToJson(e)),
       incoming_payment_is_internal_payment: this.isInternalPayment,

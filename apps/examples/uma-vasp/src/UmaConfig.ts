@@ -44,26 +44,32 @@ export default class UmaConfig {
   }
 
   umaEncryptionPubKey(): Uint8Array {
-    return Buffer.from(this.umaEncryptionPubKeyHex, "hex");
+    const buffer = Buffer.from(this.umaEncryptionPubKeyHex, "hex");
+    return new Uint8Array(buffer);
   }
 
   umaEncryptionPrivKey(): Uint8Array {
-    return Buffer.from(this.umaEncryptionPrivKeyHex, "hex");
+    const buffer = Buffer.from(this.umaEncryptionPrivKeyHex, "hex");
+    return new Uint8Array(buffer);
   }
 
   umaSigningPubKey(): Uint8Array {
-    return Buffer.from(this.umaSigningPubKeyHex, "hex");
+    const buffer = Buffer.from(this.umaSigningPubKeyHex, "hex");
+    return new Uint8Array(buffer);
   }
 
   umaSigningPrivKey(): Uint8Array {
-    return Buffer.from(this.umaSigningPrivKeyHex, "hex");
+    const buffer = Buffer.from(this.umaSigningPrivKeyHex, "hex");
+    return new Uint8Array(buffer);
   }
 
   remoteSigningMasterSeed(): Uint8Array | undefined {
-    return this.remoteSigningMasterSeedHex &&
+    const buffer =
+      this.remoteSigningMasterSeedHex &&
       this.remoteSigningMasterSeedHex.length > 0
-      ? Buffer.from(this.remoteSigningMasterSeedHex, "hex")
-      : undefined;
+        ? Buffer.from(this.remoteSigningMasterSeedHex, "hex")
+        : undefined;
+    return buffer ? new Uint8Array(buffer) : undefined;
   }
 }
 

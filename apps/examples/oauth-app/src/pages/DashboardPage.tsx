@@ -9,7 +9,7 @@ import RequireAuth from "src/auth/RequireAuth";
 import Dashboard from "src/components/Dashboard";
 import useAccountInfo from "src/hooks/useAccountInfo";
 import { useLightsparkClient } from "src/lightsparkclient/LightsparkClientProvider";
-import { Button } from "src/components/Button";
+import { Button } from "@lightsparkdev/ui/components";
 
 function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true);

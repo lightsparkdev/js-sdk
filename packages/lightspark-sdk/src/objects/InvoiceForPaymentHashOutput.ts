@@ -15,7 +15,7 @@ export const InvoiceForPaymentHashOutputToJson = (
   obj: InvoiceForPaymentHashOutput,
 ): any => {
   return {
-    invoice_for_payment_hash_output_invoice: { id: obj.invoiceId } ?? undefined,
+    invoice_for_payment_hash_output_invoice: { id: obj.invoiceId },
   };
 };
 

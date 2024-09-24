@@ -13,7 +13,7 @@
     "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
-    "clean-all": "yarn clean && rm -f .yarn/install-state.gz && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + 2>/dev/null",
+    "clean-all": "./clean-all.sh",
     "clean-resolve": "echo \"Use only as a last resort when clean-all fails to resolve an issue. In general yarn.lock should only be modified when dependencies explicitly change.\" && yarn clean-all && rm yarn.lock && yarn",
     "deps:check": "manypkg check",
     "deps:fix": "manypkg fix",
@@ -43,16 +43,12 @@
     "@changesets/cli": "^2.27.1",
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
-    "@wojtekmaj/react-daterange-picker": "^5.5.0",
     "octokit": "^4.0.2",
-    "react-datetime-picker": "^5.6.0",
-    "rehype-autolink-headings": "^7.0.0",
     "ts-prune": "^0.10.3",
-    "turbo": "^1.13.3",
-    "unimported": "^1.29.2"
+    "turbo": "^1.13.3"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@4.5.0"
 }

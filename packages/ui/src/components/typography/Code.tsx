@@ -3,7 +3,7 @@
 import styled from "@emotion/styled";
 import { type ReactNode } from "react";
 import { applyTypography } from "../../styles/typography.js";
-import { toNonTypographicReactNodes } from "../../utils/toNonTypographicReactNodes.js";
+import { toReactNodesBase } from "../../utils/toReactNodes/toReactNodesBase.js";
 import {
   type CommonStyledTypographyProps,
   type CommonTypographyProps,
@@ -24,7 +24,7 @@ export const Code = ({
 }: CodeProps) => {
   let reactNodes: ReactNode = children || null;
   if (content) {
-    reactNodes = toNonTypographicReactNodes(content);
+    reactNodes = toReactNodesBase(content);
   }
   return (
     <StyledCode

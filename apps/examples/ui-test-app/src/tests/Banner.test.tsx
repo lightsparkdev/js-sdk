@@ -1,7 +1,8 @@
 import { ThemeProvider } from "@emotion/react";
 import { Banner } from "@lightsparkdev/ui/components";
 import { themes } from "@lightsparkdev/ui/styles/themes";
-import { render as tlRender } from "@testing-library/react";
+import { link } from "@lightsparkdev/ui/utils/toReactNodes/nodes";
+import { screen, render as tlRender, waitFor } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
@@ -17,37 +18,57 @@ function render(renderElement: ReactElement) {
 }
 
 describe("Banner", () => {
-  test("should properly infer argument types and raise errors for invalid values", () => {
+  test("should properly infer argument types and raise errors for invalid values", async () => {
     render(
       <BrowserRouter>
         <Banner
           content={[
             "Hello",
-            /* @ts-expect-error `/exasdmple` is not a valid TestAppRoute */
-            { text: "World", to: "/exasdmple" },
             {
-              text: "!",
-              typography: {
-                type: "Body",
-                props: {
-                  children: "Hello",
-                  /* @ts-expect-error `cosdlor` is not a valid prop for Body component */
-                  cosdlor: "white",
-                },
+              link: {
+                text: "World",
+                /* @ts-expect-error `/exasdmple` is not a valid TestAppRoute */
+                to: "/exasdmple",
               },
             },
             {
               text: "!",
+              typography: {
+                type: "Body",
+                /* @ts-expect-error `children` cannot be provided as typography prop to TextNode */
+                children: "Hello",
+              },
+            },
+            {
+              text: "!",
+              typography: {
+                type: "Headline",
+                /* @ts-expect-error `cosdlor` is not a valid prop for Headline component */
+                cosdlor: "sdfsd",
+              },
+            },
+            {
+              text: "!",
+              typography: {
+                type: "Display",
+                /* @ts-expect-error `content` cannot be provided as typography props to TextNode nodes */
+                content: [{ text: "Hello" }],
+              },
+            },
+            link({
+              text: "!",
+              typography: {
+                type: "Body",
+                color: "white",
+              },
               to: TestAppRoutes.PageOne,
-              typography: {
-                type: "Body",
-                props: {
-                  children: "Hello",
-                  color: "white",
-                },
+            }),
+            {
+              link: {
+                text: "sdkfjn",
+                externalLink: "https://example.com",
               },
             },
-            { text: "sdkfjn", externalLink: "https://example.com" },
           ]}
           color="blue43"
           stepDuration={5}
@@ -56,5 +77,9 @@ describe("Banner", () => {
         />
       </BrowserRouter>,
     );
+
+    await waitFor(() => {
+      expect(screen.getByText("Hello")).toBeInTheDocument();
+    });
   });
 });

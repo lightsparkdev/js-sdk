@@ -17,6 +17,7 @@ type IconProps = {
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
   color?: FontColorKey | undefined;
   tutorialStep?: number;
+  id?: string;
 };
 
 export function Icon({
@@ -24,6 +25,7 @@ export function Icon({
   name,
   width,
   tutorialStep,
+  id,
   mr = 0,
   ml = 0,
   color = undefined,
@@ -43,6 +45,7 @@ export function Icon({
 
   return (
     <IconContainer
+      id={id}
       className={className}
       w={w}
       mr={mrRems}

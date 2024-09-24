@@ -102,10 +102,8 @@ export const RoutingTransactionToJson = (obj: RoutingTransaction): any => {
     routing_transaction_resolved_at: obj.resolvedAt,
     routing_transaction_amount: CurrencyAmountToJson(obj.amount),
     routing_transaction_transaction_hash: obj.transactionHash,
-    routing_transaction_incoming_channel:
-      { id: obj.incomingChannelId } ?? undefined,
-    routing_transaction_outgoing_channel:
-      { id: obj.outgoingChannelId } ?? undefined,
+    routing_transaction_incoming_channel: { id: obj.incomingChannelId },
+    routing_transaction_outgoing_channel: { id: obj.outgoingChannelId },
     routing_transaction_fees: obj.fees
       ? CurrencyAmountToJson(obj.fees)
       : undefined,

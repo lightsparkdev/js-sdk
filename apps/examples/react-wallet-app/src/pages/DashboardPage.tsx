@@ -4,12 +4,12 @@ import { useJwtAuth, useLightsparkClient } from "@lightsparkdev/react-wallet";
 import type { WalletDashboard } from "@lightsparkdev/wallet-sdk";
 import { KeyType, WalletStatus } from "@lightsparkdev/wallet-sdk";
 import { useEffect, useState } from "react";
-import { Button } from "src/components/Button";
-import { useNavigate } from "src/components/router";
 import { Routes } from "src/routes";
 import RequireAuth from "../auth/RequireAuth";
 import Dashboard from "../components/Dashboard";
 import useWalletInfo from "../hooks/useWalletInfo";
+import { useNavigate } from "@lightsparkdev/ui/router";
+import { Button } from "@lightsparkdev/ui/components";
 
 function DashboardPage() {
   const [loading, setLoading] = useState<boolean>(true);

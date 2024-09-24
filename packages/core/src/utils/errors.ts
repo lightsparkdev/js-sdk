@@ -7,9 +7,7 @@ export const isError = (e: unknown): e is Error => {
       "name" in e &&
       typeof e.name === "string" &&
       "message" in e &&
-      typeof e.message === "string" &&
-      "stack" in e &&
-      (!e.stack || typeof e.stack === "string"),
+      typeof e.message === "string",
   );
 };
 

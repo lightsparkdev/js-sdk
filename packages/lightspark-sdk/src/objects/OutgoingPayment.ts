@@ -182,7 +182,7 @@ ${FRAGMENT}
       outgoing_payment_transaction_hash: this.transactionHash,
       outgoing_payment_is_uma: this.isUma,
       outgoing_payment_origin: { id: this.originId },
-      outgoing_payment_destination: { id: this.destinationId } ?? undefined,
+      outgoing_payment_destination: { id: this.destinationId },
       outgoing_payment_fees: this.fees
         ? CurrencyAmountToJson(this.fees)
         : undefined,

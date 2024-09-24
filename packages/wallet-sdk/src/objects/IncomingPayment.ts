@@ -73,7 +73,7 @@ export const IncomingPaymentToJson = (obj: IncomingPayment): any => {
     incoming_payment_resolved_at: obj.resolvedAt,
     incoming_payment_amount: CurrencyAmountToJson(obj.amount),
     incoming_payment_transaction_hash: obj.transactionHash,
-    incoming_payment_payment_request: { id: obj.paymentRequestId } ?? undefined,
+    incoming_payment_payment_request: { id: obj.paymentRequestId },
   };
 };
 

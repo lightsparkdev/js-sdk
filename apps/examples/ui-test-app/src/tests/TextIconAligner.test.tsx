@@ -1,7 +1,8 @@
 import { ThemeProvider } from "@emotion/react";
 import { TextIconAligner } from "@lightsparkdev/ui/components";
 import { themes } from "@lightsparkdev/ui/styles/themes";
-import { render as tlRender } from "@testing-library/react";
+import { link } from "@lightsparkdev/ui/utils/toReactNodes/nodes";
+import { screen, render as tlRender, waitFor } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
@@ -17,7 +18,7 @@ function render(renderElement: ReactElement) {
 }
 
 describe("TextIconAligner", () => {
-  test("should properly infer argument types and raise errors for invalid values", () => {
+  test("should properly infer argument types and raise errors for invalid values", async () => {
     render(
       <BrowserRouter>
         <TextIconAligner
@@ -25,10 +26,10 @@ describe("TextIconAligner", () => {
             "Hello",
             /* @ts-expect-error `/something` is not a valid TestAppRoute */
             { to: "/something", text: "World" },
-            { text: "Page one", to: TestAppRoutes.PageOne },
-            { text: "Page one", to: TestAppRoutes.PageOne },
-            { text: "Page one", to: TestAppRoutes.PageOne },
-            { text: "sdkfjn", externalLink: "https://example.com" },
+            link({ text: "Page one", to: TestAppRoutes.PageOne }),
+            link({ text: "Page two", to: TestAppRoutes.PageTwo }),
+            /* @ts-expect-error `something` is not a valid TextNode prop */
+            { text: "Page one", something: "something" },
           ]}
           typography={{
             type: "Display",
@@ -39,5 +40,9 @@ describe("TextIconAligner", () => {
         />
       </BrowserRouter>,
     );
+
+    await waitFor(() => {
+      expect(screen.getByText("Page one")).toBeInTheDocument();
+    });
   });
 });

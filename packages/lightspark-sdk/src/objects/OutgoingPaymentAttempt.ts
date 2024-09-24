@@ -168,8 +168,7 @@ ${FRAGMENT}
         ? CurrencyAmountToJson(this.fees)
         : undefined,
       outgoing_payment_attempt_outgoing_payment: { id: this.outgoingPaymentId },
-      outgoing_payment_attempt_channel_snapshot:
-        { id: this.channelSnapshotId } ?? undefined,
+      outgoing_payment_attempt_channel_snapshot: { id: this.channelSnapshotId },
     };
   }
 }

@@ -1,21 +1,19 @@
 import styled from "@emotion/styled";
-import { type ReactNode } from "react";
 import { standardBorderRadius } from "../styles/common.js";
 import { getColor, type FontColorKey } from "../styles/themes.js";
-import { type TypographyTypeKey } from "../styles/tokens/typography.js";
-import { type SimpleTypographyProps } from "../styles/typography.js";
+import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
-  setDefaultReactNodesTypography,
   toReactNodes,
   type ToReactNodesArgs,
-} from "../utils/toReactNodes.js";
+} from "../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
+import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type BadgeKind = "danger" | "default";
 
-export type BadgeProps<T extends TypographyTypeKey> = {
-  content?: ToReactNodesArgs<T> | undefined;
+export type BadgeProps = {
+  content?: ToReactNodesArgs | undefined;
   kind?: BadgeKind | undefined;
   ml?: 0 | 4 | 6;
   mr?: 0 | 4 | 6;
@@ -27,10 +25,10 @@ export type BadgeProps<T extends TypographyTypeKey> = {
         color?: FontColorKey | undefined;
       }
     | undefined;
-  typography?: SimpleTypographyProps;
+  typography?: PartialSimpleTypographyProps;
 };
 
-export function Badge<T extends TypographyTypeKey>({
+export function Badge({
   content: contentProp,
   kind,
   icon,
@@ -39,31 +37,28 @@ export function Badge<T extends TypographyTypeKey>({
   size = "sm",
   block = false,
   typography: typographyProp,
-}: BadgeProps<T>) {
+}: BadgeProps) {
   const defaultTypography = {
     type: typographyProp?.type || "Label Moderate",
-    props: {
-      size: typographyProp?.size || "Small",
-      color: typographyProp?.color || (kind === "danger" ? "danger" : "text"),
-    },
+    size: typographyProp?.size || "Small",
+    color: typographyProp?.color || (kind === "danger" ? "danger" : "text"),
   } as const;
 
   const defaultTypographyMap = {
     link: defaultTypography,
-    externalLink: defaultTypography,
     text: defaultTypography,
     nextLink: defaultTypography,
   };
 
-  let content: ToReactNodesArgs<T> | ReactNode = setDefaultReactNodesTypography(
+  const nodesWithTypography = setDefaultReactNodesTypography(
     contentProp,
     defaultTypographyMap,
   );
 
-  content = toReactNodes(content);
+  const content = toReactNodes(nodesWithTypography);
 
   return contentProp ? (
-    <StyledBadge kind={kind} ml={ml} size={size} block={block}>
+    <StyledBadge kind={kind} ml={ml} mr={mr} size={size} block={block}>
       {icon ? (
         <Icon
           name={icon.name}
@@ -81,6 +76,7 @@ export function Badge<T extends TypographyTypeKey>({
 type StyledBadgeProps = {
   kind: BadgeKind | undefined;
   ml: number;
+  mr: number;
   size: "sm" | "lg";
   block: boolean;
 };
@@ -91,6 +87,7 @@ const badgeSmHPadding = 6;
 const StyledBadge = styled.div<StyledBadgeProps>`
   ${({ size }) => standardBorderRadius(size === "sm" ? 4 : 12)}
   ${({ ml }) => (ml === 0 ? "" : `margin-left: ${ml}px;`)}
+  ${({ mr }) => (mr === 0 ? "" : `margin-right: ${mr}px;`)}
 
   display: ${({ block }) => (block ? "flex" : "inline-flex")};
   gap: ${({ size }) => (size === "sm" ? badgeSmHPadding : 12)}px;

@@ -27,18 +27,19 @@ import {
 import { smHeaderLogoMarginLeft } from "../styles/constants.js";
 import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
+import { type NewRoutesType } from "../types/index.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type DropdownItemGetProps<RoutesType extends string> = WithTheme<{
-  dropdownItem: DropdownItemType<RoutesType>;
+type DropdownItemGetProps = WithTheme<{
+  dropdownItem: DropdownItemType;
 }>;
 
-type DropdownItemType<RoutesType extends string> = {
+type DropdownItemType = {
   label: string;
   getIcon?:
-    | (({ theme, dropdownItem }: DropdownItemGetProps<RoutesType>) =>
+    | (({ theme, dropdownItem }: DropdownItemGetProps) =>
         | {
             name: IconName;
             color?: string;
@@ -46,12 +47,9 @@ type DropdownItemType<RoutesType extends string> = {
           }
         | undefined)
     | undefined;
-  onClick?: ((dropdownItem: DropdownItemType<RoutesType>) => void) | undefined;
-  getCSS?: ({
-    dropdownItem,
-    theme,
-  }: DropdownItemGetProps<RoutesType>) => CSSInterpolation;
-  to?: RoutesType | undefined;
+  onClick?: ((dropdownItem: DropdownItemType) => void) | undefined;
+  getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
+  to?: NewRoutesType | undefined;
   externalLink?: ExternalLink | undefined;
   params?: RouteParams | undefined;
   selected?: boolean;
@@ -60,14 +58,14 @@ type DropdownItemType<RoutesType extends string> = {
 
 type DropdownGetProps = WithTheme<{ isOpen: boolean }>;
 
-type DropdownProps<RoutesType extends string> = {
+type DropdownProps = {
   button: {
     label?: string;
     id?: string;
     getContent?: ({ isOpen, theme }: DropdownGetProps) => ReactNode;
     getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
   };
-  dropdownItems?: DropdownItemType<RoutesType>[];
+  dropdownItems?: DropdownItemType[];
   dropdownContent?: ReactNode;
   openOnHover?: boolean;
   horizontalScrollRef?: RefObject<HTMLElement | null>;
@@ -82,7 +80,7 @@ type DropdownProps<RoutesType extends string> = {
   onClose?: () => void;
 };
 
-export function Dropdown<RoutesType extends string>({
+export function Dropdown({
   button,
   dropdownItems,
   horizontalScrollRef,
@@ -97,7 +95,7 @@ export function Dropdown<RoutesType extends string>({
   align = "center" as const,
   footer = null,
   dropdownContent = null,
-}: DropdownProps<RoutesType>) {
+}: DropdownProps) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownButtonHeight, setDropdownButtonHeight] = useState(0);
@@ -378,19 +376,13 @@ const DropdownItems = styled.ul<DropdownItemsProps>`
   margin: 0;
 `;
 
-type DropdownItemProps<RoutesType extends string> = {
-  dropdownItem: DropdownItemType<RoutesType> & { selected?: boolean };
+type DropdownItemProps = {
+  dropdownItem: DropdownItemType & { selected?: boolean };
   onClick?: () => void;
-  getCSS?: ({
-    dropdownItem,
-    theme,
-  }: DropdownItemGetProps<RoutesType>) => CSSInterpolation;
+  getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
 };
 
-function DropdownItem<RoutesType extends string>({
-  dropdownItem,
-  onClick,
-}: DropdownItemProps<RoutesType>) {
+function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
   const theme = useTheme();
 
   const dropdownItemIcon =
@@ -416,7 +408,7 @@ function DropdownItem<RoutesType extends string>({
     // single nav item
 
     return (
-      <DropdownItemLink<RoutesType>
+      <DropdownItemLink
         selected={Boolean(dropdownItem.selected)}
         to={dropdownItem.to}
         externalLink={dropdownItem.externalLink}
@@ -480,12 +472,10 @@ const cssProp = ({
   ${standardFocusOutline({ theme })}
 `;
 
-function DropdownItemLink<RoutesType extends string>(
-  props: StyledDropdownItemProps & LinkProps<RoutesType>,
-) {
+function DropdownItemLink(props: StyledDropdownItemProps & LinkProps) {
   const theme = useTheme();
   return (
-    <Link<RoutesType>
+    <Link
       {...props}
       css={cssProp({ theme, selected: Boolean(props.selected) })}
     />

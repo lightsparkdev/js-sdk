@@ -284,8 +284,9 @@ export const TransactionToJson = (obj: Transaction): any => {
       incoming_payment_resolved_at: incomingPayment.resolvedAt,
       incoming_payment_amount: CurrencyAmountToJson(incomingPayment.amount),
       incoming_payment_transaction_hash: incomingPayment.transactionHash,
-      incoming_payment_payment_request:
-        { id: incomingPayment.paymentRequestId } ?? undefined,
+      incoming_payment_payment_request: {
+        id: incomingPayment.paymentRequestId,
+      },
     };
   }
   if (obj.typename == "OutgoingPayment") {

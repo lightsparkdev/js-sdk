@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import { colors } from "../styles/colors.js";
-import { standardLineHeightEms } from "../styles/common.js";
 import { themeOr } from "../styles/themes.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
@@ -100,16 +99,17 @@ type ToggleContainerProps = {
   mb: number;
 };
 
+const gap = 12;
 export const ToggleContainer = styled.span<ToggleContainerProps>`
   display: flex;
   margin-bottom: ${({ mb }) => mb}px;
   margin-top: ${({ mt }) => mt}px;
   margin-left: ${({ ml }) => ml}px;
   align-items: center;
+  gap: ${gap}px;
 `;
 
 const ToggleLabel = styled.label`
-  margin-left: 12px;
+  width: calc(100% - ${width + gap}px);
   cursor: pointer;
-  height: ${standardLineHeightEms}em;
 `;

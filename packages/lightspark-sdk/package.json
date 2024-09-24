@@ -26,8 +26,7 @@
         "default": "./dist/index.js"
       },
       "module": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.cjs"
+      "require": "./dist/index.cjs"
     },
     "./objects": {
       "types": "./dist/objects/index.d.ts",
@@ -36,8 +35,7 @@
         "default": "./dist/objects/index.js"
       },
       "module": "./dist/objects/index.js",
-      "require": "./dist/objects/index.cjs",
-      "default": "./dist/objects/index.cjs"
+      "require": "./dist/objects/index.cjs"
     },
     "./env": {
       "types": "./dist/env.d.ts",
@@ -46,8 +44,7 @@
         "default": "./dist/env.js"
       },
       "module": "./dist/env.js",
-      "require": "./dist/env.cjs",
-      "default": "./dist/env.cjs"
+      "require": "./dist/env.cjs"
     }
   },
   "type": "module",
@@ -67,7 +64,7 @@
   "scripts": {
     "build": "yarn tsc && tsup",
     "build:watch": "yarn build --watch --clean=false",
-    "clean": "rm -rf .turbo && rm -rf dist",
+    "clean": "rm -rf dist",
     "dev": "yarn build -- --watch",
     "docs": "typedoc src",
     "format:fix": "prettier src --write",
@@ -110,9 +107,9 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "ts-jest": "^29.1.1",
     "tsc-absolute": "^1.0.1",
-    "tsup": "^7.2.0",
+    "tsup": "^8.2.4",
     "typedoc": "^0.24.7",
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.2"
   },
   "engines": {
     "node": ">=18"

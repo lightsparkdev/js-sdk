@@ -54,12 +54,11 @@ export function removeLeadingZeros(value: string): string {
   return value;
 }
 
-export type ElideArgs =
-  | number
-  | {
-      maxChars: number;
-      ellipsisPosition?: "start" | "middle" | "end" | number;
-    };
+export type ElideObjArgs = {
+  maxChars: number;
+  ellipsisPosition?: "start" | "middle" | "end" | number;
+};
+export type ElideArgs = number | ElideObjArgs;
 
 export function elide(value: string, elideArgs: ElideArgs = 5): string {
   const args =

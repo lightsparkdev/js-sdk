@@ -1,8 +1,8 @@
 import {
   setDefaultReactNodesTypography,
   setReactNodesTypography,
-  toReactNodes,
-} from "@lightsparkdev/ui/utils/toReactNodes";
+} from "@lightsparkdev/ui/utils/toReactNodes/setReactNodesTypography";
+import { toReactNodes } from "@lightsparkdev/ui/utils/toReactNodes/toReactNodes";
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
@@ -14,17 +14,27 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
 
   it("renders the expected output for a single link", () => {
     const result = toReactNodes({
-      text: "Test",
-      to: TestAppRoutes.PageOne,
+      link: {
+        text: "Test",
+        to: TestAppRoutes.PageOne,
+      },
     });
     const { asFragment } = render(<BrowserRouter>{result}</BrowserRouter>);
 
@@ -46,11 +56,23 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -61,12 +83,26 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -77,7 +113,21 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1test2test3
+        <span>
+          <span>
+            test1
+          </span>
+        </span>
+        <span>
+          <span>
+            test2
+          </span>
+        </span>
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -88,11 +138,25 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
-        test3
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -101,7 +165,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes([
       "test1\n",
       "test2\n",
-      { text: "Test", to: TestAppRoutes.PageOne },
+      { link: { text: "Test", to: TestAppRoutes.PageOne } },
       "\n",
       "test3",
     ]);
@@ -109,18 +173,35 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
         <a
           class="css-0"
           href="/test-app-page-one"
         >
           Test
         </a>
-        <br />
-        test3
+        <span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -129,8 +210,8 @@ describe("toReactNodes", () => {
     const result = toReactNodes([
       "test1\n",
       "test2\n",
-      { text: "Test", to: TestAppRoutes.PageOne },
-      { text: "Test 2", to: TestAppRoutes.PageTwo },
+      { link: { text: "Test", to: TestAppRoutes.PageOne } },
+      { link: { text: "Test 2", to: TestAppRoutes.PageTwo } },
       "\n",
       "test3",
     ]);
@@ -138,10 +219,20 @@ describe("toReactNodes", () => {
 
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
-        test1
-        <br />
-        test2
-        <br />
+        <span>
+          <span>
+            test1
+          </span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test2
+          </span>
+          <br />
+        </span>
+        <span />
         <a
           class="css-0"
           href="/test-app-page-one"
@@ -154,8 +245,15 @@ describe("toReactNodes", () => {
         >
           Test 2
         </a>
-        <br />
-        test3
+        <span>
+          <br />
+        </span>
+        <span />
+        <span>
+          <span>
+            test3
+          </span>
+        </span>
       </DocumentFragment>
     `);
   });
@@ -163,11 +261,48 @@ describe("toReactNodes", () => {
   it("should have type errors when arguments do not match inferred types", () => {
     toReactNodes([
       {
-        /* @ts-expect-error `/testsf` is not a valid TestAppRoutes */
-        to: "/testsf",
-        text: "Hello",
-        /* @ts-expect-error `contnt` is not a valid prop for the Display component */
-        typography: { type: "Display", props: { contnt: "Something" } },
+        link: {
+          /* @ts-expect-error `skundfksdnf` is not a valid Link prop */
+          skundfksdnf: "ksjndf",
+        },
+      },
+      {
+        link: {
+          /* @ts-expect-error `/testsf` is not a valid TestAppRoutes */
+          to: "/testsf",
+          content: "Hello",
+        },
+      },
+      {
+        text: "Incorrect typography",
+        typography: {
+          type: "Body",
+          color: "primary",
+          size: "Small",
+          /* @ts-expect-error `something` is not a valid Body prop */
+          something: "ksjndf",
+        },
+      },
+      {
+        link: {
+          text: "Incorrect typography",
+          typography: {
+            type: "Headline",
+            color: "primary",
+            size: "Small",
+            /* @ts-expect-error `div` is not a valid Headline heading */
+            heading: "div",
+          },
+        },
+      },
+      {
+        text: "Correct typography",
+        typography: {
+          type: "Headline",
+          color: "primary",
+          size: "Small",
+          heading: "h1",
+        },
       },
     ]);
   });
@@ -175,35 +310,27 @@ describe("toReactNodes", () => {
   it("should correctly add typography to nontypographic nodes", () => {
     const stringNode = "Some string that should have typography applied";
     const linkNode = {
-      text: "Some link node that should have typography applied",
-      to: TestAppRoutes.PageOne,
+      link: {
+        content: "Some link node that should have typography applied",
+        to: TestAppRoutes.PageOne,
+      },
     };
-    const iconNode = { icon: "LogoBolt" as const };
-    const externalLinkNode = {
-      text: "Some external link node that should have typography applied",
-      externalLink: "https://www.google.com",
-    };
+    const iconNode = { icon: { name: "LogoBolt" as const } };
     const nextLinkNode = {
-      text: "Some next link node that should have typography applied",
-      nextHref: "https://www.google.com",
+      nextLink: {
+        text: "Some next link node that should have typography applied",
+        href: "https://www.google.com",
+      },
     };
     const textNode = {
       text: "Some text node that should have typography applied",
     };
 
     const nodes = setReactNodesTypography(
-      [
-        stringNode,
-        linkNode,
-        iconNode,
-        externalLinkNode,
-        nextLinkNode,
-        textNode,
-      ],
+      [stringNode, linkNode, iconNode, nextLinkNode, textNode],
       {
         link: { type: "Body" },
-        externalLink: { type: "Body" },
-        text: { type: "Body", props: { size: "Large" } },
+        text: { type: "Body", size: "Large" },
         nextLink: { type: "Body" },
       },
     );
@@ -211,24 +338,24 @@ describe("toReactNodes", () => {
     expect(nodes).toEqual([
       {
         text: stringNode,
-        typography: { type: "Body", props: { size: "Large" } },
+        typography: { type: "Body", size: "Large" },
       },
       {
-        ...linkNode,
-        typography: { type: "Body" },
+        link: {
+          ...linkNode.link,
+          typography: { type: "Body" },
+        },
       },
       iconNode,
       {
-        ...externalLinkNode,
-        typography: { type: "Body" },
-      },
-      {
-        ...nextLinkNode,
-        typography: { type: "Body" },
+        nextLink: {
+          ...nextLinkNode.nextLink,
+          typography: { type: "Body" },
+        },
       },
       {
         ...textNode,
-        typography: { type: "Body", props: { size: "Large" } },
+        typography: { type: "Body", size: "Large" },
       },
     ]);
   });
@@ -236,24 +363,30 @@ describe("toReactNodes", () => {
   it("should correctly change the typography of typographic nodes", () => {
     const stringNode = "Some string that should have typography applied";
     const linkNode = {
-      text: "Some link node that should have typography applied",
-      to: TestAppRoutes.PageOne,
-      typography: { type: "Display", props: { size: "Medium" } },
+      link: {
+        text: "Some link node that should have typography applied",
+        to: TestAppRoutes.PageOne,
+        typography: { type: "Display", size: "Medium" } as const,
+      },
     };
-    const iconNode = { icon: "LogoBolt" as const };
+    const iconNode = { icon: { name: "LogoBolt" } as const };
     const externalLinkNode = {
-      text: "Some external link node that should have typography applied",
-      externalLink: "https://www.google.com",
-      typography: { type: "Title", props: { size: "Small" } },
+      link: {
+        text: "Some external link node that should have typography applied",
+        externalLink: "https://www.google.com",
+        typography: { type: "Title", size: "Small" } as const,
+      },
     };
     const nextLinkNode = {
-      text: "Some next link node that should have typography applied",
-      nextHref: "https://www.google.com",
-      typography: { type: "Display", props: { size: "Large" } },
+      nextLink: {
+        text: "Some next link node that should have typography applied",
+        href: "https://www.google.com",
+        typography: { type: "Display", size: "Large" } as const,
+      },
     };
     const textNode = {
       text: "Some text node that should have typography applied",
-      typography: { type: "Label", props: { size: "Small" } },
+      typography: { type: "Label", size: "Small" } as const,
     };
 
     const nodes = setReactNodesTypography(
@@ -267,8 +400,7 @@ describe("toReactNodes", () => {
       ],
       {
         link: { type: "Body" },
-        externalLink: { type: "Body" },
-        text: { type: "Body", props: { size: "Large" } },
+        text: { type: "Body", size: "Large" },
         nextLink: { type: "Body" },
       },
     );
@@ -276,24 +408,30 @@ describe("toReactNodes", () => {
     expect(nodes).toEqual([
       {
         text: stringNode,
-        typography: { type: "Body", props: { size: "Large" } },
+        typography: { type: "Body", size: "Large" },
       },
       {
-        ...linkNode,
-        typography: { type: "Body" },
+        link: {
+          ...linkNode.link,
+          typography: { type: "Body" },
+        },
       },
       iconNode,
       {
-        ...externalLinkNode,
-        typography: { type: "Body" },
+        link: {
+          ...externalLinkNode.link,
+          typography: { type: "Body" },
+        },
       },
       {
-        ...nextLinkNode,
-        typography: { type: "Body" },
+        nextLink: {
+          ...nextLinkNode.nextLink,
+          typography: { type: "Body" },
+        },
       },
       {
         ...textNode,
-        typography: { type: "Body", props: { size: "Large" } },
+        typography: { type: "Body", size: "Large" },
       },
     ]);
   });
@@ -301,28 +439,32 @@ describe("toReactNodes", () => {
   it("should not change the typography of typographic nodes when no override is provided for the node type", () => {
     const stringNode = "Some string that should not have typography applied";
     const linkNode = {
-      text: "Some link node that should have typography applied",
-      to: TestAppRoutes.PageOne,
-      typography: { type: "Display", props: { size: "Medium" } },
+      link: {
+        text: "Some link node that should have typography applied",
+        to: TestAppRoutes.PageOne,
+        typography: { type: "Display", size: "Medium" } as const,
+      },
     };
     const textNode = {
       text: "Some text node that should have typography applied",
-      typography: { type: "Label", props: { size: "Small" } },
+      typography: { type: "Label", size: "Small" } as const,
     };
 
     const nodes = setReactNodesTypography([stringNode, linkNode, textNode], {
-      link: { type: "Body", props: { size: "Large" } },
+      link: { type: "Body", size: "Large" },
     });
 
     expect(nodes).toEqual([
       stringNode,
       {
-        ...linkNode,
-        typography: { type: "Body", props: { size: "Large" } },
+        link: {
+          ...linkNode.link,
+          typography: { type: "Body", size: "Large" },
+        },
       },
       {
         ...textNode,
-        typography: { type: "Label", props: { size: "Small" } },
+        typography: { type: "Label", size: "Small" },
       },
     ]);
   });
@@ -331,17 +473,19 @@ describe("toReactNodes", () => {
     const stringNode =
       "Some string that should have default typography applied";
     const linkNode = {
-      text: "Some link node that should have default typography applied",
-      to: TestAppRoutes.PageOne,
+      link: {
+        text: "Some link node that should have default typography applied",
+        to: TestAppRoutes.PageOne,
+      },
     };
     const textNode = {
       text: "Some text node that should keep existing typography",
-      typography: { type: "Label", props: { size: "Small" } },
-    };
+      typography: { type: "Label", size: "Small" },
+    } as const;
 
     const defaultTypography = {
       type: "Body",
-      props: { size: "Large" },
+      size: "Large",
     } as const;
     const nodes = setDefaultReactNodesTypography(
       [stringNode, linkNode, textNode],
@@ -357,12 +501,14 @@ describe("toReactNodes", () => {
         typography: defaultTypography,
       },
       {
-        ...linkNode,
-        typography: defaultTypography,
+        link: {
+          ...linkNode.link,
+          typography: defaultTypography,
+        },
       },
       {
         ...textNode,
-        typography: { type: "Label", props: { size: "Small" } },
+        typography: { type: "Label", size: "Small" },
       },
     ]);
   });

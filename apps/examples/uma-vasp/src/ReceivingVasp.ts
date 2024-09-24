@@ -1,4 +1,5 @@
 import { hexToBytes } from "@lightsparkdev/core";
+import { v4 as uuidv4 } from "uuid";
 import {
   getLightsparkNodeQuery,
   LightsparkClient,
@@ -8,6 +9,7 @@ import * as uma from "@uma-sdk/core";
 import { Express } from "express";
 import ComplianceService from "./ComplianceService.js";
 import { SATS_CURRENCY } from "./currencies.js";
+import { PAYER_DATA_OPTIONS } from "./PayerDataOptions.js";
 import {
   fullUrlForRequest,
   isDomainLocalhost,
@@ -18,6 +20,7 @@ import { HttpResponse } from "./networking/HttpResponse.js";
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
+import { z } from "zod";
 
 export default class ReceivingVasp {
   constructor(
@@ -27,7 +30,7 @@ export default class ReceivingVasp {
     private readonly userService: UserService,
     private readonly complianceService: ComplianceService,
     private readonly nonceCache: uma.NonceValidator,
-  ) {}
+  ) { }
 
   registerRoutes(app: Express): void {
     app.get("/.well-known/lnurlp/:username", async (req, resp) => {
@@ -52,6 +55,42 @@ export default class ReceivingVasp {
         fullUrlForRequest(req),
         req.body,
       );
+      sendResponse(resp, response);
+    });
+
+    app.post("/api/uma/create_invoice", async (req, resp) => {
+      const user = await this.userService.getCallingUserFromRequest(
+        fullUrlForRequest(req),
+        req.headers,
+      );
+      if (!user) {
+        return sendResponse(resp, {
+          httpStatus: 401,
+          data: "Unauthorized. Check your credentials.",
+        });
+      }
+      const response = await this.handleUmaCreateInvoice(
+        user,
+        fullUrlForRequest(req),
+      )
+      sendResponse(resp, response);
+    });
+
+    app.post("/api/uma/create_and_send_invoice", async(req, resp) => {
+      const user = await this.userService.getCallingUserFromRequest(
+        fullUrlForRequest(req),
+        req.headers,
+      );
+      if (!user) {
+        return sendResponse(resp, {
+          httpStatus: 401,
+          data: "Unauthorized. Check your credentials.",
+        });
+      }
+      const response = await this.handleUmaCreateAndSendInvoice(
+        user,
+        fullUrlForRequest(req),
+      )
       sendResponse(resp, response);
     });
   }
@@ -179,12 +218,7 @@ export default class ReceivingVasp {
         maxSendableSats,
         privateKeyBytes: this.config.umaSigningPrivKey(),
         receiverKycStatus: user.kycStatus,
-        payerDataOptions: {
-          identifier: { mandatory: true },
-          name: { mandatory: false },
-          email: { mandatory: false },
-          compliance: { mandatory: true },
-        },
+        payerDataOptions: PAYER_DATA_OPTIONS,
         currencyOptions: currencyPrefs,
       });
       return { httpStatus: 200, data: response.toJsonSchemaObject() };
@@ -299,7 +333,7 @@ export default class ReceivingVasp {
     const isCurrencyAmountInBounds = isSendingAmountMsats
       ? payreq.amount >= minSendableSats && payreq.amount / 1000 <= maxSendableSats
       : payreq.amount >= receivingCurrency.minSendable &&
-        payreq.amount <= receivingCurrency.maxSendable;
+      payreq.amount <= receivingCurrency.maxSendable;
     if (!isCurrencyAmountInBounds) {
       return {
         httpStatus: 400,
@@ -404,6 +438,174 @@ export default class ReceivingVasp {
         data: new Error("Failed to generate UMA response.", { cause: e }),
       };
     }
+  }
+
+  private async handleUmaCreateInvoice(
+    user: User,
+    requestUrl: URL,
+  ): Promise<HttpResponse> {
+    return this.parseAndEncodeUmaInvoice(user, requestUrl, undefined);
+  }
+
+  private async handleUmaCreateAndSendInvoice(
+    user: User,
+    requestUrl: URL
+  ) {
+    const senderUma = requestUrl.searchParams.get("senderUma");
+    if (!senderUma) {
+      return { httpStatus: 422, data: "missing parameter senderUma" };
+    }
+    const { httpStatus, data: bech32EncodedInvoice } = await this.parseAndEncodeUmaInvoice(
+      user, requestUrl, senderUma
+    );
+    if (httpStatus !== 200) {
+      return { httpStatus, data: bech32EncodedInvoice };
+    }
+
+    const [, senderDomain] = senderUma.split("@");
+
+    // Fetch the UMA configuration from the sender's domain
+    let umaRequestEndpoint: string;
+    try {
+      umaRequestEndpoint = await this.fetchUmaRequestEndpoint(requestUrl, senderDomain);
+    } catch (e) {
+      console.error("Error fetching UMA configuration:", e);
+      return { httpStatus: 500, data: "Error fetching UMA configuration." };
+    }
+
+    const senderUrl = new URL(umaRequestEndpoint);
+    let response: globalThis.Response;
+    try {
+      response = await fetch(senderUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({"invoice":bech32EncodedInvoice})
+      });
+    } catch (e) {
+      return { httpStatus: 500, data: "Error sending payreq." };
+    }
+
+    if (response.status !== 200) {
+      return {
+        httpStatus: 200, data: `Error: request pay invoice failed: ${response.statusText}`
+      }
+    }
+
+    return {
+      httpStatus: 200, data: response.body
+    };
+  }
+
+  private async parseAndEncodeUmaInvoice(
+    user: User,
+    requestUrl: URL,
+    senderUma: string | undefined
+    ): Promise<HttpResponse> {
+      const currencyCode = requestUrl.searchParams.get("currencyCode");
+      const currencyPrefs = await this.userService.getCurrencyPreferencesForUser(
+        user.id,
+      );
+      if (!currencyPrefs) {
+        return {
+          httpStatus: 500,
+          data: "Failed to fetch currency preferences.",
+        };
+      }
+      let receivingCurrency = currencyPrefs.find(
+        (c) => c.code === currencyCode,
+      );
+      if (currencyCode && !receivingCurrency) {
+        console.error(`Invalid currency: ${currencyCode}`);
+        return {
+          httpStatus: 400,
+          data: `Invalid currency. This user does not accept ${currencyCode}.`,
+        };
+      } else if (!currencyCode) {
+        return { httpStatus: 422, data: `Invalid target currency code: ${currencyCode}` };
+      }
+      const amountResult = z.coerce.number().safeParse(requestUrl.searchParams.get("amount"));
+      if (!amountResult.success) {
+        return {
+          httpStatus: 400,
+          data: "Invalid amount parameter.",
+        };
+      }
+      const amount = amountResult.data;
+      const { code, minSendable, maxSendable } = receivingCurrency ?? SATS_CURRENCY;
+      const isSendingAmountMsats = code === SATS_CURRENCY.code;
+      
+      const [minSendableSats, maxSendableSats] =
+        await this.userService.getReceivableMsatsRangeForUser(user.id);
+      const isCurrencyAmountInBounds = isSendingAmountMsats
+        ? amount >= minSendableSats && amount / 1000 <= maxSendableSats
+        : amount >= minSendable && amount <= maxSendable;
+      if (!isCurrencyAmountInBounds) {
+        return {
+          httpStatus: 400,
+          data:
+        `Invalid amount. This user only accepts between ${minSendable} ` +
+        `and ${maxSendable} ${code}.`,
+        };
+      }
+  
+      const umaDomain = hostNameWithPort(requestUrl);
+      const bech32EncodedInvoice = await this.createUmaInvoiceBechEncoding(
+        user, amount, umaDomain, receivingCurrency ?? SATS_CURRENCY, senderUma
+      );
+      return {
+        httpStatus: 200, data: bech32EncodedInvoice
+      };
+  }
+
+
+  private async fetchUmaRequestEndpoint(fullUrl: URL, domain: string): Promise<string> {
+    const protocol = isDomainLocalhost(fullUrl.hostname) ? "http" : "https";
+    const umaConfigResponse = await fetch(`http://${domain}/.well-known/uma-configuration`);
+    if (!umaConfigResponse.ok) {
+      throw new Error(`HTTP error! status: ${umaConfigResponse.status}`);
+    }
+    const jsonResponse = await umaConfigResponse.json();
+    const umaConfiguration = jsonResponse as { uma_request_endpoint: string };
+    return umaConfiguration.uma_request_endpoint;
+  }
+
+  private async createUmaInvoiceBechEncoding(
+    user: User,
+    amount: number,
+    umaDomain: string,
+    currency: uma.Currency,
+    senderUma: string | undefined = undefined
+  ): Promise<string> {
+    const { code, name, symbol, decimals } = currency;
+
+    const expiration = Date.now() + (2 * 24 * 60 * 60 * 1000); // +2 days
+
+    const invoice = await uma.createUmaInvoice({
+      receiverUma: `$${user.umaUserName}@${umaDomain}`,
+      invoiceUUID: uuidv4(),
+      amount: amount,
+      receivingCurrency: { code, name, symbol, decimals },
+      expiration: expiration,
+      isSubjectToTravelRule: true,
+      requiredPayerData: PAYER_DATA_OPTIONS,
+      commentCharsAllowed: undefined,
+      senderUma: senderUma,
+      invoiceLimit: undefined,
+      kycStatus: uma.KycStatus.Verified,
+      callback: this.buildCallbackUrl(umaDomain, `/api/uma/payreq/${user.id}`),
+    },
+    
+      this.config.umaSigningPrivKey(),
+    );
+    return uma.InvoiceSerializer.toBech32(invoice);
+  }
+
+  private buildCallbackUrl(domain: string, path: string): string {
+    const protocol = isDomainLocalhost(domain) ? "http" : "https";
+    const callback = `${protocol}://${domain}${path}`;
+    return callback;
   }
 
   /**

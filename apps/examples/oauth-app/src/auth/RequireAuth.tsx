@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { Navigate } from "src/components/router";
-import { MainRoutes } from "src/routes";
+import { Navigate } from "@lightsparkdev/ui/router";
+import { Routes } from "src/routes";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const auth = useAuth();
@@ -12,9 +12,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
     // than dropping them off on the home page.
-    return (
-      <Navigate to={MainRoutes.Login} state={{ from: location }} replace />
-    );
+    return <Navigate to={Routes.Login} state={{ from: location }} replace />;
   }
 
   return children;

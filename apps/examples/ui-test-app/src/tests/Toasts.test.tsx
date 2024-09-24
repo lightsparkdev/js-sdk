@@ -1,10 +1,9 @@
 import { ThemeProvider } from "@emotion/react";
 import { Toasts } from "@lightsparkdev/ui/components";
 import { themes } from "@lightsparkdev/ui/styles/themes";
-import { render as tlRender } from "@testing-library/react";
+import { screen, render as tlRender, waitFor } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { TestAppRoutes } from "../types";
 
 function Providers({ children }: { children: ReactNode }) {
   return <ThemeProvider theme={themes.dark}>{children}</ThemeProvider>;
@@ -17,7 +16,7 @@ function render(renderElement: ReactElement) {
 }
 
 describe("Toasts", () => {
-  test("should properly infer argument types and raise errors for invalid values", () => {
+  test("should properly infer argument types and raise errors for invalid values", async () => {
     render(
       <BrowserRouter>
         <Toasts
@@ -26,14 +25,10 @@ describe("Toasts", () => {
               text: [
                 {
                   text: "Test toast",
-                  to: TestAppRoutes.PageOne,
                   typography: {
                     type: "Body",
-                    props: {
-                      children: "Hello",
-                      /* @ts-expect-error `cosdlor` is not a valid prop for Body component */
-                      cosdlor: "white",
-                    },
+                    /* @ts-expect-error `cosdlor` is not a valid prop for Body component */
+                    cosdlor: "white",
                   },
                 },
                 {
@@ -42,10 +37,7 @@ describe("Toasts", () => {
                   to: "/examplsdfe",
                   typography: {
                     type: "Body",
-                    props: {
-                      children: "Hello",
-                      color: "white",
-                    },
+                    color: "white",
                   },
                 },
               ],
@@ -58,5 +50,9 @@ describe("Toasts", () => {
         />
       </BrowserRouter>,
     );
+
+    await waitFor(() => {
+      expect(screen.getByText("Test toast")).toBeInTheDocument();
+    });
   });
 });

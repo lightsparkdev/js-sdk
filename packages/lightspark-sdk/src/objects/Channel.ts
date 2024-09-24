@@ -194,8 +194,7 @@ ${FRAGMENT}
       channel_id: this.id,
       channel_created_at: this.createdAt,
       channel_updated_at: this.updatedAt,
-      channel_funding_transaction:
-        { id: this.fundingTransactionId } ?? undefined,
+      channel_funding_transaction: { id: this.fundingTransactionId },
       channel_capacity: this.capacity
         ? CurrencyAmountToJson(this.capacity)
         : undefined,
@@ -224,7 +223,7 @@ ${FRAGMENT}
         ? CurrencyAmountToJson(this.commitFee)
         : undefined,
       channel_fees: this.fees ? ChannelFeesToJson(this.fees) : undefined,
-      channel_remote_node: { id: this.remoteNodeId } ?? undefined,
+      channel_remote_node: { id: this.remoteNodeId },
       channel_local_node: { id: this.localNodeId },
       channel_short_channel_id: this.shortChannelId,
     };

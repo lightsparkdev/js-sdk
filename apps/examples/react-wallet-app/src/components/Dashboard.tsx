@@ -7,9 +7,9 @@ import type {
   WalletDashboard,
 } from "@lightsparkdev/wallet-sdk";
 import { CurrencyUnit } from "@lightsparkdev/wallet-sdk";
-import { Button } from "src/components/Button";
 import { Table, Td, Th, Tr } from "./Table";
 import { standardBorderRadius } from "@lightsparkdev/ui/styles/common";
+import { Button } from "@lightsparkdev/ui/components";
 
 const Dashboard = ({ data }: { data: WalletDashboard }) => {
   return (

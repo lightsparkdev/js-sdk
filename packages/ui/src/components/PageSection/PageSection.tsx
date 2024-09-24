@@ -11,8 +11,9 @@ import {
 } from "../../styles/common.js";
 import { standardBorderColor } from "../../styles/fields.js";
 import { Heading, headingWithDefaults } from "../../styles/type.js";
+import { type NewRoutesType } from "../../types/index.js";
 import { select } from "../../utils/emotion.js";
-import { toReactNodes } from "../../utils/toReactNodes.js";
+import { toReactNodes } from "../../utils/toReactNodes/toReactNodes.js";
 import { Badge, badgeSmVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
@@ -117,9 +118,9 @@ const PageSectionBoxActionColumnNoValue = styled(
   font-style: italic;
 `;
 
-type PageSectionBoxActionProps<RoutesType extends string> = {
+type PageSectionBoxActionProps = {
   label?: string | undefined;
-  to?: RoutesType | undefined;
+  to?: NewRoutesType | undefined;
   toParams?: Record<string, string> | undefined;
   onClick?: (() => void) | undefined;
   isDelete?: boolean;
@@ -127,7 +128,7 @@ type PageSectionBoxActionProps<RoutesType extends string> = {
   dropdownItems?:
     | {
         label: string;
-        to?: RoutesType;
+        to?: NewRoutesType;
         onClick?: () => void;
       }[]
     | undefined;
@@ -140,7 +141,7 @@ type PageSectionBoxActionProps<RoutesType extends string> = {
     | null;
 };
 
-function PageSectionBoxAction<RoutesType extends string>({
+function PageSectionBoxAction({
   dropdownItems,
   icon,
   isDelete = false,
@@ -149,7 +150,7 @@ function PageSectionBoxAction<RoutesType extends string>({
   onClick,
   to,
   toParams,
-}: PageSectionBoxActionProps<RoutesType>) {
+}: PageSectionBoxActionProps) {
   const theme = useTheme();
   return loading ? (
     <div>
@@ -175,7 +176,7 @@ function PageSectionBoxAction<RoutesType extends string>({
   ) : label ? (
     /* Extra div for proper default alignment inside flex contexts */
     <div>
-      <TextButton<RoutesType>
+      <TextButton
         /* actionIcon may be null to explicitly hide or undefined for default TextButton icon: */
         leftIcon={icon}
         text={label}
@@ -187,8 +188,8 @@ function PageSectionBoxAction<RoutesType extends string>({
   ) : null;
 }
 
-type PageSectionBoxActionRowProps<RoutesType extends string> = {
-  action?: PageSectionBoxActionProps<RoutesType> | undefined;
+type PageSectionBoxActionRowProps = {
+  action?: PageSectionBoxActionProps | undefined;
   title?: string;
   titleBadge?: string | undefined;
   description?: string;
@@ -197,7 +198,7 @@ type PageSectionBoxActionRowProps<RoutesType extends string> = {
   smFlexColumn?: boolean;
 };
 
-export const PageSectionBoxActionRow = <RoutesType extends string>({
+export const PageSectionBoxActionRow = ({
   title,
   titleBadge,
   description,
@@ -205,7 +206,7 @@ export const PageSectionBoxActionRow = <RoutesType extends string>({
   children,
   action,
   smFlexColumn = true,
-}: PageSectionBoxActionRowProps<RoutesType>) => {
+}: PageSectionBoxActionRowProps) => {
   return (
     <Fragment>
       <SPageSectionBoxActionRow
@@ -278,17 +279,17 @@ export const PageSectionBoxRow = styled.div`
   ); /* This creates as many columns as can fit, each at least 150px wide */
 `;
 
-type PageSectionBoxProps<RoutesType extends string> = {
-  action?: PageSectionBoxActionProps<RoutesType> | undefined;
+type PageSectionBoxProps = {
+  action?: PageSectionBoxActionProps | undefined;
   description?: string | undefined;
   children?: React.ReactNode;
 };
 
-export function PageSectionBox<RoutesType extends string>({
+export function PageSectionBox({
   action,
   description,
   children,
-}: PageSectionBoxProps<RoutesType>) {
+}: PageSectionBoxProps) {
   return (
     <StyledPageSectionBox>
       {description && (
