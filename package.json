@@ -43,6 +43,7 @@
     "@changesets/cli": "^2.27.1",
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
+    "octokit": "^4.0.2",
     "ts-prune": "^0.10.3",
     "turbo": "^1.13.3"
   },
