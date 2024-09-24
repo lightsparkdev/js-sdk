@@ -1,5 +1,13 @@
 # @lightsparkdev/ls-react-native-crypto
 
+## 0.2.12
+
+### Patch Changes
+
+- 07900ac: - Upgrade deps
+  - Upgrade TypeScript to 5.6.2 and some related type fixes
+  - Improve clean scripts
+
 ## 0.2.11
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @lightsparkdev/react-native
 
+## 0.3.19
+
+### Patch Changes
+
+- 07900ac: - Upgrade deps
+  - Upgrade TypeScript to 5.6.2 and some related type fixes
+  - Improve clean scripts
+- Updated dependencies [07900ac]
+  - @lightsparkdev/ls-react-native-crypto@0.2.12
+  - @lightsparkdev/wallet-sdk@0.13.3
+  - @lightsparkdev/core@1.2.2
+
 ## 0.3.18
 
 ### Patch Changes
