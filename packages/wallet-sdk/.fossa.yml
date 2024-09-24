@@ -1,6 +1,0 @@
-version: 3
-
-project:
-  id: lightspark/js-wallet-sdk
-  name: js-wallet-sdk
-  url: https://github.com/lightsparkdev/js-sdk

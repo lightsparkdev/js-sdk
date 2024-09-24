@@ -1,3 +1,0 @@
-{
-  "extends": "../../../packages/tsconfig/ts-node-app.json"
-}
