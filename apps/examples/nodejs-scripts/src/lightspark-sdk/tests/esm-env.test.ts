@@ -18,7 +18,7 @@ import {
 import { getCredentialsFromEnvOrThrow } from "@lightsparkdev/lightspark-sdk/env";
 
 describe("esm environment", () => {
-  it("should be able to import modules from wallet-sdk", () => {
+  it("should be able to import modules from lightspark-sdk", () => {
     expect(getCredentialsFromEnvOrThrow).toBeDefined();
     expect(AccountTokenAuthProvider).toBeDefined();
     expect(InvoiceType).toBeDefined();
