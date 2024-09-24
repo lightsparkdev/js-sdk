@@ -1,5 +1,15 @@
 # @lightsparkdev/wallet-sdk
 
+## 0.13.3
+
+### Patch Changes
+
+- 07900ac: - Upgrade deps
+  - Upgrade TypeScript to 5.6.2 and some related type fixes
+  - Improve clean scripts
+- Updated dependencies [07900ac]
+  - @lightsparkdev/core@1.2.2
+
 ## 0.13.2
 
 ### Patch Changes

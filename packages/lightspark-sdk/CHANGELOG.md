@@ -1,5 +1,16 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.3
+
+### Patch Changes
+
+- 07900ac: - Upgrade deps
+  - Upgrade TypeScript to 5.6.2 and some related type fixes
+  - Improve clean scripts
+- Updated dependencies [07900ac]
+  - @lightsparkdev/crypto-wasm@0.1.5
+  - @lightsparkdev/core@1.2.2
+
 ## 1.8.2
 
 ### Patch Changes
