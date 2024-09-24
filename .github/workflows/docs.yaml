@@ -49,4 +49,3 @@ jobs:
       - name: "Run aws s3 sync"
         run: |
           aws s3 sync packages/lightspark-sdk/docs/ s3://${{secrets.FRONTEND_BUCKET_DEV}}/docs/js/lightspark-sdk/
-          aws s3 sync packages/wallet-sdk/docs/ s3://${{secrets.FRONTEND_BUCKET_DEV}}/docs/js/wallet-sdk/
