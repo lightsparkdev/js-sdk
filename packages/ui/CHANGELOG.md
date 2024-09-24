@@ -1,18 +1,5 @@
 # @lightsparkdev/ui
 
-## 1.0.9
-
-### Patch Changes
-
-- 07900ac: - Add several components and hooks
-  - Upgrade Typescript to 5.6.2
-  - Remove remaining generic type arguments for Routes - replaced with interface extension in downstream apps via NewRoutesType
-  - Remove generic typography arguments, using simpler/better inference via TypographyPropsWithoutContent type
-  - Improve and simplify toReactNodes
-  - Add CurrencyAmount as an available toReactNodes node
-- Updated dependencies [07900ac]
-  - @lightsparkdev/core@1.2.2
-
 ## 1.0.8
 
 ### Patch Changes

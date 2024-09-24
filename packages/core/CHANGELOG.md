@@ -1,13 +1,5 @@
 # @lightsparkdev/core
 
-## 1.2.2
-
-### Patch Changes
-
-- 07900ac: - Upgrade deps
-  - Upgrade TypeScript to 5.6.2 and some related type fixes
-  - Improve clean scripts
-
 ## 1.2.1
 
 ### Patch Changes
