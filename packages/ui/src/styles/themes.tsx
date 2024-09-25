@@ -363,6 +363,8 @@ const lightsparkDocsDarkTheme = extend(darkTheme, {
 const bridgeBaseSettings = {
   secondary: colors.grayBlue43,
   mcNeutral: colors.grayBlue43,
+  success: colors.green35,
+  link: colors.blue39,
   typography: getTypography(TypographyGroup.Bridge, {
     main: "Manrope",
     code: "Monaco",

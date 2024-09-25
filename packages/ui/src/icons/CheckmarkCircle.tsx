@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function CheckmarkCircleGreen() {
+export function CheckmarkCircle() {
   return (
     <svg
       width="100%"
@@ -8,7 +8,7 @@ export function CheckmarkCircleGreen() {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect y="0.5" width="32" height="32" rx="16" fill="#17C27C" />
+      <rect y="0.5" width="32" height="32" rx="16" fill="currentColor" />
       <path
         d="M8 16.4995L13 21.4995L24 10.4995"
         stroke="white"

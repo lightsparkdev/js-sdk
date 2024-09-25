@@ -40,7 +40,7 @@ export function ContentTable<Columns extends Column[]>({
               return (
                 <td key={column.key}>
                   {value === true ? (
-                    <Icon name="CheckmarkCircleGreen" width={16} />
+                    <Icon name="CheckmarkCircle" width={16} color="success" />
                   ) : (
                     value
                   )}

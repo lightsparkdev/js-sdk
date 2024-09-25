@@ -2,6 +2,7 @@
 /* eslint-disable no-restricted-imports */
 import type { Theme } from "@emotion/react";
 import type { Interpolation } from "@emotion/styled";
+import styled from "@emotion/styled";
 import { omit } from "lodash-es";
 import type { MouseEventHandler, ReactNode } from "react";
 import { useCallback } from "react";
@@ -86,7 +87,7 @@ export function replaceParams(
 // If `to` contains an argument like :id, inlclude the value in params object
 // and it will be replaced automatically. This way route typesaftey is
 // preserved.
-export function Link({
+function LinkBase({
   to,
   id,
   externalLink,
@@ -115,8 +116,11 @@ export function Link({
     toStr += hash ? `#${hash}` : "";
   } else if (externalLink) {
     const definedExternalLink = externalLink;
-    if (!definedExternalLink.startsWith("http")) {
-      throw new Error("Link's externalLink must start with http");
+    if (
+      !definedExternalLink.startsWith("http") &&
+      !definedExternalLink.startsWith("mailto:")
+    ) {
+      throw new Error("Link's externalLink must start with http or mailto:");
     }
     if (newTabProp === undefined) {
       newTab = true;
@@ -154,6 +158,8 @@ export function Link({
   );
 }
 
+export const Link = styled(LinkBase)``;
+
 type NavigateProps = Omit<LinkProps, "children"> & {
   to: NewRoutesType;
   state?: unknown;
@@ -174,8 +180,8 @@ export function useNavigate() {
   const navigate = useRNavigate();
   return useCallback(
     (
-      // number eg -1 can be passed to navigate back
-      to: NewRoutesType | number,
+      // -1 can be passed to navigate back
+      to: NewRoutesType | -1,
       params?: LinkProps["params"],
       options?: NavigateOptions,
     ) => {
