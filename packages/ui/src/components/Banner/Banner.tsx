@@ -75,7 +75,7 @@ export function Banner({
         <Link to={to}>
           <BannerFlexInnerContent>
             {contentNodes}
-            <Icon name="RightArrow" width={12} ml={6} />
+            <Icon name="ArrowRight" width={12} ml={6} />
           </BannerFlexInnerContent>
         </Link>
       );
