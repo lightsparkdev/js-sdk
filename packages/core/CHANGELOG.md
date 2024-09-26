@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.2.3
+
+### Patch Changes
+
+- d61a209: - Changes to internal use of currency utils
+
 ## 1.2.2
 
 ### Patch Changes

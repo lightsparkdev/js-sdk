@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.4
+
+### Patch Changes
+
+- Updated dependencies [d61a209]
+  - @lightsparkdev/core@1.2.3
+
 ## 1.8.3
 
 ### Patch Changes

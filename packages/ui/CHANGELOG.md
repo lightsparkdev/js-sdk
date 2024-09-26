@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.0.10
+
+### Patch Changes
+
+- d61a209: - Rename some icons
+- Updated dependencies [d61a209]
+  - @lightsparkdev/core@1.2.3
+
 ## 1.0.9
 
 ### Patch Changes
