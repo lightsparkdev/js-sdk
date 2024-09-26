@@ -1,5 +1,11 @@
 # @lightsparkdev/crypto-wasm
 
+## 0.1.6
+
+### Patch Changes
+
+- d933082: [crypto-wasm] Fix deps, ensure core bump patch
+
 ## 0.1.5
 
 ### Patch Changes

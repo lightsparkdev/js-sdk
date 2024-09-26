@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -83,7 +83,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@lightsparkdev/core": "1.2.3",
-    "@lightsparkdev/crypto-wasm": "0.1.5",
+    "@lightsparkdev/crypto-wasm": "0.1.6",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.7",
     "dotenv": "^16.3.1",

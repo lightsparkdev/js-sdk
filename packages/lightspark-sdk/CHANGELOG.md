@@ -1,5 +1,12 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.5
+
+### Patch Changes
+
+- Updated dependencies [d933082]
+  - @lightsparkdev/crypto-wasm@0.1.6
+
 ## 1.8.4
 
 ### Patch Changes
