@@ -2106,7 +2106,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/crypto-wasm@npm:0.1.5, @lightsparkdev/crypto-wasm@workspace:packages/crypto-wasm":
+"@lightsparkdev/crypto-wasm@npm:0.1.6, @lightsparkdev/crypto-wasm@workspace:packages/crypto-wasm":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/crypto-wasm@workspace:packages/crypto-wasm"
   dependencies:
@@ -2148,9 +2148,9 @@ __metadata:
   dependencies:
     "@inquirer/prompts": "npm:^1.1.3"
     "@lightsparkdev/core": "npm:1.2.3"
-    "@lightsparkdev/crypto-wasm": "npm:0.1.5"
+    "@lightsparkdev/crypto-wasm": "npm:0.1.6"
     "@lightsparkdev/eslint-config": "npm:*"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/jsonwebtoken": "npm:^9.0.2"
     "@types/node": "npm:^20.2.5"
@@ -2176,12 +2176,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/lightspark-sdk@npm:1.8.4, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
+"@lightsparkdev/lightspark-sdk@npm:1.8.5, @lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-sdk@workspace:packages/lightspark-sdk"
   dependencies:
     "@lightsparkdev/core": "npm:1.2.3"
-    "@lightsparkdev/crypto-wasm": "npm:0.1.5"
+    "@lightsparkdev/crypto-wasm": "npm:0.1.6"
     "@lightsparkdev/eslint-config": "npm:*"
     "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/crypto-js": "npm:^4.1.1"
@@ -2215,7 +2215,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": "npm:1.2.3"
     "@lightsparkdev/eslint-config": "npm:*"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
     commander: "npm:^11.0.0"
@@ -2241,7 +2241,7 @@ __metadata:
     "@emotion/react": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.11.0"
     "@lightsparkdev/eslint-config": "npm:*"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/oauth": "npm:*"
     "@lightsparkdev/tsconfig": "npm:*"
     "@lightsparkdev/ui": "npm:1.0.10"
@@ -2290,7 +2290,7 @@ __metadata:
   resolution: "@lightsparkdev/remote-signing-server@workspace:apps/examples/remote-signing-server"
   dependencies:
     "@lightsparkdev/core": "npm:1.2.3"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/tsconfig": "npm:*"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
@@ -2322,7 +2322,7 @@ __metadata:
     "@emotion/react": "npm:^11.11.0"
     "@emotion/styled": "npm:^11.11.0"
     "@lightsparkdev/core": "npm:1.2.3"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/tsconfig": "npm:*"
     "@lightsparkdev/ui": "npm:1.0.10"
     "@lightsparkdev/vite": "npm:*"
@@ -2460,7 +2460,7 @@ __metadata:
     "@inquirer/prompts": "npm:^1.1.3"
     "@lightsparkdev/core": "npm:1.2.3"
     "@lightsparkdev/eslint-config": "npm:*"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/chalk": "npm:^2.2.0"
     "@types/node": "npm:^20.2.5"
@@ -2485,7 +2485,7 @@ __metadata:
   resolution: "@lightsparkdev/uma-vasp@workspace:apps/examples/uma-vasp"
   dependencies:
     "@lightsparkdev/core": "npm:1.2.3"
-    "@lightsparkdev/lightspark-sdk": "npm:1.8.4"
+    "@lightsparkdev/lightspark-sdk": "npm:1.8.5"
     "@lightsparkdev/tsconfig": "npm:*"
     "@types/body-parser": "npm:^1.19.5"
     "@types/express": "npm:^4.17.21"
