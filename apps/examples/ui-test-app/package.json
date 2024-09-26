@@ -39,6 +39,7 @@
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/jest": "^11.13.0",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "*",
     "@lightsparkdev/vite": "*",

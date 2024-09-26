@@ -26,6 +26,7 @@ type CurrencyAmountProps = {
   includeEstimatedIndicator?: boolean;
   fullPrecision?: boolean | undefined;
   typography?: PartialSimpleTypographyProps;
+  centsPerBtc?: number;
 };
 
 export function CurrencyAmount({
@@ -38,10 +39,14 @@ export function CurrencyAmount({
   id,
   ml = 0,
   typography,
+  centsPerBtc,
 }: CurrencyAmountProps) {
   const unit = displayUnit;
 
-  const amountMap = isCurrencyMap(amount) ? amount : mapCurrencyAmount(amount);
+  const amountMap = isCurrencyMap(amount)
+    ? amount
+    : mapCurrencyAmount(amount, centsPerBtc);
+
   const value = amountMap[unit];
   const defaultFormattedNumber = amountMap.formatted[unit];
 

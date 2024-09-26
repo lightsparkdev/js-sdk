@@ -1,17 +1,17 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function RightArrow() {
+export function ArrowUpRight() {
   return (
     <svg
       width="100%"
-      viewBox="0 0 12 10"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M1.01704 4.99993L10.9844 4.99993M10.9844 4.99993L6.98438 0.809448M10.9844 4.99993L6.98437 9.1904"
+        d="M22.4167 17.4167V1.58333M22.4167 1.58333H6.58333M22.4167 1.58333L2 22"
         stroke="currentColor"
-        strokeWidth="1.33333"
+        strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

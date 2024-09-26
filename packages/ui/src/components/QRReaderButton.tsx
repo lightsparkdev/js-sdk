@@ -48,7 +48,7 @@ function QRReaderOverlay({
       <ScreenContext>
         <OverlayHeader>
           <BackButton onClick={onClickBack}>
-            <Icon name="LeftArrow" width={25} />
+            <Icon name="ArrowLeft" width={25} />
           </BackButton>
           {captureModeTitle ? <div>{captureModeTitle}</div> : null}
         </OverlayHeader>

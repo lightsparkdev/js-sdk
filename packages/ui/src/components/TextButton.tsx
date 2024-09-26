@@ -51,7 +51,7 @@ export function TextButton({
   let rightIconProp = rightIcon;
   if (typeof rightIcon === "undefined" && typeof leftIcon === "undefined") {
     rightIconProp = {
-      name: "RightArrow",
+      name: "ArrowRight",
     };
   }
 

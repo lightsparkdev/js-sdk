@@ -1,3 +1,4 @@
+import { createSerializer } from "@emotion/jest";
 import {
   setDefaultReactNodesTypography,
   setReactNodesTypography,
@@ -6,6 +7,14 @@ import { toReactNodes } from "@lightsparkdev/ui/utils/toReactNodes/toReactNodes"
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
+
+expect.addSnapshotSerializer(
+  createSerializer({
+    classNameReplacer(className, index) {
+      return "css-test";
+    },
+  }),
+);
 
 describe("toReactNodes", () => {
   it("renders the expected output for a single string", () => {
@@ -41,7 +50,7 @@ describe("toReactNodes", () => {
     expect(asFragment()).toMatchInlineSnapshot(`
       <DocumentFragment>
         <a
-          class="css-0"
+          class="css-test"
           href="/test-app-page-one"
         >
           Test
@@ -188,7 +197,7 @@ describe("toReactNodes", () => {
         </span>
         <span />
         <a
-          class="css-0"
+          class="css-test"
           href="/test-app-page-one"
         >
           Test
@@ -234,13 +243,13 @@ describe("toReactNodes", () => {
         </span>
         <span />
         <a
-          class="css-0"
+          class="css-test"
           href="/test-app-page-one"
         >
           Test
         </a>
         <a
-          class="css-0"
+          class="css-test"
           href="/test-app-page-two"
         >
           Test 2

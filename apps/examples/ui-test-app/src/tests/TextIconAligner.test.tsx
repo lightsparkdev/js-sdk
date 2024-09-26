@@ -36,7 +36,7 @@ describe("TextIconAligner", () => {
             size: "Small",
             color: "blue43",
           }}
-          rightIcon={{ name: "RightArrow" }}
+          rightIcon={{ name: "ArrowRight" }}
         />
       </BrowserRouter>,
     );

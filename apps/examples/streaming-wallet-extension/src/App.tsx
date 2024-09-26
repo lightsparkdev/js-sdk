@@ -223,7 +223,7 @@ function Header(screen: Screen, setScreen: (screen: Screen) => void) {
     return (
       <div className="header">
         <button onClick={() => setScreen(Screen.Balance)}>
-          <Icon name="LeftArrow" width={16} />
+          <Icon name="ArrowLeft" width={16} />
         </button>
         <HeaderBackText>Transactions</HeaderBackText>
       </div>

@@ -1,6 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function HorizontalArrows() {
+export function ArrowsHorizontal() {
   return (
     <svg
       width="100%"

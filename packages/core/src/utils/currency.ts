@@ -199,7 +199,7 @@ export type CurrencyMap = {
   type: "CurrencyMap";
 };
 
-export type CurrencyAmountObj = {
+export type DeprecatedCurrencyAmountObj = {
   /* Technically the generated graphql schema has value as `any` but it's always a number.
    * We are intentionally widening the type here to allow for more forgiving input: */
   value?: number | string | null;
@@ -208,15 +208,57 @@ export type CurrencyAmountObj = {
   __typename?: "CurrencyAmount" | undefined;
 };
 
+export type CurrencyAmountObj = {
+  /* Technically the generated graphql schema has value as `any` but it's always a number.
+   * We are intentionally widening the type here to allow for more forgiving input: */
+  original_value?: number | string | null;
+  /* assume satoshi if not provided */
+  original_unit?: CurrencyUnitType;
+  __typename?: "CurrencyAmount" | undefined;
+};
+
+export type CurrencyAmountPreferenceObj = {
+  /* Technically the generated graphql schema has value as `any` but it's always a number.
+   * We are intentionally widening the type here to allow for more forgiving input: */
+  preferred_currency_unit?: CurrencyUnitType;
+  /* assume satoshi if not provided */
+  preferred_currency_value_rounded?: number | string | null;
+  __typename?: "CurrencyAmount" | undefined;
+};
+
 export type CurrencyAmountArg =
+  | DeprecatedCurrencyAmountObj
   | CurrencyAmountObj
+  | CurrencyAmountPreferenceObj
   | SDKCurrencyAmountType
   | undefined
   | null;
 
-export function isCurrencyAmountObj(arg: unknown): arg is CurrencyAmountObj {
+export function isDeprecatedCurrencyAmountObj(
+  arg: unknown,
+): arg is DeprecatedCurrencyAmountObj {
   return (
     typeof arg === "object" && arg !== null && "value" in arg && "unit" in arg
+  );
+}
+
+export function isCurrencyAmountObj(arg: unknown): arg is CurrencyAmountObj {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    "original_value" in arg &&
+    "original_unit" in arg
+  );
+}
+
+export function isCurrencyAmountPreferenceObj(
+  arg: unknown,
+): arg is CurrencyAmountPreferenceObj {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    "preferred_currency_unit" in arg &&
+    "preferred_currency_value_rounded" in arg
   );
 }
 
@@ -248,7 +290,13 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   if (isSDKCurrencyAmount(currencyAmountArg)) {
     value = currencyAmountArg.originalValue;
     unit = currencyAmountArg.originalUnit;
+  } else if (isCurrencyAmountPreferenceObj(currencyAmountArg)) {
+    value = asNumber(currencyAmountArg.preferred_currency_value_rounded);
+    unit = currencyAmountArg.preferred_currency_unit;
   } else if (isCurrencyAmountObj(currencyAmountArg)) {
+    value = asNumber(currencyAmountArg.original_value);
+    unit = currencyAmountArg.original_unit;
+  } else if (isDeprecatedCurrencyAmountObj(currencyAmountArg)) {
     value = asNumber(currencyAmountArg.value);
     unit = currencyAmountArg.unit;
   }
