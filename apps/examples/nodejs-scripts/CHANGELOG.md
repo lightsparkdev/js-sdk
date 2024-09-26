@@ -1,5 +1,11 @@
 # @lightsparkdev/nodejs-scripts
 
+## 0.0.16
+
+### Patch Changes
+
+- @lightsparkdev/lightspark-sdk@1.8.5
+
 ## 0.0.15
 
 ### Patch Changes
