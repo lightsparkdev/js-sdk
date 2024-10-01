@@ -1,49 +1,29 @@
 "use client";
 
-import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/typography.js";
-import { toReactNodesBase } from "../../utils/toReactNodes/toReactNodesBase.js";
 import {
-  type CommonStyledTypographyProps,
-  type CommonTypographyProps,
-} from "./types.js";
-import { typographyStyles } from "./typographyStyles.js";
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../../utils/toReactNodes/toReactNodes.js";
+import {
+  getPropDefaults,
+  StyledLabelModerate,
+  type LabelModerateProps,
+} from "./base/LabelModerate.js";
 
-export type LabelModerateProps = CommonTypographyProps;
+export type LabelModeratePropsWithContentNodes = LabelModerateProps & {
+  content?: ToReactNodesArgs;
+};
 
-export const LabelModerate = ({
-  block = false,
-  children,
-  color,
-  content,
-  display,
-  hideOverflow = false,
-  id,
-  size = "Medium",
-}: LabelModerateProps) => {
-  let reactNodes: ReactNode = children || null;
-  if (content) {
-    reactNodes = toReactNodesBase(content);
+export function LabelModerate(props: LabelModeratePropsWithContentNodes) {
+  const propsWithDefaults = getPropDefaults(props);
+  let reactNodes: ReactNode = props.children || null;
+  if (props.content) {
+    reactNodes = toReactNodes(props.content);
   }
   return (
-    <StyledLabelModerate
-      block={block}
-      colorProp={color}
-      displayProp={display}
-      hideOverflow={hideOverflow}
-      id={id}
-      size={size}
-    >
+    <StyledLabelModerate {...propsWithDefaults}>
       {reactNodes}
     </StyledLabelModerate>
   );
-};
-
-type StyledLabelModerateProps = CommonStyledTypographyProps;
-
-export const StyledLabelModerate = styled.span<StyledLabelModerateProps>`
-  ${({ theme, size, colorProp }) =>
-    applyTypography(theme, "Label Moderate", size, colorProp)}
-  ${typographyStyles}
-`;
+}

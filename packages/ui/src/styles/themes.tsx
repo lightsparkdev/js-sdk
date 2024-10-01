@@ -214,7 +214,6 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 999,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 16,
       Small: 16,
@@ -232,7 +231,6 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -277,7 +275,6 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 999,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 16,
       Small: 16,
@@ -295,7 +292,6 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -373,7 +369,6 @@ const bridgeBaseSettings = {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 8,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 14,
       Small: 14,
@@ -391,7 +386,6 @@ const bridgeBaseSettings = {
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -399,7 +393,6 @@ const bridgeBaseSettings = {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",
         defaultBorderColor: "grayBlue80",
-        defaultBorderWidth: 1,
       },
     },
   }),

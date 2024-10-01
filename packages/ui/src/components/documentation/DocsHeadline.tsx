@@ -4,7 +4,8 @@ import React from "react";
 import { type FontColorKey } from "../../styles/themes.js";
 import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { isReactNodeWithChildren } from "../../utils/isReactNodeWithChildren.js";
-import { StyledHeadline, type Heading } from "../typography/Headline.js";
+import { StyledHeadline } from "../typography/base//Headline.js";
+import { type Heading } from "../typography/base/Headline.js";
 
 /* NOTE: Should only be used for documentation sites where we can't currently control 
    the MDX to ReactNode rendering. Instead we allow these components to render any

@@ -1,5 +1,6 @@
 import { css, keyframes, ThemeProvider } from "@emotion/react";
 import styled from "@emotion/styled";
+import { Fragment } from "react";
 import { themeOrWithKey, themes, type Themes } from "../styles/themes.js";
 import {
   getLineHeightForTypographyType,
@@ -30,6 +31,10 @@ type PendingValueProps = {
   typography?: PartialSimpleTypographyProps;
   width?: number | undefined;
   forceTheme?: Themes | undefined;
+  /* If fullSizePending the background will expand to the size of it's nearest parent with
+     position: relative. Otherwise the background will be the line height of the content to
+     avoid layout shift once the content is defined */
+  fullSizePending?: boolean;
 };
 
 export function PendingValue({
@@ -38,6 +43,7 @@ export function PendingValue({
   typography: typographyProp,
   width,
   forceTheme,
+  fullSizePending = false,
 }: PendingValueProps) {
   const defaultTypography = {
     type: typographyProp?.type || "Body",
@@ -59,15 +65,35 @@ export function PendingValue({
 
   const content = toReactNodes(nodesWithTypography);
 
-  const nodes = (
-    <StyledPendingValue
+  /* Depending on fullSizePending, content node may be inside the background
+     or outside to ensure intrinsic height is always equal to the line height
+     of the content once it's defined */
+  const contentNode = (
+    <StyledPendingValueContent
       typographyType={defaultTypography.type}
       typographySize={defaultTypography.size}
-      widthProp={width}
     >
-      <StyledPendingValueBg visible={!contentProp} animate={animate} />
-      <StyledPendingValueContent>{content}</StyledPendingValueContent>
-    </StyledPendingValue>
+      {content}
+    </StyledPendingValueContent>
+  );
+  const nodes = (
+    <Fragment>
+      <StyledPendingValueBgOuter
+        typographyType={defaultTypography.type}
+        typographySize={defaultTypography.size}
+        widthProp={width}
+        hasContent={!!contentProp}
+        fullSizePending={fullSizePending}
+      >
+        <StyledPendingValueBg
+          visible={!contentProp}
+          fullSizePending={fullSizePending}
+          animate={animate}
+        />
+        {fullSizePending ? null : contentNode}
+      </StyledPendingValueBgOuter>
+      {fullSizePending ? contentNode : null}
+    </Fragment>
   );
   return forceTheme ? (
     <ThemeProvider theme={themes[forceTheme]}>{nodes}</ThemeProvider>
@@ -76,22 +102,48 @@ export function PendingValue({
   );
 }
 
-const StyledPendingValue = styled.div<{
+const StyledPendingValueBgOuter = styled.div<{
   typographyType: TypographyTypeKey;
   typographySize: TokenSizeKey;
   widthProp: number | undefined;
+  fullSizePending: boolean;
+  hasContent: boolean;
 }>`
   position: relative;
   height: ${({ typographyType, typographySize, theme }) =>
     getLineHeightForTypographyType(typographyType, typographySize, theme)};
 
-  ${({ widthProp }) => (widthProp ? `width: ${widthProp}px;` : "width: 100%;")}
+  ${({ widthProp, hasContent }) =>
+    widthProp && !hasContent ? `width: ${widthProp}px;` : "width: 100%;"}
+  overflow: hidden;
   max-width: 100%;
+
+  ${({ fullSizePending }) => {
+    if (fullSizePending) {
+      return `
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 100%;
+        width: 100%;
+      `;
+    }
+    return "";
+  }}
 `;
 
-export const StyledPendingValueContent = styled.div`
+export const StyledPendingValueContent = styled.div<{
+  typographyType: TypographyTypeKey;
+  typographySize: TokenSizeKey;
+}>`
   position: relative;
   z-index: 1;
+  overflow: hidden;
+
+  height: ${({ typographyType, typographySize, theme }) =>
+    getLineHeightForTypographyType(typographyType, typographySize, theme)};
 `;
 
 const vSpacing = 2;
@@ -99,22 +151,35 @@ const vSpacing = 2;
 export const StyledPendingValueBg = styled.div<{
   animate: boolean;
   visible: boolean;
+  fullSizePending: boolean;
 }>`
   z-index: 0;
-  height: calc(100% - ${vSpacing * 2}px);
   width: 100%;
   position: absolute;
-  top: ${vSpacing}px;
-  border-radius: 999px;
+
+  ${({ fullSizePending }) => {
+    if (fullSizePending) {
+      return `
+        height: 100%;
+        top: 0;
+      `;
+    }
+    /* When not fullSizePending this looks nicer when it's just
+       slightly less tall than the line height of the content: */
+    return `
+      height: calc(100% - ${vSpacing * 2}px);
+      top: ${vSpacing}px;
+      border-radius: 999px;
+    `;
+  }}
 
   ${({ visible }) => (visible ? "opacity: 1;" : "opacity: 0;")}
-  transition: opacity 0.01s ease;
 
   background: linear-gradient(
     90deg,
-    ${themeOrWithKey("c15Neutral", "c25Neutral")} 0%,
-    ${themeOrWithKey("c2Neutral", "c3Neutral")} 50%,
-    ${themeOrWithKey("c15Neutral", "c25Neutral")} 100%
+    ${themeOrWithKey("c05Neutral", "c25Neutral")} 0%,
+    ${themeOrWithKey("c1Neutral", "c3Neutral")} 50%,
+    ${themeOrWithKey("c05Neutral", "c25Neutral")} 100%
   );
 
   background-size: 200% 100%;

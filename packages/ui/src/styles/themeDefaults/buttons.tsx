@@ -28,7 +28,6 @@ export const buttonsThemeBase = {
   defaultTypographyType: "Body Strong" as AllowedButtonTypographyTypes,
   defaultColor: "text" as ThemeOrColorKey,
   defaultBorderRadius: 32 as ButtonBorderRadius,
-  defaultBorderWidth: 1,
   defaultBackgroundColor: "bg" as BackgroundColorKeyArg,
   defaultBorderColor: "bg" as BackgroundColorKeyArg,
   defaultHoverBackgroundColor: "bg" as BackgroundColorKeyArg,
@@ -59,7 +58,6 @@ export const defaultButtonsTheme = {
   kinds: {
     primary: {
       defaultColor: "bg",
-      defaultBorderWidth: 0,
       defaultBackgroundColor: "c9Neutral",
       defaultBorderColor: "c9Neutral",
       defaultHoverBackgroundColor: "c8Neutral",
@@ -67,7 +65,6 @@ export const defaultButtonsTheme = {
     },
     ghost: {
       defaultBackgroundColor: "transparent",
-      defaultBorderWidth: 0,
       defaultHoverBackgroundColor: "transparent",
       defaultHoverBorderColor: "transparent",
       defaultPaddingsY: {

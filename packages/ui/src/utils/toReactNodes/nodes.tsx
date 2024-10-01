@@ -2,7 +2,7 @@ import { isObject } from "lodash-es";
 import type { ComponentProps } from "react";
 import type { CurrencyAmount } from "../../components/CurrencyAmount.js";
 import type { Icon } from "../../components/Icon/Icon.js";
-import { type TypographyPropsWithoutContent } from "../../components/typography/types.js";
+import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
 import type { Link } from "../../router.js";
 import type { NextLink } from "../NextLink.js";
 
@@ -20,7 +20,7 @@ export type TextNode = {
   text: string;
   id?: string;
   onClick?: () => void;
-  typography?: TypographyPropsWithoutContent;
+  typography?: TypographyPropsWithoutChildren;
 };
 
 export type IconNode = {

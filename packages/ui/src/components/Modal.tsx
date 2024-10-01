@@ -30,7 +30,8 @@ import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
-import { Headline, headlineSelector } from "./typography/Headline.js";
+import { Headline } from "./typography/Headline.js";
+import { headlineSelector } from "./typography/base/Headline.js";
 
 type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */

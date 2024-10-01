@@ -74,7 +74,7 @@ export function CurrencyAmount({
     content = renderTypography(typography.type, {
       size: typography.size,
       color: typography.color,
-      content: formattedNumber,
+      children: formattedNumber,
     });
   }
 

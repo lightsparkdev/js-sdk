@@ -12,11 +12,11 @@ import {
 } from "../../styles/tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../../styles/utils.js";
 import { select } from "../../utils/emotion.js";
-import { StyledBody } from "./Body.js";
-import { StyledCode } from "./Code.js";
-import { displaySelector } from "./Display.js";
-import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./Headline.js";
-import { StyledTitle } from "./Title.js";
+import { StyledBody } from "./base/Body.js";
+import { StyledCode } from "./base/Code.js";
+import { displaySelector } from "./base/Display.js";
+import { ALL_HEADLINE_SELECTORS, headlineSelector } from "./base/Headline.js";
+import { StyledTitle } from "./base/Title.js";
 
 type ArticleProps = {
   defaultTypography?: {
