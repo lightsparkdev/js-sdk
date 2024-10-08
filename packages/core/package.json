@@ -77,7 +77,6 @@
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
     "secp256k1": "^5.0.0",
-    "text-encoding": "^0.7.0",
     "ws": "^8.12.1",
     "zen-observable-ts": "^1.1.0"
   },
@@ -88,7 +87,6 @@
     "@types/jest": "^29.5.3",
     "@types/lodash-es": "^4.17.6",
     "@types/secp256k1": "^4.0.3",
-    "@types/text-encoding": "^0.0.36",
     "@types/ws": "^8.5.4",
     "auto-bind": "^5.0.1",
     "eslint": "^8.3.0",

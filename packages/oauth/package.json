@@ -56,7 +56,6 @@
   "devDependencies": {
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
-    "@types/text-encoding": "^0.0.36",
     "eslint": "^8.3.0",
     "eslint-watch": "^8.0.0",
     "jest": "^29.6.2",

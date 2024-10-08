@@ -28,13 +28,8 @@ export const verifyAndParseWebhook = async (
   return parseWebhook(data);
 };
 
-const parseWebhook = async (data: Uint8Array): Promise<WebhookEvent> => {
-  let td = TextDecoder;
-  if (typeof td === "undefined") {
-    const tdModule = await import("text-encoding");
-    td = tdModule.TextDecoder;
-  }
-  const dataStr = new td().decode(data);
+const parseWebhook = (data: Uint8Array): WebhookEvent => {
+  const dataStr = new TextDecoder().decode(data);
   const event = JSON.parse(dataStr);
 
   return {
