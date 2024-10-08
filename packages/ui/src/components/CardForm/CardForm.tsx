@@ -1,5 +1,5 @@
 import type { Theme } from "@emotion/react";
-import { css } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { ComponentProps, FormEvent, ReactNode } from "react";
 import { useCallback } from "react";
@@ -17,6 +17,19 @@ import {
   formButtonTopMarginStyle,
   inputSpacingPx,
 } from "../../styles/fields.js";
+import {
+  type CardFormBackgroundColor,
+  type CardFormBorderColor,
+  type CardFormBorderRadius,
+  type CardFormBorderWidth,
+  type CardFormKind,
+  type CardFormPaddingX,
+  type CardFormPaddingY,
+  type CardFormShadow,
+  type CardFormTextAlign,
+  type CardFormThemeKey,
+} from "../../styles/themeDefaults/cardForm.js";
+import { getColor } from "../../styles/themes.js";
 import { pxToRems } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { icon } from "../../utils/toReactNodes/nodes.js";
@@ -36,11 +49,6 @@ import { type TextIconAligner } from "../TextIconAligner.js";
 import { TextInputHalfRow } from "../TextInput.js";
 import { ToggleContainer } from "../Toggle.js";
 import { Headline } from "../typography/Headline.js";
-
-type CardFormKind = "primary" | "secondary" | "tertiary";
-type CardFormBorderRadius = 8 | 24;
-type CardFormShadow = "soft" | "hard" | "none";
-type CardFormTextAlign = "center" | "left";
 
 const descriptionTypography = {
   primary: {
@@ -93,40 +101,79 @@ type CardFormProps = {
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
   hasChildForm?: boolean;
   wide?: boolean;
-  kind?: "primary" | "secondary" | "tertiary";
+  kind?: CardFormKind;
   textAlign?: CardFormTextAlign;
+  shadow?: CardFormShadow;
   belowFormContent?: ToReactNodesArgs | undefined;
 };
 
 type ResolvePropsArgs = {
   kind: CardFormKind;
+  shadow?: CardFormShadow | undefined;
   textAlign?: CardFormTextAlign | undefined;
 };
 
-function resolveProps(args: ResolvePropsArgs) {
-  const isPrimary = args.kind === "primary";
-  const isSecondary = args.kind === "secondary";
-  const isTertiary = args.kind === "tertiary";
+function resolveProps(args: ResolvePropsArgs, theme: Theme) {
+  const paddingY = resolveCardFormProp(undefined, args.kind, "paddingY", theme);
+  const paddingX = resolveCardFormProp(undefined, args.kind, "paddingX", theme);
+  const textAlign = resolveCardFormProp(
+    args.textAlign,
+    args.kind,
+    "textAlign",
+    theme,
+  );
+  const shadow = resolveCardFormProp(args.shadow, args.kind, "shadow", theme);
+  const borderRadius = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "borderRadius",
+    theme,
+  );
+  const borderWidth = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "borderWidth",
+    theme,
+  );
+  const borderColor = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "borderColor",
+    theme,
+  );
+  const backgroundColor = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "backgroundColor",
+    theme,
+  );
+  const smBackgroundColor = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "smBackgroundColor",
+    theme,
+  );
+  const smBorderWidth = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "smBorderWidth",
+    theme,
+  );
 
-  const paddingY = isPrimary || isTertiary ? 56 : 40;
-  const paddingX = isSecondary || isTertiary ? 40 : 56;
-  const textAlign: CardFormTextAlign = args.textAlign || "left";
-  const shadow: CardFormShadow = isPrimary
-    ? "soft"
-    : isTertiary
-    ? "hard"
-    : "none";
-  const borderRadius: CardFormBorderRadius = isSecondary ? 8 : 24;
-  const border = isSecondary;
-
-  return {
+  const props = {
     paddingY,
     paddingX,
     shadow,
     borderRadius,
-    border,
+    borderColor,
+    borderWidth,
     textAlign,
+    backgroundColor,
+    smBackgroundColor,
+    smBorderWidth,
   };
+
+  return props;
 }
 
 export function CardForm({
@@ -142,11 +189,26 @@ export function CardForm({
   hasChildForm,
   wide = false,
   kind = "primary",
+  shadow: shadowProp,
   textAlign: textAlignProp,
   belowFormContent,
 }: CardFormProps) {
-  const { paddingY, paddingX, shadow, borderRadius, border, textAlign } =
-    resolveProps({ kind, textAlign: textAlignProp });
+  const theme = useTheme();
+  const {
+    paddingY,
+    paddingX,
+    shadow,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    textAlign,
+    backgroundColor,
+    smBackgroundColor,
+    smBorderWidth,
+  } = resolveProps(
+    { kind, textAlign: textAlignProp, shadow: shadowProp },
+    theme,
+  );
 
   const onSubmitForm = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
@@ -192,32 +254,26 @@ export function CardForm({
     </CardFormContent>
   );
 
+  const commonProps = {
+    wide,
+    shadow,
+    borderRadius,
+    borderWidth,
+    borderColor,
+    textAlign,
+    paddingX,
+    paddingY,
+    backgroundColor,
+    smBackgroundColor,
+    smBorderWidth,
+  };
+
   return (
     <CardFormContainer>
       {hasChildForm ? (
-        <StyledCardFormDiv
-          wide={wide}
-          shadow={shadow}
-          borderRadius={borderRadius}
-          border={border}
-          textAlign={textAlign}
-          paddingY={paddingY}
-          paddingX={paddingX}
-        >
-          {content}
-        </StyledCardFormDiv>
+        <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <StyledCardForm
-          wide={wide}
-          onSubmit={onSubmitForm}
-          shadow={shadow}
-          borderRadius={borderRadius}
-          border={border}
-          textAlign={textAlign}
-          paddingY={paddingY}
-          paddingX={paddingX}
-          noValidate
-        >
+        <StyledCardForm onSubmit={onSubmitForm} noValidate {...commonProps}>
           {content}
         </StyledCardForm>
       )}
@@ -362,10 +418,14 @@ type StyledCardFormStyleProps = {
   wide: boolean;
   shadow: CardFormShadow;
   borderRadius: CardFormBorderRadius;
-  border: boolean;
+  borderWidth: CardFormBorderWidth;
+  borderColor: CardFormBorderColor;
   textAlign: CardFormTextAlign;
-  paddingX: number;
-  paddingY: number;
+  paddingX: CardFormPaddingX;
+  paddingY: CardFormPaddingY;
+  backgroundColor: CardFormBackgroundColor;
+  smBackgroundColor: CardFormBackgroundColor;
+  smBorderWidth: CardFormBorderWidth;
 };
 
 const StyledCardFormStyle = ({
@@ -373,10 +433,14 @@ const StyledCardFormStyle = ({
   wide,
   shadow,
   borderRadius,
-  border,
+  borderWidth,
+  borderColor,
   textAlign,
   paddingX,
   paddingY,
+  backgroundColor,
+  smBackgroundColor,
+  smBorderWidth,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
     ${formInset({ wide, paddingX, paddingY })}
@@ -386,13 +450,17 @@ const StyledCardFormStyle = ({
       ? standardCardShadowHard
       : ""}
 
-    background-color: ${theme.bg};
     position: relative;
     height: 100%;
-    ${border ? `border: 1px solid ${theme.vlcNeutral};` : ""}
+    border-style: solid;
+    border-width: ${borderWidth}px;
+    border-color: ${getColor(theme, borderColor)};
+    background-color: ${getColor(theme, backgroundColor)};
 
     ${bp.sm(`
       box-shadow: none;
+      background-color: ${getColor(theme, smBackgroundColor)};
+      border-width: ${smBorderWidth}px;
     `)}
 
     ${bp.minSm(`
@@ -554,3 +622,18 @@ const CardFormOptionDescription = styled.p`
   color: ${colors.gray40};
   margin: 6px 0 0;
 `;
+
+function resolveCardFormProp<T, K extends CardFormThemeKey>(
+  prop: T,
+  kind: CardFormKind,
+  defaultKey: K,
+  theme: Theme,
+) {
+  return (
+    /** props may be unset for a given kind but theme defaults always exist,
+     * so this will always resolve a value: */
+    prop ||
+    theme.cardForm.kinds[kind]?.[defaultKey] ||
+    theme.cardForm[defaultKey]
+  );
+}

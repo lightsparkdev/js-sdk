@@ -15,6 +15,10 @@ import {
   defaultButtonsTheme,
 } from "./themeDefaults/buttons.js";
 import {
+  cardFormThemeBase,
+  defaultCardFormTheme,
+} from "./themeDefaults/cardForm.js";
+import {
   defaultLoadingTheme,
   loadingThemeBase,
 } from "./themeDefaults/loading.js";
@@ -88,6 +92,7 @@ const baseTheme = {
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
+  cardForm: defaultCardFormTheme,
   badge: {
     bg: "c05Neutral" as ThemeOrColorKey,
   },
@@ -148,6 +153,7 @@ const darkBaseTheme: BaseTheme = {
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
+  cardForm: defaultCardFormTheme,
   inputBackground: colors.black,
   badge: {
     bg: "c15Neutral",
@@ -381,6 +387,7 @@ const bridgeBaseSettings = {
       primary: {
         defaultColor: "bg",
         defaultBackgroundColor: "blue39",
+        defaultBorderColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
       },
       ghost: {
@@ -404,6 +411,25 @@ const bridgeBaseSettings = {
       },
       secondary: {
         defaultIconName: "UmaBridgeLoadingTransparent",
+      },
+    },
+  }),
+  cardForm: merge<typeof defaultCardFormTheme>(cardFormThemeBase, {
+    backgroundColor: "white",
+    smBackgroundColor: "bg",
+    kinds: {
+      primary: {
+        paddingY: 56,
+        paddingX: 40,
+        shadow: "hard",
+      },
+      secondary: {
+        borderWidth: 1,
+        smBorderWidth: 0,
+        borderColor: "grayBlue94",
+        paddingY: 40,
+        paddingX: 40,
+        shadow: "none",
       },
     },
   }),
