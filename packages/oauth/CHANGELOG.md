@@ -1,5 +1,14 @@
 # @lightsparkdev/oauth
 
+## 0.1.49
+
+### Patch Changes
+
+- 1a063b6: - Remove text-encoding dependency previously needed for React Native support
+- Updated dependencies [1a063b6]
+- Updated dependencies [1a063b6]
+  - @lightsparkdev/core@1.2.4
+
 ## 0.1.48
 
 ### Patch Changes

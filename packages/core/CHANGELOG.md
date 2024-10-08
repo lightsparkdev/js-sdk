@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.2.4
+
+### Patch Changes
+
+- 1a063b6: - Add MXN to currency conversion util
+- 1a063b6: - Remove text-encoding dependency previously needed for React Native support
+
 ## 1.2.3
 
 ### Patch Changes
