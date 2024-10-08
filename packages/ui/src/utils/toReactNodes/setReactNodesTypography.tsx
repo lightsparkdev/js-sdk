@@ -1,5 +1,5 @@
 import { ensureArray } from "@lightsparkdev/core";
-import { type TypographyPropsWithoutContent } from "../../components/typography/types.js";
+import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
 import { isString } from "../strings.js";
 import {
   isCurrencyAmountNode,
@@ -29,7 +29,7 @@ type SetReactNodesTypographyMapType =
   (typeof setReactNodesTypographyMapTypes)[number];
 
 type SetReactNodesTypographyMap = {
-  [nodeType in SetReactNodesTypographyMapType]?: TypographyPropsWithoutContent;
+  [nodeType in SetReactNodesTypographyMapType]?: TypographyPropsWithoutChildren;
 };
 
 export function setReactNodesTypography(
@@ -83,7 +83,7 @@ export function setReactNodesTypography(
 
 function setTextNodeTypography(
   node: TextNode | string,
-  typography: TypographyPropsWithoutContent,
+  typography: TypographyPropsWithoutChildren,
   replaceExistingTypography = true,
 ) {
   if (isString(node)) {

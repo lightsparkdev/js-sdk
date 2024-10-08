@@ -15,6 +15,10 @@ import {
   defaultButtonsTheme,
 } from "./themeDefaults/buttons.js";
 import {
+  cardFormThemeBase,
+  defaultCardFormTheme,
+} from "./themeDefaults/cardForm.js";
+import {
   defaultLoadingTheme,
   loadingThemeBase,
 } from "./themeDefaults/loading.js";
@@ -88,6 +92,7 @@ const baseTheme = {
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
+  cardForm: defaultCardFormTheme,
   badge: {
     bg: "c05Neutral" as ThemeOrColorKey,
   },
@@ -148,6 +153,7 @@ const darkBaseTheme: BaseTheme = {
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
+  cardForm: defaultCardFormTheme,
   inputBackground: colors.black,
   badge: {
     bg: "c15Neutral",
@@ -214,7 +220,6 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 999,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 16,
       Small: 16,
@@ -232,7 +237,6 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -277,7 +281,6 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 999,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 16,
       Small: 16,
@@ -295,7 +298,6 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -373,7 +375,6 @@ const bridgeBaseSettings = {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
     defaultBorderRadius: 8,
-    defaultBorderWidth: 0,
     defaultPaddingsY: {
       ExtraSmall: 14,
       Small: 14,
@@ -386,12 +387,12 @@ const bridgeBaseSettings = {
       primary: {
         defaultColor: "bg",
         defaultBackgroundColor: "blue39",
+        defaultBorderColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
       },
       ghost: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
-        defaultBorderWidth: 0,
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
       },
@@ -399,7 +400,6 @@ const bridgeBaseSettings = {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",
         defaultBorderColor: "grayBlue80",
-        defaultBorderWidth: 1,
       },
     },
   }),
@@ -411,6 +411,25 @@ const bridgeBaseSettings = {
       },
       secondary: {
         defaultIconName: "UmaBridgeLoadingTransparent",
+      },
+    },
+  }),
+  cardForm: merge<typeof defaultCardFormTheme>(cardFormThemeBase, {
+    backgroundColor: "white",
+    smBackgroundColor: "bg",
+    kinds: {
+      primary: {
+        paddingY: 56,
+        paddingX: 40,
+        shadow: "hard",
+      },
+      secondary: {
+        borderWidth: 1,
+        smBorderWidth: 0,
+        borderColor: "grayBlue94",
+        paddingY: 40,
+        paddingX: 40,
+        shadow: "none",
       },
     },
   }),

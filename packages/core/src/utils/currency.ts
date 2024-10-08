@@ -15,10 +15,11 @@ export const CurrencyUnit = {
   BITCOIN: "BITCOIN",
   SATOSHI: "SATOSHI",
   MILLISATOSHI: "MILLISATOSHI",
-  USD: "USD",
   NANOBITCOIN: "NANOBITCOIN",
   MICROBITCOIN: "MICROBITCOIN",
   MILLIBITCOIN: "MILLIBITCOIN",
+  USD: "USD",
+  MXN: "MXN",
 
   Bitcoin: "BITCOIN",
   Microbitcoin: "MICROBITCOIN",
@@ -27,6 +28,7 @@ export const CurrencyUnit = {
   Nanobitcoin: "NANOBITCOIN",
   Satoshi: "SATOSHI",
   Usd: "USD",
+  Mxn: "MXN",
 } as const;
 
 export type CurrencyUnitType = (typeof CurrencyUnit)[keyof typeof CurrencyUnit];
@@ -39,6 +41,37 @@ export type SDKCurrencyAmountType = {
   preferredCurrencyValueApprox: number;
 };
 
+const standardUnitConversionObj = {
+  [CurrencyUnit.BITCOIN]: (v: number, unitsPerBtc = 1) => v / unitsPerBtc,
+  [CurrencyUnit.MICROBITCOIN]: (v: number, unitsPerBtc = 1) =>
+    (v / unitsPerBtc) * 1_000_000,
+  [CurrencyUnit.MILLIBITCOIN]: (v: number, unitsPerBtc = 1) =>
+    (v / unitsPerBtc) * 1_000,
+  [CurrencyUnit.MILLISATOSHI]: (v: number, unitsPerBtc = 1) =>
+    (v / unitsPerBtc) * 100_000_000_000,
+  [CurrencyUnit.NANOBITCOIN]: (v: number, unitsPerBtc = 1) =>
+    (v / unitsPerBtc) * 1_000_000_000,
+  [CurrencyUnit.SATOSHI]: (v: number, unitsPerBtc = 1) =>
+    (v / unitsPerBtc) * 100_000_000,
+  /* Converting between two different fiat types is not currently supported */
+  [CurrencyUnit.USD]: (v: number) => v,
+  [CurrencyUnit.MXN]: (v: number) => v,
+};
+
+/* Round without decimals since we're returning cents: */
+const toBitcoinConversion = (v: number, unitsPerBtc = 1) =>
+  round(v * unitsPerBtc);
+const toMicrobitcoinConversion = (v: number, unitsPerBtc = 1) =>
+  round((v / 1_000_000) * unitsPerBtc);
+const toMillibitcoinConversion = (v: number, unitsPerBtc = 1) =>
+  round((v / 1_000) * unitsPerBtc);
+const toMillisatoshiConversion = (v: number, unitsPerBtc = 1) =>
+  round((v / 100_000_000_000) * unitsPerBtc);
+const toNanobitcoinConversion = (v: number, unitsPerBtc = 1) =>
+  round((v / 1_000_000_000) * unitsPerBtc);
+const toSatoshiConversion = (v: number, unitsPerBtc = 1) =>
+  round((v / 100_000_000) * unitsPerBtc);
+
 const CONVERSION_MAP = {
   [CurrencyUnit.BITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v,
@@ -47,9 +80,8 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v * 100_000_000_000,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v * 1_000_000_000,
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100_000_000,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round(v * centsPerBtc, 2),
+    [CurrencyUnit.USD]: toBitcoinConversion,
+    [CurrencyUnit.MXN]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000,
@@ -58,9 +90,8 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v * 100_000,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v * 1000,
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round((v / 1_000_000) * centsPerBtc),
+    [CurrencyUnit.USD]: toMicrobitcoinConversion,
+    [CurrencyUnit.MXN]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000,
@@ -69,9 +100,8 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v * 100_000_000,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v * 1_000_000,
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100_000,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round((v / 1_000) * centsPerBtc),
+    [CurrencyUnit.USD]: toMillibitcoinConversion,
+    [CurrencyUnit.MXN]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000_000,
@@ -80,9 +110,8 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v / 100,
     [CurrencyUnit.SATOSHI]: (v: number) => v / 1000,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round((v / 100_000_000_000) * centsPerBtc),
+    [CurrencyUnit.USD]: toMillisatoshiConversion,
+    [CurrencyUnit.MXN]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000_000,
@@ -91,9 +120,8 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v * 100,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v,
     [CurrencyUnit.SATOSHI]: (v: number) => v / 10,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round((v / 1_000_000_000) * centsPerBtc),
+    [CurrencyUnit.USD]: toNanobitcoinConversion,
+    [CurrencyUnit.MXN]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000,
@@ -102,31 +130,22 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MILLISATOSHI]: (v: number) => v * 1000,
     [CurrencyUnit.NANOBITCOIN]: (v: number) => v * 10,
     [CurrencyUnit.SATOSHI]: (v: number) => v,
-    [CurrencyUnit.USD]: (v: number, centsPerBtc = 1) =>
-      /* Round without decimals since we're returning cents: */
-      round((v / 100_000_000) * centsPerBtc),
+    [CurrencyUnit.USD]: toSatoshiConversion,
+    [CurrencyUnit.MXN]: toSatoshiConversion,
   },
-  [CurrencyUnit.USD]: {
-    [CurrencyUnit.BITCOIN]: (v: number, centsPerBtc = 1) => v / centsPerBtc,
-    [CurrencyUnit.MICROBITCOIN]: (v: number, centsPerBtc = 1) =>
-      (v / centsPerBtc) * 1_000_000,
-    [CurrencyUnit.MILLIBITCOIN]: (v: number, centsPerBtc = 1) =>
-      (v / centsPerBtc) * 1_000,
-    [CurrencyUnit.MILLISATOSHI]: (v: number, centsPerBtc = 1) =>
-      (v / centsPerBtc) * 100_000_000_000,
-    [CurrencyUnit.NANOBITCOIN]: (v: number, centsPerBtc = 1) =>
-      (v / centsPerBtc) * 1_000_000_000,
-    [CurrencyUnit.SATOSHI]: (v: number, centsPerBtc = 1) =>
-      (v / centsPerBtc) * 100_000_000,
-    [CurrencyUnit.USD]: (v: number) => v,
-  },
+  [CurrencyUnit.USD]: standardUnitConversionObj,
+  [CurrencyUnit.MXN]: standardUnitConversionObj,
 };
 
 export function convertCurrencyAmountValue(
   fromUnit: CurrencyUnitType,
   toUnit: CurrencyUnitType,
   amount: number,
-  centsPerBtc = 1,
+  /* Currency values are expected to always be provided in whole numbers of their smallest unit
+     e.g. $50.11 would be 5011. unitsPerBtc is the approximate value of one BTC in smallest
+     units to provide value estimates where needed where a backend value is not available, eg
+     previewing the approximate value of an amount to send. */
+  unitsPerBtc = 1,
 ): number {
   if (
     fromUnit === CurrencyUnit.FUTURE_VALUE ||
@@ -147,7 +166,7 @@ export function convertCurrencyAmountValue(
     );
   }
 
-  return conversionFn(amount, centsPerBtc);
+  return conversionFn(amount, unitsPerBtc);
 }
 
 export const convertCurrencyAmount = (
@@ -178,6 +197,7 @@ export type CurrencyMap = {
   [CurrencyUnit.MILLIBITCOIN]: number;
   [CurrencyUnit.NANOBITCOIN]: number;
   [CurrencyUnit.USD]: number;
+  [CurrencyUnit.MXN]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
     sats: string;
@@ -190,6 +210,7 @@ export type CurrencyMap = {
     [CurrencyUnit.MICROBITCOIN]: string;
     [CurrencyUnit.NANOBITCOIN]: string;
     [CurrencyUnit.USD]: string;
+    [CurrencyUnit.MXN]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
   isZero: boolean;
@@ -309,24 +330,26 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
 
 export function mapCurrencyAmount(
   currencyAmountArg: CurrencyAmountArg,
-  centsPerBtc = 1,
+  unitsPerBtc = 1,
 ): CurrencyMap {
   const { value, unit } = getCurrencyAmount(currencyAmountArg);
 
   const convert = convertCurrencyAmountValue;
-  const sats = convert(unit, CurrencyUnit.SATOSHI, value, centsPerBtc);
-  const btc = convert(unit, CurrencyUnit.BITCOIN, value, centsPerBtc);
-  const msats = convert(unit, CurrencyUnit.MILLISATOSHI, value, centsPerBtc);
-  const usd = convert(unit, CurrencyUnit.USD, value, centsPerBtc);
-  const mibtc = convert(unit, CurrencyUnit.MICROBITCOIN, value, centsPerBtc);
-  const mlbtc = convert(unit, CurrencyUnit.MILLIBITCOIN, value, centsPerBtc);
-  const nbtc = convert(unit, CurrencyUnit.NANOBITCOIN, value, centsPerBtc);
+  const sats = convert(unit, CurrencyUnit.SATOSHI, value, unitsPerBtc);
+  const btc = convert(unit, CurrencyUnit.BITCOIN, value, unitsPerBtc);
+  const msats = convert(unit, CurrencyUnit.MILLISATOSHI, value, unitsPerBtc);
+  const usd = convert(unit, CurrencyUnit.USD, value, unitsPerBtc);
+  const mxn = convert(unit, CurrencyUnit.MXN, value, unitsPerBtc);
+  const mibtc = convert(unit, CurrencyUnit.MICROBITCOIN, value, unitsPerBtc);
+  const mlbtc = convert(unit, CurrencyUnit.MILLIBITCOIN, value, unitsPerBtc);
+  const nbtc = convert(unit, CurrencyUnit.NANOBITCOIN, value, unitsPerBtc);
 
   const mapWithCurrencyUnits = {
     [CurrencyUnit.BITCOIN]: btc,
     [CurrencyUnit.SATOSHI]: sats,
     [CurrencyUnit.MILLISATOSHI]: msats,
     [CurrencyUnit.USD]: usd,
+    [CurrencyUnit.MXN]: mxn,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -359,6 +382,10 @@ export function mapCurrencyAmount(
       [CurrencyUnit.USD]: formatCurrencyStr({
         value: usd,
         unit: CurrencyUnit.USD,
+      }),
+      [CurrencyUnit.MXN]: formatCurrencyStr({
+        value: mxn,
+        unit: CurrencyUnit.MXN,
       }),
       [CurrencyUnit.FUTURE_VALUE]: "-",
     },

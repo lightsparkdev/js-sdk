@@ -1,56 +1,22 @@
 "use client";
 
-import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/typography.js";
-import { toReactNodesBase } from "../../utils/toReactNodes/toReactNodesBase.js";
 import {
-  type CommonStyledTypographyProps,
-  type CommonTypographyProps,
-} from "./types.js";
-import { typographyStyles } from "./typographyStyles.js";
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../../utils/toReactNodes/toReactNodes.js";
+import { type BodyProps, getPropDefaults, StyledBody } from "./base/Body.js";
 
-type AllowedBodyTags = "span" | "p" | "pre" | "div";
-
-type BodyProps = CommonTypographyProps & {
-  tag?: AllowedBodyTags | undefined;
+export type BodyPropsWithContentNodes = BodyProps & {
+  content?: ToReactNodesArgs;
 };
 
-export const Body = ({
-  block = false,
-  children,
-  color,
-  content,
-  display,
-  hideOverflow = false,
-  id,
-  size = "Medium",
-  tag = "span",
-}: BodyProps) => {
-  let reactNodes: ReactNode = children || null;
-  if (content) {
-    reactNodes = toReactNodesBase(content);
+export function Body(props: BodyPropsWithContentNodes) {
+  const propsWithDefaults = getPropDefaults(props);
+  let reactNodes: ReactNode = props.children || null;
+  if (props.content) {
+    reactNodes = toReactNodes(props.content);
   }
 
-  return (
-    <StyledBody
-      as={tag}
-      block={block}
-      colorProp={color}
-      displayProp={display}
-      hideOverflow={hideOverflow}
-      id={id}
-      size={size}
-    >
-      {reactNodes}
-    </StyledBody>
-  );
-};
-
-type StyledBodyProps = CommonStyledTypographyProps;
-
-export const StyledBody = styled.span<StyledBodyProps>`
-  ${({ theme, size, colorProp }) =>
-    applyTypography(theme, "Body", size, colorProp)}
-  ${typographyStyles}
-`;
+  return <StyledBody {...propsWithDefaults}>{reactNodes}</StyledBody>;
+}

@@ -59,7 +59,7 @@ export function NextLink({
       ? renderTypography(typography.type, {
           size: typography.size,
           color: typography.color,
-          content: text,
+          children: text,
         })
       : text;
   }

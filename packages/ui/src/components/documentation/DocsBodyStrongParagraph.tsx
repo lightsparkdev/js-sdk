@@ -3,7 +3,7 @@
 import styled from "@emotion/styled";
 import { type PartialBy } from "@lightsparkdev/core";
 import { type ComponentProps } from "react";
-import { StyledBodyStrong } from "../typography/BodyStrong.js";
+import { StyledBodyStrong } from "../typography/base/BodyStrong.js";
 
 /* NOTE: Should only be used in documentation sites where we can't currently control 
    the MDX to ReactNode rendering. Instead we allow these components to render any

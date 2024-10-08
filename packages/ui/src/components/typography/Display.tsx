@@ -1,62 +1,26 @@
 "use client";
 
-import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/typography.js";
-import { select } from "../../utils/emotion.js";
 
-import { toReactNodesBase } from "../../utils/toReactNodes/toReactNodesBase.js";
 import {
-  type CommonStyledTypographyProps,
-  type CommonTypographyProps,
-} from "./types.js";
-import { typographyStyles } from "./typographyStyles.js";
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../../utils/toReactNodes/toReactNodes.js";
+import {
+  type DisplayProps,
+  getPropDefaults,
+  StyledDisplay,
+} from "./base/Display.js";
 
-export const displayElements = ["h1", "h2", "h3", "h4", "h5", "h6"] as const;
-type DisplayElement = (typeof displayElements)[number];
-
-export type DisplayProps = CommonTypographyProps & {
-  tag?: DisplayElement | undefined;
+export type DisplayPropsWithContentNodes = DisplayProps & {
+  content?: ToReactNodesArgs;
 };
 
-export const Display = ({
-  block = false,
-  children,
-  color,
-  content,
-  display,
-  hideOverflow = false,
-  id,
-  size = "Medium",
-  tag = "h1",
-}: DisplayProps) => {
-  let reactNodes: ReactNode = children || null;
-  if (content) {
-    reactNodes = toReactNodesBase(content);
+export function Display(props: DisplayPropsWithContentNodes) {
+  const propsWithDefaults = getPropDefaults(props);
+  let reactNodes: ReactNode = props.children || null;
+  if (props.content) {
+    reactNodes = toReactNodes(props.content);
   }
-  return (
-    <StyledDisplay
-      as={tag}
-      block={block}
-      colorProp={color}
-      displayProp={display}
-      hideOverflow={hideOverflow}
-      id={id}
-      size={size}
-    >
-      {reactNodes}
-    </StyledDisplay>
-  );
-};
-
-type StyledDisplayProps = CommonStyledTypographyProps;
-
-const StyledDisplay = styled.span<StyledDisplayProps>`
-  ${({ theme, size, colorProp }) =>
-    applyTypography(theme, "Display", size, colorProp)}
-  ${typographyStyles}
-`;
-
-export function displaySelector(element: DisplayElement) {
-  return `${element}${select(StyledDisplay)}`;
+  return <StyledDisplay {...propsWithDefaults}>{reactNodes}</StyledDisplay>;
 }

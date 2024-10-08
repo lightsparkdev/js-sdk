@@ -42,11 +42,8 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
 
     const encodedClientId = encodeURIComponent(this.clientId);
     const encodedClientSecret = encodeURIComponent(this.clientSecret);
-    let TextEncoderImpl = TextEncoder;
-    if (typeof TextEncoder === "undefined") {
-      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
-    }
-    const credentialsBytes = new TextEncoderImpl().encode(
+
+    const credentialsBytes = new TextEncoder().encode(
       encodedClientId + ":" + encodedClientSecret,
     );
     headers["Authorization"] = `Basic ${b64encode(credentialsBytes)}`;

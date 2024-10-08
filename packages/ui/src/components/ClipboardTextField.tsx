@@ -40,7 +40,7 @@ export function ClipboardTextField({
   const displayValue = elideArgs ? elide(value, elideArgs) : value;
 
   const nodes = renderTypography(typography?.type || "Body", {
-    content: displayValue,
+    children: displayValue,
     size: typography?.size || "ExtraSmall",
     color: typography?.color || "inherit",
   });

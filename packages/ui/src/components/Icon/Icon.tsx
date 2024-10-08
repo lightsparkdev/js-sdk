@@ -12,8 +12,8 @@ type IconProps = {
   className?: string | undefined;
   name: IconName;
   width: number;
-  mr?: number | undefined;
-  ml?: number | undefined;
+  mr?: number | "auto" | undefined;
+  ml?: number | "auto" | undefined;
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
   color?: FontColorKey | undefined;
   tutorialStep?: number;
@@ -26,8 +26,8 @@ export function Icon({
   width,
   tutorialStep,
   id,
-  mr = 0,
-  ml = 0,
+  mr: mrProp = 0,
+  ml: mlProp = 0,
   color = undefined,
   verticalAlign = "middle",
 }: IconProps) {
@@ -36,8 +36,14 @@ export function Icon({
   /** Assume width is px relative to the root font size but specify
    * in ems to preserve scale for larger font sizes */
   const w = parseFloat((width / rootFontSizePx).toFixed(2));
-  const mrRems = parseFloat((mr / rootFontSizePx).toFixed(2));
-  const mlRems = parseFloat((ml / rootFontSizePx).toFixed(2));
+  const mr =
+    typeof mrProp === "number"
+      ? `${parseFloat((mrProp / rootFontSizePx).toFixed(2))}em`
+      : mrProp;
+  const ml =
+    typeof mlProp === "number"
+      ? `${parseFloat((mlProp / rootFontSizePx).toFixed(2))}em`
+      : mlProp;
   const va =
     typeof verticalAlign === "string"
       ? verticalAlign
@@ -48,8 +54,8 @@ export function Icon({
       id={id}
       className={className}
       w={w}
-      mr={mrRems}
-      ml={mlRems}
+      mr={mr}
+      ml={ml}
       verticalAlign={va}
       fontColor={color}
       data-tutorial-tip={tutorialStep?.toString()}
@@ -61,8 +67,8 @@ export function Icon({
 
 type IconContainerProps = {
   w: number;
-  mr: number;
-  ml: number;
+  mr: string;
+  ml: string;
   verticalAlign: string | number;
   fontColor?: FontColorKey | undefined;
 };
@@ -74,8 +80,8 @@ export const IconContainer = styled.span<IconContainerProps>`
     width: ${w}em;
     /* ensure no shrink in flex containers: */
     min-width: ${w}em;
-    ${mr ? `margin-right: ${mr}em;` : ""}
-    ${ml ? `margin-left: ${ml}em;` : ""}
+    ${mr ? `margin-right: ${mr};` : ""}
+    ${ml ? `margin-left: ${ml};` : ""}
   `}
 
   vertical-align: ${({ verticalAlign }) =>

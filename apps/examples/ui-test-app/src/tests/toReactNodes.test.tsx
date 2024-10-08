@@ -26,10 +26,8 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
-        </span>
-        <span>
           <span>
             test2
           </span>
@@ -68,16 +66,12 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
-        </span>
-        <span>
           <span>
             test2
+            <br />
           </span>
-          <br />
-        </span>
-        <span>
           <span>
             test3
           </span>
@@ -95,19 +89,15 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
-        </span>
-        <span>
-          <br />
-        </span>
-        <span>
+          <span>
+            <br />
+          </span>
           <span>
             test2
+            <br />
           </span>
-          <br />
-        </span>
-        <span>
           <span>
             test3
           </span>
@@ -150,17 +140,15 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <span>
           <span>
             test2
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <span>
           <span>
             test3
@@ -185,17 +173,15 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <span>
           <span>
             test2
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <a
           class="css-test"
           href="/test-app-page-one"
@@ -203,9 +189,10 @@ describe("toReactNodes", () => {
           Test
         </a>
         <span>
-          <br />
+          <span>
+            <br />
+          </span>
         </span>
-        <span />
         <span>
           <span>
             test3
@@ -231,17 +218,15 @@ describe("toReactNodes", () => {
         <span>
           <span>
             test1
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <span>
           <span>
             test2
+            <br />
           </span>
-          <br />
         </span>
-        <span />
         <a
           class="css-test"
           href="/test-app-page-one"
@@ -255,9 +240,10 @@ describe("toReactNodes", () => {
           Test 2
         </a>
         <span>
-          <br />
+          <span>
+            <br />
+          </span>
         </span>
-        <span />
         <span>
           <span>
             test3

@@ -176,7 +176,6 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     "defaultBackgroundColor",
   );
 
-  const borderWidth = resolveProp(null, kind, "defaultBorderWidth", theme);
   const borderColor = resolveBackgroundColorKey(
     theme,
     kind,
@@ -213,7 +212,6 @@ function resolveProps(props: ButtonProps, theme: Theme) {
         : defaultPaddingY[paddingYType],
     borderRadius: resolveProp(borderRadius, kind, "defaultBorderRadius", theme),
     backgroundColor,
-    borderWidth,
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
@@ -237,7 +235,6 @@ export function Button(props: ButtonProps) {
     onClick,
     icon,
     backgroundColor,
-    borderWidth,
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
@@ -303,7 +300,7 @@ export function Button(props: ButtonProps) {
             }}
           >
             {renderTypography(typography.type, {
-              content: text,
+              children: text,
               color: typography.color,
               size,
             })}
@@ -329,7 +326,6 @@ export function Button(props: ButtonProps) {
     iconSide,
     paddingY,
     backgroundColor,
-    borderWidth,
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
@@ -381,7 +377,6 @@ type StyledButtonProps = {
   disabled: boolean;
   fullWidth: boolean;
   backgroundColor: string;
-  borderWidth: number;
   borderColor: string;
   hoverBackgroundColor: string;
   hoverBorderColor: string;
@@ -401,14 +396,15 @@ const buttonStyle = ({
   fullWidth,
   zIndex,
   iconSide,
-  borderWidth,
-  borderColor,
+  borderColor: borderColorProp,
   isRound,
   borderRadius,
   backgroundColor,
   hoverBackgroundColor,
   hoverBorderColor,
 }: StyledButtonProps & { theme: Theme }) => {
+  const borderColor = borderColorProp || backgroundColor;
+
   return css`
     display: inline-flex;
     opacity: ${disabled && !isLoading ? 0.2 : 1};
@@ -437,7 +433,8 @@ const buttonStyle = ({
       text-align: center;
       white-space: nowrap;
       background-color: ${backgroundColor};
-      border: ${borderWidth}px solid;
+      box-sizing: content-box;
+      border: 1px solid;
       border-color: ${borderColor};
       border-radius: ${isRound ? "100%" : `${borderRadius}px`};
       padding: ${getPadding({

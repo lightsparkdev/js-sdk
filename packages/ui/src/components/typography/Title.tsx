@@ -1,49 +1,21 @@
 "use client";
 
-import styled from "@emotion/styled";
 import { type ReactNode } from "react";
-import { applyTypography } from "../../styles/typography.js";
-import { toReactNodesBase } from "../../utils/toReactNodes/toReactNodesBase.js";
 import {
-  type CommonStyledTypographyProps,
-  type CommonTypographyProps,
-} from "./types.js";
-import { typographyStyles } from "./typographyStyles.js";
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../../utils/toReactNodes/toReactNodes.js";
+import { getPropDefaults, StyledTitle, type TitleProps } from "./base/Title.js";
 
-export type TitleProps = CommonTypographyProps;
-
-export const Title = ({
-  block = false,
-  children,
-  color,
-  content,
-  display,
-  hideOverflow = false,
-  id,
-  size = "Medium",
-}: TitleProps) => {
-  let reactNodes: ReactNode = children || null;
-  if (content) {
-    reactNodes = toReactNodesBase(content);
-  }
-  return (
-    <StyledTitle
-      size={size}
-      colorProp={color}
-      block={block}
-      id={id}
-      hideOverflow={hideOverflow}
-      displayProp={display}
-    >
-      {reactNodes}
-    </StyledTitle>
-  );
+export type TitlePropsWithContentNodes = TitleProps & {
+  content?: ToReactNodesArgs;
 };
 
-type StyledTitleStrongProps = CommonStyledTypographyProps;
-
-export const StyledTitle = styled.span<StyledTitleStrongProps>`
-  ${({ theme, size, colorProp }) =>
-    applyTypography(theme, "Title", size, colorProp)}
-  ${typographyStyles}
-`;
+export function Title(props: TitlePropsWithContentNodes) {
+  const propsWithDefaults = getPropDefaults(props);
+  let reactNodes: ReactNode = props.children || null;
+  if (props.content) {
+    reactNodes = toReactNodes(props.content);
+  }
+  return <StyledTitle {...propsWithDefaults}>{reactNodes}</StyledTitle>;
+}

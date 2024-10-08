@@ -229,15 +229,8 @@ class Requester {
     signingNodeId: string | undefined,
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<Uint8Array> {
-    let TextEncoderImpl;
-    if (typeof TextEncoder === "undefined") {
-      TextEncoderImpl = (await import("text-encoding")).TextEncoder;
-    } else {
-      TextEncoderImpl = TextEncoder;
-    }
-
     if (!signingNodeId) {
-      return new TextEncoderImpl().encode(JSON.stringify(queryPayload));
+      return new TextEncoder().encode(JSON.stringify(queryPayload));
     }
 
     const query = queryPayload.query;
@@ -262,9 +255,7 @@ class Requester {
       );
     }
 
-    const encodedPayload = new TextEncoderImpl().encode(
-      JSON.stringify(payload),
-    );
+    const encodedPayload = new TextEncoder().encode(JSON.stringify(payload));
 
     const signedPayload = await key.sign(encodedPayload);
 
