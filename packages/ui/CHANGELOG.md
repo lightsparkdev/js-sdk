@@ -1,16 +1,5 @@
 # @lightsparkdev/ui
 
-## 1.0.11
-
-### Patch Changes
-
-- 1a063b6: - PendingValue improvements
-  - Fix circular dep issue with typography and toReactNodes utils
-  - Add theming for CardForm
-- Updated dependencies [1a063b6]
-- Updated dependencies [1a063b6]
-  - @lightsparkdev/core@1.2.4
-
 ## 1.0.10
 
 ### Patch Changes

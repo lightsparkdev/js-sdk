@@ -12,6 +12,8 @@ type IconWithCircleBackgroundProps = {
   iconName?: IconName;
   iconWidth?: IconWidth | undefined;
   to?: NewRoutesType | undefined;
+  darkBg?: boolean;
+  shouldRotate?: boolean;
   onClick?: () => void;
 };
 
@@ -20,11 +22,21 @@ export function IconWithCircleBackground({
   iconWidth = 40,
   to,
   onClick,
+  darkBg = false,
+  shouldRotate = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
     <Flex center onClick={onClick}>
-      <StyledIconWithCircleBackground size={iconWidth}>
-        <Icon name={iconName} width={iconWidth} color="grayBlue9" />
+      <StyledIconWithCircleBackground
+        size={iconWidth}
+        darkBg={darkBg}
+        shouldRotate={shouldRotate}
+      >
+        <Icon
+          name={iconName}
+          width={iconWidth}
+          color={darkBg ? "white" : "grayBlue9"}
+        />
       </StyledIconWithCircleBackground>
     </Flex>
   );
@@ -33,10 +45,15 @@ export function IconWithCircleBackground({
 
 type StyledIconWithCircleBackgroundProps = {
   size: IconWidth;
+  darkBg: boolean;
+  shouldRotate: boolean;
 };
 
 const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackgroundProps>`
-  background-color: ${({ theme }) => getColor(theme, "grayBlue94")};
+  background: ${({ theme, darkBg }) =>
+    darkBg
+      ? `linear-gradient(291.4deg, #1C243F 0%, #21283A 100%)`
+      : getColor(theme, "grayBlue94")};
   border-radius: 50%;
   padding: ${({ size }) => getPadding(size)}px;
   display: flex;
@@ -45,6 +62,21 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
     `width: ${size + getPadding(size) * 2}px; height: ${
       size + getPadding(size) * 2
     }px;`}
+
+  @keyframes IconWithCircleBackgroundRotate {
+    0% {
+      transform: rotate(0);
+    }
+    35% {
+      transform: rotate(360deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  ${({ shouldRotate }) =>
+    shouldRotate &&
+    `animation: IconWithCircleBackgroundRotate 10s ease infinite;`}
 `;
 
 function getPadding(size: IconWidth) {

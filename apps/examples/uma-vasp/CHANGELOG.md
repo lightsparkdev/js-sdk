@@ -1,14 +1,5 @@
 # @lightsparkdev/uma-vasp
 
-## 0.0.42
-
-### Patch Changes
-
-- Updated dependencies [1a063b6]
-- Updated dependencies [1a063b6]
-  - @lightsparkdev/core@1.2.4
-  - @lightsparkdev/lightspark-sdk@1.8.6
-
 ## 0.0.41
 
 ### Patch Changes

@@ -1,15 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.8.6
-
-### Patch Changes
-
-- 1a063b6: - Remove text-encoding dependency previously needed for React Native support
-- Updated dependencies [1a063b6]
-- Updated dependencies [1a063b6]
-  - @lightsparkdev/core@1.2.4
-  - @lightsparkdev/crypto-wasm@0.1.7
-
 ## 1.8.5
 
 ### Patch Changes
