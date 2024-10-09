@@ -56,6 +56,8 @@ export function PendingValue({
     link: defaultTypography,
     text: defaultTypography,
     nextLink: defaultTypography,
+    currencyAmount: defaultTypography,
+    clipboardTextField: defaultTypography,
   };
 
   const nodesWithTypography = setDefaultReactNodesTypography(

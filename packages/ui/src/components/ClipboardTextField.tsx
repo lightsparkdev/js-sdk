@@ -2,15 +2,17 @@ import styled from "@emotion/styled";
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { useClipboard } from "../hooks/useClipboard.js";
-import { extend, lineClamp as lineClampCSS } from "../styles/utils.js";
+import { type ThemeOrColorKey } from "../styles/themes.js";
+import { applyTypography } from "../styles/typography.js";
+import { lineClamp as lineClampCSS } from "../styles/utils.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
 import { Icon } from "./Icon/Icon.js";
-import { renderTypography } from "./typography/renderTypography.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type ClipboardTextFieldProps = {
   value: string;
   icon?: boolean;
+  id?: string;
   stopPropagation?: boolean;
   /* Note maxLines forces box layout: */
   maxLines?: number | undefined;
@@ -18,6 +20,7 @@ type ClipboardTextFieldProps = {
   wordBreakAll?: boolean;
   tag?: "span" | "pre";
   iconSide?: "left" | "right";
+  iconColor?: ThemeOrColorKey;
   typography?: PartialSimpleTypographyProps | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0];
 };
@@ -25,39 +28,32 @@ type ClipboardTextFieldProps = {
 export function ClipboardTextField({
   value,
   icon,
+  id,
   stopPropagation,
   maxLines,
   elide: elideArgs,
   wordBreakAll = false,
   tag = "span",
   iconSide = "left",
+  iconColor: iconColorProp,
   typography,
   clipboardCallbacks,
 }: ClipboardTextFieldProps) {
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
-  const addLineClamp = maxLines && maxLines > 1;
+  const addLineClamp = Boolean(maxLines && maxLines > 1);
   const displayValue = elideArgs ? elide(value, elideArgs) : value;
 
-  const nodes = renderTypography(typography?.type || "Body", {
-    children: displayValue,
-    size: typography?.size || "ExtraSmall",
-    color: typography?.color || "inherit",
-  });
-
-  const baseValueCSS = {
-    flex: 1,
-    overflow: "hidden",
-    textAlign: "left" as const,
-    textOverflow: "ellipsis",
-    wordBreak: wordBreakAll ? ("break-all" as const) : ("normal" as const),
-    verticalAlign: "middle",
-  };
-  const valueCSS = addLineClamp
-    ? extend(baseValueCSS, lineClampCSS(maxLines), { alignSelf: "baseline" })
-    : baseValueCSS;
-
-  const valueNode = <span css={valueCSS}>{nodes}</span>;
+  const valueNode = (
+    <ClipboardTextFieldValue
+      wordBreakAll={wordBreakAll}
+      typography={typography}
+      addLineClamp={addLineClamp}
+      maxLines={maxLines}
+    >
+      {displayValue}
+    </ClipboardTextFieldValue>
+  );
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
@@ -78,43 +74,85 @@ export function ClipboardTextField({
     }
   }
 
-  const baseContainerCSS = {
-    maxWidth: "100%",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    alignItems: "center",
-    boxSizing: "content-box" as const,
-    cursor: "pointer",
+  const commonProps = {
+    as: tag,
+    id,
+    addLineClamp,
+    maxLines,
   };
-  const containerCSS = addLineClamp
-    ? /* keep the icon on the same line when addLineClamp: */
-      extend(baseContainerCSS, { display: "inline-flex" })
-    : maxLines === 1
-    ? extend(baseContainerCSS, { whiteSpace: "nowrap", display: "inline-flex" })
-    : baseContainerCSS;
 
+  const iconColor = iconColorProp || typography?.color || "inherit";
   return canWriteToClipboard && value ? (
     <StyledClipboardTextField
-      as={tag}
       onClick={onClick}
-      css={containerCSS}
       role="button"
       tabIndex={0}
       onKeyDown={onKeyDown}
+      {...commonProps}
     >
       {icon && iconSide === "left" ? (
-        <Icon name="Copy" width={16} mr={4} />
+        <Icon name="Copy" width={20} mr={8} color={iconColor} />
       ) : null}
       {valueNode}
       {icon && iconSide === "right" ? (
-        <Icon name="Copy" width={16} ml={4} />
+        <Icon name="Copy" width={20} ml={8} color={iconColor} />
       ) : null}
     </StyledClipboardTextField>
   ) : (
-    <StyledClipboardTextField as={tag} css={containerCSS}>
+    <StyledClipboardTextField {...commonProps}>
       {valueNode}
     </StyledClipboardTextField>
   );
 }
 
-const StyledClipboardTextField = styled.span``;
+type StyledClipboardTextFieldProps = {
+  addLineClamp: boolean;
+  maxLines?: number | undefined;
+};
+
+const StyledClipboardTextField = styled.span<StyledClipboardTextFieldProps>`
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-items: center;
+  box-sizing: content-box;
+  cursor: pointer;
+
+  ${({ addLineClamp, maxLines }) =>
+    /* keep the icon on the same line when addLineClamp: */
+    addLineClamp || maxLines === 1 ? "display: inline-flex;" : ""}
+
+  ${({ maxLines }) => (maxLines === 1 ? "white-space: nowrap;" : "")}
+`;
+
+type ClipboardTextFieldValueProps = {
+  wordBreakAll: boolean;
+  addLineClamp: boolean;
+  maxLines?: number | undefined;
+  typography?: PartialSimpleTypographyProps | undefined;
+};
+
+const ClipboardTextFieldValue = styled.span<ClipboardTextFieldValueProps>`
+  flex: 1;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  word-break: ${({ wordBreakAll }) => (wordBreakAll ? "break-all" : "normal")};
+  vertical-align: middle;
+
+  ${({ addLineClamp, maxLines }) =>
+    addLineClamp && maxLines
+      ? `
+        ${lineClampCSS(maxLines).styles}
+        align-self: baseline;
+      `
+      : ""}
+
+  ${({ theme, typography }) =>
+    applyTypography(
+      theme,
+      typography?.type || "Body",
+      typography?.size || "ExtraSmall",
+      typography?.color || "inherit",
+    )}
+`;
