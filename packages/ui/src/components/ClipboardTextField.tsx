@@ -1,8 +1,10 @@
+import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { MouseEvent } from "react";
 import { useCallback } from "react";
 import { useClipboard } from "../hooks/useClipboard.js";
 import { type ThemeOrColorKey } from "../styles/themes.js";
+import { getLineHeightNumberForTypographyType } from "../styles/tokens/typography.js";
 import { applyTypography } from "../styles/typography.js";
 import { lineClamp as lineClampCSS } from "../styles/utils.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
@@ -39,6 +41,7 @@ export function ClipboardTextField({
   typography,
   clipboardCallbacks,
 }: ClipboardTextFieldProps) {
+  const theme = useTheme();
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
   const addLineClamp = Boolean(maxLines && maxLines > 1);
@@ -81,6 +84,15 @@ export function ClipboardTextField({
     maxLines,
   };
 
+  const typographyType = typography?.type || "Body";
+  const typographySize = typography?.size || "ExtraSmall";
+
+  const lineHeight = getLineHeightNumberForTypographyType(
+    typographyType,
+    typographySize,
+    theme,
+  );
+
   const iconColor = iconColorProp || typography?.color || "inherit";
   return canWriteToClipboard && value ? (
     <StyledClipboardTextField
@@ -91,11 +103,21 @@ export function ClipboardTextField({
       {...commonProps}
     >
       {icon && iconSide === "left" ? (
-        <Icon name="Copy" width={20} mr={8} color={iconColor} />
+        <Icon
+          name="Copy"
+          width={lineHeight * 0.7}
+          mr={lineHeight * 0.3}
+          color={iconColor}
+        />
       ) : null}
       {valueNode}
       {icon && iconSide === "right" ? (
-        <Icon name="Copy" width={20} ml={8} color={iconColor} />
+        <Icon
+          name="Copy"
+          width={lineHeight * 0.7}
+          ml={lineHeight * 0.3}
+          color={iconColor}
+        />
       ) : null}
     </StyledClipboardTextField>
   ) : (

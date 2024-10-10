@@ -4,7 +4,6 @@ import { Fragment } from "react";
 import { themeOrWithKey, themes, type Themes } from "../styles/themes.js";
 import {
   getLineHeightForTypographyType,
-  type LineHeightKey,
   type TokenSizeKey,
   type TypographyTypeKey,
 } from "../styles/tokens/typography.js";
@@ -27,7 +26,6 @@ const bgPosition = keyframes`
 type PendingValueProps = {
   animate?: boolean;
   content?: ToReactNodesArgs | undefined;
-  height?: LineHeightKey | undefined;
   typography?: PartialSimpleTypographyProps;
   width?: number | undefined;
   forceTheme?: Themes | undefined;
