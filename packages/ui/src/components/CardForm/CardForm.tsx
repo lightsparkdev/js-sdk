@@ -89,6 +89,8 @@ const descriptionTypography = {
   },
 } as const;
 
+type BelowCardFormContentGap = 0 | 16;
+
 type CardFormProps = {
   children?: ReactNode;
   disabled?: boolean;
@@ -105,6 +107,7 @@ type CardFormProps = {
   textAlign?: CardFormTextAlign;
   shadow?: CardFormShadow;
   belowFormContent?: ToReactNodesArgs | undefined;
+  belowFormContentGap?: BelowCardFormContentGap | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -192,6 +195,7 @@ export function CardForm({
   shadow: shadowProp,
   textAlign: textAlignProp,
   belowFormContent,
+  belowFormContentGap = 0,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -277,7 +281,9 @@ export function CardForm({
           {content}
         </StyledCardForm>
       )}
-      <BelowCardFormContent>{belowFormContentNodes}</BelowCardFormContent>
+      <BelowCardFormContent gap={belowFormContentGap}>
+        {belowFormContentNodes}
+      </BelowCardFormContent>
     </CardFormContainer>
   );
 }
@@ -297,9 +303,17 @@ const CardFormContent = styled.div`
   align-self: center;
 `;
 
-const BelowCardFormContent = styled.div`
+type BelowCardFormContentProps = {
+  gap: BelowCardFormContentGap;
+};
+
+const BelowCardFormContent = styled.div<BelowCardFormContentProps>`
   text-align: center;
   margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ gap }) => gap}px;
 
   ${bp.sm(`
     margin-bottom: 32px;

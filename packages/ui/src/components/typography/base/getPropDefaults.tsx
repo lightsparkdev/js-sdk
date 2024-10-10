@@ -13,6 +13,7 @@ export function getPropDefaultsBase<
     id: props.id,
     display: props.display,
     size: props.size || "Medium",
+    textAlign: props.textAlign,
     children: props.children ? stringToNodes(props.children) : null,
     ...extra,
   };

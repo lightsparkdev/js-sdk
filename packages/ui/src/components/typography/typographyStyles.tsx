@@ -6,6 +6,7 @@ export const typographyStyles = ({
   block: blockProp,
   hideOverflow,
   displayProp,
+  textAlign,
 }: { theme: Theme } & CommonStyledTypographyProps) => {
   const displayValue =
     blockProp || hideOverflow ? "block" : displayProp || null;
@@ -13,6 +14,7 @@ export const typographyStyles = ({
     /* Margins should always be set in parent style contexts eg Article: */
     margin: 0;
 
+    ${textAlign ? `text-align: ${textAlign};` : ""}
     ${displayValue ? `display: ${displayValue};` : ""}
     ${hideOverflow
       ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"

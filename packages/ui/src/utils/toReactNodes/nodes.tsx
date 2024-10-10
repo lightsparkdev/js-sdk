@@ -1,5 +1,6 @@
 import { isObject } from "lodash-es";
 import type { ComponentProps } from "react";
+import { type ClipboardTextField } from "../../components/ClipboardTextField.js";
 import type { CurrencyAmount } from "../../components/CurrencyAmount.js";
 import type { Icon } from "../../components/Icon/Icon.js";
 import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
@@ -32,6 +33,10 @@ export type CurrencyAmountNode = {
   currencyAmount: ComponentProps<typeof CurrencyAmount>;
 };
 
+export type ClipboardTextFieldNode = {
+  clipboardTextField: ComponentProps<typeof ClipboardTextField>;
+};
+
 export function isLinkNode(node: unknown): node is LinkNode {
   return Boolean(node && isObject(node) && "link" in node);
 }
@@ -48,6 +53,12 @@ export function isCurrencyAmountNode(
   node: unknown,
 ): node is CurrencyAmountNode {
   return Boolean(node && isObject(node) && "currencyAmount" in node);
+}
+
+export function isClipboardTextFieldNode(
+  node: unknown,
+): node is ClipboardTextFieldNode {
+  return Boolean(node && isObject(node) && "clipboardTextField" in node);
 }
 
 export function isTextNode(node: unknown): node is TextNode {
@@ -74,3 +85,6 @@ export const currencyAmount = (
 ): CurrencyAmountNode => ({ currencyAmount });
 
 export const icon = (icon: IconNode["icon"]): IconNode => ({ icon });
+export const clipboardTextField = (
+  clipboardTextField: ComponentProps<typeof ClipboardTextField>,
+): ClipboardTextFieldNode => ({ clipboardTextField });

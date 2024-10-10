@@ -2,6 +2,7 @@ import { ensureArray } from "@lightsparkdev/core";
 import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
 import { isString } from "../strings.js";
 import {
+  isClipboardTextFieldNode,
   isCurrencyAmountNode,
   isIconNode,
   isLinkNode,
@@ -17,6 +18,7 @@ const setReactNodesTypographyMapTypes = [
   "text",
   "nextLink",
   "currencyAmount",
+  "clipboardTextField",
 ] as const;
 
 export function isNonTypographicReactNode(
@@ -65,6 +67,16 @@ export function setReactNodesTypography(
         currencyAmount: {
           ...node.currencyAmount,
           typography: typography.currencyAmount,
+        },
+      };
+    } else if (
+      isClipboardTextFieldNode(node) &&
+      typography.clipboardTextField
+    ) {
+      return {
+        clipboardTextField: {
+          ...node.clipboardTextField,
+          typography: typography.clipboardTextField,
         },
       };
     } else if ((isTextNode(node) || isString(node)) && typography.text) {

@@ -5,11 +5,13 @@ import { Icon } from "../../components/Icon/Icon.js";
 import { Link } from "../../router.js";
 import { NextLink } from "../NextLink.js";
 import {
+  isClipboardTextFieldNode,
   isCurrencyAmountNode,
   isIconNode,
   isLinkNode,
   isNextLinkNode,
   isTextNode,
+  type ClipboardTextFieldNode,
   type CurrencyAmountNode,
   type IconNode,
   type LinkNode,
@@ -18,6 +20,7 @@ import {
 } from "./nodes.js";
 
 import { Fragment, type ReactNode } from "react";
+import { ClipboardTextField } from "../../components/ClipboardTextField.js";
 import { renderTypography } from "../../components/typography/renderTypography.js";
 import { stringToNodes } from "./stringToNodes.js";
 
@@ -28,6 +31,7 @@ export type ToReactNodesArg =
   | NextLinkNode
   | IconNode
   | CurrencyAmountNode
+  | ClipboardTextFieldNode
   | null
   | undefined;
 
@@ -91,6 +95,13 @@ export function toReactNodes(toReactNodesArg: ToReactNodesArgs) {
         <CurrencyAmount
           key={`currency-amount-${i}-${node.currencyAmount.id}`}
           {...node.currencyAmount}
+        />
+      );
+    } else if (isClipboardTextFieldNode(node)) {
+      return (
+        <ClipboardTextField
+          key={`clipboard-text-field-${i}-${node.clipboardTextField.id}`}
+          {...node.clipboardTextField}
         />
       );
     }
