@@ -18,6 +18,7 @@ import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
+import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
   toReactNodes,
   type ToReactNodesArgs,
@@ -30,7 +31,6 @@ import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 import { Body } from "./typography/Body.js";
-import { Headline } from "./typography/Headline.js";
 import { headlineSelector } from "./typography/base/Headline.js";
 
 type ExtraAction = ComponentProps<typeof Button> & {
@@ -288,15 +288,15 @@ export function Modal({
 
   let titleContent: React.ReactNode | null = null;
   if (title) {
-    if (typeof title === "string") {
-      titleContent = (
-        <Headline heading="h4" size={TokenSize.Small}>
-          {title}
-        </Headline>
-      );
-    } else {
-      titleContent = toReactNodes(title);
-    }
+    const defaultTypography = {
+      type: "Headline",
+      heading: "h4",
+      size: TokenSize.Small,
+    } as const;
+    const titleNodesWithTypography = setDefaultReactNodesTypography(title, {
+      default: defaultTypography,
+    });
+    titleContent = toReactNodes(titleNodesWithTypography);
   }
 
   let descriptionContent: React.ReactNode | null = null;

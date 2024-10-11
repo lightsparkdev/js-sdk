@@ -44,16 +44,9 @@ export function Badge({
     color: typographyProp?.color || (kind === "danger" ? "danger" : "text"),
   } as const;
 
-  const defaultTypographyMap = {
-    link: defaultTypography,
-    text: defaultTypography,
-    nextLink: defaultTypography,
-  };
-
-  const nodesWithTypography = setDefaultReactNodesTypography(
-    contentProp,
-    defaultTypographyMap,
-  );
+  const nodesWithTypography = setDefaultReactNodesTypography(contentProp, {
+    default: defaultTypography,
+  });
 
   const content = toReactNodes(nodesWithTypography);
 

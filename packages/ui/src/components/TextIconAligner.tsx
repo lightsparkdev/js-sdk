@@ -54,16 +54,10 @@ export function TextIconAligner({
     color: typographyProp?.color || "text",
   } as const;
 
-  const defaultTypographyMap = {
-    link: defaultTypography,
-    text: defaultTypography,
-    nextLink: defaultTypography,
-  };
-
-  const nodesWithTypography = setDefaultReactNodesTypography(
-    contentProp,
-    defaultTypographyMap,
-  );
+  const nodesWithTypography = setDefaultReactNodesTypography(contentProp, {
+    default: defaultTypography,
+    link: { ...defaultTypography, color: "link" },
+  });
 
   const content = toReactNodes(nodesWithTypography);
 
