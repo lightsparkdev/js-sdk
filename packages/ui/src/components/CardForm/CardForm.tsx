@@ -50,45 +50,6 @@ import { TextInputHalfRow } from "../TextInput.js";
 import { ToggleContainer } from "../Toggle.js";
 import { Headline } from "../typography/Headline.js";
 
-const descriptionTypography = {
-  primary: {
-    text: {
-      type: "Body Strong",
-      size: "Small",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body Strong",
-      size: "Small",
-      color: "text",
-    },
-  },
-  secondary: {
-    text: {
-      type: "Body Strong",
-      size: "Small",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body Strong",
-      size: "Small",
-      color: "text",
-    },
-  },
-  tertiary: {
-    text: {
-      type: "Body",
-      size: "Large",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body",
-      size: "Large",
-      color: "text",
-    },
-  },
-} as const;
-
 type BelowCardFormContentGap = 0 | 16;
 
 type CardFormProps = {
@@ -162,6 +123,12 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     "smBorderWidth",
     theme,
   );
+  const defaultDescriptionTypographyMap = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "defaultDescriptionTypographyMap",
+    theme,
+  );
 
   const props = {
     paddingY,
@@ -174,6 +141,7 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
+    defaultDescriptionTypographyMap,
   };
 
   return props;
@@ -209,6 +177,7 @@ export function CardForm({
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
+    defaultDescriptionTypographyMap,
   } = resolveProps(
     { kind, textAlign: textAlignProp, shadow: shadowProp },
     theme,
@@ -228,7 +197,10 @@ export function CardForm({
   );
 
   const formattedDescription = description
-    ? toReactNodesWithTypographyMap(description, descriptionTypography[kind])
+    ? toReactNodesWithTypographyMap(
+        description,
+        defaultDescriptionTypographyMap,
+      )
     : null;
 
   const belowFormContentNodes = belowFormContent

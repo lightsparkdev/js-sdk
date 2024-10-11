@@ -417,6 +417,18 @@ const bridgeBaseSettings = {
   cardForm: merge<typeof defaultCardFormTheme>(cardFormThemeBase, {
     backgroundColor: "white",
     smBackgroundColor: "bg",
+    defaultDescriptionTypographyMap: {
+      default: {
+        type: "Body",
+        size: "Large",
+        color: "secondary",
+      },
+      link: {
+        type: "Body",
+        size: "Large",
+        color: "text",
+      },
+    },
     kinds: {
       primary: {
         paddingY: 56,

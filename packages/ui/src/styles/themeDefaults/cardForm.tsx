@@ -1,3 +1,6 @@
+import type { ThemeOrColorKey } from "../themes.js";
+import type { TokenSizeKey, TypographyTypeKey } from "../tokens/typography.js";
+
 export type CardFormPaddingY = 40 | 56;
 export type CardFormPaddingX = 40 | 56;
 export type CardFormBorderWidth = 0 | 1;
@@ -18,6 +21,18 @@ const cardFormThemeBaseProps = {
   backgroundColor: "bg" as CardFormBackgroundColor,
   smBackgroundColor: "bg" as CardFormBackgroundColor,
   smBorderWidth: 0 as CardFormBorderWidth,
+  defaultDescriptionTypographyMap: {
+    default: {
+      type: "Body Strong" as TypographyTypeKey,
+      size: "Small" as TokenSizeKey,
+      color: "mcNeutral" as ThemeOrColorKey,
+    },
+    link: {
+      type: "Body Strong" as TypographyTypeKey,
+      size: "Small" as TokenSizeKey,
+      color: "text" as ThemeOrColorKey,
+    },
+  },
 } as const;
 
 export const cardFormThemeBase = {
