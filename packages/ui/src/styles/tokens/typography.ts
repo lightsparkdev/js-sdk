@@ -2137,7 +2137,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Body]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].sm}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].md}`,
             letterSpacing: `${
