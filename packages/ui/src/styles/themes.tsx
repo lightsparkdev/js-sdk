@@ -61,6 +61,7 @@ const baseThemeColors = {
   info: colors.blue43,
   lcNeutral: colors.gray80,
   link: colors.blue43,
+  linkLight: "#0068C90F",
   mcNeutral: colors.gray40,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
@@ -72,6 +73,7 @@ const baseThemeColors = {
   text: colors.black,
   vlcNeutral: colors.gray95,
   warning: colors.warning,
+  transparent: colors.transparent,
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
 export const themeOrColorKeyValues = [
@@ -138,6 +140,7 @@ const darkBaseTheme: BaseTheme = {
   info: colors.white,
   lcNeutral: colors.gray40,
   link: colors.blue43,
+  linkLight: "#0068C90F",
   mcNeutral: colors.gray60,
   onInfoText: colors.white,
   onPrimaryText: colors.black,
@@ -150,6 +153,7 @@ const darkBaseTheme: BaseTheme = {
   typography: getTypography(TypographyGroup.Lightspark),
   vlcNeutral: colors.gray20,
   warning: colors.warning,
+  transparent: colors.transparent,
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
@@ -198,8 +202,11 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
   smBg: colors.gray98,
   secondary: colors.grayBlue43,
   tertiary: colors.grayBlue9,
+  warning: "#F7E3E3",
+  danger: "#E31A1A",
   text: colors.grayBlue9,
   link: colors.blue39,
+  linkLight: "#0068C90F",
   inputBackground: colors.white,
   typography: getTypography(TypographyGroup.UmaAuthSdk, {
     main: "Manrope",
@@ -231,8 +238,12 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
     kinds: {
       primary: {
         defaultColor: "bg",
+        defaultBorderColor: "blue39",
         defaultBackgroundColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
+        defaultHoverBorderColor: "blue37",
+        defaultActiveBackgroundColor: "blue22",
+        defaultActiveBorderColor: "blue22",
       },
       ghost: {
         defaultColor: "secondary",
@@ -242,12 +253,46 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
       },
       secondary: {
         defaultBackgroundColor: "grayBlue94",
-        defaultHoverBackgroundColor: "grayBlue80",
-        defaultBorderColor: "grayBlue80",
+        defaultBorderColor: "grayBlue94",
+        defaultHoverBackgroundColor: "grayBlue88",
+        defaultHoverBorderColor: "grayBlue88",
+        defaultActiveBackgroundColor: "grayBlue57",
+        defaultActiveBorderColor: "grayBlue57",
       },
       tertiary: {
         defaultColor: "bg",
-        defaultHoverBackgroundColor: "grayBlue18",
+        defaultBackgroundColor: "grayBlue9",
+        defaultHoverBackgroundColor: "grayBlue12",
+        defaultActiveBackgroundColor: "grayBlue14",
+      },
+      transparent: {
+        defaultBackgroundColor: "transparent",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "transparenta02",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "transparenta08",
+        defaultActiveBorderColor: "transparent",
+      },
+      linkLight: {
+        defaultColor: "link",
+        defaultBackgroundColor: "linkLight",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "grayBlue93",
+        defaultHoverBorderColor: "grayBlue93",
+        defaultActiveBackgroundColor: "grayBlue92",
+        defaultActiveBorderColor: "grayBlue92",
+      },
+      warning: {
+        defaultColor: "danger",
+        defaultBackgroundColor: "red42a10",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "red42a20",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "red42a30",
+        defaultActiveBorderColor: "transparent",
+      },
+      danger: {
+        defaultColor: "white",
       },
     },
   }),
@@ -309,6 +354,26 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
       tertiary: {
         defaultColor: "bg",
         defaultHoverBackgroundColor: "grayBlue80",
+      },
+      transparent: {
+        defaultBackgroundColor: "transparent",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultHoverBorderColor: "transparent",
+      },
+      linkLight: {
+        defaultColor: "link",
+        defaultBackgroundColor: "linkLight",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "linkLight",
+        defaultHoverBorderColor: "transparent",
+      },
+      warning: {
+        defaultColor: "danger",
+        defaultBackgroundColor: "warning",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "warning",
+        defaultHoverBorderColor: "transparent",
       },
     },
   }),
