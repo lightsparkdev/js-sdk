@@ -1,3 +1,7 @@
-import type * as icons from "../../icons/index.js";
+import * as icons from "../../icons/index.js";
 
-export type IconName = keyof typeof icons;
+export const iconMap = {
+  ...icons,
+} as const;
+
+export type IconName = keyof typeof iconMap;

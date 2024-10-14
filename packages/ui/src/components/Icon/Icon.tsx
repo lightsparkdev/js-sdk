@@ -1,16 +1,18 @@
 "use client";
 
 import styled from "@emotion/styled";
+import { type RequiredKeys } from "@lightsparkdev/core";
+import React, { type ComponentPropsWithoutRef, type ElementType } from "react";
 import { invertFillColor, invertStrokeColor } from "../../icons/constants.js";
-import * as icons from "../../icons/index.js";
 import { rootFontSizePx } from "../../styles/common.js";
 import { getFontColor, type FontColorKey } from "../../styles/themes.js";
 import { isString } from "../../utils/strings.js";
 import type { IconName } from "./types.js";
+import { iconMap } from "./types.js";
 
-type IconProps = {
+type IconProps<I extends IconName> = {
   className?: string | undefined;
-  name: IconName;
+  name: I;
   width: number;
   mr?: number | "auto" | undefined;
   ml?: number | "auto" | undefined;
@@ -18,9 +20,12 @@ type IconProps = {
   color?: FontColorKey | undefined;
   tutorialStep?: number;
   id?: string;
-};
+  /* Require iconProps if icon takes a props object and at least one of its props is required: */
+} & (RequiredKeys<ComponentPropsWithoutRef<(typeof iconMap)[I]>> extends never
+  ? { iconProps?: ComponentPropsWithoutRef<(typeof iconMap)[I]> }
+  : { iconProps: ComponentPropsWithoutRef<(typeof iconMap)[I]> });
 
-export function Icon({
+export function Icon<I extends IconName>({
   className,
   name,
   width,
@@ -30,8 +35,9 @@ export function Icon({
   ml: mlProp = 0,
   color = undefined,
   verticalAlign = "middle",
-}: IconProps) {
-  const IconComponent = icons[name] || null;
+  iconProps,
+}: IconProps<I>) {
+  const IconComponent = iconMap[name] as ElementType;
 
   /** Assume width is px relative to the root font size but specify
    * in ems to preserve scale for larger font sizes */
@@ -49,6 +55,8 @@ export function Icon({
       ? verticalAlign
       : parseFloat((verticalAlign / rootFontSizePx).toFixed(2));
 
+  const icon = React.createElement(IconComponent, iconProps, null);
+
   return (
     <IconContainer
       id={id}
@@ -60,7 +68,7 @@ export function Icon({
       fontColor={color}
       data-tutorial-tip={tutorialStep?.toString()}
     >
-      {IconComponent ? <IconComponent /> : null}
+      {icon}
     </IconContainer>
   );
 }

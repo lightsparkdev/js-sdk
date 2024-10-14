@@ -45,3 +45,13 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 /* Opposite of Partial - make all keys required with NonNullable values */
 export type Complete<T> = { [P in keyof T]-?: NonNullable<T[P]> };
+
+/**
+ * RequiredKeys utility extracts all the keys of T that are required.
+ * For each key K in T, it checks if Pick<T, K> extends {} (an empty object). If it does, that
+ * means K is optional; otherwise, it's required.
+ * The resulting type is a union of all required keys in T.
+ */
+export type RequiredKeys<T> = {
+  [K in keyof T]-?: Record<string, never> extends Pick<T, K> ? never : K;
+}[keyof T];
