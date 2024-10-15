@@ -209,7 +209,7 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
   linkLight: "#0068C90F",
   inputBackground: colors.white,
   typography: getTypography(TypographyGroup.UmaAuthSdk, {
-    main: "Manrope",
+    main: "Inter",
     code: "Monaco",
   }),
   content: extendBase(lightBaseTheme, {
@@ -308,7 +308,7 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
   link: colors.blue39,
   inputBackground: colors.gray5,
   typography: getTypography(TypographyGroup.UmaAuthSdk, {
-    main: "Manrope",
+    main: "Inter",
     code: "Monaco",
   }),
   content: extendBase(lightBaseTheme, {
