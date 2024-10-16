@@ -2,20 +2,20 @@
 
 import { type PathProps } from "./types.js";
 
-export function Copy({
-  strokeWidth = "1.5",
+export function Limit({
+  strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
     <svg
+      xmlns="http://www.w3.org/2000/svg"
       width="100%"
       viewBox="0 0 20 20"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M13.25 6.75V1.25C13.25 0.97386 13.0261 0.75 12.75 0.75H1.25C0.97386 0.75 0.75 0.97386 0.75 1.25V12.75C0.75 13.0261 0.97386 13.25 1.25 13.25H6.75M7.25 6.75H18.75C19.0261 6.75 19.25 6.97386 19.25 7.25V18.75C19.25 19.0261 19.0261 19.25 18.75 19.25H7.25C6.97386 19.25 6.75 19.0261 6.75 18.75V7.25C6.75 6.97386 6.97386 6.75 7.25 6.75Z"
+        d="M9.99883 10.8335L7.49887 8.3335M4.40956 15.8335C1.77112 12.8887 1.86683 8.36008 4.6967 5.5302C7.62563 2.60126 12.3743 2.60126 15.3033 5.5302C18.1332 8.36008 18.2289 12.8887 15.5904 15.8335"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
