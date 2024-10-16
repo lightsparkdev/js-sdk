@@ -1,6 +1,13 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function CheckmarkCircle() {
+import { invertStrokeColor } from "./constants.js";
+import { type PathProps } from "./types.js";
+
+export function CheckmarkCircle({
+  strokeWidth = "2",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,8 +18,10 @@ export function CheckmarkCircle() {
       <rect y="0.5" width="32" height="32" rx="16" fill="currentColor" />
       <path
         d="M8 16.4995L13 21.4995L24 10.4995"
-        stroke="white"
-        strokeWidth="2.00003"
+        className={invertStrokeColor}
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

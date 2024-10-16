@@ -1,6 +1,12 @@
 // Copyright  ©, 2024, Lightspark Group, Inc. - All Rights Reserved
 
-export const ChevronLeft = () => (
+import { type PathProps } from "./types.js";
+
+export const ChevronLeft = ({
+  strokeWidth = "2",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) => (
   <svg
     width="100%"
     height="100%"
@@ -11,9 +17,9 @@ export const ChevronLeft = () => (
     <path
       d="M15 20L7 12L15 4"
       stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+      strokeLinecap={strokeLinecap}
+      strokeLinejoin={strokeLinejoin}
     />
   </svg>
 );

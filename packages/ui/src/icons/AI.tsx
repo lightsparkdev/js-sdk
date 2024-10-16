@@ -1,22 +1,12 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-import {
-  type PathLinecap,
-  type PathLinejoin,
-  type PathStrokeWidth,
-} from "./types.js";
-
-type AIProps = {
-  strokeWidth?: PathStrokeWidth;
-  strokeLinecap?: PathLinecap;
-  strokeLinejoin?: PathLinejoin;
-};
+import { type PathProps } from "./types.js";
 
 export function AI({
   strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
-}: AIProps) {
+}: PathProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

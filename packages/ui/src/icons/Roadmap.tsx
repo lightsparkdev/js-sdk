@@ -1,4 +1,10 @@
-export function Roadmap() {
+import { type PathProps } from "./types.js";
+
+export function Roadmap({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="16"
@@ -9,9 +15,10 @@ export function Roadmap() {
     >
       <path
         d="M4.66667 7.99996H11.3333M7.33333 11.3333H14M2 4.66663H8.66667"
-        stroke="black"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

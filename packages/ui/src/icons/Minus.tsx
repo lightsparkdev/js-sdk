@@ -1,6 +1,11 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function Minus() {
+import { type PathProps } from "./types.js";
+
+export function Minus({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,8 +16,8 @@ export function Minus() {
       <path
         d="M6.75 12H17.25"
         stroke="currentColor"
-        strokeWidth="1.40621"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
       />
     </svg>
   );

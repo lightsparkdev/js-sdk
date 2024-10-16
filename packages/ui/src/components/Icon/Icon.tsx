@@ -113,10 +113,10 @@ export const IconContainer = styled.span<IconContainerProps>`
       */
 
       .${invertFillColor} {
-        fill: ${fontColor ? theme.hcNeutralFromBg(color) : "currentColor"};
+        fill: ${color ? theme.hcNeutralFromBg(color) : "currentColor"};
       }
       .${invertStrokeColor} {
-        stroke: ${fontColor ? theme.hcNeutralFromBg(color) : "currentColor"};
+        stroke: ${color ? theme.hcNeutralFromBg(color) : "currentColor"};
       }
     }
   `;
