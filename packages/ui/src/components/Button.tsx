@@ -23,7 +23,6 @@ import { applyTypography } from "../styles/typography.js";
 import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon/Icon.js";
-import { type IconName } from "./Icon/types.js";
 import { Loading, type LoadingKind } from "./Loading.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -60,7 +59,9 @@ export type ButtonProps = {
   externalLink?: string | undefined;
   filename?: string | undefined;
   toParams?: RouteParams | undefined;
-  icon?: IconName | undefined;
+  icon?:
+    | Pick<ComponentProps<typeof Icon>, "name" | "color" | "iconProps">
+    | undefined;
   iconSide?: IconSide;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
@@ -294,7 +295,7 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Icon name={icon} width={iconSize} color={typography.color} />
+        <Icon {...icon} width={iconSize} color={typography.color} />
       </ButtonIcon>
     );
   }

@@ -117,7 +117,7 @@ export const Drawer = (props: Props) => {
             <BackButtonContainer>
               <Button
                 onClick={props.handleBack}
-                icon="ChevronLeft"
+                icon={{ name: "ChevronLeft" }}
                 kind="ghost"
                 size="Small"
               />
