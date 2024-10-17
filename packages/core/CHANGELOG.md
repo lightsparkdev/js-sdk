@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.2.5
+
+### Patch Changes
+
+- f148f37: - add RequiredKeys type utility
+
 ## 1.2.4
 
 ### Patch Changes
