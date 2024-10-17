@@ -23,7 +23,6 @@ import { applyTypography } from "../styles/typography.js";
 import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
 import { Icon } from "./Icon/Icon.js";
-import { type IconName } from "./Icon/types.js";
 import { Loading, type LoadingKind } from "./Loading.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -35,11 +34,14 @@ export const buttonKinds = [
   "secondary",
   "primary",
   "ghost",
+  "transparent",
   "green33",
   "purple55",
   "blue43",
   "blue39",
+  "linkLight",
   "danger",
+  "warning",
   "tertiary",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
@@ -57,7 +59,9 @@ export type ButtonProps = {
   externalLink?: string | undefined;
   filename?: string | undefined;
   toParams?: RouteParams | undefined;
-  icon?: IconName | undefined;
+  icon?:
+    | Pick<ComponentProps<typeof Icon>, "name" | "color" | "iconProps">
+    | undefined;
   iconSide?: IconSide;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
@@ -125,7 +129,9 @@ function resolveBackgroundColorKey(
     | "defaultBackgroundColor"
     | "defaultHoverBackgroundColor"
     | "defaultBorderColor"
-    | "defaultHoverBorderColor",
+    | "defaultHoverBorderColor"
+    | "defaultActiveBackgroundColor"
+    | "defaultActiveBorderColor",
 ) {
   const defaultBackgroundColorKey = theme.buttons.kinds[kind]?.[defaultKey];
   let backgroundColorKey = defaultBackgroundColorKey;
@@ -191,6 +197,16 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     kind,
     "defaultHoverBorderColor",
   );
+  const activeBackgroundColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultActiveBackgroundColor",
+  );
+  const activeBorderColor = resolveBackgroundColorKey(
+    theme,
+    kind,
+    "defaultActiveBorderColor",
+  );
 
   const typography = {
     type:
@@ -215,6 +231,8 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
+    activeBackgroundColor,
+    activeBorderColor,
   };
 }
 
@@ -238,6 +256,8 @@ export function Button(props: ButtonProps) {
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
+    activeBackgroundColor,
+    activeBorderColor,
     iconSide = "left",
     loading = false,
     loadingKind = "primary",
@@ -275,7 +295,7 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Icon name={icon} width={iconSize} color={typography.color} />
+        <Icon {...icon} width={iconSize} color={typography.color} />
       </ButtonIcon>
     );
   }
@@ -329,6 +349,8 @@ export function Button(props: ButtonProps) {
     borderColor,
     hoverBackgroundColor,
     hoverBorderColor,
+    activeBackgroundColor,
+    activeBorderColor,
     isRound: isSingleCharRoundButton,
     isLoading: loading,
     disabled: disabled || loading,
@@ -380,6 +402,8 @@ type StyledButtonProps = {
   borderColor: string;
   hoverBackgroundColor: string;
   hoverBorderColor: string;
+  activeBackgroundColor: string;
+  activeBorderColor: string;
   css: { marginTop: string | undefined; marginLeft: string | undefined };
   borderRadius: ButtonBorderRadius;
   iconSide: IconSide;
@@ -402,6 +426,8 @@ const buttonStyle = ({
   backgroundColor,
   hoverBackgroundColor,
   hoverBorderColor,
+  activeBackgroundColor,
+  activeBorderColor,
 }: StyledButtonProps & { theme: Theme }) => {
   const borderColor = borderColorProp || backgroundColor;
 
@@ -451,6 +477,11 @@ const buttonStyle = ({
       &:hover {
         background-color: ${hoverBackgroundColor};
         border-color: ${hoverBorderColor};
+      }
+
+      &:active {
+        background-color: ${activeBackgroundColor};
+        border-color: ${activeBorderColor};
       }
     }
   `;

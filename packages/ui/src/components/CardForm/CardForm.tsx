@@ -50,44 +50,7 @@ import { TextInputHalfRow } from "../TextInput.js";
 import { ToggleContainer } from "../Toggle.js";
 import { Headline } from "../typography/Headline.js";
 
-const descriptionTypography = {
-  primary: {
-    text: {
-      type: "Body Strong",
-      size: "Small",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body Strong",
-      size: "Small",
-      color: "text",
-    },
-  },
-  secondary: {
-    text: {
-      type: "Body Strong",
-      size: "Small",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body Strong",
-      size: "Small",
-      color: "text",
-    },
-  },
-  tertiary: {
-    text: {
-      type: "Body",
-      size: "Large",
-      color: "mcNeutral",
-    },
-    link: {
-      type: "Body",
-      size: "Large",
-      color: "text",
-    },
-  },
-} as const;
+type BelowCardFormContentGap = 0 | 16;
 
 type CardFormProps = {
   children?: ReactNode;
@@ -105,6 +68,7 @@ type CardFormProps = {
   textAlign?: CardFormTextAlign;
   shadow?: CardFormShadow;
   belowFormContent?: ToReactNodesArgs | undefined;
+  belowFormContentGap?: BelowCardFormContentGap | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -159,6 +123,12 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     "smBorderWidth",
     theme,
   );
+  const defaultDescriptionTypographyMap = resolveCardFormProp(
+    undefined,
+    args.kind,
+    "defaultDescriptionTypographyMap",
+    theme,
+  );
 
   const props = {
     paddingY,
@@ -171,6 +141,7 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
+    defaultDescriptionTypographyMap,
   };
 
   return props;
@@ -192,6 +163,7 @@ export function CardForm({
   shadow: shadowProp,
   textAlign: textAlignProp,
   belowFormContent,
+  belowFormContentGap = 0,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -205,6 +177,7 @@ export function CardForm({
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
+    defaultDescriptionTypographyMap,
   } = resolveProps(
     { kind, textAlign: textAlignProp, shadow: shadowProp },
     theme,
@@ -224,7 +197,10 @@ export function CardForm({
   );
 
   const formattedDescription = description
-    ? toReactNodesWithTypographyMap(description, descriptionTypography[kind])
+    ? toReactNodesWithTypographyMap(
+        description,
+        defaultDescriptionTypographyMap,
+      )
     : null;
 
   const belowFormContentNodes = belowFormContent
@@ -277,7 +253,9 @@ export function CardForm({
           {content}
         </StyledCardForm>
       )}
-      <BelowCardFormContent>{belowFormContentNodes}</BelowCardFormContent>
+      <BelowCardFormContent gap={belowFormContentGap}>
+        {belowFormContentNodes}
+      </BelowCardFormContent>
     </CardFormContainer>
   );
 }
@@ -297,9 +275,17 @@ const CardFormContent = styled.div`
   align-self: center;
 `;
 
-const BelowCardFormContent = styled.div`
+type BelowCardFormContentProps = {
+  gap: BelowCardFormContentGap;
+};
+
+const BelowCardFormContent = styled.div<BelowCardFormContentProps>`
   text-align: center;
   margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ gap }) => gap}px;
 
   ${bp.sm(`
     margin-bottom: 32px;

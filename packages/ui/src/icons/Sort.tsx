@@ -1,6 +1,11 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-export function Sort() {
+import { type PathProps } from "./types.js";
+
+export function Sort({
+  strokeWidth = "1.5",
+  strokeLinecap = "square",
+}: PathProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -12,8 +17,8 @@ export function Sort() {
       <path
         d="M1.5 2.5H10.5M4.5 9.5H7.5M3 6H9"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="square"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
       />
     </svg>
   );

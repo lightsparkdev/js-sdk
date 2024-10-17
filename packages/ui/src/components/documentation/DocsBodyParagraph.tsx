@@ -10,7 +10,7 @@ import { StyledBody } from "../typography/base/Body.js";
 
 type DocsBodyParagraphProps = PartialBy<
   ComponentProps<typeof StyledBody>,
-  "size" | "block" | "colorProp" | "displayProp" | "hideOverflow"
+  "size" | "block" | "colorProp" | "displayProp" | "hideOverflow" | "textAlign"
 >;
 
 export function DocsBodyParagraph({
@@ -18,6 +18,7 @@ export function DocsBodyParagraph({
   displayProp,
   hideOverflow = false,
   size = "Medium",
+  textAlign,
   ...rest
 }: DocsBodyParagraphProps) {
   return (
@@ -28,6 +29,7 @@ export function DocsBodyParagraph({
       colorProp={colorProp}
       displayProp={displayProp}
       hideOverflow={hideOverflow}
+      textAlign={textAlign}
       size={size}
     />
   );

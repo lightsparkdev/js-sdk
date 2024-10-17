@@ -1,8 +1,13 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
 import { invertStrokeColor } from "./constants.js";
+import { type PathProps } from "./types.js";
 
-export function ArrowCircle() {
+export function ArrowCircle({
+  strokeWidth = "2",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -14,9 +19,9 @@ export function ArrowCircle() {
       <path
         className={invertStrokeColor}
         d="M21 18V9M21 9H12M21 9L9.5 20.5"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

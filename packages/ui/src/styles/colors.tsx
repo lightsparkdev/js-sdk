@@ -47,6 +47,8 @@ const baseColors = {
   // less than 50% saturated blue
   grayBlue5: "#0c0d0f",
   grayBlue9: "#16171A",
+  grayBlue12: "#2D2E34",
+  grayBlue14: "#3A3B41",
   grayBlue18: "#21283a",
   grayBlue32: "#4F5156",
   grayBlue43: "#686A72",
@@ -56,6 +58,8 @@ const baseColors = {
   grayBlue69: "#A6A9BA",
   grayBlue80: "#C0C9D6",
   grayBlue88: "#DEDFE4",
+  grayBlue92: "#E1EBF5",
+  grayBlue93: "#E6EEF6",
   grayBlue94: "#EBEEF2",
   grayBlue96: "#F2F5F7",
   // purple
@@ -63,6 +67,8 @@ const baseColors = {
   purple55: "#8B38DE",
   // red
   red42a10: "#D800271A",
+  red42a20: "#D800272D",
+  red42a30: "#D800273F",
   // yellow
   primary,
   warning: primary,
@@ -70,6 +76,10 @@ const baseColors = {
   danger: "#FD2C0F",
   // neutral
   secondary: neutral.black,
+  // transparent
+  transparent: "transparent",
+  transparenta02: "#00000005",
+  transparenta08: "#00000014",
 } as const;
 
 /* We only want `as const` to affect keys, the values should be widened to strings: */

@@ -1,6 +1,12 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function Close() {
+import { type PathProps } from "./types.js";
+
+export function Close({
+  strokeWidth = "1",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,8 +17,9 @@ export function Close() {
       <path
         d="M0.5 0.5L7.5 7.5M0.5 7.5L7.5 0.5"
         stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

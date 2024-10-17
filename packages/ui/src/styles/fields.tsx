@@ -3,7 +3,13 @@ import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
 import { type PartialSimpleTypographyProps } from "../components/typography/types.js";
 import { standardBorderRadius, subtext } from "./common.js";
-import { themeOr, type ThemeProp, type WithTheme } from "./themes.js";
+import {
+  getColor,
+  themeOr,
+  type ThemeOrColorKey,
+  type ThemeProp,
+  type WithTheme,
+} from "./themes.js";
 import { applyTypography } from "./typography.js";
 import { z } from "./z-index.js";
 
@@ -59,16 +65,33 @@ const textInputActiveStyles = ({
   theme,
   paddingLeftPx,
   paddingRightPx,
+  activeOutline,
+  activeOutlineColor,
 }: WithTheme<{
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
-}>) => css`
-  border-color: ${textInputBorderColorFocused({ theme })};
-  border-width: 2px;
-  padding: ${textInputPaddingPx - 1}px;
-  ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
-  ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
-`;
+  activeOutline?: boolean | undefined;
+  activeOutlineColor?: ThemeOrColorKey | undefined;
+}>) => {
+  if (activeOutline) {
+    const outlineColor = activeOutlineColor
+      ? getColor(theme, activeOutlineColor)
+      : textInputBorderColorFocused({ theme });
+    return css`
+      outline: 2px solid ${outlineColor};
+      outline-offset: 2px;
+      caret-color: ${outlineColor};
+    `;
+  }
+
+  return css`
+    border-color: ${textInputBorderColorFocused({ theme })};
+    border-width: 2px;
+    padding: ${textInputPaddingPx - 1}px;
+    ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
+    ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
+  `;
+};
 
 export const defaultTextInputTypography = {
   type: "Body",
@@ -85,6 +108,10 @@ export const textInputStyle = ({
   hasError,
   paddingLeftPx,
   paddingRightPx,
+  paddingTopPx,
+  paddingBottomPx,
+  activeOutline,
+  activeOutlineColor,
   typography,
   borderRadius,
 }: WithTheme<{
@@ -94,6 +121,10 @@ export const textInputStyle = ({
   hasError?: boolean | undefined;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
+  paddingTopPx?: number | undefined;
+  paddingBottomPx?: number | undefined;
+  activeOutline?: boolean | undefined;
+  activeOutlineColor?: ThemeOrColorKey | undefined;
   typography?: PartialSimpleTypographyProps | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
 }>) => css`
@@ -115,6 +146,10 @@ export const textInputStyle = ({
   ${paddingRightPx
     ? `padding-right: ${paddingRightPx - (hasError ? 1 : 0)}px;`
     : ""}
+  ${paddingTopPx ? `padding-top: ${paddingTopPx - (hasError ? 1 : 0)}px;` : ""}
+  ${paddingBottomPx
+    ? `padding-bottom: ${paddingBottomPx - (hasError ? 1 : 0)}px;`
+    : ""}
   border-style: solid;
   border-width: ${hasError ? "2" : "1"}px;
   border-color: ${hasError ? theme.danger : textInputBorderColor({ theme })};
@@ -134,10 +169,23 @@ export const textInputStyle = ({
   &:focus,
   &:active,
   &:has(:focus) {
-    ${textInputActiveStyles({ theme, paddingLeftPx, paddingRightPx })}
+    ${textInputActiveStyles({
+      theme,
+      paddingLeftPx,
+      paddingRightPx,
+      activeOutline,
+      activeOutlineColor,
+    })}
   }
 
-  ${active && textInputActiveStyles({ theme, paddingLeftPx, paddingRightPx })}
+  ${active &&
+  textInputActiveStyles({
+    theme,
+    paddingLeftPx,
+    paddingRightPx,
+    activeOutline,
+    activeOutlineColor,
+  })}
 
   &::placeholder {
     color: ${textInputPlaceholderColor({ theme })};

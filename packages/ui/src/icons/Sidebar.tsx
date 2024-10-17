@@ -1,6 +1,12 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function Sidebar() {
+import { type PathProps } from "./types.js";
+
+export function Sidebar({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,9 +17,9 @@ export function Sidebar() {
       <path
         d="M5 1H13C14.1046 1 15 1.89543 15 3V8M5 1H3.1875H3C1.89543 1 1 1.89543 1 3V13C1 14.1046 1.89543 15 3 15H5M5 1V5V8M5 15H13C14.1046 15 15 14.1046 15 13V8M5 15V8M5 8H15"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

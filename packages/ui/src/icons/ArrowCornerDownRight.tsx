@@ -1,6 +1,12 @@
 // Copyright  ©, 2023, Lightspark Group, Inc. - All Rights Reserved
 
-export function ArrowCornerDownRight() {
+import { type PathProps } from "./types.js";
+
+export function ArrowCornerDownRight({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,9 +17,9 @@ export function ArrowCornerDownRight() {
       <path
         d="M2.66699 3.3335V10.0002H13.3337M13.3337 10.0002L10.667 7.3335M13.3337 10.0002L10.667 12.6668"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

@@ -1,6 +1,12 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function CreditCard() {
+import { type PathProps } from "./types.js";
+
+export function CreditCard({
+  strokeWidth = "1.125",
+  strokeLinecap = "butt",
+  strokeLinejoin = "miter",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -16,7 +22,9 @@ export function CreditCard() {
         height="7.125"
         rx="1"
         stroke="currentColor"
-        strokeWidth="1.125"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
         mask="url(#path-1-inside-1_865_26901)"
       />
     </svg>

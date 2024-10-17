@@ -53,7 +53,7 @@ export const StringFilter = ({
         kind="primary"
         size="ExtraSmall"
         text={value}
-        icon="Close"
+        icon={{ name: "Close" }}
         iconSide="right"
         onClick={() => {
           updateFilterState({

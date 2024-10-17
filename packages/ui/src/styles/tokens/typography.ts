@@ -2137,7 +2137,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Body]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].sm}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].md}`,
             letterSpacing: `${
@@ -4450,4 +4450,13 @@ export function getLineHeightForTypographyType(
   }
 
   return desktopTokens.lineHeight;
+}
+
+export function getLineHeightNumberForTypographyType(
+  type: TypographyTypeKey,
+  size: TokenSizeKey,
+  theme: Theme,
+) {
+  const lineHeight = getLineHeightForTypographyType(type, size, theme);
+  return parseFloat(lineHeight);
 }

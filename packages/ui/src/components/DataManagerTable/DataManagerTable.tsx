@@ -565,7 +565,7 @@ export function DataManagerTable<
               numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
             }`}
             paddingY="short"
-            icon="Sort"
+            icon={{ name: "Sort" }}
             typography={{ color: "c6Neutral" }}
             onClick={() => setShowFilterPopover(!showFilterPopover)}
           />

@@ -34,16 +34,9 @@ export function Checkbox({
     color: typographyProp?.color || "text",
   } as const;
 
-  const defaultTypographyMap = {
-    link: defaultTypography,
-    text: defaultTypography,
-    nextLink: defaultTypography,
-  };
-
-  const nodesWithTypography = setDefaultReactNodesTypography(
-    label,
-    defaultTypographyMap,
-  );
+  const nodesWithTypography = setDefaultReactNodesTypography(label, {
+    default: defaultTypography,
+  });
 
   const content = toReactNodes(nodesWithTypography);
 

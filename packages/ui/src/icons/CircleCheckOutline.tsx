@@ -1,4 +1,10 @@
-export function CircleCheckOutline() {
+import { type PathProps } from "./types.js";
+
+export function CircleCheckOutline({
+  strokeWidth = "2",
+  strokeLinecap = "butt",
+  strokeLinejoin = "miter",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -9,7 +15,9 @@ export function CircleCheckOutline() {
       <path
         d="M6 10L8.5 12.5L13.5 7.5M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

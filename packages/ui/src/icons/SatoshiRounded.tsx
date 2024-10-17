@@ -1,6 +1,11 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function SatoshiRounded() {
+import { type PathProps } from "./types.js";
+
+export function SatoshiRounded({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+}: PathProps) {
   return (
     <svg
       viewBox="0 0 12 16"
@@ -10,32 +15,32 @@ export function SatoshiRounded() {
     >
       <path
         d="M10.4 4.77783H1.09985"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
         stroke="currentColor"
       />
       <path
         d="M10.4 8H1.09985"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
         stroke="currentColor"
       />
       <path
         d="M10.4 11.2222H1.09985"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
         stroke="currentColor"
       />
       <path
         d="M5.95215 15.2498L5.95215 13.6387"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
         stroke="currentColor"
       />
       <path
         d="M5.95215 2.36111L5.95215 0.75"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
         stroke="currentColor"
       />
     </svg>

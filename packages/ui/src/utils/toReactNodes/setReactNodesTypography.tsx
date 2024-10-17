@@ -2,6 +2,7 @@ import { ensureArray } from "@lightsparkdev/core";
 import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
 import { isString } from "../strings.js";
 import {
+  isClipboardTextFieldNode,
   isCurrencyAmountNode,
   isIconNode,
   isLinkNode,
@@ -13,10 +14,12 @@ import {
 import { toReactNodes, type ToReactNodesArgs } from "./toReactNodes.js";
 
 const setReactNodesTypographyMapTypes = [
+  "default",
   "link",
   "text",
   "nextLink",
   "currencyAmount",
+  "clipboardTextField",
 ] as const;
 
 export function isNonTypographicReactNode(
@@ -39,38 +42,56 @@ export function setReactNodesTypography(
 ) {
   const nodes = ensureArray(nodesArg);
 
+  const typographyMap = {
+    link: typography.link || typography.default,
+    text: typography.text || typography.default,
+    nextLink: typography.nextLink || typography.default,
+    currencyAmount: typography.currencyAmount || typography.default,
+    clipboardTextField: typography.clipboardTextField || typography.default,
+  };
+
   const nodesWithTypography = nodes.map((node) => {
     if (isNonTypographicReactNode(node)) {
       return node;
-    } else if (isLinkNode(node) && typography.link) {
+    } else if (isLinkNode(node) && typographyMap.link) {
       return {
         link: {
           ...node.link,
           typography: replaceExistingTypography
-            ? typography.link
-            : node.link.typography || typography.link,
+            ? typographyMap.link
+            : node.link.typography || typographyMap.link,
         },
       };
-    } else if (isNextLinkNode(node) && typography.nextLink) {
+    } else if (isNextLinkNode(node) && typographyMap.nextLink) {
       return {
         nextLink: {
           ...node.nextLink,
           typography: replaceExistingTypography
-            ? typography.nextLink
-            : node.nextLink.typography || typography.nextLink,
+            ? typographyMap.nextLink
+            : node.nextLink.typography || typographyMap.nextLink,
         },
       };
-    } else if (isCurrencyAmountNode(node) && typography.currencyAmount) {
+    } else if (isCurrencyAmountNode(node) && typographyMap.currencyAmount) {
       return {
         currencyAmount: {
           ...node.currencyAmount,
-          typography: typography.currencyAmount,
+          typography: typographyMap.currencyAmount,
         },
       };
-    } else if ((isTextNode(node) || isString(node)) && typography.text) {
+    } else if (
+      isClipboardTextFieldNode(node) &&
+      typographyMap.clipboardTextField
+    ) {
+      return {
+        clipboardTextField: {
+          ...node.clipboardTextField,
+          typography: typographyMap.clipboardTextField,
+        },
+      };
+    } else if ((isTextNode(node) || isString(node)) && typographyMap.text) {
       return setTextNodeTypography(
         node,
-        typography.text,
+        typographyMap.text,
         replaceExistingTypography,
       );
     }
@@ -124,7 +145,11 @@ export function toReactNodesWithTypographyMap(
    several components while still allowing downstream instances to override as needed. */
 export function setDefaultReactNodesTypography(
   nodesArg: ToReactNodesArgs,
-  nodesTypographyMap: SetReactNodesTypographyMap,
+  setDefaultReactNodesTypographyArg: SetReactNodesTypographyMap,
 ) {
-  return setReactNodesTypography(nodesArg, nodesTypographyMap, false);
+  return setReactNodesTypography(
+    nodesArg,
+    setDefaultReactNodesTypographyArg,
+    false,
+  );
 }

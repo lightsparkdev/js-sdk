@@ -1,6 +1,12 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
-export function Monitor() {
+import { type PathProps } from "./types.js";
+
+export function Monitor({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       width="100%"
@@ -11,15 +17,15 @@ export function Monitor() {
       <path
         d="M4.89258 16.2514H7.99972M11.1069 16.2514H7.99972M7.99972 13.959V16.2514"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
       />
       <path
         d="M3.5 8H5L7 10L9 5L11 7H12.5"
         stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
       <rect
         x="0.75"
@@ -28,7 +34,7 @@ export function Monitor() {
         height="11.193"
         rx="2"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth={strokeWidth}
       />
     </svg>
   );

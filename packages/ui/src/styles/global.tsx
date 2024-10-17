@@ -1,4 +1,4 @@
-import { css, Global, useTheme } from "@emotion/react";
+import { css, Global, useTheme, type Theme } from "@emotion/react";
 import { useEffect } from "react";
 import "react-tooltip/dist/react-tooltip.css";
 import "../static/fonts.css";
@@ -7,8 +7,19 @@ import { rootFontSizeRems, standardLineHeightEms } from "./common.js";
 import { cssVars } from "./constants.js";
 import { useThemeBg, type ThemeProp } from "./themes.js";
 
+const getFontImport = (theme: Theme) => {
+  switch (theme.typography.fontFamilies.main) {
+    case "Inter":
+      return `@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');`;
+    case "Manrope":
+      return `@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");`;
+    default:
+      return "";
+  }
+};
+
 export const globalComponentStyles = ({ theme }: ThemeProp) => css`
-  @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+  ${getFontImport(theme)};
 
   html {
     font-size: ${rootFontSizeRems}rem;

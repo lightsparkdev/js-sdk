@@ -10,6 +10,8 @@ import { Button } from "./Button.js";
 import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
+type DrawerKind = "default" | "floating";
+
 interface Props {
   children?: React.ReactNode;
   onClose?: () => void;
@@ -17,6 +19,8 @@ interface Props {
   closeButton?: boolean;
   nonDismissable?: boolean;
   handleBack?: (() => void) | undefined;
+  padding?: string;
+  kind?: DrawerKind | undefined;
 }
 
 export const Drawer = (props: Props) => {
@@ -103,29 +107,31 @@ export const Drawer = (props: Props) => {
         grabbing={grabbing}
         ref={drawerContainerRef}
       >
-        {props.grabber && !props.nonDismissable && (
-          <Grabber onClick={handleClose}>
-            <GrabberBar />
-          </Grabber>
-        )}
-        {props.handleBack && (
-          <BackButtonContainer>
-            <Button
-              onClick={props.handleBack}
-              icon="ChevronLeft"
-              kind="ghost"
-              size="Small"
-            />
-          </BackButtonContainer>
-        )}
-        {props.closeButton && !props.nonDismissable && (
-          <CloseButtonContainer>
-            <CloseButton onClick={handleClose} type="button">
-              <Icon name="Close" width={12} />
-            </CloseButton>
-          </CloseButtonContainer>
-        )}
-        {props.children}
+        <DrawerInnerContainer kind={props.kind} padding={props.padding}>
+          {props.grabber && !props.nonDismissable && (
+            <Grabber onClick={handleClose}>
+              <GrabberBar />
+            </Grabber>
+          )}
+          {props.handleBack && (
+            <BackButtonContainer>
+              <Button
+                onClick={props.handleBack}
+                icon={{ name: "ChevronLeft" }}
+                kind="ghost"
+                size="Small"
+              />
+            </BackButtonContainer>
+          )}
+          {props.closeButton && !props.nonDismissable && (
+            <CloseButtonContainer>
+              <CloseButton onClick={handleClose} type="button">
+                <Icon name="Close" width={10} />
+              </CloseButton>
+            </CloseButtonContainer>
+          )}
+          {props.children}
+        </DrawerInnerContainer>
       </DrawerContainer>
     </>
   );
@@ -164,17 +170,13 @@ const DrawerContainer = styled.div<{
   position: fixed;
   max-height: 100dvh;
   width: 100%;
-  background-color: ${({ theme }) => theme.bg};
   right: 0;
   bottom: 0;
   transform: translateY(${(props) => `${props.totalDeltaY}px`});
   z-index: ${z.modalContainer};
-  border-radius: ${Spacing.px.lg} ${Spacing.px.lg} 0 0;
   display: flex;
   flex-direction: column;
-  padding: ${Spacing.px["6xl"]} ${Spacing.px.xl} ${Spacing.px["2xl"]}
-    ${Spacing.px.xl};
-  overflow-y: auto;
+  align-items: center;
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
   ${(props) =>
@@ -203,6 +205,31 @@ const DrawerContainer = styled.div<{
       transform: translateY(100%);
     }
   }
+`;
+
+const DrawerInnerContainer = styled.div<{
+  kind?: DrawerKind | undefined;
+  padding?: string | undefined;
+}>`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: ${(props) =>
+    props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
+  min-width: 320px;
+  height: 100%;
+  ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
+  border-radius: ${(props) =>
+    props.kind === "floating"
+      ? Spacing.px.lg
+      : `${Spacing.px.lg} ${Spacing.px.lg} 0 0`};
+  background-color: ${({ theme }) => theme.bg};
+  padding: ${(props) =>
+    props.padding
+      ? `${props.padding}`
+      : `${Spacing.px["6xl"]} ${Spacing.px.xl} ${Spacing.px["2xl"]}
+    ${Spacing.px.xl}`};
+  overflow-y: auto;
 `;
 
 const Grabber = styled.div`

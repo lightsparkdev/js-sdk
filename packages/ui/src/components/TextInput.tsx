@@ -18,7 +18,11 @@ import {
   textInputStyle,
   type TextInputBorderRadius,
 } from "../styles/fields.js";
-import { getFontColor, type FontColorKey } from "../styles/themes.js";
+import {
+  getFontColor,
+  type FontColorKey,
+  type ThemeOrColorKey,
+} from "../styles/themes.js";
 import { applyTypography } from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
@@ -100,6 +104,11 @@ export type TextInputProps = {
     | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
   width?: "full" | "short" | undefined;
+  paddingX?: number;
+  paddingY?: number;
+  // Outline that appears outside/offset when the input is focused
+  activeOutline?: boolean;
+  activeOutlineColor?: ThemeOrColorKey;
 };
 
 function withDefaults(textInputProps: TextInputProps) {
@@ -144,10 +153,27 @@ export function TextInput(textInputProps: TextInputProps) {
   const textInputWidth = props.width === "short" ? "250px" : "100%";
 
   let paddingLeftPx: number | undefined;
-  if (props.icon && !isIconRight) {
+  if (typeof props.paddingX === "number") {
+    if (isIconRight) {
+      paddingLeftPx = props.paddingX;
+    } else {
+      paddingLeftPx = props.paddingX + iconWidth + iconTextOffset;
+    }
+  } else if (props.icon && !isIconRight) {
     paddingLeftPx = iconOffset + iconWidth + iconTextOffset;
   } else if (props.select) {
     paddingLeftPx = selectLeftOffset + props.select.width + 5;
+  }
+
+  let paddingRightPx: number | undefined;
+  if (typeof props.paddingX === "number") {
+    if (isIconRight) {
+      paddingRightPx = iconTextOffset + iconWidth + props.paddingX;
+    } else {
+      paddingRightPx = props.paddingX;
+    }
+  } else if (isIconRight) {
+    paddingRightPx = 28;
   }
 
   let input = (
@@ -188,7 +214,11 @@ export function TextInput(textInputProps: TextInputProps) {
         type={props.type}
         value={props.value}
         paddingLeftPx={paddingLeftPx}
-        paddingRightPx={isIconRight ? 28 : undefined}
+        paddingRightPx={paddingRightPx}
+        paddingTopPx={props.paddingY}
+        paddingBottomPx={props.paddingY}
+        activeOutline={props.activeOutline}
+        activeOutlineColor={props.activeOutlineColor}
         hasError={hasError}
         data-test-id={props.testId}
         typography={props.typography}
@@ -222,7 +252,9 @@ export function TextInput(textInputProps: TextInputProps) {
         <TextInputIconContainer
           onClick={props.onClickIcon ? props.onClickIcon : () => {}}
           isIconRight={isIconRight}
-          iconOffset={iconOffset}
+          iconOffset={
+            typeof props.paddingX === "number" ? props.paddingX : iconOffset
+          }
           focused={focused}
           hasValue={Boolean(props.value)}
           colorProp={props.typography.color}
@@ -300,10 +332,6 @@ const WithIcon = styled.div<WithIconProps>`
   ${standardBorderRadius(8)}
   position: relative;
 
-  input {
-    padding-right: 34px;
-  }
-
   & ${IconContainer.toString()} {
     z-index: ${z.textInput + 1};
   }
@@ -340,6 +368,10 @@ interface InputProps {
   disabled: boolean;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
+  paddingTopPx?: number | undefined;
+  paddingBottomPx?: number | undefined;
+  activeOutline?: boolean | undefined;
+  activeOutlineColor?: ThemeOrColorKey | undefined;
   typography: RequiredSimpleTypographyProps;
   borderRadius?: TextInputBorderRadius | undefined;
 }

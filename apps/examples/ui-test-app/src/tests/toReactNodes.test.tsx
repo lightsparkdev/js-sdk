@@ -484,10 +484,7 @@ describe("toReactNodes", () => {
     } as const;
     const nodes = setDefaultReactNodesTypography(
       [stringNode, linkNode, textNode],
-      {
-        link: defaultTypography,
-        text: defaultTypography,
-      },
+      { default: defaultTypography },
     );
 
     expect(nodes).toEqual([
