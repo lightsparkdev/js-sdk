@@ -2242,7 +2242,7 @@ __metadata:
     "@lightsparkdev/lightspark-sdk": "npm:1.8.7"
     "@lightsparkdev/oauth": "npm:*"
     "@lightsparkdev/tsconfig": "npm:*"
-    "@lightsparkdev/ui": "npm:1.0.12"
+    "@lightsparkdev/ui": "npm:1.0.13"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
     "@types/react": "npm:^18.2.12"
@@ -2321,7 +2321,7 @@ __metadata:
     "@lightsparkdev/core": "npm:1.2.5"
     "@lightsparkdev/lightspark-sdk": "npm:1.8.7"
     "@lightsparkdev/tsconfig": "npm:*"
-    "@lightsparkdev/ui": "npm:1.0.12"
+    "@lightsparkdev/ui": "npm:1.0.13"
     "@lightsparkdev/vite": "npm:*"
     "@types/chrome": "npm:^0.0.254"
     "@types/jest": "npm:^29.5.3"
@@ -2362,7 +2362,7 @@ __metadata:
     "@lightsparkdev/core": "npm:1.2.5"
     "@lightsparkdev/eslint-config": "npm:*"
     "@lightsparkdev/tsconfig": "npm:*"
-    "@lightsparkdev/ui": "npm:1.0.12"
+    "@lightsparkdev/ui": "npm:1.0.13"
     "@lightsparkdev/vite": "npm:*"
     "@testing-library/jest-dom": "npm:^6.1.2"
     "@types/jest": "npm:^29.5.3"
@@ -2387,7 +2387,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/ui@npm:1.0.12, @lightsparkdev/ui@workspace:packages/ui":
+"@lightsparkdev/ui@npm:1.0.13, @lightsparkdev/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/ui@workspace:packages/ui"
   dependencies:
