@@ -358,8 +358,10 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
       transparent: {
         defaultBackgroundColor: "transparent",
         defaultBorderColor: "transparent",
-        defaultHoverBackgroundColor: "grayBlue94",
+        defaultHoverBackgroundColor: "transparenta02",
         defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "transparenta08",
+        defaultActiveBorderColor: "transparent",
       },
       linkLight: {
         defaultColor: "link",
@@ -454,6 +456,9 @@ const bridgeBaseSettings = {
         defaultBackgroundColor: "blue39",
         defaultBorderColor: "blue39",
         defaultHoverBackgroundColor: "blue37",
+        defaultHoverBorderColor: "blue37",
+        defaultActiveBackgroundColor: "blue22",
+        defaultActiveBorderColor: "blue22",
       },
       ghost: {
         defaultColor: "secondary",
@@ -465,8 +470,11 @@ const bridgeBaseSettings = {
       },
       secondary: {
         defaultBackgroundColor: "transparent",
-        defaultHoverBackgroundColor: "grayBlue94",
         defaultBorderColor: "grayBlue80",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultHoverBorderColor: "grayBlue80",
+        defaultActiveBackgroundColor: "grayBlue88",
+        defaultActiveBorderColor: "grayBlue80",
       },
       transparent: {
         defaultColor: "secondary",
