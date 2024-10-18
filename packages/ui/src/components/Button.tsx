@@ -2,6 +2,7 @@
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { type PartialBy } from "@lightsparkdev/core";
 import { uniqueId } from "lodash-es";
 import { Fragment, useRef, type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
@@ -46,6 +47,8 @@ export const buttonKinds = [
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
+type IconProps = ComponentProps<typeof Icon>;
+
 export type ButtonProps = {
   kind?: ButtonKind | undefined;
   typography?: ButtonTypographyArgs | undefined;
@@ -60,10 +63,11 @@ export type ButtonProps = {
   filename?: string | undefined;
   toParams?: RouteParams | undefined;
   icon?:
-    | Pick<ComponentProps<typeof Icon>, "name" | "color" | "iconProps">
+    | (Pick<IconProps, "name" | "color" | "iconProps"> &
+        /* We'll set a default width if not provided, leave unrequired: */
+        PartialBy<IconProps, "width">)
     | undefined;
   iconSide?: IconSide;
-  iconWidth?: number | undefined;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
   onClick?: (() => void) | undefined;
@@ -271,7 +275,6 @@ export function Button(props: ButtonProps) {
     zIndex = undefined,
     tooltipText,
     borderRadius,
-    iconWidth,
   } = resolveProps(props, theme);
 
   const tooltipId = useRef(uniqueId());
@@ -299,7 +302,7 @@ export function Button(props: ButtonProps) {
       >
         <Icon
           {...icon}
-          width={iconWidth || defaultIconWidth}
+          width={icon.width || defaultIconWidth}
           color={typography.color}
         />
       </ButtonIcon>
