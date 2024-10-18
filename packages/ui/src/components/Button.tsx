@@ -63,11 +63,12 @@ export type ButtonProps = {
     | Pick<ComponentProps<typeof Icon>, "name" | "color" | "iconProps">
     | undefined;
   iconSide?: IconSide;
+  iconWidth?: number | undefined;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
   onClick?: (() => void) | undefined;
-  mt?: number;
-  ml?: number;
+  mt?: number | "auto";
+  ml?: number | "auto";
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
@@ -270,11 +271,12 @@ export function Button(props: ButtonProps) {
     zIndex = undefined,
     tooltipText,
     borderRadius,
+    iconWidth,
   } = resolveProps(props, theme);
 
   const tooltipId = useRef(uniqueId());
 
-  const iconSize = size === "ExtraSmall" ? 12 : 16;
+  const defaultIconWidth = size === "ExtraSmall" ? 12 : 16;
   let currentIcon = null;
   if (loading) {
     currentIcon = (
@@ -284,7 +286,7 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Loading size={iconSize} center={false} kind={loadingKind} />
+        <Loading size={defaultIconWidth} center={false} kind={loadingKind} />
       </ButtonIcon>
     );
   } else if (icon) {
@@ -295,7 +297,11 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Icon {...icon} width={iconSize} color={typography.color} />
+        <Icon
+          {...icon}
+          width={iconWidth || defaultIconWidth}
+          color={typography.color}
+        />
       </ButtonIcon>
     );
   }
@@ -355,11 +361,14 @@ export function Button(props: ButtonProps) {
     isLoading: loading,
     disabled: disabled || loading,
     css: {
-      marginTop: mt ? `${mt}px` : undefined,
-      marginLeft: ml ? `${ml}px` : undefined,
+      marginTop: mt ? (typeof mt === "number" ? `${mt}px` : "auto") : undefined,
+      marginLeft: ml
+        ? typeof ml === "number"
+          ? `${ml}px`
+          : "auto"
+        : undefined,
     },
     newTab,
-    text,
     borderRadius,
     zIndex,
   };
@@ -497,6 +506,9 @@ interface ButtonIconProps {
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   ${({ iconSide, kind, typography }) =>
     `${iconSide}: ${getPaddingX(typography.size, kind, false)}px;`}
 `;

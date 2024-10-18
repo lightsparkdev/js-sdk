@@ -19,6 +19,7 @@ export type CommonTypographyProps = {
   id?: string | undefined;
   display?: AllowedDisplay | undefined;
   textAlign?: TextAlign | undefined;
+  onClick?: (() => void) | undefined;
 };
 
 export type CommonStyledTypographyProps = {
@@ -30,6 +31,7 @@ export type CommonStyledTypographyProps = {
   /* these are an inherent html props so we need to change the name, append prop: */
   displayProp: AllowedDisplay | undefined;
   colorProp: FontColorKey | undefined;
+  onClick: (() => void) | undefined;
 };
 
 /* Common types for external component use of typography args */

@@ -30,8 +30,10 @@ import {
   type CardFormThemeKey,
 } from "../../styles/themeDefaults/cardForm.js";
 import { getColor } from "../../styles/themes.js";
+import { Spacing } from "../../styles/tokens/spacing.js";
 import { pxToRems } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
+import { select } from "../../utils/emotion.js";
 import { icon } from "../../utils/toReactNodes/nodes.js";
 import { toReactNodesWithTypographyMap } from "../../utils/toReactNodes/setReactNodesTypography.js";
 import {
@@ -323,6 +325,13 @@ export const CardFormFieldLabel = styled.label`
   }
 `;
 
+export const CardFormNearButtonColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: ${Spacing.px.sm};
+`;
+
 type CardFormDataFieldValueProps = Omit<
   ComponentProps<typeof ClipboardTextField>,
   "value"
@@ -503,7 +512,7 @@ const StyledCardFormStyle = ({
         margin-top: 24px;
       }
 
-      & > ${ButtonSelector()} {
+      & > ${ButtonSelector()}, & > ${select(CardFormNearButtonColumn)} {
         ${formButtonTopMarginStyle}
       }
     }
