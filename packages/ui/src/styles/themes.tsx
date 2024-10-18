@@ -228,12 +228,30 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
     defaultSize: "Medium",
     defaultBorderRadius: 999,
     defaultPaddingsY: {
-      ExtraSmall: 16,
-      Small: 16,
-      Schmedium: 16,
-      Medium: 16,
-      Mlarge: 16,
-      Large: 16,
+      ExtraSmall: {
+        short: 14,
+        regular: 16,
+      },
+      Small: {
+        short: 14,
+        regular: 16,
+      },
+      Schmedium: {
+        short: 14,
+        regular: 16,
+      },
+      Medium: {
+        short: 14,
+        regular: 16,
+      },
+      Mlarge: {
+        short: 14,
+        regular: 16,
+      },
+      Large: {
+        short: 14,
+        regular: 16,
+      },
     },
     kinds: {
       primary: {
@@ -252,12 +270,12 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
         defaultHoverBorderColor: "transparent",
       },
       secondary: {
-        defaultBackgroundColor: "grayBlue94",
-        defaultBorderColor: "grayBlue94",
-        defaultHoverBackgroundColor: "grayBlue88",
-        defaultHoverBorderColor: "grayBlue88",
-        defaultActiveBackgroundColor: "grayBlue57",
-        defaultActiveBorderColor: "grayBlue57",
+        defaultBackgroundColor: "transparent",
+        defaultBorderColor: "grayBlue80",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultHoverBorderColor: "grayBlue80",
+        defaultActiveBackgroundColor: "grayBlue88",
+        defaultActiveBorderColor: "grayBlue80",
       },
       tertiary: {
         defaultColor: "bg",
@@ -327,12 +345,30 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
     defaultSize: "Medium",
     defaultBorderRadius: 999,
     defaultPaddingsY: {
-      ExtraSmall: 16,
-      Small: 16,
-      Schmedium: 16,
-      Medium: 16,
-      Mlarge: 16,
-      Large: 16,
+      ExtraSmall: {
+        short: 14,
+        regular: 16,
+      },
+      Small: {
+        short: 14,
+        regular: 16,
+      },
+      Schmedium: {
+        short: 14,
+        regular: 16,
+      },
+      Medium: {
+        short: 14,
+        regular: 16,
+      },
+      Mlarge: {
+        short: 14,
+        regular: 16,
+      },
+      Large: {
+        short: 14,
+        regular: 16,
+      },
     },
     kinds: {
       primary: {
