@@ -2,6 +2,7 @@
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { type PartialBy } from "@lightsparkdev/core";
 import { uniqueId } from "lodash-es";
 import { Fragment, useRef, type ComponentProps } from "react";
 import { Link, type RouteParams } from "../router.js";
@@ -46,6 +47,8 @@ export const buttonKinds = [
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
+type IconProps = ComponentProps<typeof Icon>;
+
 export type ButtonProps = {
   kind?: ButtonKind | undefined;
   typography?: ButtonTypographyArgs | undefined;
@@ -60,14 +63,16 @@ export type ButtonProps = {
   filename?: string | undefined;
   toParams?: RouteParams | undefined;
   icon?:
-    | Pick<ComponentProps<typeof Icon>, "name" | "color" | "iconProps">
+    | (Pick<IconProps, "name" | "color" | "iconProps"> &
+        /* We'll set a default width if not provided, leave unrequired: */
+        PartialBy<IconProps, "width">)
     | undefined;
   iconSide?: IconSide;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
   onClick?: (() => void) | undefined;
-  mt?: number;
-  ml?: number;
+  mt?: number | "auto";
+  ml?: number | "auto";
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
@@ -274,7 +279,7 @@ export function Button(props: ButtonProps) {
 
   const tooltipId = useRef(uniqueId());
 
-  const iconSize = size === "ExtraSmall" ? 12 : 16;
+  const defaultIconWidth = size === "ExtraSmall" ? 12 : 16;
   let currentIcon = null;
   if (loading) {
     currentIcon = (
@@ -284,7 +289,7 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Loading size={iconSize} center={false} kind={loadingKind} />
+        <Loading size={defaultIconWidth} center={false} kind={loadingKind} />
       </ButtonIcon>
     );
   } else if (icon) {
@@ -295,7 +300,11 @@ export function Button(props: ButtonProps) {
         typography={typography}
         kind={kind}
       >
-        <Icon {...icon} width={iconSize} color={typography.color} />
+        <Icon
+          {...icon}
+          width={icon.width || defaultIconWidth}
+          color={typography.color}
+        />
       </ButtonIcon>
     );
   }
@@ -355,11 +364,14 @@ export function Button(props: ButtonProps) {
     isLoading: loading,
     disabled: disabled || loading,
     css: {
-      marginTop: mt ? `${mt}px` : undefined,
-      marginLeft: ml ? `${ml}px` : undefined,
+      marginTop: mt ? (typeof mt === "number" ? `${mt}px` : "auto") : undefined,
+      marginLeft: ml
+        ? typeof ml === "number"
+          ? `${ml}px`
+          : "auto"
+        : undefined,
     },
     newTab,
-    text,
     borderRadius,
     zIndex,
   };
@@ -497,6 +509,9 @@ interface ButtonIconProps {
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   ${({ iconSide, kind, typography }) =>
     `${iconSide}: ${getPaddingX(typography.size, kind, false)}px;`}
 `;

@@ -36,15 +36,15 @@ export const buttonsThemeBase = {
   defaultActiveBorderColor: "bg" as BackgroundColorKeyArg,
   defaultOutlineOffset: 1,
   defaultPaddingsY: {
-    ExtraSmall: 4,
+    ExtraSmall: 4 as PaddingY,
     Small: {
       short: 8,
       regular: 12,
     } as PaddingY,
-    Schmedium: 12,
-    Medium: 12,
-    Mlarge: 12,
-    Large: 12,
+    Schmedium: 12 as PaddingY,
+    Medium: 12 as PaddingY,
+    Mlarge: 12 as PaddingY,
+    Large: 12 as PaddingY,
   },
   kinds: {},
 };

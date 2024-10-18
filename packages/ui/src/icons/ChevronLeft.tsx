@@ -3,7 +3,7 @@
 import { type PathProps } from "./types.js";
 
 export const ChevronLeft = ({
-  strokeWidth = "2",
+  strokeWidth = "1.5",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) => (

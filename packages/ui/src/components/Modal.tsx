@@ -1,7 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 
-import type { ComponentProps, MutableRefObject } from "react";
+import type { ComponentProps, MutableRefObject, ReactNode } from "react";
 import React, { Fragment, useEffect, useLayoutEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { useLiveRef } from "../hooks/useLiveRef.js";
@@ -13,7 +13,6 @@ import {
   standardFocusOutline,
 } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
-import { TokenSize } from "../styles/tokens/typography.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
@@ -30,8 +29,6 @@ import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
 import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
-import { Body } from "./typography/Body.js";
-import { headlineSelector } from "./typography/base/Headline.js";
 
 type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */
@@ -99,6 +96,8 @@ type ModalProps = {
   handleBack?: () => void;
   /** The element to append the modal into. */
   appendToElement?: HTMLElement;
+  bottomContent?: ReactNode | undefined;
+  topLeftIcon?: ComponentProps<typeof Icon> | undefined;
 };
 
 export function Modal({
@@ -130,6 +129,8 @@ export function Modal({
   extraActions,
   handleBack,
   appendToElement,
+  bottomContent,
+  topLeftIcon,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
@@ -291,27 +292,31 @@ export function Modal({
     const defaultTypography = {
       type: "Headline",
       heading: "h4",
-      size: TokenSize.Small,
+      size: "Small",
     } as const;
     const titleNodesWithTypography = setDefaultReactNodesTypography(title, {
       default: defaultTypography,
     });
-    titleContent = toReactNodes(titleNodesWithTypography);
+    titleContent = (
+      <ModalTitle>{toReactNodes(titleNodesWithTypography)}</ModalTitle>
+    );
   }
 
   let descriptionContent: React.ReactNode | null = null;
   if (description) {
-    if (typeof description === "string") {
-      descriptionContent = (
-        <Description>
-          <Body size={"ExtraSmall"} content={description} />
-        </Description>
-      );
-    } else {
-      descriptionContent = (
-        <Description>{toReactNodes(description)}</Description>
-      );
-    }
+    const defaultTypography = {
+      type: "Body",
+      size: "ExtraSmall",
+    } as const;
+    const descriptionNodesWithTypography = setDefaultReactNodesTypography(
+      description,
+      { default: defaultTypography },
+    );
+    descriptionContent = (
+      <ModalDescription>
+        {toReactNodes(descriptionNodesWithTypography)}
+      </ModalDescription>
+    );
   }
 
   let topContentNode = null;
@@ -379,11 +384,13 @@ export function Modal({
             )}
             {!ghost && (
               <ModalNavigation>
-                {handleBack && (
+                {handleBack ? (
                   <BackButton onClick={handleBack}>
                     <Icon name="ChevronLeft" width={16} />
                   </BackButton>
-                )}
+                ) : topLeftIcon ? (
+                  <Icon {...topLeftIcon} />
+                ) : null}
                 {!nonDismissable && (
                   <CloseButton onClick={onClickCloseButton} type="button">
                     <Icon name="Close" width={9} />
@@ -392,6 +399,9 @@ export function Modal({
               </ModalNavigation>
             )}
             <ModalContentInner ghost={ghost}>{modalContent}</ModalContentInner>
+            {bottomContent && (
+              <div css={{ marginTop: "auto" }}>{bottomContent}</div>
+            )}
           </ModalContent>
         </ModalContainer>
       </Fragment>
@@ -442,7 +452,7 @@ const ModalContainer = styled.div<{ top: number }>`
 `;
 
 const contentTopMarginPx = 24;
-const Description = styled.div`
+const ModalDescription = styled.div`
   color: ${({ theme }) => theme.mcNeutral};
   margin-top: ${Spacing.px.sm};
   & + * {
@@ -475,6 +485,13 @@ const ModalButtonColumn = styled.div`
   margin-top: ${Spacing.px.lg};
 `;
 
+const ModalTitle = styled.div`
+  margin: 0;
+  & + *:not(${select(ModalDescription)}) {
+    margin-top: ${contentTopMarginPx}px;
+  }
+`;
+
 const ModalContent = styled.div<{
   width: number;
   smKind: SmKind;
@@ -491,6 +508,8 @@ const ModalContent = styled.div<{
   max-width: 100%;
   max-height: 100%;
   position: absolute;
+  display: flex;
+  flex-direction: column;
 
   ${({ ghost, width }) => `
     ${ghost ? "" : standardBorderRadius(16)}
@@ -501,18 +520,11 @@ const ModalContent = styled.div<{
     smKind === "fullscreen"
       ? bp.sm(`
           width: 100%;
-          height: 100%;
+          height: 100dvh;
         `)
       : ""}
 
   ${({ ghost }) => (ghost ? "" : "padding: 16px 16px 40px;")}
-
-  ${headlineSelector("h4")} {
-    margin: 0;
-    & + *:not(${select(Description)}) {
-      margin-top: ${contentTopMarginPx}px;
-    }
-  }
 `;
 
 const ModalNavigation = styled.div`

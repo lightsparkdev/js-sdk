@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { type ReactElement } from "react";
 import { isReactNodeWithChildren } from "../../utils/isReactNodeWithChildren.js";
 import {
   type HeadlineProps,
@@ -70,16 +70,19 @@ const toKebabCase = (str: string) => {
 
 type DocsHeadlineProps = {
   children: React.ReactNode;
-} & Partial<Pick<HeadlineProps, "color" | "size" | "heading" | "textAlign">>;
+} & Partial<
+  Pick<HeadlineProps, "color" | "size" | "heading" | "textAlign" | "onClick">
+>;
 
 export const DocsHeadline = ({
   children,
   color,
   size = "Medium",
   heading = "h1",
+  onClick,
   textAlign,
 }: DocsHeadlineProps) => {
-  const id = toKebabCase(getHeaderId(children as React.ReactElement));
+  const id = toKebabCase(getHeaderId(children as ReactElement));
   return (
     <StyledHeadline
       as={heading}
@@ -89,6 +92,7 @@ export const DocsHeadline = ({
       displayProp="block"
       hideOverflow={false}
       textAlign={textAlign}
+      onClick={onClick}
       block
     >
       {children}

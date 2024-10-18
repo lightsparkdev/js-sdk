@@ -34,7 +34,7 @@ export const StyledHeadline = styled.span<StyledHeadlineProps>`
   ${typographyStyles}
 `;
 
-export function headlineSelector(heading: Heading) {
+export function headlineSelector(heading: Heading | "*") {
   return `${heading}${select(StyledHeadline)}`;
 }
 
