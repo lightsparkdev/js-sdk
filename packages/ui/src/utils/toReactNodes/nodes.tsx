@@ -19,8 +19,6 @@ export type NextLinkNode = {
 
 export type TextNode = {
   text: string;
-  id?: string;
-  onClick?: () => void;
   typography?: TypographyPropsWithoutChildren;
 };
 

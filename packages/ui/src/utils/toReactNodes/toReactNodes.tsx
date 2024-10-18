@@ -58,18 +58,9 @@ export function toReactNodes(toReactNodesArg: ToReactNodesArgs) {
       } else {
         content = stringToNodes(text);
       }
-      const props = isTextNode(node)
-        ? {
-            onClick: node.onClick,
-            style: { cursor: "pointer" },
-          }
-        : undefined;
-      /* text property is a sufficient key for both strings and text nodes due to minimal impl */
-      const key = `text-${i}-${text.substr(0, 20)}`;
       return (
-        <span key={key} {...props}>
-          {content}
-        </span>
+        /* text property is a sufficient key for both strings and text nodes due to minimal impl */
+        <Fragment key={`text-${i}-${text.substr(0, 20)}`}>{content}</Fragment>
       );
     } else if (isLinkNode(node)) {
       /* For some nodes obtaining a stable key is not straightforward. Index will be used by default

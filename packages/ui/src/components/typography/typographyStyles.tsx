@@ -7,6 +7,7 @@ export const typographyStyles = ({
   hideOverflow,
   displayProp,
   textAlign,
+  onClick,
 }: { theme: Theme } & CommonStyledTypographyProps) => {
   const displayValue =
     blockProp || hideOverflow ? "block" : displayProp || null;
@@ -14,6 +15,7 @@ export const typographyStyles = ({
     /* Margins should always be set in parent style contexts eg Article: */
     margin: 0;
 
+    ${typeof onClick === "function" ? "cursor: pointer;" : ""}
     ${textAlign ? `text-align: ${textAlign};` : ""}
     ${displayValue ? `display: ${displayValue};` : ""}
     ${hideOverflow
