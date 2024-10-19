@@ -19,7 +19,7 @@ export const typographyStyles = ({
     ${textAlign ? `text-align: ${textAlign};` : ""}
     ${displayValue ? `display: ${displayValue};` : ""}
     ${hideOverflow
-      ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+      ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;"
       : ""}
   `;
 };
