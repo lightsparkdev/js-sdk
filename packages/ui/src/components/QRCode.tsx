@@ -69,7 +69,7 @@ export function QRCode({
               border={border}
               animated={animated}
             >
-              <Icon name="LogoOnCircle" width={30} />
+              <Icon name="LogoOnCircle" width={30} ml="auto" mr="auto" />
             </EmptyQRCode>
           </EmptyQRCodeSizer>
         )}
