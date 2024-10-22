@@ -18,7 +18,6 @@ type DocsBodyStrongParagraphProps = PartialBy<
   | "hideOverflow"
   | "textAlign"
   | "onClick"
-  | "underline"
 >;
 
 export function DocsBodyStrongParagraph({
@@ -29,7 +28,6 @@ export function DocsBodyStrongParagraph({
   size = "Medium",
   textAlign,
   onClick,
-  underline = false,
   ...rest
 }: DocsBodyStrongParagraphProps) {
   return (
@@ -43,7 +41,6 @@ export function DocsBodyStrongParagraph({
         size={size}
         textAlign={textAlign}
         onClick={onClick}
-        underline={underline}
       />
     </StyledBodyStrongBlock>
   );

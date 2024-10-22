@@ -20,7 +20,6 @@ export type CommonTypographyProps = {
   display?: AllowedDisplay | undefined;
   textAlign?: TextAlign | undefined;
   onClick?: (() => void) | undefined;
-  underline?: boolean | undefined;
 };
 
 export type CommonStyledTypographyProps = {
@@ -33,7 +32,6 @@ export type CommonStyledTypographyProps = {
   displayProp: AllowedDisplay | undefined;
   colorProp: FontColorKey | undefined;
   onClick: (() => void) | undefined;
-  underline: boolean;
 };
 
 /* Common types for external component use of typography args */

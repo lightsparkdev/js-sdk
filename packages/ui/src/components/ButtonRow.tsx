@@ -7,7 +7,6 @@ import { Button, type ButtonProps } from "./Button.js";
 export type ButtonRowProps = {
   buttons: (ButtonProps | "divider")[];
   smSticky?: boolean;
-  bottomBorder?: boolean;
   className?: string;
   headerHeight?: number;
 };
@@ -16,15 +15,10 @@ export function ButtonRow({
   buttons,
   className,
   smSticky = true,
-  bottomBorder = true,
   headerHeight = 0,
 }: ButtonRowProps) {
   return (
-    <ButtonRowContainer
-      smSticky={smSticky}
-      headerHeight={headerHeight}
-      bottomBorder={bottomBorder}
-    >
+    <ButtonRowContainer smSticky={smSticky} headerHeight={headerHeight}>
       <StyledButtonRow className={className}>
         {buttons.map((button, idx) =>
           button === "divider" ? (
@@ -41,11 +35,10 @@ export function ButtonRow({
 export const ButtonRowContainer = styled.div<{
   smSticky: boolean;
   headerHeight: number;
-  bottomBorder: boolean;
 }>`
   max-width: 100%;
   ${({ theme }) => bp.sm(`background: ${theme.bg}`)}
-  ${({ headerHeight, smSticky, bottomBorder }) =>
+  ${({ headerHeight, smSticky }) =>
     bp.sm(
       `
         ${
@@ -61,23 +54,17 @@ export const ButtonRowContainer = styled.div<{
             z-index: 2;`
             : `position: relative;`
         }
-        ${
-          bottomBorder
-            ? `
-            &:before {
-              content: "";
-              box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.09);
-              height: 1px;
-              position: absolute;
-              background: black;
-              bottom: 1px;
-              width: 100%;
-              z-index: 0;
-            }
-          `
-            : ``
-        }
         z-index: 2;
+        &:before {
+          content: "";
+          box-shadow: 0px 0px 9px 3px rgba(0, 0, 0, 0.09);
+          height: 1px;
+          position: absolute;
+          background: black;
+          bottom: 1px;
+          width: 100%;
+          z-index: 0;
+        }
       `,
     )}
 `;

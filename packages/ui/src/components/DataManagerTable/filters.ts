@@ -1,8 +1,8 @@
 interface FilterBase<T extends Record<string, unknown>> {
   type: FilterType;
   label: string;
-  // This is the accessorKey for the column in the data
-  accessorKey: keyof T;
+  // This is the accessor for the column in the data
+  accessor: keyof T;
   value?: string | boolean;
   // Placeholder for any string filters
   placeholder?: string;
@@ -58,18 +58,12 @@ export interface BooleanFilter<T extends Record<string, unknown>>
   queryVariable: string;
 }
 
-export interface CurrencyFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
-  type: FilterType.CURRENCY;
-}
-
 export type Filter<T extends Record<string, unknown>> =
   | DateFilter<T>
   | EnumFilter<T>
   | StringFilter<T>
   | IdFilter<T>
-  | BooleanFilter<T>
-  | CurrencyFilter<T>;
+  | BooleanFilter<T>;
 
 export enum FilterType {
   DATE = "date",
@@ -77,6 +71,5 @@ export enum FilterType {
   STRING = "string",
   ID = "id",
   NUMBER = "number",
-  CURRENCY = "currency",
   BOOLEAN = "boolean",
 }

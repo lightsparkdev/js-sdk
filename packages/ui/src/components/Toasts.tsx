@@ -7,14 +7,12 @@ import { standardContentInset } from "../styles/common.js";
 import { themeOr } from "../styles/themes.js";
 import { extend, flexCenter, pxToRems } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
-import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
   toReactNodes,
   type ToReactNodesArgs,
 } from "../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
-import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type ToastQueueArg = {
   text: ToReactNodesArgs;
@@ -36,7 +34,6 @@ export type ToastsProps = {
   removeExpiredAndNotVisible?: boolean;
   dedupeConsecutive?: boolean;
   maxVisible?: number;
-  typography?: PartialSimpleTypographyProps | undefined;
 };
 
 type TimeoutRef = ReturnType<typeof setTimeout> | null;
@@ -51,7 +48,6 @@ export function Toasts({
   maxVisible = 3,
   removeExpiredAndNotVisible = true,
   dedupeConsecutive = true,
-  typography: typographyProp,
 }: ToastsProps) {
   const queuedToastIds = useRef(new Set<string>());
   const prevToastQueue = useRef<ToastQueueArg[]>([]);
@@ -62,11 +58,6 @@ export function Toasts({
   const hidingTimeoutRefs = useRef<{ [id: string]: TimeoutRef }>({});
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [nodeReady, setNodeReady] = useState(false);
-  const defaultTypography = {
-    type: typographyProp?.type || "Body",
-    size: typographyProp?.size || "ExtraSmall",
-    color: typographyProp?.color || "white",
-  } as const;
 
   const hideToast = useCallback(
     (id: string) => {
@@ -214,16 +205,8 @@ export function Toasts({
           ? fromCurrent - 1
           : fromCurrent;
 
-        const nodesWithTypography = toast.text
-          ? setDefaultReactNodesTypography(toast.text, {
-              default: defaultTypography,
-            })
-          : null;
-
         const textNode = (
-          <span>
-            {nodesWithTypography ? toReactNodes(nodesWithTypography) : null}
-          </span>
+          <span>{toast.text ? toReactNodes(toast.text) : null}</span>
         );
         return (
           <Fragment key={toast.id}>
