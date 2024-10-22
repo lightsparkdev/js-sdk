@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { isObject, type Query } from "@lightsparkdev/core";
+import { type Query, isObject } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type ChannelFees from "./ChannelFees.js";
@@ -71,7 +71,11 @@ class Channel implements Entity {
     public readonly estimatedForceClosureWaitMinutes?: number | undefined,
     /** The amount to be paid in fees for the current set of commitment transactions. **/
     public readonly commitFee?: CurrencyAmount | undefined,
-    /** The fees charged for routing payments through this channel. **/
+    /**
+     * The fees charged for routing payments through this channel.
+     *
+     * @deprecated Customer nodes do not route payments anymore.
+     **/
     public readonly fees?: ChannelFees | undefined,
     /** If known, the remote node of the channel. **/
     public readonly remoteNodeId?: string | undefined,

@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { isObject, type Query } from "@lightsparkdev/core";
+import { type Query, isObject } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
@@ -60,7 +60,11 @@ class OutgoingPaymentAttempt implements Entity {
      * one-hop payment, this value will be zero as we don't need to pay a fee to ourselves.
      **/
     public readonly fees?: CurrencyAmount | undefined,
-    /** The channel snapshot at the time the outgoing payment attempt was made. **/
+    /**
+     * The channel snapshot at the time the outgoing payment attempt was made.
+     *
+     * @deprecated Not supported.
+     **/
     public readonly channelSnapshotId?: string | undefined,
   ) {
     autoBind(this);

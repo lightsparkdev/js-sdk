@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
+import { LightsparkException, type Query, isObject } from "@lightsparkdev/core";
 import Account from "./Account.js";
 import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import Wallet from "./Wallet.js";

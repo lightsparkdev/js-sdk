@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
+import { LightsparkException, type Query, isObject } from "@lightsparkdev/core";
 import type ChannelClosingTransaction from "./ChannelClosingTransaction.js";
 import type ChannelOpeningTransaction from "./ChannelOpeningTransaction.js";
 import type CurrencyAmount from "./CurrencyAmount.js";

@@ -1,14 +1,23 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
 interface CreateUmaInvoiceInput {
+  /** The node from which to create the invoice. **/
   nodeId: string;
 
+  /** The amount for which the invoice should be created, in millisatoshis. **/
   amountMsats: number;
 
+  /**
+   * The SHA256 hash of the UMA metadata payload. This will be present in the h-tag (SHA256
+   * purpose of payment) of the resulting Bolt 11 invoice.
+   **/
   metadataHash: string;
 
+  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
   expirySecs?: number | undefined;
 
+  /** An optional, monthly-rotated, unique hashed identifier corresponding to the receiver of the
+   * payment. **/
   receiverHash?: string | undefined;
 }
 
