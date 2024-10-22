@@ -10,7 +10,7 @@
     "build-sb": "turbo run build-sb",
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
-    "checks": "yarn deps:check && turbo gql-codegen && turbo lint format test circular-deps",
+    "checks": "yarn deps:check && turbo lint format gql-codegen test circular-deps",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
     "clean-all": "./clean-all.sh",

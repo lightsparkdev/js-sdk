@@ -1,7 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
 import type {
-  AppendUnitsOptions,
   CurrencyAmountArg,
   CurrencyMap,
   CurrencyUnitType,
@@ -9,7 +8,6 @@ import type {
 import {
   CurrencyUnit,
   formatCurrencyStr,
-  getCurrencyAmount,
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
@@ -22,19 +20,18 @@ type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
   displayUnit?: CurrencyUnitType;
   shortNumber?: boolean;
-  showUnits?: boolean | AppendUnitsOptions | undefined;
+  showUnits?: boolean;
   ml?: number;
   id?: string;
   includeEstimatedIndicator?: boolean;
   fullPrecision?: boolean | undefined;
   typography?: PartialSimpleTypographyProps;
   unitsPerBtc?: number;
-  showCurrencyIcon?: boolean;
 };
 
 export function CurrencyAmount({
   amount,
-  displayUnit: displayUnitProp,
+  displayUnit = CurrencyUnit.SATOSHI,
   shortNumber = false,
   showUnits = false,
   includeEstimatedIndicator = false,
@@ -43,52 +40,33 @@ export function CurrencyAmount({
   ml = 0,
   typography,
   unitsPerBtc,
-  showCurrencyIcon = true,
 }: CurrencyAmountProps) {
-  let displayUnit: CurrencyUnitType;
-  let amountMap: CurrencyMap;
-  if (isCurrencyMap(amount)) {
-    displayUnit = displayUnitProp || CurrencyUnit.SATOSHI;
-    amountMap = amount;
-  } else {
-    const resolvedCurrencyAmount = getCurrencyAmount(amount);
-    /* default to the currency amount unit if defined and displayUnit is not provided: */
-    displayUnit = displayUnitProp || resolvedCurrencyAmount.unit;
-    amountMap = mapCurrencyAmount(amount, unitsPerBtc);
-  }
+  const unit = displayUnit;
 
-  const value = amountMap[displayUnit];
-  const defaultFormattedNumber = amountMap.formatted[displayUnit];
+  const amountMap = isCurrencyMap(amount)
+    ? amount
+    : mapCurrencyAmount(amount, unitsPerBtc);
 
-  const appendUnits =
-    showUnits === false
-      ? undefined
-      : showUnits === true
-      ? ({
-          plural: false,
-          lowercase: false,
-          showForCurrentLocaleUnit: false,
-        } as const)
-      : showUnits;
+  const value = amountMap[unit];
+  const defaultFormattedNumber = amountMap.formatted[unit];
 
   /* There are just a few ways that CurrencyAmounts need to be formatted
      throughout the UI. In general the default should always be used: */
   let formattedNumber = defaultFormattedNumber;
   if (shortNumber) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { precision: 1, compact: true, appendUnits },
+      { value: Number(value), unit },
+      { precision: 1, compact: true },
     );
   } else if (fullPrecision) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { precision: "full", appendUnits },
+      { value: Number(value), unit },
+      { precision: "full" },
     );
-  } else if (appendUnits) {
-    formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { appendUnits },
-    );
+  }
+
+  if (showUnits) {
+    formattedNumber += ` ${shorttext(unit, value)}`;
   }
 
   let content: string | ReactNode = formattedNumber;
@@ -103,7 +81,7 @@ export function CurrencyAmount({
   return (
     <StyledCurrencyAmount ml={ml} id={id}>
       {includeEstimatedIndicator && "Est. "}
-      {showCurrencyIcon ? <CurrencyIcon unit={displayUnit} /> : null}
+      <CurrencyIcon unit={unit} />
       {content}
     </StyledCurrencyAmount>
   );
@@ -117,6 +95,24 @@ export const CurrencyIcon = ({ unit }: { unit: CurrencyUnitType }) => {
       return <Icon name="Satoshi" width={8} verticalAlign={-2} mr={2} />;
     default:
       return null;
+  }
+};
+
+const shorttext = (unit: CurrencyUnitType, value: number) => {
+  const pl = value !== 1;
+  switch (unit) {
+    case CurrencyUnit.BITCOIN:
+      return "BTC";
+    case CurrencyUnit.MILLIBITCOIN:
+      return "mBTC";
+    case CurrencyUnit.MICROBITCOIN:
+      return "μBTC";
+    case CurrencyUnit.SATOSHI:
+      return `sat${pl ? "s" : ""}`;
+    case CurrencyUnit.MILLISATOSHI:
+      return `msat${pl ? "s" : ""}`;
+    default:
+      return unit;
   }
 };
 

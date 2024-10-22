@@ -9,7 +9,6 @@ import { z } from "../styles/z-index.js";
 type TooltipProps = Omit<ComponentProps<typeof ReactTooltip>, "id"> & {
   /* Make 3rd party types compatible with our undefined rule: */
   id?: string | undefined;
-  interactive?: boolean;
 };
 
 export function Tooltip(props: TooltipProps) {
@@ -42,7 +41,6 @@ export function Tooltip(props: TooltipProps) {
           border="0.05rem solid rgba(0, 0, 0, 0.1)"
           className={styles({ theme })}
           variant="light"
-          clickable={Boolean(props.interactive)}
         />,
         nodeRef.current,
       )

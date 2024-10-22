@@ -17,7 +17,6 @@ type DocsBodyParagraphProps = PartialBy<
   | "hideOverflow"
   | "textAlign"
   | "onClick"
-  | "underline"
 >;
 
 export function DocsBodyParagraph({
@@ -27,7 +26,6 @@ export function DocsBodyParagraph({
   size = "Medium",
   textAlign,
   onClick,
-  underline = false,
   ...rest
 }: DocsBodyParagraphProps) {
   return (
@@ -41,7 +39,6 @@ export function DocsBodyParagraph({
       textAlign={textAlign}
       size={size}
       onClick={onClick}
-      underline={underline}
     />
   );
 }

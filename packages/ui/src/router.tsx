@@ -54,7 +54,6 @@ export type LinkProps = {
   newTab?: boolean | undefined;
   hash?: RouteHash | undefined;
   typography?: SimpleTypographyProps | undefined;
-  disabled?: boolean | undefined;
 };
 
 export function replaceParams(
@@ -159,9 +158,7 @@ function LinkBase({
   );
 }
 
-export const Link = styled(LinkBase)`
-  ${({ disabled }) => disabled && `pointer-events: none;`}
-`;
+export const Link = styled(LinkBase)``;
 
 type NavigateProps = Omit<LinkProps, "children"> & {
   to: NewRoutesType;
@@ -201,15 +198,8 @@ export function useNavigate() {
 
 export function useMatchRoutes(routes: NewRoutesType[]): boolean {
   const location = useLocation();
-  const doesMatch = matchRoutes(routes, location.pathname);
+  const doesMatch = routes.some((route) => matchPath(route, location.pathname));
   return doesMatch;
-}
-
-export function matchRoutes(
-  routes: NewRoutesType[],
-  locationPathname: string,
-): boolean {
-  return routes.some((route) => matchPath(route, locationPathname));
 }
 
 export function useFindMatchingRoute(

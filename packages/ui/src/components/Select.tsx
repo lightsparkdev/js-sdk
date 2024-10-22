@@ -29,7 +29,6 @@ export type SelectProps<
   zIndex?: number | undefined;
   label?: string | undefined;
   getOptionStyles?: StylesConfig<Option, IsMulti, Group>["option"];
-  getControlStyles?: StylesConfig<Option, IsMulti, Group>["control"];
   selectRef?: Ref<SelectInstance<Option, IsMulti, Group>> | undefined;
 };
 
@@ -44,7 +43,6 @@ export function Select<
   openMenuOnFocus = true,
   tabSelectsValue = false,
   getOptionStyles,
-  getControlStyles,
   ...rest
 }: SelectProps<Option, IsMulti, Group>) {
   const theme = useTheme();
@@ -58,9 +56,6 @@ export function Select<
       };
     },
     control: (styles, state) => {
-      const controlStyles = getControlStyles
-        ? getControlStyles(styles, state)
-        : {};
       return {
         ...styles,
         transition: "none",
@@ -82,7 +77,6 @@ export function Select<
           state.menuIsOpen || state.isFocused
             ? textInputBorderColorFocused({ theme })
             : textInputBorderColor({ theme }),
-        ...controlStyles,
       };
     },
     indicatorsContainer: (styles) => ({
@@ -174,7 +168,9 @@ export function Select<
         ref={selectRef}
         components={{
           DropdownIndicator: () => <Icon name="Chevron" width={16} />,
-          ...rest.components,
+          // Option: (option) => {
+          //   return <div>Option</div>;
+          // },
         }}
         theme={(selectTheme) => ({
           ...selectTheme,
