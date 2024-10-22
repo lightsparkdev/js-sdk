@@ -6,17 +6,15 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 30 | 16.5;
+type IconWidth = 40 | 16.5;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
   iconWidth?: IconWidth | undefined;
   to?: NewRoutesType | undefined;
   darkBg?: boolean;
-  noBg?: boolean;
   shouldRotate?: boolean;
   onClick?: () => void;
-  disabled?: boolean;
 };
 
 export function IconWithCircleBackground({
@@ -26,22 +24,13 @@ export function IconWithCircleBackground({
   onClick,
   darkBg = false,
   shouldRotate = false,
-  noBg = false,
-  disabled = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
-    <Flex
-      center
-      onClick={onClick}
-      disabled={disabled}
-      as={onClick ? "button" : "div"}
-      asButtonType="button"
-    >
+    <Flex center onClick={onClick}>
       <StyledIconWithCircleBackground
         size={iconWidth}
         darkBg={darkBg}
         shouldRotate={shouldRotate}
-        noBg={noBg}
       >
         <Icon
           name={iconName}
@@ -51,30 +40,19 @@ export function IconWithCircleBackground({
       </StyledIconWithCircleBackground>
     </Flex>
   );
-  return to ? (
-    <div css={{ cursor: disabled ? "not-allowed" : undefined }}>
-      <Link to={to} disabled={disabled}>
-        {content}
-      </Link>
-    </div>
-  ) : (
-    content
-  );
+  return to ? <Link to={to}>{content}</Link> : content;
 }
 
 type StyledIconWithCircleBackgroundProps = {
   size: IconWidth;
   darkBg: boolean;
   shouldRotate: boolean;
-  noBg: boolean;
 };
 
 const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackgroundProps>`
-  background: ${({ theme, darkBg, noBg }) =>
+  background: ${({ theme, darkBg }) =>
     darkBg
       ? `linear-gradient(291.4deg, #1C243F 0%, #21283A 100%)`
-      : noBg
-      ? "transparent"
       : getColor(theme, "grayBlue94")};
   border-radius: 50%;
   padding: ${({ size }) => getPadding(size)}px;

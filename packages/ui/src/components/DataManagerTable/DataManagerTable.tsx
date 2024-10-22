@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-
 import { type useClipboard } from "../../hooks/useClipboard.js";
-import { bp, useBreakpoints } from "../../styles/breakpoints.js";
+import { bp } from "../../styles/breakpoints.js";
 import { standardContentInset } from "../../styles/common.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
 import { Button, StyledButton } from "../Button.js";
@@ -18,11 +17,6 @@ import {
   type BooleanFilterState,
 } from "./BooleanFilter.js";
 import {
-  CurrencyFilter,
-  getDefaultCurrencyFilterState,
-  type CurrencyFilterState,
-} from "./CurrencyFilter.js";
-import {
   DateFilter,
   getDefaultDateFilterState,
   type DateFilterState,
@@ -34,11 +28,6 @@ import {
   type EnumFilterState,
 } from "./EnumFilter.js";
 import { type FilterState } from "./Filter.js";
-import {
-  FilterType,
-  type Filter,
-  type StringFilter as StringFilterType,
-} from "./filters.js";
 import {
   IdFilter,
   getDefaultIdFilterState,
@@ -52,6 +41,11 @@ import {
   isStringFilterState,
   type StringFilterState,
 } from "./StringFilter.js";
+import {
+  FilterType,
+  type Filter,
+  type StringFilter as StringFilterType,
+} from "./filters.js";
 
 interface FilterOptions<
   T extends Record<string, unknown>,
@@ -83,7 +77,6 @@ export type DataManagerTableProps<
   pageSizes: number[];
   nextPageCursor?: string | null | undefined;
   resultCount?: number | undefined;
-  isFullCount?: boolean | undefined;
   showHeader?: boolean;
   loading?: boolean | undefined;
   // If provided, the show more button will be displayed at the bottom of the table.
@@ -96,7 +89,6 @@ export type DataManagerTableProps<
     | undefined;
   cardPage?: boolean | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
-  header?: JSX.Element;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -118,8 +110,6 @@ function getDefaultFilterState<T extends Record<string, unknown>>(
       return getDefaultIdFilterState(filter.allowedEntities);
     case FilterType.BOOLEAN:
       return getDefaultBooleanFilterState();
-    case FilterType.CURRENCY:
-      return getDefaultCurrencyFilterState();
     default:
       throw new Error("Invalid filter type");
   }
@@ -132,7 +122,7 @@ function initialFilterState<T extends Record<string, unknown>>(
   filters.forEach((filter) => {
     state = {
       ...state,
-      [filter.accessorKey]: getDefaultFilterState<T>(filter),
+      [filter.accessor]: getDefaultFilterState<T>(filter),
     };
   });
 
@@ -154,7 +144,6 @@ export function DataManagerTable<
   QueryVariablesType,
   QueryResultType,
 >(props: DataManagerTableProps<T, QueryVariablesType, QueryResultType>) {
-  const breakPoint = useBreakpoints();
   const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
     startResult: undefined,
@@ -172,8 +161,6 @@ export function DataManagerTable<
   const [fetchVariables, setFetchVariables] = useState<QueryVariablesType>(
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
-
-  const isSm = breakPoint.isSm();
 
   useEffect(() => {
     setIsLoading(Boolean(props.loading));
@@ -232,7 +219,7 @@ export function DataManagerTable<
     return (state: FilterState) => {
       setFilterStates((prevState) => ({
         ...prevState,
-        [filter.accessorKey]: state,
+        [filter.accessor]: state,
       }));
     };
   }
@@ -262,14 +249,14 @@ export function DataManagerTable<
         );
         if (validResult) {
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessorKey] = validResult;
+          appliedFilterStates[filter.accessor] = validResult;
 
           // Update UI filter state as a result of applying if needed
           if (isIdFilterState(filterState)) {
             const appliedValues = (validResult as IdFilterState).appliedValues;
             const isApplied = !!appliedValues?.length;
             updateFilterState(filter)({
-              ...filterStates[filter.accessorKey],
+              ...filterStates[filter.accessor],
               value: "",
               appliedValues: appliedValues ? [...appliedValues] : [],
               isApplied,
@@ -311,14 +298,14 @@ export function DataManagerTable<
           updatedAppliedValues.push(value);
 
           const newFilterState = {
-            ...filterStates[filter.accessorKey],
+            ...filterStates[filter.accessor],
             value: "",
             appliedValues: updatedAppliedValues,
             isApplied: !!updatedAppliedValues.length,
           } as StringFilterState;
 
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessorKey] = newFilterState;
+          appliedFilterStates[filter.accessor] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
         } else if (filterState.appliedValues?.length === 0) {
@@ -329,19 +316,19 @@ export function DataManagerTable<
       } else if (isEnumFilterState(filterState)) {
         if (filterState.value) {
           const newFilterState = {
-            ...filterStates[filter.accessorKey],
+            ...filterStates[filter.accessor],
             value: "",
             appliedValues: filterState.appliedValues,
             isApplied: !!filterState.appliedValues?.length,
           } as EnumFilterState;
 
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessorKey] = newFilterState;
+          appliedFilterStates[filter.accessor] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
         } else if (filterState.appliedValues?.length === 0) {
           // If there are no more applied values, remove the filter
-          updateFilterState(filter)(getDefaultEnumFilterState());
+          updateFilterState(filter)(getDefaultStringFilterState());
           filterState.isApplied = false;
         }
       }
@@ -490,10 +477,10 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessorKey]: state,
+                      [filter.accessor]: state,
                     }));
                   }}
-                  state={filterStates[filter.accessorKey] as DateFilterState}
+                  state={filterStates[filter.accessor] as DateFilterState}
                 />
               </div>
             );
@@ -504,13 +491,13 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessorKey]: state,
+                      [filter.accessor]: state,
                     }));
                   }}
                   options={filter.enumValues}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessorKey] as EnumFilterState}
+                  state={filterStates[filter.accessor] as EnumFilterState}
                   isMulti={filter.isMulti}
                 />
               </div>
@@ -522,12 +509,12 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessorKey]: state,
+                      [filter.accessor]: state,
                     }));
                   }}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessorKey] as StringFilterState}
+                  state={filterStates[filter.accessor] as StringFilterState}
                 />
               </div>
             );
@@ -538,12 +525,12 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessorKey]: state,
+                      [filter.accessor]: state,
                     }));
                   }}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessorKey] as IdFilterState}
+                  state={filterStates[filter.accessor] as IdFilterState}
                 />
               </div>
             );
@@ -554,28 +541,11 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessorKey]: state,
+                      [filter.accessor]: state,
                     }));
                   }}
                   label={filter.label}
-                  state={filterStates[filter.accessorKey] as BooleanFilterState}
-                />
-              </div>
-            );
-          case FilterType.CURRENCY:
-            return (
-              <div key={filter.label}>
-                <CurrencyFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
-                  label={filter.label}
-                  state={
-                    filterStates[filter.accessorKey] as CurrencyFilterState
-                  }
+                  state={filterStates[filter.accessor] as BooleanFilterState}
                 />
               </div>
             );
@@ -584,25 +554,18 @@ export function DataManagerTable<
         }
       })
     : [];
+
   let filters: React.ReactNode;
-  const isFilterButtonSmall = isSm && props.header;
   if (props.filterOptions) {
     filters = (
       <>
         <DataManagerTableFilterContainer>
           <Button
-            kind={isFilterButtonSmall ? "roundIcon" : "secondary"}
-            text={
-              !isFilterButtonSmall
-                ? `Filter${
-                    numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
-                  }`
-                : undefined
-            }
-            size="ExtraSmall"
-            icon={{
-              name: "Sort",
-            }}
+            text={`Filter${
+              numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
+            }`}
+            paddingY="short"
+            icon={{ name: "Sort" }}
             typography={{ color: "c6Neutral" }}
             onClick={() => setShowFilterPopover(!showFilterPopover)}
           />
@@ -681,18 +644,12 @@ export function DataManagerTable<
   } else if (props.resultCount) {
     const startResult = pageCursorState.startResult || 1;
     const endResult = Math.min(props.resultCount, startResult + pageSize - 1);
-    const isFullCount = props.isFullCount ?? true;
-
-    const countString = isFullCount
-      ? props.resultCount
-      : props.resultCount + "+";
-
     const resultsString = (
       <div>
         <Label>Viewing </Label>
         <LabelModerate>{`${startResult}-${endResult}`}</LabelModerate>
         <Label> of </Label>
-        <LabelModerate>{`${countString}`}</LabelModerate>
+        <LabelModerate>{`${props.resultCount}`}</LabelModerate>
         <Label> results</Label>
       </div>
     );
@@ -732,10 +689,7 @@ export function DataManagerTable<
   const content = (
     <>
       {props.showHeader && (
-        <DataManagerTableHeader>
-          {props.header}
-          {filters}
-        </DataManagerTableHeader>
+        <DataManagerTableHeader>{filters}</DataManagerTableHeader>
       )}
       <Table {...props} loading={isLoading} />
       {footer}
@@ -779,7 +733,10 @@ const DataManagerTableHeader = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-end;
+  gap: ${Spacing.px.sm};
   padding: ${Spacing.px.xs} 0;
+  ${commonPadding};
 `;
 
 const DataManagerTableFooter = styled.div`
@@ -811,14 +768,5 @@ const PaginationButtonsContainer = styled.div`
 `;
 
 const DataManagerTableFilterContainer = styled.div`
-  position: absolute;
-  z-index: 3;
-  background: white;
-  right: 0;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 15%
-  );
-  ${commonPadding}
+  position: relative;
 `;

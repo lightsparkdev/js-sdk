@@ -2,7 +2,7 @@ import type { CSSInterpolation } from "@emotion/css";
 import { css, useTheme } from "@emotion/react";
 import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
-import type { ComponentProps, ReactNode, RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import {
   useCallback,
   useEffect,
@@ -30,7 +30,6 @@ import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
-import { IconToggle } from "./IconToggle.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type DropdownItemGetProps = WithTheme<{
@@ -54,7 +53,6 @@ type DropdownItemType = {
   externalLink?: ExternalLink | undefined;
   params?: RouteParams | undefined;
   selected?: boolean;
-  toggle?: ComponentProps<typeof IconToggle> | undefined;
   hash?: RouteHash;
 };
 
@@ -425,18 +423,6 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
     );
   }
 
-  if (dropdownItem.toggle) {
-    return (
-      <DropdownItemDiv selected={false} css={cssProp} withHoverColor={false}>
-        {dropdownItemIconNode}
-        {dropdownItem.label}
-        <div css={{ marginLeft: "auto" }}>
-          <IconToggle {...dropdownItem.toggle} />
-        </div>
-      </DropdownItemDiv>
-    );
-  }
-
   return (
     <DropdownItemDiv
       selected={false}
@@ -453,16 +439,9 @@ const DropdownButton = styled(UnstyledButton)`
   ${standardFocusOutline}
 `;
 
-type DropdownItemStyleProps = WithTheme<{
-  selected?: boolean;
-  withHoverColor?: boolean;
-}>;
+type DropdownItemStyleProps = WithTheme<{ selected?: boolean }>;
 
-const dropdownItemStyle = ({
-  theme,
-  selected,
-  withHoverColor = true,
-}: DropdownItemStyleProps) => `
+const dropdownItemStyle = ({ selected, theme }: DropdownItemStyleProps) => `
   background-color: ${selected ? theme.primary : "transparent"};
   box-sizing: border-box;
   cursor: pointer;
@@ -476,20 +455,13 @@ const dropdownItemStyle = ({
   padding: 8px 16px;
   ${bp.sm(`padding-left: ${smHeaderLogoMarginLeft};`)}
 
-  ${
-    withHoverColor
-      ? `
-      &:hover {
-        color: ${theme.hcNeutral} !important;
-      }
-      `
-      : ""
+  &:hover {
+    color: ${theme.hcNeutral} !important;
   }
 `;
 
 type StyledDropdownItemProps = {
   selected?: boolean;
-  withHoverColor?: boolean;
 };
 
 const cssProp = ({

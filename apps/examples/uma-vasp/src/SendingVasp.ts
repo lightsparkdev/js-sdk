@@ -961,7 +961,7 @@ export default class SendingVasp {
       requestUrl: requestUrl,
       senderProfile: payerPofile,
       pubKeys: pubKeys,
-      umaVersion: invoice.umaVersions,
+      umaVersion: invoice.umaVersion,
       invoiceUUID: invoice.invoiceUUID
     });
   }

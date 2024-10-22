@@ -8,33 +8,15 @@ import { cssVars } from "./constants.js";
 import { useThemeBg, type ThemeProp } from "./themes.js";
 
 const getFontImport = (theme: Theme) => {
-  let importStr = "";
-  const fontStrs = [];
-
-  const interStr = "Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900";
-  const manropeStr = "Manrope:wght@200..800";
-  const montserratStr = "Montserrat:ital,wght@0,100..900;1,100..900";
-  const robotoMonoStr = "Roboto+Mono:ital,wght@0,100..700;1,100..700";
-
-  if (theme.typography.fontFamilies.main === "Inter") {
-    fontStrs.push(interStr);
-  } else if (theme.typography.fontFamilies.main === "Manrope") {
-    fontStrs.push(manropeStr);
-  } else if (theme.typography.fontFamilies.main === "Montserrat") {
-    fontStrs.push(montserratStr);
+  switch (theme.typography.fontFamilies.main) {
+    case "Inter":
+      return `@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');`;
+    case "Manrope":
+    case "Montserrat":
+      return `@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");`;
+    default:
+      return "";
   }
-
-  if (theme.typography.fontFamilies.code === "Roboto Mono") {
-    fontStrs.push(robotoMonoStr);
-  }
-
-  if (fontStrs.length) {
-    importStr = `@import url('https://fonts.googleapis.com/css2?family=${fontStrs.join(
-      "&family=",
-    )}&display=swap');`;
-  }
-
-  return importStr;
 };
 
 export const globalComponentStyles = ({ theme }: ThemeProp) => css`

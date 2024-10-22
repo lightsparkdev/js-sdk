@@ -7,7 +7,6 @@ export const typographyStyles = ({
   hideOverflow,
   displayProp,
   textAlign,
-  underline,
   onClick,
 }: { theme: Theme } & CommonStyledTypographyProps) => {
   const displayValue =
@@ -19,10 +18,6 @@ export const typographyStyles = ({
     ${typeof onClick === "function" ? "cursor: pointer;" : ""}
     ${textAlign ? `text-align: ${textAlign};` : ""}
     ${displayValue ? `display: ${displayValue};` : ""}
-
-    /* Tokens have text-decoration set, override with !important if underline specified: */
-    ${underline ? "text-decoration: underline !important;" : ""}
-
     ${hideOverflow
       ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;"
       : ""}

@@ -41,15 +41,9 @@ export enum Themes {
   BridgeDark = "bridgeDark",
 }
 
-export function isTheme(theme: unknown): theme is Themes {
-  return Object.values(Themes).includes(theme as Themes);
-}
-
 const baseThemeColors = {
   bg: colors.white,
   smBg: colors.white,
-  c02Neutral: colors.gray98,
-  c02NeutralLight: "#F9F9F91A",
   c05Neutral: colors.gray95,
   c1Neutral: colors.gray90,
   c15Neutral: colors.gray85,
@@ -127,8 +121,6 @@ const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,
   bg: colors.black,
   smBg: colors.black,
-  c02Neutral: colors.gray98,
-  c02NeutralLight: "#F9F9F91A",
   c05Neutral: colors.gray5,
   c1Neutral: colors.gray10,
   c15Neutral: colors.gray15,
@@ -201,13 +193,6 @@ const darkTheme = extend(darkBaseTheme, {
     smBg: colors.gray40,
     text: colors.white,
     secondary: colors.secondary,
-  }),
-  buttons: merge<typeof buttonsThemeBase>(defaultButtonsTheme, {
-    kinds: {
-      secondary: {
-        defaultBorderColor: "gray15",
-      },
-    },
   }),
 });
 
@@ -283,22 +268,6 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
-        defaultPaddingsY: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
-        defaultPaddingsX: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
       },
       secondary: {
         defaultBackgroundColor: "grayBlue94",
@@ -420,22 +389,6 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
         defaultBackgroundColor: "transparent",
         defaultHoverBackgroundColor: "transparent",
         defaultHoverBorderColor: "transparent",
-        defaultPaddingsY: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
-        defaultPaddingsX: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
       },
       secondary: {
         defaultBackgroundColor: "grayBlue80",
@@ -527,7 +480,7 @@ const bridgeBaseSettings = {
   link: colors.blue39,
   typography: getTypography(TypographyGroup.Bridge, {
     main: "Manrope",
-    code: "Roboto Mono",
+    code: "Monaco",
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Title",
@@ -558,22 +511,6 @@ const bridgeBaseSettings = {
         defaultBorderColor: "transparent",
         defaultHoverBorderColor: "transparent",
         defaultActiveBackgroundColor: "transparent",
-        defaultPaddingsY: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
-        defaultPaddingsX: {
-          ExtraSmall: 0,
-          Small: 0,
-          Schmedium: 0,
-          Medium: 0,
-          Mlarge: 0,
-          Large: 0,
-        },
       },
       secondary: {
         defaultBackgroundColor: "transparent",
@@ -649,7 +586,6 @@ const bridgeLightTheme = extend(lightTheme, {
   text: colors.grayBlue9,
   secondary: colors.grayBlue43,
   inputBackground: colors.white,
-  danger: colors.red50,
 });
 
 const bridgeDarkTheme = extend(darkTheme, {

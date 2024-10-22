@@ -265,6 +265,10 @@ export function CardForm({
 const CardFormContainer = styled.div`
   display: flex;
   flex-direction: column;
+
+  ${bp.sm(`
+    height: 100%;
+  `)}
 `;
 
 const CardFormContent = styled.div`
@@ -279,12 +283,15 @@ type BelowCardFormContentProps = {
 
 const BelowCardFormContent = styled.div<BelowCardFormContentProps>`
   text-align: center;
+  margin-top: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: ${({ gap }) => gap}px;
-  margin-top: ${Spacing.px.xl};
-  margin-bottom: ${Spacing.px.xl};
+
+  ${bp.sm(`
+    margin-bottom: 32px;
+  `)}
 `;
 
 const CardFormSubtitle = styled.div``;
