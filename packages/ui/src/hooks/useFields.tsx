@@ -1,4 +1,3 @@
-import { isValidUmaAddress } from "@uma-sdk/core";
 import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -22,13 +21,12 @@ const defaultMsgs = {
   code: "Code must be eight characters long.",
   password: "Password must be at least eight characters.",
   required: "This field is required.",
-  umaAddress: "Please enter a valid UMA address.",
 };
 
 const regexp = {
   phone: /^[2-9]{1}[0-9]{9}$/,
   postalCode: /(^\d{5}$)|(^\d{5}-\d{4}$)/,
-  email: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+  email: /^.+@.+$/,
   state:
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
 };
@@ -58,10 +56,6 @@ export const v: Validators = {
     (msg = defaultMsgs.code) =>
     (value) =>
       value.trim().length !== 8 ? msg : false,
-  umaAddress:
-    (msg = defaultMsgs.umaAddress) =>
-    (value) =>
-      !isValidUmaAddress(value) ? msg : false,
   required:
     (msg = defaultMsgs.required) =>
     (value) =>

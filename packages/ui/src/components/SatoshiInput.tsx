@@ -1,12 +1,14 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import { Fragment } from "react";
-import NumberInput, { type NumberInputProps } from "./NumberInput.js";
+import CommaNumberInput, {
+  type CommaNumberInputProps,
+} from "./CommaNumberInput.js";
 import {
   SatoshiInputLabel,
   type SatoshiInputLabelProps,
 } from "./SatoshiInputLabel.js";
 
-type SatoshiInputProps = Omit<NumberInputProps, "label"> & {
+type SatoshiInputProps = Omit<CommaNumberInputProps, "label"> & {
   maxValue?: number;
   label?: SatoshiInputLabelProps;
 };
@@ -26,10 +28,9 @@ export function SatoshiInput({
           showTooltip={label.showTooltip}
         />
       )}
-      <NumberInput
+      <CommaNumberInput
         placeholder="SATs"
         {...rest}
-        allowDecimals={false}
         icon={{ name: "SatoshiRounded", side: "left" }}
         maxValue={maxValue ? Math.floor(maxValue) : undefined}
         error={error}

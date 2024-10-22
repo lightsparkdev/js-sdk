@@ -14,7 +14,7 @@ import { Heading, headingWithDefaults } from "../../styles/type.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { select } from "../../utils/emotion.js";
 import { toReactNodes } from "../../utils/toReactNodes/toReactNodes.js";
-import { Badge, type BadgeKind, badgeSmVPadding } from "../Badge.js";
+import { Badge, badgeSmVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
@@ -192,8 +192,6 @@ type PageSectionBoxActionRowProps = {
   action?: PageSectionBoxActionProps | undefined;
   title?: string;
   titleBadge?: string | undefined;
-  titleBadgeKind?: BadgeKind | undefined;
-  titleRightContent?: React.ReactNode;
   description?: string;
   separator?: boolean;
   children?: React.ReactNode;
@@ -203,8 +201,6 @@ type PageSectionBoxActionRowProps = {
 export const PageSectionBoxActionRow = ({
   title,
   titleBadge,
-  titleBadgeKind = "default",
-  titleRightContent,
   description,
   separator,
   children,
@@ -218,15 +214,10 @@ export const PageSectionBoxActionRow = ({
         smFlexColumn={Boolean(smFlexColumn)}
       >
         {title ? (
-          <div css={{ flex: 1 }}>
+          <div>
             <PageSectionBoxTitle>
-              <div>
-                {title}
-                {titleBadge ? (
-                  <Badge content={titleBadge} ml={4} kind={titleBadgeKind} />
-                ) : null}
-              </div>
-              {titleRightContent}
+              {title}
+              {titleBadge ? <Badge content={titleBadge} ml={4} /> : null}
             </PageSectionBoxTitle>
             {description ? (
               <PageSectionBoxDescription>
@@ -379,8 +370,6 @@ export const StyledPageSectionBox = styled.div`
 export const PageSectionBoxTitle = styled.div<{ lg?: boolean }>`
   display: flex;
   align-items: center;
-  width: 100%;
-  justify-content: space-between;
   font-size: ${({ lg }) => (lg ? 14 : 12)}px;
   font-weight: 600;
   line-height: ${({ lg }) =>

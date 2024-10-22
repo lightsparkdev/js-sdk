@@ -41,6 +41,10 @@ export {
 } from "./CodeInput/CodeInput.js";
 export { Collapsible, StyledCollapsible } from "./Collapsible.js";
 export { CommandKey } from "./CommandKey.js";
+export {
+  CommaNumberInput,
+  type CommaNumberInputProps,
+} from "./CommaNumberInput.js";
 export { CopyToClipboardButton } from "./CopyToClipboardButton.js";
 export { CurrencyAmount, CurrencyIcon } from "./CurrencyAmount.js";
 export {
@@ -60,7 +64,6 @@ export { LightboxImage } from "./LightboxImage.js";
 export { LightsparkProvider } from "./LightsparkProvider.js";
 export { Loading, LoadingWrapper } from "./Loading.js";
 export { Modal } from "./Modal.js";
-export { NumberInput, type NumberInputProps } from "./NumberInput.js";
 export {
   PageSection,
   PageSectionBox,
