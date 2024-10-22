@@ -1,5 +1,16 @@
 # @lightsparkdev/lightspark-cli
 
+## 0.0.62
+
+### Patch Changes
+
+- 80c16c1: - Bump secp256k1 from 5.0.0 to 5.0.1
+- Updated dependencies [80c16c1]
+- Updated dependencies [80c16c1]
+  - @lightsparkdev/core@1.2.6
+  - @lightsparkdev/lightspark-sdk@1.8.8
+  - @lightsparkdev/crypto-wasm@0.1.9
+
 ## 0.0.61
 
 ### Patch Changes

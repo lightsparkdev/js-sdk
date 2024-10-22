@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/uma-vasp-cli",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "private": true,
   "description": "CLI for the Demo UMA VASP in ../apps/examples/uma-vasp",
   "main": "./dist/index.js",
@@ -43,8 +43,8 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^1.1.3",
-    "@lightsparkdev/core": "1.2.5",
-    "@lightsparkdev/lightspark-sdk": "1.8.7",
+    "@lightsparkdev/core": "1.2.6",
+    "@lightsparkdev/lightspark-sdk": "1.8.8",
     "@uma-sdk/core": "^1.2.0",
     "chalk": "^5.3.0",
     "commander": "^11.0.0"

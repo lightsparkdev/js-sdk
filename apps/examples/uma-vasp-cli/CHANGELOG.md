@@ -1,5 +1,14 @@
 # @lightsparkdev/uma-vasp-cli
 
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [80c16c1]
+- Updated dependencies [80c16c1]
+  - @lightsparkdev/core@1.2.6
+  - @lightsparkdev/lightspark-sdk@1.8.8
+
 ## 0.0.23
 
 ### Patch Changes

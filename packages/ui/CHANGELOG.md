@@ -1,5 +1,15 @@
 # @lightsparkdev/ui
 
+## 1.0.14
+
+### Patch Changes
+
+- 80c16c1: - Fix alignment of empty QR code
+  - Fix fonts for some projects
+  - Fix button themes and add quaternary button kind
+- Updated dependencies [80c16c1]
+  - @lightsparkdev/core@1.2.6
+
 ## 1.0.13
 
 ### Patch Changes
