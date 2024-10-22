@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.2.6
+
+### Patch Changes
+
+- 80c16c1: - Bump secp256k1 from 5.0.0 to 5.0.1
+
 ## 1.2.5
 
 ### Patch Changes
