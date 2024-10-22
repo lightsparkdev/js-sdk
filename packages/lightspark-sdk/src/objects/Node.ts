@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
+import { LightsparkException, type Query, isObject } from "@lightsparkdev/core";
 import type LightsparkClient from "../client.js";
 import { BalancesFromJson, BalancesToJson } from "./Balances.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
@@ -67,6 +67,8 @@ interface Node {
    * A summary metric used to capture how well positioned a node is to send, receive, or route
    * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
    * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
+   *
+   * @deprecated Not supported.
    **/
   conductivity?: number | undefined;
 

@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { isObject, type Query } from "@lightsparkdev/core";
+import { type Query, isObject } from "@lightsparkdev/core";
 import IncentivesIneligibilityReason from "./IncentivesIneligibilityReason.js";
 import IncentivesStatus from "./IncentivesStatus.js";
 

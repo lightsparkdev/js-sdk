@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { isObject, type Query } from "@lightsparkdev/core";
+import { type Query, isObject } from "@lightsparkdev/core";
 import autoBind from "auto-bind";
 import type LightsparkClient from "../client.js";
 import BitcoinNetwork from "./BitcoinNetwork.js";
@@ -51,6 +51,8 @@ class GraphNode implements Node, Entity {
      * A summary metric used to capture how well positioned a node is to send, receive, or route
      * transactions efficiently. Maximizing a node's conductivity helps a node’s transactions to be
      * capital efficient. The value is an integer ranging between 0 and 10 (bounds included).
+     *
+     * @deprecated Not supported.
      **/
     public readonly conductivity?: number | undefined,
     /**

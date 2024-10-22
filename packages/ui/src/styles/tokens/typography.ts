@@ -336,7 +336,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Headline]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["4xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["3xl"]}`,
             letterSpacing: "-.96px",
@@ -347,7 +347,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["3xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xl"]}`,
             letterSpacing: "-.84px",
@@ -358,7 +358,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xl}`,
             letterSpacing: "-.72px",
@@ -761,7 +761,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Headline]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["4xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["3xl"]}`,
             letterSpacing: "-.96px",
@@ -772,7 +772,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["3xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark]["2xl"]}`,
             letterSpacing: "-.84px",
@@ -783,7 +783,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.ExtraBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Lightspark]["2xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Lightspark].xl}`,
             letterSpacing: "-.72px",
@@ -2260,7 +2260,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.LabelModerate]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].xs}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].sm}`,
             letterSpacing: `${
@@ -2273,7 +2273,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].xs}`,
             letterSpacing: `${
@@ -2286,7 +2286,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             letterSpacing: `${
@@ -2603,7 +2603,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Body]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].sm}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].md}`,
             letterSpacing: `${
@@ -2617,7 +2617,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Medium}`,
-            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].sm}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].xs}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].sm}`,
             letterSpacing: `${
               LETTER_SPACING[TypographyGroup.UmaAuthSdk].normal
@@ -2685,7 +2685,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Label]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].xs}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].sm}`,
             letterSpacing: `${
@@ -2698,7 +2698,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].xs}`,
             letterSpacing: `${
@@ -2711,7 +2711,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
+            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             letterSpacing: `${
@@ -2726,7 +2726,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.LabelModerate]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk].xs}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].sm}`,
             letterSpacing: `${
@@ -2739,7 +2739,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk].xs}`,
             letterSpacing: `${
@@ -2752,7 +2752,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            fontWeight: `${FONT_WEIGHTS.main.SemiBold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.UmaAuthSdk]["2xs"]}`,
             letterSpacing: `${

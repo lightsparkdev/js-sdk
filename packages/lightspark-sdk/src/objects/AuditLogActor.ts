@@ -1,6 +1,6 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
-import { LightsparkException, isObject, type Query } from "@lightsparkdev/core";
+import { LightsparkException, type Query, isObject } from "@lightsparkdev/core";
 import type ApiToken from "./ApiToken.js";
 import Permission from "./Permission.js";
 

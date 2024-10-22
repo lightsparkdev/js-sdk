@@ -44,6 +44,7 @@ export const buttonKinds = [
   "danger",
   "warning",
   "tertiary",
+  "quaternary",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
