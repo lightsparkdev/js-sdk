@@ -80,6 +80,14 @@ export const defaultButtonsTheme = {
         Large: 0,
       },
     },
+    quaternary: {
+      defaultBackgroundColor: "transparent",
+      defaultBorderColor: "gray80",
+      defaultHoverBackgroundColor: "transparenta02",
+      defaultHoverBorderColor: "gray80",
+      defaultActiveBackgroundColor: "transparenta08",
+      defaultActiveBorderColor: "gray80",
+    },
     transparent: {
       defaultBackgroundColor: "transparent",
       defaultBorderColor: "transparent",

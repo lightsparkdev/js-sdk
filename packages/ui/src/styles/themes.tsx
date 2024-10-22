@@ -209,7 +209,7 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
   linkLight: "#0068C90F",
   inputBackground: colors.white,
   typography: getTypography(TypographyGroup.UmaAuthSdk, {
-    main: "Inter",
+    main: "Manrope",
     code: "Monaco",
   }),
   content: extendBase(lightBaseTheme, {
@@ -270,6 +270,14 @@ const umaAuthSdkLightTheme = extend(lightTheme, {
         defaultHoverBorderColor: "transparent",
       },
       secondary: {
+        defaultBackgroundColor: "grayBlue94",
+        defaultBorderColor: "grayBlue94",
+        defaultHoverBackgroundColor: "grayBlue88",
+        defaultHoverBorderColor: "grayBlue88",
+        defaultActiveBackgroundColor: "grayBlue69",
+        defaultActiveBorderColor: "grayBlue69",
+      },
+      quaternary: {
         defaultBackgroundColor: "transparent",
         defaultBorderColor: "grayBlue80",
         defaultHoverBackgroundColor: "grayBlue94",
@@ -326,7 +334,7 @@ const umaAuthSdkDarkTheme = extend(darkTheme, {
   link: colors.blue39,
   inputBackground: colors.gray5,
   typography: getTypography(TypographyGroup.UmaAuthSdk, {
-    main: "Inter",
+    main: "Manrope",
     code: "Monaco",
   }),
   content: extendBase(lightBaseTheme, {
