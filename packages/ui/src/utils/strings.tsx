@@ -36,27 +36,6 @@ export function removeCommas(value: string): string {
   return value.replace(/,/g, "");
 }
 
-export function removeNonDigit(value: string): string {
-  // Remove any non-digit characters (including decimal point)
-  const numericValue = value.replace(/[^\d]/g, "");
-  // Remove leading zeros
-  return numericValue.replace(/^0+/, "") || "0";
-}
-
-export function addCommasToVariableDecimal(
-  value: string | number,
-  decimals: number,
-): string {
-  const val = removeNonDigit(value.toString());
-  return decimals === 0
-    ? addCommasToDigits(val)
-    : addCommasToDigits(
-        val.padStart(decimals + 1, "0").slice(0, -decimals) +
-          "." +
-          val.padStart(decimals + 1, "0").slice(-decimals),
-      );
-}
-
 export function addCommasToDigits(value: string | number): string {
   if (typeof value === "number") {
     value = value.toString();
