@@ -516,6 +516,14 @@ export function formatCurrencyStr(
   const currentLocale = getCurrentLocale();
 
   switch (unit) {
+    case CurrencyUnit.MXN:
+    case CurrencyUnit.USD:
+      return num.toLocaleString(currentLocale, {
+        style: "currency",
+        currency: defaultCurrencyCode,
+        notation: compact ? ("compact" as const) : undefined,
+        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
+      });
     case CurrencyUnit.BITCOIN:
       /* In most cases product prefers 4 precision digtis for BTC. In a few places
          full precision (8 digits) are preferred, e.g. for a transaction details page: */
@@ -540,13 +548,6 @@ export function formatCurrencyStr(
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
-    case CurrencyUnit.USD:
-      return num.toLocaleString(currentLocale, {
-        style: "currency",
-        currency: defaultCurrencyCode,
-        notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
-      });
   }
 }
 
