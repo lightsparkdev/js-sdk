@@ -91,7 +91,7 @@ export type TextInputProps = {
   hintTooltip?: string | undefined;
   label?: string;
   rightButtonText?: string | undefined;
-  onRightButtonClick?: () => void;
+  onRightButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   typography?: PartialSimpleTypographyProps | undefined;
   select?:
     | {
