@@ -2,7 +2,13 @@
 import styled from "@emotion/styled";
 
 import type { ComponentProps, MutableRefObject, ReactNode } from "react";
-import React, { Fragment, useEffect, useLayoutEffect, useRef } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactDOM from "react-dom";
 import { useLiveRef } from "../hooks/useLiveRef.js";
 import { Breakpoints, bp, useBreakpoints } from "../styles/breakpoints.js";
@@ -133,6 +139,7 @@ export function Modal({
   topLeftIcon,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
+  const [visibleChanged, setVisibleChanged] = useState(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
   const ref = firstFocusRef || defaultFirstFocusRef;
@@ -146,9 +153,15 @@ export function Modal({
   useEffect(() => {
     if (visible !== visibleChangedRef.current) {
       visibleChangedRef.current = visible;
+      setVisibleChanged(true);
     }
   }, [visible]);
-  const visibleChanged = visible !== visibleChangedRef.current;
+
+  useEffect(() => {
+    if (visibleChanged) {
+      setVisibleChanged(false);
+    }
+  }, [visibleChanged]);
 
   useEffect(() => {
     prevFocusedElement.current = document.activeElement;
