@@ -1,10 +1,19 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type CellContext,
+  type ColumnSort,
+  type HeaderContext,
+  type Row,
+} from "@tanstack/react-table";
 import { isObject } from "lodash-es";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
-import { Fragment, useCallback, useMemo } from "react";
-import { useTable, type Row } from "react-table";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { useClipboard } from "../../hooks/useClipboard.js";
 import {
   Link,
@@ -32,7 +41,12 @@ import { Loading } from "../Loading.js";
 
 export type TableColumnHeaderInfo = string | { name: string; tooltip?: string };
 
-export type TableCell = string | LinkCell | ClipboardCell | ReactNode;
+export type TableCell =
+  | string
+  | LinkCell
+  | ClipboardCell
+  | MultilineCell
+  | ReactNode;
 
 type ObjectCell = {
   text: string;
@@ -80,8 +94,8 @@ const isMultilineCell = (value: unknown): value is MultilineCell => {
 };
 
 interface Column<T extends Record<string, unknown>> {
-  Header: TableColumnHeaderInfo;
-  accessor: keyof T;
+  header: TableColumnHeaderInfo;
+  accessorKey: keyof T;
 }
 
 export type TableProps<T extends Record<string, unknown>> = {
@@ -104,6 +118,7 @@ export function Table<T extends Record<string, unknown>>({
   clipboardCallbacks,
 }: TableProps<T>) {
   const navigate = useNavigate();
+  const [sorting, setSorting] = useState<ColumnSort[]>([]);
 
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
@@ -119,22 +134,24 @@ export function Table<T extends Record<string, unknown>>({
     () =>
       columns.map((column) => ({
         ...column,
-        Header:
-          typeof column.Header === "string" ? (
-            column.Header
+        header: (context: HeaderContext<T, TableCell>) =>
+          typeof column.header === "string" ? (
+            column.header
           ) : (
             <div>
-              {column.Header.name}
+              {column.header.name}
               <InfoIconTooltip
-                id={`tooltip-${column.Header.name}`}
-                content={column.Header.tooltip || ""}
+                id={`tooltip-${column.header.name}`}
+                content={column.header.tooltip || ""}
                 verticalAlign={-2}
               />
             </div>
           ),
-        accessor: column.accessor.toString(),
-        Cell: ({ value }: { value: unknown }) => {
-          let content = value as ReactNode;
+        accessorKey: column.accessorKey.toString(),
+        cell: (context: CellContext<T, TableCell>) => {
+          const value = context.getValue();
+
+          let content: ReactNode = null;
           let icon = null;
           if (isObjectCell(value)) {
             icon = value.icon ? (
@@ -155,6 +172,8 @@ export function Table<T extends Record<string, unknown>>({
                 </Fragment>
               );
             }
+          } else {
+            content = value;
           }
 
           if (isLinkAndClipboardCell(value)) {
@@ -265,10 +284,17 @@ export function Table<T extends Record<string, unknown>>({
     [columns, canWriteToClipboard, onClickCopy, clipboardCallbacks],
   );
 
-  const tableInstance = useTable({ columns: mappedColumns, data });
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const tableInstance = useReactTable({
+    columns: mappedColumns,
+    data,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    // debugTable: true
+  });
 
   function onClickDataRow(
     event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
@@ -292,40 +318,35 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <TableWrapper>
-      <StyledTable {...getTableProps()} clickable={Boolean(onClickRow)}>
+      <StyledTable clickable={Boolean(onClickRow)}>
         <thead>
           {
             // Loop over the header rows
-            headerGroups.map((headerGroup) => (
-              // Apply the header row props
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {
-                  // Loop over the headers in each row
-                  headerGroup.headers.map((column) => (
-                    // Apply the header cell props
-                    <th {...column.getHeaderProps()}>
-                      {
-                        // Render the header
-                        column.render("Header")
-                      }
+            tableInstance.getHeaderGroups().map((headerGroup) => {
+              return (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </th>
-                  ))
-                }
-              </tr>
-            ))
+                  ))}
+                </tr>
+              );
+            })
           }
         </thead>
-        {/* Apply the table body props */}
-        <tbody {...getTableBodyProps()}>
+        <tbody>
           {
             // Loop over the table rows
-            rows.map((row) => {
-              // Prepare the row for display
-              prepareRow(row);
+            tableInstance.getRowModel().rows.map((row) => {
               return (
-                // Apply the row props
                 <tr
-                  {...row.getRowProps()}
+                  key={row.id}
                   onClick={(event) => onClickDataRow(event, row)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
@@ -334,20 +355,14 @@ export function Table<T extends Record<string, unknown>>({
                   }}
                   tabIndex={0}
                 >
-                  {
-                    // Loop over the rows cells
-                    row.cells.map((cell) => {
-                      // Apply the cell props
-                      return (
-                        <td {...cell.getCellProps()}>
-                          {
-                            // Render the cell contents
-                            cell.render("Cell")
-                          }
-                        </td>
-                      );
-                    })
-                  }
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
                 </tr>
               );
             })
