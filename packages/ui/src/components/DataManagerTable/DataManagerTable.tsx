@@ -122,7 +122,7 @@ function initialFilterState<T extends Record<string, unknown>>(
   filters.forEach((filter) => {
     state = {
       ...state,
-      [filter.accessor]: getDefaultFilterState<T>(filter),
+      [filter.accessorKey]: getDefaultFilterState<T>(filter),
     };
   });
 
@@ -219,7 +219,7 @@ export function DataManagerTable<
     return (state: FilterState) => {
       setFilterStates((prevState) => ({
         ...prevState,
-        [filter.accessor]: state,
+        [filter.accessorKey]: state,
       }));
     };
   }
@@ -249,14 +249,14 @@ export function DataManagerTable<
         );
         if (validResult) {
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessor] = validResult;
+          appliedFilterStates[filter.accessorKey] = validResult;
 
           // Update UI filter state as a result of applying if needed
           if (isIdFilterState(filterState)) {
             const appliedValues = (validResult as IdFilterState).appliedValues;
             const isApplied = !!appliedValues?.length;
             updateFilterState(filter)({
-              ...filterStates[filter.accessor],
+              ...filterStates[filter.accessorKey],
               value: "",
               appliedValues: appliedValues ? [...appliedValues] : [],
               isApplied,
@@ -298,14 +298,14 @@ export function DataManagerTable<
           updatedAppliedValues.push(value);
 
           const newFilterState = {
-            ...filterStates[filter.accessor],
+            ...filterStates[filter.accessorKey],
             value: "",
             appliedValues: updatedAppliedValues,
             isApplied: !!updatedAppliedValues.length,
           } as StringFilterState;
 
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessor] = newFilterState;
+          appliedFilterStates[filter.accessorKey] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
         } else if (filterState.appliedValues?.length === 0) {
@@ -316,14 +316,14 @@ export function DataManagerTable<
       } else if (isEnumFilterState(filterState)) {
         if (filterState.value) {
           const newFilterState = {
-            ...filterStates[filter.accessor],
+            ...filterStates[filter.accessorKey],
             value: "",
             appliedValues: filterState.appliedValues,
             isApplied: !!filterState.appliedValues?.length,
           } as EnumFilterState;
 
           // Apply the result of the validation for refetching data
-          appliedFilterStates[filter.accessor] = newFilterState;
+          appliedFilterStates[filter.accessorKey] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
         } else if (filterState.appliedValues?.length === 0) {
@@ -477,10 +477,10 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessor]: state,
+                      [filter.accessorKey]: state,
                     }));
                   }}
-                  state={filterStates[filter.accessor] as DateFilterState}
+                  state={filterStates[filter.accessorKey] as DateFilterState}
                 />
               </div>
             );
@@ -491,13 +491,13 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessor]: state,
+                      [filter.accessorKey]: state,
                     }));
                   }}
                   options={filter.enumValues}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessor] as EnumFilterState}
+                  state={filterStates[filter.accessorKey] as EnumFilterState}
                   isMulti={filter.isMulti}
                 />
               </div>
@@ -509,12 +509,12 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessor]: state,
+                      [filter.accessorKey]: state,
                     }));
                   }}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessor] as StringFilterState}
+                  state={filterStates[filter.accessorKey] as StringFilterState}
                 />
               </div>
             );
@@ -525,12 +525,12 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessor]: state,
+                      [filter.accessorKey]: state,
                     }));
                   }}
                   label={filter.label}
                   placeholder={filter.placeholder}
-                  state={filterStates[filter.accessor] as IdFilterState}
+                  state={filterStates[filter.accessorKey] as IdFilterState}
                 />
               </div>
             );
@@ -541,11 +541,11 @@ export function DataManagerTable<
                   updateFilterState={(state) => {
                     setFilterStates((prevState) => ({
                       ...prevState,
-                      [filter.accessor]: state,
+                      [filter.accessorKey]: state,
                     }));
                   }}
                   label={filter.label}
-                  state={filterStates[filter.accessor] as BooleanFilterState}
+                  state={filterStates[filter.accessorKey] as BooleanFilterState}
                 />
               </div>
             );
