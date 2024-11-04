@@ -1,8 +1,8 @@
 interface FilterBase<T extends Record<string, unknown>> {
   type: FilterType;
   label: string;
-  // This is the accessor for the column in the data
-  accessor: keyof T;
+  // This is the accessorKey for the column in the data
+  accessorKey: keyof T;
   value?: string | boolean;
   // Placeholder for any string filters
   placeholder?: string;
