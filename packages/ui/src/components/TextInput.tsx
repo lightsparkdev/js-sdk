@@ -1,8 +1,10 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
 import type {
+  ChangeEvent,
   ClipboardEvent,
   CompositionEvent,
+  FocusEvent,
   KeyboardEvent,
   RefCallback,
   RefObject,
@@ -58,18 +60,16 @@ export type TextInputProps = {
     | undefined;
   maxLength?: number;
   name?: string;
-  onBlur?: () => void;
-  onChange: (
-    newValue: string,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  onChange: (newValue: string, event: ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
-  onFocus?: () => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
   onKeyDown?: (
     keyValue: string,
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: KeyboardEvent<HTMLInputElement>,
   ) => void;
+  onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   inputRef?: RefObject<HTMLInputElement> | undefined;
   inputRefCb?: RefCallback<HTMLInputElement>;
@@ -86,7 +86,7 @@ export type TextInputProps = {
     | undefined;
   onBeforeInput?: (e: CompositionEvent) => void;
   pattern?: string;
-  inputMode?: "numeric" | undefined;
+  inputMode?: "numeric" | "decimal" | undefined;
   hint?: string | undefined;
   hintTooltip?: string | undefined;
   label?: string;
@@ -183,10 +183,10 @@ export function TextInput(textInputProps: TextInputProps) {
         maxLength={props.maxLength}
         inputMode={props.inputMode}
         pattern={props.pattern}
-        onBlur={() => {
+        onBlur={(blurEvent) => {
           setFocused(false);
           if (props.onBlur) {
-            props.onBlur();
+            props.onBlur(blurEvent);
           }
         }}
         onChange={(e) => {
@@ -194,10 +194,10 @@ export function TextInput(textInputProps: TextInputProps) {
           e.target.setCustomValidity("");
           props.onChange(e.target.value, e);
         }}
-        onFocus={() => {
+        onFocus={(focusEvent) => {
           setFocused(true);
           if (props.onFocus) {
-            props.onFocus();
+            props.onFocus(focusEvent);
           }
         }}
         onKeyDown={(e) => {
@@ -206,6 +206,7 @@ export function TextInput(textInputProps: TextInputProps) {
           }
           handleKeyDown(e);
         }}
+        onKeyUp={props.onKeyUp}
         id={props.id}
         onPaste={props.onPaste}
         placeholder={props.placeholder}
