@@ -1,19 +1,7 @@
-import { ThemeProvider } from "@emotion/react";
 import { Toasts } from "@lightsparkdev/ui/components";
-import { themes } from "@lightsparkdev/ui/styles/themes";
-import { screen, render as tlRender, waitFor } from "@testing-library/react";
-import type { ReactElement, ReactNode } from "react";
+import { screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-
-function Providers({ children }: { children: ReactNode }) {
-  return <ThemeProvider theme={themes.dark}>{children}</ThemeProvider>;
-}
-
-function render(renderElement: ReactElement) {
-  return tlRender(renderElement, {
-    wrapper: Providers,
-  });
-}
+import { render } from "./render";
 
 describe("Toasts", () => {
   test("should properly infer argument types and raise errors for invalid values", async () => {
