@@ -1,21 +1,9 @@
-import { ThemeProvider } from "@emotion/react";
 import { TextIconAligner } from "@lightsparkdev/ui/components";
-import { themes } from "@lightsparkdev/ui/styles/themes";
 import { link } from "@lightsparkdev/ui/utils/toReactNodes/nodes";
-import { screen, render as tlRender, waitFor } from "@testing-library/react";
-import type { ReactElement, ReactNode } from "react";
+import { screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "../types";
-
-function Providers({ children }: { children: ReactNode }) {
-  return <ThemeProvider theme={themes.dark}>{children}</ThemeProvider>;
-}
-
-function render(renderElement: ReactElement) {
-  return tlRender(renderElement, {
-    wrapper: Providers,
-  });
-}
+import { render } from "./render";
 
 describe("TextIconAligner", () => {
   test("should properly infer argument types and raise errors for invalid values", async () => {
