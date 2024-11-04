@@ -1,24 +1,7 @@
-import { ThemeProvider } from "@emotion/react";
 import { jest } from "@jest/globals";
 import { CodeInput } from "@lightsparkdev/ui/components/CodeInput/CodeInput";
-import { themes } from "@lightsparkdev/ui/styles/themes";
-import {
-  fireEvent,
-  screen,
-  render as tlRender,
-  waitFor,
-} from "@testing-library/react";
-import { type ReactElement, type ReactNode } from "react";
-
-function Providers({ children }: { children: ReactNode }) {
-  return <ThemeProvider theme={themes.dark}>{children}</ThemeProvider>;
-}
-
-function render(renderElement: ReactElement) {
-  return tlRender(renderElement, {
-    wrapper: Providers,
-  });
-}
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { render } from "./render";
 
 describe("CodeInput", () => {
   beforeEach(() => {
