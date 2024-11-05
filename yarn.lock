@@ -2410,6 +2410,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.4.3"
     "@types/jest": "npm:^29.5.3"
     "@types/prismjs": "npm:^1.26.0"
+    "@uma-sdk/core": "npm:^1.2.3"
     "@wojtekmaj/react-daterange-picker": "npm:^5.5.0"
     "@wojtekmaj/react-datetimerange-picker": "npm:^5.5.0"
     "@zxing/browser": "npm:^0.1.1"
@@ -2460,7 +2461,7 @@ __metadata:
     "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/chalk": "npm:^2.2.0"
     "@types/node": "npm:^20.2.5"
-    "@uma-sdk/core": "npm:^1.2.0"
+    "@uma-sdk/core": "npm:^1.2.3"
     chalk: "npm:^5.3.0"
     commander: "npm:^11.0.0"
     eslint: "npm:^8.3.0"
@@ -2487,7 +2488,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/supertest": "npm:^2.0.14"
     "@types/uuid": "npm:^9.0.7"
-    "@uma-sdk/core": "npm:^1.2.0"
+    "@uma-sdk/core": "npm:^1.2.3"
     express: "npm:^4.18.2"
     jest: "npm:^29.6.2"
     nodemon: "npm:^2.0.22"
@@ -4584,14 +4585,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uma-sdk/core@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@uma-sdk/core@npm:1.2.0"
+"@uma-sdk/core@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@uma-sdk/core@npm:1.2.3"
   dependencies:
     eciesjs: "npm:^0.4.4"
     secp256k1: "npm:^5.0.0"
     zod: "npm:^3.22.2"
-  checksum: 10/5d27d7fd7f9c5a3c59f4f75e2e726873c619cb07f55827235b2925deb2aa7b6d874372816f28f37ab0f0a39ba1c2c4858f0206f453b94fb13cdef2cd92515231
+  checksum: 10/593630b7394336a214c82864709ecc3ba5071b61dfd66be582ffee0c8b322fe6bbae3b80b59130ca0fc8087e6e257d2e49cf962c95893dde40c8d830681dfdae
   languageName: node
   linkType: hard
 
