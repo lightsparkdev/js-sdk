@@ -1,3 +1,4 @@
+import { isValidUmaAddress } from "@uma-sdk/core";
 import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +22,7 @@ const defaultMsgs = {
   code: "Code must be eight characters long.",
   password: "Password must be at least eight characters.",
   required: "This field is required.",
+  umaAddress: "Please enter a valid UMA address.",
 };
 
 const regexp = {
@@ -56,6 +58,10 @@ export const v: Validators = {
     (msg = defaultMsgs.code) =>
     (value) =>
       value.trim().length !== 8 ? msg : false,
+  umaAddress:
+    (msg = defaultMsgs.umaAddress) =>
+    (value) =>
+      !isValidUmaAddress(value) ? msg : false,
   required:
     (msg = defaultMsgs.required) =>
     (value) =>
