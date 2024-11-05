@@ -16,6 +16,8 @@ type IconProps<I extends IconName> = {
   width: number;
   mr?: number | "auto" | undefined;
   ml?: number | "auto" | undefined;
+  mt?: number | "auto" | undefined;
+  mb?: number | "auto" | undefined;
   verticalAlign?: "middle" | "top" | "bottom" | "super" | number;
   color?: FontColorKey | undefined;
   tutorialStep?: number;
@@ -33,6 +35,8 @@ export function Icon<I extends IconName>({
   id,
   mr: mrProp = 0,
   ml: mlProp = 0,
+  mt: mtProp = 0,
+  mb: mbProp = 0,
   color = undefined,
   verticalAlign = "middle",
   iconProps,
@@ -50,6 +54,14 @@ export function Icon<I extends IconName>({
     typeof mlProp === "number"
       ? `${parseFloat((mlProp / rootFontSizePx).toFixed(2))}em`
       : mlProp;
+  const mt =
+    typeof mtProp === "number"
+      ? `${parseFloat((mtProp / rootFontSizePx).toFixed(2))}em`
+      : mtProp;
+  const mb =
+    typeof mbProp === "number"
+      ? `${parseFloat((mbProp / rootFontSizePx).toFixed(2))}em`
+      : mbProp;
   const va =
     typeof verticalAlign === "string"
       ? verticalAlign
@@ -64,6 +76,8 @@ export function Icon<I extends IconName>({
       w={w}
       mr={mr}
       ml={ml}
+      mt={mt}
+      mb={mb}
       verticalAlign={va}
       fontColor={color}
       data-tutorial-tip={tutorialStep?.toString()}
@@ -77,6 +91,8 @@ type IconContainerProps = {
   w: number;
   mr: string;
   ml: string;
+  mt: string;
+  mb: string;
   verticalAlign: string | number;
   fontColor?: FontColorKey | undefined;
 };
@@ -84,12 +100,14 @@ type IconContainerProps = {
 export const IconContainer = styled.span<IconContainerProps>`
   pointer-events: none;
   display: inline-flex;
-  ${({ mr, ml, w }) => `
+  ${({ mr, ml, mt, mb, w }) => `
     width: ${w}em;
     /* ensure no shrink in flex containers: */
     min-width: ${w}em;
     ${mr ? `margin-right: ${mr};` : ""}
     ${ml ? `margin-left: ${ml};` : ""}
+    ${mt ? `margin-top: ${mt};` : ""}
+    ${mb ? `margin-bottom: ${mb};` : ""}
   `}
 
   vertical-align: ${({ verticalAlign }) =>
