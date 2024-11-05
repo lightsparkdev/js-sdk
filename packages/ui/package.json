@@ -63,6 +63,7 @@
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@svgr/core": "^8.1.0",
     "@tanstack/react-table": "^8.20.5",
+    "@uma-sdk/core": "^1.2.3",
     "@wojtekmaj/react-daterange-picker": "^5.5.0",
     "@wojtekmaj/react-datetimerange-picker": "^5.5.0",
     "@zxing/browser": "^0.1.1",
