@@ -22,6 +22,7 @@ import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
+import { isReactNode } from "../types/typeGuard.js";
 import { select } from "../utils/emotion.js";
 import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
@@ -59,7 +60,9 @@ function isSubmitLinkWithHref(
   return Boolean(submitLink && "href" in submitLink);
 }
 
-type TopContent = ComponentProps<typeof IconWithCircleBackground>;
+type TopContent =
+  | ComponentProps<typeof IconWithCircleBackground>
+  | React.ReactNode;
 
 type ModalProps = {
   visible: boolean;
@@ -334,11 +337,15 @@ export function Modal({
 
   let topContentNode = null;
   if (topContent) {
-    topContentNode = (
-      <div css={{ marginBottom: Spacing.px.xl }}>
-        <IconWithCircleBackground {...topContent} />
-      </div>
-    );
+    if (isReactNode(topContent)) {
+      topContentNode = topContent;
+    } else {
+      topContentNode = (
+        <div css={{ marginBottom: Spacing.px.xl }}>
+          <IconWithCircleBackground {...topContent} />
+        </div>
+      );
+    }
   }
 
   const modalContent = (
