@@ -3,6 +3,7 @@ export { AnchorLink } from "./AnchorLink.js";
 export { ApiConnection } from "./ApiConnection.js";
 export { AppIcon } from "./AppIcon.js";
 export { ArrowCircle } from "./ArrowCircle.js";
+export { ArrowCircleCutout } from "./ArrowCircleCutout.js";
 export { ArrowCircleTier1 } from "./ArrowCircleTier1.js";
 export { ArrowCircleTier2 } from "./ArrowCircleTier2.js";
 export { ArrowCircleTier3 } from "./ArrowCircleTier3.js";
