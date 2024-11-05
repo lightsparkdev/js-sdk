@@ -19,6 +19,8 @@ type FlexProps = {
     | "pre-wrap"
     | "pre-line"
     | undefined;
+  mt?: number | "auto" | undefined;
+  gap?: number | undefined;
 };
 
 export function Flex({
@@ -28,6 +30,8 @@ export function Flex({
   column = false,
   children,
   onClick,
+  mt,
+  gap,
   as = "div",
   overflow,
   whiteSpace,
@@ -49,6 +53,8 @@ export function Flex({
       whiteSpace={whiteSpace}
       mr={mr}
       ml={ml}
+      mt={mt}
+      gap={gap}
     >
       {children}
     </StyledFlex>
@@ -64,6 +70,8 @@ type StyledFlexProps = {
   whiteSpace: FlexProps["whiteSpace"];
   mr: FlexProps["mr"];
   ml: FlexProps["ml"];
+  mt: FlexProps["mt"];
+  gap: number | undefined;
 };
 
 const StyledFlex = styled.div<StyledFlexProps>`
@@ -78,7 +86,22 @@ const StyledFlex = styled.div<StyledFlexProps>`
     overflowProp ? `overflow: ${overflowProp}; max-width: 100%;` : ""}
   ${({ whiteSpace }) => (whiteSpace ? `white-space: ${whiteSpace};` : "")}
   ${({ mr }) =>
-    mr ? `margin-right: ${typeof mr === "number" ? `${mr}px` : mr};` : ""}
+    typeof mr === "number"
+      ? `margin-right: ${mr}px;`
+      : mr === "auto"
+      ? `margin-right: ${mr};`
+      : ""}
   ${({ ml }) =>
-    ml ? `margin-left: ${typeof ml === "number" ? `${ml}px` : ml};` : ""}
+    typeof ml === "number"
+      ? `margin-left: ${ml}px;`
+      : ml === "auto"
+      ? `margin-left: ${ml};`
+      : ""}
+  ${({ mt }) =>
+    typeof mt === "number"
+      ? `margin-top: ${mt}px;`
+      : mt === "auto"
+      ? `margin-top: ${mt};`
+      : ""}
+  ${({ gap }) => gap && `gap: ${gap}px;`}
 `;
