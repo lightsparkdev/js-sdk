@@ -71,7 +71,10 @@ const toKebabCase = (str: string) => {
 type DocsHeadlineProps = {
   children: React.ReactNode;
 } & Partial<
-  Pick<HeadlineProps, "color" | "size" | "heading" | "textAlign" | "onClick">
+  Pick<
+    HeadlineProps,
+    "color" | "size" | "heading" | "textAlign" | "onClick" | "underline"
+  >
 >;
 
 export const DocsHeadline = ({
@@ -81,6 +84,7 @@ export const DocsHeadline = ({
   heading = "h1",
   onClick,
   textAlign,
+  underline = false,
 }: DocsHeadlineProps) => {
   const id = toKebabCase(getHeaderId(children as ReactElement));
   return (
@@ -93,6 +97,7 @@ export const DocsHeadline = ({
       hideOverflow={false}
       textAlign={textAlign}
       onClick={onClick}
+      underline={underline}
       block
     >
       {children}
