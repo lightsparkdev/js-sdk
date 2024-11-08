@@ -15,6 +15,7 @@ export function getPropDefaultsBase<
     size: props.size || "Medium",
     textAlign: props.textAlign,
     onClick: props.onClick,
+    underline: props.underline || false,
     children: props.children ? stringToNodes(props.children) : null,
     ...extra,
   };
