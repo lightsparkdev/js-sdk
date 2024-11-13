@@ -37,16 +37,19 @@ type PhoneInputProps = {
   pxPerChar?: number;
   onChange?: ({ number, formatted, isValid }: PhoneInputOnChangeArg) => void;
   typography?: PartialSimpleTypographyProps | undefined;
+  defaultCountryCode?: CountryCode;
 };
 
 export function PhoneInput({
   typography,
   onChange: onChangeProp,
   pxPerChar = 6,
+  defaultCountryCode = "US",
 }: PhoneInputProps) {
   /* countryCode only controls the country used for parsing phone number input. User may
      still enter or paste the country phone code */
-  const [countryCode, setCountryCode] = useState<CountryCode>("US");
+  const [countryCode, setCountryCode] =
+    useState<CountryCode>(defaultCountryCode);
   const [value, setValue] = useState("");
   const [width, setWidth] = useState(getSelectWidth(countryCode, pxPerChar));
   const [wasBlurred, setWasBlurred] = useState(false);
