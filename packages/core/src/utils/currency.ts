@@ -146,7 +146,7 @@ export function convertCurrencyAmountValue(
      units to provide value estimates where needed where a backend value is not available, eg
      previewing the approximate value of an amount to send. */
   unitsPerBtc = 1,
-): number {
+) {
   if (
     fromUnit === CurrencyUnit.FUTURE_VALUE ||
     toUnit === CurrencyUnit.FUTURE_VALUE
@@ -220,40 +220,68 @@ export type CurrencyMap = {
   type: "CurrencyMap";
 };
 
+/* GQL CurrencyAmountInputs have this shape as well as client side CurrencyAmount objects.
+ * Technically value is always a number for GQL inputs. This is enforced by mutation input
+ * types. For client side utils we can have slightly more forgiving input and coerce with
+ * asNumber. */
+export type CurrencyAmountInputObj = {
+  value: number | string | null;
+  unit: CurrencyUnitType;
+};
+
+/* Persisted CurrencyAmount objects may have this shape if queried from GQL in this format
+   but the fields are deprecated and original_unit and original_value should be used instead: */
 export type DeprecatedCurrencyAmountObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  value?: number | string | null;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  value?: number;
   /* assume satoshi if not provided */
   unit?: CurrencyUnitType;
-  __typename?: "CurrencyAmount" | undefined;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  original_value?: number | string | null;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  original_value?: number;
   /* assume satoshi if not provided */
   original_unit?: CurrencyUnitType;
-  __typename?: "CurrencyAmount" | undefined;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountPreferenceObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  preferred_currency_unit?: CurrencyUnitType;
-  /* assume satoshi if not provided */
-  preferred_currency_value_rounded?: number | string | null;
-  __typename?: "CurrencyAmount" | undefined;
+  /* unit and value, along with original unit and value are all required for
+   * CurrencyAmountPreferenceObj - the preferred value is used for the corresponding unit
+   * but the original unit/value are also needed to ensure accurate conversion to other units */
+  original_value: number;
+  original_unit: CurrencyUnitType;
+  preferred_currency_unit: CurrencyUnitType;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  preferred_currency_value_approx: number;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountArg =
+  | CurrencyAmountInputObj
   | DeprecatedCurrencyAmountObj
   | CurrencyAmountObj
   | CurrencyAmountPreferenceObj
   | SDKCurrencyAmountType
   | undefined
   | null;
+
+export function isCurrencyAmountInputObj(
+  arg: unknown,
+): arg is CurrencyAmountInputObj {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    "value" in arg &&
+    (typeof arg.value === "number" ||
+      typeof arg.value === "string" ||
+      arg.value === null) &&
+    "unit" in arg &&
+    typeof arg.unit === "string"
+  );
+}
 
 export function isDeprecatedCurrencyAmountObj(
   arg: unknown,
@@ -278,8 +306,14 @@ export function isCurrencyAmountPreferenceObj(
   return (
     typeof arg === "object" &&
     arg !== null &&
+    "original_unit" in arg &&
+    typeof arg.original_unit === "string" &&
+    "original_value" in arg &&
+    typeof arg.original_value === "number" &&
     "preferred_currency_unit" in arg &&
-    "preferred_currency_value_rounded" in arg
+    typeof arg.preferred_currency_unit === "string" &&
+    "preferred_currency_value_approx" in arg &&
+    typeof arg.preferred_currency_value_approx === "number"
   );
 }
 
@@ -311,13 +345,13 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   if (isSDKCurrencyAmount(currencyAmountArg)) {
     value = currencyAmountArg.originalValue;
     unit = currencyAmountArg.originalUnit;
-  } else if (isCurrencyAmountPreferenceObj(currencyAmountArg)) {
-    value = asNumber(currencyAmountArg.preferred_currency_value_rounded);
-    unit = currencyAmountArg.preferred_currency_unit;
   } else if (isCurrencyAmountObj(currencyAmountArg)) {
     value = asNumber(currencyAmountArg.original_value);
     unit = currencyAmountArg.original_unit;
-  } else if (isDeprecatedCurrencyAmountObj(currencyAmountArg)) {
+  } else if (
+    isCurrencyAmountInputObj(currencyAmountArg) ||
+    isDeprecatedCurrencyAmountObj(currencyAmountArg)
+  ) {
     value = asNumber(currencyAmountArg.value);
     unit = currencyAmountArg.unit;
   }
@@ -328,21 +362,70 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   };
 }
 
+function convertCurrencyAmountValues(
+  fromUnit: CurrencyUnitType,
+  amount: number,
+  unitsPerBtc = 1,
+  conversionOverride?: { unit: CurrencyUnitType; convertedValue: number },
+) {
+  const convert = convertCurrencyAmountValue;
+  const namesToUnits = {
+    sats: CurrencyUnit.SATOSHI,
+    btc: CurrencyUnit.BITCOIN,
+    msats: CurrencyUnit.MILLISATOSHI,
+    usd: CurrencyUnit.USD,
+    mxn: CurrencyUnit.MXN,
+    mibtc: CurrencyUnit.MICROBITCOIN,
+    mlbtc: CurrencyUnit.MILLIBITCOIN,
+    nbtc: CurrencyUnit.NANOBITCOIN,
+  };
+  return Object.entries(namesToUnits).reduce(
+    (acc, [name, unit]) => {
+      if (conversionOverride && unit === conversionOverride.unit) {
+        acc[name as keyof typeof namesToUnits] =
+          conversionOverride.convertedValue;
+      } else {
+        acc[name as keyof typeof namesToUnits] = convert(
+          fromUnit,
+          unit,
+          amount,
+          unitsPerBtc,
+        );
+      }
+      return acc;
+    },
+    {} as Record<keyof typeof namesToUnits, number>,
+  );
+}
+
+function getPreferredConversionOverride(currencyAmountArg: CurrencyAmountArg) {
+  if (isCurrencyAmountPreferenceObj(currencyAmountArg)) {
+    return {
+      unit: currencyAmountArg.preferred_currency_unit,
+      convertedValue: currencyAmountArg.preferred_currency_value_approx,
+    };
+  } else if (isSDKCurrencyAmount(currencyAmountArg)) {
+    return {
+      unit: currencyAmountArg.preferredCurrencyUnit,
+      convertedValue: currencyAmountArg.preferredCurrencyValueApprox,
+    };
+  }
+  return undefined;
+}
+
 export function mapCurrencyAmount(
   currencyAmountArg: CurrencyAmountArg,
   unitsPerBtc = 1,
 ): CurrencyMap {
   const { value, unit } = getCurrencyAmount(currencyAmountArg);
 
-  const convert = convertCurrencyAmountValue;
-  const sats = convert(unit, CurrencyUnit.SATOSHI, value, unitsPerBtc);
-  const btc = convert(unit, CurrencyUnit.BITCOIN, value, unitsPerBtc);
-  const msats = convert(unit, CurrencyUnit.MILLISATOSHI, value, unitsPerBtc);
-  const usd = convert(unit, CurrencyUnit.USD, value, unitsPerBtc);
-  const mxn = convert(unit, CurrencyUnit.MXN, value, unitsPerBtc);
-  const mibtc = convert(unit, CurrencyUnit.MICROBITCOIN, value, unitsPerBtc);
-  const mlbtc = convert(unit, CurrencyUnit.MILLIBITCOIN, value, unitsPerBtc);
-  const nbtc = convert(unit, CurrencyUnit.NANOBITCOIN, value, unitsPerBtc);
+  /* Prefer approximation from backend for corresponding unit if specified on currencyAmountArg.
+   * This will always be at most for one single unit type since there's only one
+   * preferred_currency_unit on CurrencyAmount types: */
+  const conversionOverride = getPreferredConversionOverride(currencyAmountArg);
+
+  const { sats, msats, btc, usd, mxn, mibtc, mlbtc, nbtc } =
+    convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
   const mapWithCurrencyUnits = {
     [CurrencyUnit.BITCOIN]: btc,
