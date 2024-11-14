@@ -138,7 +138,7 @@ describe("convertCurrencyAmountValue", () => {
 });
 
 describe("mapCurrencyAmount", () => {
-  it("should return the expected value for a CurrencyAmountObj", () => {
+  it("should return the expected value for a CurrencyAmountInputObj with number value", () => {
     const currencyMap = mapCurrencyAmount(
       {
         value: 100_000_000,
@@ -169,6 +169,113 @@ describe("mapCurrencyAmount", () => {
     expect(currencyMap.isLessThan(smallerCurrencyMap)).toBe(false);
     expect(smallerCurrencyMap.isGreaterThan(currencyMap)).toBe(false);
     expect(smallerCurrencyMap.isLessThan(currencyMap)).toBe(true);
+  });
+
+  it("should return the expected value for a CurrencyAmountInputObj with string value", () => {
+    const currencyMap = mapCurrencyAmount(
+      {
+        value: "100000000",
+        unit: CurrencyUnit.SATOSHI,
+      },
+      25_000_00,
+    );
+    expect(currencyMap.btc).toBe(1);
+    expect(currencyMap.USD).toBe(25_000_00);
+    expect(currencyMap.sats).toBe(100_000_000);
+    expect(currencyMap.msats).toBe(100_000_000_000);
+    expect(currencyMap.formatted.btc).toBe("1");
+    expect(currencyMap.formatted.USD).toBe("$25,000.00");
+    expect(currencyMap.formatted.sats).toBe("100,000,000");
+    expect(currencyMap.formatted.msats).toBe("100,000,000,000");
+  });
+
+  it("should return the expected value for a CurrencyAmountInputObj with null value", () => {
+    const currencyMap = mapCurrencyAmount(
+      {
+        value: null,
+        unit: CurrencyUnit.SATOSHI,
+      },
+      25_000_00,
+    );
+    expect(currencyMap.btc).toBe(0);
+    expect(currencyMap.USD).toBe(0);
+    expect(currencyMap.sats).toBe(0);
+    expect(currencyMap.msats).toBe(0);
+    expect(currencyMap.formatted.btc).toBe("0");
+    expect(currencyMap.formatted.USD).toBe("$0.00");
+    expect(currencyMap.formatted.sats).toBe("0");
+    expect(currencyMap.formatted.msats).toBe("0");
+  });
+
+  it("should return the expected value for a CurrencyAmountObj", () => {
+    const currencyMap = mapCurrencyAmount(
+      {
+        original_value: 147,
+        original_unit: CurrencyUnit.SATOSHI,
+      },
+      25_000_00,
+    );
+    expect(currencyMap.btc).toBe(0.00000147);
+    expect(currencyMap.USD).toBe(4); // 0.03675 should round to 4 cents
+    expect(currencyMap.sats).toBe(147);
+    expect(currencyMap.msats).toBe(147_000);
+    expect(currencyMap.formatted.btc).toBe("0");
+    expect(currencyMap.formatted.USD).toBe("$0.04");
+    expect(currencyMap.formatted.sats).toBe("147");
+    expect(currencyMap.formatted.msats).toBe("147,000");
+  });
+
+  it("should have a type error when extra fields are provided as CurrencyAmountArg", () => {
+    mapCurrencyAmount(
+      {
+        original_value: 147,
+        original_unit: CurrencyUnit.SATOSHI,
+        /* @ts-expect-error `value` cannot be provided with `original_value` */
+        value: 100_000_000,
+      },
+      25_000_00,
+    );
+  });
+
+  it("should use the backend approximation for the corresponding unit only when provided via CurrencyAmountPreferenceObj", () => {
+    const currencyMap = mapCurrencyAmount(
+      {
+        original_value: 147,
+        original_unit: CurrencyUnit.SATOSHI,
+        preferred_currency_unit: CurrencyUnit.USD,
+        preferred_currency_value_approx: 1_234_56,
+      },
+      25_000_00,
+    );
+    expect(currencyMap.btc).toBe(0.00000147);
+    expect(currencyMap.USD).toBe(1_234_56);
+    expect(currencyMap.sats).toBe(147);
+    expect(currencyMap.msats).toBe(147_000);
+    expect(currencyMap.formatted.btc).toBe("0");
+    expect(currencyMap.formatted.USD).toBe("$1,234.56");
+    expect(currencyMap.formatted.sats).toBe("147");
+    expect(currencyMap.formatted.msats).toBe("147,000");
+  });
+
+  it("should return the expected value for a SDKCurrencyAmountType and use backend approximation for the corresponding unit", () => {
+    const currencyMap = mapCurrencyAmount(
+      {
+        originalValue: 147,
+        originalUnit: CurrencyUnit.SATOSHI,
+        preferredCurrencyUnit: CurrencyUnit.USD,
+        preferredCurrencyValueApprox: 1_234_56,
+        preferredCurrencyValueRounded: 1_234_56,
+      },
+      25_000_00,
+    );
+    expect(currencyMap.btc).toBe(0.00000147);
+    expect(currencyMap.USD).toBe(1_234_56);
+    expect(currencyMap.sats).toBe(147);
+    expect(currencyMap.msats).toBe(147_000);
+    expect(currencyMap.formatted.btc).toBe("0");
+    expect(currencyMap.formatted.USD).toBe("$1,234.56");
+    expect(currencyMap.formatted.sats).toBe("147");
+    expect(currencyMap.formatted.msats).toBe("147,000");
   });
 });
 
