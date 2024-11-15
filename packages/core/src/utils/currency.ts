@@ -338,7 +338,7 @@ function asNumber(value: string | number | null | undefined) {
   return value || 0;
 }
 
-function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
+export function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   let value = 0;
   let unit = undefined;
 
@@ -536,6 +536,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "MSAT";
     case CurrencyUnit.USD:
       return "USD";
+    case CurrencyUnit.MXN:
+      return "MXN";
   }
   return "Unsupported CurrencyUnit";
 };
