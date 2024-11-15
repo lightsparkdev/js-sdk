@@ -5,6 +5,7 @@ import type {
   ClipboardEvent,
   CompositionEvent,
   FocusEvent,
+  InputHTMLAttributes,
   KeyboardEvent,
   RefCallback,
   RefObject,
@@ -109,6 +110,7 @@ export type TextInputProps = {
   // Outline that appears outside/offset when the input is focused
   activeOutline?: boolean;
   activeOutlineColor?: ThemeOrColorKey;
+  enterKeyHint?: InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
 };
 
 function withDefaults(textInputProps: TextInputProps) {
@@ -235,6 +237,7 @@ export function TextInput(textInputProps: TextInputProps) {
           }
         }}
         borderRadius={props.borderRadius}
+        enterKeyHint={props.enterKeyHint}
       />
       {props.rightButtonText && (
         <RightButtonAligner iconOffset={iconOffset}>
