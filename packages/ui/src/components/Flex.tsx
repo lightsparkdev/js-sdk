@@ -3,8 +3,20 @@ import { type ElementType, type ReactNode } from "react";
 
 type FlexProps = {
   center?: boolean | undefined;
-  justify?: "center" | "flex-start" | "flex-end" | "space-between" | undefined;
-  align?: "center" | "flex-start" | "flex-end" | "space-between" | undefined;
+  justify?:
+    | "stretch"
+    | "center"
+    | "flex-start"
+    | "flex-end"
+    | "space-between"
+    | undefined;
+  align?:
+    | "stretch"
+    | "center"
+    | "flex-start"
+    | "flex-end"
+    | "space-between"
+    | undefined;
   children?: ReactNode;
   as?: ElementType | undefined;
   column?: boolean | undefined;
@@ -38,8 +50,8 @@ export function Flex({
   mr,
   ml,
 }: FlexProps) {
-  const justify = justifyProp ? justifyProp : center ? "center" : "flex-start";
-  const align = alignProp ? alignProp : center ? "center" : "flex-start";
+  const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
+  const align = alignProp ? alignProp : center ? "center" : "stretch";
 
   return (
     <StyledFlex
@@ -74,7 +86,7 @@ type StyledFlexProps = {
   gap: number | undefined;
 };
 
-const StyledFlex = styled.div<StyledFlexProps>`
+export const StyledFlex = styled.div<StyledFlexProps>`
   display: flex;
   text-overflow: ellipsis;
 
