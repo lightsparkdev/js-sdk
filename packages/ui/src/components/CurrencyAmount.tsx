@@ -8,6 +8,7 @@ import type {
 import {
   CurrencyUnit,
   formatCurrencyStr,
+  getCurrencyAmount,
   isCurrencyMap,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
@@ -31,7 +32,7 @@ type CurrencyAmountProps = {
 
 export function CurrencyAmount({
   amount,
-  displayUnit = CurrencyUnit.SATOSHI,
+  displayUnit: displayUnitProp,
   shortNumber = false,
   showUnits = false,
   includeEstimatedIndicator = false,
@@ -41,32 +42,38 @@ export function CurrencyAmount({
   typography,
   unitsPerBtc,
 }: CurrencyAmountProps) {
-  const unit = displayUnit;
+  let displayUnit: CurrencyUnitType;
+  let amountMap: CurrencyMap;
+  if (isCurrencyMap(amount)) {
+    displayUnit = displayUnitProp || CurrencyUnit.SATOSHI;
+    amountMap = amount;
+  } else {
+    const resolvedCurrencyAmount = getCurrencyAmount(amount);
+    /* default to the currency amount unit if defined and displayUnit is not provided: */
+    displayUnit = displayUnitProp || resolvedCurrencyAmount.unit;
+    amountMap = mapCurrencyAmount(amount, unitsPerBtc);
+  }
 
-  const amountMap = isCurrencyMap(amount)
-    ? amount
-    : mapCurrencyAmount(amount, unitsPerBtc);
-
-  const value = amountMap[unit];
-  const defaultFormattedNumber = amountMap.formatted[unit];
+  const value = amountMap[displayUnit];
+  const defaultFormattedNumber = amountMap.formatted[displayUnit];
 
   /* There are just a few ways that CurrencyAmounts need to be formatted
      throughout the UI. In general the default should always be used: */
   let formattedNumber = defaultFormattedNumber;
   if (shortNumber) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit },
+      { value: Number(value), unit: displayUnit },
       { precision: 1, compact: true },
     );
   } else if (fullPrecision) {
     formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit },
+      { value: Number(value), unit: displayUnit },
       { precision: "full" },
     );
   }
 
   if (showUnits) {
-    formattedNumber += ` ${shorttext(unit, value)}`;
+    formattedNumber += ` ${shorttext(displayUnit, value)}`;
   }
 
   let content: string | ReactNode = formattedNumber;
@@ -81,7 +88,7 @@ export function CurrencyAmount({
   return (
     <StyledCurrencyAmount ml={ml} id={id}>
       {includeEstimatedIndicator && "Est. "}
-      <CurrencyIcon unit={unit} />
+      <CurrencyIcon unit={displayUnit} />
       {content}
     </StyledCurrencyAmount>
   );
