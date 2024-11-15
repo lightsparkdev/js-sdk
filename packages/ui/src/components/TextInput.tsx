@@ -274,7 +274,7 @@ export function TextInput(textInputProps: TextInputProps) {
   const { select } = props;
 
   return (
-    <StyledTextInput width={textInputWidth}>
+    <StyledTextInput widthProp={textInputWidth}>
       {props.label ? (
         <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
       ) : null}
@@ -437,8 +437,8 @@ export const TextInputHalfRow = styled.div`
   }
 `;
 
-const StyledTextInput = styled.div<{ width: string }>`
-  width: ${({ width }) => width};
+const StyledTextInput = styled.div<{ widthProp: string }>`
+  width: ${({ widthProp }) => widthProp};
   position: relative;
 
   /* eg forms, should be left consistent: */
