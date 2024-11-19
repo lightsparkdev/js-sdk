@@ -19,7 +19,7 @@ import {
   isThemeOrColorKey,
   type ThemeOrColorKey,
 } from "../styles/themes.js";
-import { TokenSize, type TokenSizeKey } from "../styles/tokens/typography.js";
+import { type TokenSizeKey } from "../styles/tokens/typography.js";
 import { applyTypography } from "../styles/typography.js";
 import { type NewRoutesType } from "../types/index.js";
 import { select } from "../utils/emotion.js";
@@ -45,6 +45,8 @@ export const buttonKinds = [
   "warning",
   "tertiary",
   "quaternary",
+  "roundSingleChar",
+  "roundIcon",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
@@ -81,52 +83,6 @@ export type ButtonProps = {
   zIndex?: number | undefined;
   borderRadius?: ButtonBorderRadius | undefined;
 };
-
-type PaddingProps = {
-  paddingY: number;
-  size: TokenSizeKey;
-  iconSide?: IconSide | undefined;
-  isRound: boolean;
-  kind: ButtonKind;
-};
-
-const roundPaddingsX = {
-  [TokenSize.ExtraSmall]: 10,
-  [TokenSize.Small]: 10,
-  [TokenSize.Schmedium]: 10,
-  [TokenSize.Medium]: 14,
-  [TokenSize.Mlarge]: 19,
-  [TokenSize.Large]: 19,
-} as const;
-
-const paddingsX = {
-  [TokenSize.ExtraSmall]: 16,
-  [TokenSize.Small]: 24,
-  [TokenSize.Schmedium]: 24,
-  [TokenSize.Medium]: 24,
-  [TokenSize.Mlarge]: 24,
-  [TokenSize.Large]: 24,
-} as const;
-
-function getPaddingX(size: TokenSizeKey, kind: ButtonKind, isRound: boolean) {
-  return kind === "ghost"
-    ? 0
-    : isRound
-    ? roundPaddingsX[size]
-    : paddingsX[size];
-}
-
-function getPadding({ paddingY, kind, size, iconSide, isRound }: PaddingProps) {
-  const paddingX = getPaddingX(size, kind, isRound);
-  const paddingForIcon = 0;
-  return kind === "ghost"
-    ? 0
-    : `${paddingY}px ${
-        paddingX + (iconSide === "right" ? paddingForIcon : 0)
-      }px ${paddingY}px ${
-        paddingX + (iconSide === "left" ? paddingForIcon : 0)
-      }px`;
-}
 
 function resolveBackgroundColorKey(
   theme: Theme,
@@ -169,8 +125,18 @@ function resolveProp<T, K extends ButtonsThemeKey>(
 }
 
 function resolveProps(props: ButtonProps, theme: Theme) {
+  const isSingleCharRoundButton = Boolean(
+    props.text && props.text.length === 1 && !props.icon,
+  );
+  const isRoundIconButton = Boolean(!props.text && props.icon);
+  const defaultKind = isSingleCharRoundButton
+    ? "roundSingleChar"
+    : isRoundIconButton
+    ? "roundIcon"
+    : "secondary";
+
   const {
-    kind = "secondary",
+    kind = defaultKind,
     size: sizeProp,
     paddingY: paddingYType = "regular",
     borderRadius,
@@ -181,6 +147,8 @@ function resolveProps(props: ButtonProps, theme: Theme) {
   const size = resolveProp(sizeProp, kind, "defaultSize", theme);
   const defaultPaddingsY = resolveProp(null, kind, "defaultPaddingsY", theme);
   const defaultPaddingY = defaultPaddingsY[size];
+  const defaultPaddingsX = resolveProp(null, kind, "defaultPaddingsX", theme);
+  const defaultPaddingX = defaultPaddingsX[size];
 
   const backgroundColor = resolveBackgroundColorKey(
     theme,
@@ -232,7 +200,11 @@ function resolveProps(props: ButtonProps, theme: Theme) {
       typeof defaultPaddingY === "number"
         ? defaultPaddingY
         : defaultPaddingY[paddingYType],
-    borderRadius: resolveProp(borderRadius, kind, "defaultBorderRadius", theme),
+    paddingX: defaultPaddingX,
+    borderRadius:
+      kind === "roundSingleChar" || kind === "roundIcon"
+        ? 999
+        : resolveProp(borderRadius, kind, "defaultBorderRadius", theme),
     backgroundColor,
     borderColor,
     hoverBackgroundColor,
@@ -248,6 +220,7 @@ export function Button(props: ButtonProps) {
     kind,
     typography,
     size,
+    paddingX,
     paddingY,
     text,
     to,
@@ -289,6 +262,7 @@ export function Button(props: ButtonProps) {
         text={text}
         typography={typography}
         kind={kind}
+        paddingX={paddingX}
       >
         <Loading size={defaultIconWidth} center={false} kind={loadingKind} />
       </ButtonIcon>
@@ -300,10 +274,12 @@ export function Button(props: ButtonProps) {
         text={text}
         typography={typography}
         kind={kind}
+        paddingX={paddingX}
       >
         <Icon
           {...icon}
           width={icon.width || defaultIconWidth}
+          square
           color={typography.color}
         />
       </ButtonIcon>
@@ -344,8 +320,6 @@ export function Button(props: ButtonProps) {
     </Fragment>
   );
 
-  const isSingleCharRoundButton = Boolean(text && text.length === 1 && !icon);
-
   const commonProps = {
     id,
     kind,
@@ -354,6 +328,7 @@ export function Button(props: ButtonProps) {
     onClick,
     fullWidth,
     iconSide,
+    paddingX,
     paddingY,
     backgroundColor,
     borderColor,
@@ -361,7 +336,6 @@ export function Button(props: ButtonProps) {
     hoverBorderColor,
     activeBackgroundColor,
     activeBorderColor,
-    isRound: isSingleCharRoundButton,
     isLoading: loading,
     disabled: disabled || loading,
     css: {
@@ -400,10 +374,10 @@ export function Button(props: ButtonProps) {
 }
 
 type StyledButtonProps = {
+  paddingX: number;
   paddingY: number;
   kind: ButtonKind;
   isLoading: boolean;
-  isRound: boolean;
   typography: {
     type: AllowedButtonTypographyTypes;
     size: TokenSizeKey;
@@ -424,6 +398,7 @@ type StyledButtonProps = {
 };
 
 const buttonStyle = ({
+  paddingX,
   paddingY,
   kind,
   theme,
@@ -434,7 +409,6 @@ const buttonStyle = ({
   zIndex,
   iconSide,
   borderColor: borderColorProp,
-  isRound,
   borderRadius,
   backgroundColor,
   hoverBackgroundColor,
@@ -475,14 +449,10 @@ const buttonStyle = ({
       box-sizing: content-box;
       border: 1px solid;
       border-color: ${borderColor};
-      border-radius: ${isRound ? "100%" : `${borderRadius}px`};
-      padding: ${getPadding({
-        paddingY,
-        kind,
-        size: typography.size,
-        iconSide,
-        isRound,
-      })};
+      border-radius: ${typeof borderRadius === "number"
+        ? `${borderRadius}px`
+        : borderRadius};
+      padding: ${paddingY}px ${paddingX}px;
       transition:
         background-color 0.2s ease-out,
         border-color 0.2s ease-out;
@@ -507,14 +477,14 @@ interface ButtonIconProps {
   iconSide?: IconSide | undefined;
   text?: string | undefined;
   kind: ButtonKind;
+  paddingX: number;
 }
 
 const ButtonIcon = styled.div<ButtonIconProps>`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${({ iconSide, kind, typography }) =>
-    `${iconSide}: ${getPaddingX(typography.size, kind, false)}px;`}
+  ${({ iconSide, paddingX }) => `${iconSide}: ${paddingX}px;`}
 `;
 
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`

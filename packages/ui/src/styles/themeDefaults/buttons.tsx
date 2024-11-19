@@ -5,7 +5,7 @@ import { type TokenSizeKey } from "../tokens/typography.js";
 export type PaddingYKey = "short" | "regular";
 export type PaddingY = number | { [key in PaddingYKey]: number };
 
-export const buttonBorderRadiuses = [8, 32, 999] as const;
+export const buttonBorderRadiuses = [8, 32, 999, "100%"] as const;
 export type ButtonBorderRadius = (typeof buttonBorderRadiuses)[number];
 export const allowedButtonTypographyTypes = [
   "Body",
@@ -46,6 +46,14 @@ export const buttonsThemeBase = {
     Mlarge: 12 as PaddingY,
     Large: 12 as PaddingY,
   },
+  defaultPaddingsX: {
+    ExtraSmall: 16,
+    Small: 24,
+    Schmedium: 24,
+    Medium: 24,
+    Mlarge: 24,
+    Large: 24,
+  },
   kinds: {},
 };
 export type ButtonsThemeKey = keyof typeof buttonsThemeBase;
@@ -72,6 +80,14 @@ export const defaultButtonsTheme = {
       defaultHoverBackgroundColor: "transparent",
       defaultHoverBorderColor: "transparent",
       defaultPaddingsY: {
+        ExtraSmall: 0,
+        Small: 0,
+        Schmedium: 0,
+        Medium: 0,
+        Mlarge: 0,
+        Large: 0,
+      },
+      defaultPaddingsX: {
         ExtraSmall: 0,
         Small: 0,
         Schmedium: 0,
@@ -143,6 +159,46 @@ export const defaultButtonsTheme = {
     },
     danger: {
       defaultColor: "white",
+    },
+    roundSingleChar: {
+      defaultBackgroundColor: "bg",
+      defaultBorderColor: "gray90",
+      defaultHoverBackgroundColor: "bg",
+      defaultHoverBorderColor: "gray85",
+      defaultActiveBackgroundColor: "bg",
+      defaultActiveBorderColor: "gray80",
+      defaultPaddingsX: {
+        ExtraSmall: 10,
+        Small: 18,
+        Schmedium: 18,
+        Medium: 19,
+        Mlarge: 19,
+        Large: 20,
+      },
+    },
+    roundIcon: {
+      defaultBackgroundColor: "bg",
+      defaultBorderColor: "gray90",
+      defaultHoverBackgroundColor: "bg",
+      defaultHoverBorderColor: "gray85",
+      defaultActiveBackgroundColor: "bg",
+      defaultActiveBorderColor: "gray80",
+      defaultPaddingsX: {
+        ExtraSmall: 10,
+        Small: 10,
+        Medium: 10,
+        Schmedium: 10,
+        Mlarge: 10,
+        Large: 10,
+      },
+      defaultPaddingsY: {
+        ExtraSmall: 10,
+        Small: 10,
+        Medium: 10,
+        Schmedium: 10,
+        Mlarge: 10,
+        Large: 10,
+      },
     },
   } as ButtonKindsProps,
 };
