@@ -18,7 +18,6 @@ export function NumberInput({
 }: NumberInputProps) {
   const ref = useRef<HTMLInputElement | null>(null);
   const {
-    inputRef,
     getRenderValue,
     handleOnChange,
     handleOnBlur,
@@ -70,7 +69,7 @@ export function NumberInput({
       onBlur={handleOnBlur}
       onFocus={handleOnFocus}
       value={getRenderValue()}
-      inputRef={inputRef}
+      inputRef={ref}
       type="text"
       inputMode="decimal"
       pattern="[0-9,.]*"
