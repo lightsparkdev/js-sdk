@@ -31,6 +31,7 @@ export { CheckmarkCircleTier1 } from "./CheckmarkCircleTier1.js";
 export { CheckmarkCircleTier2 } from "./CheckmarkCircleTier2.js";
 export { CheckmarkCircleTier3 } from "./CheckmarkCircleTier3.js";
 export { Chevron } from "./Chevron.js";
+export { ChevronDown } from "./ChevronDown.js";
 export { ChevronLeft } from "./ChevronLeft.js";
 export { ChevronRight } from "./ChevronRight.js";
 export { CircleCheck } from "./CircleCheck.js";
