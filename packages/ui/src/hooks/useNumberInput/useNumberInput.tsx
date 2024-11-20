@@ -1,11 +1,5 @@
 import type React from "react";
-import {
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   type UseNumberInputArgs,
   type UseNumberInputOnChangeValues,
@@ -101,8 +95,6 @@ export function useNumberInput({
   const [cursor, setCursor] = useState(0);
   const [changeCount, setChangeCount] = useState(0);
   const [lastKeyStroke, setLastKeyStroke] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
 
   /**
    * Process change in value
@@ -309,9 +301,9 @@ export function useNumberInput({
         selectionStart &&
         selectionStart > stateValue.length - suffix.length
       ) {
-        if (inputRef.current) {
+        if (ref && ref.current) {
           const newCursor = stateValue.length - suffix.length;
-          inputRef.current.setSelectionRange(newCursor, newCursor);
+          ref.current.setSelectionRange(newCursor, newCursor);
         }
       }
     }
@@ -329,12 +321,13 @@ export function useNumberInput({
     if (
       dirty &&
       stateValue !== "-" &&
-      inputRef.current &&
-      document.activeElement === inputRef.current
+      ref &&
+      ref.current &&
+      document.activeElement === ref.current
     ) {
-      inputRef.current.setSelectionRange(cursor, cursor);
+      ref.current.setSelectionRange(cursor, cursor);
     }
-  }, [stateValue, cursor, inputRef, dirty, changeCount]);
+  }, [stateValue, cursor, ref, dirty, changeCount]);
 
   /**
    * If user has only entered "-" or decimal separator,
@@ -357,7 +350,6 @@ export function useNumberInput({
   };
 
   return {
-    inputRef,
     getRenderValue,
     handleOnChange,
     handleOnBlur,

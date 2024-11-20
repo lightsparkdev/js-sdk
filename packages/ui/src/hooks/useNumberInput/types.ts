@@ -1,4 +1,4 @@
-import { type ComponentPropsWithRef } from "react";
+import { type ComponentPropsWithRef, type RefObject } from "react";
 
 /** Value in different formats */
 export type UseNumberInputOnChangeValues = {
@@ -102,7 +102,7 @@ export type UseNumberInputArgs = {
   formatValueOnBlur?: boolean | undefined;
 
   /* text input props: */
-  ref?: InputProps["ref"];
+  ref?: RefObject<HTMLInputElement>;
   min?: InputProps["min"];
   max?: InputProps["max"];
   value?: InputProps["value"];
