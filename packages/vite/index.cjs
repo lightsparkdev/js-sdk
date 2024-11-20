@@ -83,7 +83,7 @@ module.exports.buildConfig = ({
           changeOrigin: true,
           ws: true,
         },
-        "/clientlogs": {
+        "/ui/logs": {
           target: proxyTarget,
           changeOrigin: true,
         },
