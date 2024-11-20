@@ -149,9 +149,10 @@ export function TextInput(textInputProps: TextInputProps) {
   const hasError = Boolean(props.error);
 
   /* Default to right side icon if not specified: */
-  const hasIconLeft = Boolean(props.icon && props.icon.side === "left");
+  const iconSide = props.icon ? props.icon.side || "right" : undefined;
+  const hasIconLeft = Boolean(props.icon && iconSide === "left");
   const hasIconRight =
-    Boolean(props.icon && props.icon.side === "right") || props.loading;
+    Boolean(props.icon && iconSide === "right") || props.loading;
   const iconWidth = props.icon?.width || 12;
   /* Where the icon center should be regardless of icon width: */
   const iconCenterOffset = props.icon?.offset === "large" ? 26 : 18;
@@ -261,7 +262,7 @@ export function TextInput(textInputProps: TextInputProps) {
   if (hasIconLeft || hasIconRight) {
     input = (
       <WithIcon hasError={hasError} withFocus={focused}>
-        {props.icon?.side === "left" && (
+        {props.icon && iconSide === "left" && (
           <TextInputIconContainer
             onClick={props.onClickIcon ? props.onClickIcon : () => {}}
             isIconRight={false}
@@ -274,7 +275,7 @@ export function TextInput(textInputProps: TextInputProps) {
                 : leftIconOffset
             }
           >
-            <Icon name={props.icon?.name} width={iconWidth} />
+            <Icon name={props.icon.name} width={iconWidth} />
           </TextInputIconContainer>
         )}
         {input}
@@ -293,8 +294,8 @@ export function TextInput(textInputProps: TextInputProps) {
           >
             {props.loading ? (
               <Loading center={false} size={rightIconWidth} />
-            ) : props.icon?.side === "right" ? (
-              <Icon name={props.icon?.name} width={rightIconWidth} />
+            ) : props.icon && iconSide === "right" ? (
+              <Icon name={props.icon.name} width={rightIconWidth} />
             ) : null}
           </TextInputIconContainer>
         )}
