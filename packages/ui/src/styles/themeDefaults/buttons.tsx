@@ -184,7 +184,7 @@ export const defaultButtonsTheme = {
       defaultActiveBackgroundColor: "bg",
       defaultActiveBorderColor: "gray80",
       defaultPaddingsX: {
-        ExtraSmall: 10,
+        ExtraSmall: 8,
         Small: 10,
         Medium: 10,
         Schmedium: 10,
@@ -192,7 +192,7 @@ export const defaultButtonsTheme = {
         Large: 10,
       },
       defaultPaddingsY: {
-        ExtraSmall: 10,
+        ExtraSmall: 8,
         Small: 10,
         Medium: 10,
         Schmedium: 10,

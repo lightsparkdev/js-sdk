@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
+
 import { type useClipboard } from "../../hooks/useClipboard.js";
-import { bp } from "../../styles/breakpoints.js";
+import { Breakpoints, bp, useBreakpoints } from "../../styles/breakpoints.js";
 import { standardContentInset } from "../../styles/common.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
 import { Button, StyledButton } from "../Button.js";
@@ -89,6 +90,7 @@ export type DataManagerTableProps<
     | undefined;
   cardPage?: boolean | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
+  header?: JSX.Element;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -144,6 +146,7 @@ export function DataManagerTable<
   QueryVariablesType,
   QueryResultType,
 >(props: DataManagerTableProps<T, QueryVariablesType, QueryResultType>) {
+  const breakPoint = useBreakpoints();
   const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
     startResult: undefined,
@@ -161,6 +164,8 @@ export function DataManagerTable<
   const [fetchVariables, setFetchVariables] = useState<QueryVariablesType>(
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
+
+  const isSm = breakPoint.current(Breakpoints.sm);
 
   useEffect(() => {
     setIsLoading(Boolean(props.loading));
@@ -554,18 +559,25 @@ export function DataManagerTable<
         }
       })
     : [];
-
   let filters: React.ReactNode;
+  const isFilterButtonSmall = isSm && props.header;
   if (props.filterOptions) {
     filters = (
       <>
         <DataManagerTableFilterContainer>
           <Button
-            text={`Filter${
-              numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
-            }`}
-            paddingY="short"
-            icon={{ name: "Sort" }}
+            kind={isFilterButtonSmall ? "roundIcon" : "secondary"}
+            text={
+              !isFilterButtonSmall
+                ? `Filter${
+                    numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
+                  }`
+                : undefined
+            }
+            size="ExtraSmall"
+            icon={{
+              name: "Sort",
+            }}
             typography={{ color: "c6Neutral" }}
             onClick={() => setShowFilterPopover(!showFilterPopover)}
           />
@@ -689,7 +701,10 @@ export function DataManagerTable<
   const content = (
     <>
       {props.showHeader && (
-        <DataManagerTableHeader>{filters}</DataManagerTableHeader>
+        <DataManagerTableHeader>
+          {props.header}
+          {filters}
+        </DataManagerTableHeader>
       )}
       <Table {...props} loading={isLoading} />
       {footer}
@@ -733,10 +748,7 @@ const DataManagerTableHeader = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-end;
-  gap: ${Spacing.px.sm};
   padding: ${Spacing.px.xs} 0;
-  ${commonPadding};
 `;
 
 const DataManagerTableFooter = styled.div`
@@ -768,5 +780,14 @@ const PaginationButtonsContainer = styled.div`
 `;
 
 const DataManagerTableFilterContainer = styled.div`
-  position: relative;
+  position: absolute;
+  z-index: 3;
+  background: white;
+  right: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 15%
+  );
+  ${commonPadding}
 `;
