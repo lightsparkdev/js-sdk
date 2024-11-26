@@ -10,7 +10,11 @@ import { getTypographyString } from "../../styles/tokens/typography.js";
 import { z } from "../../styles/z-index.js";
 import { Icon } from "../Icon/Icon.js";
 import { LabelModerate } from "../typography/LabelModerate.js";
-import { DateRangeOperation, type CustomDateRangeData } from "./date_utils.js";
+import {
+  DateRangeOperation,
+  MIN_DATE,
+  type CustomDateRangeData,
+} from "./date_utils.js";
 
 type DateOrNull = Date | null;
 
@@ -95,6 +99,7 @@ export const DateWidget = ({
             onCalendarOpen={handleCalendarOpen}
             onCalendarClose={handleCalendarClose}
             value={dates}
+            minDate={MIN_DATE}
           />
         );
       } else {
@@ -105,6 +110,7 @@ export const DateWidget = ({
             onCalendarClose={handleCalendarClose}
             value={dates}
             disableClock
+            minDate={MIN_DATE}
           />
         );
       }
@@ -116,6 +122,7 @@ export const DateWidget = ({
           onCalendarOpen={handleCalendarOpen}
           onCalendarClose={handleCalendarClose}
           value={dates as Date}
+          minDate={MIN_DATE}
         />
       );
       break;
@@ -128,6 +135,7 @@ export const DateWidget = ({
             onCalendarOpen={handleCalendarOpen}
             onCalendarClose={handleCalendarClose}
             value={dates as Date}
+            minDate={MIN_DATE}
           />
         );
       } else {
@@ -138,6 +146,7 @@ export const DateWidget = ({
             onCalendarClose={handleCalendarClose}
             value={dates as Date}
             disableClock
+            minDate={MIN_DATE}
           />
         );
       }
