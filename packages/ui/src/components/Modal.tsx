@@ -531,7 +531,7 @@ const ModalContent = styled.div<{
   display: flex;
   flex-direction: column;
 
-  ${({ ghost, width }) => `
+  ${({ ghost, smKind, width }) => `
     ${ghost ? "" : standardBorderRadius(16)}
     width: ${width}px;
   `}
@@ -539,6 +539,7 @@ const ModalContent = styled.div<{
   ${({ smKind }) =>
     smKind === "fullscreen"
       ? bp.sm(`
+          border-radius: 0px;
           width: 100%;
           height: 100dvh;
         `)
