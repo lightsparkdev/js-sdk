@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 
 import { type useClipboard } from "../../hooks/useClipboard.js";
-import { Breakpoints, bp, useBreakpoints } from "../../styles/breakpoints.js";
+import { bp, useBreakpoints } from "../../styles/breakpoints.js";
 import { standardContentInset } from "../../styles/common.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
 import { Button, StyledButton } from "../Button.js";
@@ -18,6 +18,11 @@ import {
   type BooleanFilterState,
 } from "./BooleanFilter.js";
 import {
+  CurrencyFilter,
+  getDefaultCurrencyFilterState,
+  type CurrencyFilterState,
+} from "./CurrencyFilter.js";
+import {
   DateFilter,
   getDefaultDateFilterState,
   type DateFilterState,
@@ -29,6 +34,11 @@ import {
   type EnumFilterState,
 } from "./EnumFilter.js";
 import { type FilterState } from "./Filter.js";
+import {
+  FilterType,
+  type Filter,
+  type StringFilter as StringFilterType,
+} from "./filters.js";
 import {
   IdFilter,
   getDefaultIdFilterState,
@@ -42,11 +52,6 @@ import {
   isStringFilterState,
   type StringFilterState,
 } from "./StringFilter.js";
-import {
-  FilterType,
-  type Filter,
-  type StringFilter as StringFilterType,
-} from "./filters.js";
 
 interface FilterOptions<
   T extends Record<string, unknown>,
@@ -112,6 +117,8 @@ function getDefaultFilterState<T extends Record<string, unknown>>(
       return getDefaultIdFilterState(filter.allowedEntities);
     case FilterType.BOOLEAN:
       return getDefaultBooleanFilterState();
+    case FilterType.CURRENCY:
+      return getDefaultCurrencyFilterState();
     default:
       throw new Error("Invalid filter type");
   }
@@ -165,7 +172,7 @@ export function DataManagerTable<
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
 
-  const isSm = breakPoint.current(Breakpoints.sm);
+  const isSm = breakPoint.isSm();
 
   useEffect(() => {
     setIsLoading(Boolean(props.loading));
@@ -333,7 +340,7 @@ export function DataManagerTable<
           updateFilterState(filter)(newFilterState);
         } else if (filterState.appliedValues?.length === 0) {
           // If there are no more applied values, remove the filter
-          updateFilterState(filter)(getDefaultStringFilterState());
+          updateFilterState(filter)(getDefaultEnumFilterState());
           filterState.isApplied = false;
         }
       }
@@ -551,6 +558,23 @@ export function DataManagerTable<
                   }}
                   label={filter.label}
                   state={filterStates[filter.accessorKey] as BooleanFilterState}
+                />
+              </div>
+            );
+          case FilterType.CURRENCY:
+            return (
+              <div key={filter.label}>
+                <CurrencyFilter
+                  updateFilterState={(state) => {
+                    setFilterStates((prevState) => ({
+                      ...prevState,
+                      [filter.accessorKey]: state,
+                    }));
+                  }}
+                  label={filter.label}
+                  state={
+                    filterStates[filter.accessorKey] as CurrencyFilterState
+                  }
                 />
               </div>
             );
