@@ -58,12 +58,18 @@ export interface BooleanFilter<T extends Record<string, unknown>>
   queryVariable: string;
 }
 
+export interface CurrencyFilter<T extends Record<string, unknown>>
+  extends FilterBase<T> {
+  type: FilterType.CURRENCY;
+}
+
 export type Filter<T extends Record<string, unknown>> =
   | DateFilter<T>
   | EnumFilter<T>
   | StringFilter<T>
   | IdFilter<T>
-  | BooleanFilter<T>;
+  | BooleanFilter<T>
+  | CurrencyFilter<T>;
 
 export enum FilterType {
   DATE = "date",
@@ -71,5 +77,6 @@ export enum FilterType {
   STRING = "string",
   ID = "id",
   NUMBER = "number",
+  CURRENCY = "currency",
   BOOLEAN = "boolean",
 }
