@@ -17,8 +17,13 @@ export interface LightsparkWindow extends Window {
   dev?: {
     [key: string]: unknown;
   };
-  /* google tag manager. assume always defined, from index.html: */
-  dataLayer: unknown[];
+  /* Google Tag Manager: */
+  dataLayer?: unknown[];
+  gaGlobal?: {
+    /* Google Analytics Client ID: */
+    vid: string;
+    from_cookie: boolean;
+  };
   /* Google Recaptcha adds a global window property, so assume always defined from index.html */
   grecaptcha?: {
     enterprise: {
