@@ -247,6 +247,7 @@ export function Modal({
 
   function onSubmitForm(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    e.stopPropagation();
     if (!submitDisabled && onSubmit) {
       onSubmit();
     }
