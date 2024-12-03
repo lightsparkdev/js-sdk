@@ -168,9 +168,7 @@ export function Select<
         ref={selectRef}
         components={{
           DropdownIndicator: () => <Icon name="Chevron" width={16} />,
-          // Option: (option) => {
-          //   return <div>Option</div>;
-          // },
+          ...rest.components,
         }}
         theme={(selectTheme) => ({
           ...selectTheme,
