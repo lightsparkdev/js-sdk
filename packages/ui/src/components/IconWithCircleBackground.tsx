@@ -6,7 +6,7 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 16.5;
+type IconWidth = 40 | 30 | 16.5;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
