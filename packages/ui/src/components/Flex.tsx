@@ -22,8 +22,6 @@ type FlexProps = {
   column?: boolean | undefined;
   onClick?: (() => void) | undefined;
   overflow?: "hidden" | "visible" | "scroll" | "auto" | undefined;
-  mr?: number | "auto" | undefined;
-  ml?: number | "auto" | undefined;
   whiteSpace?:
     | "nowrap"
     | "normal"
@@ -32,6 +30,9 @@ type FlexProps = {
     | "pre-line"
     | undefined;
   mt?: number | "auto" | undefined;
+  mr?: number | "auto" | undefined;
+  mb?: number | "auto" | undefined;
+  ml?: number | "auto" | undefined;
   gap?: number | undefined;
 };
 
@@ -42,12 +43,13 @@ export function Flex({
   column = false,
   children,
   onClick,
-  mt,
   gap,
   as = "div",
   overflow,
   whiteSpace,
+  mt,
   mr,
+  mb,
   ml,
 }: FlexProps) {
   const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
@@ -66,6 +68,7 @@ export function Flex({
       mr={mr}
       ml={ml}
       mt={mt}
+      mb={mb}
       gap={gap}
     >
       {children}
@@ -80,9 +83,10 @@ type StyledFlexProps = {
   cursorProp: "pointer" | "initial" | "unset";
   overflowProp: FlexProps["overflow"];
   whiteSpace: FlexProps["whiteSpace"];
-  mr: FlexProps["mr"];
-  ml: FlexProps["ml"];
   mt: FlexProps["mt"];
+  mr: FlexProps["mr"];
+  mb: FlexProps["mb"];
+  ml: FlexProps["ml"];
   gap: number | undefined;
 };
 
@@ -97,23 +101,29 @@ export const StyledFlex = styled.div<StyledFlexProps>`
   ${({ overflowProp }) =>
     overflowProp ? `overflow: ${overflowProp}; max-width: 100%;` : ""}
   ${({ whiteSpace }) => (whiteSpace ? `white-space: ${whiteSpace};` : "")}
+  ${({ mt }) =>
+    typeof mt === "number"
+      ? `margin-top: ${mt}px;`
+      : mt === "auto"
+      ? `margin-top: ${mt};`
+      : ""}
   ${({ mr }) =>
     typeof mr === "number"
       ? `margin-right: ${mr}px;`
       : mr === "auto"
       ? `margin-right: ${mr};`
       : ""}
+  ${({ mb }) =>
+    typeof mb === "number"
+      ? `margin-bottom: ${mb}px;`
+      : mb === "auto"
+      ? `margin-bottom: ${mb};`
+      : ""}
   ${({ ml }) =>
     typeof ml === "number"
       ? `margin-left: ${ml}px;`
       : ml === "auto"
       ? `margin-left: ${ml};`
-      : ""}
-  ${({ mt }) =>
-    typeof mt === "number"
-      ? `margin-top: ${mt}px;`
-      : mt === "auto"
-      ? `margin-top: ${mt};`
       : ""}
   ${({ gap }) => gap && `gap: ${gap}px;`}
 `;
