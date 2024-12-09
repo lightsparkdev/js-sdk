@@ -1,75 +1,90 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Fragment } from "react";
+import { type ComponentProps, Fragment } from "react";
 import FramedLogoOnCircle from "../static/images/FramedLogoOnCircle.svg?url";
+import UmaLogo from "../static/images/UmaLogoQRCode.svg?url";
 // eslint-disable-next-line no-restricted-imports
+import { round } from "@lightsparkdev/core";
 import { QRCodeSVG } from "qrcode.react";
 import { colors } from "../styles/colors.js";
+import { standardBorderRadius } from "../styles/common.js";
+import { getColor } from "../styles/themes.js";
 import { absoluteCenter } from "../styles/utils.js";
 import { Icon } from "./Icon/Icon.js";
 
 type Props = {
   value?: string | undefined;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   heading?: string;
   border?: boolean;
   isCentered?: boolean;
   size?: number;
   showLogo?: boolean;
   animated?: boolean;
-};
-
-const defaultProps = {
-  children: null,
-  border: true,
-  isCentered: true,
-  size: 256,
-  showLogo: true,
-  animated: false,
+  kind?: "lightspark" | "uma";
+  level?: "L" | "M" | "Q" | "H";
 };
 
 export function QRCode({
   value,
   children,
   heading,
-  border = defaultProps.border,
-  isCentered = defaultProps.isCentered,
-  size = defaultProps.size,
-  showLogo = defaultProps.showLogo,
-  animated = defaultProps.animated,
+  border = true,
+  isCentered = true,
+  size = 256,
+  kind = "lightspark",
+  showLogo = true,
+  animated = false,
+  level = "L",
 }: Props) {
+  const isUma = kind === "uma";
   const logoSize = Math.round(size * 0.2);
-  const imageSettingsProp = showLogo
-    ? {
-        imageSettings: {
-          excavate: true,
-          height: logoSize,
-          src: FramedLogoOnCircle,
-          width: logoSize,
-        },
-      }
-    : {};
+  const umaLogoSize = Math.round(size * 0.2);
+  const qrCodeProps: Partial<ComponentProps<typeof QRCodeSVG>> = {
+    marginSize: isUma ? 4 : 0,
+  };
+
+  if (isUma) {
+    qrCodeProps.bgColor = colors.grayBlue10;
+    qrCodeProps.fgColor = colors.white;
+  }
+  if (showLogo) {
+    qrCodeProps.imageSettings = {
+      excavate: true,
+      height: isUma ? round(umaLogoSize * 0.8) : logoSize,
+      src: isUma ? UmaLogo : FramedLogoOnCircle,
+      width: isUma ? umaLogoSize : logoSize,
+    };
+  }
+
   return (
     <Fragment>
       {heading && <QRCodeLabel>{heading}</QRCodeLabel>}
-      <QRCodeContainer isCentered={isCentered}>
+      <QRCodeContainer isCentered={isCentered} size={size}>
         {value ? (
-          <QRCodeImage isCentered={isCentered} border={border}>
+          <QRCodeImage isCentered={isCentered} border={border} isUma={isUma}>
             <QRCodeSVG
               value={value}
               size={size}
-              level="L"
-              {...imageSettingsProp}
+              level={level}
+              {...qrCodeProps}
             />
           </QRCodeImage>
         ) : (
-          <EmptyQRCodeSizer size={size}>
+          <EmptyQRCodeSizer size={size} isUma={isUma}>
             <EmptyQRCode
               isCentered={isCentered}
               border={border}
               animated={animated}
+              isUma={isUma}
             >
-              <Icon name="LogoOnCircle" width={30} ml="auto" mr="auto" />
+              <Icon
+                name={isUma ? "Uma" : "LogoOnCircle"}
+                color={isUma ? "white" : undefined}
+                width={isUma ? 42 : 30}
+                ml="auto"
+                mr="auto"
+              />
             </EmptyQRCode>
           </EmptyQRCodeSizer>
         )}
@@ -79,24 +94,28 @@ export function QRCode({
   );
 }
 
-QRCode.defaultProps = defaultProps;
-
 const borderWidth = 10;
 
 type QRCodeProps = {
   border: boolean;
   isCentered: boolean;
+  isUma: boolean;
 };
 
-export const qr = ({ isCentered, border }: QRCodeProps) => css`
+export const qr = ({ isCentered, border, isUma }: QRCodeProps) => css`
   display: inline-block;
+  overflow: hidden;
   ${border && `border: ${borderWidth}px solid #ffffff;`}
   ${border && `border-radius: 8px;`}
   ${border && "box-sizing: content-box;"}
+  ${isUma && standardBorderRadius(16)}
 `;
 
-const QRCodeContainer = styled.div<{ isCentered: boolean }>`
+const QRCodeContainer = styled.div<{ isCentered: boolean; size: number }>`
   display: flex;
+  ${({ size }) => `width: ${size}px;`}
+  max-width: 100%;
+
   ${({ isCentered }) =>
     isCentered &&
     `
@@ -131,6 +150,7 @@ const startingLeftPer = 55;
 
 type EmptyQRCodeSizerProps = {
   size: number;
+  isUma: boolean;
 };
 
 const EmptyQRCodeSizer = styled.div<EmptyQRCodeSizerProps>`
@@ -138,12 +158,17 @@ const EmptyQRCodeSizer = styled.div<EmptyQRCodeSizerProps>`
   max-width: 100%;
   position: relative;
   padding-top: 100%;
+  ${({ isUma, theme }) =>
+    isUma &&
+    `background-color: ${getColor(theme, "grayBlue10")};
+    ${standardBorderRadius(16)}`}
 `;
 
 type EmptyQRCodeProps = {
   border: boolean;
   isCentered: boolean;
   animated: boolean;
+  isUma: boolean;
 };
 
 const EmptyQRCode = styled.div<EmptyQRCodeProps>`
