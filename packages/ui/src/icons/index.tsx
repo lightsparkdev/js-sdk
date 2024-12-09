@@ -10,6 +10,7 @@ export { ArrowCircleTier3 } from "./ArrowCircleTier3.js";
 export { ArrowCornerDownRight } from "./ArrowCornerDownRight.js";
 export { ArrowDown } from "./ArrowDown.js";
 export { ArrowLeft } from "./ArrowLeft.js";
+export { ArrowLeftCircleCutout } from "./ArrowLeftCircleCutout.js";
 export { ArrowRight } from "./ArrowRight.js";
 export { ArrowsDown } from "./ArrowsDown.js";
 export { ArrowsHorizontal } from "./ArrowsHorizontal.js";
