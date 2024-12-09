@@ -49,6 +49,7 @@ export { DollarManropeSmall } from "./DollarManropeSmall.js";
 export { DotGrid1x3Horizontal } from "./DotGrid1x3Horizontal.js";
 export { Download } from "./Download.js";
 export { Envelope } from "./Envelope.js";
+export { EnvelopePlus } from "./EnvelopePlus.js";
 export { ExclamationPoint } from "./ExclamationPoint.js";
 export { Explorer } from "./Explorer.js";
 export { Eye } from "./Eye.js";
