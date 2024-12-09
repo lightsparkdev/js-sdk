@@ -63,6 +63,7 @@ const baseColors = {
   grayBlue92: "#E1EBF5",
   grayBlue93: "#E6EEF6",
   grayBlue94: "#EBEEF2",
+  grayBlue95: "#F2F3F5",
   grayBlue96: "#F2F5F7",
   // purple
   purple43: "#820AD1",
