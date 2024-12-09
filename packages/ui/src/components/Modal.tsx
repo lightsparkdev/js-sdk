@@ -1,6 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 
+import { type PartialBy } from "@lightsparkdev/core";
 import type { ComponentProps, MutableRefObject, ReactNode } from "react";
 import React, {
   Fragment,
@@ -36,6 +37,8 @@ import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
 import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+
+type IconProps = ComponentProps<typeof Icon>;
 
 type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */
@@ -79,6 +82,11 @@ type ModalProps = {
   submitDisabled?: boolean;
   submitLoading?: boolean;
   submitLoadingKind?: LoadingKind | undefined;
+  submitIcon?:
+    | (Pick<IconProps, "name" | "color" | "iconProps"> &
+        /* We'll set a default width if not provided, leave unrequired: */
+        PartialBy<IconProps, "width">)
+    | undefined;
   submitText?: string;
   submitLink?:
     | {
@@ -97,6 +105,8 @@ type ModalProps = {
   nonDismissable?: boolean;
   width?: number;
   progressBar?: ProgressBarProps;
+  /** Determines which order we display the buttons */
+  buttonOrder?: "submit-first" | "cancel-first";
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";
   /** Allows placing extra buttons in the same button layout */
@@ -125,6 +135,7 @@ export function Modal({
   submitLoading,
   submitLoadingKind,
   submitText,
+  submitIcon,
   submitLink,
   cancelText = "Cancel",
   firstFocusRef,
@@ -134,6 +145,7 @@ export function Modal({
   autoFocus = true,
   width = 460,
   progressBar,
+  buttonOrder = "cancel-first",
   buttonLayout = "horizontal",
   extraActions,
   handleBack,
@@ -271,7 +283,7 @@ export function Modal({
         .map(({ placement, text, ...rest }, i) => (
           <Button key={text || `no-text-${i}`} text={text} {...rest} />
         ))}
-      {!isSm && !cancelHidden && (
+      {!isSm && !cancelHidden && buttonOrder === "cancel-first" && (
         <Button
           disabled={cancelDisabled}
           onClick={onClickCancel}
@@ -282,6 +294,7 @@ export function Modal({
         <Button
           kind="primary"
           disabled={submitDisabled}
+          icon={submitIcon}
           text={submitText ?? "Continue"}
           loading={submitLoading}
           loadingKind={submitLoadingKind}
@@ -295,7 +308,13 @@ export function Modal({
           onClick={submitLink ? onSubmit : undefined}
         />
       )}
-      {isSm && !cancelHidden && <Button onClick={onClose} text={cancelText} />}
+      {(isSm || buttonOrder === "submit-first") && !cancelHidden && (
+        <Button
+          disabled={cancelDisabled}
+          onClick={onClickCancel}
+          text={cancelText}
+        />
+      )}
       {extraActions
         ?.filter((action) => action.placement === "below")
         .map(({ placement, text, ...rest }, i) => (
