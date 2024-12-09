@@ -1,6 +1,7 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
 import type {
+  AppendUnitsOptions,
   CurrencyAmountArg,
   CurrencyMap,
   CurrencyUnitType,
@@ -21,7 +22,7 @@ type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap;
   displayUnit?: CurrencyUnitType;
   shortNumber?: boolean;
-  showUnits?: boolean;
+  showUnits?: boolean | AppendUnitsOptions | undefined;
   ml?: number;
   id?: string;
   includeEstimatedIndicator?: boolean;
@@ -57,23 +58,34 @@ export function CurrencyAmount({
   const value = amountMap[displayUnit];
   const defaultFormattedNumber = amountMap.formatted[displayUnit];
 
+  const appendUnits =
+    showUnits === false
+      ? undefined
+      : showUnits === true
+      ? ({
+          plural: true,
+          lowercase: true,
+        } as const)
+      : showUnits;
+
   /* There are just a few ways that CurrencyAmounts need to be formatted
      throughout the UI. In general the default should always be used: */
   let formattedNumber = defaultFormattedNumber;
   if (shortNumber) {
     formattedNumber = formatCurrencyStr(
       { value: Number(value), unit: displayUnit },
-      { precision: 1, compact: true },
+      { precision: 1, compact: true, appendUnits },
     );
   } else if (fullPrecision) {
     formattedNumber = formatCurrencyStr(
       { value: Number(value), unit: displayUnit },
-      { precision: "full" },
+      { precision: "full", appendUnits },
     );
-  }
-
-  if (showUnits) {
-    formattedNumber += ` ${shorttext(displayUnit, value)}`;
+  } else if (appendUnits) {
+    formattedNumber = formatCurrencyStr(
+      { value: Number(value), unit: displayUnit },
+      { appendUnits },
+    );
   }
 
   let content: string | ReactNode = formattedNumber;
@@ -102,24 +114,6 @@ export const CurrencyIcon = ({ unit }: { unit: CurrencyUnitType }) => {
       return <Icon name="Satoshi" width={8} verticalAlign={-2} mr={2} />;
     default:
       return null;
-  }
-};
-
-const shorttext = (unit: CurrencyUnitType, value: number) => {
-  const pl = value !== 1;
-  switch (unit) {
-    case CurrencyUnit.BITCOIN:
-      return "BTC";
-    case CurrencyUnit.MILLIBITCOIN:
-      return "mBTC";
-    case CurrencyUnit.MICROBITCOIN:
-      return "μBTC";
-    case CurrencyUnit.SATOSHI:
-      return `sat${pl ? "s" : ""}`;
-    case CurrencyUnit.MILLISATOSHI:
-      return `msat${pl ? "s" : ""}`;
-    default:
-      return unit;
   }
 };
 

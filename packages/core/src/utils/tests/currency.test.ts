@@ -3,6 +3,7 @@
 import {
   convertCurrencyAmountValue,
   CurrencyUnit,
+  formatCurrencyStr,
   localeToCurrencySymbol,
   mapCurrencyAmount,
   separateCurrencyStrParts,
@@ -359,5 +360,79 @@ describe("separateCurrencyStrParts", () => {
   expect(separateCurrencyStrParts(mxnFormatted)).toEqual({
     amount: "5.00",
     symbol: "$",
+  });
+});
+
+describe("formatCurrencyStr", () => {
+  it("should return the expected currency string", () => {
+    expect(
+      formatCurrencyStr({
+        value: 5000,
+        unit: CurrencyUnit.USD,
+      }),
+    ).toBe("$50.00");
+  });
+
+  it("should return the expected currency string with precision 1", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 5000.245235323, unit: CurrencyUnit.Bitcoin },
+        { precision: 1 },
+      ),
+    ).toBe("5,000.2");
+  });
+
+  it("should return the expected currency string with precision full", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 5000.245235323, unit: CurrencyUnit.Bitcoin },
+        { precision: "full" },
+      ),
+    ).toBe("5,000.24523532");
+  });
+
+  it("should return the expected currency string with compact", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 5000.245235323, unit: CurrencyUnit.Bitcoin },
+        { compact: true },
+      ),
+    ).toBe("5K");
+  });
+
+  it("should return the expected currency string with appendUnits", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 100000, unit: CurrencyUnit.Satoshi },
+        { appendUnits: { plural: true, lowercase: true } },
+      ),
+    ).toBe("100,000 sats");
+  });
+
+  it("should return the expected currency string with appendUnits plural and lowercase", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 100000, unit: CurrencyUnit.Satoshi },
+        { appendUnits: { plural: true, lowercase: true } },
+      ),
+    ).toBe("100,000 sats");
+  });
+
+  it("should return the expected currency string with appendUnits plural and lowercase with value < 2", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 1, unit: CurrencyUnit.Satoshi },
+        { appendUnits: { plural: true, lowercase: true } },
+      ),
+    ).toBe("1 sat");
+  });
+
+  it("should return the expected currency string with appendUnits plural and lowercase with value < 2", () => {
+    expect(
+      formatCurrencyStr(
+        { value: 100012, unit: CurrencyUnit.Mxn },
+        { appendUnits: { plural: false } },
+      ),
+    ).toBe("$1,000.12 MXN");
   });
 });

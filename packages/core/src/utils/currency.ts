@@ -534,6 +534,10 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "SAT";
     case CurrencyUnit.MILLISATOSHI:
       return "MSAT";
+    case CurrencyUnit.MILLIBITCOIN:
+      return "mBTC";
+    case CurrencyUnit.MICROBITCOIN:
+      return "μBTC";
     case CurrencyUnit.USD:
       return "USD";
     case CurrencyUnit.MXN:
@@ -547,6 +551,12 @@ const defaultOptions = {
   precision: undefined,
   compact: false,
   showBtcSymbol: false,
+  append: undefined,
+};
+
+export type AppendUnitsOptions = {
+  plural?: boolean | undefined;
+  lowercase?: boolean | undefined;
 };
 
 type FormatCurrencyStrOptions = {
@@ -554,6 +564,7 @@ type FormatCurrencyStrOptions = {
   precision?: number | "full" | undefined;
   compact?: boolean | undefined;
   showBtcSymbol?: boolean | undefined;
+  appendUnits?: AppendUnitsOptions | undefined;
 };
 
 export function formatCurrencyStr(
@@ -570,7 +581,7 @@ export function formatCurrencyStr(
   const { unit } = currencyAmount;
 
   const centCurrencies = [CurrencyUnit.USD, CurrencyUnit.MXN] as string[];
-  /* Currencies are always provided in the smallest unit, e.g. cents for USD. These should be
+  /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
    * divided by 100 for proper display format: */
   if (centCurrencies.includes(unit)) {
     num = num / 100;
@@ -602,40 +613,57 @@ export function formatCurrencyStr(
 
   const currentLocale = getCurrentLocale();
 
+  let formattedStr = "";
   switch (unit) {
     case CurrencyUnit.MXN:
     case CurrencyUnit.USD:
-      return num.toLocaleString(currentLocale, {
+      formattedStr = num.toLocaleString(currentLocale, {
         style: "currency",
         currency: defaultCurrencyCode,
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
       });
+      break;
     case CurrencyUnit.BITCOIN:
       /* In most cases product prefers 4 precision digtis for BTC. In a few places
          full precision (8 digits) are preferred, e.g. for a transaction details page: */
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(4, 8),
       })}`;
+      break;
     case CurrencyUnit.SATOSHI:
       /* In most cases product prefers hiding sub sat precision (msats). In a few
          places full precision (3 digits) are preferred, e.g. for Lightning fees
          paid on a transaction details page: */
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 3),
       })}`;
+      break;
     case CurrencyUnit.MILLISATOSHI:
     case CurrencyUnit.MICROBITCOIN:
     case CurrencyUnit.MILLIBITCOIN:
     case CurrencyUnit.NANOBITCOIN:
     default:
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
   }
+
+  if (options?.appendUnits) {
+    const unitStr = abbrCurrencyUnit(unit);
+    const unitSuffix = options.appendUnits.plural && num > 1 ? "s" : "";
+    const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
+    formattedStr += ` ${
+      options.appendUnits.lowercase
+        ? unitStrWithSuffix.toLowerCase()
+        : unitStrWithSuffix
+    }`;
+  }
+
+  return formattedStr;
 }
 
 export function separateCurrencyStrParts(currencyStr: string) {
