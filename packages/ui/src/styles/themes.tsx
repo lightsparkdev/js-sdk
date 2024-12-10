@@ -44,6 +44,7 @@ export enum Themes {
 const baseThemeColors = {
   bg: colors.white,
   smBg: colors.white,
+  c02NeutralLight: "#F9F9F91A",
   c05Neutral: colors.gray95,
   c1Neutral: colors.gray90,
   c15Neutral: colors.gray85,
@@ -121,6 +122,7 @@ const darkBaseTheme: BaseTheme = {
   type: Themes.Dark,
   bg: colors.black,
   smBg: colors.black,
+  c02NeutralLight: "#F9F9F91A",
   c05Neutral: colors.gray5,
   c1Neutral: colors.gray10,
   c15Neutral: colors.gray15,

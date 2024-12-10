@@ -36,6 +36,7 @@ const baseColors = {
   ...neutral,
   // green
   success: "#17C27C",
+  green: "#46ac4a",
   green33: "#179257",
   green35: "#19981E",
   // blue
