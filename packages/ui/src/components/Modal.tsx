@@ -145,7 +145,7 @@ export function Modal({
   autoFocus = true,
   width = 460,
   progressBar,
-  buttonOrder = "cancel-first",
+  buttonOrder,
   buttonLayout = "horizontal",
   extraActions,
   handleBack,
@@ -276,6 +276,12 @@ export function Modal({
   const linkIsHref = isSubmitLinkWithHref(submitLink);
   const linkIsRoute = !linkIsHref && submitLink;
 
+  const displayCancelAbove = !!buttonOrder
+    ? buttonOrder === "cancel-first"
+    : !isSm;
+  const displayCancelBelow = !!buttonOrder
+    ? buttonOrder === "submit-first"
+    : isSm;
   const buttonContent = (
     <>
       {extraActions
@@ -283,7 +289,7 @@ export function Modal({
         .map(({ placement, text, ...rest }, i) => (
           <Button key={text || `no-text-${i}`} text={text} {...rest} />
         ))}
-      {!isSm && !cancelHidden && buttonOrder === "cancel-first" && (
+      {displayCancelAbove && !cancelHidden && (
         <Button
           disabled={cancelDisabled}
           onClick={onClickCancel}
@@ -308,7 +314,7 @@ export function Modal({
           onClick={submitLink ? onSubmit : undefined}
         />
       )}
-      {(isSm || buttonOrder === "submit-first") && !cancelHidden && (
+      {displayCancelBelow && !cancelHidden && (
         <Button
           disabled={cancelDisabled}
           onClick={onClickCancel}
