@@ -13,6 +13,7 @@ type IconWithCircleBackgroundProps = {
   iconWidth?: IconWidth | undefined;
   to?: NewRoutesType | undefined;
   darkBg?: boolean;
+  noBg?: boolean;
   shouldRotate?: boolean;
   onClick?: () => void;
 };
@@ -24,6 +25,7 @@ export function IconWithCircleBackground({
   onClick,
   darkBg = false,
   shouldRotate = false,
+  noBg = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
     <Flex center onClick={onClick}>
@@ -31,6 +33,7 @@ export function IconWithCircleBackground({
         size={iconWidth}
         darkBg={darkBg}
         shouldRotate={shouldRotate}
+        noBg={noBg}
       >
         <Icon
           name={iconName}
@@ -47,12 +50,15 @@ type StyledIconWithCircleBackgroundProps = {
   size: IconWidth;
   darkBg: boolean;
   shouldRotate: boolean;
+  noBg: boolean;
 };
 
 const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackgroundProps>`
-  background: ${({ theme, darkBg }) =>
+  background: ${({ theme, darkBg, noBg }) =>
     darkBg
       ? `linear-gradient(291.4deg, #1C243F 0%, #21283A 100%)`
+      : noBg
+      ? "transparent"
       : getColor(theme, "grayBlue94")};
   border-radius: 50%;
   padding: ${({ size }) => getPadding(size)}px;
