@@ -265,10 +265,6 @@ export function CardForm({
 const CardFormContainer = styled.div`
   display: flex;
   flex-direction: column;
-
-  ${bp.sm(`
-    height: 100%;
-  `)}
 `;
 
 const CardFormContent = styled.div`
