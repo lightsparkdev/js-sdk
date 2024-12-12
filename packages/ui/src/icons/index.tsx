@@ -130,6 +130,7 @@ export { Trash } from "./Trash.js";
 export { Uma } from "./Uma.js";
 export { UmaBridgeLoading } from "./UmaBridgeLoading.js";
 export { UmaBridgeLoadingTransparent } from "./UmaBridgeLoadingTransparent.js";
+export { UmaPaymentLoadingSpinner } from "./UmaPaymentLoadingSpinner.js";
 export { Upload } from "./Upload.js";
 export { WalletSDKIcon } from "./WalletSDKIcon.js";
 export { WarningSign } from "./WarningSign.js";
