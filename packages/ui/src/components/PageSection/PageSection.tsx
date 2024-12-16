@@ -14,7 +14,7 @@ import { Heading, headingWithDefaults } from "../../styles/type.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { select } from "../../utils/emotion.js";
 import { toReactNodes } from "../../utils/toReactNodes/toReactNodes.js";
-import { Badge, badgeSmVPadding } from "../Badge.js";
+import { Badge, type BadgeKind, badgeSmVPadding } from "../Badge.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
@@ -192,6 +192,7 @@ type PageSectionBoxActionRowProps = {
   action?: PageSectionBoxActionProps | undefined;
   title?: string;
   titleBadge?: string | undefined;
+  titleBadgeKind?: BadgeKind | undefined;
   description?: string;
   separator?: boolean;
   children?: React.ReactNode;
@@ -201,6 +202,7 @@ type PageSectionBoxActionRowProps = {
 export const PageSectionBoxActionRow = ({
   title,
   titleBadge,
+  titleBadgeKind = "default",
   description,
   separator,
   children,
@@ -217,7 +219,9 @@ export const PageSectionBoxActionRow = ({
           <div>
             <PageSectionBoxTitle>
               {title}
-              {titleBadge ? <Badge content={titleBadge} ml={4} /> : null}
+              {titleBadge ? (
+                <Badge content={titleBadge} ml={4} kind={titleBadgeKind} />
+              ) : null}
             </PageSectionBoxTitle>
             {description ? (
               <PageSectionBoxDescription>

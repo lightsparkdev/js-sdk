@@ -10,7 +10,7 @@ import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
-type BadgeKind = "danger" | "default";
+export type BadgeKind = "success" | "danger" | "default";
 
 export type BadgeProps = {
   content?: ToReactNodesArgs | undefined;
@@ -41,7 +41,9 @@ export function Badge({
   const defaultTypography = {
     type: typographyProp?.type || "Label Moderate",
     size: typographyProp?.size || "Small",
-    color: typographyProp?.color || (kind === "danger" ? "danger" : "text"),
+    color:
+      typographyProp?.color ||
+      (kind === "danger" ? "danger" : kind === "success" ? "white" : "text"),
   } as const;
 
   const nodesWithTypography = setDefaultReactNodesTypography(contentProp, {
@@ -57,7 +59,13 @@ export function Badge({
           name={icon.name}
           width={20}
           color={
-            icon.color ? icon.color : kind === "danger" ? "danger" : undefined
+            icon.color
+              ? icon.color
+              : kind === "danger"
+              ? "danger"
+              : kind === "success"
+              ? "success"
+              : undefined
           }
         />
       ) : null}
@@ -90,6 +98,8 @@ const StyledBadge = styled.div<StyledBadgeProps>`
   background-color: ${({ theme, kind }) => {
     if (kind === "danger") {
       return getColor(theme, "red42a10");
+    } else if (kind === "success") {
+      return getColor(theme, "success");
     } else {
       return getColor(theme, theme.badge.bg);
     }
