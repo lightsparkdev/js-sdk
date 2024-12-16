@@ -104,7 +104,7 @@ type ModalProps = {
   top?: number;
   nonDismissable?: boolean;
   width?: number;
-  progressBar?: ProgressBarProps;
+  progressBar?: ProgressBarProps | undefined;
   /** Determines which order we display the buttons */
   buttonOrder?: "submit-first" | "cancel-first";
   /** Determines if buttons are laid out horizontally or vertically */
