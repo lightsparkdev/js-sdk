@@ -135,6 +135,7 @@ export { UmaBridgeLoading } from "./UmaBridgeLoading.js";
 export { UmaBridgeLoadingTransparent } from "./UmaBridgeLoadingTransparent.js";
 export { UmaPaymentLoadingSpinner } from "./UmaPaymentLoadingSpinner.js";
 export { Upload } from "./Upload.js";
+export { Wallet } from "./Wallet.js";
 export { WalletSDKIcon } from "./WalletSDKIcon.js";
 export { WarningSign } from "./WarningSign.js";
 export { WhatsApp } from "./WhatsApp.js";
