@@ -16,6 +16,7 @@ type IconWithCircleBackgroundProps = {
   noBg?: boolean;
   shouldRotate?: boolean;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export function IconWithCircleBackground({
@@ -26,9 +27,16 @@ export function IconWithCircleBackground({
   darkBg = false,
   shouldRotate = false,
   noBg = false,
+  disabled = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
-    <Flex center onClick={onClick}>
+    <Flex
+      center
+      onClick={onClick}
+      disabled={disabled}
+      as={onClick ? "button" : "div"}
+      asButtonType="button"
+    >
       <StyledIconWithCircleBackground
         size={iconWidth}
         darkBg={darkBg}
@@ -43,7 +51,15 @@ export function IconWithCircleBackground({
       </StyledIconWithCircleBackground>
     </Flex>
   );
-  return to ? <Link to={to}>{content}</Link> : content;
+  return to ? (
+    <div css={{ cursor: disabled ? "not-allowed" : undefined }}>
+      <Link to={to} disabled={disabled}>
+        {content}
+      </Link>
+    </div>
+  ) : (
+    content
+  );
 }
 
 type StyledIconWithCircleBackgroundProps = {
