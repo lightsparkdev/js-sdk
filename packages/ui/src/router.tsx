@@ -54,6 +54,7 @@ export type LinkProps = {
   newTab?: boolean | undefined;
   hash?: RouteHash | undefined;
   typography?: SimpleTypographyProps | undefined;
+  disabled?: boolean | undefined;
 };
 
 export function replaceParams(
@@ -158,7 +159,9 @@ function LinkBase({
   );
 }
 
-export const Link = styled(LinkBase)``;
+export const Link = styled(LinkBase)`
+  ${({ disabled }) => disabled && `pointer-events: none;`}
+`;
 
 type NavigateProps = Omit<LinkProps, "children"> & {
   to: NewRoutesType;
