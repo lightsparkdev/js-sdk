@@ -193,6 +193,7 @@ type PageSectionBoxActionRowProps = {
   title?: string;
   titleBadge?: string | undefined;
   titleBadgeKind?: BadgeKind | undefined;
+  titleRightContent?: React.ReactNode;
   description?: string;
   separator?: boolean;
   children?: React.ReactNode;
@@ -203,6 +204,7 @@ export const PageSectionBoxActionRow = ({
   title,
   titleBadge,
   titleBadgeKind = "default",
+  titleRightContent,
   description,
   separator,
   children,
@@ -216,12 +218,15 @@ export const PageSectionBoxActionRow = ({
         smFlexColumn={Boolean(smFlexColumn)}
       >
         {title ? (
-          <div>
+          <div css={{ flex: 1 }}>
             <PageSectionBoxTitle>
-              {title}
-              {titleBadge ? (
-                <Badge content={titleBadge} ml={4} kind={titleBadgeKind} />
-              ) : null}
+              <div>
+                {title}
+                {titleBadge ? (
+                  <Badge content={titleBadge} ml={4} kind={titleBadgeKind} />
+                ) : null}
+              </div>
+              {titleRightContent}
             </PageSectionBoxTitle>
             {description ? (
               <PageSectionBoxDescription>
@@ -374,6 +379,8 @@ export const StyledPageSectionBox = styled.div`
 export const PageSectionBoxTitle = styled.div<{ lg?: boolean }>`
   display: flex;
   align-items: center;
+  width: 100%;
+  justify-content: space-between;
   font-size: ${({ lg }) => (lg ? 14 : 12)}px;
   font-weight: 600;
   line-height: ${({ lg }) =>
