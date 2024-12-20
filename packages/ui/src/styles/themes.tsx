@@ -41,6 +41,10 @@ export enum Themes {
   BridgeDark = "bridgeDark",
 }
 
+export function isTheme(theme: unknown): theme is Themes {
+  return Object.values(Themes).includes(theme as Themes);
+}
+
 const baseThemeColors = {
   bg: colors.white,
   smBg: colors.white,
