@@ -41,6 +41,7 @@ export { CircleCheckOutline } from "./CircleCheckOutline.js";
 export { CirclePlus } from "./CirclePlus.js";
 export { Clock } from "./Clock.js";
 export { Close } from "./Close.js";
+export { CloudUpload } from "./CloudUpload.js";
 export { Code } from "./Code.js";
 export { Contrast } from "./Contrast.js";
 export { Copy } from "./Copy.js";
