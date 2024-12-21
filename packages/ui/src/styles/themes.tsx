@@ -642,6 +642,7 @@ const bridgeLightTheme = extend(lightTheme, {
   text: colors.grayBlue9,
   secondary: colors.grayBlue43,
   inputBackground: colors.white,
+  danger: colors.red50,
 });
 
 const bridgeDarkTheme = extend(darkTheme, {
