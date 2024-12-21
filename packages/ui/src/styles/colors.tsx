@@ -70,6 +70,7 @@ const baseColors = {
   purple43: "#820AD1",
   purple55: "#8B38DE",
   // red
+  red50: "#E31A1A",
   red42a10: "#D800271A",
   red42a20: "#D800272D",
   red42a30: "#D800273F",
