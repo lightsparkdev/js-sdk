@@ -29,6 +29,7 @@ type CurrencyAmountProps = {
   fullPrecision?: boolean | undefined;
   typography?: PartialSimpleTypographyProps;
   unitsPerBtc?: number;
+  showCurrencyIcon?: boolean;
 };
 
 export function CurrencyAmount({
@@ -42,6 +43,7 @@ export function CurrencyAmount({
   ml = 0,
   typography,
   unitsPerBtc,
+  showCurrencyIcon = true,
 }: CurrencyAmountProps) {
   let displayUnit: CurrencyUnitType;
   let amountMap: CurrencyMap;
@@ -100,7 +102,7 @@ export function CurrencyAmount({
   return (
     <StyledCurrencyAmount ml={ml} id={id}>
       {includeEstimatedIndicator && "Est. "}
-      <CurrencyIcon unit={displayUnit} />
+      {showCurrencyIcon ? <CurrencyIcon unit={displayUnit} /> : null}
       {content}
     </StyledCurrencyAmount>
   );
