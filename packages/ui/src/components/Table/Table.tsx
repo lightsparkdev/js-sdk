@@ -51,6 +51,7 @@ export type TableCell =
 type ObjectCell = {
   text: string;
   icon?: IconName | undefined;
+  base64icon?: string | undefined;
 };
 const isObjectCell = (value: unknown): value is ObjectCell => {
   return isObject(value) && "text" in value && typeof value.text === "string";
@@ -150,24 +151,26 @@ export function Table<T extends Record<string, unknown>>({
         accessorKey: column.accessorKey.toString(),
         cell: (context: CellContext<T, TableCell>) => {
           const value = context.getValue();
-
           let content: ReactNode = null;
           let icon = null;
           if (isObjectCell(value)) {
+            const base64icon = value.base64icon ? (
+              <Base64Icon src={value.base64icon} alt="Icon" />
+            ) : null;
             icon = value.icon ? (
               <Icon name={value.icon} width={14} mr={4} color="c4Neutral" />
             ) : null;
             if (isMultilineCell(value)) {
               content = (
                 <LineClampSpan>
-                  {icon}
+                  {base64icon ? base64icon : icon}
                   {value.text}
                 </LineClampSpan>
               );
             } else {
               content = (
                 <Fragment>
-                  {icon}
+                  {base64icon ? base64icon : icon}
                   {value.text}
                 </Fragment>
               );
@@ -432,6 +435,14 @@ const LineClampSpan = styled.span`
   ${lineClamp(2)}
 `;
 
+const Base64Icon = styled.img`
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 4px;
+  margin-right: 12px;
+`;
+
 const cellPaddingPx = 15;
 const StyledTable = styled.table<StyledTableProps>`
   position: relative;
@@ -478,10 +489,10 @@ const StyledTable = styled.table<StyledTableProps>`
       position: absolute;
       /* Position offsets inside trs do not properly follow relatively positioned
          parents in Safari (see bug https://bit.ly/49dViWy), use margin instead: */
-      margin-top: 5px;
       left: -12px;
       width: calc(100% + 24px);
-      height: 32px;
+      top: 0;
+      bottom: 0px;
       border: 1px solid ${({ theme }) => theme.c1Neutral};
       pointer-events: none;
     }
