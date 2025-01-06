@@ -26,6 +26,7 @@ import {
   standardBorderRadius,
   standardContentInset,
 } from "../../styles/common.js";
+import { themeOrWithKey } from "../../styles/themes.js";
 import {
   ignoreSSRWarning,
   lineClamp,
@@ -466,7 +467,8 @@ const StyledTable = styled.table<StyledTableProps>`
     max-width: 200px;
     text-align: left;
     padding: ${cellPaddingPx}px 0px;
-    border-bottom: 1px solid ${({ theme }) => theme.c1Neutral};
+    border-bottom: 1px solid
+      ${({ theme }) => themeOrWithKey("c1Neutral", "c2Neutral")({ theme })};
     padding: ${cellPaddingPx}px;
     &:first-of-type {
       padding-left: 0px;
@@ -489,11 +491,12 @@ const StyledTable = styled.table<StyledTableProps>`
       position: absolute;
       /* Position offsets inside trs do not properly follow relatively positioned
          parents in Safari (see bug https://bit.ly/49dViWy), use margin instead: */
+      margin-top: 5px;
       left: -12px;
       width: calc(100% + 24px);
-      top: 0;
-      bottom: 0px;
-      border: 1px solid ${({ theme }) => theme.c1Neutral};
+      height: 32px;
+      border: 1px solid
+        ${({ theme }) => themeOrWithKey("c1Neutral", "c2Neutral")({ theme })};
       pointer-events: none;
     }
   }
