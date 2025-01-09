@@ -83,6 +83,7 @@ export type DataManagerTableProps<
   pageSizes: number[];
   nextPageCursor?: string | null | undefined;
   resultCount?: number | undefined;
+  isFullCount?: boolean | undefined;
   showHeader?: boolean;
   loading?: boolean | undefined;
   // If provided, the show more button will be displayed at the bottom of the table.
@@ -680,12 +681,19 @@ export function DataManagerTable<
   } else if (props.resultCount) {
     const startResult = pageCursorState.startResult || 1;
     const endResult = Math.min(props.resultCount, startResult + pageSize - 1);
+    const isFullCount =
+      props.isFullCount === undefined ? true : props.isFullCount;
+
+    const countString = isFullCount
+      ? props.resultCount
+      : props.resultCount + "+";
+
     const resultsString = (
       <div>
         <Label>Viewing </Label>
         <LabelModerate>{`${startResult}-${endResult}`}</LabelModerate>
         <Label> of </Label>
-        <LabelModerate>{`${props.resultCount}`}</LabelModerate>
+        <LabelModerate>{`${countString}`}</LabelModerate>
         <Label> results</Label>
       </div>
     );
