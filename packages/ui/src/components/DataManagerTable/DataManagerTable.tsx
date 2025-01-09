@@ -681,8 +681,7 @@ export function DataManagerTable<
   } else if (props.resultCount) {
     const startResult = pageCursorState.startResult || 1;
     const endResult = Math.min(props.resultCount, startResult + pageSize - 1);
-    const isFullCount =
-      props.isFullCount === undefined ? true : props.isFullCount;
+    const isFullCount = props.isFullCount ?? true;
 
     const countString = isFullCount
       ? props.resultCount
