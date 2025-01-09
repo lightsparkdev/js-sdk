@@ -109,6 +109,7 @@ export type TableProps<T extends Record<string, unknown>> = {
   ) => { link?: string; to?: NewRoutesType; params: RouteParams } | void;
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
+  rowHoverEffect?: "border" | "background" | "none" | undefined;
 };
 
 export function Table<T extends Record<string, unknown>>({
@@ -118,6 +119,7 @@ export function Table<T extends Record<string, unknown>>({
   onClickRow,
   emptyState,
   clipboardCallbacks,
+  rowHoverEffect = "border",
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -322,7 +324,10 @@ export function Table<T extends Record<string, unknown>>({
 
   return (
     <TableWrapper>
-      <StyledTable clickable={Boolean(onClickRow)}>
+      <StyledTable
+        clickable={Boolean(onClickRow)}
+        rowHoverEffect={rowHoverEffect}
+      >
         <thead>
           {
             // Loop over the header rows
@@ -361,6 +366,7 @@ export function Table<T extends Record<string, unknown>>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
+                      <div className="background-wrapper"></div>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -387,6 +393,7 @@ const TableWrapper = styled.div`
 
 type StyledTableProps = {
   clickable: boolean;
+  rowHoverEffect: "border" | "background" | "none" | undefined;
 };
 
 const hoverCellStyles = css`
@@ -481,33 +488,23 @@ const StyledTable = styled.table<StyledTableProps>`
     }
   }
 
-  tr {
-    cursor: ${({ clickable }) => (clickable ? "pointer" : "default")};
-    position: relative;
-
-    &:hover td:first-child:before ${ignoreSSRWarning} {
-      ${standardBorderRadius(16)}
-      content: "";
-      position: absolute;
-      /* Position offsets inside trs do not properly follow relatively positioned
-         parents in Safari (see bug https://bit.ly/49dViWy), use margin instead: */
-      margin-top: 5px;
-      left: -12px;
-      width: calc(100% + 24px);
-      height: 32px;
-      border: 1px solid
-        ${({ theme }) => themeOrWithKey("c1Neutral", "c2Neutral")({ theme })};
-      pointer-events: none;
-    }
-  }
-
   td {
     max-width: 200px;
     text-overflow: ellipsis;
     overflow: hidden;
     padding: 0 ${cellPaddingPx}px;
     white-space: nowrap;
-    & > * {
+    .background-wrapper {
+      position: absolute;
+      display: none;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: -1;
+    }
+    & > span {
       overflow: hidden;
       text-overflow: ellipsis;
       display: block;
@@ -529,5 +526,72 @@ const StyledTable = styled.table<StyledTableProps>`
     & ${LineClampSpan} {
       white-space: normal;
     }
+  }
+
+  tr {
+    cursor: ${({ clickable }) => (clickable ? "pointer" : "default")};
+    position: relative;
+
+    ${({ rowHoverEffect, theme }) =>
+      rowHoverEffect === "border"
+        ? `&:hover td:first-child:before ${ignoreSSRWarning} {
+            ${standardBorderRadius(16)}
+            content: "";
+            position: absolute;
+            /* Position offsets inside trs do not properly follow relatively positioned
+            parents in Safari (see bug https://bit.ly/49dViWy), use margin instead: */
+
+            border: 1px solid ${themeOrWithKey(
+              "c1Neutral",
+              "c2Neutral",
+            )({ theme })};
+
+            margin-top: 5px;
+            left: -12px;
+            width: calc(100% + 24px);
+            height: 32px;
+            pointer-events: none;
+          }
+        `
+        : rowHoverEffect === "background"
+        ? `
+        &:hover {
+            td {
+              position: relative;
+              .background-wrapper {
+                display: block;
+                position: absolute;
+                pointer-events: none;
+                background: ${theme.c1Neutral};
+              }
+              &:first-of-type {
+                overflow: visible;
+                .background-wrapper {
+                  border-top-left-radius: 32px;
+                  border-bottom-left-radius: 32px;
+                  transform: translateX(-12px);
+                  width: calc(100% + 12px);
+                  span {
+                    transform: translateX(12px);
+                  }
+                }
+              }
+              &:last-of-type {
+                overflow: visible;
+                .background-wrapper {
+                  border-top-right-radius: 32px;
+                  border-bottom-right-radius: 32px;
+                  transform: translateX(12px);
+                  width: calc(100% + 12px);
+                  left: auto;
+                  span {
+                    transform: translateX(-12px);
+                  }
+                }
+              }
+            }
+          }
+            `
+        : null}
   }
 `;
