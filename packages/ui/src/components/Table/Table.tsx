@@ -22,13 +22,9 @@ import {
   type RouteParams,
 } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
-import {
-  standardBorderRadius,
-  standardContentInset,
-} from "../../styles/common.js";
+import { standardContentInset } from "../../styles/common.js";
 import { themeOrWithKey } from "../../styles/themes.js";
 import {
-  ignoreSSRWarning,
   lineClamp,
   overflowAutoWithoutScrollbars,
 } from "../../styles/utils.js";
@@ -366,7 +362,6 @@ export function Table<T extends Record<string, unknown>>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
-                      <div className="background-wrapper"></div>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -494,16 +489,6 @@ const StyledTable = styled.table<StyledTableProps>`
     overflow: hidden;
     padding: 0 ${cellPaddingPx}px;
     white-space: nowrap;
-    .background-wrapper {
-      position: absolute;
-      display: none;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      z-index: -1;
-    }
     & > span {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -533,65 +518,58 @@ const StyledTable = styled.table<StyledTableProps>`
     position: relative;
 
     ${({ rowHoverEffect, theme }) =>
-      rowHoverEffect === "border"
-        ? `&:hover td:first-child:before ${ignoreSSRWarning} {
-            ${standardBorderRadius(16)}
-            content: "";
-            position: absolute;
-            /* Position offsets inside trs do not properly follow relatively positioned
-            parents in Safari (see bug https://bit.ly/49dViWy), use margin instead: */
-
-            border: 1px solid ${themeOrWithKey(
-              "c1Neutral",
-              "c2Neutral",
-            )({ theme })};
-
-            margin-top: 5px;
-            left: -12px;
-            width: calc(100% + 24px);
-            height: 32px;
-            pointer-events: none;
-          }
-        `
-        : rowHoverEffect === "background"
-        ? `
+      `
         &:hover {
-            td {
-              position: relative;
-              .background-wrapper {
-                display: block;
-                position: absolute;
-                pointer-events: none;
-                background: ${theme.c1Neutral};
+          td {
+            position: relative;
+            &:before {
+              content: "";
+              display: block;
+              position: absolute;
+              pointer-events: none;
+              height: 80%;
+              top: 10%;
+              bottom: 10%;
+              ${
+                rowHoverEffect === "background"
+                  ? `background: ${theme.c1Neutral};`
+                  : `
+                    border: 1px solid ${themeOrWithKey(
+                      "c1Neutral",
+                      "c2Neutral",
+                    )({ theme })};
+                    border-left-width: 0;
+                    border-right-width: 0;
+                  `
               }
-              &:first-of-type {
-                overflow: visible;
-                .background-wrapper {
-                  border-top-left-radius: 32px;
-                  border-bottom-left-radius: 32px;
-                  transform: translateX(-12px);
-                  width: calc(100% + 12px);
-                  span {
-                    transform: translateX(12px);
-                  }
-                }
+              left: 0;
+              right: 0;
+              width: 100%;
+              z-index: -1;
+            }
+            &:first-of-type {
+              overflow: visible;
+              &:before {
+                border-top-left-radius: 32px;
+                border-bottom-left-radius: 32px;
+                transform: translateX(-12px);
+                width: calc(100% + 12px);
+                ${rowHoverEffect === "border" ? "border-left-width: 1px;" : ""}
               }
-              &:last-of-type {
-                overflow: visible;
-                .background-wrapper {
-                  border-top-right-radius: 32px;
-                  border-bottom-right-radius: 32px;
-                  transform: translateX(12px);
-                  width: calc(100% + 12px);
-                  left: auto;
-                  span {
-                    transform: translateX(-12px);
-                  }
-                }
+            }
+            &:last-of-type {
+              overflow: visible;
+              &:before {
+                border-top-right-radius: 32px;
+                border-bottom-right-radius: 32px;
+                transform: translateX(12px);
+                width: calc(100% + 12px);
+                left: auto;
+                ${rowHoverEffect === "border" ? "border-right-width: 1px;" : ""}
               }
             }
           }
-            `
-        : null}
+        }
+        `}
   }
 `;
