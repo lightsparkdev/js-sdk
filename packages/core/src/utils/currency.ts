@@ -577,6 +577,9 @@ const defaultOptions = {
 export type AppendUnitsOptions = {
   plural?: boolean | undefined;
   lowercase?: boolean | undefined;
+  /* Default behavior for built in toLocaleString is to not show the unit when it's
+     the default unit in the locale (when using default currencyDisplay). We'll do the same. */
+  showForCurrentLocaleUnit?: boolean | undefined;
 };
 
 type FormatCurrencyStrOptions = {
@@ -675,6 +678,14 @@ export function formatCurrencyStr(
   }
 
   if (options?.appendUnits) {
+    const localeCurrencyCode = localeToCurrencyCode(currentLocale);
+    if (
+      unit === localeCurrencyCode &&
+      !options.appendUnits.showForCurrentLocaleUnit
+    ) {
+      return formattedStr;
+    }
+
     const unitStr = abbrCurrencyUnit(unit);
     const unitSuffix = options.appendUnits.plural && num > 1 ? "s" : "";
     const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
