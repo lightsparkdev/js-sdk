@@ -560,6 +560,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "USD";
     case CurrencyUnit.MXN:
       return "MXN";
+    case CurrencyUnit.PHP:
+      return "PHP";
   }
   return "Unsupported CurrencyUnit";
 };
