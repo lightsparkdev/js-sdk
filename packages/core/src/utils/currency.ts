@@ -637,9 +637,11 @@ export function formatCurrencyStr(
   switch (unit) {
     case CurrencyUnit.MXN:
     case CurrencyUnit.USD:
+    case CurrencyUnit.PHP:
       formattedStr = num.toLocaleString(currentLocale, {
         style: "currency",
-        currency: defaultCurrencyCode,
+        currency: unit,
+        currencyDisplay: "narrowSymbol",
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
       });
