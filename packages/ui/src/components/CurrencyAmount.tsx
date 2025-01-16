@@ -65,8 +65,9 @@ export function CurrencyAmount({
       ? undefined
       : showUnits === true
       ? ({
-          plural: true,
-          lowercase: true,
+          plural: false,
+          lowercase: false,
+          showForCurrentLocaleUnit: false,
         } as const)
       : showUnits;
 
