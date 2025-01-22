@@ -35,6 +35,10 @@ type FlexProps = {
   mr?: number | "auto" | undefined;
   mb?: number | "auto" | undefined;
   ml?: number | "auto" | undefined;
+  pt?: number | undefined;
+  pr?: number | undefined;
+  pb?: number | undefined;
+  pl?: number | undefined;
   gap?: number | undefined;
 };
 
@@ -55,6 +59,10 @@ export function Flex({
   mr,
   mb,
   ml,
+  pt,
+  pr,
+  pb,
+  pl,
 }: FlexProps) {
   const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
   const align = alignProp ? alignProp : center ? "center" : "stretch";
@@ -75,12 +83,28 @@ export function Flex({
       ml={ml}
       mt={mt}
       mb={mb}
+      pt={pt}
+      pr={pr}
+      pb={pb}
+      pl={pl}
       gap={gap}
       {...asButtonProps}
     >
       {children}
     </StyledFlex>
   );
+}
+
+function marginPropToString(
+  margin: number | "auto" | undefined,
+  type: "top" | "right" | "bottom" | "left",
+) {
+  if (typeof margin === "number") {
+    return `margin-${type}: ${margin}px;`;
+  } else if (margin === "auto") {
+    return `margin-${type}: auto;`;
+  }
+  return "";
 }
 
 type StyledFlexProps = {
@@ -94,6 +118,10 @@ type StyledFlexProps = {
   mr: FlexProps["mr"];
   mb: FlexProps["mb"];
   ml: FlexProps["ml"];
+  pt: FlexProps["pt"];
+  pr: FlexProps["pr"];
+  pb: FlexProps["pb"];
+  pl: FlexProps["pl"];
   gap: number | undefined;
   as?: ElementType | undefined;
 };
@@ -123,29 +151,15 @@ export const StyledFlex = styled.div<StyledFlexProps>`
   ${({ overflowProp }) =>
     overflowProp ? `overflow: ${overflowProp}; max-width: 100%;` : ""}
   ${({ whiteSpace }) => (whiteSpace ? `white-space: ${whiteSpace};` : "")}
-  ${({ mt }) =>
-    typeof mt === "number"
-      ? `margin-top: ${mt}px;`
-      : mt === "auto"
-      ? `margin-top: ${mt};`
-      : ""}
-  ${({ mr }) =>
-    typeof mr === "number"
-      ? `margin-right: ${mr}px;`
-      : mr === "auto"
-      ? `margin-right: ${mr};`
-      : ""}
-  ${({ mb }) =>
-    typeof mb === "number"
-      ? `margin-bottom: ${mb}px;`
-      : mb === "auto"
-      ? `margin-bottom: ${mb};`
-      : ""}
-  ${({ ml }) =>
-    typeof ml === "number"
-      ? `margin-left: ${ml}px;`
-      : ml === "auto"
-      ? `margin-left: ${ml};`
-      : ""}
   ${({ gap }) => gap && `gap: ${gap}px;`}
+
+  ${({ mt }) => marginPropToString(mt, "top")}
+  ${({ mr }) => marginPropToString(mr, "right")}
+  ${({ mb }) => marginPropToString(mb, "bottom")}
+  ${({ ml }) => marginPropToString(ml, "left")}
+
+  ${({ pt }) => pt && `padding-top: ${pt}px;`}
+  ${({ pr }) => pr && `padding-right: ${pr}px;`}
+  ${({ pb }) => pb && `padding-bottom: ${pb}px;`}
+  ${({ pl }) => pl && `padding-left: ${pl}px;`}
 `;
