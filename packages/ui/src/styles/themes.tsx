@@ -520,7 +520,7 @@ const bridgeBaseSettings = {
   link: colors.blue39,
   typography: getTypography(TypographyGroup.Bridge, {
     main: "Manrope",
-    code: "Monaco",
+    code: "Roboto Mono",
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Title",
