@@ -603,7 +603,11 @@ export function formatCurrencyStr(
   let { value: num } = currencyAmount;
   const { unit } = currencyAmount;
 
-  const centCurrencies = [CurrencyUnit.USD, CurrencyUnit.MXN] as string[];
+  const centCurrencies = [
+    CurrencyUnit.USD,
+    CurrencyUnit.MXN,
+    CurrencyUnit.PHP,
+  ] as string[];
   /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
    * divided by 100 for proper display format: */
   if (centCurrencies.includes(unit)) {
