@@ -202,6 +202,13 @@ const darkTheme = extend(darkBaseTheme, {
     text: colors.white,
     secondary: colors.secondary,
   }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    kinds: {
+      secondary: {
+        defaultBorderColor: "gray30",
+      },
+    },
+  }),
 });
 
 const umaAuthSdkLightTheme = extend(lightTheme, {
