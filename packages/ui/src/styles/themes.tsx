@@ -205,7 +205,7 @@ const darkTheme = extend(darkBaseTheme, {
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     kinds: {
       secondary: {
-        defaultBorderColor: "gray30",
+        defaultBorderColor: "gray15",
       },
     },
   }),
