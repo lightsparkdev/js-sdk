@@ -83,6 +83,10 @@ module.exports.buildConfig = ({
           changeOrigin: true,
           ws: true,
         },
+        "^/umaauth/.*": {
+          target: proxyTarget,
+          changeOrigin: true,
+        },
         "/ui/logs": {
           target: proxyTarget,
           changeOrigin: true,
