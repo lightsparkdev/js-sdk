@@ -4,7 +4,7 @@ import { FRAGMENT as IncomingPaymentFragment } from "../objects/IncomingPayment.
 
 export const IncomingPaymentsForInvoice = `
 query IncomingPaymentsForInvoice(
-    $invoice_id: Hash32!,
+    $invoice_id: ID!,
     $statuses: [TransactionStatus!] 
 ) {
     incoming_payments_for_invoice(input: {
