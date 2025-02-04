@@ -201,8 +201,15 @@ export function useNavigate() {
 
 export function useMatchRoutes(routes: NewRoutesType[]): boolean {
   const location = useLocation();
-  const doesMatch = routes.some((route) => matchPath(route, location.pathname));
+  const doesMatch = matchRoutes(routes, location.pathname);
   return doesMatch;
+}
+
+export function matchRoutes(
+  routes: NewRoutesType[],
+  locationPathname: string,
+): boolean {
+  return routes.some((route) => matchPath(route, locationPathname));
 }
 
 export function useFindMatchingRoute(
