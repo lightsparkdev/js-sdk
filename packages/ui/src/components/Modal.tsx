@@ -1,8 +1,15 @@
 "use client";
 import styled from "@emotion/styled";
 
+import { type PartialBy } from "@lightsparkdev/core";
 import type { ComponentProps, MutableRefObject, ReactNode } from "react";
-import React, { Fragment, useEffect, useLayoutEffect, useRef } from "react";
+import React, {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import ReactDOM from "react-dom";
 import { useLiveRef } from "../hooks/useLiveRef.js";
 import { Breakpoints, bp, useBreakpoints } from "../styles/breakpoints.js";
@@ -16,6 +23,7 @@ import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
+import { isReactNode } from "../types/typeGuard.js";
 import { select } from "../utils/emotion.js";
 import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
@@ -29,6 +37,8 @@ import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
 import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+
+type IconProps = ComponentProps<typeof Icon>;
 
 type ExtraAction = ComponentProps<typeof Button> & {
   /** Determines the placement relative to the submission/cancel buttons. */
@@ -53,7 +63,9 @@ function isSubmitLinkWithHref(
   return Boolean(submitLink && "href" in submitLink);
 }
 
-type TopContent = ComponentProps<typeof IconWithCircleBackground>;
+type TopContent =
+  | ComponentProps<typeof IconWithCircleBackground>
+  | React.ReactNode;
 
 type ModalProps = {
   visible: boolean;
@@ -70,6 +82,11 @@ type ModalProps = {
   submitDisabled?: boolean;
   submitLoading?: boolean;
   submitLoadingKind?: LoadingKind | undefined;
+  submitIcon?:
+    | (Pick<IconProps, "name" | "color" | "iconProps"> &
+        /* We'll set a default width if not provided, leave unrequired: */
+        PartialBy<IconProps, "width">)
+    | undefined;
   submitText?: string;
   submitLink?:
     | {
@@ -87,7 +104,9 @@ type ModalProps = {
   top?: number;
   nonDismissable?: boolean;
   width?: number;
-  progressBar?: ProgressBarProps;
+  progressBar?: ProgressBarProps | undefined;
+  /** Determines which order we display the buttons */
+  buttonOrder?: "submit-first" | "cancel-first";
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";
   /** Allows placing extra buttons in the same button layout */
@@ -116,6 +135,7 @@ export function Modal({
   submitLoading,
   submitLoadingKind,
   submitText,
+  submitIcon,
   submitLink,
   cancelText = "Cancel",
   firstFocusRef,
@@ -125,6 +145,7 @@ export function Modal({
   autoFocus = true,
   width = 460,
   progressBar,
+  buttonOrder,
   buttonLayout = "horizontal",
   extraActions,
   handleBack,
@@ -133,6 +154,7 @@ export function Modal({
   topLeftIcon,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
+  const [visibleChanged, setVisibleChanged] = useState(false);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [defaultFirstFocusRef, defaultFirstFocusRefCb] = useLiveRef();
   const ref = firstFocusRef || defaultFirstFocusRef;
@@ -146,9 +168,15 @@ export function Modal({
   useEffect(() => {
     if (visible !== visibleChangedRef.current) {
       visibleChangedRef.current = visible;
+      setVisibleChanged(true);
     }
   }, [visible]);
-  const visibleChanged = visible !== visibleChangedRef.current;
+
+  useEffect(() => {
+    if (visibleChanged) {
+      setVisibleChanged(false);
+    }
+  }, [visibleChanged]);
 
   useEffect(() => {
     prevFocusedElement.current = document.activeElement;
@@ -231,6 +259,7 @@ export function Modal({
 
   function onSubmitForm(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    e.stopPropagation();
     if (!submitDisabled && onSubmit) {
       onSubmit();
     }
@@ -247,6 +276,12 @@ export function Modal({
   const linkIsHref = isSubmitLinkWithHref(submitLink);
   const linkIsRoute = !linkIsHref && submitLink;
 
+  const displayCancelAbove = !!buttonOrder
+    ? buttonOrder === "cancel-first"
+    : !isSm;
+  const displayCancelBelow = !!buttonOrder
+    ? buttonOrder === "submit-first"
+    : isSm;
   const buttonContent = (
     <>
       {extraActions
@@ -254,7 +289,7 @@ export function Modal({
         .map(({ placement, text, ...rest }, i) => (
           <Button key={text || `no-text-${i}`} text={text} {...rest} />
         ))}
-      {!isSm && !cancelHidden && (
+      {displayCancelAbove && !cancelHidden && (
         <Button
           disabled={cancelDisabled}
           onClick={onClickCancel}
@@ -265,6 +300,7 @@ export function Modal({
         <Button
           kind="primary"
           disabled={submitDisabled}
+          icon={submitIcon}
           text={submitText ?? "Continue"}
           loading={submitLoading}
           loadingKind={submitLoadingKind}
@@ -278,7 +314,13 @@ export function Modal({
           onClick={submitLink ? onSubmit : undefined}
         />
       )}
-      {isSm && !cancelHidden && <Button onClick={onClose} text={cancelText} />}
+      {displayCancelBelow && !cancelHidden && (
+        <Button
+          disabled={cancelDisabled}
+          onClick={onClickCancel}
+          text={cancelText}
+        />
+      )}
       {extraActions
         ?.filter((action) => action.placement === "below")
         .map(({ placement, text, ...rest }, i) => (
@@ -321,11 +363,15 @@ export function Modal({
 
   let topContentNode = null;
   if (topContent) {
-    topContentNode = (
-      <div css={{ marginBottom: Spacing.px.xl }}>
-        <IconWithCircleBackground {...topContent} />
-      </div>
-    );
+    if (isReactNode(topContent)) {
+      topContentNode = topContent;
+    } else {
+      topContentNode = (
+        <div css={{ marginBottom: Spacing.px.xl }}>
+          <IconWithCircleBackground {...topContent} />
+        </div>
+      );
+    }
   }
 
   const modalContent = (
@@ -511,7 +557,7 @@ const ModalContent = styled.div<{
   display: flex;
   flex-direction: column;
 
-  ${({ ghost, width }) => `
+  ${({ ghost, smKind, width }) => `
     ${ghost ? "" : standardBorderRadius(16)}
     width: ${width}px;
   `}
@@ -519,6 +565,7 @@ const ModalContent = styled.div<{
   ${({ smKind }) =>
     smKind === "fullscreen"
       ? bp.sm(`
+          border-radius: 0px;
           width: 100%;
           height: 100dvh;
         `)

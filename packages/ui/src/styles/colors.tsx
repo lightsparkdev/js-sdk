@@ -36,6 +36,7 @@ const baseColors = {
   ...neutral,
   // green
   success: "#17C27C",
+  green: "#46ac4a",
   green33: "#179257",
   green35: "#19981E",
   // blue
@@ -47,6 +48,7 @@ const baseColors = {
   // less than 50% saturated blue
   grayBlue5: "#0c0d0f",
   grayBlue9: "#16171A",
+  grayBlue10: "#14161D",
   grayBlue12: "#2D2E34",
   grayBlue14: "#3A3B41",
   grayBlue18: "#21283a",
@@ -56,16 +58,19 @@ const baseColors = {
   grayBlue57: "#8B8E98",
   grayBlue67: "#9BA7B9",
   grayBlue69: "#A6A9BA",
+  grayBlue78: "#C0C6CE",
   grayBlue80: "#C0C9D6",
   grayBlue88: "#DEDFE4",
   grayBlue92: "#E1EBF5",
   grayBlue93: "#E6EEF6",
   grayBlue94: "#EBEEF2",
+  grayBlue95: "#F2F3F5",
   grayBlue96: "#F2F5F7",
   // purple
   purple43: "#820AD1",
   purple55: "#8B38DE",
   // red
+  red50: "#E31A1A",
   red42a10: "#D800271A",
   red42a20: "#D800272D",
   red42a30: "#D800273F",

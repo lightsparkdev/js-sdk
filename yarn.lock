@@ -2403,13 +2403,14 @@ __metadata:
     "@simbathesailor/use-what-changed": "npm:^2.0.0"
     "@svgr/core": "npm:^8.1.0"
     "@svgr/plugin-jsx": "npm:^8.1.0"
+    "@tanstack/react-table": "npm:^8.20.5"
     "@testing-library/dom": "npm:^9.2.0"
     "@testing-library/jest-dom": "npm:^6.1.2"
     "@testing-library/react": "npm:^14.0.0"
     "@testing-library/user-event": "npm:^14.4.3"
     "@types/jest": "npm:^29.5.3"
     "@types/prismjs": "npm:^1.26.0"
-    "@types/react-table": "npm:^7.7.18"
+    "@uma-sdk/core": "npm:^1.2.3"
     "@wojtekmaj/react-daterange-picker": "npm:^5.5.0"
     "@wojtekmaj/react-datetimerange-picker": "npm:^5.5.0"
     "@zxing/browser": "npm:^0.1.1"
@@ -2440,7 +2441,6 @@ __metadata:
     react-dom: "npm:^18.1.0"
     react-router-dom: "npm:6.11.2"
     react-select: "npm:^5.4.0"
-    react-table: "npm:^7.8.0"
     react-tooltip: "npm:^5.10.1"
     ts-jest: "npm:^29.1.1"
     tsc-absolute: "npm:^1.0.1"
@@ -2461,7 +2461,7 @@ __metadata:
     "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/chalk": "npm:^2.2.0"
     "@types/node": "npm:^20.2.5"
-    "@uma-sdk/core": "npm:^1.2.0"
+    "@uma-sdk/core": "npm:^1.2.3"
     chalk: "npm:^5.3.0"
     commander: "npm:^11.0.0"
     eslint: "npm:^8.3.0"
@@ -2488,7 +2488,7 @@ __metadata:
     "@types/express": "npm:^4.17.21"
     "@types/supertest": "npm:^2.0.14"
     "@types/uuid": "npm:^9.0.7"
-    "@uma-sdk/core": "npm:^1.2.0"
+    "@uma-sdk/core": "npm:^1.2.3"
     express: "npm:^4.18.2"
     jest: "npm:^29.6.2"
     nodemon: "npm:^2.0.22"
@@ -3655,6 +3655,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/react-table@npm:^8.20.5":
+  version: 8.20.5
+  resolution: "@tanstack/react-table@npm:8.20.5"
+  dependencies:
+    "@tanstack/table-core": "npm:8.20.5"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10/df67094795a0b7e4b34f73abe346443c2e806c572fea31b58759aa8ec5274f613e5e6941090eb16f861bda10d3088731bc6e7f15e5f90326db273bc55b9141ce
+  languageName: node
+  linkType: hard
+
+"@tanstack/table-core@npm:8.20.5":
+  version: 8.20.5
+  resolution: "@tanstack/table-core@npm:8.20.5"
+  checksum: 10/5408237920d5796951e925278edbbe76f71006627a4e3da248a810970256f75d973538fe7ae75a32155d4a25a95abc4fffaea337b5120f7940d7e664dc9da87f
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^9.0.0, @testing-library/dom@npm:^9.2.0":
   version: 9.3.4
   resolution: "@testing-library/dom@npm:9.3.4"
@@ -4196,15 +4215,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-table@npm:^7.7.18":
-  version: 7.7.20
-  resolution: "@types/react-table@npm:7.7.20"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10/adf86958dd5b2e044d23fc7896f758b5ec59987891b41e9b02d935d666e999a518b0bdd8ba5bd60d644f20147de0ec3cf5f6a12b75516f1fad43fb3b4fd8361f
-  languageName: node
-  linkType: hard
-
 "@types/react-transition-group@npm:^4.4.0":
   version: 4.4.10
   resolution: "@types/react-transition-group@npm:4.4.10"
@@ -4575,14 +4585,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uma-sdk/core@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "@uma-sdk/core@npm:1.2.0"
+"@uma-sdk/core@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@uma-sdk/core@npm:1.2.3"
   dependencies:
     eciesjs: "npm:^0.4.4"
     secp256k1: "npm:^5.0.0"
     zod: "npm:^3.22.2"
-  checksum: 10/5d27d7fd7f9c5a3c59f4f75e2e726873c619cb07f55827235b2925deb2aa7b6d874372816f28f37ab0f0a39ba1c2c4858f0206f453b94fb13cdef2cd92515231
+  checksum: 10/593630b7394336a214c82864709ecc3ba5071b61dfd66be582ffee0c8b322fe6bbae3b80b59130ca0fc8087e6e257d2e49cf962c95893dde40c8d830681dfdae
   languageName: node
   linkType: hard
 
@@ -12976,15 +12986,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
   checksum: 10/04d3639ea1872a9e4d9080ece1947432fc595403c0a740f671a1b7f7dd2639288cb133ec7a2b1ac20fad69fd303d696c2f924763405e0e1d93b847e54df9e966
-  languageName: node
-  linkType: hard
-
-"react-table@npm:^7.8.0":
-  version: 7.8.0
-  resolution: "react-table@npm:7.8.0"
-  peerDependencies:
-    react: ^16.8.3 || ^17.0.0-0 || ^18.0.0
-  checksum: 10/0c87db8f8823f8eca7a5521d406fa0c75d79972d47768f0c8347af3fa51f9856eea449186a0e2db2effc54d1d74a4e3477855cdbe9adf836d7dfac3a6ec5cdbf
   languageName: node
   linkType: hard
 

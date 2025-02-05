@@ -20,6 +20,7 @@ export const CurrencyUnit = {
   MILLIBITCOIN: "MILLIBITCOIN",
   USD: "USD",
   MXN: "MXN",
+  PHP: "PHP",
 
   Bitcoin: "BITCOIN",
   Microbitcoin: "MICROBITCOIN",
@@ -29,6 +30,7 @@ export const CurrencyUnit = {
   Satoshi: "SATOSHI",
   Usd: "USD",
   Mxn: "MXN",
+  Php: "PHP",
 } as const;
 
 export type CurrencyUnitType = (typeof CurrencyUnit)[keyof typeof CurrencyUnit];
@@ -56,6 +58,7 @@ const standardUnitConversionObj = {
   /* Converting between two different fiat types is not currently supported */
   [CurrencyUnit.USD]: (v: number) => v,
   [CurrencyUnit.MXN]: (v: number) => v,
+  [CurrencyUnit.PHP]: (v: number) => v,
 };
 
 /* Round without decimals since we're returning cents: */
@@ -82,6 +85,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100_000_000,
     [CurrencyUnit.USD]: toBitcoinConversion,
     [CurrencyUnit.MXN]: toBitcoinConversion,
+    [CurrencyUnit.PHP]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000,
@@ -92,6 +96,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100,
     [CurrencyUnit.USD]: toMicrobitcoinConversion,
     [CurrencyUnit.MXN]: toMicrobitcoinConversion,
+    [CurrencyUnit.PHP]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000,
@@ -102,6 +107,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v * 100_000,
     [CurrencyUnit.USD]: toMillibitcoinConversion,
     [CurrencyUnit.MXN]: toMillibitcoinConversion,
+    [CurrencyUnit.PHP]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000_000,
@@ -112,6 +118,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v / 1000,
     [CurrencyUnit.USD]: toMillisatoshiConversion,
     [CurrencyUnit.MXN]: toMillisatoshiConversion,
+    [CurrencyUnit.PHP]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000_000,
@@ -122,6 +129,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v / 10,
     [CurrencyUnit.USD]: toNanobitcoinConversion,
     [CurrencyUnit.MXN]: toNanobitcoinConversion,
+    [CurrencyUnit.PHP]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000,
@@ -132,9 +140,11 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SATOSHI]: (v: number) => v,
     [CurrencyUnit.USD]: toSatoshiConversion,
     [CurrencyUnit.MXN]: toSatoshiConversion,
+    [CurrencyUnit.PHP]: toSatoshiConversion,
   },
   [CurrencyUnit.USD]: standardUnitConversionObj,
   [CurrencyUnit.MXN]: standardUnitConversionObj,
+  [CurrencyUnit.PHP]: standardUnitConversionObj,
 };
 
 export function convertCurrencyAmountValue(
@@ -146,7 +156,7 @@ export function convertCurrencyAmountValue(
      units to provide value estimates where needed where a backend value is not available, eg
      previewing the approximate value of an amount to send. */
   unitsPerBtc = 1,
-): number {
+) {
   if (
     fromUnit === CurrencyUnit.FUTURE_VALUE ||
     toUnit === CurrencyUnit.FUTURE_VALUE
@@ -198,6 +208,7 @@ export type CurrencyMap = {
   [CurrencyUnit.NANOBITCOIN]: number;
   [CurrencyUnit.USD]: number;
   [CurrencyUnit.MXN]: number;
+  [CurrencyUnit.PHP]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
     sats: string;
@@ -211,6 +222,7 @@ export type CurrencyMap = {
     [CurrencyUnit.NANOBITCOIN]: string;
     [CurrencyUnit.USD]: string;
     [CurrencyUnit.MXN]: string;
+    [CurrencyUnit.PHP]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
   isZero: boolean;
@@ -220,40 +232,68 @@ export type CurrencyMap = {
   type: "CurrencyMap";
 };
 
+/* GQL CurrencyAmountInputs have this shape as well as client side CurrencyAmount objects.
+ * Technically value is always a number for GQL inputs. This is enforced by mutation input
+ * types. For client side utils we can have slightly more forgiving input and coerce with
+ * asNumber. */
+export type CurrencyAmountInputObj = {
+  value: number | string | null;
+  unit: CurrencyUnitType;
+};
+
+/* Persisted CurrencyAmount objects may have this shape if queried from GQL in this format
+   but the fields are deprecated and original_unit and original_value should be used instead: */
 export type DeprecatedCurrencyAmountObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  value?: number | string | null;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  value?: number;
   /* assume satoshi if not provided */
   unit?: CurrencyUnitType;
-  __typename?: "CurrencyAmount" | undefined;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  original_value?: number | string | null;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  original_value?: number;
   /* assume satoshi if not provided */
   original_unit?: CurrencyUnitType;
-  __typename?: "CurrencyAmount" | undefined;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountPreferenceObj = {
-  /* Technically the generated graphql schema has value as `any` but it's always a number.
-   * We are intentionally widening the type here to allow for more forgiving input: */
-  preferred_currency_unit?: CurrencyUnitType;
-  /* assume satoshi if not provided */
-  preferred_currency_value_rounded?: number | string | null;
-  __typename?: "CurrencyAmount" | undefined;
+  /* unit and value, along with original unit and value are all required for
+   * CurrencyAmountPreferenceObj - the preferred value is used for the corresponding unit
+   * but the original unit/value are also needed to ensure accurate conversion to other units */
+  original_value: number;
+  original_unit: CurrencyUnitType;
+  preferred_currency_unit: CurrencyUnitType;
+  /* Technically the generated graphql schema has value as `any` but it's always a number: */
+  preferred_currency_value_approx: number;
+  __typename?: "CurrencyAmount";
 };
 
 export type CurrencyAmountArg =
+  | CurrencyAmountInputObj
   | DeprecatedCurrencyAmountObj
   | CurrencyAmountObj
   | CurrencyAmountPreferenceObj
   | SDKCurrencyAmountType
   | undefined
   | null;
+
+export function isCurrencyAmountInputObj(
+  arg: unknown,
+): arg is CurrencyAmountInputObj {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    "value" in arg &&
+    (typeof arg.value === "number" ||
+      typeof arg.value === "string" ||
+      arg.value === null) &&
+    "unit" in arg &&
+    typeof arg.unit === "string"
+  );
+}
 
 export function isDeprecatedCurrencyAmountObj(
   arg: unknown,
@@ -278,8 +318,14 @@ export function isCurrencyAmountPreferenceObj(
   return (
     typeof arg === "object" &&
     arg !== null &&
+    "original_unit" in arg &&
+    typeof arg.original_unit === "string" &&
+    "original_value" in arg &&
+    typeof arg.original_value === "number" &&
     "preferred_currency_unit" in arg &&
-    "preferred_currency_value_rounded" in arg
+    typeof arg.preferred_currency_unit === "string" &&
+    "preferred_currency_value_approx" in arg &&
+    typeof arg.preferred_currency_value_approx === "number"
   );
 }
 
@@ -304,20 +350,20 @@ function asNumber(value: string | number | null | undefined) {
   return value || 0;
 }
 
-function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
+export function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   let value = 0;
   let unit = undefined;
 
   if (isSDKCurrencyAmount(currencyAmountArg)) {
     value = currencyAmountArg.originalValue;
     unit = currencyAmountArg.originalUnit;
-  } else if (isCurrencyAmountPreferenceObj(currencyAmountArg)) {
-    value = asNumber(currencyAmountArg.preferred_currency_value_rounded);
-    unit = currencyAmountArg.preferred_currency_unit;
   } else if (isCurrencyAmountObj(currencyAmountArg)) {
     value = asNumber(currencyAmountArg.original_value);
     unit = currencyAmountArg.original_unit;
-  } else if (isDeprecatedCurrencyAmountObj(currencyAmountArg)) {
+  } else if (
+    isCurrencyAmountInputObj(currencyAmountArg) ||
+    isDeprecatedCurrencyAmountObj(currencyAmountArg)
+  ) {
     value = asNumber(currencyAmountArg.value);
     unit = currencyAmountArg.unit;
   }
@@ -328,21 +374,71 @@ function getCurrencyAmount(currencyAmountArg: CurrencyAmountArg) {
   };
 }
 
+function convertCurrencyAmountValues(
+  fromUnit: CurrencyUnitType,
+  amount: number,
+  unitsPerBtc = 1,
+  conversionOverride?: { unit: CurrencyUnitType; convertedValue: number },
+) {
+  const convert = convertCurrencyAmountValue;
+  const namesToUnits = {
+    sats: CurrencyUnit.SATOSHI,
+    btc: CurrencyUnit.BITCOIN,
+    msats: CurrencyUnit.MILLISATOSHI,
+    usd: CurrencyUnit.USD,
+    mxn: CurrencyUnit.MXN,
+    php: CurrencyUnit.PHP,
+    mibtc: CurrencyUnit.MICROBITCOIN,
+    mlbtc: CurrencyUnit.MILLIBITCOIN,
+    nbtc: CurrencyUnit.NANOBITCOIN,
+  };
+  return Object.entries(namesToUnits).reduce(
+    (acc, [name, unit]) => {
+      if (conversionOverride && unit === conversionOverride.unit) {
+        acc[name as keyof typeof namesToUnits] =
+          conversionOverride.convertedValue;
+      } else {
+        acc[name as keyof typeof namesToUnits] = convert(
+          fromUnit,
+          unit,
+          amount,
+          unitsPerBtc,
+        );
+      }
+      return acc;
+    },
+    {} as Record<keyof typeof namesToUnits, number>,
+  );
+}
+
+function getPreferredConversionOverride(currencyAmountArg: CurrencyAmountArg) {
+  if (isCurrencyAmountPreferenceObj(currencyAmountArg)) {
+    return {
+      unit: currencyAmountArg.preferred_currency_unit,
+      convertedValue: currencyAmountArg.preferred_currency_value_approx,
+    };
+  } else if (isSDKCurrencyAmount(currencyAmountArg)) {
+    return {
+      unit: currencyAmountArg.preferredCurrencyUnit,
+      convertedValue: currencyAmountArg.preferredCurrencyValueApprox,
+    };
+  }
+  return undefined;
+}
+
 export function mapCurrencyAmount(
   currencyAmountArg: CurrencyAmountArg,
   unitsPerBtc = 1,
 ): CurrencyMap {
   const { value, unit } = getCurrencyAmount(currencyAmountArg);
 
-  const convert = convertCurrencyAmountValue;
-  const sats = convert(unit, CurrencyUnit.SATOSHI, value, unitsPerBtc);
-  const btc = convert(unit, CurrencyUnit.BITCOIN, value, unitsPerBtc);
-  const msats = convert(unit, CurrencyUnit.MILLISATOSHI, value, unitsPerBtc);
-  const usd = convert(unit, CurrencyUnit.USD, value, unitsPerBtc);
-  const mxn = convert(unit, CurrencyUnit.MXN, value, unitsPerBtc);
-  const mibtc = convert(unit, CurrencyUnit.MICROBITCOIN, value, unitsPerBtc);
-  const mlbtc = convert(unit, CurrencyUnit.MILLIBITCOIN, value, unitsPerBtc);
-  const nbtc = convert(unit, CurrencyUnit.NANOBITCOIN, value, unitsPerBtc);
+  /* Prefer approximation from backend for corresponding unit if specified on currencyAmountArg.
+   * This will always be at most for one single unit type since there's only one
+   * preferred_currency_unit on CurrencyAmount types: */
+  const conversionOverride = getPreferredConversionOverride(currencyAmountArg);
+
+  const { sats, msats, btc, usd, mxn, php, mibtc, mlbtc, nbtc } =
+    convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
   const mapWithCurrencyUnits = {
     [CurrencyUnit.BITCOIN]: btc,
@@ -350,6 +446,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.MILLISATOSHI]: msats,
     [CurrencyUnit.USD]: usd,
     [CurrencyUnit.MXN]: mxn,
+    [CurrencyUnit.PHP]: php,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -386,6 +483,10 @@ export function mapCurrencyAmount(
       [CurrencyUnit.MXN]: formatCurrencyStr({
         value: mxn,
         unit: CurrencyUnit.MXN,
+      }),
+      [CurrencyUnit.PHP]: formatCurrencyStr({
+        value: php,
+        unit: CurrencyUnit.PHP,
       }),
       [CurrencyUnit.FUTURE_VALUE]: "-",
     },
@@ -451,8 +552,16 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "SAT";
     case CurrencyUnit.MILLISATOSHI:
       return "MSAT";
+    case CurrencyUnit.MILLIBITCOIN:
+      return "mBTC";
+    case CurrencyUnit.MICROBITCOIN:
+      return "μBTC";
     case CurrencyUnit.USD:
       return "USD";
+    case CurrencyUnit.MXN:
+      return "MXN";
+    case CurrencyUnit.PHP:
+      return "PHP";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -462,6 +571,15 @@ const defaultOptions = {
   precision: undefined,
   compact: false,
   showBtcSymbol: false,
+  append: undefined,
+};
+
+export type AppendUnitsOptions = {
+  plural?: boolean | undefined;
+  lowercase?: boolean | undefined;
+  /* Default behavior for built in toLocaleString is to not show the unit when it's
+     the default unit in the locale (when using default currencyDisplay). We'll do the same. */
+  showForCurrentLocaleUnit?: boolean | undefined;
 };
 
 type FormatCurrencyStrOptions = {
@@ -469,6 +587,7 @@ type FormatCurrencyStrOptions = {
   precision?: number | "full" | undefined;
   compact?: boolean | undefined;
   showBtcSymbol?: boolean | undefined;
+  appendUnits?: AppendUnitsOptions | undefined;
 };
 
 export function formatCurrencyStr(
@@ -484,8 +603,14 @@ export function formatCurrencyStr(
   let { value: num } = currencyAmount;
   const { unit } = currencyAmount;
 
-  /* Currencies should always be represented in the smallest unit, e.g. cents for USD: */
-  if (unit === CurrencyUnit.USD) {
+  const centCurrencies = [
+    CurrencyUnit.USD,
+    CurrencyUnit.MXN,
+    CurrencyUnit.PHP,
+  ] as string[];
+  /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
+   * divided by 100 for proper display format: */
+  if (centCurrencies.includes(unit)) {
     num = num / 100;
   }
 
@@ -515,39 +640,67 @@ export function formatCurrencyStr(
 
   const currentLocale = getCurrentLocale();
 
+  let formattedStr = "";
   switch (unit) {
+    case CurrencyUnit.MXN:
+    case CurrencyUnit.USD:
+    case CurrencyUnit.PHP:
+      formattedStr = num.toLocaleString(currentLocale, {
+        style: "currency",
+        currency: unit,
+        currencyDisplay: "narrowSymbol",
+        notation: compact ? ("compact" as const) : undefined,
+        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
+      });
+      break;
     case CurrencyUnit.BITCOIN:
       /* In most cases product prefers 4 precision digtis for BTC. In a few places
          full precision (8 digits) are preferred, e.g. for a transaction details page: */
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(4, 8),
       })}`;
+      break;
     case CurrencyUnit.SATOSHI:
       /* In most cases product prefers hiding sub sat precision (msats). In a few
          places full precision (3 digits) are preferred, e.g. for Lightning fees
          paid on a transaction details page: */
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 3),
       })}`;
+      break;
     case CurrencyUnit.MILLISATOSHI:
     case CurrencyUnit.MICROBITCOIN:
     case CurrencyUnit.MILLIBITCOIN:
     case CurrencyUnit.NANOBITCOIN:
     default:
-      return `${symbol}${num.toLocaleString(currentLocale, {
+      formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
-    case CurrencyUnit.USD:
-      return num.toLocaleString(currentLocale, {
-        style: "currency",
-        currency: defaultCurrencyCode,
-        notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
-      });
   }
+
+  if (options?.appendUnits) {
+    const localeCurrencyCode = localeToCurrencyCode(currentLocale);
+    if (
+      unit === localeCurrencyCode &&
+      !options.appendUnits.showForCurrentLocaleUnit
+    ) {
+      return formattedStr;
+    }
+
+    const unitStr = abbrCurrencyUnit(unit);
+    const unitSuffix = options.appendUnits.plural && num > 1 ? "s" : "";
+    const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
+    formattedStr += ` ${
+      options.appendUnits.lowercase
+        ? unitStrWithSuffix.toLowerCase()
+        : unitStrWithSuffix
+    }`;
+  }
+
+  return formattedStr;
 }
 
 export function separateCurrencyStrParts(currencyStr: string) {

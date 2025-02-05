@@ -1,8 +1,11 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
 import type {
+  ChangeEvent,
   ClipboardEvent,
   CompositionEvent,
+  FocusEvent,
+  InputHTMLAttributes,
   KeyboardEvent,
   RefCallback,
   RefObject,
@@ -28,6 +31,7 @@ import { z } from "../styles/z-index.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
+import { Loading } from "./Loading.js";
 import { ToggleContainer } from "./Toggle.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
@@ -58,18 +62,16 @@ export type TextInputProps = {
     | undefined;
   maxLength?: number;
   name?: string;
-  onBlur?: () => void;
-  onChange: (
-    newValue: string,
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  onChange: (newValue: string, event: ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
-  onFocus?: () => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
   onKeyDown?: (
     keyValue: string,
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: KeyboardEvent<HTMLInputElement>,
   ) => void;
+  onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   inputRef?: RefObject<HTMLInputElement> | undefined;
   inputRefCb?: RefCallback<HTMLInputElement>;
@@ -86,12 +88,12 @@ export type TextInputProps = {
     | undefined;
   onBeforeInput?: (e: CompositionEvent) => void;
   pattern?: string;
-  inputMode?: "numeric" | undefined;
+  inputMode?: "numeric" | "decimal" | undefined;
   hint?: string | undefined;
   hintTooltip?: string | undefined;
   label?: string;
   rightButtonText?: string | undefined;
-  onRightButtonClick?: () => void;
+  onRightButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   typography?: PartialSimpleTypographyProps | undefined;
   select?:
     | {
@@ -109,6 +111,9 @@ export type TextInputProps = {
   // Outline that appears outside/offset when the input is focused
   activeOutline?: boolean;
   activeOutlineColor?: ThemeOrColorKey;
+  enterKeyHint?: InputHTMLAttributes<HTMLInputElement>["enterKeyHint"];
+  autoFocus?: boolean;
+  loading?: boolean;
 };
 
 function withDefaults(textInputProps: TextInputProps) {
@@ -144,37 +149,43 @@ export function TextInput(textInputProps: TextInputProps) {
   const hasError = Boolean(props.error);
 
   /* Default to right side icon if not specified: */
-  const isIconRight = Boolean(props.icon && props.icon.side !== "left");
+  const iconSide = props.icon ? props.icon.side || "right" : undefined;
+  const hasIconLeft = Boolean(props.icon && iconSide === "left");
+  const hasIconRight =
+    Boolean(props.icon && iconSide === "right") || props.loading;
   const iconWidth = props.icon?.width || 12;
-  /* Where the icon center should be regardless of width */
+  /* Where the icon center should be regardless of icon width: */
   const iconCenterOffset = props.icon?.offset === "large" ? 26 : 18;
-  const iconOffset = iconCenterOffset - iconWidth / 2;
   const iconTextOffset = iconCenterOffset === 18 ? 4 : 14;
-  const textInputWidth = props.width === "short" ? "250px" : "100%";
 
+  const leftIconOffset = iconCenterOffset - iconWidth / 2;
   let paddingLeftPx: number | undefined;
   if (typeof props.paddingX === "number") {
-    if (isIconRight) {
-      paddingLeftPx = props.paddingX;
-    } else {
+    if (hasIconLeft) {
       paddingLeftPx = props.paddingX + iconWidth + iconTextOffset;
+    } else {
+      paddingLeftPx = props.paddingX;
     }
-  } else if (props.icon && !isIconRight) {
-    paddingLeftPx = iconOffset + iconWidth + iconTextOffset;
+  } else if (hasIconLeft) {
+    paddingLeftPx = leftIconOffset + iconWidth + iconTextOffset;
   } else if (props.select) {
     paddingLeftPx = selectLeftOffset + props.select.width + 5;
   }
 
+  const rightIconWidth = props.loading ? 20 : iconWidth;
+  const rightIconOffset = iconCenterOffset - rightIconWidth / 2;
   let paddingRightPx: number | undefined;
   if (typeof props.paddingX === "number") {
-    if (isIconRight) {
-      paddingRightPx = iconTextOffset + iconWidth + props.paddingX;
+    if (hasIconRight) {
+      paddingRightPx = iconTextOffset + rightIconWidth + props.paddingX;
     } else {
       paddingRightPx = props.paddingX;
     }
-  } else if (isIconRight) {
-    paddingRightPx = 28;
+  } else if (hasIconRight) {
+    paddingRightPx = rightIconOffset + rightIconWidth + iconTextOffset;
   }
+
+  const textInputWidth = props.width === "short" ? "250px" : "100%";
 
   let input = (
     <InputContainer>
@@ -183,10 +194,10 @@ export function TextInput(textInputProps: TextInputProps) {
         maxLength={props.maxLength}
         inputMode={props.inputMode}
         pattern={props.pattern}
-        onBlur={() => {
+        onBlur={(blurEvent) => {
           setFocused(false);
           if (props.onBlur) {
-            props.onBlur();
+            props.onBlur(blurEvent);
           }
         }}
         onChange={(e) => {
@@ -194,10 +205,10 @@ export function TextInput(textInputProps: TextInputProps) {
           e.target.setCustomValidity("");
           props.onChange(e.target.value, e);
         }}
-        onFocus={() => {
+        onFocus={(focusEvent) => {
           setFocused(true);
           if (props.onFocus) {
-            props.onFocus();
+            props.onFocus(focusEvent);
           }
         }}
         onKeyDown={(e) => {
@@ -206,6 +217,7 @@ export function TextInput(textInputProps: TextInputProps) {
           }
           handleKeyDown(e);
         }}
+        onKeyUp={props.onKeyUp}
         id={props.id}
         onPaste={props.onPaste}
         placeholder={props.placeholder}
@@ -234,9 +246,11 @@ export function TextInput(textInputProps: TextInputProps) {
           }
         }}
         borderRadius={props.borderRadius}
+        enterKeyHint={props.enterKeyHint}
+        autoFocus={props.autoFocus}
       />
       {props.rightButtonText && (
-        <RightButtonAligner iconOffset={iconOffset}>
+        <RightButtonAligner paddingX={rightIconOffset}>
           <RightButton onClick={props.onRightButtonClick}>
             {props.rightButtonText}
           </RightButton>
@@ -245,23 +259,46 @@ export function TextInput(textInputProps: TextInputProps) {
     </InputContainer>
   );
 
-  if (props.icon) {
+  if (hasIconLeft || hasIconRight) {
     input = (
       <WithIcon hasError={hasError} withFocus={focused}>
-        {isIconRight ? <>{input}</> : null}
-        <TextInputIconContainer
-          onClick={props.onClickIcon ? props.onClickIcon : () => {}}
-          isIconRight={isIconRight}
-          iconOffset={
-            typeof props.paddingX === "number" ? props.paddingX : iconOffset
-          }
-          focused={focused}
-          hasValue={Boolean(props.value)}
-          colorProp={props.typography.color}
-        >
-          <Icon name={props.icon.name} width={iconWidth} />
-        </TextInputIconContainer>
-        {isIconRight ? null : <>{input}</>}
+        {props.icon && iconSide === "left" && (
+          <TextInputIconContainer
+            onClick={props.onClickIcon ? props.onClickIcon : () => {}}
+            isIconRight={false}
+            focused={focused}
+            hasValue={Boolean(props.value)}
+            colorProp={props.typography.color}
+            iconOffset={
+              typeof props.paddingX === "number"
+                ? props.paddingX
+                : leftIconOffset
+            }
+          >
+            <Icon name={props.icon.name} width={iconWidth} />
+          </TextInputIconContainer>
+        )}
+        {input}
+        {hasIconRight && (
+          <TextInputIconContainer
+            onClick={props.onClickIcon ? props.onClickIcon : () => {}}
+            isIconRight={true}
+            focused={focused}
+            hasValue={Boolean(props.value)}
+            colorProp={props.typography.color}
+            iconOffset={
+              typeof props.paddingX === "number"
+                ? props.paddingX
+                : rightIconOffset
+            }
+          >
+            {props.loading ? (
+              <Loading center={false} size={rightIconWidth} />
+            ) : props.icon && iconSide === "right" ? (
+              <Icon name={props.icon.name} width={rightIconWidth} />
+            ) : null}
+          </TextInputIconContainer>
+        )}
       </WithIcon>
     );
   }
@@ -273,7 +310,7 @@ export function TextInput(textInputProps: TextInputProps) {
   const { select } = props;
 
   return (
-    <StyledTextInput width={textInputWidth}>
+    <StyledTextInput widthProp={textInputWidth}>
       {props.label ? (
         <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
       ) : null}
@@ -392,10 +429,10 @@ const Input = styled.input<InputProps>`
   }
 `;
 
-const RightButtonAligner = styled.div<{ iconOffset: number }>`
+const RightButtonAligner = styled.div<{ paddingX: number }>`
   position: absolute;
   top: 0;
-  right: ${({ iconOffset }) => iconOffset}px;
+  right: ${({ paddingX }) => paddingX}px;
   z-index: ${z.textInput + 1};
   bottom: 0;
   display: flex;
@@ -436,8 +473,8 @@ export const TextInputHalfRow = styled.div`
   }
 `;
 
-const StyledTextInput = styled.div<{ width: string }>`
-  width: ${({ width }) => width};
+const StyledTextInput = styled.div<{ widthProp: string }>`
+  width: ${({ widthProp }) => widthProp};
   position: relative;
 
   /* eg forms, should be left consistent: */
