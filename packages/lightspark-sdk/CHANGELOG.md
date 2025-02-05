@@ -1,5 +1,15 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.9
+
+### Patch Changes
+
+- 56d359b: - GraphQL Query Adjustment:
+  – In packages/lightspark-sdk/src/graphql/IncomingPaymentsForInvoice.ts, the type for the $invoice_id variable was changed from Hash32! to ID! to better align with schema definitions.
+- Updated dependencies [56d359b]
+  - @lightsparkdev/core@1.2.7
+  - @lightsparkdev/crypto-wasm@0.1.10
+
 ## 1.8.8
 
 ### Patch Changes
