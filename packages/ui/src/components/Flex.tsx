@@ -7,14 +7,18 @@ type FlexProps = {
     | "stretch"
     | "center"
     | "flex-start"
+    | "start"
     | "flex-end"
+    | "end"
     | "space-between"
     | undefined;
   align?:
     | "stretch"
     | "center"
     | "flex-start"
+    | "start"
     | "flex-end"
+    | "end"
     | "space-between"
     | undefined;
   children?: ReactNode;
