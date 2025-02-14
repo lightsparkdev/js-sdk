@@ -146,11 +146,13 @@ class LightsparkClient {
    * @param cryptoImpl The crypto implementation to use. Defaults to web and node compatible crypto.
    *     For React Native, you should use the `ReactNativeCrypto`
    *     implementation from `@lightsparkdev/react-native`.
+   * @param signingKey Passing in a signing key enables you to overload the default signing behavior.  You can implement your own SigningKey class to make requests to a secure environment to sign or load a locally persisted key.  WARNING: Typically, you won't need to set this parameter unless you want to customize the OSK signing flow. Most users should just use `loadNodeSigningKey` instead of passing this parameter.
    */
   constructor(
     private authProvider: AuthProvider = new StubAuthProvider(),
     private readonly serverUrl: string = "api.lightspark.com",
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
+    private readonly signingKey?: SigningKey,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.nodeKeyLoaderCache = new NodeKeyLoaderCache(
@@ -164,6 +166,7 @@ class LightsparkClient {
       authProvider,
       serverUrl,
       this.cryptoImpl,
+      this.signingKey,
     );
 
     autoBind(this);
