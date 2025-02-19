@@ -153,6 +153,7 @@ class LightsparkClient {
     private readonly serverUrl: string = "api.lightspark.com",
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
     private readonly signingKey?: SigningKey,
+    private readonly fetchImpl: typeof fetch = fetch,
   ) {
     this.nodeKeyCache = new NodeKeyCache(this.cryptoImpl);
     this.nodeKeyLoaderCache = new NodeKeyLoaderCache(
@@ -167,6 +168,7 @@ class LightsparkClient {
       serverUrl,
       this.cryptoImpl,
       this.signingKey,
+      this.fetchImpl,
     );
 
     autoBind(this);
@@ -219,6 +221,8 @@ class LightsparkClient {
       authProvider,
       this.serverUrl,
       this.cryptoImpl,
+      this.signingKey,
+      this.fetchImpl,
     );
     this.authProvider = authProvider;
   }

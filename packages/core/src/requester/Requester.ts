@@ -42,6 +42,7 @@ class Requester {
     private readonly baseUrl: string = DEFAULT_BASE_URL,
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
     private readonly signingKey?: SigningKey,
+    private readonly fetchImpl: typeof fetch = fetch,
   ) {
     let websocketImpl;
     if (typeof WebSocket === "undefined" && typeof window === "undefined") {
@@ -190,7 +191,7 @@ class Requester {
       variables,
       headers,
     });
-    const response = await fetch(url, {
+    const response = await this.fetchImpl(url, {
       method: "POST",
       headers,
       body: bodyData,
