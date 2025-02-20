@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.8.10
+
+### Patch Changes
+
+- 47733a2: - Allow injecting a custom fetchImpl into the JS SDK. This is helpful for clients who need custom requesting logic, logging, etc.
+- Updated dependencies [47733a2]
+  - @lightsparkdev/core@1.2.8
+  - @lightsparkdev/crypto-wasm@0.1.11
+
 ## 1.8.9
 
 ### Patch Changes
