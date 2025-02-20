@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/ui-test-app",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Lightspark UI components",
   "author": "Lightspark Inc.",
   "main": "./dist/index.js",
@@ -31,7 +31,7 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@lightsparkdev/core": "1.2.8",
-    "@lightsparkdev/ui": "1.0.16",
+    "@lightsparkdev/ui": "1.0.17",
     "react": "^18.2.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "6.11.2"

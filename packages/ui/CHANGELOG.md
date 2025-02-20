@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.0.17
+
+### Patch Changes
+
+- a0aed49: - Testing release workflow
+
 ## 1.0.16
 
 ### Patch Changes
