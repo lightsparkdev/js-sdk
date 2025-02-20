@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-cli",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "CLI for the Lightspark JS sdk",
   "main": "./dist/index.js",
   "bin": {
@@ -44,9 +44,9 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^1.1.3",
-    "@lightsparkdev/core": "1.2.7",
-    "@lightsparkdev/crypto-wasm": "0.1.10",
-    "@lightsparkdev/lightspark-sdk": "1.8.9",
+    "@lightsparkdev/core": "1.2.8",
+    "@lightsparkdev/crypto-wasm": "0.1.11",
+    "@lightsparkdev/lightspark-sdk": "1.8.10",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
     "dotenv": "^16.3.1",
