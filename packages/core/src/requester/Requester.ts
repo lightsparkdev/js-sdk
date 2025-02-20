@@ -15,6 +15,7 @@ import StubAuthProvider from "../auth/StubAuthProvider.js";
 import type { CryptoInterface } from "../crypto/crypto.js";
 import { DefaultCrypto, LightsparkSigningException } from "../crypto/crypto.js";
 import type NodeKeyCache from "../crypto/NodeKeyCache.js";
+import type { SigningKey } from "../crypto/SigningKey.js";
 import LightsparkException from "../LightsparkException.js";
 import { logger } from "../Logger.js";
 import { b64encode } from "../utils/base64.js";
@@ -40,6 +41,8 @@ class Requester {
     private readonly authProvider: AuthProvider = new StubAuthProvider(),
     private readonly baseUrl: string = DEFAULT_BASE_URL,
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
+    private readonly signingKey?: SigningKey,
+    private readonly fetchImpl: typeof fetch = fetch,
   ) {
     let websocketImpl;
     if (typeof WebSocket === "undefined" && typeof window === "undefined") {
@@ -188,7 +191,7 @@ class Requester {
       variables,
       headers,
     });
-    const response = await fetch(url, {
+    const response = await this.fetchImpl(url, {
       method: "POST",
       headers,
       body: bodyData,
@@ -248,7 +251,7 @@ class Requester {
       expires_at: expiration,
     };
 
-    const key = this.nodeKeyCache.getKey(signingNodeId);
+    const key = this.signingKey ?? this.nodeKeyCache.getKey(signingNodeId);
     if (!key) {
       throw new LightsparkSigningException(
         "Missing node of encrypted_signing_private_key",

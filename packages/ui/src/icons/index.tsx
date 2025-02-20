@@ -22,6 +22,7 @@ export { Bank } from "./Bank.js";
 export { BitcoinB } from "./BitcoinB.js";
 export { BitcoinBOnRoundedSquare } from "./BitcoinBOnRoundedSquare.js";
 export { BrokenChainLink } from "./BrokenChainLink.js";
+export { Calendar } from "./Calendar.js";
 export { CalendarClock } from "./CalendarClock.js";
 export { CameraCapture } from "./CameraCapture.js";
 export { CaretRight } from "./CaretRight.js";
