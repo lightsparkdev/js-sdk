@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.0.16
+
+### Patch Changes
+
+- 47733a2: - New icon, minor update to Flex component
+- Updated dependencies [47733a2]
+  - @lightsparkdev/core@1.2.8
+
 ## 1.0.15
 
 ### Patch Changes
