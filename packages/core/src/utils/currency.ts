@@ -673,7 +673,8 @@ export function formatCurrencyStr(
     ? ""
     : unit === CurrencyUnit.BITCOIN
     ? ""
-    : unit === CurrencyUnit.SATOSHI || unit === "SAT"
+    : unit === CurrencyUnit.SATOSHI ||
+      unit === abbrCurrencyUnit(CurrencyUnit.SATOSHI)
     ? ""
     : "";
 
@@ -690,7 +691,7 @@ export function formatCurrencyStr(
       })}`;
       break;
     case CurrencyUnit.SATOSHI:
-    case "SAT":
+    case abbrCurrencyUnit(CurrencyUnit.SATOSHI):
       /* In most cases product prefers hiding sub sat precision (msats). In a few
          places full precision (3 digits) are preferred, e.g. for Lightning fees
          paid on a transaction details page: */
