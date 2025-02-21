@@ -22,6 +22,7 @@ import type BlockchainBalance from "./BlockchainBalance.js";
 import { BlockchainBalanceFromJson } from "./BlockchainBalance.js";
 import type CurrencyAmount from "./CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./CurrencyAmount.js";
+import type CurrencyAmountInput from "./CurrencyAmountInput.js";
 import type Entity from "./Entity.js";
 import type LightsparkNodeOwner from "./LightsparkNodeOwner.js";
 import type TransactionFailures from "./TransactionFailures.js";
@@ -732,13 +733,15 @@ query FetchAccountToChannelsConnection($bitcoin_network: BitcoinNetwork!, $light
     lightningNodeId: string | undefined = undefined,
     statuses: TransactionStatus[] | undefined = undefined,
     excludeFailures: TransactionFailures | undefined = undefined,
+    maxAmount: CurrencyAmountInput | undefined = undefined,
+    minAmount: CurrencyAmountInput | undefined = undefined,
   ): Promise<AccountToTransactionsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: [TransactionType!], $after_date: DateTime, $before_date: DateTime, $bitcoin_network: BitcoinNetwork, $lightning_node_id: ID, $statuses: [TransactionStatus!], $exclude_failures: TransactionFailures) {
+query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: [TransactionType!], $after_date: DateTime, $before_date: DateTime, $bitcoin_network: BitcoinNetwork, $lightning_node_id: ID, $statuses: [TransactionStatus!], $exclude_failures: TransactionFailures, $max_amount: CurrencyAmountInput, $min_amount: CurrencyAmountInput) {
     current_account {
         ... on Account {
-            transactions(, first: $first, after: $after, types: $types, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id, statuses: $statuses, exclude_failures: $exclude_failures) {
+            transactions(, first: $first, after: $after, types: $types, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id, statuses: $statuses, exclude_failures: $exclude_failures, max_amount: $max_amount, min_amount: $min_amount) {
                 __typename
                 account_to_transactions_connection_count: count
                 account_to_transactions_connection_page_info: page_info {
@@ -1337,6 +1340,8 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
         lightning_node_id: lightningNodeId,
         statuses: statuses,
         exclude_failures: excludeFailures,
+        max_amount: maxAmount,
+        min_amount: minAmount,
       },
       constructObject: (json) => {
         const connection = json["current_account"]["transactions"];
@@ -1353,13 +1358,15 @@ query FetchAccountToTransactionsConnection($first: Int, $after: String, $types: 
     beforeDate: string | undefined = undefined,
     bitcoinNetwork: BitcoinNetwork | undefined = undefined,
     lightningNodeId: string | undefined = undefined,
+    maxAmount: CurrencyAmountInput | undefined = undefined,
+    minAmount: CurrencyAmountInput | undefined = undefined,
   ): Promise<AccountToPaymentRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $after_date: DateTime, $before_date: DateTime, $bitcoin_network: BitcoinNetwork, $lightning_node_id: ID) {
+query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $after_date: DateTime, $before_date: DateTime, $bitcoin_network: BitcoinNetwork, $lightning_node_id: ID, $max_amount: CurrencyAmountInput, $min_amount: CurrencyAmountInput) {
     current_account {
         ... on Account {
-            payment_requests(, first: $first, after: $after, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id) {
+            payment_requests(, first: $first, after: $after, after_date: $after_date, before_date: $before_date, bitcoin_network: $bitcoin_network, lightning_node_id: $lightning_node_id, max_amount: $max_amount, min_amount: $min_amount) {
                 __typename
                 account_to_payment_requests_connection_count: count
                 account_to_payment_requests_connection_page_info: page_info {
@@ -1692,6 +1699,8 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
         before_date: beforeDate,
         bitcoin_network: bitcoinNetwork,
         lightning_node_id: lightningNodeId,
+        max_amount: maxAmount,
+        min_amount: minAmount,
       },
       constructObject: (json) => {
         const connection = json["current_account"]["payment_requests"];
@@ -1710,13 +1719,15 @@ query FetchAccountToPaymentRequestsConnection($first: Int, $after: String, $afte
     idempotencyKeys: string[] | undefined = undefined,
     afterDate: string | undefined = undefined,
     beforeDate: string | undefined = undefined,
+    maxAmount: CurrencyAmountInput | undefined = undefined,
+    minAmount: CurrencyAmountInput | undefined = undefined,
   ): Promise<AccountToWithdrawalRequestsConnection> {
     return (await client.executeRawQuery({
       queryPayload: ` 
-query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $bitcoin_networks: [BitcoinNetwork!], $statuses: [WithdrawalRequestStatus!], $node_ids: [ID!], $idempotency_keys: [String!], $after_date: DateTime, $before_date: DateTime) {
+query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $bitcoin_networks: [BitcoinNetwork!], $statuses: [WithdrawalRequestStatus!], $node_ids: [ID!], $idempotency_keys: [String!], $after_date: DateTime, $before_date: DateTime, $max_amount: CurrencyAmountInput, $min_amount: CurrencyAmountInput) {
     current_account {
         ... on Account {
-            withdrawal_requests(, first: $first, after: $after, bitcoin_networks: $bitcoin_networks, statuses: $statuses, node_ids: $node_ids, idempotency_keys: $idempotency_keys, after_date: $after_date, before_date: $before_date) {
+            withdrawal_requests(, first: $first, after: $after, bitcoin_networks: $bitcoin_networks, statuses: $statuses, node_ids: $node_ids, idempotency_keys: $idempotency_keys, after_date: $after_date, before_date: $before_date, max_amount: $max_amount, min_amount: $min_amount) {
                 __typename
                 account_to_withdrawal_requests_connection_count: count
                 account_to_withdrawal_requests_connection_page_info: page_info {
@@ -1795,6 +1806,8 @@ query FetchAccountToWithdrawalRequestsConnection($first: Int, $after: String, $b
         idempotency_keys: idempotencyKeys,
         after_date: afterDate,
         before_date: beforeDate,
+        max_amount: maxAmount,
+        min_amount: minAmount,
       },
       constructObject: (json) => {
         const connection = json["current_account"]["withdrawal_requests"];

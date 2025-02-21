@@ -3,12 +3,19 @@
 import InvoiceType from "./InvoiceType.js";
 
 interface CreateTestModeInvoiceInput {
+  /** The local node from which to create the invoice. **/
   localNodeId: string;
 
+  /**
+   * The amount for which the invoice should be created, in millisatoshis. Setting the amount to
+   * 0 will allow the payer to specify an amount.
+   **/
   amountMsats: number;
 
+  /** An optional memo to include in the invoice. **/
   memo?: string | undefined;
 
+  /** The type of invoice to create. **/
   invoiceType?: InvoiceType | undefined;
 }
 
