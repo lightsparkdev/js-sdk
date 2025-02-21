@@ -241,6 +241,21 @@ export type CurrencyAmountInputObj = {
   unit: CurrencyUnitType;
 };
 
+/**
+ * UMA has flexible currency types which contain details needed to render amounts.
+ */
+export type UmaCurrency = {
+  code: string;
+  symbol: string;
+  decimals: number;
+  name: string;
+};
+
+export type UmaCurrencyAmount = {
+  value: number;
+  currency: UmaCurrency;
+};
+
 /* Persisted CurrencyAmount objects may have this shape if queried from GQL in this format
    but the fields are deprecated and original_unit and original_value should be used instead: */
 export type DeprecatedCurrencyAmountObj = {
@@ -292,6 +307,21 @@ export function isCurrencyAmountInputObj(
       arg.value === null) &&
     "unit" in arg &&
     typeof arg.unit === "string"
+  );
+}
+
+export function isUmaCurrencyAmount(arg: unknown): arg is UmaCurrencyAmount {
+  return (
+    typeof arg === "object" &&
+    arg !== null &&
+    "value" in arg &&
+    typeof arg.value === "number" &&
+    "currency" in arg &&
+    typeof (arg as UmaCurrencyAmount).currency === "object" &&
+    typeof (arg as UmaCurrencyAmount).currency.code === "string" &&
+    typeof (arg as UmaCurrencyAmount).currency.symbol === "string" &&
+    typeof (arg as UmaCurrencyAmount).currency.name === "string" &&
+    typeof (arg as UmaCurrencyAmount).currency.decimals === "number"
   );
 }
 
@@ -591,7 +621,7 @@ type FormatCurrencyStrOptions = {
 };
 
 export function formatCurrencyStr(
-  amount: CurrencyAmountArg,
+  amount: CurrencyAmountArg | UmaCurrencyAmount,
   options?: FormatCurrencyStrOptions,
 ) {
   const { precision, compact, showBtcSymbol } = {
@@ -599,19 +629,28 @@ export function formatCurrencyStr(
     ...options,
   };
 
-  const currencyAmount = getCurrencyAmount(amount);
-  let { value: num } = currencyAmount;
-  const { unit } = currencyAmount;
-
-  const centCurrencies = [
-    CurrencyUnit.USD,
-    CurrencyUnit.MXN,
-    CurrencyUnit.PHP,
-  ] as string[];
-  /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
-   * divided by 100 for proper display format: */
-  if (centCurrencies.includes(unit)) {
-    num = num / 100;
+  let num: number;
+  let unit: string;
+  if (isUmaCurrencyAmount(amount)) {
+    num = amount.value;
+    unit = amount.currency.code;
+    if (amount.currency.decimals > 0) {
+      num = amount.value / Math.pow(10, amount.currency.decimals);
+    }
+  } else {
+    const currencyAmount = getCurrencyAmount(amount);
+    num = currencyAmount.value;
+    unit = currencyAmount.unit;
+    const centCurrencies = [
+      CurrencyUnit.USD,
+      CurrencyUnit.MXN,
+      CurrencyUnit.PHP,
+    ] as string[];
+    /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
+     * divided by 100 for proper display format: */
+    if (centCurrencies.includes(unit)) {
+      num = num / 100;
+    }
   }
 
   function getDefaultMaxFractionDigits(
@@ -634,7 +673,7 @@ export function formatCurrencyStr(
     ? ""
     : unit === CurrencyUnit.BITCOIN
     ? ""
-    : unit === CurrencyUnit.SATOSHI
+    : unit === CurrencyUnit.SATOSHI || unit === "SAT"
     ? ""
     : "";
 
@@ -642,17 +681,6 @@ export function formatCurrencyStr(
 
   let formattedStr = "";
   switch (unit) {
-    case CurrencyUnit.MXN:
-    case CurrencyUnit.USD:
-    case CurrencyUnit.PHP:
-      formattedStr = num.toLocaleString(currentLocale, {
-        style: "currency",
-        currency: unit,
-        currencyDisplay: "narrowSymbol",
-        notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
-      });
-      break;
     case CurrencyUnit.BITCOIN:
       /* In most cases product prefers 4 precision digtis for BTC. In a few places
          full precision (8 digits) are preferred, e.g. for a transaction details page: */
@@ -662,6 +690,7 @@ export function formatCurrencyStr(
       })}`;
       break;
     case CurrencyUnit.SATOSHI:
+    case "SAT":
       /* In most cases product prefers hiding sub sat precision (msats). In a few
          places full precision (3 digits) are preferred, e.g. for Lightning fees
          paid on a transaction details page: */
@@ -674,11 +703,20 @@ export function formatCurrencyStr(
     case CurrencyUnit.MICROBITCOIN:
     case CurrencyUnit.MILLIBITCOIN:
     case CurrencyUnit.NANOBITCOIN:
-    default:
       formattedStr = `${symbol}${num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
+      break;
+    default:
+      formattedStr = num.toLocaleString(currentLocale, {
+        style: "currency",
+        currency: unit,
+        currencyDisplay: "narrowSymbol",
+        notation: compact ? ("compact" as const) : undefined,
+        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
+      });
+      break;
   }
 
   if (options?.appendUnits) {
@@ -690,7 +728,9 @@ export function formatCurrencyStr(
       return formattedStr;
     }
 
-    const unitStr = abbrCurrencyUnit(unit);
+    const unitStr = isUmaCurrencyAmount(amount)
+      ? amount.currency.code
+      : abbrCurrencyUnit(unit as CurrencyUnitType);
     const unitSuffix = options.appendUnits.plural && num > 1 ? "s" : "";
     const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
     formattedStr += ` ${
