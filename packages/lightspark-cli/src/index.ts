@@ -179,6 +179,42 @@ const createInvoice = async (
   qrcode.generate(encodedInvoice, { small: true });
 };
 
+const createOffer = async (client: LightsparkClient, options: OptionValues) => {
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId } = await selectNodeId(nodeIds);
+
+  let { amount, description } = options;
+  if (!amount) {
+    amount = await input({
+      message: "What is the amount in SATs?",
+      validate: (value) => Number.isInteger(Number(value)),
+    });
+  }
+  if (!description) {
+    description = await input({
+      message: "What is the description?",
+    });
+  }
+
+  console.log(
+    "Creating an offer with options: ",
+    JSON.stringify({ amount, description }, null, 2),
+    "\n",
+  );
+
+  const encodedOffer = await client.createOffer(
+    selectedNodeId,
+    Number(amount) * 1000,
+    description,
+  );
+
+  if (!encodedOffer) {
+    throw new Error("Failed to create offer");
+  }
+  console.log("Encoded offer:", encodedOffer);
+  qrcode.generate(encodedOffer, { small: true });
+};
+
 const createTestModeInvoice = async (
   client: LightsparkClient,
   options: OptionValues,
@@ -375,6 +411,56 @@ const payInvoice = async (
   const payment = await client.payInvoice(
     selectedNodeId,
     encodedInvoice,
+    1_000_000,
+    60, // Default
+    options.amount === -1 ? undefined : options.amount * 1000,
+  );
+  console.log("Payment:", JSON.stringify(payment, null, 2));
+};
+
+const payOffer = async (
+  client: LightsparkClient,
+  options: OptionValues,
+  credentials: EnvCredentials,
+) => {
+  const nodeIds = await getNodeIds(client);
+  const { id: selectedNodeId, bitcoinNetwork } = await selectNodeId(nodeIds);
+
+  let encodedOffer = options.offer;
+  if (!encodedOffer) {
+    encodedOffer = await input({
+      message: "What is the encoded offer?",
+      validate: (value) => value.length > 0,
+    });
+  }
+
+  let loaderArgs;
+  if (selectedNodeId.startsWith("LightsparkNodeWithRemoteSigning")) {
+    const seedHex = await inputRemoteSigningSeedHex();
+    loaderArgs = { masterSeed: hexToBytes(seedHex), network: bitcoinNetwork };
+  } else {
+    let nodePassword = options.password;
+    if (bitcoinNetwork === BitcoinNetwork.REGTEST) {
+      nodePassword = nodePassword || credentials.testNodePassword;
+    } else if (!nodePassword) {
+      nodePassword = await password({
+        message: `What is the password for the node (${selectedNodeId})?`,
+        mask: "*",
+      });
+    }
+    loaderArgs = { password: nodePassword };
+  }
+
+  await client.loadNodeSigningKey(selectedNodeId, loaderArgs);
+
+  console.log(
+    "Paying an offer with options: ",
+    JSON.stringify({ ...options }, null, 2),
+    "\n",
+  );
+  const payment = await client.payOffer(
+    selectedNodeId,
+    encodedOffer,
     1_000_000,
     60, // Default
     options.amount === -1 ? undefined : options.amount * 1000,
@@ -638,6 +724,22 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
       );
     });
 
+  const createOfferCmd = new Command("create-offer")
+    .description("Create an offer for your account")
+    .action((options) => {
+      main(options, createOffer).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err),
+      );
+    });
+
+  const payOfferCmd = new Command("pay-offer")
+    .description("Pay an offer for your account")
+    .action((options) => {
+      main(options, payOffer).catch((err) =>
+        console.error("Oh no, something went wrong.\n", err),
+      );
+    });
+
   const balancesCmd = new Command("balances")
     .description("Get balances for your account")
     .action((options) => {
@@ -778,6 +880,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     )
     .version(getPackageVersion())
     .addCommand(createInvoiceCmd)
+    .addCommand(createOfferCmd)
     .addCommand(createTestModeInvoiceCmd)
     .addCommand(recentTxCmd)
     .addCommand(balancesCmd)
@@ -789,6 +892,7 @@ const safeParseInt = (value: string /* dummyPrevious: any */) => {
     .addCommand(decodeInvoiceCmd)
     .addCommand(createNodeWalletAddressCmd)
     .addCommand(payInvoiceCmd)
+    .addCommand(payOfferCmd)
     .addCommand(payUmaInvoiceCmd)
     .addCommand(createTestModePaymentCmd)
     .addCommand(getNodeChannelsCmd)
