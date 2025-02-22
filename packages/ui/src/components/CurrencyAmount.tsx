@@ -5,12 +5,14 @@ import type {
   CurrencyAmountArg,
   CurrencyMap,
   CurrencyUnitType,
+  UmaCurrencyAmount,
 } from "@lightsparkdev/core";
 import {
   CurrencyUnit,
   formatCurrencyStr,
   getCurrencyAmount,
   isCurrencyMap,
+  isUmaCurrencyAmount,
   mapCurrencyAmount,
 } from "@lightsparkdev/core";
 import type { ReactNode } from "react";
@@ -19,7 +21,7 @@ import { renderTypography } from "./typography/renderTypography.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type CurrencyAmountProps = {
-  amount: CurrencyAmountArg | CurrencyMap;
+  amount: CurrencyAmountArg | CurrencyMap | UmaCurrencyAmount;
   displayUnit?: CurrencyUnitType;
   shortNumber?: boolean;
   showUnits?: boolean | AppendUnitsOptions | undefined;
@@ -45,20 +47,36 @@ export function CurrencyAmount({
   unitsPerBtc,
   showCurrencyIcon = true,
 }: CurrencyAmountProps) {
-  let displayUnit: CurrencyUnitType;
-  let amountMap: CurrencyMap;
-  if (isCurrencyMap(amount)) {
-    displayUnit = displayUnitProp || CurrencyUnit.SATOSHI;
-    amountMap = amount;
+  let value: number;
+  let defaultFormattedNumber: string;
+  let displayUnitStr: string;
+  let currencyAmountForFormatting: CurrencyAmountArg | UmaCurrencyAmount;
+  if (isUmaCurrencyAmount(amount)) {
+    value = amount.value;
+    defaultFormattedNumber = formatCurrencyStr(amount);
+    displayUnitStr =
+      amount.currency.code === "SAT"
+        ? CurrencyUnit.SATOSHI
+        : amount.currency.code;
+    currencyAmountForFormatting = amount;
   } else {
-    const resolvedCurrencyAmount = getCurrencyAmount(amount);
-    /* default to the currency amount unit if defined and displayUnit is not provided: */
-    displayUnit = displayUnitProp || resolvedCurrencyAmount.unit;
-    amountMap = mapCurrencyAmount(amount, unitsPerBtc);
-  }
+    let amountMap: CurrencyMap;
+    let displayUnit: CurrencyUnitType;
+    if (isCurrencyMap(amount)) {
+      displayUnit = displayUnitProp || CurrencyUnit.SATOSHI;
+      amountMap = amount;
+    } else {
+      const resolvedCurrencyAmount = getCurrencyAmount(amount);
+      /* default to the currency amount unit if defined and displayUnit is not provided: */
+      displayUnit = displayUnitProp || resolvedCurrencyAmount.unit;
+      amountMap = mapCurrencyAmount(amount, unitsPerBtc);
+    }
 
-  const value = amountMap[displayUnit];
-  const defaultFormattedNumber = amountMap.formatted[displayUnit];
+    value = amountMap[displayUnit];
+    defaultFormattedNumber = amountMap.formatted[displayUnit];
+    displayUnitStr = displayUnit;
+    currencyAmountForFormatting = { value: Number(value), unit: displayUnit };
+  }
 
   const appendUnits =
     showUnits === false
@@ -75,20 +93,20 @@ export function CurrencyAmount({
      throughout the UI. In general the default should always be used: */
   let formattedNumber = defaultFormattedNumber;
   if (shortNumber) {
-    formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { precision: 1, compact: true, appendUnits },
-    );
+    formattedNumber = formatCurrencyStr(currencyAmountForFormatting, {
+      precision: 1,
+      compact: true,
+      appendUnits,
+    });
   } else if (fullPrecision) {
-    formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { precision: "full", appendUnits },
-    );
+    formattedNumber = formatCurrencyStr(currencyAmountForFormatting, {
+      precision: "full",
+      appendUnits,
+    });
   } else if (appendUnits) {
-    formattedNumber = formatCurrencyStr(
-      { value: Number(value), unit: displayUnit },
-      { appendUnits },
-    );
+    formattedNumber = formatCurrencyStr(currencyAmountForFormatting, {
+      appendUnits,
+    });
   }
 
   let content: string | ReactNode = formattedNumber;
@@ -103,7 +121,9 @@ export function CurrencyAmount({
   return (
     <StyledCurrencyAmount ml={ml} id={id}>
       {includeEstimatedIndicator && "Est. "}
-      {showCurrencyIcon ? <CurrencyIcon unit={displayUnit} /> : null}
+      {showCurrencyIcon ? (
+        <CurrencyIcon unit={displayUnitStr as CurrencyUnitType} />
+      ) : null}
       {content}
     </StyledCurrencyAmount>
   );

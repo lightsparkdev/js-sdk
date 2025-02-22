@@ -47,6 +47,8 @@ export { default as CreateInvoiceOutput } from "./CreateInvoiceOutput.js";
 export { default as CreateLnurlInvoiceInput } from "./CreateLnurlInvoiceInput.js";
 export { default as CreateNodeWalletAddressInput } from "./CreateNodeWalletAddressInput.js";
 export { default as CreateNodeWalletAddressOutput } from "./CreateNodeWalletAddressOutput.js";
+export { default as CreateOfferInput } from "./CreateOfferInput.js";
+export { default as CreateOfferOutput } from "./CreateOfferOutput.js";
 export { default as CreateTestModeInvoiceInput } from "./CreateTestModeInvoiceInput.js";
 export { default as CreateTestModeInvoiceOutput } from "./CreateTestModeInvoiceOutput.js";
 export { default as CreateTestModePaymentInput } from "./CreateTestModePaymentInput.js";
@@ -55,6 +57,7 @@ export { default as CreateUmaInvitationInput } from "./CreateUmaInvitationInput.
 export { default as CreateUmaInvitationOutput } from "./CreateUmaInvitationOutput.js";
 export { default as CreateUmaInvoiceInput } from "./CreateUmaInvoiceInput.js";
 export { default as CurrencyAmount } from "./CurrencyAmount.js";
+export { default as CurrencyAmountInput } from "./CurrencyAmountInput.js";
 export { default as CurrencyUnit } from "./CurrencyUnit.js";
 export { default as DailyLiquidityForecast } from "./DailyLiquidityForecast.js";
 export { default as DeclineToSignMessagesInput } from "./DeclineToSignMessagesInput.js";
@@ -116,6 +119,8 @@ export { default as Node, getNodeQuery } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
 export { default as NodeAddressType } from "./NodeAddressType.js";
 export { default as NodeToAddressesConnection } from "./NodeToAddressesConnection.js";
+export { default as Offer, getOfferQuery } from "./Offer.js";
+export { default as OfferData, getOfferDataQuery } from "./OfferData.js";
 export { default as OnChainFeeTarget } from "./OnChainFeeTarget.js";
 export {
   default as OnChainTransaction,
@@ -143,6 +148,9 @@ export {
 } from "./PaymentRequest.js";
 export { default as PaymentRequestData } from "./PaymentRequestData.js";
 export { default as PaymentRequestStatus } from "./PaymentRequestStatus.js";
+export { default as PayOfferInput } from "./PayOfferInput.js";
+export { default as PayOfferOutput } from "./PayOfferOutput.js";
+export { default as PayTestModeInvoiceInput } from "./PayTestModeInvoiceInput.js";
 export { default as PayUmaInvoiceInput } from "./PayUmaInvoiceInput.js";
 export { default as Permission } from "./Permission.js";
 export { default as PostTransactionData } from "./PostTransactionData.js";
