@@ -120,18 +120,3 @@ $ cd examples/node-scripts
 $ npm install
 $ npx ts-node createInvoice.ts -a "100" -m "Whasssupppp"
 ```
-
-### Streaming Wallet Extension
-
-This example is meant to be used in conjunction with the [Lightspark streaming sats demo](https://app.lightspark.com/demos/streaming). It can be built and installed as a Chrome extension by running (from root js-sdk directory):
-
-```bash
-$ yarn
-$ yarn build
-```
-
-Then, go to `chrome://extensions` and click "Load unpacked" and select the `apps/examples/streaming-wallet-extension/build` directory.
-
-When the extension is installed, it will automatically open the streaming sats demo page. You can then click extension icon to open the extension popup, which will give you the ability to create a test account with 2 nodes - a viewer node (which acts as your wallet for the demo), and a creator node, which simulates the wallet of the creator of the streaming content. The page will reload and you'll be able to start streaming sats as the video plays!
-
-To see how it works, check out the background directory in the extension code. It uses the SDK to create an invoice on behalf of the creator node, then uses the SDK to pay the invoice on behalf of the viewer node. It also uses the SDK to get the current balance of both nodes and listen for transaction updates, which it broadcasts to the webpage.
