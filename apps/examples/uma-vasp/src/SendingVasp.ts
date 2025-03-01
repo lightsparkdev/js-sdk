@@ -1,12 +1,12 @@
 import { convertCurrencyAmount } from "@lightsparkdev/core";
 import {
   CurrencyUnit,
+  getLightsparkNodeQuery,
   InvoiceData,
   LightsparkClient,
   OutgoingPayment,
   PaymentDirection,
   TransactionStatus,
-  getLightsparkNodeQuery,
 } from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
 import { Express, Request } from "express";
@@ -19,7 +19,12 @@ import SendingVaspRequestCache, {
 import UmaConfig from "./UmaConfig.js";
 import { User } from "./User.js";
 import UserService from "./UserService.js";
-import { CURRENCIES, CurrencyType, isCurrencyType, SATS_CURRENCY } from "./currencies.js";
+import {
+  CURRENCIES,
+  CurrencyType,
+  isCurrencyType,
+  SATS_CURRENCY,
+} from "./currencies.js";
 import { HttpResponse } from "./networking/HttpResponse.js";
 import {
   fullUrlForRequest,
@@ -37,7 +42,7 @@ export default class SendingVasp {
     private readonly ledgerService: InternalLedgerService,
     private readonly complianceService: ComplianceService,
     private readonly nonceCache: uma.NonceValidator,
-  ) { }
+  ) {}
 
   registerRoutes(app: Express) {
     app.get("/api/umalookup/:receiver", async (req: Request, resp) => {
@@ -109,7 +114,8 @@ export default class SendingVasp {
         });
       }
       const response = await this.handlePayInvoice(
-        user, fullUrlForRequest(req)
+        user,
+        fullUrlForRequest(req),
       );
       sendResponse(resp, response);
     });
@@ -138,16 +144,19 @@ export default class SendingVasp {
         });
       }
 
-      const response = await this.handleRequestPayInvoice(invoice, invoiceBech32Str);
+      const response = await this.handleRequestPayInvoice(
+        invoice,
+        invoiceBech32Str,
+      );
       sendResponse(resp, response);
     });
 
     app.get("/api/uma/pending_requests", async (req, resp) => {
       const pendingRequests = this.requestCache.getPendingPayReqs();
       sendResponse(resp, {
-        httpStatus: 200, data: pendingRequests
-      })
-
+        httpStatus: 200,
+        data: pendingRequests,
+      });
     });
   }
 
@@ -443,8 +452,9 @@ export default class SendingVasp {
       };
     }
 
-
-    const umaVersion = initialRequestData.lnurlpResponse.umaVersion ?? uma.getHighestSupportedVersionForMajorVersion(1);
+    const umaVersion =
+      initialRequestData.lnurlpResponse.umaVersion ??
+      uma.getHighestSupportedVersionForMajorVersion(1);
 
     return this.handleUmaPayReqInternal({
       callback: initialRequestData.lnurlpResponse.callback,
@@ -459,41 +469,39 @@ export default class SendingVasp {
       requestUrl: requestUrl,
       senderProfile: payerProfile,
       pubKeys: pubKeys,
-      invoiceUUID: undefined
-    })
+      invoiceUUID: undefined,
+    });
   }
 
-  private async handleUmaPayReqInternal(
-    {
-      callback,
-      user,
-      currencyCode,
-      receiverUma,
-      amount,
-      amountValueMillisats,
-      isAmountInMsats,
-      sendingUma,
-      umaVersion,
-      requestUrl,
-      senderProfile: payerProfile,
-      pubKeys,
-      invoiceUUID
-    }: {
-      callback: string,
-      user: User,
-      currencyCode: CurrencyType,
-      receiverUma: string,
-      amount: number,
-      amountValueMillisats: number,
-      isAmountInMsats: boolean,
-      sendingUma: string,
-      umaVersion: string,
-      requestUrl: URL,
-      senderProfile: PayerProfile,
-      pubKeys: uma.PubKeyResponse,
-      invoiceUUID: string | undefined
-    }
-  ): Promise<HttpResponse> {
+  private async handleUmaPayReqInternal({
+    callback,
+    user,
+    currencyCode,
+    receiverUma,
+    amount,
+    amountValueMillisats,
+    isAmountInMsats,
+    sendingUma,
+    umaVersion,
+    requestUrl,
+    senderProfile: payerProfile,
+    pubKeys,
+    invoiceUUID,
+  }: {
+    callback: string;
+    user: User;
+    currencyCode: CurrencyType;
+    receiverUma: string;
+    amount: number;
+    amountValueMillisats: number;
+    isAmountInMsats: boolean;
+    sendingUma: string;
+    umaVersion: string;
+    requestUrl: URL;
+    senderProfile: PayerProfile;
+    pubKeys: uma.PubKeyResponse;
+    invoiceUUID: string | undefined;
+  }): Promise<HttpResponse> {
     const trInfo = await this.complianceService.getTravelRuleInfoForTransaction(
       user.id,
       sendingUma,
@@ -553,7 +561,10 @@ export default class SendingVasp {
     }
 
     if (!response.ok || response.status !== 200) {
-      return { httpStatus: 424, data: `Payreq failed. ${response.status}, ${response.body}` };
+      return {
+        httpStatus: 424,
+        data: `Payreq failed. ${response.status}, ${response.body}`,
+      };
     }
 
     let payResponse: uma.PayReqResponse;
@@ -723,7 +734,7 @@ export default class SendingVasp {
     const newCallbackUuid = this.requestCache.savePayReqData(
       payreqResponse.payeeData?.identifier ?? "",
       encodedInvoice,
-      undefined, // no invoice id 
+      undefined, // no invoice id
       "", // No utxo callback for non-UMA lnurl.
       invoice,
       [],
@@ -904,24 +915,29 @@ export default class SendingVasp {
       return { httpStatus: 422, data: "Missing argument: invoice" };
     }
     // payments can also be done via uuid of cached request
-    // by checking uma prefix, determine if invoiceStr is a bech32 encoded invoice.  
+    // by checking uma prefix, determine if invoiceStr is a bech32 encoded invoice.
     // if prefix not present, treat as uuid/ zod can parse this
     let encodedInvoice;
     if (!invoiceStr.startsWith("uma")) {
-      encodedInvoice = this.requestCache.getPayReqData(invoiceStr)?.encodedInvoice;
+      encodedInvoice =
+        this.requestCache.getPayReqData(invoiceStr)?.encodedInvoice;
     }
     let invoice: uma.Invoice;
     try {
       invoice = uma.InvoiceSerializer.fromBech32(encodedInvoice ?? invoiceStr);
     } catch (e) {
-      return { httpStatus: 500, data: "Cannot parse Invoice from invoice paramater" };
+      return {
+        httpStatus: 500,
+        data: "Cannot parse Invoice from invoice paramater",
+      };
     }
 
     let payerPofile = this.getPayerProfile(
       user,
       invoice.requiredPayerData ?? {},
       this.getSendingVaspDomain(requestUrl),
-      true)
+      true,
+    );
 
     const [, receivingVaspDomain] = invoice.receiverUma.split("@");
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
@@ -931,18 +947,23 @@ export default class SendingVasp {
         data: "Error fetching receiving vasp public key.",
       };
 
-    const signatureVerified = uma.verifyUmaInvoiceSignature(invoice, pubKeys.getSigningPubKey());
+    const signatureVerified = uma.verifyUmaInvoiceSignature(
+      invoice,
+      pubKeys.getSigningPubKey(),
+    );
     if (!signatureVerified) {
       return { httpStatus: 500, data: "Unable to verify invoice signature" };
     }
 
     if (!isCurrencyType(invoice.receivingCurrency.code)) {
       return {
-        httpStatus: 500, data: `Invalid currency code ${invoice.receivingCurrency.code}`
+        httpStatus: 500,
+        data: `Invalid currency code ${invoice.receivingCurrency.code}`,
       };
     }
-    const isAmountInMsats = invoice.receivingCurrency.code == SATS_CURRENCY.code;
-    const currency = CURRENCIES[invoice.receivingCurrency.code as CurrencyType]
+    const isAmountInMsats =
+      invoice.receivingCurrency.code == SATS_CURRENCY.code;
+    const currency = CURRENCIES[invoice.receivingCurrency.code as CurrencyType];
     const currencyInMsats = invoice.amount * currency.multiplier;
 
     if (invoice.expiration < Date.now()) {
@@ -957,12 +978,14 @@ export default class SendingVasp {
       amount: invoice.amount,
       amountValueMillisats: currencyInMsats, // todo
       isAmountInMsats: isAmountInMsats, //todo
-      sendingUma: invoice.senderUma ?? this.formatUma(user.umaUserName, this.getSendingVaspDomain(requestUrl)),
+      sendingUma:
+        invoice.senderUma ??
+        this.formatUma(user.umaUserName, this.getSendingVaspDomain(requestUrl)),
       requestUrl: requestUrl,
       senderProfile: payerPofile,
       pubKeys: pubKeys,
       umaVersion: invoice.umaVersions,
-      invoiceUUID: invoice.invoiceUUID
+      invoiceUUID: invoice.invoiceUUID,
     });
   }
 
@@ -980,14 +1003,17 @@ export default class SendingVasp {
     if (!pubKeys) {
       return {
         httpStatus: 500,
-        data: "Error, unable to get receiving Vasp public signing key"
-      }
+        data: "Error, unable to get receiving Vasp public signing key",
+      };
     }
-    const verified = uma.verifyUmaInvoiceSignature(invoice, pubKeys.getSigningPubKey());
+    const verified = uma.verifyUmaInvoiceSignature(
+      invoice,
+      pubKeys.getSigningPubKey(),
+    );
     if (!verified) {
       return {
         httpStatus: 500,
-        data: "Error, unable to verify uma invoice"
+        data: "Error, unable to verify uma invoice",
       };
     }
     // save request
@@ -996,13 +1022,15 @@ export default class SendingVasp {
       encodedInvoice,
       invoice.invoiceUUID,
       // invoice data / utxo callback / etc not required
-      undefined, undefined, undefined
-    )
+      undefined,
+      undefined,
+      undefined,
+    );
     // In a real VASP, here you might push a notification to inform the sender that
     // a new invoice has arrived.
     return {
-      httpStatus: 200
-    }
+      httpStatus: 200,
+    };
   }
 
   private async checkInternalLedgerBalance(
@@ -1129,7 +1157,7 @@ export default class SendingVasp {
       ) {
         throw new Error(
           "Node is an OSK, but no signing key password was provided in the config. " +
-          "Set the LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD environment variable",
+            "Set the LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD environment variable",
         );
       }
       return await this.lightsparkClient.loadNodeSigningKey(
@@ -1145,7 +1173,7 @@ export default class SendingVasp {
     if (!remoteSigningMasterSeed) {
       throw new Error(
         "Node is a remote signing node, but no master seed was provided in the config. " +
-        "Set the LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED environment variable",
+          "Set the LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED environment variable",
       );
     }
     return await this.lightsparkClient.loadNodeSigningKey(this.config.nodeID, {
