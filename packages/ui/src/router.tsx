@@ -5,7 +5,7 @@ import type { Interpolation } from "@emotion/styled";
 import styled from "@emotion/styled";
 import { omit } from "lodash-es";
 import type { MouseEventHandler, ReactNode } from "react";
-import { useCallback } from "react";
+import { forwardRef, useCallback } from "react";
 import type { PathMatch } from "react-router-dom";
 import {
   Link as RLink,
@@ -88,76 +88,84 @@ export function replaceParams(
 // If `to` contains an argument like :id, inlclude the value in params object
 // and it will be replaced automatically. This way route typesaftey is
 // preserved.
-function LinkBase({
-  to,
-  id,
-  externalLink,
-  filename,
-  params,
-  children,
-  text,
-  css,
-  onClick,
-  className,
-  hash = null,
-  blue = false,
-  newTab: newTabProp,
-  typography,
-}: LinkProps) {
-  if (!isString(to) && !externalLink && !onClick) {
-    throw new Error(
-      "Link must have either `to` or `externalLink` or `onClick` defined",
+export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
+  (
+    {
+      to,
+      id,
+      externalLink,
+      filename,
+      params,
+      children,
+      text,
+      css,
+      onClick,
+      className,
+      hash = null,
+      blue = false,
+      newTab: newTabProp,
+      typography,
+    },
+    ref,
+  ) => {
+    if (!isString(to) && !externalLink && !onClick) {
+      throw new Error(
+        "Link must have either `to` or `externalLink` or `onClick` defined",
+      );
+    }
+
+    let toStr;
+    let newTab = Boolean(newTabProp);
+    if (isString(to)) {
+      toStr = replaceParams(to, params);
+      toStr += hash ? `#${hash}` : "";
+    } else if (externalLink) {
+      const definedExternalLink = externalLink;
+      if (
+        !definedExternalLink.startsWith("http") &&
+        !definedExternalLink.startsWith("mailto:")
+      ) {
+        throw new Error("Link's externalLink must start with http or mailto:");
+      }
+      if (newTabProp === undefined) {
+        newTab = true;
+      }
+      toStr = definedExternalLink;
+    } else {
+      toStr = "#";
+    }
+
+    let content = children;
+    if (text) {
+      content = typography
+        ? renderTypography(typography.type, {
+            size: typography.size,
+            color: typography.color,
+            children: text,
+          })
+        : text;
+    }
+
+    return (
+      <RLink
+        to={toStr}
+        id={id}
+        css={css}
+        onClick={onClick}
+        className={className}
+        download={filename}
+        style={{ color: blue ? colors.blue43 : "inherit" }}
+        target={newTab ? "_blank" : undefined}
+        rel={newTab ? "noopener noreferrer" : undefined}
+        ref={ref}
+      >
+        {content}
+      </RLink>
     );
-  }
+  },
+);
 
-  let toStr;
-  let newTab = Boolean(newTabProp);
-  if (isString(to)) {
-    toStr = replaceParams(to, params);
-    toStr += hash ? `#${hash}` : "";
-  } else if (externalLink) {
-    const definedExternalLink = externalLink;
-    if (
-      !definedExternalLink.startsWith("http") &&
-      !definedExternalLink.startsWith("mailto:")
-    ) {
-      throw new Error("Link's externalLink must start with http or mailto:");
-    }
-    if (newTabProp === undefined) {
-      newTab = true;
-    }
-    toStr = definedExternalLink;
-  } else {
-    toStr = "#";
-  }
-
-  let content = children;
-  if (text) {
-    content = typography
-      ? renderTypography(typography.type, {
-          size: typography.size,
-          color: typography.color,
-          children: text,
-        })
-      : text;
-  }
-
-  return (
-    <RLink
-      to={toStr}
-      id={id}
-      css={css}
-      onClick={onClick}
-      className={className}
-      download={filename}
-      style={{ color: blue ? colors.blue43 : "inherit" }}
-      target={newTab ? "_blank" : undefined}
-      rel={newTab ? "noopener noreferrer" : undefined}
-    >
-      {content}
-    </RLink>
-  );
-}
+LinkBase.displayName = "LinkBase";
 
 export const Link = styled(LinkBase)`
   ${({ disabled }) => disabled && `pointer-events: none;`}

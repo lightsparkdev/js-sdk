@@ -106,6 +106,7 @@ export type TableProps<T extends Record<string, unknown>> = {
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   rowHoverEffect?: "border" | "background" | "none" | undefined;
+  minHeight?: number;
 };
 
 export function Table<T extends Record<string, unknown>>({
@@ -116,6 +117,7 @@ export function Table<T extends Record<string, unknown>>({
   emptyState,
   clipboardCallbacks,
   rowHoverEffect = "border",
+  minHeight = 300,
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -150,6 +152,7 @@ export function Table<T extends Record<string, unknown>>({
         accessorKey: column.accessorKey.toString(),
         cell: (context: CellContext<T, TableCell>) => {
           const value = context.getValue();
+
           let content: ReactNode = null;
           let icon = null;
           if (isObjectCell(value)) {
@@ -319,7 +322,7 @@ export function Table<T extends Record<string, unknown>>({
   }
 
   return (
-    <TableWrapper>
+    <TableWrapper minHeight={minHeight}>
       <StyledTable
         clickable={Boolean(onClickRow)}
         rowHoverEffect={rowHoverEffect}
@@ -380,9 +383,13 @@ export function Table<T extends Record<string, unknown>>({
   );
 }
 
-const TableWrapper = styled.div`
+type TableWrapperProps = {
+  minHeight: number;
+};
+
+const TableWrapper = styled.div<TableWrapperProps>`
   position: relative;
-  min-height: 300px;
+  min-height: ${({ minHeight }) => minHeight}px;
   ${overflowAutoWithoutScrollbars}
 `;
 
@@ -407,6 +414,10 @@ const LinkCellContent = styled.span`
 const HoverableCellWrapper = styled.div`
   ${hoverCellStyles}
 
+  ${Link} {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
   display: flex !important;
   gap: 4px;
 `;
@@ -452,6 +463,7 @@ const StyledTable = styled.table<StyledTableProps>`
   border-spacing: 0;
   width: 100%;
 
+  /* Important to use padding here instead of width so that table container overflow functions properly: */
   ${bp.lg(`
     padding-left: ${standardContentInset.lgPx}px;
     padding-right: ${standardContentInset.lgPx}px;
@@ -467,6 +479,8 @@ const StyledTable = styled.table<StyledTableProps>`
 
   th {
     max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-align: left;
     padding: ${cellPaddingPx}px 0px;
     border-bottom: 1px solid
@@ -545,7 +559,6 @@ const StyledTable = styled.table<StyledTableProps>`
               left: 0;
               right: 0;
               width: 100%;
-              z-index: -1;
             }
             &:first-of-type {
               overflow: visible;

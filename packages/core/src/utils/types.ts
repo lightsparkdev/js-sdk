@@ -22,6 +22,10 @@ export const isType =
     return node?.__typename === typename;
   };
 
+export type ExtractByTypename<T, N extends string> = T extends { __typename: N }
+  ? T
+  : never;
+
 export type DeepPartial<T> = T extends object
   ? {
       [P in keyof T]?: DeepPartial<T[P]>;
@@ -55,3 +59,7 @@ export type Complete<T> = { [P in keyof T]-?: NonNullable<T[P]> };
 export type RequiredKeys<T> = {
   [K in keyof T]-?: Record<string, never> extends Pick<T, K> ? never : K;
 }[keyof T];
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}

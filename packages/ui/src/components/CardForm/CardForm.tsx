@@ -41,7 +41,7 @@ import {
   type ToReactNodesArgs,
 } from "../../utils/toReactNodes/toReactNodes.js";
 import { ButtonSelector } from "../Button.js";
-import { StyledButtonRow } from "../ButtonRow.js";
+import { StyledButtonRowButton } from "../ButtonRow.js";
 import { Checkbox, type CheckboxProps } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { StyledFileInput } from "../FileInput.js";
@@ -463,7 +463,7 @@ const StyledCardFormStyle = ({
       margin-top: 40px !important;
     }
 
-    ${CardFormButtonRow}, ${StyledButtonRow} {
+    ${CardFormButtonRow}, ${StyledButtonRowButton} {
       ${ButtonSelector()} {
         margin-top: 0;
       }

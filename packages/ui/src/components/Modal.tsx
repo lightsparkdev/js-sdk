@@ -420,6 +420,9 @@ export function Modal({
           aria-modal
           aria-hidden
           tabIndex={-1}
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
           role="dialog"
           ref={modalContainerRef}
           top={top || (smKind === "default" ? standardContentInset.smPx : 0)}

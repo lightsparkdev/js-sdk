@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { ensureArray } from "@lightsparkdev/core";
 import { Spacing } from "../../styles/tokens/spacing.js";
+import { z } from "../../styles/z-index.js";
 import { Button } from "../Button.js";
 import Select from "../Select.js";
 import { Filter, type FilterState } from "./Filter.js";
@@ -68,6 +69,7 @@ export const EnumFilter = ({
     <>
       <Filter label={label}>
         <Select
+          zIndex={z.dropdown + 1}
           placeholder="Select event"
           options={options}
           onChange={(option) => {

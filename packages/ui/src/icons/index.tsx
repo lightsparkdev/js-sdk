@@ -37,6 +37,7 @@ export { Chevron } from "./Chevron.js";
 export { ChevronDown } from "./ChevronDown.js";
 export { ChevronLeft } from "./ChevronLeft.js";
 export { ChevronRight } from "./ChevronRight.js";
+export { ChevronUp } from "./ChevronUp.js";
 export { CircleCheck } from "./CircleCheck.js";
 export { CircleCheckOutline } from "./CircleCheckOutline.js";
 export { CirclePlus } from "./CirclePlus.js";

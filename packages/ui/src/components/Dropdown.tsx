@@ -2,7 +2,13 @@ import type { CSSInterpolation } from "@emotion/css";
 import { css, useTheme } from "@emotion/react";
 import type { CSSObject } from "@emotion/styled";
 import styled from "@emotion/styled";
-import type { ComponentProps, ReactNode, RefObject } from "react";
+import type {
+  ComponentProps,
+  FocusEvent,
+  KeyboardEvent,
+  ReactNode,
+  RefObject,
+} from "react";
 import {
   useCallback,
   useEffect,
@@ -11,6 +17,7 @@ import {
   useState,
 } from "react";
 import ReactDOM from "react-dom";
+import { useLiveRef } from "../hooks/useLiveRef.js";
 import {
   Link,
   type ExternalLink,
@@ -28,9 +35,11 @@ import { smHeaderLogoMarginLeft } from "../styles/constants.js";
 import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
+import { Button } from "./Button.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
-import { IconToggle } from "./IconToggle.js";
+import { MultiToggle } from "./MultiToggle.js";
+import { Toggle } from "./Toggle.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type DropdownItemGetProps = WithTheme<{
@@ -54,22 +63,34 @@ type DropdownItemType = {
   externalLink?: ExternalLink | undefined;
   params?: RouteParams | undefined;
   selected?: boolean;
-  toggle?: ComponentProps<typeof IconToggle> | undefined;
+  toggle?:
+    | ComponentProps<typeof MultiToggle>
+    | ComponentProps<typeof Toggle>
+    | undefined;
   hash?: RouteHash;
 };
 
 type DropdownGetProps = WithTheme<{ isOpen: boolean }>;
 
+type DropdownBorderRadius = 8 | 12;
+
+type CommonSimpleDropdownButton = {
+  id?: string;
+  getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
+};
+
+type SimpleDropdownButton =
+  | (CommonSimpleDropdownButton & {
+      label: string;
+    })
+  | (CommonSimpleDropdownButton & {
+      getContent: ({ isOpen, theme }: DropdownGetProps) => ReactNode;
+    });
+
 type DropdownProps = {
-  button: {
-    label?: string;
-    id?: string;
-    getContent?: ({ isOpen, theme }: DropdownGetProps) => ReactNode;
-    getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
-  };
+  button: ComponentProps<typeof Button> | SimpleDropdownButton;
   dropdownItems?: DropdownItemType[];
   dropdownContent?: ReactNode;
-  openOnHover?: boolean;
   horizontalScrollRef?: RefObject<HTMLElement | null>;
   minDropdownItemsWidth?: number;
   maxDropdownItemsWidth?: number;
@@ -80,6 +101,9 @@ type DropdownProps = {
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   onOpen?: () => void;
   onClose?: () => void;
+  isOpen?: boolean;
+  borderRadius?: DropdownBorderRadius;
+  openOnHover?: boolean;
 };
 
 export function Dropdown({
@@ -88,6 +112,7 @@ export function Dropdown({
   horizontalScrollRef,
   onClickDropdownItems,
   getCSS,
+  isOpen: isOpenProp,
   onOpen,
   onClose,
   closeOnScroll = false,
@@ -97,9 +122,11 @@ export function Dropdown({
   align = "center" as const,
   footer = null,
   dropdownContent = null,
+  borderRadius = 8,
 }: DropdownProps) {
   const theme = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isOpenProp || false);
+
   const [dropdownButtonHeight, setDropdownButtonHeight] = useState(0);
   const [dropdownButtonWidth, setDropdownButtonWidth] = useState(0);
   const [dropdownCoords, setDropdownCoords] = useState({
@@ -108,11 +135,18 @@ export function Dropdown({
     right: 0,
   });
   const dropdownRef = useRef<HTMLDivElement | null>(null);
-  const dropdownButtonRef = useRef<HTMLButtonElement | null>(null);
+  const [dropdownButtonRef, dropdownButtonRefCb] =
+    useLiveRef<HTMLButtonElement>();
   const dropdownItemsRef = useRef<HTMLUListElement | null>(null);
   const [dropdownItemsWidth, setDropdownItemsWidth] = useState(0);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [nodeReady, setNodeReady] = useState(false);
+
+  useEffect(() => {
+    if (isOpenProp !== undefined) {
+      setIsOpen(isOpenProp);
+    }
+  }, [isOpenProp]);
 
   useEffect(() => {
     if (!nodeRef.current) {
@@ -140,7 +174,7 @@ export function Dropdown({
     [onOpen, onClose],
   );
 
-  function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (event.key === "Escape") {
       event.preventDefault();
       setOpen(false);
@@ -150,9 +184,7 @@ export function Dropdown({
     }
   }
 
-  function handleBlur(
-    event: React.FocusEvent<HTMLButtonElement | HTMLLIElement, Element>,
-  ) {
+  function handleBlur(event: FocusEvent<HTMLElement>) {
     const targetOutsideDropdownItems =
       dropdownItemsRef.current &&
       !dropdownItemsRef.current.contains(event.relatedTarget) &&
@@ -162,16 +194,9 @@ export function Dropdown({
     }
   }
 
-  const handleRef = useCallback((ref: HTMLButtonElement | null) => {
-    if (ref && !dropdownButtonRef.current) {
-      dropdownButtonRef.current = ref;
-    }
-    return ref;
-  }, []);
-
   // close dropdown when clicking outside of it
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: globalThis.MouseEvent) {
       const targetOutsideDropdownItems =
         dropdownItemsRef.current &&
         !dropdownItemsRef.current.contains(event.target as Node);
@@ -191,7 +216,7 @@ export function Dropdown({
     return () => {
       window.document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen, setOpen]);
+  }, [isOpen, setOpen, dropdownButtonRef]);
 
   const reposition = useCallback(() => {
     if (dropdownButtonRef.current && dropdownItemsRef.current) {
@@ -209,7 +234,7 @@ export function Dropdown({
         dropdownItemsRef.current.getBoundingClientRect();
       setDropdownItemsWidth(dropdownItemsRect.width);
     }
-  }, []);
+  }, [dropdownButtonRef]);
 
   // handle all cases where a dropdown nav needs to be repositioned:
   useLayoutEffect(() => {
@@ -255,7 +280,13 @@ export function Dropdown({
       navItemsResizeObserver?.disconnect();
       dropdownResizeObserver?.disconnect();
     };
-  }, [setOpen, horizontalScrollRef, closeOnScroll, reposition]);
+  }, [
+    setOpen,
+    horizontalScrollRef,
+    closeOnScroll,
+    reposition,
+    dropdownButtonRef,
+  ]);
 
   const handleClickDropdownItems = useCallback(() => {
     setOpen(false);
@@ -275,8 +306,57 @@ export function Dropdown({
     dropdownItemOffsetLeft = dropdownCoords.right - dropdownItemsWidth;
   }
 
-  const buttonContent =
-    button.label || (button.getContent && button.getContent({ isOpen, theme }));
+  const commonButtonProps = {
+    id: button.id,
+    type: "button",
+    onMouseEnter: () => {
+      if (openOnHover) {
+        reposition();
+        setOpen(true);
+      }
+    },
+    onMouseLeave: () => {
+      if (openOnHover) {
+        setOpen(false);
+      }
+    },
+    onMouseDown: () => {
+      reposition();
+      setOpen(!isOpen);
+    },
+    onKeyDown: handleKeyDown,
+    onFocus: () => {
+      reposition();
+      setOpen(true);
+    },
+    onBlur: handleBlur,
+    ref: dropdownButtonRefCb,
+  } as const;
+
+  const commonUnstyledButtonProps = {
+    ...commonButtonProps,
+    css:
+      "getCSS" in button && button.getCSS
+        ? button.getCSS({ isOpen, theme })
+        : undefined,
+  };
+
+  let buttonNode: ReactNode = null;
+  if ("label" in button) {
+    buttonNode = (
+      <UnstyledDropdownButton {...commonUnstyledButtonProps}>
+        {button.label}
+      </UnstyledDropdownButton>
+    );
+  } else if ("getContent" in button) {
+    buttonNode = (
+      <UnstyledDropdownButton {...commonUnstyledButtonProps}>
+        {button.getContent({ isOpen, theme })}
+      </UnstyledDropdownButton>
+    );
+  } else {
+    buttonNode = <Button {...button} {...commonButtonProps} />;
+  }
 
   const containerCSS = getCSS && getCSS({ isOpen, theme });
 
@@ -285,39 +365,7 @@ export function Dropdown({
       css={{ position: "relative", display: "inline-flex", ...containerCSS }}
       ref={dropdownRef}
     >
-      <DropdownButton
-        id={button.id}
-        type="button"
-        onMouseEnter={
-          openOnHover
-            ? () => {
-                reposition();
-                setOpen(true);
-              }
-            : undefined
-        }
-        onMouseLeave={
-          openOnHover
-            ? () => {
-                setOpen(false);
-              }
-            : undefined
-        }
-        onMouseDown={(e) => {
-          reposition();
-          setOpen(!isOpen);
-        }}
-        onKeyDown={handleKeyDown}
-        onFocus={(e) => {
-          reposition();
-          setOpen(true);
-        }}
-        onBlur={handleBlur}
-        ref={handleRef}
-        css={button.getCSS && button.getCSS({ isOpen, theme })}
-      >
-        {buttonContent}
-      </DropdownButton>
+      {buttonNode}
       {nodeReady && nodeRef.current
         ? ReactDOM.createPortal(
             <DropdownItems
@@ -327,6 +375,8 @@ export function Dropdown({
               ref={dropdownItemsRef}
               minWidth={minDropdownItemsWidth}
               maxWidth={maxDropdownItemsWidth}
+              hasItems={dropdownItems ? dropdownItems.length > 0 : false}
+              borderRadius={borderRadius}
             >
               {dropdownItems?.map((dropdownItem, i) => {
                 return (
@@ -360,13 +410,15 @@ type DropdownItemsProps = {
   top: number;
   minWidth?: number;
   maxWidth?: number;
+  hasItems: boolean;
+  borderRadius: DropdownBorderRadius;
 };
 
 const DropdownItems = styled.ul<DropdownItemsProps>`
   ${overlaySurface}
   color: ${({ theme }) => themeOr(theme.c6Neutral, theme.c8Neutral)};
-  ${standardBorderRadius(8)}
-  padding: 12px 0;
+  ${({ borderRadius }) => standardBorderRadius(borderRadius)}
+  ${({ hasItems }) => (hasItems ? "padding: 12px 0;" : "padding: 0;")}
   visibility: ${({ isOpen }) => (isOpen ? "visible" : "hidden")};
   position: fixed;
   ${({ minWidth }) => (minWidth ? `min-width: ${minWidth}px;` : "")}
@@ -431,7 +483,11 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
         {dropdownItemIconNode}
         {dropdownItem.label}
         <div css={{ marginLeft: "auto" }}>
-          <IconToggle {...dropdownItem.toggle} />
+          {"options" in dropdownItem.toggle ? (
+            <MultiToggle {...dropdownItem.toggle} />
+          ) : (
+            <Toggle {...dropdownItem.toggle} />
+          )}
         </div>
       </DropdownItemDiv>
     );
@@ -449,7 +505,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
   );
 }
 
-const DropdownButton = styled(UnstyledButton)`
+const UnstyledDropdownButton = styled(UnstyledButton)`
   ${standardFocusOutline}
 `;
 

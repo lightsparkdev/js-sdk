@@ -22,7 +22,7 @@ import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type CurrencyAmountProps = {
   amount: CurrencyAmountArg | CurrencyMap | UmaCurrencyAmount;
-  displayUnit?: CurrencyUnitType;
+  displayUnit?: CurrencyUnitType | undefined;
   shortNumber?: boolean;
   showUnits?: boolean | AppendUnitsOptions | undefined;
   ml?: number;
