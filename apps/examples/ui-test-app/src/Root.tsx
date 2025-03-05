@@ -37,13 +37,13 @@ export function Root() {
           <Toasts
             queue={[
               {
-                text: "Another test toast",
+                content: "Another test toast",
                 duration: 5000,
                 id: "test-toast-2",
                 expires: Date.now() + 10_000,
               },
               {
-                text: [
+                content: [
                   {
                     text: "Test toast, with a ",
                   },

@@ -1,5 +1,5 @@
 import { type Complete } from "@lightsparkdev/core";
-import { type ReactNode } from "react";
+import { type MouseEvent, type ReactNode } from "react";
 import type { FontColorKey } from "../../styles/themes.js";
 import type {
   TokenSizeKey,
@@ -19,7 +19,10 @@ export type CommonTypographyProps = {
   id?: string | undefined;
   display?: AllowedDisplay | undefined;
   textAlign?: TextAlign | undefined;
-  onClick?: (() => void) | undefined;
+  onClick?: ((e: MouseEvent) => void) | undefined;
+  /* For cases where we want to serialize and store typography props, we can't persist
+     onClick functions so we can provide a callback name / type to refer to instead: */
+  onClickType?: string | undefined;
   underline?: boolean | undefined;
 };
 
@@ -32,7 +35,7 @@ export type CommonStyledTypographyProps = {
   /* these are an inherent html props so we need to change the name, append prop: */
   displayProp: AllowedDisplay | undefined;
   colorProp: FontColorKey | undefined;
-  onClick: (() => void) | undefined;
+  onClick: ((e: MouseEvent) => void) | undefined;
   underline: boolean;
 };
 
@@ -41,6 +44,7 @@ export type SimpleTypographyProps = {
   type: TypographyTypeKey;
   size?: TokenSizeKey | undefined;
   color?: FontColorKey | undefined;
+  underline?: boolean | undefined;
 };
 export type PartialSimpleTypographyProps = Partial<SimpleTypographyProps>;
 export type RequiredSimpleTypographyProps = Complete<SimpleTypographyProps>;
