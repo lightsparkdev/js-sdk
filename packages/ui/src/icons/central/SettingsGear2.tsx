@@ -18,12 +18,14 @@ export function SettingsGear2({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M14.75 12C14.75 13.5188 13.5188 14.75 12 14.75C10.4812 14.75 9.25 13.5188 9.25 12C9.25 10.4812 10.4812 9.25 12 9.25C13.5188 9.25 14.75 10.4812 14.75 12Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

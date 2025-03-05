@@ -19,12 +19,14 @@ export function CircleInfo({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M12 7.375C11.6548 7.375 11.375 7.65482 11.375 8C11.375 8.34518 11.6548 8.625 12 8.625C12.3452 8.625 12.625 8.34518 12.625 8C12.625 7.65482 12.3452 7.375 12 7.375Z"
         fill="currentColor"
         stroke="currentColor"
         strokeWidth="0.25"
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

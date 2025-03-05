@@ -18,6 +18,7 @@ export function PlusSmall({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

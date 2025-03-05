@@ -21,6 +21,7 @@ export function SubscriptionTick1({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M15.0305 11.2798C15.3234 10.9869 15.3234 10.5121 15.0305 10.2192C14.7376 9.92629 14.2627 9.92629 13.9698 10.2192L11.0002 13.1888L10.0305 12.2192C9.73756 11.9263 9.26268 11.9263 8.96979 12.2192C8.6769 12.5121 8.6769 12.9869 8.96979 13.2798L10.4698 14.7798C10.6105 14.9205 10.8013 14.9995 11.0002 14.9995C11.1991 14.9995 11.3899 14.9205 11.5305 14.7798L15.0305 11.2798Z"
@@ -28,6 +29,7 @@ export function SubscriptionTick1({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

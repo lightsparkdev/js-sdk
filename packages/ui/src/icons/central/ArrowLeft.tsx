@@ -19,6 +19,7 @@ export function ArrowLeft({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

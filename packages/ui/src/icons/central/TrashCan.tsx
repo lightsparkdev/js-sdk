@@ -19,6 +19,7 @@ export function TrashCan({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M3.25 5.75H20.75"
@@ -26,6 +27,7 @@ export function TrashCan({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M8.52441 5.58289C8.7306 3.84652 10.2079 2.5 11.9998 2.5C13.7917 2.5 15.269 3.84652 15.4752 5.58289"
@@ -33,6 +35,7 @@ export function TrashCan({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M10 10.5V16.25"
@@ -40,6 +43,7 @@ export function TrashCan({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M14 10.5V16.25"
@@ -47,6 +51,7 @@ export function TrashCan({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

@@ -19,6 +19,7 @@ export function EyeSlash({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M9.5 9.92322C9.03166 10.4864 8.75 11.2103 8.75 12C8.75 13.7949 10.2051 15.25 12 15.25C12.8035 15.25 13.5389 14.9584 14.1061 14.4753"
@@ -26,6 +27,7 @@ export function EyeSlash({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M6.22264 6.75C4.77316 7.82826 3.45438 9.34251 2.37201 11.2927C2.24036 11.53 2.17453 11.6486 2.1437 11.7986C2.11877 11.92 2.11877 12.0799 2.14371 12.2012C2.17454 12.3513 2.24046 12.47 2.3723 12.7076C5.97916 19.206 12.211 20.8633 17.1567 17.6795"
@@ -33,6 +35,7 @@ export function EyeSlash({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M2.75 2.75L21.25 21.25"
@@ -40,6 +43,7 @@ export function EyeSlash({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

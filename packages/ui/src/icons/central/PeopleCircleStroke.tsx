@@ -18,6 +18,7 @@ export function PeopleCircleStroke({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

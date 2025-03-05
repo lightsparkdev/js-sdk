@@ -18,6 +18,7 @@ export function TriangleExclamation({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

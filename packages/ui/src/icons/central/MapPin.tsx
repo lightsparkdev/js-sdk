@@ -18,12 +18,14 @@ export function MapPin({
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M19.25 10C19.25 14.1772 15.8227 17.996 13.681 19.9746C12.7191 20.8633 11.2809 20.8633 10.319 19.9746C8.17726 17.996 4.75 14.1772 4.75 10C4.75 5.99594 7.99594 2.75 12 2.75C16.0041 2.75 19.25 5.99594 19.25 10Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

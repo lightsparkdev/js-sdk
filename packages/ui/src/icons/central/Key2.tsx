@@ -19,12 +19,14 @@ export function Key2({
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
+        vectorEffect="non-scaling-stroke"
       />
       <path
         d="M17.25 8.5C17.25 9.4665 16.4665 10.25 15.5 10.25C14.5335 10.25 13.75 9.4665 13.75 8.5C13.75 7.5335 14.5335 6.75 15.5 6.75C16.4665 6.75 17.25 7.5335 17.25 8.5Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap="square"
+        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );
