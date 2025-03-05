@@ -111,7 +111,7 @@ export type SerializableLinkNode = {
 export type SerializableTextNode = {
   text: string;
   typography?: SerializableTypographyProps & {
-    onClickType?: "reload" | undefined;
+    onClickType?: "reloadPage" | undefined;
   };
 };
 
