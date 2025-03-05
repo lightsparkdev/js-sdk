@@ -2,7 +2,6 @@
 
 import styled from "@emotion/styled";
 import { useRef, useState } from "react";
-import { colors } from "../styles/colors.js";
 import { standardFocusOutline } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { z } from "../styles/z-index.js";
@@ -126,7 +125,12 @@ export const Drawer = (props: Props) => {
           {props.closeButton && !props.nonDismissable && (
             <CloseButtonContainer>
               <CloseButton onClick={handleClose} type="button">
-                <Icon name="Close" width={10} />
+                <Icon
+                  name="CentralCrossLarge"
+                  square
+                  width={16}
+                  color="grayBlue43"
+                />
               </CloseButton>
             </CloseButtonContainer>
           )}
@@ -251,10 +255,10 @@ const CloseButtonContainer = styled.div`
   top: 20px;
   right: 20px;
   border-radius: 50%;
-  background-color: ${colors.grayBlue94};
-  padding: ${Spacing.px.xs};
-  height: 30px;
-  width: 30px;
+  background-color: #edeef1; /* TODO: Use semantic token */
+  padding: ${Spacing.px["2xs"]};
+  height: 28px;
+  width: 28px;
   display: flex;
   align-items: center;
 
