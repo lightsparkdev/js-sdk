@@ -83,6 +83,7 @@ const baseColors = {
   danger: "#FD2C0F",
   // neutral
   secondary: neutral.black,
+  gray: "#242526",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",

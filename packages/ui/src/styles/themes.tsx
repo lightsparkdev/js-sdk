@@ -592,6 +592,22 @@ const bridgeBaseSettings = {
         defaultActiveBackgroundColor: "transparenta08",
         defaultActiveBorderColor: "transparent",
       },
+      gray: {
+        defaultColor: "gray",
+        defaultBackgroundColor: "gray",
+        defaultBorderColor: "gray",
+        defaultHoverBackgroundColor: "gray",
+        defaultHoverBorderColor: "gray",
+        defaultActiveBackgroundColor: "gray",
+        defaultActiveBorderColor: "gray",
+      },
+      grayGradient: {
+        defaultColor: "gray98",
+        defaultBackgroundColor: "gray98",
+        defaultBorderColor: "gray98",
+        defaultHoverBackgroundColor: "gray98",
+        defaultHoverBorderColor: "gray98",
+      },
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
