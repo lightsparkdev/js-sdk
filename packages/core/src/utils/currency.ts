@@ -700,7 +700,20 @@ export function formatCurrencyStr(
 
   const currentLocale = getCurrentLocale();
 
+  function isFormattableFiatCurrencyCode(currencyCode: string) {
+    try {
+      new Intl.NumberFormat(currentLocale, {
+        style: "currency",
+        currency: currencyCode,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   let formattedStr = "";
+  let forceAppendUnits = false;
   switch (unit) {
     case CurrencyUnit.BITCOIN:
       /* In most cases product prefers 4 precision digtis for BTC. In a few places
@@ -730,20 +743,26 @@ export function formatCurrencyStr(
       })}`;
       break;
     default:
-      formattedStr = num.toLocaleString(currentLocale, {
-        style: "currency",
-        currency: unit,
-        currencyDisplay: "narrowSymbol",
-        notation: compact ? ("compact" as const) : undefined,
-        maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
-      });
+      if (isFormattableFiatCurrencyCode(unit)) {
+        formattedStr = num.toLocaleString(currentLocale, {
+          style: "currency",
+          currency: unit,
+          currencyDisplay: "narrowSymbol",
+          notation: compact ? ("compact" as const) : undefined,
+          maximumFractionDigits: getDefaultMaxFractionDigits(2, 2),
+        });
+      } else {
+        formattedStr = `${num}`;
+        forceAppendUnits = true;
+      }
       break;
   }
 
-  if (options?.appendUnits) {
+  if (options?.appendUnits || forceAppendUnits) {
     const localeCurrencyCode = localeToCurrencyCode(currentLocale);
     if (
       unit === localeCurrencyCode &&
+      options?.appendUnits &&
       !options.appendUnits.showForCurrentLocaleUnit
     ) {
       return formattedStr;
@@ -752,10 +771,10 @@ export function formatCurrencyStr(
     const unitStr = isUmaCurrencyAmount(amount)
       ? amount.currency.code
       : abbrCurrencyUnit(unit as CurrencyUnitType);
-    const unitSuffix = options.appendUnits.plural && num > 1 ? "s" : "";
+    const unitSuffix = options?.appendUnits?.plural && num > 1 ? "s" : "";
     const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
     formattedStr += ` ${
-      options.appendUnits.lowercase
+      options?.appendUnits?.lowercase
         ? unitStrWithSuffix.toLowerCase()
         : unitStrWithSuffix
     }`;
