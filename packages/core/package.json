@@ -19,32 +19,17 @@
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.cjs"
-      }
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": {
-        "types": "./dist/utils/index.d.ts",
-        "default": "./dist/utils/index.js"
-      },
-      "module": "./dist/utils/index.js",
-      "require": {
-        "types": "./dist/utils/index.d.ts",
-        "default": "./dist/utils/index.cjs"
-      }
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
     }
   },
   "browser": {
@@ -65,6 +50,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
+    "package-types": "yarn attw --pack .",
     "postversion": "yarn build",
     "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail src/**/tests/**/*.test.ts",
     "types:watch": "tsc-absolute --watch",
@@ -81,6 +67,7 @@
     "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
     "@types/crypto-js": "^4.1.1",

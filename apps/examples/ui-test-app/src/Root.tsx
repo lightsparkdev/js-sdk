@@ -9,6 +9,7 @@ import {
   Toggle,
 } from "@lightsparkdev/ui/components";
 import { Headline } from "@lightsparkdev/ui/components/typography";
+import "@lightsparkdev/ui/static/fonts.css";
 import { GlobalStyles } from "@lightsparkdev/ui/styles/global";
 import { themes } from "@lightsparkdev/ui/styles/themes";
 import { useState } from "react";
