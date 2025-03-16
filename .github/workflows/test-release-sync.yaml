@@ -308,13 +308,13 @@ jobs:
 
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
-          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev
+          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev --nogit-destination-rebase
 
-      # - name: "Notify failure on Slack"
-      #   if: "failure() && github.event_name == 'push'"
-      #   run: |
-      #     curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
-      #     {
-      #       "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
-      #     }
-      #     EOF
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
