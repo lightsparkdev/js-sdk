@@ -1,5 +1,5 @@
 ---
-"@lightsparkdev/lightspark-cli": patch
+"@lightsparkdev/lightspark-cli": minor
 ---
 
 - **Bolt 12 “Offer” commands**

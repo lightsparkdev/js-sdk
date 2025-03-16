@@ -1,5 +1,5 @@
 ---
-"@lightsparkdev/lightspark-sdk": patch
+"@lightsparkdev/lightspark-sdk": minor
 ---
 
 - **Bolt 12 Offer support**

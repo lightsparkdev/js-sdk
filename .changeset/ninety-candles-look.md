@@ -1,5 +1,5 @@
 ---
-"@lightsparkdev/core": patch
+"@lightsparkdev/core": minor
 ---
 
 - CJS + ESM improvements

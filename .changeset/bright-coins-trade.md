@@ -1,5 +1,5 @@
 ---
-"@lightsparkdev/ui": patch
+"@lightsparkdev/ui": minor
 ---
 
 - **New UI components & toggles**
