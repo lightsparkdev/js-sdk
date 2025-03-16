@@ -1,5 +1,23 @@
 # @lightsparkdev/oauth
 
+## 0.1.54
+
+### Patch Changes
+
+- b1f160b: - CJS + ESM improvements
+
+  - Refined `package.json` exports to define both `index.js` (ESM) and `index.cjs` (CJS).
+  - Added `"exports"` for Node 18+ usage.
+  - Type‐safety checks
+
+    - Introduced a devDependency on `@arethetypeswrong/cli` and added a `"package-types"` script for consistent checks.
+
+  - No major functional changes
+    - Focused primarily on packaging, exports, and aligning build scripts with the rest of the monorepo.
+
+- Updated dependencies [b1f160b]
+  - @lightsparkdev/core@1.3.0
+
 ## 0.1.53
 
 ### Patch Changes
