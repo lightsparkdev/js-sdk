@@ -2,7 +2,7 @@
   "extends": "../../../packages/tsconfig/react-app.json",
   "compilerOptions": {
     "baseUrl": "src",
-    "types": ["node", "chrome", "vite/client"]
+    "types": ["node", "vite/client"]
   },
   "include": ["src/**/*"],
   "exclude": ["**/tests", "dist", "node_modules"]
