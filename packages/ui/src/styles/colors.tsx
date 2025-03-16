@@ -77,10 +77,13 @@ const baseColors = {
   // yellow
   primary,
   warning: primary,
+  warningText: "#BB6B01",
+  warningBackground: "#FBEECB",
   // orange
   danger: "#FD2C0F",
   // neutral
   secondary: neutral.black,
+  gray: "#242526",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",

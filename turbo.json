@@ -42,6 +42,9 @@
       "cache": false,
       "persistent": true
     },
+    "package-types": {
+      "dependsOn": ["build", "^build"]
+    },
     "start": {
       "cache": false,
       "persistent": true,

@@ -10,9 +10,9 @@ describe("Toasts", () => {
         <Toasts
           queue={[
             {
-              text: [
+              content: [
                 {
-                  text: "Test toast",
+                  text: "Test toast text",
                   typography: {
                     type: "Body",
                     /* @ts-expect-error `cosdlor` is not a valid prop for Body component */
@@ -20,12 +20,14 @@ describe("Toasts", () => {
                   },
                 },
                 {
-                  text: "Test toast",
-                  /* @ts-expect-error `/examplsdfe` is not a valid TestAppRoute */
-                  to: "/examplsdfe",
-                  typography: {
-                    type: "Body",
-                    color: "white",
+                  link: {
+                    text: "Test toast link",
+                    /* @ts-expect-error `/examplsdfe` is not a valid TestAppRoute */
+                    to: "/examplsdfe",
+                    typography: {
+                      type: "Body",
+                      color: "white",
+                    },
                   },
                 },
               ],
@@ -40,7 +42,11 @@ describe("Toasts", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Test toast")).toBeInTheDocument();
+      expect(screen.getByText("Test toast text")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Test toast link")).toBeInTheDocument();
     });
   });
 });

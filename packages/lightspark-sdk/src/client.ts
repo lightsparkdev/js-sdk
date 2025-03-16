@@ -35,6 +35,7 @@ import { CreateApiToken } from "./graphql/CreateApiToken.js";
 import { CreateInvoice } from "./graphql/CreateInvoice.js";
 import { CreateLnurlInvoice } from "./graphql/CreateLnurlInvoice.js";
 import { CreateNodeWalletAddress } from "./graphql/CreateNodeWalletAddress.js";
+import { CreateOffer } from "./graphql/CreateOffer.js";
 import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
 import { CreateUmaInvitation } from "./graphql/CreateUmaInvitation.js";
@@ -53,6 +54,7 @@ import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { OutgoingPaymentsForInvoice } from "./graphql/OutgoingPaymentsForInvoice.js";
 import { OutgoingPaymentsForPaymentHash } from "./graphql/OutgoingPaymentsForPaymentHash.js";
 import { PayInvoice } from "./graphql/PayInvoice.js";
+import { PayOffer } from "./graphql/PayOffer.js";
 import { PayUmaInvoice } from "./graphql/PayUmaInvoice.js";
 import { PaymentRequestsForNode } from "./graphql/PaymentRequestsForNode.js";
 import { RegisterPayment } from "./graphql/RegisterPayment.js";
@@ -543,6 +545,31 @@ class LightsparkClient {
   }
 
   /**
+   * Creates an offer for the given node.
+   *
+   * @param nodeId The node ID for which to create an offer.
+   * @param amountMsats The amount of the offer in msats.
+   * @param description The description of the offer.
+   * @returns An encoded offer, or undefined if the offer could not be created.
+   */
+  public async createOffer(
+    nodeId: string,
+    amountMsats: number,
+    description: string,
+  ): Promise<string | undefined> {
+    const variables = {
+      node_id: nodeId,
+      amount_msats: amountMsats,
+      description,
+    };
+    const response = await this.requester.makeRawRequest(
+      CreateOffer,
+      variables,
+    );
+    return response.create_offer?.offer.encoded_offer;
+  }
+
+  /**
    * Generates a Lightning Invoice (follows the Bolt 11 specification) to
    * request a payment from another Lightning Node.
    * This should only be used for generating invoices for LNURLs,
@@ -863,6 +890,57 @@ class LightsparkClient {
     return (
       response.pay_invoice &&
       OutgoingPaymentFromJson(response.pay_invoice.payment)
+    );
+  }
+
+  /**
+   * Sends a lightning payment for a given offer.
+   *
+   * @param payerNodeId The ID of the node that will pay the offer.
+   * @param encodedOffer The encoded offer to pay.
+   * @param timeoutSecs A timeout for the payment in seconds. Defaults to 60 seconds.
+   * @param maximumFeesMsats Maximum fees (in msats) to pay for the payment. This parameter is required.
+   *     As guidance, a maximum fee of 16 basis points should make almost all
+   *     transactions succeed.
+   * @param amountMsats The amount to pay in msats for a no-amount offer. Defaults to the full amount of the
+   *     offer. NOTE: This parameter can only be passed for a no-amount
+   *     offer. Otherwise, the call will fail.
+   * @param idempotencyKey An optional idempotency key for the payment. If provided, the payment will be attempted only once.
+   * @returns An `OutgoingPayment` object if the payment was successful, or undefined if the payment failed.
+   */
+  public async payOffer(
+    payerNodeId: string,
+    encodedOffer: string,
+    timeoutSecs: number,
+    maximumFeeMsats: number,
+    amountMsats?: number,
+    idempotencyKey?: string,
+  ): Promise<OutgoingPayment | undefined> {
+    if (!this.nodeKeyCache.hasKey(payerNodeId)) {
+      throw new LightsparkSigningException("Paying node is not unlocked");
+    }
+    const variables = {
+      node_id: payerNodeId,
+      encoded_offer: encodedOffer,
+      timeout_secs: timeoutSecs,
+      maximum_fees_msats: maximumFeeMsats,
+      amount_msats: amountMsats,
+      idempotency_key: idempotencyKey,
+    };
+    const response = await this.requester.makeRawRequest(
+      PayOffer,
+      variables,
+      payerNodeId,
+    );
+    if (response.pay_offer?.payment.outgoing_payment_failure_message) {
+      throw new LightsparkException(
+        "PaymentError",
+        response.pay_offer?.payment.outgoing_payment_failure_message
+          .rich_text_text,
+      );
+    }
+    return (
+      response.pay_offer && OutgoingPaymentFromJson(response.pay_offer.payment)
     );
   }
 

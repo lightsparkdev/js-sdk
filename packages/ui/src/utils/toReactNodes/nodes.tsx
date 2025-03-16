@@ -4,7 +4,12 @@ import { type ClipboardTextField } from "../../components/ClipboardTextField.js"
 import type { CurrencyAmount } from "../../components/CurrencyAmount.js";
 import type { Icon } from "../../components/Icon/Icon.js";
 import { type TypographyPropsWithoutChildren } from "../../components/typography/renderTypography.js";
-import type { Link } from "../../router.js";
+import { type Link } from "../../router.js";
+import { type FontColorKey } from "../../styles/themes.js";
+import {
+  type TokenSizeKey,
+  type TypographyTypeKey,
+} from "../../styles/tokens/typography.js";
 import type { NextLink } from "../NextLink.js";
 
 export type LinkNode = {
@@ -86,3 +91,39 @@ export const icon = (icon: IconNode["icon"]): IconNode => ({ icon });
 export const clipboardTextField = (
   clipboardTextField: ComponentProps<typeof ClipboardTextField>,
 ): ClipboardTextFieldNode => ({ clipboardTextField });
+
+type SerializableTypographyProps = {
+  type: TypographyTypeKey;
+  size?: TokenSizeKey | undefined;
+  color?: FontColorKey | undefined;
+  underline?: boolean | undefined;
+};
+
+export type SerializableLinkNode = {
+  link: Pick<
+    LinkNode["link"],
+    "to" | "externalLink" | "text" | "disabled" | "id" | "newTab" | "params"
+  > & {
+    typography?: SerializableTypographyProps;
+  };
+};
+
+export type SerializableTextNode = {
+  text: string;
+  typography?: SerializableTypographyProps & {
+    onClickType?: "reloadPage" | undefined;
+  };
+};
+
+/* Since notices are persisted to localStorage for UX purposes (e.g. we want to make sure a user
+ * sees a notice when the page is refreshed), we can't allow the exact kind of props like functions
+ * and objects that are normally allowed for ToReactNodes, instead we'll map serializable data to
+ * more limited functionality */
+export type SerializableToReactNodesArg =
+  | string
+  | SerializableLinkNode
+  | SerializableTextNode;
+
+export type SerializableToReactNodesArgs =
+  | SerializableToReactNodesArg
+  | SerializableToReactNodesArg[];

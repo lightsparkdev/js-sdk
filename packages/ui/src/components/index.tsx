@@ -8,8 +8,8 @@ export {
 } from "./Button.js";
 export {
   ButtonRow,
-  ButtonRowContainer,
   StyledButtonRow,
+  StyledButtonRowButton,
   type ButtonRowProps,
 } from "./ButtonRow.js";
 export {

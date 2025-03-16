@@ -4,14 +4,22 @@ import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { type PartialBy } from "@lightsparkdev/core";
 import { uniqueId } from "lodash-es";
-import { Fragment, useRef, type ComponentProps } from "react";
+import {
+  forwardRef,
+  Fragment,
+  useRef,
+  type ComponentProps,
+  type FocusEvent,
+  type MouseEvent,
+  type Ref,
+} from "react";
 import { Link, type RouteParams } from "../router.js";
 import { getFocusOutline } from "../styles/common.js";
 import {
   type AllowedButtonTypographyTypes,
   type ButtonBorderRadius,
-  type ButtonTypographyArgs,
   type ButtonsThemeKey,
+  type ButtonTypographyArgs,
   type PaddingYKey,
 } from "../styles/themeDefaults/buttons.js";
 import {
@@ -47,6 +55,8 @@ export const buttonKinds = [
   "quaternary",
   "roundSingleChar",
   "roundIcon",
+  "gray",
+  "grayGradient",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
@@ -73,7 +83,13 @@ export type ButtonProps = {
   iconSide?: IconSide;
   loading?: boolean | undefined;
   loadingKind?: LoadingKind | undefined;
-  onClick?: (() => void) | undefined;
+  onClick?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+  onMouseEnter?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+  onMouseDown?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+  onMouseUp?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+  onMouseLeave?: ((event: MouseEvent<HTMLElement>) => void) | undefined;
+  onFocus?: ((event: FocusEvent<HTMLElement>) => void) | undefined;
+  onBlur?: ((event: FocusEvent<HTMLElement>) => void) | undefined;
   mt?: number | "auto";
   ml?: number | "auto";
   fullWidth?: boolean | undefined;
@@ -214,7 +230,10 @@ function resolveProps(props: ButtonProps, theme: Theme) {
   };
 }
 
-export function Button(props: ButtonProps) {
+export const Button = forwardRef<
+  HTMLButtonElement | HTMLAnchorElement,
+  ButtonProps
+>((props, ref) => {
   const theme = useTheme();
   const {
     kind,
@@ -230,6 +249,12 @@ export function Button(props: ButtonProps) {
     filename,
     toParams,
     onClick,
+    onMouseEnter,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    onFocus,
+    onBlur,
     icon,
     backgroundColor,
     borderColor,
@@ -326,6 +351,12 @@ export function Button(props: ButtonProps) {
     type,
     typography,
     onClick,
+    onMouseEnter,
+    onMouseDown,
+    onMouseUp,
+    onMouseLeave,
+    onFocus,
+    onBlur,
     fullWidth,
     iconSide,
     paddingX,
@@ -349,11 +380,17 @@ export function Button(props: ButtonProps) {
     newTab,
     borderRadius,
     zIndex,
-  };
+  } as const;
 
   if (to) {
     return (
-      <ButtonLink {...commonProps} to={to} params={toParams} hash={hash}>
+      <ButtonLink
+        {...commonProps}
+        to={to}
+        params={toParams}
+        hash={hash}
+        ref={ref as Ref<HTMLAnchorElement>}
+      >
         {content}
       </ButtonLink>
     );
@@ -365,13 +402,18 @@ export function Button(props: ButtonProps) {
       href={externalLink}
       download={filename}
       target="_blank"
+      ref={ref as Ref<HTMLAnchorElement>}
     >
       {content}
     </ButtonHrefLink>
   ) : (
-    <StyledButton {...commonProps}>{content}</StyledButton>
+    <StyledButton {...commonProps} ref={ref as Ref<HTMLButtonElement>}>
+      {content}
+    </StyledButton>
   );
-}
+});
+
+Button.displayName = "Button";
 
 type StyledButtonProps = {
   paddingX: number;
@@ -487,6 +529,18 @@ const ButtonIcon = styled.div<ButtonIconProps>`
   ${({ iconSide, paddingX }) => `${iconSide}: ${paddingX}px;`}
 `;
 
+type LinkWithoutTypographyProps = Omit<
+  ComponentProps<typeof Link>,
+  "typography"
+>;
+
+const LinkWithoutTypography = forwardRef<
+  HTMLAnchorElement,
+  LinkWithoutTypographyProps
+>((props, ref) => {
+  return <Link {...props} ref={ref} />;
+});
+
 export const StyledButton = styled(UnstyledButton)<StyledButtonProps>`
   ${(props) => buttonStyle(props)}
 `;
@@ -501,12 +555,3 @@ export const ButtonSelector = (prepend = "", append = "") =>
   `${prepend}*:is(${select(StyledButton)}, ${select(ButtonLink)}, ${select(
     ButtonHrefLink,
   )})${append}`;
-
-type LinkWithoutTypographyProps = Omit<
-  ComponentProps<typeof Link>,
-  "typography"
->;
-
-function LinkWithoutTypography(props: LinkWithoutTypographyProps) {
-  return <Link {...props} />;
-}

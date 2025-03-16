@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { colors } from "../styles/colors.js";
-import { themeOr } from "../styles/themes.js";
+import { getColor, themeOr, type ThemeOrColorKey } from "../styles/themes.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
 type ToggleProps = {
@@ -9,7 +9,7 @@ type ToggleProps = {
   ml?: number;
   mt?: number;
   mb?: number;
-  bg?: string;
+  bg?: ThemeOrColorKey | undefined;
   disabled?: boolean;
   label?: string;
   /* id is required to ensure label click affects toggle: */
@@ -51,7 +51,7 @@ export function Toggle({
 }
 
 type ToggleButtonProps = {
-  bg?: string | undefined;
+  bg?: ThemeOrColorKey | undefined;
   isOn: boolean;
   disabled: boolean;
 };
@@ -68,7 +68,7 @@ const ToggleButton = styled(UnstyledButton)<ToggleButtonProps>`
   opacity: ${({ disabled }) => (disabled ? 0.3 : 1)};
   background-color: ${({ bg, theme, isOn }) => {
     if (bg) {
-      return bg;
+      return getColor(theme, bg);
     } else if (isOn) {
       return theme.success;
     }

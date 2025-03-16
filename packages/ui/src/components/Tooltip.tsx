@@ -10,9 +10,11 @@ type TooltipProps = Omit<ComponentProps<typeof ReactTooltip>, "id"> & {
   /* Make 3rd party types compatible with our undefined rule: */
   id?: string | undefined;
   interactive?: boolean;
+  maxWidth?: 260 | 400 | undefined;
 };
 
 export function Tooltip(props: TooltipProps) {
+  const maxWidth = props.maxWidth || 260;
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [nodeReady, setNodeReady] = React.useState(false);
 
@@ -40,7 +42,7 @@ export function Tooltip(props: TooltipProps) {
           content={props.content || ""}
           noArrow
           border="0.05rem solid rgba(0, 0, 0, 0.1)"
-          className={styles({ theme })}
+          className={styles({ theme, maxWidth })}
           variant="light"
           clickable={Boolean(props.interactive)}
         />,
@@ -49,7 +51,12 @@ export function Tooltip(props: TooltipProps) {
     : null;
 }
 
-const styles = ({ theme }: { theme: Theme }) => css`
+type TooltipStyleProps = {
+  theme: Theme;
+  maxWidth: number;
+};
+
+const styles = ({ theme, maxWidth }: TooltipStyleProps) => css`
   font-size: "10px";
   color: ${theme.c8Neutral} !important;
   border-radius: 8px !important;
@@ -57,7 +64,8 @@ const styles = ({ theme }: { theme: Theme }) => css`
   z-index: ${z.tooltip};
   ${overlaySurface({ theme, important: true })};
 
-  max-width: 260px;
+  max-width: ${maxWidth}px;
+  word-break: break-word;
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
     0px 4px 8px 0px rgba(0, 0, 0, 0.08) !important;

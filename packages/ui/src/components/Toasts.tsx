@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { isEqual } from "lodash-es";
+import { isEqual, isObject } from "lodash-es";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { colors } from "../styles/colors.js";
@@ -10,6 +10,7 @@ import { z } from "../styles/z-index.js";
 import { setDefaultReactNodesTypography } from "../utils/toReactNodes/setReactNodesTypography.js";
 import {
   toReactNodes,
+  type ToReactNodesArg,
   type ToReactNodesArgs,
 } from "../utils/toReactNodes/toReactNodes.js";
 import { Icon } from "./Icon/Icon.js";
@@ -17,7 +18,7 @@ import { UnstyledButton } from "./UnstyledButton.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type ToastQueueArg = {
-  text: ToReactNodesArgs;
+  content: ToReactNodesArgs;
   duration: number | null;
   id: string;
   expires: number;
@@ -37,6 +38,9 @@ export type ToastsProps = {
   dedupeConsecutive?: boolean;
   maxVisible?: number;
   typography?: PartialSimpleTypographyProps | undefined;
+  onClickContentNode?:
+    | ((node: ToReactNodesArg, toastId: string) => void)
+    | undefined;
 };
 
 type TimeoutRef = ReturnType<typeof setTimeout> | null;
@@ -52,6 +56,7 @@ export function Toasts({
   removeExpiredAndNotVisible = true,
   dedupeConsecutive = true,
   typography: typographyProp,
+  onClickContentNode,
 }: ToastsProps) {
   const queuedToastIds = useRef(new Set<string>());
   const prevToastQueue = useRef<ToastQueueArg[]>([]);
@@ -123,7 +128,7 @@ export function Toasts({
       const newToasts = newToastQueueArgs.reduce((acc, toast) => {
         if (dedupeConsecutive && acc.length) {
           const lastToast = acc[acc.length - 1];
-          if (isEqual(toast.text, lastToast.text)) {
+          if (isEqual(toast.content, lastToast.content)) {
             return acc;
           }
         }
@@ -142,7 +147,7 @@ export function Toasts({
         if (
           dedupeConsecutive &&
           currentToast &&
-          isEqual(newToasts[0].text, currentToast.text)
+          isEqual(newToasts[0].content, currentToast.content)
         ) {
           return currentToastQueue;
         }
@@ -214,17 +219,30 @@ export function Toasts({
           ? fromCurrent - 1
           : fromCurrent;
 
-        const nodesWithTypography = toast.text
-          ? setDefaultReactNodesTypography(toast.text, {
+        const nodes = toast.content
+          ? setDefaultReactNodesTypography(toast.content, {
               default: defaultTypography,
+            }).map((node) => {
+              if (isObject(node) && "typography" in node && node.typography) {
+                const existingOnClick = node.typography.onClick;
+                /* wrap any existing onClick for the node and notify also notify parent when the
+                 * node is clicked */
+                if (existingOnClick || onClickContentNode) {
+                  node.typography.onClick = (e) => {
+                    if (existingOnClick) {
+                      existingOnClick(e);
+                    }
+                    if (onClickContentNode) {
+                      onClickContentNode(node, toast.id);
+                    }
+                  };
+                }
+              }
+              return node;
             })
           : null;
 
-        const textNode = (
-          <span>
-            {nodesWithTypography ? toReactNodes(nodesWithTypography) : null}
-          </span>
-        );
+        const contentNode = <span>{nodes ? toReactNodes(nodes) : null}</span>;
         return (
           <Fragment key={toast.id}>
             {ReactDOM.createPortal(
@@ -245,7 +263,7 @@ export function Toasts({
                 stackDir={stackDir === "above" ? -1 : 1}
                 movingToCurrent={movingToCurrent}
               >
-                {textNode}
+                {contentNode}
                 <UnstyledButton
                   css={extend(flexCenter, {
                     position: "absolute",

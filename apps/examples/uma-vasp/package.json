@@ -9,7 +9,9 @@
     "build": "yarn tsc",
     "start:docker": "node dist/startServer.js",
     "test:start": "./test.sh start",
-    "test": "./test.sh test"
+    "test": "./test.sh test",
+    "format": "prettier src --check",
+    "format:fix": "prettier src --write"
   },
   "main": "dist/index.js",
   "dependencies": {

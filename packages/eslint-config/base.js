@@ -24,7 +24,7 @@ module.exports = {
   overrides: [
     {
       /* All Typescript files, including tests and files outside src: */
-      files: ["**/*.ts?(x)"],
+      files: ["**/*.?(m|c)ts?(x)"],
       extends: [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",

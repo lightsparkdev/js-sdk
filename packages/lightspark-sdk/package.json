@@ -20,36 +20,21 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "module": "./dist/index.js",
+      "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./objects": {
-      "types": "./dist/objects/index.d.ts",
-      "import": {
-        "types": "./dist/objects/index.d.ts",
-        "default": "./dist/objects/index.js"
-      },
-      "module": "./dist/objects/index.js",
+      "import": "./dist/objects/index.js",
       "require": "./dist/objects/index.cjs"
     },
     "./env": {
-      "types": "./dist/env.d.ts",
-      "import": {
-        "types": "./dist/env.d.ts",
-        "default": "./dist/env.js"
-      },
-      "module": "./dist/env.js",
+      "import": "./dist/env.js",
       "require": "./dist/env.cjs"
     }
   },
   "type": "module",
   "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "browser": {
     "crypto": false,
@@ -73,6 +58,7 @@
     "lint:fix:continue": "eslint --fix . || exit 0",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
+    "package-types": "yarn attw --pack .",
     "postversion": "yarn build",
     "test-cmd": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "test": "yarn test-cmd src/tests/*.test.ts",
@@ -93,6 +79,7 @@
     "zen-observable-ts": "^1.1.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
     "@types/crypto-js": "^4.1.1",

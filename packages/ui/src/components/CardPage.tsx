@@ -18,7 +18,7 @@ import {
   size,
 } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
-import { ButtonRowContainer } from "./ButtonRow.js";
+import { StyledButtonRow } from "./ButtonRow.js";
 
 type Props = {
   children?: React.ReactNode;
@@ -337,7 +337,7 @@ const CardPageHeader = styled.div<{ headerMarginBottom?: number }>`
   justify-content: space-between;
   position: relative;
 
-  & + *:not(${CardPageSubtitle}):not(${ButtonRowContainer}) {
+  & + *:not(${CardPageSubtitle}):not(${StyledButtonRow}) {
     margin-top: ${headingContentMarginPx}px !important;
   }
 
@@ -345,7 +345,7 @@ const CardPageHeader = styled.div<{ headerMarginBottom?: number }>`
     margin-top: 5px;
   }
 
-  & + ${ButtonRowContainer} {
+  & + ${StyledButtonRow} {
     margin-top: 16px;
   }
 `;

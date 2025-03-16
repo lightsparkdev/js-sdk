@@ -1,5 +1,4 @@
 import {
-  ComplianceProvider,
   PaymentDirection,
   PostTransactionData,
 } from "@lightsparkdev/lightspark-sdk";
@@ -20,13 +19,13 @@ export default interface ComplianceService {
     sendingUmaAddress: string,
     receivingUmaAddress: string,
     amountMsats: number,
-    counterpartyNodeId: string|undefined,
+    counterpartyNodeId: string | undefined,
     counterpartyUtxos: string[],
   ): Promise<boolean>;
 
   registerTransactionMonitoring(
     paymentId: string,
-    nodePubKey: string|undefined,
+    nodePubKey: string | undefined,
     paymentDirection: PaymentDirection,
     lastHopUtxosWithAmounts: PostTransactionData[],
   ): Promise<void>;

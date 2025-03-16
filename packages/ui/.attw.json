@@ -1,0 +1,20 @@
+{
+  "profile": "node16",
+  "excludeEntrypoints": [
+    "@lightsparkdev/ui/src/components",
+    "@lightsparkdev/ui/src/components/*",
+    "@lightsparkdev/ui/src/components/typography",
+    "@lightsparkdev/ui/src/hooks",
+    "@lightsparkdev/ui/src/hooks/*",
+    "@lightsparkdev/ui/src/icons",
+    "@lightsparkdev/ui/src/icons/*",
+    "@lightsparkdev/ui/src/router",
+    "@lightsparkdev/ui/src/styles/",
+    "@lightsparkdev/ui/src/styles/*",
+    "@lightsparkdev/ui/src/types",
+    "@lightsparkdev/ui/src/types/*",
+    "@lightsparkdev/ui/src/utils",
+    "@lightsparkdev/ui/src/utils/*",
+    "@lightsparkdev/ui/static/"
+  ]
+}

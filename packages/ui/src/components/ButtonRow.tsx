@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { bp } from "../styles/breakpoints.js";
 import { standardContentInset } from "../styles/common.js";
+import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { Button, type ButtonProps } from "./Button.js";
 
@@ -10,6 +11,7 @@ export type ButtonRowProps = {
   bottomBorder?: boolean;
   className?: string;
   headerHeight?: number;
+  ml?: number | undefined;
 };
 
 export function ButtonRow({
@@ -18,14 +20,16 @@ export function ButtonRow({
   smSticky = true,
   bottomBorder = true,
   headerHeight = 0,
+  ml,
 }: ButtonRowProps) {
   return (
-    <ButtonRowContainer
+    <StyledButtonRow
       smSticky={smSticky}
       headerHeight={headerHeight}
       bottomBorder={bottomBorder}
+      ml={ml}
     >
-      <StyledButtonRow className={className}>
+      <StyledButtonRowButton className={className}>
         {buttons.map((button, idx) =>
           button === "divider" ? (
             <ButtonRowDivider key={idx} />
@@ -33,17 +37,19 @@ export function ButtonRow({
             <Button key={idx} {...button} />
           ),
         )}
-      </StyledButtonRow>
-    </ButtonRowContainer>
+      </StyledButtonRowButton>
+    </StyledButtonRow>
   );
 }
 
-export const ButtonRowContainer = styled.div<{
+export const StyledButtonRow = styled.div<{
   smSticky: boolean;
   headerHeight: number;
   bottomBorder: boolean;
+  ml: number | undefined;
 }>`
   max-width: 100%;
+  ${({ ml }) => (typeof ml !== "undefined" ? `margin-left: ${ml}px;` : ``)}
   ${({ theme }) => bp.sm(`background: ${theme.bg}`)}
   ${({ headerHeight, smSticky, bottomBorder }) =>
     bp.sm(
@@ -88,17 +94,13 @@ const ButtonRowDivider = styled.div`
   padding-left: 16px;
 `;
 
-export const StyledButtonRow = styled.div`
+export const StyledButtonRowButton = styled.div`
   ${overflowAutoWithoutScrollbars}
   background: ${({ theme }) => theme.bg};
   display: flex;
   position: relative;
   z-index: 1;
-
-  & button:not(:first-of-type),
-  & a:not(:first-of-type) {
-    margin-left: 8px;
-  }
+  gap: ${Spacing.px.xs};
 
   & ${ButtonRowDivider} + button,
   & ${ButtonRowDivider} + a {

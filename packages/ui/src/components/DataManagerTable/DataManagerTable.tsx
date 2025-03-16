@@ -1,13 +1,20 @@
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { type useClipboard } from "../../hooks/useClipboard.js";
 import { bp, useBreakpoints } from "../../styles/breakpoints.js";
-import { standardContentInset } from "../../styles/common.js";
+import {
+  standardBorderRadius,
+  standardContentInset,
+} from "../../styles/common.js";
+import { getColor, themeOr, themeOrWithKey } from "../../styles/themes.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
+import { z } from "../../styles/z-index.js";
 import { Button, StyledButton } from "../Button.js";
+import { StyledButtonRow } from "../ButtonRow.js";
 import { CardPageFullWidth } from "../CardPage.js";
 import { Dropdown } from "../Dropdown.js";
+import { Modal } from "../Modal.js";
 import { Table, type TableProps } from "../Table/Table.js";
 import { TextIconAligner } from "../TextIconAligner.js";
 import { Label } from "../typography/Label.js";
@@ -45,7 +52,6 @@ import {
   isIdFilterState,
   type IdFilterState,
 } from "./IdFilter.js";
-import { Popover } from "./Popover.js";
 import {
   StringFilter,
   getDefaultStringFilterState,
@@ -94,9 +100,10 @@ export type DataManagerTableProps<
   filterOptions?:
     | FilterOptions<T, QueryVariablesType, QueryResultType>
     | undefined;
-  cardPage?: boolean | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   header?: JSX.Element;
+  cardPageFullWidth?: boolean | undefined;
+  cardPageMt?: number;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -154,6 +161,12 @@ export function DataManagerTable<
   QueryVariablesType,
   QueryResultType,
 >(props: DataManagerTableProps<T, QueryVariablesType, QueryResultType>) {
+  const isCardPageFullWidth =
+    typeof props.cardPageFullWidth === "boolean"
+      ? props.cardPageFullWidth
+      : true;
+  const cardPageMt =
+    typeof props.cardPageMt === "undefined" ? 24 : props.cardPageMt;
   const breakPoint = useBreakpoints();
   const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
@@ -163,7 +176,7 @@ export function DataManagerTable<
   });
   const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
   const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
-  const [showFilterPopover, setShowFilterPopover] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
     props.filterOptions
       ? initialFilterState(props.filterOptions.filters)
@@ -354,7 +367,7 @@ export function DataManagerTable<
     setNumFiltersApplied(numFiltersApplied);
 
     // Note: we only want to apply the filter states updated with validation results.
-    setShowFilterPopover(false);
+    setShowFilters(false);
     setIsLoading(true);
 
     const newFetchVariables = getFilterQueryVariables(
@@ -586,41 +599,79 @@ export function DataManagerTable<
     : [];
   let filters: React.ReactNode;
   const isFilterButtonSmall = isSm && props.header;
+
+  function onApply() {
+    void handleApplyFilters(filterStates, props.filterOptions!, pageSize);
+  }
+
+  const filterContent = (
+    <FilterContentInner
+      onKeyDownCapture={(e) => {
+        if (e.key === "Enter") {
+          onApply();
+        }
+      }}
+      isSm={isSm}
+    >
+      {filterSections}
+      <FilterContentFooter>
+        <Button text="Clear" onClick={handleClearFilters} />
+        <FilterContentFooterRight>
+          <Button text="Cancel" onClick={() => setShowFilters(false)} />
+          <Button text="Apply" kind="primary" onClick={onApply} />
+        </FilterContentFooterRight>
+      </FilterContentFooter>
+    </FilterContentInner>
+  );
+
+  const commonButtonProps = {
+    kind: isFilterButtonSmall ? "roundIcon" : "secondary",
+    size: "ExtraSmall",
+    typography: { color: "c6Neutral" },
+    icon: {
+      name: "Sort",
+    },
+    text: !isFilterButtonSmall
+      ? `Filter${numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""}`
+      : undefined,
+  } as const;
+
   if (props.filterOptions) {
     filters = (
       <>
         <DataManagerTableFilterContainer>
-          <Button
-            kind={isFilterButtonSmall ? "roundIcon" : "secondary"}
-            text={
-              !isFilterButtonSmall
-                ? `Filter${
-                    numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""
-                  }`
-                : undefined
-            }
-            size="ExtraSmall"
-            icon={{
-              name: "Sort",
-            }}
-            typography={{ color: "c6Neutral" }}
-            onClick={() => setShowFilterPopover(!showFilterPopover)}
-          />
-          <Popover
-            show={showFilterPopover}
-            setShow={setShowFilterPopover}
-            side="right"
-            onApply={() =>
-              void handleApplyFilters(
-                filterStates,
-                props.filterOptions!,
-                pageSize,
-              )
-            }
-            onClear={handleClearFilters}
-          >
-            {filterSections}
-          </Popover>
+          {isSm ? (
+            <Fragment>
+              <Button
+                {...commonButtonProps}
+                onClick={() => setShowFilters(!showFilters)}
+              />
+              <Modal
+                visible={showFilters}
+                onClose={() => setShowFilters(false)}
+                smKind="fullscreen"
+              >
+                {filterContent}
+              </Modal>
+            </Fragment>
+          ) : (
+            <Dropdown
+              borderRadius={12}
+              maxDropdownItemsWidth={400}
+              dropdownContent={
+                <FilterDropdownContent>{filterContent}</FilterDropdownContent>
+              }
+              isOpen={showFilters}
+              onOpen={() => {
+                setShowFilters(true);
+              }}
+              onClose={() => {
+                setShowFilters(false);
+              }}
+              button={commonButtonProps}
+              align="right"
+            />
+          )}
         </DataManagerTableFilterContainer>
       </>
     );
@@ -742,13 +793,10 @@ export function DataManagerTable<
     </>
   );
 
-  const isCardPage =
-    typeof props.cardPage === "boolean" ? props.cardPage : true;
-
   return (
     <StyledDataManagerTable>
-      {isCardPage ? (
-        <CardPageFullWidth css={{ marginTop: "24px" }}>
+      {isCardPageFullWidth ? (
+        <CardPageFullWidth css={{ marginTop: `${cardPageMt}px` }}>
           {content}
         </CardPageFullWidth>
       ) : (
@@ -780,6 +828,7 @@ const DataManagerTableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   padding: ${Spacing.px.xs} 0;
+  position: relative;
 `;
 
 const DataManagerTableFooter = styled.div`
@@ -813,12 +862,47 @@ const PaginationButtonsContainer = styled.div`
 const DataManagerTableFilterContainer = styled.div`
   position: absolute;
   z-index: 3;
-  background: white;
   right: 0;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 15%
-  );
+  ${StyledButtonRow} + & {
+    background: linear-gradient(
+      to right,
+      ${({ theme }) =>
+          themeOr("rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)")({ theme })}
+        0%,
+      ${({ theme }) => getColor(theme, "bg")} 15%
+    );
+  }
   ${commonPadding}
+`;
+
+const FilterDropdownContent = styled.div`
+  width: 400px;
+  background: ${({ theme }) => theme.bg};
+  border: 0.5px solid
+    ${({ theme }) => themeOrWithKey("c1Neutral", "c4Neutral")({ theme })};
+  ${standardBorderRadius(12)}
+  box-shadow:
+    0px 1px 4px 0px rgba(0, 0, 0, 0.1),
+    0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+`;
+
+const FilterContentInner = styled.div<{ isSm?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  gap: ${Spacing.px.xl};
+  padding: ${({ isSm }) => (isSm ? "0px" : Spacing.px.lg)};
+  z-index: ${z.dropdown + 1};
+  position: relative;
+`;
+
+const FilterContentFooter = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const FilterContentFooterRight = styled.div`
+  display: flex;
+  gap: ${Spacing.px.xs};
 `;

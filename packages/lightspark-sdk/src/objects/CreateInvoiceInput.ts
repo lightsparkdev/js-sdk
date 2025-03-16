@@ -16,8 +16,18 @@ interface CreateInvoiceInput {
 
   invoiceType?: InvoiceType | undefined;
 
-  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
+  /**
+   * The expiry of the invoice in seconds. Default value is 86400 (1 day) for AMP invoice, or
+   * 3600 (1 hour) for STANDARD invoice.
+   **/
   expirySecs?: number | undefined;
+
+  /**
+   * The payment hash of the invoice. It should only be set if your node is a remote signing
+   * node. If not set, it will be requested through REMOTE_SIGNING webhooks with sub event type
+   * REQUEST_INVOICE_PAYMENT_HASH.
+   **/
+  paymentHash?: string | undefined;
 }
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
@@ -30,6 +40,7 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
         InvoiceType.FUTURE_VALUE
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
+    paymentHash: obj["create_invoice_input_payment_hash"],
   } as CreateInvoiceInput;
 };
 export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
@@ -39,6 +50,7 @@ export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
     create_invoice_input_memo: obj.memo,
     create_invoice_input_invoice_type: obj.invoiceType,
     create_invoice_input_expiry_secs: obj.expirySecs,
+    create_invoice_input_payment_hash: obj.paymentHash,
   };
 };
 

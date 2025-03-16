@@ -1,28 +1,56 @@
 {
   "name": "@lightsparkdev/ui",
   "version": "1.0.17",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./components": "./dist/components/index.js",
-    "./components/*": "./dist/components/*.js",
-    "./components/": "./dist/components/",
-    "./components/typography": "./dist/components/typography/index.js",
-    "./hooks/*": "./dist/hooks/*.js",
-    "./hooks": "./dist/hooks/index.js",
-    "./icons": "./dist/icons/index.js",
-    "./icons/*": "./dist/icons/*.js",
-    "./styles/*": "./dist/styles/*.js",
-    "./styles/fonts.css": "./dist/styles/fonts.css",
-    "./types/*": "./dist/types/*.js",
-    "./types": "./dist/types/index.js",
-    "./utils/*": "./dist/utils/*.js",
-    "./utils": "./dist/utils/index.js",
-    "./static/": "./dist/static/",
-    "./router": "./dist/router.js",
+    "./components": {
+      "import": "./dist/components/index.js",
+      "require": "./dist/components/index.cjs"
+    },
+    "./components/*": {
+      "import": "./dist/components/*.js",
+      "require": "./dist/components/*.cjs"
+    },
+    "./components/typography": {
+      "import": "./dist/components/typography/index.js",
+      "require": "./dist/components/typography/index.cjs"
+    },
+    "./hooks/*": {
+      "import": "./dist/hooks/*.js",
+      "require": "./dist/hooks/*.cjs"
+    },
+    "./icons/*": {
+      "import": "./dist/icons/*.js",
+      "require": "./dist/icons/*.cjs"
+    },
+    "./styles/*": {
+      "import": "./dist/styles/*.js",
+      "require": "./dist/styles/*.cjs"
+    },
+    "./types/*": {
+      "import": "./dist/types/*.js",
+      "require": "./dist/types/*.cjs"
+    },
+    "./utils/*": {
+      "import": "./dist/utils/*.js",
+      "require": "./dist/utils/*.cjs"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./static/": {
+      "import": "./dist/static/",
+      "require": "./dist/static/"
+    },
+    "./router": {
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
+    },
     "./src/components": "./src/components/index.js",
     "./src/components/*": "./src/components/*.js",
     "./src/components/typography": "./src/components/typography/index.js",
@@ -30,13 +58,12 @@
     "./src/hooks": "./src/hooks/index.js",
     "./src/icons": "./src/icons/index.js",
     "./src/icons/*": "./src/icons/*.js",
+    "./src/styles/": "./src/styles/",
     "./src/styles/*": "./src/styles/*.js",
-    "./src/styles/fonts.css": "./src/styles/fonts.css",
-    "./src/types/*": "./src/types/*.js",
     "./src/types": "./src/types/index.js",
+    "./src/types/*": "./src/types/*.js",
     "./src/utils/*": "./src/utils/*.js",
     "./src/utils": "./src/utils/index.js",
-    "./src/static/": "./src/static/",
     "./src/router": "./src/router.js"
   },
   "scripts": {
@@ -50,6 +77,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw . -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
+    "package-types": "yarn attw --pack .",
     "test": "echo \"ui package tests are located in apps/examples/ui-test-app\"",
     "types": "yarn tsc",
     "types:watch": "tsc-absolute --watch"
@@ -87,6 +115,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@emotion/babel-plugin": "^11.11.0",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",

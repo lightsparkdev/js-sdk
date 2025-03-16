@@ -4,7 +4,12 @@ import {
   getCountryCallingCode,
   type CountryCode,
 } from "libphonenumber-js";
-import { useCallback, useState, type ComponentProps } from "react";
+import {
+  useCallback,
+  useState,
+  type ComponentProps,
+  type FocusEvent,
+} from "react";
 import { countryCodesToNames } from "../utils/countryCodesToNames.js";
 import { TextInput } from "./TextInput.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
@@ -29,13 +34,23 @@ function getSelectWidth(value: CountryCode, pxPerChar: number) {
 
 export type PhoneInputOnChangeArg = {
   number: string;
+  countryCallingCode: string;
+  nationalNumber: string;
   formatted: string;
   isValid: boolean;
 };
 
 type PhoneInputProps = {
   pxPerChar?: number;
-  onChange?: ({ number, formatted, isValid }: PhoneInputOnChangeArg) => void;
+  onChange?: ({
+    number,
+    countryCallingCode,
+    nationalNumber,
+    formatted,
+    isValid,
+  }: PhoneInputOnChangeArg) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  error?: string | undefined;
   typography?: PartialSimpleTypographyProps | undefined;
   defaultCountryCode?: CountryCode;
 };
@@ -43,6 +58,8 @@ type PhoneInputProps = {
 export function PhoneInput({
   typography,
   onChange: onChangeProp,
+  onBlur: onBlurProp,
+  error: errorProp,
   pxPerChar = 6,
   defaultCountryCode = "US",
 }: PhoneInputProps) {
@@ -89,6 +106,8 @@ export function PhoneInput({
       if (onChangeProp && phoneNumber) {
         onChangeProp({
           number: phoneNumber.number,
+          countryCallingCode: phoneNumber.countryCallingCode,
+          nationalNumber: phoneNumber.nationalNumber,
           formatted: formattedValue,
           isValid: phoneNumber.isValid(),
         });
@@ -117,9 +136,14 @@ export function PhoneInput({
       pattern="[0-9,]*"
       inputMode="numeric"
       value={formattedValue}
-      onBlur={() => setWasBlurred(true)}
+      onBlur={(blurEvent) => {
+        setWasBlurred(true);
+        if (onBlurProp) {
+          onBlurProp(blurEvent);
+        }
+      }}
       onChange={onChange}
-      error={error}
+      error={errorProp || error}
       typography={typography}
     />
   );

@@ -20,9 +20,15 @@
     "url": "https://github.com/lightsparkdev/js-sdk/issues"
   },
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "browser": {
     "crypto": false
   },
@@ -41,6 +47,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
+    "package-types": "yarn attw --pack .",
     "postversion": "yarn build",
     "test": "echo \"TODO\"",
     "types:watch": "tsc-absolute --watch",
@@ -54,6 +61,7 @@
     "dayjs": "^1.11.7"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
     "eslint": "^8.3.0",

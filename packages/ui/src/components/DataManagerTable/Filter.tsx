@@ -33,16 +33,16 @@ export const Filter = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Container>
+    <FilterContainer>
       <FilterHeader>
         <LabelModerate>{`Filter by ${label}`}</LabelModerate>
       </FilterHeader>
       <FilterBody>{children}</FilterBody>
-    </Container>
+    </FilterContainer>
   );
 };
 
-const Container = styled.div`
+const FilterContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${Spacing.px.sm};

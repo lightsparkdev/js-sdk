@@ -2,11 +2,11 @@ import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import {
   fetchPublicKeyForVasp,
   getPubKeyResponse,
-  parsePostTransactionCallback,
-  verifyPostTransactionCallbackSignature,
   InMemoryPublicKeyCache,
+  NonceValidator,
+  parsePostTransactionCallback,
   PubKeyResponse,
-  NonceValidator
+  verifyPostTransactionCallbackSignature,
 } from "@uma-sdk/core";
 import bodyParser from "body-parser";
 import express from "express";
@@ -63,10 +63,12 @@ export const createUmaServer = (
   receivingVasp.registerRoutes(app);
 
   app.get("/.well-known/lnurlpubkey", (req, res) => {
-    res.send(getPubKeyResponse({
-      signingCertChainPem: config.umaSigningCertChain,
-      encryptionCertChainPem: config.umaEncryptionCertChain,
-    }).toJsonString());
+    res.send(
+      getPubKeyResponse({
+        signingCertChainPem: config.umaSigningCertChain,
+        encryptionCertChainPem: config.umaEncryptionCertChain,
+      }).toJsonString(),
+    );
   });
 
   app.get("/.well-known/uma-configuration", (req, res) => {
@@ -99,15 +101,24 @@ export const createUmaServer = (
     console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
 
     try {
-      const isSignatureValid = await verifyPostTransactionCallbackSignature(postTransactionCallback, pubKeys, nonceCache);
+      const isSignatureValid = await verifyPostTransactionCallbackSignature(
+        postTransactionCallback,
+        pubKeys,
+        nonceCache,
+      );
       if (!isSignatureValid) {
-        return { httpStatus: 400, data: "Invalid post transaction callback signature." };
+        return {
+          httpStatus: 400,
+          data: "Invalid post transaction callback signature.",
+        };
       }
     } catch (e) {
       console.error(e);
       return {
         httpStatus: 500,
-        data: new Error("Invalid post transaction callback signature.", { cause: e }),
+        data: new Error("Invalid post transaction callback signature.", {
+          cause: e,
+        }),
       };
     }
 
