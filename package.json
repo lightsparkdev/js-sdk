@@ -46,7 +46,7 @@
     "@octokit/auth-action": "^4.0.1",
     "octokit": "^4.0.2",
     "ts-prune": "^0.10.3",
-    "turbo": "^1.13.3"
+    "turbo": "^2.4.4"
   },
   "engines": {
     "node": ">=18"
