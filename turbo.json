@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**"]
@@ -14,7 +14,9 @@
     "build-sb": {
       "outputs": ["storybook-static/**"]
     },
-    "circular-deps": {},
+    "circular-deps": {
+      "dependsOn": []
+    },
     "clean": {
       "cache": false
     },
@@ -26,8 +28,12 @@
       "dependsOn": ["^build"],
       "outputs": ["docs/**"]
     },
-    "format": {},
-    "format:fix": {},
+    "format": {
+      "dependsOn": []
+    },
+    "format:fix": {
+      "dependsOn": []
+    },
     "gql-codegen": {
       /* Always run codegen since it depends on files external to the workspace: */
       "cache": false
@@ -42,8 +48,8 @@
       "cache": false,
       "persistent": true
     },
-    "package-types": {
-      "dependsOn": ["build", "^build"]
+    "package:checks": {
+      "dependsOn": []
     },
     "start": {
       "cache": false,

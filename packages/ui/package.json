@@ -43,9 +43,9 @@
       "import": "./dist/utils/index.js",
       "require": "./dist/utils/index.cjs"
     },
-    "./static/": {
-      "import": "./dist/static/",
-      "require": "./dist/static/"
+    "./static/*": {
+      "import": "./dist/static/*",
+      "require": "./dist/static/*"
     },
     "./router": {
       "import": "./dist/router.js",
@@ -77,7 +77,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw . -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
-    "package-types": "yarn attw --pack .",
+    "package:checks": "yarn attw --pack .",
     "test": "echo \"ui package tests are located in apps/examples/ui-test-app\"",
     "types": "yarn tsc",
     "types:watch": "tsc-absolute --watch"
@@ -157,6 +157,13 @@
   },
   "files": [
     "dist/*",
+    "dist/hooks/*",
+    "dist/icons/*",
+    "dist/types/*",
+    "dist/styles/*",
+    "dist/utils/*",
+    "dist/router.js",
+    "dist/static/*",
     "CHANGELOG.md"
   ],
   "engines": {

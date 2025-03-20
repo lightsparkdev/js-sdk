@@ -31,6 +31,7 @@ export type BannerProps = {
   hPadding?: number | undefined;
   right?: ReactNode | undefined;
   left?: ReactNode | undefined;
+  blurScroll?: boolean | undefined;
 };
 
 export function Banner({
@@ -47,6 +48,7 @@ export function Banner({
   minHeight = 0,
   hPadding = 0,
   borderColor,
+  blurScroll = false,
 }: BannerProps) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
@@ -104,6 +106,7 @@ export function Banner({
       ref={ref}
       borderProgress={borderProgress}
       hPadding={hPadding}
+      blurScroll={blurScroll}
     >
       {left}
       {innerContent}
@@ -154,6 +157,7 @@ const StyledBanner = styled.div<{
   borderProgress: number | undefined;
   hPadding: number;
   borderColor: ThemeOrColorKey | undefined;
+  blurScroll: boolean | undefined;
 }>`
   position: fixed;
   left: 0;
@@ -164,6 +168,13 @@ const StyledBanner = styled.div<{
   font-weight: 500;
   background-color: ${({ colorProp, theme }) =>
     colorProp ? getColor(theme, colorProp) : "none"};
+  ${({ blurScroll }) =>
+    blurScroll
+      ? `
+      background: rgba(249, 249, 249, 0.8);
+      backdrop-filter: blur(32px);
+      `
+      : ""}
   display: flex;
   justify-content: ${({ hasSideContent }) =>
     hasSideContent ? "space-between" : "center"};
