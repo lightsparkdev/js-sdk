@@ -1,15 +1,18 @@
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import {
+  ErrorCode,
   fetchPublicKeyForVasp,
   getPubKeyResponse,
   InMemoryPublicKeyCache,
   NonceValidator,
   parsePostTransactionCallback,
   PubKeyResponse,
+  UmaError,
   verifyPostTransactionCallbackSignature,
 } from "@uma-sdk/core";
 import bodyParser from "body-parser";
 import express from "express";
+import asyncHandler from "express-async-handler";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
 import ReceivingVasp from "./ReceivingVasp.js";
@@ -18,7 +21,10 @@ import SendingVaspRequestCache from "./SendingVaspRequestCache.js";
 import UmaConfig from "./UmaConfig.js";
 import UserService from "./UserService.js";
 import { errorMessage } from "./errors.js";
-import { fullUrlForRequest } from "./networking/expressAdapters.js";
+import {
+  fullUrlForRequest,
+  sendResponse,
+} from "./networking/expressAdapters.js";
 
 export const createUmaServer = (
   config: UmaConfig,
@@ -62,7 +68,7 @@ export const createUmaServer = (
   );
   receivingVasp.registerRoutes(app);
 
-  app.get("/.well-known/lnurlpubkey", (req, res) => {
+  app.get("/.well-known/lnurlpubkey", (_req, res) => {
     res.send(
       getPubKeyResponse({
         signingCertChainPem: config.umaSigningCertChain,
@@ -81,54 +87,64 @@ export const createUmaServer = (
     });
   });
 
-  app.post("/api/uma/utxoCallback", async (req, res) => {
-    const postTransactionCallback = parsePostTransactionCallback(req.body);
+  app.post(
+    "/api/uma/utxoCallback",
+    asyncHandler(async (req, resp) => {
+      const postTransactionCallback = parsePostTransactionCallback(req.body);
 
-    let pubKeys: PubKeyResponse;
-    try {
-      pubKeys = await fetchPublicKeyForVasp({
-        cache: pubKeyCache,
-        vaspDomain: postTransactionCallback.vaspDomain,
-      });
-    } catch (e) {
-      console.error(e);
-      return {
-        httpStatus: 500,
-        data: new Error("Failed to fetch public key.", { cause: e }),
-      };
-    }
-
-    console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
-
-    try {
-      const isSignatureValid = await verifyPostTransactionCallbackSignature(
-        postTransactionCallback,
-        pubKeys,
-        nonceCache,
-      );
-      if (!isSignatureValid) {
-        return {
-          httpStatus: 400,
-          data: "Invalid post transaction callback signature.",
-        };
+      let pubKeys: PubKeyResponse;
+      try {
+        pubKeys = await fetchPublicKeyForVasp({
+          cache: pubKeyCache,
+          vaspDomain: postTransactionCallback.vaspDomain,
+        });
+      } catch (e) {
+        console.error(e);
+        if (e instanceof UmaError) {
+          throw e;
+        }
+        throw new UmaError(
+          "Failed to fetch public key.",
+          ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+        );
       }
-    } catch (e) {
-      console.error(e);
-      return {
-        httpStatus: 500,
-        data: new Error("Invalid post transaction callback signature.", {
-          cause: e,
-        }),
-      };
-    }
 
-    console.log(`Received UTXO callback for ${req.query.txid}`);
-    console.log(`  ${req.body}`);
-    res.send("ok");
-  });
+      console.log(`Fetched pubkeys: ${JSON.stringify(pubKeys, null, 2)}`);
+
+      try {
+        const isSignatureValid = await verifyPostTransactionCallbackSignature(
+          postTransactionCallback,
+          pubKeys,
+          nonceCache,
+        );
+        if (!isSignatureValid) {
+          throw new UmaError(
+            "Invalid post transaction callback signature.",
+            ErrorCode.INVALID_SIGNATURE,
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        if (e instanceof UmaError) {
+          throw e;
+        }
+        throw new UmaError(
+          "Invalid post transaction callback signature.",
+          ErrorCode.INVALID_SIGNATURE,
+        );
+      }
+
+      console.log(`Received UTXO callback for ${req.query.txid}`);
+      console.log(`  ${req.body}`);
+      sendResponse(resp, {
+        httpStatus: 200,
+        data: "ok",
+      });
+    }),
+  );
 
   // Default 404 handler.
-  app.use(function (req, res, next) {
+  app.use(function (_req, res) {
     res.status(404);
     res.send(errorMessage("Not found."));
   });
@@ -139,12 +155,16 @@ export const createUmaServer = (
       return next(err);
     }
 
-    if (err.message === "User not found.") {
-      res.status(404).send(errorMessage(err.message));
+    if (err instanceof UmaError) {
+      res.status(err.httpStatusCode).json(JSON.parse(err.toJSON()));
       return;
     }
 
-    res.status(500).send(errorMessage(`Something broke! ${err.message}`));
+    const error = new UmaError(
+      `Something broke! ${err.message}`,
+      ErrorCode.INTERNAL_ERROR,
+    );
+    res.status(error.httpStatusCode).json(JSON.parse(error.toJSON()));
   });
 
   return app;

@@ -7,10 +7,10 @@ An example UMA VASP server implementation using Typescript.
 Configure environment variables needed to talk to Lightspark and UMA messages (API keys, etc.). Information on how to set them can be found in `src/UmaConfig.ts`.
 
 1. Create an API token (`LIGHTSPARK_API_TOKEN_CLIENT_ID`, `LIGHTSPARK_API_TOKEN_CLIENT_SECRET`)
-in your account's [API config page](https://app.lightspark.com/api-config).
+   in your account's [API config page](https://app.lightspark.com/api-config).
 
 1. Find your node credentials (`LIGHTSPARK_UMA_NODE_ID`, `LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD`)
-in your account's [API config page](https://app.lightspark.com/api-config).
+   in your account's [API config page](https://app.lightspark.com/api-config).
 
 1. Create a secp256k1 private key to use as your encryption private key (`LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY`) and use this private key to wrap the corresponding encryption public key in an X.509 Certificate (`LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN`). Similarly for signing, create a secp256k1 private key to use as your signing private key (`LIGHTSPARK_UMA_SIGNING_PRIVKEY`) and use this private key to wrap the corresponding signing public key in an X.509 Certificate (`LIGHTSPARK_UMA_SIGNING_CERT_CHAIN`). You may choose to use the same keypair for encryption and signing. For information on generating these, see [our docs](https://docs.uma.me/uma-standard/keys-authentication-encryption).
 
@@ -115,7 +115,7 @@ $ PORT=8081 yarn start
 Now, you can test the full uma flow like:
 
 ```bash
-# First, call to vasp1 to lookup Bob at vasp2. This will return currency conversion info, etc. It will also contain a 
+# First, call to vasp1 to lookup Bob at vasp2. This will return currency conversion info, etc. It will also contain a
 # callback ID that you'll need for the next call
 $ curl -X GET http://localhost:8080/api/umalookup/\$bob@localhost:8081 -u bob:pa55word
 
