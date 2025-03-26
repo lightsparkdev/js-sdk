@@ -10,6 +10,7 @@ import {
   type ComponentProps,
   type FocusEvent,
 } from "react";
+import { type TextInputBorderRadius } from "../styles/fields.js";
 import { countryCodesToNames } from "../utils/countryCodesToNames.js";
 import { TextInput } from "./TextInput.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
@@ -42,6 +43,7 @@ export type PhoneInputOnChangeArg = {
 
 type PhoneInputProps = {
   pxPerChar?: number;
+  borderRadius?: TextInputBorderRadius | undefined;
   onChange?: ({
     number,
     countryCallingCode,
@@ -62,6 +64,7 @@ export function PhoneInput({
   error: errorProp,
   pxPerChar = 6,
   defaultCountryCode = "US",
+  borderRadius = 8 as TextInputBorderRadius,
 }: PhoneInputProps) {
   /* countryCode only controls the country used for parsing phone number input. User may
      still enter or paste the country phone code */
@@ -132,6 +135,7 @@ export function PhoneInput({
         value: countryCode,
         onChange: onChangeSelect,
         width,
+        height: 54,
       }}
       pattern="[0-9,]*"
       inputMode="numeric"
@@ -145,6 +149,9 @@ export function PhoneInput({
       onChange={onChange}
       error={errorProp || error}
       typography={typography}
+      borderRadius={borderRadius}
+      borderWidth={0.5}
+      paddingY={13.5}
     />
   );
 }

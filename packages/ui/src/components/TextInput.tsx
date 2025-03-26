@@ -102,9 +102,12 @@ export type TextInputProps = {
         onChange: (value: string) => void;
         /* A specified width is required to ensure left input padding is correct */
         width: number;
+        /* A specified height is required to ensure the select is the same height as the input */
+        height: number;
       }
     | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
+  borderWidth?: number | undefined;
   width?: "full" | "short" | undefined;
   paddingX?: number;
   paddingY?: number;
@@ -246,6 +249,7 @@ export function TextInput(textInputProps: TextInputProps) {
           }
         }}
         borderRadius={props.borderRadius}
+        borderWidth={props.borderWidth}
         enterKeyHint={props.enterKeyHint}
         autoFocus={props.autoFocus}
       />
@@ -318,6 +322,7 @@ export function TextInput(textInputProps: TextInputProps) {
         <TextInputSelect
           value={select.value}
           widthProp={select.width}
+          heightProp={select.height}
           typography={props.typography}
           onChange={(event) => {
             select.onChange(event.target.value);
@@ -346,6 +351,7 @@ export function TextInput(textInputProps: TextInputProps) {
 
 const TextInputSelect = styled.select<{
   widthProp: number;
+  heightProp: number;
   typography: RequiredSimpleTypographyProps;
 }>`
   ${({ typography, theme }) =>
@@ -356,7 +362,7 @@ const TextInputSelect = styled.select<{
   background-color: transparent;
   top: 0;
   left: ${selectLeftOffset}px;
-  height: 48px;
+  height: ${({ heightProp }) => `${heightProp}px`};
   width: ${({ widthProp }) => `${widthProp}px`};
 `;
 
@@ -411,6 +417,7 @@ interface InputProps {
   activeOutlineColor?: ThemeOrColorKey | undefined;
   typography: RequiredSimpleTypographyProps;
   borderRadius?: TextInputBorderRadius | undefined;
+  borderWidth?: number | undefined;
 }
 
 const Input = styled.input<InputProps>`

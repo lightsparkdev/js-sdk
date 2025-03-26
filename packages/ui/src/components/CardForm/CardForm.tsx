@@ -23,8 +23,9 @@ import {
   type CardFormBorderRadius,
   type CardFormBorderWidth,
   type CardFormKind,
+  type CardFormPaddingBottom,
+  type CardFormPaddingTop,
   type CardFormPaddingX,
-  type CardFormPaddingY,
   type CardFormShadow,
   type CardFormTextAlign,
   type CardFormThemeKey,
@@ -69,6 +70,8 @@ type CardFormProps = {
   kind?: CardFormKind;
   textAlign?: CardFormTextAlign;
   shadow?: CardFormShadow;
+  paddingTop?: CardFormPaddingTop | undefined;
+  paddingBottom?: CardFormPaddingBottom | undefined;
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
 };
@@ -77,10 +80,23 @@ type ResolvePropsArgs = {
   kind: CardFormKind;
   shadow?: CardFormShadow | undefined;
   textAlign?: CardFormTextAlign | undefined;
+  paddingTop?: CardFormPaddingTop | undefined;
+  paddingBottom?: CardFormPaddingBottom | undefined;
 };
 
 function resolveProps(args: ResolvePropsArgs, theme: Theme) {
-  const paddingY = resolveCardFormProp(undefined, args.kind, "paddingY", theme);
+  const paddingTop = resolveCardFormProp(
+    args.paddingTop,
+    args.kind,
+    "paddingTop",
+    theme,
+  );
+  const paddingBottom = resolveCardFormProp(
+    args.paddingBottom,
+    args.kind,
+    "paddingBottom",
+    theme,
+  );
   const paddingX = resolveCardFormProp(undefined, args.kind, "paddingX", theme);
   const textAlign = resolveCardFormProp(
     args.textAlign,
@@ -133,7 +149,8 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
   );
 
   const props = {
-    paddingY,
+    paddingTop,
+    paddingBottom,
     paddingX,
     shadow,
     borderRadius,
@@ -164,12 +181,15 @@ export function CardForm({
   kind = "primary",
   shadow: shadowProp,
   textAlign: textAlignProp,
+  paddingTop: paddingTopProp,
+  paddingBottom: paddingBottomProp,
   belowFormContent,
   belowFormContentGap = 0,
 }: CardFormProps) {
   const theme = useTheme();
   const {
-    paddingY,
+    paddingTop,
+    paddingBottom,
     paddingX,
     shadow,
     borderRadius,
@@ -181,7 +201,13 @@ export function CardForm({
     smBorderWidth,
     defaultDescriptionTypographyMap,
   } = resolveProps(
-    { kind, textAlign: textAlignProp, shadow: shadowProp },
+    {
+      kind,
+      textAlign: textAlignProp,
+      shadow: shadowProp,
+      paddingTop: paddingTopProp,
+      paddingBottom: paddingBottomProp,
+    },
     theme,
   );
 
@@ -240,7 +266,8 @@ export function CardForm({
     borderColor,
     textAlign,
     paddingX,
-    paddingY,
+    paddingTop,
+    paddingBottom,
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
@@ -287,7 +314,9 @@ const BelowCardFormContent = styled.div<BelowCardFormContentProps>`
   margin-bottom: ${Spacing.px.xl};
 `;
 
-const CardFormSubtitle = styled.div``;
+const CardFormSubtitle = styled.div`
+  padding: 0 ${Spacing.px.xs};
+`;
 
 export const CardFormButtonRow = styled.div<{
   justify?: "left" | "center" | undefined;
@@ -361,20 +390,26 @@ const StyledCardFormCheckboxParagraph = styled.div`
 type CardFormInsetProps = {
   wide: boolean;
   paddingX: number;
-  paddingY: number;
+  paddingTop: number;
+  paddingBottom: number;
 };
 
-const formInset = ({ wide, paddingX, paddingY }: CardFormInsetProps) => css`
+const formInset = ({
+  wide,
+  paddingX,
+  paddingTop,
+  paddingBottom,
+}: CardFormInsetProps) => css`
   margin-left: auto;
   margin-right: auto;
   max-width: 100%;
   padding-right: ${paddingX}px;
   padding-left: ${paddingX}px;
-  padding-top: ${paddingY}px;
-  padding-bottom: ${paddingY}px;
+  padding-top: ${paddingTop}px;
+  padding-bottom: ${paddingBottom}px;
 
   ${bp.minSm(`
-    width: ${wide ? 700 : 505}px;
+    width: ${wide ? 700 : 408}px;
   `)}
 
   ${bp.sm(`
@@ -397,7 +432,7 @@ const formInset = ({ wide, paddingX, paddingY }: CardFormInsetProps) => css`
 
   & ${CardFormFullTopContent} {
     ${bp.minSm(`
-      margin-top: -${paddingY}px;
+      margin-top: -${paddingTop}px;
     `)}
   }
 `;
@@ -410,7 +445,8 @@ type StyledCardFormStyleProps = {
   borderColor: CardFormBorderColor;
   textAlign: CardFormTextAlign;
   paddingX: CardFormPaddingX;
-  paddingY: CardFormPaddingY;
+  paddingTop: CardFormPaddingTop;
+  paddingBottom: CardFormPaddingBottom;
   backgroundColor: CardFormBackgroundColor;
   smBackgroundColor: CardFormBackgroundColor;
   smBorderWidth: CardFormBorderWidth;
@@ -425,13 +461,14 @@ const StyledCardFormStyle = ({
   borderColor,
   textAlign,
   paddingX,
-  paddingY,
+  paddingTop,
+  paddingBottom,
   backgroundColor,
   smBackgroundColor,
   smBorderWidth,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
-    ${formInset({ wide, paddingX, paddingY })}
+    ${formInset({ wide, paddingX, paddingTop, paddingBottom })}
     ${shadow === "soft"
       ? standardCardShadow
       : shadow === "hard"
@@ -518,6 +555,8 @@ const StyledCardFormDiv =
   styled.div<StyledCardFormStyleProps>(StyledCardFormStyle);
 
 const CardHeadline = styled.div<{ hasTopContent: boolean }>`
+  padding: 0 ${Spacing.px.xs};
+
   ${({ hasTopContent }) => (hasTopContent ? "margin-top: 32px;" : "")}
 
   & + *:not(${CardFormSubtitle}) {

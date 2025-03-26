@@ -52,7 +52,6 @@ export const inputBlockStyle = ({
 export const textInputPlaceholderColor = ({ theme }: ThemeProp) =>
   theme.c4Neutral;
 export const textInputFontWeight = 600;
-export const textInputBorderRadiusPx = 8;
 export const textInputPaddingPx = 12;
 export const textInputPadding = `${textInputPaddingPx}px`;
 
@@ -65,11 +64,15 @@ const textInputActiveStyles = ({
   theme,
   paddingLeftPx,
   paddingRightPx,
+  paddingTopPx,
+  paddingBottomPx,
   activeOutline,
   activeOutlineColor,
 }: WithTheme<{
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;
+  paddingTopPx?: number | undefined;
+  paddingBottomPx?: number | undefined;
   activeOutline?: boolean | undefined;
   activeOutlineColor?: ThemeOrColorKey | undefined;
 }>) => {
@@ -90,6 +93,8 @@ const textInputActiveStyles = ({
     padding: ${textInputPaddingPx - 1}px;
     ${paddingLeftPx ? `padding-left: ${paddingLeftPx - 1}px;` : ""}
     ${paddingRightPx ? `padding-right: ${paddingRightPx - 1}px;` : ""}
+    ${paddingTopPx ? `padding-top: ${paddingTopPx - 1}px;` : ""}
+    ${paddingBottomPx ? `padding-bottom: ${paddingBottomPx - 1}px;` : ""}
   `;
 };
 
@@ -99,7 +104,7 @@ export const defaultTextInputTypography = {
   color: "text",
 } as const;
 
-export type TextInputBorderRadius = "round" | "default";
+export type TextInputBorderRadius = 8 | 16 | 999;
 
 export const textInputStyle = ({
   theme,
@@ -114,6 +119,7 @@ export const textInputStyle = ({
   activeOutlineColor,
   typography,
   borderRadius,
+  borderWidth,
 }: WithTheme<{
   // In some cases we want to show an active state when another element is focused.
   active?: boolean | undefined;
@@ -127,10 +133,9 @@ export const textInputStyle = ({
   activeOutlineColor?: ThemeOrColorKey | undefined;
   typography?: PartialSimpleTypographyProps | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
+  borderWidth?: number | undefined;
 }>) => css`
-  border-radius: ${borderRadius === "round"
-    ? "999"
-    : textInputBorderRadiusPx}px;
+  border-radius: ${borderRadius}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;
@@ -151,7 +156,11 @@ export const textInputStyle = ({
     ? `padding-bottom: ${paddingBottomPx - (hasError ? 1 : 0)}px;`
     : ""}
   border-style: solid;
-  border-width: ${hasError ? "2" : "1"}px;
+  border-width: ${hasError
+    ? "2"
+    : borderWidth !== undefined
+    ? borderWidth
+    : "1"}px;
   border-color: ${hasError ? theme.danger : textInputBorderColor({ theme })};
   line-height: 22px;
   outline: none;
@@ -173,6 +182,8 @@ export const textInputStyle = ({
       theme,
       paddingLeftPx,
       paddingRightPx,
+      paddingTopPx,
+      paddingBottomPx,
       activeOutline,
       activeOutlineColor,
     })}
@@ -183,6 +194,8 @@ export const textInputStyle = ({
     theme,
     paddingLeftPx,
     paddingRightPx,
+    paddingTopPx,
+    paddingBottomPx,
     activeOutline,
     activeOutlineColor,
   })}

@@ -64,6 +64,7 @@ export function SingleCodeInput({
           theme,
           disabled: Boolean(disabled),
           hasError: false,
+          borderRadius: 8,
         }).styles
       }
       width: ${width};
