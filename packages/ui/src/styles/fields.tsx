@@ -135,7 +135,7 @@ export const textInputStyle = ({
   borderRadius?: TextInputBorderRadius | undefined;
   borderWidth?: number | undefined;
 }>) => css`
-  border-radius: ${borderRadius}px;
+  border-radius: ${borderRadius ?? 8}px;
   background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;
