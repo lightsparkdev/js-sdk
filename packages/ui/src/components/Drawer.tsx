@@ -9,7 +9,7 @@ import { Button } from "./Button.js";
 import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type DrawerKind = "default" | "floating";
+export type DrawerKind = "default" | "floating";
 
 interface Props {
   children?: React.ReactNode;
@@ -18,7 +18,7 @@ interface Props {
   closeButton?: boolean;
   nonDismissable?: boolean;
   handleBack?: (() => void) | undefined;
-  padding?: string;
+  padding?: string | undefined;
   kind?: DrawerKind | undefined;
 }
 

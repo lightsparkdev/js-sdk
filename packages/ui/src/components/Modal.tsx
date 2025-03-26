@@ -31,13 +31,12 @@ import {
   type ToReactNodesArgs,
 } from "../utils/toReactNodes/toReactNodes.js";
 import { Button, ButtonSelector } from "./Button.js";
-import { Drawer } from "./Drawer.js";
+import { Drawer, type DrawerKind } from "./Drawer.js";
 import { Icon } from "./Icon/Icon.js";
 import { IconWithCircleBackground } from "./IconWithCircleBackground.js";
 import { type LoadingKind } from "./Loading.js";
 import { ProgressBar, type ProgressBarProps } from "./ProgressBar.js";
 import { UnstyledButton } from "./UnstyledButton.js";
-
 type IconProps = ComponentProps<typeof Icon>;
 
 type ExtraAction = ComponentProps<typeof Button> & {
@@ -117,6 +116,9 @@ type ModalProps = {
   appendToElement?: HTMLElement;
   bottomContent?: ReactNode | undefined;
   topLeftIcon?: ComponentProps<typeof Icon> | undefined;
+  drawerKind?: DrawerKind;
+  drawerPadding?: number;
+  drawerCloseButton?: boolean;
 };
 
 export function Modal({
@@ -152,6 +154,9 @@ export function Modal({
   appendToElement,
   bottomContent,
   topLeftIcon,
+  drawerKind,
+  drawerPadding,
+  drawerCloseButton = true,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
   const [visibleChanged, setVisibleChanged] = useState(false);
@@ -403,9 +408,11 @@ export function Modal({
     content = (
       <Drawer
         onClose={() => onClickCloseButton()}
-        closeButton
+        closeButton={drawerCloseButton}
         nonDismissable={nonDismissable}
         handleBack={handleBack}
+        kind={drawerKind ?? "default"}
+        padding={drawerPadding !== undefined ? `${drawerPadding}px` : undefined}
       >
         {modalContent}
       </Drawer>
