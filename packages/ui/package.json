@@ -101,7 +101,7 @@
     "libphonenumber-js": "^1.11.1",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
-    "next": "^13.4.19",
+    "next": "^13.5.10",
     "prismjs": "^1.29.0",
     "qrcode.react": "^4.0.1",
     "react": "^18.2.0",
