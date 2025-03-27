@@ -211,8 +211,8 @@ const LETTER_SPACING = {
     loose: ".1em",
   },
   [TypographyGroup.Bridge]: {
-    tight: "-2%",
-    normal: "0%",
+    tight: "-0.48px",
+    normal: "0",
     wide: "10%",
   },
 };
