@@ -32,6 +32,7 @@ import {
 } from "../../styles/themeDefaults/cardForm.js";
 import { getColor } from "../../styles/themes.js";
 import { Spacing } from "../../styles/tokens/spacing.js";
+import { type TokenSizeKey } from "../../styles/tokens/typography.js";
 import { pxToRems } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { select } from "../../utils/emotion.js";
@@ -60,10 +61,12 @@ type CardFormProps = {
   disabled?: boolean;
   topContent?: ReactNode;
   title?: string;
+  titleSize?: TokenSizeKey;
   titleRightIcon?:
     | ComponentProps<typeof TextIconAligner>["rightIcon"]
     | undefined;
   description?: ToReactNodesArgs | undefined;
+  full?: boolean;
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
   hasChildForm?: boolean;
   wide?: boolean;
@@ -74,6 +77,7 @@ type CardFormProps = {
   paddingBottom?: CardFormPaddingBottom | undefined;
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
+  forceMarginAfterSubtitle?: boolean;
 };
 
 type ResolvePropsArgs = {
@@ -171,7 +175,9 @@ export function CardForm({
   disabled,
   topContent = null,
   title,
+  titleSize = "Large",
   description,
+  full = false,
   onSubmit,
   titleRightIcon,
   /* In some cases eg third party libs we can't avoid the need for child forms, so the
@@ -185,6 +191,7 @@ export function CardForm({
   paddingBottom: paddingBottomProp,
   belowFormContent,
   belowFormContentGap = 0,
+  forceMarginAfterSubtitle = true,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -228,6 +235,7 @@ export function CardForm({
     ? toReactNodesWithTypographyMap(
         description,
         defaultDescriptionTypographyMap,
+        false,
       )
     : null;
 
@@ -235,8 +243,10 @@ export function CardForm({
     ? toReactNodes(belowFormContent)
     : null;
 
+  const CardFormContentTarget = full ? CardFormContentFull : CardFormContent;
+
   const content = (
-    <CardFormContent>
+    <CardFormContentTarget>
       {topContent}
       {title && (
         <CardHeadline hasTopContent={Boolean(topContent)}>
@@ -248,6 +258,7 @@ export function CardForm({
                 : []),
             ]}
             display="inline-flex"
+            size={titleSize}
           />
         </CardHeadline>
       )}
@@ -255,7 +266,7 @@ export function CardForm({
         <CardFormSubtitle>{formattedDescription}</CardFormSubtitle>
       )}
       {children}
-    </CardFormContent>
+    </CardFormContentTarget>
   );
 
   const commonProps = {
@@ -271,21 +282,29 @@ export function CardForm({
     backgroundColor,
     smBackgroundColor,
     smBorderWidth,
+    forceMarginAfterSubtitle,
   };
 
+  const Container = full ? CardFormContentFull : CardFormContainer;
+
   return (
-    <CardFormContainer>
+    <Container>
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <StyledCardForm onSubmit={onSubmitForm} noValidate {...commonProps}>
+        <StyledCardForm
+          onSubmit={onSubmitForm}
+          noValidate
+          {...commonProps}
+          forceMarginAfterSubtitle={forceMarginAfterSubtitle}
+        >
           {content}
         </StyledCardForm>
       )}
       <BelowCardFormContent gap={belowFormContentGap}>
         {belowFormContentNodes}
       </BelowCardFormContent>
-    </CardFormContainer>
+    </Container>
   );
 }
 
@@ -298,6 +317,13 @@ const CardFormContent = styled.div`
   display: flex;
   flex-direction: column;
   align-self: center;
+`;
+
+const CardFormContentFull = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  height: 100%;
 `;
 
 type BelowCardFormContentProps = {
@@ -450,6 +476,7 @@ type StyledCardFormStyleProps = {
   backgroundColor: CardFormBackgroundColor;
   smBackgroundColor: CardFormBackgroundColor;
   smBorderWidth: CardFormBorderWidth;
+  forceMarginAfterSubtitle: boolean | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -466,6 +493,7 @@ const StyledCardFormStyle = ({
   backgroundColor,
   smBackgroundColor,
   smBorderWidth,
+  forceMarginAfterSubtitle = true,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
     ${formInset({ wide, paddingX, paddingTop, paddingBottom })}
@@ -496,9 +524,11 @@ const StyledCardFormStyle = ({
       text-align: ${textAlign};
     }
 
-    ${CardFormSubtitle} + * {
+    ${forceMarginAfterSubtitle
+      ? `${CardFormSubtitle.toString()} + * {
       margin-top: 40px !important;
-    }
+    }`
+      : ""}
 
     ${CardFormButtonRow}, ${StyledButtonRowButton} {
       ${ButtonSelector()} {
@@ -551,13 +581,14 @@ const StyledCardFormStyle = ({
 
 const StyledCardForm =
   styled.form<StyledCardFormStyleProps>(StyledCardFormStyle);
+
 const StyledCardFormDiv =
   styled.div<StyledCardFormStyleProps>(StyledCardFormStyle);
 
 const CardHeadline = styled.div<{ hasTopContent: boolean }>`
   padding: 0 ${Spacing.px.xs};
 
-  ${({ hasTopContent }) => (hasTopContent ? "margin-top: 32px;" : "")}
+  ${({ hasTopContent }) => (hasTopContent ? "margin-top: 24px;" : "")}
 
   & + *:not(${CardFormSubtitle}) {
     margin-top: 40px;

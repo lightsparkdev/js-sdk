@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { isNumber } from "lodash-es";
 import { type ElementType, type ReactNode } from "react";
 
 type FlexProps = {
@@ -35,6 +36,8 @@ type FlexProps = {
     | "pre-wrap"
     | "pre-line"
     | undefined;
+  height?: number | "auto" | "100%" | undefined;
+  width?: number | "auto" | "100%" | undefined;
   mt?: number | "auto" | undefined;
   mr?: number | "auto" | undefined;
   mb?: number | "auto" | undefined;
@@ -67,6 +70,8 @@ export function Flex({
   pr,
   pb,
   pl,
+  height,
+  width,
 }: FlexProps) {
   const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
   const align = alignProp ? alignProp : center ? "center" : "stretch";
@@ -92,6 +97,8 @@ export function Flex({
       pb={pb}
       pl={pl}
       gap={gap}
+      height={height}
+      width={width}
       {...asButtonProps}
     >
       {children}
@@ -128,6 +135,8 @@ type StyledFlexProps = {
   pl: FlexProps["pl"];
   gap: number | undefined;
   as?: ElementType | undefined;
+  height?: FlexProps["height"];
+  width?: FlexProps["width"];
 };
 
 export const StyledFlex = styled.div<StyledFlexProps>`
@@ -166,4 +175,10 @@ export const StyledFlex = styled.div<StyledFlexProps>`
   ${({ pr }) => pr && `padding-right: ${pr}px;`}
   ${({ pb }) => pb && `padding-bottom: ${pb}px;`}
   ${({ pl }) => pl && `padding-left: ${pl}px;`}
+
+  ${({ height }) =>
+    height &&
+    (isNumber(height) ? `height: ${height}px;` : `height: ${height};`)}
+  ${({ width }) =>
+    width && (isNumber(width) ? `width: ${width}px;` : `width: ${width};`)}
 `;

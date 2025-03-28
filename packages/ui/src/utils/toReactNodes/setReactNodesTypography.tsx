@@ -126,6 +126,7 @@ function setTextNodeTypography(
 export function toReactNodesWithTypographyMap(
   nodesArg: ToReactNodesArgs,
   nodesTypographyMap: SetReactNodesTypographyMap,
+  replaceExistingTypography = true,
 ) {
   if (!nodesArg) {
     return null;
@@ -134,6 +135,7 @@ export function toReactNodesWithTypographyMap(
   const nodesWithTypography = setReactNodesTypography(
     nodesArg,
     nodesTypographyMap,
+    replaceExistingTypography,
   );
 
   const nodes = toReactNodes(nodesWithTypography);

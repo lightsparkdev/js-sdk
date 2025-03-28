@@ -1,22 +1,25 @@
 import styled from "@emotion/styled";
 import { Link } from "../router.js";
-import { getColor } from "../styles/themes.js";
+import { getColor, type ThemeOrColorKey } from "../styles/themes.js";
 import { type NewRoutesType } from "../types/index.js";
 import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 30 | 16.5;
+type IconWidth = 40 | 36 | 30 | 20 | 16.5;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
   iconWidth?: IconWidth | undefined;
+  iconColor?: ThemeOrColorKey | undefined;
   to?: NewRoutesType | undefined;
   darkBg?: boolean;
   noBg?: boolean;
+  bgColor?: ThemeOrColorKey | undefined;
   shouldRotate?: boolean;
   onClick?: () => void;
   disabled?: boolean;
+  iconStrokeWidth?: number;
 };
 
 export function IconWithCircleBackground({
@@ -28,6 +31,9 @@ export function IconWithCircleBackground({
   shouldRotate = false,
   noBg = false,
   disabled = false,
+  bgColor,
+  iconColor,
+  iconStrokeWidth,
 }: IconWithCircleBackgroundProps) {
   const content = (
     <Flex
@@ -42,11 +48,13 @@ export function IconWithCircleBackground({
         darkBg={darkBg}
         shouldRotate={shouldRotate}
         noBg={noBg}
+        bgColor={bgColor}
       >
         <Icon
           name={iconName}
           width={iconWidth}
-          color={darkBg ? "white" : "grayBlue9"}
+          color={iconColor ? iconColor : darkBg ? "white" : "grayBlue9"}
+          iconProps={{ strokeWidth: iconStrokeWidth }}
         />
       </StyledIconWithCircleBackground>
     </Flex>
@@ -67,14 +75,17 @@ type StyledIconWithCircleBackgroundProps = {
   darkBg: boolean;
   shouldRotate: boolean;
   noBg: boolean;
+  bgColor: ThemeOrColorKey | undefined;
 };
 
 const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackgroundProps>`
-  background: ${({ theme, darkBg, noBg }) =>
+  background: ${({ theme, darkBg, noBg, bgColor }) =>
     darkBg
       ? `linear-gradient(291.4deg, #1C243F 0%, #21283A 100%)`
       : noBg
       ? "transparent"
+      : bgColor
+      ? getColor(theme, bgColor)
       : getColor(theme, "grayBlue94")};
   border-radius: 50%;
   padding: ${({ size }) => getPadding(size)}px;
@@ -104,6 +115,12 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
 function getPadding(size: IconWidth) {
   if (size === 40) {
     return 20;
+  }
+  if (size === 36) {
+    return 14;
+  }
+  if (size === 20) {
+    return 10;
   }
   return 16;
 }
