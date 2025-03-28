@@ -19,6 +19,7 @@ const neutral = {
   gray91: "#171717",
   gray95: "#F2F2F2",
   gray98: "#F9F9F9",
+  gray99: "#EDEEF1",
   white: "#FFFFFF",
 };
 
@@ -40,6 +41,7 @@ const baseColors = {
   green33: "#179257",
   green35: "#19981E",
   // blue
+  blue10: "#E4EFFB",
   blue43: "#145BC6",
   blue22: "#0E2E60",
   blue39: "#0068C9",
@@ -74,6 +76,8 @@ const baseColors = {
   red42a10: "#D800271A",
   red42a20: "#D800272D",
   red42a30: "#D800273F",
+  errorText: "#E41C1B",
+  errorBackground: "#FEE2E1",
   // yellow
   primary,
   warning: primary,
