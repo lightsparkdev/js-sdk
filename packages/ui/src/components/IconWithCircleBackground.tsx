@@ -6,7 +6,7 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 36 | 30 | 20 | 16.5;
+type IconWidth = 40 | 36 | 30 | 20 | 16.5 | 14;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
@@ -20,6 +20,7 @@ type IconWithCircleBackgroundProps = {
   onClick?: () => void;
   disabled?: boolean;
   iconStrokeWidth?: number;
+  opaque?: boolean;
 };
 
 export function IconWithCircleBackground({
@@ -34,6 +35,7 @@ export function IconWithCircleBackground({
   bgColor,
   iconColor,
   iconStrokeWidth,
+  opaque = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
     <Flex
@@ -54,7 +56,10 @@ export function IconWithCircleBackground({
           name={iconName}
           width={iconWidth}
           color={iconColor ? iconColor : darkBg ? "white" : "grayBlue9"}
-          iconProps={{ strokeWidth: iconStrokeWidth }}
+          iconProps={{
+            strokeWidth: iconStrokeWidth,
+            fill: opaque ? "currentColor" : "none",
+          }}
         />
       </StyledIconWithCircleBackground>
     </Flex>

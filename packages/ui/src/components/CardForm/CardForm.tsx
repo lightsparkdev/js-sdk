@@ -65,6 +65,7 @@ type CardFormProps = {
   titleRightIcon?:
     | ComponentProps<typeof TextIconAligner>["rightIcon"]
     | undefined;
+  afterTitleMargin?: 24 | 40 | undefined;
   description?: ToReactNodesArgs | undefined;
   full?: boolean;
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
@@ -192,6 +193,7 @@ export function CardForm({
   belowFormContent,
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
+  afterTitleMargin = 40,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -249,7 +251,10 @@ export function CardForm({
     <CardFormContentTarget>
       {topContent}
       {title && (
-        <CardHeadline hasTopContent={Boolean(topContent)}>
+        <CardHeadline
+          hasTopContent={Boolean(topContent)}
+          afterTitleMargin={afterTitleMargin}
+        >
           <Headline
             content={[
               title,
@@ -585,13 +590,16 @@ const StyledCardForm =
 const StyledCardFormDiv =
   styled.div<StyledCardFormStyleProps>(StyledCardFormStyle);
 
-const CardHeadline = styled.div<{ hasTopContent: boolean }>`
+const CardHeadline = styled.div<{
+  hasTopContent: boolean;
+  afterTitleMargin: number;
+}>`
   padding: 0 ${Spacing.px.xs};
 
   ${({ hasTopContent }) => (hasTopContent ? "margin-top: 24px;" : "")}
 
-  & + *:not(${CardFormSubtitle}) {
-    margin-top: 40px;
+  & + *:not(${CardFormSubtitle.toString()}) {
+    margin-top: ${({ afterTitleMargin }) => afterTitleMargin}px;
   }
 
   & + ${CardFormSubtitle} {

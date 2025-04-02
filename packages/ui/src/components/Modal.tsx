@@ -413,6 +413,7 @@ export function Modal({
         handleBack={handleBack}
         kind={drawerKind ?? "default"}
         padding={drawerPadding !== undefined ? `${drawerPadding}px` : undefined}
+        top={top}
       >
         {modalContent}
       </Drawer>

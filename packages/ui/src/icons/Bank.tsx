@@ -6,12 +6,13 @@ export function Bank({
   strokeWidth = "1.5",
   strokeLinecap = "square",
   strokeLinejoin = "round",
+  fill = "none",
 }: PathProps) {
   return (
     <svg
       width="100%"
       viewBox="0 0 24 24"
-      fill="none"
+      fill={fill}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
