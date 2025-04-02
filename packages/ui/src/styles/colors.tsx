@@ -90,6 +90,7 @@ const baseColors = {
   secondary: neutral.black,
   gray: "#242526",
   gray2: "#6D7685",
+  gray3: "#D9DBDF",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",

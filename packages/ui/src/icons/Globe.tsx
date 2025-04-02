@@ -5,13 +5,7 @@ export function Globe({
   strokeLinecap = "round",
 }: PathProps) {
   return (
-    <svg
-      width="197"
-      height="183"
-      viewBox="0 0 197 183"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 213 296" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M131.942 1C131.942 1 1.00484 40.3138 1.00098 148.876C1.00484 256.839 132.045 294.357 132.045 294.357"
         stroke="currentColor"
@@ -68,6 +62,24 @@ export function Globe({
       />
       <path
         d="M579.404 147.676H1.00518"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+      />
+      <path
+        d="M588.464 202.3131H13.0322"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+      />
+      <path
+        d="M597.524 256.9502H59.8089"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+      />
+      <path
+        d="M606.584 294.3873H132.20"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
