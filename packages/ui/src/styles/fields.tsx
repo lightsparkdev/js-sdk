@@ -2,9 +2,11 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { useLayoutEffect, useRef, useState } from "react";
 import { type PartialSimpleTypographyProps } from "../components/typography/types.js";
+import { colors } from "./colors.js";
 import { standardBorderRadius, subtext } from "./common.js";
 import {
   getColor,
+  isBridge,
   themeOr,
   type ThemeOrColorKey,
   type ThemeProp,
@@ -56,7 +58,9 @@ export const textInputPaddingPx = 12;
 export const textInputPadding = `${textInputPaddingPx}px`;
 
 export const textInputBorderColor = ({ theme }: ThemeProp) =>
-  themeOr(theme.c1Neutral, theme.c3Neutral)({ theme });
+  isBridge(theme)
+    ? colors.gray4
+    : themeOr(theme.c1Neutral, theme.c3Neutral)({ theme });
 export const textInputBorderColorFocused = ({ theme }: ThemeProp) =>
   themeOr(theme.hcNeutral, theme.hcNeutral)({ theme });
 

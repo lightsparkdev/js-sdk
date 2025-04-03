@@ -111,6 +111,7 @@ export type TextInputProps = {
   width?: "full" | "short" | undefined;
   paddingX?: number;
   paddingY?: number;
+  marginTop?: number | undefined;
   // Outline that appears outside/offset when the input is focused
   activeOutline?: boolean;
   activeOutlineColor?: ThemeOrColorKey;
@@ -314,7 +315,7 @@ export function TextInput(textInputProps: TextInputProps) {
   const { select } = props;
 
   return (
-    <StyledTextInput widthProp={textInputWidth}>
+    <StyledTextInput widthProp={textInputWidth} marginTop={props.marginTop}>
       {props.label ? (
         <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
       ) : null}
@@ -422,7 +423,6 @@ interface InputProps {
 
 const Input = styled.input<InputProps>`
   ${textInputStyle};
-
   // disable autofill styles in chrome https://stackoverflow.com/a/68240841/9808766
   &:-webkit-autofill,
   &:-webkit-autofill:focus,
@@ -480,9 +480,15 @@ export const TextInputHalfRow = styled.div`
   }
 `;
 
-const StyledTextInput = styled.div<{ widthProp: string }>`
+const StyledTextInput = styled.div<{
+  widthProp: string;
+  marginTop: number | undefined;
+}>`
   width: ${({ widthProp }) => widthProp};
   position: relative;
+  /* Apply marginTop to every TextInput when specified */
+  margin-top: ${({ marginTop }) =>
+    marginTop !== undefined ? `${marginTop}px` : ""};
 
   /* eg forms, should be left consistent: */
   & + & {

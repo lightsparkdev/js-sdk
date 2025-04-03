@@ -817,6 +817,9 @@ export const isLight = (theme: Theme) =>
     Themes.UmaAuthSdkLight,
   ].includes(theme.type);
 
+export const isBridge = (theme: Theme) =>
+  [Themes.BridgeLight, Themes.BridgeDark].includes(theme.type);
+
 export const themeOr =
   (lightValue: string, darkValue: string) =>
   ({ theme }: { theme: Theme }) => {
