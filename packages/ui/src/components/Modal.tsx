@@ -19,6 +19,7 @@ import {
   standardContentInset,
   standardFocusOutline,
 } from "../styles/common.js";
+import type { ButtonBorderRadius } from "../styles/themeDefaults/buttons.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
@@ -108,6 +109,8 @@ type ModalProps = {
   buttonOrder?: "submit-first" | "cancel-first";
   /** Determines if buttons are laid out horizontally or vertically */
   buttonLayout?: "horizontal" | "vertical";
+  /** Determines the border radius of the buttons */
+  buttonBorderRadius?: ButtonBorderRadius | undefined;
   /** Allows placing extra buttons in the same button layout */
   extraActions?: ExtraAction[] | undefined;
   /** Displays a back button at the top of the modal which calls this function */
@@ -149,6 +152,7 @@ export function Modal({
   progressBar,
   buttonOrder,
   buttonLayout = "horizontal",
+  buttonBorderRadius,
   extraActions,
   handleBack,
   appendToElement,
@@ -317,6 +321,7 @@ export function Modal({
           type={submitLink ? "button" : "submit"}
           /* The form element handles submit events when submit button is not a link: */
           onClick={submitLink ? onSubmit : undefined}
+          borderRadius={buttonBorderRadius}
         />
       )}
       {displayCancelBelow && !cancelHidden && (
