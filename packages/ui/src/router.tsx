@@ -142,6 +142,7 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
             size: typography.size,
             color: typography.color,
             children: text,
+            underline: typography.underline,
           })
         : text;
     }
