@@ -208,9 +208,22 @@ class Requester {
     };
     const data = responseJson.data;
     if (!data) {
+      let firstErrorName: string | undefined = undefined;
+      if (
+        Array.isArray(responseJson.errors) &&
+        responseJson.errors.length > 0
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const firstError = responseJson.errors[0];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        firstErrorName = firstError["extensions"]?.["error_name"] as
+          | string
+          | undefined;
+      }
       throw new LightsparkException(
         "RequestFailed",
         `Request ${operation} failed. ${JSON.stringify(responseJson.errors)}`,
+        { errorName: firstErrorName },
       );
     }
     return data;
