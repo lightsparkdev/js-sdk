@@ -1,5 +1,15 @@
 # @lightsparkdev/ui
 
+## 1.1.1
+
+### Patch Changes
+
+- b21b85e: \* Surface error name when the requester hits a graphQL error.
+  - Update Turbo
+  - Several small UI package improvements.
+- Updated dependencies [b21b85e]
+  - @lightsparkdev/core@1.3.1
+
 ## 1.1.0
 
 ### Minor Changes
