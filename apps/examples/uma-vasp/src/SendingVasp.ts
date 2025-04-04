@@ -9,7 +9,8 @@ import {
   TransactionStatus,
 } from "@lightsparkdev/lightspark-sdk";
 import * as uma from "@uma-sdk/core";
-import { Express, Request } from "express";
+import { Express } from "express";
+import asyncHandler from "express-async-handler";
 import ComplianceService from "./ComplianceService.js";
 import InternalLedgerService from "./InternalLedgerService.js";
 import SendingVaspRequestCache, {
@@ -44,120 +45,137 @@ export default class SendingVasp {
     private readonly nonceCache: uma.NonceValidator,
   ) {}
 
-  registerRoutes(app: Express) {
-    app.get("/api/umalookup/:receiver", async (req: Request, resp) => {
-      const user = await this.userService.getCallingUserFromRequest(
-        fullUrlForRequest(req),
-        req.headers,
-      );
-      if (!user) {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Unauthorized. Check your credentials.",
-        });
-      }
-      const response = await this.handleClientUmaLookup(
-        user,
-        req.params.receiver,
-        fullUrlForRequest(req),
-      );
-      sendResponse(resp, response);
-    });
+  registerRoutes(app: Express): void {
+    app.get(
+      "/api/umalookup/:receiver",
+      asyncHandler(async (req, resp) => {
+        const user = await this.userService.getCallingUserFromRequest(
+          fullUrlForRequest(req),
+          req.headers,
+        );
+        if (!user) {
+          throw new uma.UmaError(
+            "Unauthorized. Check your credentials.",
+            uma.ErrorCode.FORBIDDEN,
+          );
+        }
+        const response = await this.handleClientUmaLookup(
+          user,
+          req.params.receiver,
+          fullUrlForRequest(req),
+        );
+        sendResponse(resp, response);
+      }),
+    );
 
-    app.get("/api/umapayreq/:callbackUuid", async (req: Request, resp) => {
-      const user = await this.userService.getCallingUserFromRequest(
-        fullUrlForRequest(req),
-        req.headers,
-      );
-      if (!user) {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Unauthorized. Check your credentials.",
-        });
-      }
-      const response = await this.handleClientUmaPayreq(
-        user,
-        req.params.callbackUuid,
-        fullUrlForRequest(req),
-      );
-      sendResponse(resp, response);
-    });
+    app.get(
+      "/api/umapayreq/:callbackUuid",
+      asyncHandler(async (req, resp) => {
+        const user = await this.userService.getCallingUserFromRequest(
+          fullUrlForRequest(req),
+          req.headers,
+        );
+        if (!user) {
+          throw new uma.UmaError(
+            "Unauthorized. Check your credentials.",
+            uma.ErrorCode.FORBIDDEN,
+          );
+        }
+        const response = await this.handleClientUmaPayreq(
+          user,
+          req.params.callbackUuid,
+          fullUrlForRequest(req),
+        );
+        sendResponse(resp, response);
+      }),
+    );
 
-    app.post("/api/sendpayment/:callbackUuid", async (req, resp) => {
-      const user = await this.userService.getCallingUserFromRequest(
-        fullUrlForRequest(req),
-        req.headers,
-      );
-      if (!user) {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Unauthorized. Check your credentials.",
-        });
-      }
-      const response = await this.handleClientSendPayment(
-        user,
-        req.params.callbackUuid,
-        fullUrlForRequest(req),
-      );
-      sendResponse(resp, response);
-    });
+    app.post(
+      "/api/sendpayment/:callbackUuid",
+      asyncHandler(async (req, resp) => {
+        const user = await this.userService.getCallingUserFromRequest(
+          fullUrlForRequest(req),
+          req.headers,
+        );
+        if (!user) {
+          throw new uma.UmaError(
+            "Unauthorized. Check your credentials.",
+            uma.ErrorCode.FORBIDDEN,
+          );
+        }
+        const response = await this.handleClientSendPayment(
+          user,
+          req.params.callbackUuid,
+          fullUrlForRequest(req),
+        );
+        sendResponse(resp, response);
+      }),
+    );
 
-    app.post("/api/uma/pay_invoice", async (req, resp) => {
-      const user = await this.userService.getCallingUserFromRequest(
-        fullUrlForRequest(req),
-        req.headers,
-      );
-      if (!user) {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Unauthorized. Check your credentials.",
-        });
-      }
-      const response = await this.handlePayInvoice(
-        user,
-        fullUrlForRequest(req),
-      );
-      sendResponse(resp, response);
-    });
+    app.post(
+      "/api/uma/pay_invoice",
+      asyncHandler(async (req, resp) => {
+        const user = await this.userService.getCallingUserFromRequest(
+          fullUrlForRequest(req),
+          req.headers,
+        );
+        if (!user) {
+          throw new uma.UmaError(
+            "Unauthorized. Check your credentials.",
+            uma.ErrorCode.FORBIDDEN,
+          );
+        }
+        const response = await this.handlePayInvoice(
+          user,
+          fullUrlForRequest(req),
+        );
+        sendResponse(resp, response);
+      }),
+    );
 
-    app.post("/api/uma/request_invoice_payment", async (req, resp) => {
-      let invoiceBech32Str;
-      try {
-        invoiceBech32Str = JSON.parse(req.body)["invoice"];
-      } catch (e) {
-        return sendResponse(resp, {
-          httpStatus: 500,
-          data: "Error. unable to parse uma invoice .",
-        });
-      }
-      if (!invoiceBech32Str || typeof invoiceBech32Str !== "string") {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Error. Required invoice not provided.",
-        });
-      }
-      const invoice = uma.InvoiceSerializer.fromBech32(invoiceBech32Str);
-      if (!invoice.senderUma) {
-        return sendResponse(resp, {
-          httpStatus: 401,
-          data: "Error. Sender Uma not present on invoice.",
-        });
-      }
+    app.post(
+      "/api/uma/request_invoice_payment",
+      asyncHandler(async (req, resp) => {
+        let invoiceBech32Str;
+        try {
+          invoiceBech32Str = JSON.parse(req.body)["invoice"];
+        } catch (e) {
+          throw new uma.UmaError(
+            "Error. unable to parse uma invoice .",
+            uma.ErrorCode.INVALID_INPUT,
+          );
+        }
+        if (!invoiceBech32Str || typeof invoiceBech32Str !== "string") {
+          throw new uma.UmaError(
+            "Error. Required invoice not provided.",
+            uma.ErrorCode.INVALID_INPUT,
+          );
+        }
+        const invoice = uma.InvoiceSerializer.fromBech32(invoiceBech32Str);
+        if (!invoice.senderUma) {
+          throw new uma.UmaError(
+            "Error. Sender Uma not present on invoice.",
+            uma.ErrorCode.INVALID_INPUT,
+          );
+        }
+        const response = await this.handleRequestPayInvoice(
+          invoice,
+          invoiceBech32Str,
+        );
+        sendResponse(resp, response);
+      }),
+    );
 
-      const response = await this.handleRequestPayInvoice(
-        invoice,
-        invoiceBech32Str,
-      );
-      sendResponse(resp, response);
-    });
-
-    app.get("/api/uma/pending_requests", async (req, resp) => {
-      const pendingRequests = this.requestCache.getPendingPayReqs();
-      sendResponse(resp, {
-        httpStatus: 200,
-        data: pendingRequests,
-      });
-    });
+    app.get(
+      "/api/uma/pending_requests",
+      asyncHandler(async (req, resp) => {
+        const pendingRequests = this.requestCache.getPendingPayReqs();
+        sendResponse(resp, {
+          httpStatus: 200,
+          data: pendingRequests,
+        });
+      }),
+    );
   }
 
   private async handleClientUmaLookup(
@@ -166,13 +184,13 @@ export default class SendingVasp {
     requestUrl: URL,
   ): Promise<HttpResponse> {
     if (!receiverUmaAddress) {
-      return { httpStatus: 400, data: "Missing receiver" };
+      throw new uma.UmaError("Missing receiver", uma.ErrorCode.INVALID_INPUT);
     }
 
     const [receiverId, receivingVaspDomain] = receiverUmaAddress.split("@");
     if (!receiverId || !receivingVaspDomain) {
       console.error(`Invalid receiver: ${receiverUmaAddress}`);
-      return { httpStatus: 400, data: "Invalid receiver" };
+      throw new uma.UmaError("Invalid receiver", uma.ErrorCode.INVALID_INPUT);
     }
 
     if (
@@ -182,10 +200,10 @@ export default class SendingVasp {
         receiverUmaAddress,
       )
     ) {
-      return {
-        httpStatus: 400,
-        data: `Transaction not allowed to ${receiverUmaAddress}.`,
-      };
+      throw new uma.UmaError(
+        `Transaction not allowed to ${receiverUmaAddress}.`,
+        uma.ErrorCode.COUNTERPARTY_NOT_ALLOWED,
+      );
     }
 
     let lnurlpRequestUrl: URL;
@@ -210,7 +228,10 @@ export default class SendingVasp {
       response = await fetch(lnurlpRequestUrl);
     } catch (e) {
       console.error("Error fetching Lnurlp request.", e);
-      return { httpStatus: 424, data: "Error fetching Lnurlp request." };
+      throw new uma.UmaError(
+        "Error fetching Lnurlp request.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     if (response.status === 412) {
@@ -222,18 +243,18 @@ export default class SendingVasp {
         );
       } catch (e) {
         console.error("Error fetching Lnurlp request.", e);
-        return {
-          httpStatus: 424,
-          data: new Error("Error fetching Lnurlp request.", { cause: e }),
-        };
+        throw new uma.UmaError(
+          "Error fetching Lnurlp request.",
+          uma.ErrorCode.INTERNAL_ERROR,
+        );
       }
     }
 
     if (!response.ok) {
-      return {
-        httpStatus: 424,
-        data: `Error fetching Lnurlp request. ${response.status}`,
-      };
+      throw new uma.UmaError(
+        `Error fetching Lnurlp request. ${response.status}`,
+        uma.ErrorCode.LNURLP_REQUEST_FAILED,
+      );
     }
 
     let lnurlpResponse: uma.LnurlpResponse;
@@ -242,7 +263,10 @@ export default class SendingVasp {
       lnurlpResponse = uma.LnurlpResponse.fromJson(responseJson);
     } catch (e) {
       console.error("Error parsing lnurlp response.", e, responseJson);
-      return { httpStatus: 424, data: `Error parsing Lnurlp response. ${e}` };
+      throw new uma.UmaError(
+        `Error parsing Lnurlp response. ${e}`,
+        uma.ErrorCode.PARSE_LNURLP_RESPONSE_ERROR,
+      );
     }
 
     if (!lnurlpResponse.isUma()) {
@@ -256,10 +280,10 @@ export default class SendingVasp {
 
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
     if (!pubKeys)
-      return {
-        httpStatus: 424,
-        data: "Error fetching receiving vasp public key.",
-      };
+      throw new uma.UmaError(
+        "Error fetching receiving vasp public key.",
+        uma.ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+      );
 
     try {
       const isSignatureValid = await uma.verifyUmaLnurlpResponseSignature(
@@ -268,16 +292,20 @@ export default class SendingVasp {
         this.nonceCache,
       );
       if (!isSignatureValid) {
-        return { httpStatus: 424, data: "Invalid UMA response signature." };
+        throw new uma.UmaError(
+          "Invalid UMA response signature.",
+          uma.ErrorCode.INVALID_SIGNATURE,
+        );
       }
     } catch (e) {
       console.error("Error verifying UMA response signature.", e);
-      return {
-        httpStatus: 424,
-        data: new Error("Error verifying UMA response signature.", {
-          cause: e,
-        }),
-      };
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Error verifying UMA response signature.",
+        uma.ErrorCode.INVALID_SIGNATURE,
+      );
     }
 
     const callbackUuid = this.requestCache.saveLnurlpResponseData(
@@ -351,26 +379,35 @@ export default class SendingVasp {
     requestUrl: URL,
   ): Promise<HttpResponse> {
     if (!callbackUuid || callbackUuid === "") {
-      return { httpStatus: 400, data: "Missing callbackUuid" };
+      throw new uma.UmaError(
+        "Missing callbackUuid",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
 
     const initialRequestData =
       this.requestCache.getLnurlpResponseData(callbackUuid);
     if (!initialRequestData) {
-      return { httpStatus: 400, data: "callbackUuid not found" };
+      throw new uma.UmaError(
+        "callbackUuid not found",
+        uma.ErrorCode.REQUEST_NOT_FOUND,
+      );
     }
 
     const amountStr = requestUrl.searchParams.get("amount");
     if (!amountStr || typeof amountStr !== "string") {
-      return { httpStatus: 400, data: "Missing amount" };
+      throw new uma.UmaError("Missing amount", uma.ErrorCode.INVALID_INPUT);
     }
     const amount = parseFloat(amountStr);
     if (isNaN(amount)) {
-      return { httpStatus: 400, data: "Invalid amount" };
+      throw new uma.UmaError("Invalid amount", uma.ErrorCode.INVALID_INPUT);
     }
 
     if (!initialRequestData.lnurlpResponse) {
-      return { httpStatus: 400, data: "Invalid callbackUuid" };
+      throw new uma.UmaError(
+        "Invalid callbackUuid",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
 
     const receivingCurrencyCode = requestUrl.searchParams.get(
@@ -401,18 +438,27 @@ export default class SendingVasp {
     }
 
     if (!payerProfile) {
-      return { httpStatus: 400, data: "Missing payerData" };
+      throw new uma.UmaError(
+        "Missing payerData",
+        uma.ErrorCode.REQUEST_NOT_FOUND,
+      );
     }
 
     if (!receivingCurrencyCode || typeof receivingCurrencyCode !== "string") {
-      return { httpStatus: 400, data: "Missing currencyCode" };
+      throw new uma.UmaError(
+        "Missing currencyCode",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
 
     const selectedCurrency = (
       initialRequestData.lnurlpResponse.currencies || []
     ).find((c) => c.code === receivingCurrencyCode);
     if (selectedCurrency === undefined) {
-      return { httpStatus: 400, data: "Currency code not supported" };
+      throw new uma.UmaError(
+        "Currency code not supported",
+        uma.ErrorCode.INVALID_CURRENCY,
+      );
     }
 
     const msatsParam = requestUrl.searchParams.get("isAmountInMsats");
@@ -426,7 +472,10 @@ export default class SendingVasp {
       await this.userService.getCurrencyPreferencesForUser(user.id)
     )?.find((c) => c.code === sendingCurrencyCode);
     if (sendingCurrency === undefined) {
-      return { httpStatus: 400, data: "Sending currency code not supported" };
+      throw new uma.UmaError(
+        "Sending currency code not supported",
+        uma.ErrorCode.INVALID_CURRENCY,
+      );
     }
     const sendingCurrencyAmount =
       amountValueMillisats / sendingCurrency.multiplier;
@@ -439,17 +488,20 @@ export default class SendingVasp {
         sendingCurrencyCode,
       )
     ) {
-      return { httpStatus: 400, data: "Insufficient balance." };
+      throw new uma.UmaError(
+        "Insufficient balance.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     let pubKeys = await this.fetchPubKeys(
       initialRequestData.receivingVaspDomain,
     );
     if (!pubKeys) {
-      return {
-        httpStatus: 424,
-        data: "Error fetching receiving vasp public key.",
-      };
+      throw new uma.UmaError(
+        "Error fetching receiving vasp public key.",
+        uma.ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+      );
     }
 
     const umaVersion =
@@ -541,7 +593,13 @@ export default class SendingVasp {
       });
     } catch (e) {
       console.error("Error generating payreq.", e);
-      return { httpStatus: 500, data: "Error generating payreq." };
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Error generating payreq.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     console.log(
@@ -557,14 +615,20 @@ export default class SendingVasp {
         body: payReq.toJsonString(),
       });
     } catch (e) {
-      return { httpStatus: 500, data: "Error sending payreq." };
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Error sending payreq.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     if (!response.ok || response.status !== 200) {
-      return {
-        httpStatus: 424,
-        data: `Payreq failed. ${response.status}, ${response.body}`,
-      };
+      throw new uma.UmaError(
+        `Payreq failed. ${response.status}, ${response.body}`,
+        uma.ErrorCode.PAYREQ_REQUEST_FAILED,
+      );
     }
 
     let payResponse: uma.PayReqResponse;
@@ -574,15 +638,18 @@ export default class SendingVasp {
     } catch (e) {
       console.error("Error parsing payreq response. Raw response: " + bodyText);
       console.error("Error:", e);
-      return { httpStatus: 424, data: "Error parsing payreq response." };
+      throw new uma.UmaError(
+        "Error parsing payreq response.",
+        uma.ErrorCode.PARSE_PAYREQ_RESPONSE_ERROR,
+      );
     }
 
     if (!payResponse.isUma()) {
       console.log("Received non-uma response for uma payreq.");
-      return {
-        httpStatus: 424,
-        data: "Received non-uma response for uma payreq.",
-      };
+      throw new uma.UmaError(
+        "Received non-uma response for uma payreq.",
+        uma.ErrorCode.MISSING_REQUIRED_UMA_PARAMETERS,
+      );
     }
 
     try {
@@ -595,18 +662,21 @@ export default class SendingVasp {
           this.nonceCache,
         );
         if (!isSignatureValid) {
-          return {
-            httpStatus: 424,
-            data: "Invalid payreq response signature.",
-          };
+          throw new uma.UmaError(
+            "Invalid payreq response signature.",
+            uma.ErrorCode.INVALID_SIGNATURE,
+          );
         }
       }
     } catch (e) {
       console.error(e);
-      return {
-        httpStatus: 424,
-        data: new Error("Invalid payreq response signature.", { cause: e }),
-      };
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Invalid payreq response signature.",
+        uma.ErrorCode.INVALID_SIGNATURE,
+      );
     }
 
     console.log(`Verified payreq response signature.`);
@@ -619,10 +689,10 @@ export default class SendingVasp {
       payResponse.payeeData?.compliance?.utxos ?? [],
     );
     if (!shouldTransact) {
-      return {
-        httpStatus: 424,
-        data: "Transaction not allowed due to risk rating.",
-      };
+      throw new uma.UmaError(
+        "Transaction not allowed due to risk rating.",
+        uma.ErrorCode.COUNTERPARTY_NOT_ALLOWED,
+      );
     }
 
     let invoice: InvoiceData;
@@ -630,7 +700,10 @@ export default class SendingVasp {
       invoice = await this.lightsparkClient.decodeInvoice(payResponse.pr);
     } catch (e) {
       console.error("Error decoding invoice.", e);
-      return { httpStatus: 500, data: "Error decoding invoice." };
+      throw new uma.UmaError(
+        "Error decoding invoice.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     const senderCurrencies =
@@ -697,28 +770,37 @@ export default class SendingVasp {
       });
     } catch (e) {
       console.error("Error sending payreq.", e);
-      return { httpStatus: 500, data: "Error sending payreq." };
+      throw new uma.UmaError(
+        "Error sending payreq.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     const responseText = await response.text();
     if (!response.ok) {
-      return { httpStatus: 424, data: `Payreq failed. ${response.status}` };
+      throw new uma.UmaError(
+        `Payreq failed. ${response.status}`,
+        uma.ErrorCode.PAYREQ_REQUEST_FAILED,
+      );
     }
 
     const responseJson = JSON.parse(responseText);
     if (responseJson.status === "ERROR") {
       console.error("Error on pay request.", responseJson.reason);
-      return {
-        httpStatus: 424,
-        data: `Error on pay request. reason: ${responseJson.reason}`,
-      };
+      throw new uma.UmaError(
+        `Error on pay request. reason: ${responseJson.reason} code: ${responseJson.code}`,
+        uma.ErrorCode.PAYREQ_REQUEST_FAILED,
+      );
     }
     let payreqResponse: uma.PayReqResponse;
     try {
       payreqResponse = uma.PayReqResponse.fromJson(responseText);
     } catch (e) {
       console.error("Error parsing payreq response.", e);
-      return { httpStatus: 424, data: "Error parsing payreq response." };
+      throw new uma.UmaError(
+        "Error parsing payreq response.",
+        uma.ErrorCode.PARSE_PAYREQ_RESPONSE_ERROR,
+      );
     }
 
     const encodedInvoice = payreqResponse.pr;
@@ -728,7 +810,10 @@ export default class SendingVasp {
       invoice = await this.lightsparkClient.decodeInvoice(encodedInvoice);
     } catch (e) {
       console.error("Error decoding invoice.", e);
-      return { httpStatus: 500, data: "Error decoding invoice." };
+      throw new uma.UmaError(
+        "Error decoding invoice.",
+        uma.ErrorCode.INVALID_INVOICE,
+      );
     }
 
     const newCallbackUuid = this.requestCache.savePayReqData(
@@ -758,7 +843,7 @@ export default class SendingVasp {
       getLightsparkNodeQuery(this.config.nodeID),
     );
     if (!node) {
-      throw new Error("Node not found.");
+      throw new uma.UmaError("Node not found.", uma.ErrorCode.INTERNAL_ERROR);
     }
 
     return node;
@@ -772,7 +857,13 @@ export default class SendingVasp {
       });
     } catch (e) {
       console.error("Error fetching public key.", e);
-      return null;
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Error fetching public key.",
+        uma.ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+      );
     }
   }
 
@@ -782,23 +873,29 @@ export default class SendingVasp {
     requestUrl: URL,
   ): Promise<HttpResponse> {
     if (!callbackUuid || callbackUuid === "") {
-      return { httpStatus: 400, data: "Missing callbackUuid" };
+      throw new uma.UmaError(
+        "Missing callbackUuid",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
 
     const payReqData = this.requestCache.getPayReqData(callbackUuid);
     if (!payReqData || !payReqData?.invoiceData) {
-      return { httpStatus: 400, data: "callbackUuid not found" };
+      throw new uma.UmaError(
+        "Could not find pay request associated with uuid",
+        uma.ErrorCode.REQUEST_NOT_FOUND,
+      );
     }
 
     if (new Date(payReqData.invoiceData.expiresAt) < new Date()) {
-      return { httpStatus: 400, data: "Invoice expired" };
+      throw new uma.UmaError("Invoice expired", uma.ErrorCode.INVOICE_EXPIRED);
     }
 
     if (payReqData.invoiceData.amount.originalValue <= 0) {
-      return {
-        httpStatus: 400,
-        data: "Invalid invoice amount. Positive amount required.",
-      };
+      throw new uma.UmaError(
+        "Invalid invoice amount. Positive amount required.",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
 
     const sendingCurrencyCode =
@@ -807,7 +904,10 @@ export default class SendingVasp {
       await this.userService.getCurrencyPreferencesForUser(user.id)
     )?.find((c) => c.code === sendingCurrencyCode);
     if (sendingCurrency === undefined) {
-      return { httpStatus: 400, data: "Sending currency code not supported" };
+      throw new uma.UmaError(
+        "Sending currency code not supported",
+        uma.ErrorCode.INVALID_CURRENCY,
+      );
     }
 
     const amountMsats = convertCurrencyAmount(
@@ -817,16 +917,16 @@ export default class SendingVasp {
 
     const sendingCurrencyAmount = amountMsats / sendingCurrency.multiplier;
     if (sendingCurrencyAmount < sendingCurrency.minSendable) {
-      return {
-        httpStatus: 400,
-        data: `Invalid invoice amount. Minimum amount is ${sendingCurrency.minSendable} ${sendingCurrency.code}.`,
-      };
+      throw new uma.UmaError(
+        `Invalid invoice amount. Minimum amount is ${sendingCurrency.minSendable} ${sendingCurrency.code}.`,
+        uma.ErrorCode.AMOUNT_OUT_OF_RANGE,
+      );
     }
     if (sendingCurrencyAmount > sendingCurrency.maxSendable) {
-      return {
-        httpStatus: 400,
-        data: `Invalid invoice amount. Maximum amount is ${sendingCurrency.maxSendable} ${sendingCurrency.code}.`,
-      };
+      throw new uma.UmaError(
+        `Invalid invoice amount. Maximum amount is ${sendingCurrency.maxSendable} ${sendingCurrency.code}.`,
+        uma.ErrorCode.AMOUNT_OUT_OF_RANGE,
+      );
     }
 
     if (
@@ -837,7 +937,10 @@ export default class SendingVasp {
         sendingCurrencyCode,
       )
     ) {
-      return { httpStatus: 400, data: "Insufficient balance." };
+      throw new uma.UmaError(
+        "Insufficient balance.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     let payment: OutgoingPayment;
@@ -845,7 +948,10 @@ export default class SendingVasp {
     try {
       const signingKeyLoaded = await this.loadNodeSigningKey();
       if (!signingKeyLoaded) {
-        throw new Error("Error loading signing key.");
+        throw new uma.UmaError(
+          "Error loading signing key.",
+          uma.ErrorCode.INTERNAL_ERROR,
+        );
       }
       const paymentResult = await this.lightsparkClient.payUmaInvoice(
         this.config.nodeID,
@@ -853,7 +959,10 @@ export default class SendingVasp {
         /* maxFeesMsats */ 1_000_000,
       );
       if (!paymentResult) {
-        throw new Error("Payment request failed.");
+        throw new uma.UmaError(
+          "Payment request failed.",
+          uma.ErrorCode.INTERNAL_ERROR,
+        );
       }
       paymentId = paymentResult.id;
       await this.ledgerService.recordOutgoingTransactionBegan(
@@ -885,7 +994,13 @@ export default class SendingVasp {
           paymentId,
         );
       }
-      return { httpStatus: 500, data: "Error paying invoice." };
+      if (e instanceof uma.UmaError) {
+        throw e;
+      }
+      throw new uma.UmaError(
+        "Error paying invoice.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     await this.sendPostTransactionCallback(payment, payReqData, requestUrl);
@@ -912,7 +1027,10 @@ export default class SendingVasp {
   private async handlePayInvoice(user: User, requestUrl: URL) {
     const invoiceStr = requestUrl.searchParams.get("invoice");
     if (!invoiceStr) {
-      return { httpStatus: 422, data: "Missing argument: invoice" };
+      throw new uma.UmaError(
+        "Missing argument: invoice",
+        uma.ErrorCode.INVALID_INPUT,
+      );
     }
     // payments can also be done via uuid of cached request
     // by checking uma prefix, determine if invoiceStr is a bech32 encoded invoice.
@@ -926,13 +1044,13 @@ export default class SendingVasp {
     try {
       invoice = uma.InvoiceSerializer.fromBech32(encodedInvoice ?? invoiceStr);
     } catch (e) {
-      return {
-        httpStatus: 500,
-        data: "Cannot parse Invoice from invoice paramater",
-      };
+      throw new uma.UmaError(
+        "Cannot parse Invoice from invoice parameter",
+        uma.ErrorCode.INVALID_INVOICE,
+      );
     }
 
-    let payerPofile = this.getPayerProfile(
+    let payerProfile = this.getPayerProfile(
       user,
       invoice.requiredPayerData ?? {},
       this.getSendingVaspDomain(requestUrl),
@@ -942,24 +1060,27 @@ export default class SendingVasp {
     const [, receivingVaspDomain] = invoice.receiverUma.split("@");
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
     if (!pubKeys)
-      return {
-        httpStatus: 424,
-        data: "Error fetching receiving vasp public key.",
-      };
+      throw new uma.UmaError(
+        "Error fetching receiving vasp public key.",
+        uma.ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+      );
 
     const signatureVerified = uma.verifyUmaInvoiceSignature(
       invoice,
       pubKeys.getSigningPubKey(),
     );
     if (!signatureVerified) {
-      return { httpStatus: 500, data: "Unable to verify invoice signature" };
+      throw new uma.UmaError(
+        "Unable to verify invoice signature",
+        uma.ErrorCode.INVALID_SIGNATURE,
+      );
     }
 
     if (!isCurrencyType(invoice.receivingCurrency.code)) {
-      return {
-        httpStatus: 500,
-        data: `Invalid currency code ${invoice.receivingCurrency.code}`,
-      };
+      throw new uma.UmaError(
+        `Invalid currency code ${invoice.receivingCurrency.code}`,
+        uma.ErrorCode.INVALID_CURRENCY,
+      );
     }
     const isAmountInMsats =
       invoice.receivingCurrency.code == SATS_CURRENCY.code;
@@ -967,7 +1088,10 @@ export default class SendingVasp {
     const currencyInMsats = invoice.amount * currency.multiplier;
 
     if (invoice.expiration < Date.now()) {
-      return { httpStatus: 500, data: "Unable to process expired invoice" };
+      throw new uma.UmaError(
+        "Unable to process expired invoice",
+        uma.ErrorCode.INVOICE_EXPIRED,
+      );
     }
 
     return this.handleUmaPayReqInternal({
@@ -982,7 +1106,7 @@ export default class SendingVasp {
         invoice.senderUma ??
         this.formatUma(user.umaUserName, this.getSendingVaspDomain(requestUrl)),
       requestUrl: requestUrl,
-      senderProfile: payerPofile,
+      senderProfile: payerProfile,
       pubKeys: pubKeys,
       umaVersion: invoice.umaVersions,
       invoiceUUID: invoice.invoiceUUID,
@@ -1001,20 +1125,20 @@ export default class SendingVasp {
     let pubKeys = await this.fetchPubKeys(receivingVaspDomain);
 
     if (!pubKeys) {
-      return {
-        httpStatus: 500,
-        data: "Error, unable to get receiving Vasp public signing key",
-      };
+      throw new uma.UmaError(
+        "Error, unable to get receiving Vasp public signing key",
+        uma.ErrorCode.COUNTERPARTY_PUBKEY_FETCH_ERROR,
+      );
     }
     const verified = uma.verifyUmaInvoiceSignature(
       invoice,
       pubKeys.getSigningPubKey(),
     );
     if (!verified) {
-      return {
-        httpStatus: 500,
-        data: "Error, unable to verify uma invoice",
-      };
+      throw new uma.UmaError(
+        "Error, unable to verify uma invoice",
+        uma.ErrorCode.INVALID_SIGNATURE,
+      );
     }
     // save request
     this.requestCache.savePayReqData(
@@ -1085,7 +1209,10 @@ export default class SendingVasp {
       OutgoingPayment.getOutgoingPaymentQuery(paymentResult.id),
     );
     if (!payment) {
-      throw new Error("Payment not found.");
+      throw new uma.UmaError(
+        "Payment not found.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     if (payment.status !== TransactionStatus.PENDING) {
@@ -1094,7 +1221,10 @@ export default class SendingVasp {
 
     const maxRetries = 40;
     if (retryNum >= maxRetries) {
-      throw new Error("Payment timed out.");
+      throw new uma.UmaError(
+        "Payment timed out.",
+        uma.ErrorCode.INTERNAL_ERROR,
+      );
     }
 
     await new Promise((resolve) => setTimeout(resolve, 250));
@@ -1147,7 +1277,7 @@ export default class SendingVasp {
       getLightsparkNodeQuery(this.config.nodeID),
     );
     if (!node) {
-      throw new Error("Node not found.");
+      throw new uma.UmaError("Node not found.", uma.ErrorCode.INTERNAL_ERROR);
     }
 
     if (node.typename.includes("OSK")) {
@@ -1155,9 +1285,10 @@ export default class SendingVasp {
         !this.config.oskSigningKeyPassword ||
         this.config.oskSigningKeyPassword === ""
       ) {
-        throw new Error(
+        throw new uma.UmaError(
           "Node is an OSK, but no signing key password was provided in the config. " +
             "Set the LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD environment variable",
+          uma.ErrorCode.INTERNAL_ERROR,
         );
       }
       return await this.lightsparkClient.loadNodeSigningKey(
@@ -1171,9 +1302,10 @@ export default class SendingVasp {
     // Assume remote signing node.
     const remoteSigningMasterSeed = this.config.remoteSigningMasterSeed();
     if (!remoteSigningMasterSeed) {
-      throw new Error(
+      throw new uma.UmaError(
         "Node is a remote signing node, but no master seed was provided in the config. " +
           "Set the LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED environment variable",
+        uma.ErrorCode.INTERNAL_ERROR,
       );
     }
     return await this.lightsparkClient.loadNodeSigningKey(this.config.nodeID, {

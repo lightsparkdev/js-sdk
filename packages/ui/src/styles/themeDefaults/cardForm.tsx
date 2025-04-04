@@ -2,17 +2,20 @@ import type { ThemeOrColorKey } from "../themes.js";
 import type { TokenSizeKey, TypographyTypeKey } from "../tokens/typography.js";
 
 export type CardFormPaddingY = 40 | 56;
-export type CardFormPaddingX = 40 | 56;
+export type CardFormPaddingX = 32 | 40 | 56;
+export type CardFormPaddingTop = 24 | 32 | 40 | 56;
+export type CardFormPaddingBottom = 32 | 40 | 56 | 64;
 export type CardFormBorderWidth = 0 | 1;
-export type CardFormBorderRadius = 8 | 24;
+export type CardFormBorderRadius = 8 | 24 | 32;
 export type CardFormShadow = "soft" | "hard" | "none";
 export type CardFormTextAlign = "center" | "left";
 export type CardFormBorderColor = "vlcNeutral" | "grayBlue94";
 export type CardFormBackgroundColor = "bg" | "white";
 
 const cardFormThemeBaseProps = {
-  paddingY: 56 as CardFormPaddingY,
   paddingX: 56 as CardFormPaddingX,
+  paddingTop: 56 as CardFormPaddingTop,
+  paddingBottom: 56 as CardFormPaddingBottom,
   shadow: "soft" as CardFormShadow,
   borderRadius: 24 as CardFormBorderRadius,
   borderWidth: 0 as CardFormBorderWidth,
@@ -57,13 +60,19 @@ export const defaultCardFormTheme = {
   kinds: {
     primary: {},
     secondary: {
-      paddingY: 40,
+      paddingTop: 40,
+      paddingBottom: 40,
       paddingX: 40,
       shadow: "none",
       borderRadius: 8,
       borderWidth: 1,
       borderColor: "vlcNeutral",
     },
-    tertiary: { paddingY: 56, paddingX: 40, shadow: "hard" },
+    tertiary: {
+      paddingTop: 56,
+      paddingBottom: 56,
+      paddingX: 40,
+      shadow: "hard",
+    },
   } as Partial<CardFormKindProps>,
 };

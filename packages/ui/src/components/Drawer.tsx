@@ -9,7 +9,7 @@ import { Button } from "./Button.js";
 import { Icon } from "./Icon/Icon.js";
 import { UnstyledButton } from "./UnstyledButton.js";
 
-type DrawerKind = "default" | "floating";
+export type DrawerKind = "default" | "floating";
 
 interface Props {
   children?: React.ReactNode;
@@ -18,8 +18,9 @@ interface Props {
   closeButton?: boolean;
   nonDismissable?: boolean;
   handleBack?: (() => void) | undefined;
-  padding?: string;
+  padding?: string | undefined;
   kind?: DrawerKind | undefined;
+  top?: number | undefined;
 }
 
 export const Drawer = (props: Props) => {
@@ -105,6 +106,7 @@ export const Drawer = (props: Props) => {
         totalDeltaY={totalDeltaY}
         grabbing={grabbing}
         ref={drawerContainerRef}
+        top={props.top}
       >
         <DrawerInnerContainer kind={props.kind} padding={props.padding}>
           {props.grabber && !props.nonDismissable && (
@@ -170,6 +172,7 @@ const DrawerContainer = styled.div<{
   isOpen: boolean;
   totalDeltaY: number;
   grabbing: boolean;
+  top?: number | undefined;
 }>`
   position: fixed;
   max-height: 100dvh;
@@ -181,6 +184,8 @@ const DrawerContainer = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  ${(props) => props.top && `top: ${props.top}px;`}
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
   ${(props) =>
@@ -233,7 +238,6 @@ const DrawerInnerContainer = styled.div<{
       ? `${props.padding}`
       : `${Spacing.px["6xl"]} ${Spacing.px.xl} ${Spacing.px["2xl"]}
     ${Spacing.px.xl}`};
-  overflow-y: auto;
 `;
 
 const Grabber = styled.div`

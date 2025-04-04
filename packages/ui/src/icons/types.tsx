@@ -8,4 +8,5 @@ export type PathProps = {
   strokeWidth?: PathStrokeWidth;
   strokeLinecap?: PathLinecap;
   strokeLinejoin?: PathLinejoin;
+  fill?: string;
 };

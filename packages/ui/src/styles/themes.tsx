@@ -532,14 +532,14 @@ const bridgeBaseSettings = {
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Title",
     defaultSize: "Medium",
-    defaultBorderRadius: 8,
+    defaultBorderRadius: 999,
     defaultPaddingsY: {
-      ExtraSmall: 14,
-      Small: 14,
-      Schmedium: 14,
-      Medium: 14,
-      Mlarge: 14,
-      Large: 14,
+      ExtraSmall: 13,
+      Small: 13,
+      Schmedium: 13,
+      Medium: 13,
+      Mlarge: 13,
+      Large: 13,
     },
     kinds: {
       primary: {
@@ -624,6 +624,7 @@ const bridgeBaseSettings = {
   cardForm: merge<typeof defaultCardFormTheme>(cardFormThemeBase, {
     backgroundColor: "white",
     smBackgroundColor: "bg",
+    borderRadius: 32,
     defaultDescriptionTypographyMap: {
       default: {
         type: "Body",
@@ -638,16 +639,21 @@ const bridgeBaseSettings = {
     },
     kinds: {
       primary: {
-        paddingY: 56,
+        borderWidth: 1,
+        smBorderWidth: 0,
+        borderColor: "grayBlue94",
+        paddingTop: 24,
+        paddingBottom: 64,
         paddingX: 40,
-        shadow: "hard",
+        shadow: "none",
       },
       secondary: {
         borderWidth: 1,
         smBorderWidth: 0,
         borderColor: "grayBlue94",
-        paddingY: 40,
-        paddingX: 40,
+        paddingTop: 32,
+        paddingBottom: 64,
+        paddingX: 32,
         shadow: "none",
       },
     },
@@ -664,6 +670,7 @@ const bridgeLightTheme = extend(lightTheme, {
   smBg: colors.gray98,
   text: colors.grayBlue9,
   secondary: colors.grayBlue43,
+  tertiary: colors.gray3,
   inputBackground: colors.white,
   danger: colors.red50,
 });
@@ -810,6 +817,9 @@ export const isLight = (theme: Theme) =>
     Themes.UmameDocsLight,
     Themes.UmaAuthSdkLight,
   ].includes(theme.type);
+
+export const isBridge = (theme: Theme) =>
+  [Themes.BridgeLight, Themes.BridgeDark].includes(theme.type);
 
 export const themeOr =
   (lightValue: string, darkValue: string) =>

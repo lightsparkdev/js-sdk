@@ -19,6 +19,7 @@ const neutral = {
   gray91: "#171717",
   gray95: "#F2F2F2",
   gray98: "#F9F9F9",
+  gray99: "#EDEEF1",
   white: "#FFFFFF",
 };
 
@@ -40,10 +41,12 @@ const baseColors = {
   green33: "#179257",
   green35: "#19981E",
   // blue
+  blue10: "#E4EFFB",
   blue43: "#145BC6",
   blue22: "#0E2E60",
   blue39: "#0068C9",
   blue37: "#21529c",
+  blue50: "#2483D1",
   blue58: "#28BFFF",
   // less than 50% saturated blue
   grayBlue5: "#0c0d0f",
@@ -74,6 +77,8 @@ const baseColors = {
   red42a10: "#D800271A",
   red42a20: "#D800272D",
   red42a30: "#D800273F",
+  errorText: "#E41C1B",
+  errorBackground: "#FEE2E1",
   // yellow
   primary,
   warning: primary,
@@ -84,6 +89,10 @@ const baseColors = {
   // neutral
   secondary: neutral.black,
   gray: "#242526",
+  gray2: "#6D7685",
+  gray3: "#D9DBDF",
+  gray4: "#B6BAC3",
+  gray6: "#8E95A2",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",

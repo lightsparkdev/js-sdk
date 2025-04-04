@@ -29,8 +29,11 @@ export type BannerProps = {
   onHeightChange?: (height: number) => void;
   minHeight?: number | "auto" | undefined;
   hPadding?: number | undefined;
+  vPadding?: number | undefined;
+  fixed?: boolean | undefined;
   right?: ReactNode | undefined;
   left?: ReactNode | undefined;
+  blurScroll?: boolean | undefined;
 };
 
 export function Banner({
@@ -42,11 +45,14 @@ export function Banner({
   onHeightChange,
   right,
   left,
+  fixed,
   bgProgressDuration,
   borderProgress,
   minHeight = 0,
   hPadding = 0,
+  vPadding = 0,
   borderColor,
+  blurScroll = false,
 }: BannerProps) {
   const [width, setWidth] = useState(70);
   const resizeProps = useMemo(() => ["height" as const], []);
@@ -88,7 +94,6 @@ export function Banner({
     <BannerInnerContent
       isVisible={Boolean(content)}
       maxMdContentJustify={maxMdContentJustify || "center"}
-      minHeight={minHeight}
     >
       {contentNode}
     </BannerInnerContent>
@@ -104,6 +109,10 @@ export function Banner({
       ref={ref}
       borderProgress={borderProgress}
       hPadding={hPadding}
+      vPadding={vPadding}
+      minHeight={minHeight}
+      fixed={fixed}
+      blurScroll={blurScroll}
     >
       {left}
       {innerContent}
@@ -122,7 +131,6 @@ export function Banner({
 const BannerInnerContent = styled.div<{
   isVisible: boolean;
   maxMdContentJustify: MaxMdContentJustify;
-  minHeight: number | "auto";
 }>`
   z-index: 1;
   padding: ${({ isVisible }) => (isVisible ? `0px 17.5px` : "0px")};
@@ -131,8 +139,6 @@ const BannerInnerContent = styled.div<{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: ${({ minHeight }) =>
-    typeof minHeight === "number" ? `${minHeight}px` : "auto"};
 
   & > * {
     position: relative;
@@ -153,10 +159,13 @@ const StyledBanner = styled.div<{
   hasSideContent: boolean;
   borderProgress: number | undefined;
   hPadding: number;
+  vPadding: number;
+  minHeight: number | "auto";
+  fixed: boolean | undefined;
   borderColor: ThemeOrColorKey | undefined;
+  blurScroll: boolean | undefined;
 }>`
-  position: fixed;
-  left: 0;
+  ${({ fixed }) => (fixed ? "position: fixed; left: 0;" : "")};
 
   width: 100%;
   z-index: ${z.notificationBanner};
@@ -164,11 +173,20 @@ const StyledBanner = styled.div<{
   font-weight: 500;
   background-color: ${({ colorProp, theme }) =>
     colorProp ? getColor(theme, colorProp) : "none"};
+  ${({ blurScroll }) =>
+    blurScroll
+      ? `
+      background: rgba(249, 249, 249, 0.8);
+      backdrop-filter: blur(32px);
+      `
+      : ""}
   display: flex;
   justify-content: ${({ hasSideContent }) =>
     hasSideContent ? "space-between" : "center"};
   align-items: center;
-  padding: ${({ hPadding }) => `0 ${hPadding}px`};
+  padding: ${({ hPadding, vPadding }) => `${vPadding}px ${hPadding}px`};
+  min-height: ${({ minHeight }) =>
+    typeof minHeight === "number" ? `${minHeight}px` : "auto"};
   ${({ borderColor, theme }) =>
     borderColor
       ? `border-bottom: 1px solid ${getColor(theme, borderColor)};`
