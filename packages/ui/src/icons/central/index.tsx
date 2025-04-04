@@ -3,6 +3,7 @@ export { ArrowDownLeft as CentralArrowDownLeft } from "./ArrowDownLeft.js";
 export { ArrowInbox as CentralArrowInbox } from "./ArrowInbox.js";
 export { ArrowLeft as CentralArrowLeft } from "./ArrowLeft.js";
 export { ArrowsRepeatLeftRight as CentralArrowsRepeatLeftRight } from "./ArrowsRepeatLeftRight.js";
+export { ArrowUpDown as CentralArrowUpDown } from "./ArrowUpDown.js";
 export { ArrowUpRight as CentralArrowUpRight } from "./ArrowUpRight.js";
 export { Bank as CentralBank } from "./Bank.js";
 export { BarsThree as CentralBarsThree } from "./BarsThree.js";
