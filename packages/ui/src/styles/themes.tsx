@@ -583,6 +583,15 @@ const bridgeBaseSettings = {
         defaultActiveBackgroundColor: "grayBlue88",
         defaultActiveBorderColor: "grayBlue80",
       },
+      tertiary: {
+        defaultColor: "gray99",
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "gray99",
+        defaultHoverBackgroundColor: "gray98",
+        defaultHoverBorderColor: "gray98",
+        defaultActiveBackgroundColor: "gray",
+        defaultActiveBorderColor: "gray",
+      },
       transparent: {
         defaultColor: "secondary",
         defaultBackgroundColor: "transparent",
