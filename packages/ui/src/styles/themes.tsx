@@ -576,12 +576,12 @@ const bridgeBaseSettings = {
         },
       },
       secondary: {
-        defaultBackgroundColor: "transparent",
-        defaultBorderColor: "grayBlue80",
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",
-        defaultHoverBorderColor: "grayBlue80",
+        defaultHoverBorderColor: "transparent",
         defaultActiveBackgroundColor: "grayBlue88",
-        defaultActiveBorderColor: "grayBlue80",
+        defaultActiveBorderColor: "transparent",
       },
       tertiary: {
         defaultColor: "gray99",
@@ -617,6 +617,15 @@ const bridgeBaseSettings = {
         defaultHoverBackgroundColor: "gray98",
         defaultHoverBorderColor: "gray98",
       },
+      linkLight: {
+        defaultColor: "link",
+        defaultBackgroundColor: "linkLight",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "linkLight",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "linkLight",
+        defaultActiveBorderColor: "transparent",
+      },
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
@@ -634,15 +643,16 @@ const bridgeBaseSettings = {
     backgroundColor: "white",
     smBackgroundColor: "bg",
     borderRadius: 32,
+    contentMarginTop: 0,
     defaultDescriptionTypographyMap: {
       default: {
         type: "Body",
-        size: "Large",
+        size: "Medium",
         color: "secondary",
       },
       link: {
         type: "Body",
-        size: "Large",
+        size: "Medium",
         color: "text",
       },
     },

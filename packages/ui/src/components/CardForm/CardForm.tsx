@@ -79,6 +79,7 @@ type CardFormProps = {
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
   forceMarginAfterSubtitle?: boolean;
+  contentMarginTop?: number | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -87,6 +88,7 @@ type ResolvePropsArgs = {
   textAlign?: CardFormTextAlign | undefined;
   paddingTop?: CardFormPaddingTop | undefined;
   paddingBottom?: CardFormPaddingBottom | undefined;
+  contentMarginTop?: number | undefined;
 };
 
 function resolveProps(args: ResolvePropsArgs, theme: Theme) {
@@ -152,8 +154,15 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     "defaultDescriptionTypographyMap",
     theme,
   );
+  const contentMarginTop = resolveCardFormProp(
+    args.contentMarginTop,
+    args.kind,
+    "contentMarginTop",
+    theme,
+  );
 
   const props = {
+    contentMarginTop,
     paddingTop,
     paddingBottom,
     paddingX,
@@ -190,6 +199,7 @@ export function CardForm({
   textAlign: textAlignProp,
   paddingTop: paddingTopProp,
   paddingBottom: paddingBottomProp,
+  contentMarginTop: contentMarginTopProp,
   belowFormContent,
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
@@ -197,6 +207,7 @@ export function CardForm({
 }: CardFormProps) {
   const theme = useTheme();
   const {
+    contentMarginTop,
     paddingTop,
     paddingBottom,
     paddingX,
@@ -216,6 +227,7 @@ export function CardForm({
       shadow: shadowProp,
       paddingTop: paddingTopProp,
       paddingBottom: paddingBottomProp,
+      contentMarginTop: contentMarginTopProp,
     },
     theme,
   );
@@ -254,6 +266,7 @@ export function CardForm({
         <CardHeadline
           hasTopContent={Boolean(topContent)}
           afterTitleMargin={afterTitleMargin}
+          contentMarginTop={contentMarginTop}
         >
           <Headline
             content={[
@@ -593,14 +606,12 @@ const StyledCardFormDiv =
 const CardHeadline = styled.div<{
   hasTopContent: boolean;
   afterTitleMargin: number;
+  contentMarginTop: number | undefined;
 }>`
   padding: 0 ${Spacing.px.xs};
 
-  ${({ hasTopContent }) => (hasTopContent ? "margin-top: 24px;" : "")}
-
-  & + *:not(${CardFormSubtitle.toString()}) {
-    margin-top: ${({ afterTitleMargin }) => afterTitleMargin}px;
-  }
+  ${({ hasTopContent, contentMarginTop }) =>
+    hasTopContent ? `margin-top: ${contentMarginTop ?? 32}px;` : ""}
 
   & + ${CardFormSubtitle} {
     margin-top: 12px;
