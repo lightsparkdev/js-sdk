@@ -47,6 +47,7 @@ import { StyledButtonRowButton } from "../ButtonRow.js";
 import { Checkbox, type CheckboxProps } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { StyledFileInput } from "../FileInput.js";
+import { Flex } from "../Flex.js";
 import { LoadingWrapper } from "../Loading.js";
 import { StyledSelect } from "../Select.js";
 import { type TextIconAligner } from "../TextIconAligner.js";
@@ -80,6 +81,7 @@ type CardFormProps = {
   belowFormContentGap?: BelowCardFormContentGap | undefined;
   forceMarginAfterSubtitle?: boolean;
   contentMarginTop?: number | undefined;
+  graphicHeader?: React.ReactNode;
 };
 
 type ResolvePropsArgs = {
@@ -204,6 +206,7 @@ export function CardForm({
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
   afterTitleMargin = 40,
+  graphicHeader,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -310,14 +313,18 @@ export function CardForm({
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <StyledCardForm
-          onSubmit={onSubmitForm}
-          noValidate
-          {...commonProps}
-          forceMarginAfterSubtitle={forceMarginAfterSubtitle}
-        >
-          {content}
-        </StyledCardForm>
+        <Flex column align="center">
+          {graphicHeader && graphicHeader}
+          <StyledCardForm
+            onSubmit={onSubmitForm}
+            noValidate
+            {...commonProps}
+            forceMarginAfterSubtitle={forceMarginAfterSubtitle}
+            graphicHeader={graphicHeader ? true : false}
+          >
+            {content}
+          </StyledCardForm>
+        </Flex>
       )}
       <BelowCardFormContent gap={belowFormContentGap}>
         {belowFormContentNodes}
@@ -436,6 +443,7 @@ type CardFormInsetProps = {
   paddingX: number;
   paddingTop: number;
   paddingBottom: number;
+  graphicHeader?: boolean;
 };
 
 const formInset = ({
@@ -443,6 +451,7 @@ const formInset = ({
   paddingX,
   paddingTop,
   paddingBottom,
+  graphicHeader,
 }: CardFormInsetProps) => css`
   margin-left: auto;
   margin-right: auto;
@@ -457,10 +466,10 @@ const formInset = ({
   `)}
 
   ${bp.sm(`
-    padding: 0;
+    padding: ${graphicHeader ? "24px" : "0"};
   `)}
 
-  ${standardContentInset.smCSS}
+  ${graphicHeader ? `width: 100%;` : standardContentInset.smCSS}
 
   & ${CardFormFullWidth}, & ${CardFormFullTopContent} {
     ${bp.sm(`
@@ -495,6 +504,7 @@ type StyledCardFormStyleProps = {
   smBackgroundColor: CardFormBackgroundColor;
   smBorderWidth: CardFormBorderWidth;
   forceMarginAfterSubtitle: boolean | undefined;
+  graphicHeader?: boolean | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -512,9 +522,13 @@ const StyledCardFormStyle = ({
   smBackgroundColor,
   smBorderWidth,
   forceMarginAfterSubtitle = true,
+  graphicHeader,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
-    ${formInset({ wide, paddingX, paddingTop, paddingBottom })}
+    ${graphicHeader
+      ? formInset({ wide, paddingX, paddingTop, paddingBottom, graphicHeader })
+      : formInset({ wide, paddingX, paddingTop, paddingBottom })}
+
     ${shadow === "soft"
       ? standardCardShadow
       : shadow === "hard"
@@ -535,7 +549,11 @@ const StyledCardFormStyle = ({
     `)}
 
     ${bp.minSm(`
-      border-radius: ${borderRadius}px;
+      border-radius: ${
+        graphicHeader
+          ? `0 0 ${borderRadius}px ${borderRadius}px`
+          : `${borderRadius}px`
+      };
     `)}
 
     ${CardHeadline}, ${CardFormSubtitle} {
