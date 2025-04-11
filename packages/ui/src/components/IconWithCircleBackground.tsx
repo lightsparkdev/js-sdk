@@ -6,7 +6,7 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 36 | 30 | 24 | 20 | 16.5 | 14;
+type IconWidth = 48 | 40 | 36 | 30 | 24 | 20 | 16.5 | 14;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
@@ -136,6 +136,9 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
 `;
 
 function getPadding(size: IconWidth) {
+  if (size === 48) {
+    return 38;
+  }
   if (size === 40) {
     return 20;
   }
