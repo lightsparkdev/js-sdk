@@ -1,24 +1,24 @@
 import { type PathProps } from "../types.js";
 
-export function Phone({
+export function ArrowInboxUp({
   strokeWidth = "1.5",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
     <svg
-      width="100%"
-      viewBox="0 0 24 24"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
     >
       <path
-        d="M9.75 19.25H14.25M6.75 22.25H17.25C17.8023 22.25 18.25 21.8023 18.25 21.25V2.75C18.25 2.19772 17.8023 1.75 17.25 1.75H6.75C6.19772 1.75 5.75 2.19772 5.75 2.75V21.25C5.75 21.8023 6.19772 22.25 6.75 22.25Z"
+        d="M10 3.125V12.5M10 3.125L13.75 6.875M10 3.125L6.25 6.875M16.875 10.625V16.0417C16.875 16.5019 16.5019 16.875 16.0417 16.875H3.95833C3.4981 16.875 3.125 16.5019 3.125 16.0417V10.625"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

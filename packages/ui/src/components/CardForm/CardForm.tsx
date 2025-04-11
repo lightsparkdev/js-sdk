@@ -47,6 +47,7 @@ import { StyledButtonRowButton } from "../ButtonRow.js";
 import { Checkbox, type CheckboxProps } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { StyledFileInput } from "../FileInput.js";
+import { Flex } from "../Flex.js";
 import { LoadingWrapper } from "../Loading.js";
 import { StyledSelect } from "../Select.js";
 import { type TextIconAligner } from "../TextIconAligner.js";
@@ -60,6 +61,7 @@ type CardFormProps = {
   children?: ReactNode;
   disabled?: boolean;
   topContent?: ReactNode;
+  aboveHeaderContent?: ReactNode;
   title?: string;
   titleSize?: TokenSizeKey;
   titleRightIcon?:
@@ -79,6 +81,9 @@ type CardFormProps = {
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
   forceMarginAfterSubtitle?: boolean;
+  contentMarginTop?: number | undefined;
+  graphicHeader?: React.ReactNode;
+  centeredContent?: boolean;
 };
 
 type ResolvePropsArgs = {
@@ -175,6 +180,7 @@ export function CardForm({
   children,
   disabled,
   topContent = null,
+  aboveHeaderContent,
   title,
   titleSize = "Large",
   description,
@@ -194,6 +200,8 @@ export function CardForm({
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
   afterTitleMargin = 40,
+  graphicHeader,
+  centeredContent = false,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -247,28 +255,37 @@ export function CardForm({
 
   const CardFormContentTarget = full ? CardFormContentFull : CardFormContent;
 
+  const headerData = [
+    aboveHeaderContent,
+    title && (
+      <CardHeadline
+        hasTopContent={Boolean(topContent)}
+        afterTitleMargin={afterTitleMargin}
+      >
+        <Headline
+          content={[
+            title,
+            ...(titleRightIcon
+              ? [icon({ name: titleRightIcon.name, ml: 4 })]
+              : []),
+          ]}
+          display="inline-flex"
+          size={titleSize}
+        />
+      </CardHeadline>
+    ),
+    formattedDescription && (
+      <CardFormSubtitle>{formattedDescription}</CardFormSubtitle>
+    ),
+  ];
+
   const content = (
     <CardFormContentTarget>
       {topContent}
-      {title && (
-        <CardHeadline
-          hasTopContent={Boolean(topContent)}
-          afterTitleMargin={afterTitleMargin}
-        >
-          <Headline
-            content={[
-              title,
-              ...(titleRightIcon
-                ? [icon({ name: titleRightIcon.name, ml: 4 })]
-                : []),
-            ]}
-            display="inline-flex"
-            size={titleSize}
-          />
-        </CardHeadline>
-      )}
-      {formattedDescription && (
-        <CardFormSubtitle>{formattedDescription}</CardFormSubtitle>
+      {centeredContent ? (
+        <CenteredHeader>{headerData}</CenteredHeader>
+      ) : (
+        headerData
       )}
       {children}
     </CardFormContentTarget>
@@ -297,14 +314,18 @@ export function CardForm({
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <StyledCardForm
-          onSubmit={onSubmitForm}
-          noValidate
-          {...commonProps}
-          forceMarginAfterSubtitle={forceMarginAfterSubtitle}
-        >
-          {content}
-        </StyledCardForm>
+        <Flex column align="center">
+          {graphicHeader && graphicHeader}
+          <StyledCardForm
+            onSubmit={onSubmitForm}
+            noValidate
+            {...commonProps}
+            forceMarginAfterSubtitle={forceMarginAfterSubtitle}
+            graphicHeader={graphicHeader ? true : false}
+          >
+            {content}
+          </StyledCardForm>
+        </Flex>
       )}
       <BelowCardFormContent gap={belowFormContentGap}>
         {belowFormContentNodes}
@@ -312,6 +333,14 @@ export function CardForm({
     </Container>
   );
 }
+
+const CenteredHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  justify-content: center;
+`;
 
 const CardFormContainer = styled.div`
   display: flex;
@@ -423,6 +452,7 @@ type CardFormInsetProps = {
   paddingX: number;
   paddingTop: number;
   paddingBottom: number;
+  graphicHeader?: boolean;
 };
 
 const formInset = ({
@@ -430,6 +460,7 @@ const formInset = ({
   paddingX,
   paddingTop,
   paddingBottom,
+  graphicHeader,
 }: CardFormInsetProps) => css`
   margin-left: auto;
   margin-right: auto;
@@ -444,10 +475,10 @@ const formInset = ({
   `)}
 
   ${bp.sm(`
-    padding: 0;
+    padding: ${graphicHeader ? "24px" : "0"};
   `)}
 
-  ${standardContentInset.smCSS}
+  ${graphicHeader ? `width: 100%;` : standardContentInset.smCSS}
 
   & ${CardFormFullWidth}, & ${CardFormFullTopContent} {
     ${bp.sm(`
@@ -482,6 +513,7 @@ type StyledCardFormStyleProps = {
   smBackgroundColor: CardFormBackgroundColor;
   smBorderWidth: CardFormBorderWidth;
   forceMarginAfterSubtitle: boolean | undefined;
+  graphicHeader?: boolean | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -499,9 +531,13 @@ const StyledCardFormStyle = ({
   smBackgroundColor,
   smBorderWidth,
   forceMarginAfterSubtitle = true,
+  graphicHeader,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
-    ${formInset({ wide, paddingX, paddingTop, paddingBottom })}
+    ${graphicHeader
+      ? formInset({ wide, paddingX, paddingTop, paddingBottom, graphicHeader })
+      : formInset({ wide, paddingX, paddingTop, paddingBottom })}
+
     ${shadow === "soft"
       ? standardCardShadow
       : shadow === "hard"
@@ -522,7 +558,11 @@ const StyledCardFormStyle = ({
     `)}
 
     ${bp.minSm(`
-      border-radius: ${borderRadius}px;
+      border-radius: ${
+        graphicHeader
+          ? `0 0 ${borderRadius}px ${borderRadius}px`
+          : `${borderRadius}px`
+      };
     `)}
 
     ${CardHeadline}, ${CardFormSubtitle} {
@@ -593,10 +633,12 @@ const StyledCardFormDiv =
 const CardHeadline = styled.div<{
   hasTopContent: boolean;
   afterTitleMargin: number;
+  contentMarginTop?: number | undefined;
 }>`
   padding: 0 ${Spacing.px.xs};
 
-  ${({ hasTopContent }) => (hasTopContent ? "margin-top: 24px;" : "")}
+  ${({ hasTopContent, contentMarginTop }) =>
+    hasTopContent ? `margin-top: ${contentMarginTop ?? 32}px;` : ""}
 
   & + *:not(${CardFormSubtitle.toString()}) {
     margin-top: ${({ afterTitleMargin }) => afterTitleMargin}px;
