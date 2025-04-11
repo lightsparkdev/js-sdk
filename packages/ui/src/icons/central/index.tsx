@@ -1,6 +1,7 @@
 export { ArrowBoxRight as CentralArrowBoxRight } from "./ArrowBoxRight.js";
 export { ArrowDownLeft as CentralArrowDownLeft } from "./ArrowDownLeft.js";
 export { ArrowInbox as CentralArrowInbox } from "./ArrowInbox.js";
+export { ArrowInboxUp as CentralArrowInboxUp } from "./ArrowInboxUp.js";
 export { ArrowLeft as CentralArrowLeft } from "./ArrowLeft.js";
 export { ArrowsRepeatLeftRight as CentralArrowsRepeatLeftRight } from "./ArrowsRepeatLeftRight.js";
 export { ArrowUpDown as CentralArrowUpDown } from "./ArrowUpDown.js";
