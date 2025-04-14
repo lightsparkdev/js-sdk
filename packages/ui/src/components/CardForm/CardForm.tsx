@@ -202,6 +202,7 @@ export function CardForm({
   afterTitleMargin = 40,
   graphicHeader,
   centeredContent = false,
+  contentMarginTop,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -261,6 +262,7 @@ export function CardForm({
       <CardHeadline
         hasTopContent={Boolean(topContent)}
         afterTitleMargin={afterTitleMargin}
+        contentMarginTop={contentMarginTop}
       >
         <Headline
           content={[
