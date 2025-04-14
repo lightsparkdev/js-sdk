@@ -535,7 +535,7 @@ const bridgeBaseSettings = {
     defaultBorderRadius: 999,
     defaultPaddingsY: {
       ExtraSmall: 13,
-      Small: 13,
+      Small: 10,
       Schmedium: 13,
       Medium: 13,
       Mlarge: 13,
