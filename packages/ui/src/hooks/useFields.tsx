@@ -95,6 +95,7 @@ const defaultValidators: Record<string, ValidatorFn[]> = {
   code: [v.required("Please enter a code."), v.code()],
   email: [v.required("Email is required."), v.email()],
   phoneNumber: [v.required("Phone number is required."), v.phone()],
+  multiInput: [v.required("This field is required.")],
   birthdayDay: [v.min("Day is required.", 1)],
   birthdayMonth: [v.min("Day is required.", 1)],
   birthdayYear: [v.min("Day is required.", 4)],
