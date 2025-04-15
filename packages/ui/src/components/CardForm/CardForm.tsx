@@ -2,7 +2,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { ComponentProps, FormEvent, ReactNode } from "react";
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
 import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
@@ -257,12 +257,15 @@ export function CardForm({
   const CardFormContentTarget = full ? CardFormContentFull : CardFormContent;
 
   const headerData = [
-    aboveHeaderContent,
-    title && (
+    aboveHeaderContent ? (
+      <Fragment key="card-form-above-header">{aboveHeaderContent}</Fragment>
+    ) : null,
+    title ? (
       <CardHeadline
         hasTopContent={Boolean(topContent)}
         afterTitleMargin={afterTitleMargin}
         contentMarginTop={contentMarginTop}
+        key="card-form-title"
       >
         <Headline
           content={[
@@ -275,10 +278,12 @@ export function CardForm({
           size={titleSize}
         />
       </CardHeadline>
-    ),
-    formattedDescription && (
-      <CardFormSubtitle>{formattedDescription}</CardFormSubtitle>
-    ),
+    ) : null,
+    formattedDescription ? (
+      <CardFormSubtitle key="card-form-subtitle">
+        {formattedDescription}
+      </CardFormSubtitle>
+    ) : null,
   ];
 
   const content = (
