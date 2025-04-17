@@ -77,14 +77,6 @@ export const v: Validators = {
         ? msg || `Must be at least ${len} characters long.`
         : false;
     },
-  matchesField:
-    (msg = defaultMsgs.matchesField, targetField = "") =>
-    (value, fields) => {
-      if (typeof targetField !== "string") {
-        return msg;
-      }
-      return value !== fields?.[targetField] ? msg : false;
-    },
 };
 
 /* Optional validation is colocated here for consistency.
@@ -132,7 +124,6 @@ const defaultFormatters: Record<string, (value: string) => string> = {
 function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
   fieldName: keyof T,
   fieldValue: string,
-  fields: Fields<T>,
   validatorsArg?: boolean | ValidatorFn[],
 ) {
   /* Using default validation for fields can be enabled conditionally for convenience. Enabled by
@@ -142,7 +133,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
     const validators = defaultValidators[fieldName as string];
     if (validators) {
       for (const validator of validators) {
-        const errorMsg = validator(fieldValue, fields);
+        const errorMsg = validator(fieldValue);
         if (errorMsg) {
           return errorMsg;
         }
@@ -154,7 +145,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
       return null;
     }
     for (const validator of validatorsArg) {
-      const errorMsg = validator(fieldValue, fields);
+      const errorMsg = validator(fieldValue);
       if (errorMsg) {
         return errorMsg;
       }
@@ -210,7 +201,6 @@ export default function useFields<
       const fieldError = getFirstFieldError(
         fieldName,
         fieldValue,
-        fields,
         customValidators,
       );
       /**
@@ -225,7 +215,7 @@ export default function useFields<
       }
       return fieldError;
     },
-    [defaultFields, blurredFields, fields],
+    [defaultFields, blurredFields],
   );
 
   const checkFieldsForError = useCallback(
@@ -298,7 +288,6 @@ export default function useFields<
       const firstFieldError = getFirstFieldError(
         fieldName,
         fieldValue,
-        fields,
         customValidators,
       );
       return firstFieldError;
