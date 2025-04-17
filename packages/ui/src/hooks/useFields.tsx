@@ -3,7 +3,8 @@ import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type ValidatorFn = (value: string) => string | false;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ValidatorFn = (value: string, fields?: Fields<any>) => string | false;
 type Validators = {
   [key: string]: (msg?: string, ...args: unknown[]) => ValidatorFn;
 };
@@ -20,9 +21,11 @@ const defaultMsgs = {
   state: "Please enter a valid two-letter state abbreviation.",
   name: "Name must be at least three characters.",
   code: "Code must be eight characters long.",
-  password: "Password must be at least eight characters.",
+  password:
+    "Password must be at least 12 characters, must contain at least two types of characters: lowercase, uppercase, numbers, special",
   required: "This field is required.",
   umaAddress: "Please enter a valid UMA address.",
+  matchesField: "Target field does not match.",
 };
 
 const regexp = {
@@ -74,6 +77,14 @@ export const v: Validators = {
         ? msg || `Must be at least ${len} characters long.`
         : false;
     },
+  matchesField:
+    (msg = defaultMsgs.matchesField, targetField = "") =>
+    (value, fields) => {
+      if (typeof targetField !== "string") {
+        return msg;
+      }
+      return value !== fields?.[targetField] ? msg : false;
+    },
 };
 
 /* Optional validation is colocated here for consistency.
@@ -121,6 +132,7 @@ const defaultFormatters: Record<string, (value: string) => string> = {
 function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
   fieldName: keyof T,
   fieldValue: string,
+  fields: Fields<T>,
   validatorsArg?: boolean | ValidatorFn[],
 ) {
   /* Using default validation for fields can be enabled conditionally for convenience. Enabled by
@@ -130,7 +142,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
     const validators = defaultValidators[fieldName as string];
     if (validators) {
       for (const validator of validators) {
-        const errorMsg = validator(fieldValue);
+        const errorMsg = validator(fieldValue, fields);
         if (errorMsg) {
           return errorMsg;
         }
@@ -142,7 +154,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
       return null;
     }
     for (const validator of validatorsArg) {
-      const errorMsg = validator(fieldValue);
+      const errorMsg = validator(fieldValue, fields);
       if (errorMsg) {
         return errorMsg;
       }
@@ -198,6 +210,7 @@ export default function useFields<
       const fieldError = getFirstFieldError(
         fieldName,
         fieldValue,
+        fields,
         customValidators,
       );
       /**
@@ -212,7 +225,7 @@ export default function useFields<
       }
       return fieldError;
     },
-    [defaultFields, blurredFields],
+    [defaultFields, blurredFields, fields],
   );
 
   const checkFieldsForError = useCallback(
@@ -285,10 +298,12 @@ export default function useFields<
       const firstFieldError = getFirstFieldError(
         fieldName,
         fieldValue,
+        fields,
         customValidators,
       );
       return firstFieldError;
     });
+
     return valid;
   }, [fields, defaultFields]);
 

@@ -7,6 +7,7 @@ import type {
   FocusEvent,
   InputHTMLAttributes,
   KeyboardEvent,
+  ReactNode,
   RefCallback,
   RefObject,
   SyntheticEvent,
@@ -28,6 +29,7 @@ import {
 } from "../styles/themes.js";
 import { applyTypography } from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
+import type { ToReactNodesArgs } from "../utils/toReactNodes/toReactNodes.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
@@ -51,7 +53,10 @@ export type IconWidth = (typeof iconWidths)[number];
 
 export type TextInputProps = {
   disabled?: boolean | undefined;
-  error?: string | undefined;
+  error?: string | ToReactNodesArgs | undefined;
+  contentError?: ReactNode | undefined;
+  success?: string | ToReactNodesArgs | undefined;
+  contentSuccess?: ReactNode | undefined;
   icon?:
     | {
         name: IconName;
@@ -89,7 +94,8 @@ export type TextInputProps = {
   onBeforeInput?: (e: CompositionEvent) => void;
   pattern?: string;
   inputMode?: "numeric" | "decimal" | undefined;
-  hint?: string | undefined;
+  hint?: string | ToReactNodesArgs | undefined;
+  hideNonErrorsIfBlurred?: boolean | undefined;
   hintTooltip?: string | undefined;
   label?: string;
   rightButtonText?: string | undefined;
@@ -150,7 +156,8 @@ export function TextInput(textInputProps: TextInputProps) {
     }
   };
 
-  const hasError = Boolean(props.error);
+  const hasError = Boolean(props.error || props.contentError);
+  const hasSuccess = Boolean(props.success || props.contentSuccess);
 
   /* Default to right side icon if not specified: */
   const iconSide = props.icon ? props.icon.side || "right" : undefined;
@@ -236,6 +243,7 @@ export function TextInput(textInputProps: TextInputProps) {
         activeOutline={props.activeOutline}
         activeOutlineColor={props.activeOutlineColor}
         hasError={hasError}
+        hasSuccess={hasSuccess}
         data-test-id={props.testId}
         typography={props.typography}
         autoComplete={
@@ -339,9 +347,13 @@ export function TextInput(textInputProps: TextInputProps) {
       )}
       {input}
       <InputSubtext
-        text={props.error || props.hint}
+        text={props.error || props.success || props.hint}
+        content={props.contentError || props.contentSuccess}
         hasError={hasError}
+        hasSuccess={hasSuccess}
         tooltipId={hintTooltipId}
+        hideNonErrorsIfBlurred={props.hideNonErrorsIfBlurred}
+        focused={focused}
       />
       {props.hintTooltip ? (
         <Tooltip id={hintTooltipId} content={props.hintTooltip} place="right" />
@@ -409,6 +421,7 @@ const TextInputIconContainer = styled.div<TextInputIconContainerProps>`
 
 interface InputProps {
   hasError: boolean;
+  hasSuccess: boolean;
   disabled: boolean;
   paddingLeftPx?: number | undefined;
   paddingRightPx?: number | undefined;

@@ -84,6 +84,7 @@ type CardFormProps = {
   contentMarginTop?: number | undefined;
   graphicHeader?: React.ReactNode;
   centeredContent?: boolean;
+  formButtonTopMargin?: number | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -101,12 +102,14 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     "paddingTop",
     theme,
   );
+
   const paddingBottom = resolveCardFormProp(
     args.paddingBottom,
     args.kind,
     "paddingBottom",
     theme,
   );
+
   const paddingX = resolveCardFormProp(undefined, args.kind, "paddingX", theme);
   const textAlign = resolveCardFormProp(
     args.textAlign,
@@ -203,6 +206,7 @@ export function CardForm({
   graphicHeader,
   centeredContent = false,
   contentMarginTop,
+  formButtonTopMargin,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -321,7 +325,7 @@ export function CardForm({
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <Flex column align="center">
+        <Flex column align="center" height={full ? "100%" : "auto"}>
           {graphicHeader && graphicHeader}
           <StyledCardForm
             onSubmit={onSubmitForm}
@@ -329,14 +333,17 @@ export function CardForm({
             {...commonProps}
             forceMarginAfterSubtitle={forceMarginAfterSubtitle}
             graphicHeader={graphicHeader ? true : false}
+            formButtonTopMargin={formButtonTopMargin}
           >
             {content}
           </StyledCardForm>
         </Flex>
       )}
-      <BelowCardFormContent gap={belowFormContentGap}>
-        {belowFormContentNodes}
-      </BelowCardFormContent>
+      {belowFormContentNodes && (
+        <BelowCardFormContent gap={belowFormContentGap}>
+          {belowFormContentNodes}
+        </BelowCardFormContent>
+      )}
     </Container>
   );
 }
@@ -521,6 +528,7 @@ type StyledCardFormStyleProps = {
   smBorderWidth: CardFormBorderWidth;
   forceMarginAfterSubtitle: boolean | undefined;
   graphicHeader?: boolean | undefined;
+  formButtonTopMargin?: number | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -539,6 +547,7 @@ const StyledCardFormStyle = ({
   smBorderWidth,
   forceMarginAfterSubtitle = true,
   graphicHeader,
+  formButtonTopMargin = 32,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
     ${graphicHeader
@@ -625,7 +634,9 @@ const StyledCardFormStyle = ({
       }
 
       & > ${ButtonSelector()}, & > ${select(CardFormNearButtonColumn)} {
-        ${formButtonTopMarginStyle}
+        ${formButtonTopMargin !== undefined
+          ? `margin-top: ${formButtonTopMargin}px;`
+          : formButtonTopMarginStyle}
       }
     }
   `;
