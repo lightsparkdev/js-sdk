@@ -325,7 +325,9 @@ export default function useFields<
         });
       }
     });
-    mergeWithFields(newFields as Partial<T>);
+    if (Object.keys(newFields).length > 0) {
+      mergeWithFields(newFields as Partial<T>);
+    }
     prevDefaultFields.current = defaultFields;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultFields, mergeWithFields]);
