@@ -21,6 +21,8 @@ interface Props {
   padding?: string | undefined;
   kind?: DrawerKind | undefined;
   top?: number | undefined;
+  height?: number | undefined;
+  alignBottom?: boolean | undefined;
 }
 
 export const Drawer = (props: Props) => {
@@ -108,7 +110,12 @@ export const Drawer = (props: Props) => {
         ref={drawerContainerRef}
         top={props.top}
       >
-        <DrawerInnerContainer kind={props.kind} padding={props.padding}>
+        <DrawerInnerContainer
+          kind={props.kind}
+          padding={props.padding}
+          height={props.height}
+          alignBottom={props.alignBottom}
+        >
           {props.grabber && !props.nonDismissable && (
             <Grabber onClick={handleClose}>
               <GrabberBar />
@@ -219,15 +226,18 @@ const DrawerContainer = styled.div<{
 const DrawerInnerContainer = styled.div<{
   kind?: DrawerKind | undefined;
   padding?: string | undefined;
+  height?: number | undefined;
+  alignBottom?: boolean | undefined;
 }>`
+  ${(props) => (props.alignBottom ? "margin-top: auto;" : "")}
   position: relative;
   display: flex;
   flex-direction: column;
   width: ${(props) =>
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
-  height: 100%;
   ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
+  height: ${(props) => (props.height ? `${props.height}px` : "100%")};
   border-radius: ${(props) =>
     props.kind === "floating"
       ? Spacing.px.lg

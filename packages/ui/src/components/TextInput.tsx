@@ -46,7 +46,7 @@ const selectLeftOffset = 10;
 
 export const iconSides = ["left", "right"] as const;
 export type IconSide = (typeof iconSides)[number];
-export const iconOffsets = ["small", "large"] as const;
+export const iconOffsets = ["small", "medium", "large"] as const;
 export type IconOffset = (typeof iconOffsets)[number];
 export const iconWidths = [8, 12, 16] as const;
 export type IconWidth = (typeof iconWidths)[number];
@@ -166,8 +166,14 @@ export function TextInput(textInputProps: TextInputProps) {
     Boolean(props.icon && iconSide === "right") || props.loading;
   const iconWidth = props.icon?.width || 12;
   /* Where the icon center should be regardless of icon width: */
-  const iconCenterOffset = props.icon?.offset === "large" ? 26 : 18;
-  const iconTextOffset = iconCenterOffset === 18 ? 4 : 14;
+  const iconCenterOffset =
+    props.icon?.offset === "large" || props.icon?.offset === "medium" ? 26 : 18;
+  const iconTextOffset =
+    props.icon?.offset === "large"
+      ? 14
+      : props.icon?.offset === "medium"
+      ? 8
+      : 4;
 
   const leftIconOffset = iconCenterOffset - iconWidth / 2;
   let paddingLeftPx: number | undefined;
