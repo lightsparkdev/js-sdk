@@ -280,10 +280,16 @@ export default function useFields<
           },
           {} as Partial<T>,
         );
-        return {
+
+        const updated = {
           ...latestFields,
           ...formatted,
         };
+        const fieldsChanged =
+          JSON.stringify(updated) !== JSON.stringify(latestFields);
+
+        /* Prevent rerender if fields are identical - return same ref to ensure memoized: */
+        return fieldsChanged ? updated : latestFields;
       });
       checkFieldsForError(updatedFields);
     },
