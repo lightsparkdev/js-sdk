@@ -45,7 +45,6 @@
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
     "octokit": "^4.0.2",
-    "react-circle-flags": "^0.0.23",
     "ts-prune": "^0.10.3",
     "turbo": "^2.4.4"
   },
