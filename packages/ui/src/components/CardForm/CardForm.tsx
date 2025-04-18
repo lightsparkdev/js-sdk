@@ -656,7 +656,9 @@ const CardHeadline = styled.div<{
   padding: 0 ${Spacing.px.xs};
 
   ${({ hasTopContent, contentMarginTop }) =>
-    hasTopContent ? `margin-top: ${contentMarginTop ?? 32}px;` : ""}
+    hasTopContent || contentMarginTop !== undefined
+      ? `margin-top: ${contentMarginTop ?? 32}px;`
+      : ""}
 
   & + *:not(${CardFormSubtitle.toString()}) {
     margin-top: ${({ afterTitleMargin }) => afterTitleMargin}px;
