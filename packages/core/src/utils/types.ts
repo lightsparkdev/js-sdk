@@ -59,7 +59,3 @@ export type Complete<T> = { [P in keyof T]-?: NonNullable<T[P]> };
 export type RequiredKeys<T> = {
   [K in keyof T]-?: Record<string, never> extends Pick<T, K> ? never : K;
 }[keyof T];
-
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}

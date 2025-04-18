@@ -22,6 +22,7 @@ type ToastQueueArg = {
   duration: number | null;
   id: string;
   expires: number;
+  type?: "error" | "success" | "info";
 };
 
 type Toast = ToastQueueArg & {
@@ -247,6 +248,13 @@ export function Toasts({
           <Fragment key={toast.id}>
             {ReactDOM.createPortal(
               <StyledToast
+                backgroundColor={
+                  toast.type === "error"
+                    ? colors.red50
+                    : toast.type === "success"
+                    ? colors.green33
+                    : undefined
+                }
                 isActive={toast.isActive}
                 isHiding={toast.isHiding}
                 isVisible={fromCurrent < maxVisible}
@@ -304,6 +312,7 @@ const StyledToast = styled.div<{
   maxVisible: number;
   movingToCurrent: boolean;
   stackDir: 1 | -1;
+  backgroundColor?: string | undefined;
 }>`
   position: fixed;
   z-index: ${z.toast};
@@ -312,10 +321,10 @@ const StyledToast = styled.div<{
   align-items: flex-start;
   justify-content: space-between;
   font-weight: 500;
-  background-color: ${({ isCurrent, movingToCurrent }) =>
+  background-color: ${({ isCurrent, movingToCurrent, backgroundColor }) =>
     isCurrent || movingToCurrent
-      ? colors.blue43
-      : themeOr("#2A50B2", colors.blue43)};
+      ? backgroundColor ?? colors.blue43
+      : backgroundColor ?? themeOr("#2A50B2", colors.blue43)};
   color: rgba(255, 255, 255, 0);
   padding: 16px 24px;
   ${({ duration }) => !duration && "padding-right: 50px;"}
