@@ -10609,7 +10609,6 @@ __metadata:
     "@manypkg/cli": "npm:^0.21.0"
     "@octokit/auth-action": "npm:^4.0.1"
     octokit: "npm:^4.0.2"
-    react-circle-flags: "npm:^0.0.23"
     ts-prune: "npm:^0.10.3"
     turbo: "npm:^2.4.4"
   languageName: unknown
@@ -13045,15 +13044,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10/26a58d9bbe9b1bbe1201612628d0f6bdeec0355ed3730013d066b9e87adbbee4b6f3f1c83352978c0e2f317d8d32ac31ac2cbb3c6f83833bef0ba047c5bb6907
-  languageName: node
-  linkType: hard
-
-"react-circle-flags@npm:^0.0.23":
-  version: 0.0.23
-  resolution: "react-circle-flags@npm:0.0.23"
-  peerDependencies:
-    react: ^16.0.0 || 17.x || 18.x || 19.x
-  checksum: 10/93800e1737c3e3cac70325213f83e9af445d860eaf50237cbf74c048a899f64fbadbf6106d8209f322c8af7345778f4e05ee90aa9f18aa5d816b1a7fc6d9c7e0
   languageName: node
   linkType: hard
 
