@@ -321,7 +321,7 @@ export function CardForm({
   const Container = full ? CardFormContentFull : CardFormContainer;
 
   return (
-    <Container>
+    <Container paddingBottom={paddingBottom}>
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
@@ -367,11 +367,12 @@ const CardFormContent = styled.div`
   align-self: center;
 `;
 
-const CardFormContentFull = styled.div`
+const CardFormContentFull = styled.div<{ paddingBottom?: number | undefined }>`
   display: flex;
   flex-direction: column;
   align-self: center;
   height: 100%;
+  padding-bottom: ${({ paddingBottom }) => paddingBottom ?? 0}px;
 `;
 
 type BelowCardFormContentProps = {
