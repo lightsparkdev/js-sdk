@@ -121,6 +121,7 @@ type ModalProps = {
   drawerCloseButton?: boolean;
   drawerHeight?: number | undefined;
   drawerAlignBottom?: boolean | undefined;
+  drawerDisableTouchMove?: boolean | undefined;
 };
 
 export function Modal({
@@ -159,8 +160,8 @@ export function Modal({
   drawerKind,
   drawerPadding,
   drawerCloseButton = true,
-  drawerHeight,
   drawerAlignBottom,
+  drawerDisableTouchMove,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
   const [visibleChanged, setVisibleChanged] = useState(false);
@@ -418,8 +419,8 @@ export function Modal({
         kind={drawerKind ?? "default"}
         padding={drawerPadding !== undefined ? `${drawerPadding}px` : undefined}
         top={top}
-        height={drawerHeight}
         alignBottom={drawerAlignBottom}
+        disableTouchMove={drawerDisableTouchMove ?? false}
       >
         {modalContent}
       </Drawer>

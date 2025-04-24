@@ -21,8 +21,8 @@ interface Props {
   padding?: string | undefined;
   kind?: DrawerKind | undefined;
   top?: number | undefined;
-  height?: number | undefined;
   alignBottom?: boolean | undefined;
+  disableTouchMove?: boolean;
 }
 
 export const Drawer = (props: Props) => {
@@ -48,7 +48,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchMove = (event: React.TouchEvent) => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -73,7 +73,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchStart = () => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -81,7 +81,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchEnd = () => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -113,7 +113,6 @@ export const Drawer = (props: Props) => {
         <DrawerInnerContainer
           kind={props.kind}
           padding={props.padding}
-          height={props.height}
           alignBottom={props.alignBottom}
         >
           {props.grabber && !props.nonDismissable && (
@@ -226,7 +225,6 @@ const DrawerContainer = styled.div<{
 const DrawerInnerContainer = styled.div<{
   kind?: DrawerKind | undefined;
   padding?: string | undefined;
-  height?: number | undefined;
   alignBottom?: boolean | undefined;
 }>`
   ${(props) => (props.alignBottom ? "margin-top: auto;" : "")}
@@ -237,7 +235,7 @@ const DrawerInnerContainer = styled.div<{
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
   ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
-  height: ${(props) => (props.height ? `${props.height}px` : "100%")};
+  height: 100%;
   border-radius: ${(props) =>
     props.kind === "floating"
       ? Spacing.px.lg
