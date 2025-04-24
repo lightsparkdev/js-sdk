@@ -363,7 +363,6 @@ export default function useFields<
     blurredFields,
     getUpdateField,
     allFieldsValid,
-    checkFieldForError,
     fieldErrors,
     /* needs to be a new object to ensure downstream effects are notified on updates: */
     fields: {
