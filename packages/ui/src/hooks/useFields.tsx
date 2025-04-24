@@ -26,6 +26,7 @@ const defaultMsgs = {
   required: "This field is required.",
   umaAddress: "Please enter a valid UMA address.",
   matchesField: "Target field does not match.",
+  clabe: "Please enter a valid CLABE.",
 };
 
 const regexp = {
@@ -34,6 +35,7 @@ const regexp = {
   email: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
   state:
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
+  clabe: /^[0-9]{18}$/,
 };
 
 export const v: Validators = {
@@ -65,6 +67,10 @@ export const v: Validators = {
     (msg = defaultMsgs.umaAddress) =>
     (value) =>
       !isValidUmaAddress(value) ? msg : false,
+  clabe:
+    (msg = defaultMsgs.clabe) =>
+    (value) =>
+      !regexp.clabe.test(value) ? msg : false,
   required:
     (msg = defaultMsgs.required) =>
     (value) =>
