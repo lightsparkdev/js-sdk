@@ -525,6 +525,7 @@ const bridgeBaseSettings = {
   mcNeutral: colors.grayBlue43,
   success: colors.green35,
   link: colors.blue39,
+  linkLight: colors.blue10,
   typography: getTypography(TypographyGroup.Bridge, {
     main: "Manrope",
     code: "Roboto Mono",

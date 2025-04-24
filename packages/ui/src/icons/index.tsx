@@ -103,6 +103,7 @@ export { NodeAdd } from "./NodeAdd.js";
 export { NonagonCheckmark } from "./NonagonCheckmark.js";
 export { Notebook } from "./Notebook.js";
 export { NotEye } from "./NotEye.js";
+export { NubankLogo } from "./NubankLogo.js";
 export { PaperPlane } from "./PaperPlane.js";
 export { PaperPlaneRounder } from "./PaperPlaneRounder.js";
 export { Pencil } from "./Pencil.js";
