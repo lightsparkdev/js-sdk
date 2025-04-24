@@ -450,10 +450,15 @@ const StyledCardFormDataFieldValue = styled.div`
 `;
 
 export const CardFormFullWidth = styled.div``;
-export const CardFormFullTopContent = styled.div`
-  ${bp.minSm(`
-    border-radius: 16px 16px 0 0;
+
+type CardFormFullTopContentProps = {
+  borderRadius?: string;
+};
+export const CardFormFullTopContent = styled.div<CardFormFullTopContentProps>`
+  ${({ borderRadius = "16px 16px 0 0" }) =>
+    bp.minSm(`
     overflow: hidden;
+    border-radius: ${borderRadius};
   `)}
 `;
 
