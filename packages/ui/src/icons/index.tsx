@@ -79,6 +79,7 @@ export { Info } from "./Info.js";
 export { JavaScriptTwoTone } from "./JavaScriptTwoTone.js";
 export { JavaTwoTone } from "./JavaTwoTone.js";
 export { KotlinTwoTone } from "./KotlinTwoTone.js";
+export { LightningBoltOutline } from "./LightningBoltOutline.js";
 export { LightningOnRoundedSquare } from "./LightningOnRoundedSquare.js";
 export { Limit } from "./Limit.js";
 export { LinkIcon } from "./LinkIcon.js";

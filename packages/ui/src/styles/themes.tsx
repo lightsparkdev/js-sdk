@@ -688,7 +688,7 @@ const bridgeLightTheme = extend(lightTheme, {
   bg: colors.gray98,
   smBg: colors.gray98,
   text: colors.grayBlue9,
-  secondary: colors.grayBlue43,
+  secondary: colors.gray2,
   tertiary: colors.gray3,
   inputBackground: colors.white,
   danger: colors.red50,
