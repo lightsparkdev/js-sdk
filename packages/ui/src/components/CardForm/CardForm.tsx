@@ -85,6 +85,7 @@ type CardFormProps = {
   graphicHeader?: React.ReactNode;
   centeredContent?: boolean;
   formButtonTopMargin?: number | undefined;
+  selectMarginTop?: number | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -207,6 +208,7 @@ export function CardForm({
   centeredContent = false,
   contentMarginTop,
   formButtonTopMargin,
+  selectMarginTop,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -334,6 +336,7 @@ export function CardForm({
             forceMarginAfterSubtitle={forceMarginAfterSubtitle}
             graphicHeader={graphicHeader ? true : false}
             formButtonTopMargin={formButtonTopMargin}
+            selectMarginTop={selectMarginTop}
           >
             {content}
           </StyledCardForm>
@@ -535,6 +538,7 @@ type StyledCardFormStyleProps = {
   forceMarginAfterSubtitle: boolean | undefined;
   graphicHeader?: boolean | undefined;
   formButtonTopMargin?: number | undefined;
+  selectMarginTop?: number | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -554,6 +558,7 @@ const StyledCardFormStyle = ({
   forceMarginAfterSubtitle = true,
   graphicHeader,
   formButtonTopMargin = 32,
+  selectMarginTop = inputSpacingPx,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
     ${graphicHeader
@@ -604,7 +609,7 @@ const StyledCardFormStyle = ({
     }
 
     ${StyledSelect}, ${ToggleContainer} {
-      margin-top: ${inputSpacingPx}px;
+      margin-top: ${selectMarginTop}px;
     }
 
     ${CardFormFieldLabel} {
