@@ -235,7 +235,7 @@ const DrawerInnerContainer = styled.div<{
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
   ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
-  height: 100%;
+  height: auto;
   border-radius: ${(props) =>
     props.kind === "floating"
       ? Spacing.px.lg

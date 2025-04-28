@@ -119,7 +119,6 @@ type ModalProps = {
   drawerKind?: DrawerKind;
   drawerPadding?: number;
   drawerCloseButton?: boolean;
-  drawerHeight?: number | undefined;
   drawerAlignBottom?: boolean | undefined;
   drawerDisableTouchMove?: boolean | undefined;
 };
