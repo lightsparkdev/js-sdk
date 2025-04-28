@@ -90,6 +90,7 @@ export { Lock2 } from "./Lock2.js";
 export { Logo } from "./Logo.js";
 export { LogoBolt } from "./LogoBolt.js";
 export { LogoIssuance } from "./LogoIssuance.js";
+export { LogoMark } from "./LogoMark.js";
 export { LogoOnCircle } from "./LogoOnCircle.js";
 export { Logout } from "./Logout.js";
 export { MagicWand } from "./MagicWand.js";

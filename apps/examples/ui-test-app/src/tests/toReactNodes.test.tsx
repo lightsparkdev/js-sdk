@@ -276,7 +276,7 @@ describe("toReactNodes", () => {
         to: TestAppRoutes.PageOne,
       },
     };
-    const iconNode = { icon: { name: "LogoBolt" as const } };
+    const iconNode = { icon: { name: "LogoMark" as const } };
     const nextLinkNode = {
       nextLink: {
         text: "Some next link node that should have typography applied",
@@ -330,7 +330,7 @@ describe("toReactNodes", () => {
         typography: { type: "Display", size: "Medium" } as const,
       },
     };
-    const iconNode = { icon: { name: "LogoBolt" } as const };
+    const iconNode = { icon: { name: "LogoMark" } as const };
     const externalLinkNode = {
       link: {
         text: "Some external link node that should have typography applied",

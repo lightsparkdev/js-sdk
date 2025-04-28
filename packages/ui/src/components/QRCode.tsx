@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 import { type ComponentProps, Fragment } from "react";
-import FramedLogoOnCircle from "../static/images/FramedLogoOnCircle.svg?url";
+import LogoMark from "../static/images/LogoMark.svg?url";
 import UmaLogo from "../static/images/UmaLogoQRCode.svg?url";
 // eslint-disable-next-line no-restricted-imports
 import { round } from "@lightsparkdev/core";
@@ -52,7 +52,7 @@ export function QRCode({
     qrCodeProps.imageSettings = {
       excavate: true,
       height: isUma ? round(umaLogoSize * 0.8) : logoSize,
-      src: isUma ? UmaLogo : FramedLogoOnCircle,
+      src: isUma ? UmaLogo : LogoMark,
       width: isUma ? umaLogoSize : logoSize,
     };
   }
@@ -79,9 +79,9 @@ export function QRCode({
               isUma={isUma}
             >
               <Icon
-                name={isUma ? "Uma" : "LogoOnCircle"}
+                name={isUma ? "Uma" : "LogoMark"}
                 color={isUma ? "white" : undefined}
-                width={isUma ? 42 : 30}
+                width={isUma ? 42 : 45}
                 ml="auto"
                 mr="auto"
               />
