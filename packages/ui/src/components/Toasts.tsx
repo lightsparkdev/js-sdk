@@ -252,7 +252,7 @@ export function Toasts({
                   toast.type === "error"
                     ? colors.red50
                     : toast.type === "success"
-                    ? colors.green33
+                    ? colors.green37
                     : undefined
                 }
                 isActive={toast.isActive}

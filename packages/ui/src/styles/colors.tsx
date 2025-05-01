@@ -41,6 +41,7 @@ const baseColors = {
   green: "#46ac4a",
   green33: "#179257",
   green35: "#19981E",
+  green37: "#179A1C",
   // blue
   blue10: "#E4EFFB",
   blue43: "#145BC6",
