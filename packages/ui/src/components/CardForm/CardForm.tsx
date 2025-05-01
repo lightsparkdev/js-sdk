@@ -64,6 +64,7 @@ type CardFormProps = {
   aboveHeaderContent?: ReactNode;
   title?: string;
   titleSize?: TokenSizeKey;
+  titleMarginLeft?: number | undefined;
   titleRightIcon?:
     | ComponentProps<typeof TextIconAligner>["rightIcon"]
     | undefined;
@@ -187,6 +188,7 @@ export function CardForm({
   aboveHeaderContent,
   title,
   titleSize = "Large",
+  titleMarginLeft,
   description,
   full = false,
   onSubmit,
@@ -272,6 +274,7 @@ export function CardForm({
         afterTitleMargin={afterTitleMargin}
         contentMarginTop={contentMarginTop}
         key="card-form-title"
+        titleMarginLeft={titleMarginLeft}
       >
         <Headline
           content={[
@@ -663,6 +666,7 @@ const CardHeadline = styled.div<{
   hasTopContent: boolean;
   afterTitleMargin: number;
   contentMarginTop?: number | undefined;
+  titleMarginLeft?: number | undefined;
 }>`
   padding: 0 ${Spacing.px.xs};
 
@@ -678,6 +682,9 @@ const CardHeadline = styled.div<{
   & + ${CardFormSubtitle} {
     margin-top: 12px;
   }
+
+  ${({ titleMarginLeft }) =>
+    titleMarginLeft !== undefined && `margin-left: ${titleMarginLeft}px;`}
 `;
 
 type CardFormTextWithLinkProps = {
