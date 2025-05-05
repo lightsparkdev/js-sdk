@@ -45,6 +45,7 @@ export const buttonKinds = [
   "ghost",
   "transparent",
   "green33",
+  "green37",
   "purple55",
   "blue43",
   "blue39",
