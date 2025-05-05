@@ -48,8 +48,10 @@ export const iconSides = ["left", "right"] as const;
 export type IconSide = (typeof iconSides)[number];
 export const iconOffsets = ["small", "medium", "large"] as const;
 export type IconOffset = (typeof iconOffsets)[number];
-export const iconWidths = [8, 12, 16] as const;
+export const iconWidths = [8, 12, 16, 20] as const;
 export type IconWidth = (typeof iconWidths)[number];
+export const iconStrokeWidths = [1, 1.5, 2] as const;
+export type IconStrokeWidth = (typeof iconStrokeWidths)[number];
 
 export type TextInputProps = {
   disabled?: boolean | undefined;
@@ -63,6 +65,7 @@ export type TextInputProps = {
         width?: IconWidth | undefined;
         side?: IconSide | undefined;
         offset?: IconOffset | undefined;
+        strokeWidth?: IconStrokeWidth | undefined;
       }
     | undefined;
   maxLength?: number;
@@ -294,7 +297,11 @@ export function TextInput(textInputProps: TextInputProps) {
                 : leftIconOffset
             }
           >
-            <Icon name={props.icon.name} width={iconWidth} />
+            <Icon
+              name={props.icon.name}
+              width={iconWidth}
+              iconProps={{ strokeWidth: props.icon.strokeWidth }}
+            />
           </TextInputIconContainer>
         )}
         {input}
@@ -314,7 +321,11 @@ export function TextInput(textInputProps: TextInputProps) {
             {props.loading ? (
               <Loading center={false} size={rightIconWidth} />
             ) : props.icon && iconSide === "right" ? (
-              <Icon name={props.icon.name} width={rightIconWidth} />
+              <Icon
+                name={props.icon.name}
+                width={rightIconWidth}
+                iconProps={{ strokeWidth: props.icon.strokeWidth }}
+              />
             ) : null}
           </TextInputIconContainer>
         )}
