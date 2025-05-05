@@ -70,7 +70,7 @@ export const EnumFilter = ({
       <Filter label={label}>
         <Select
           zIndex={z.dropdown + 1}
-          placeholder="Select event"
+          placeholder="Select value"
           options={options}
           onChange={(option) => {
             if (option) {
