@@ -15,12 +15,13 @@ function buildStandardContentInset(
   smPx: number,
   minSmMaxLgPx: number,
   lgPx: number,
+  smDontAdjustWidth = false,
 ) {
   const smCSS = css`
     ${bp.sm(`
       margin-left: auto;
       margin-right: auto;
-      width: calc(100% - ${smPx * 2}px);
+      width: ${smDontAdjustWidth ? "100%" : `calc(100% - ${smPx * 2}px)`};
     `)}
   `;
   const minSmMaxLgCSS = css`

@@ -9,6 +9,7 @@ export { ArrowUpRight as CentralArrowUpRight } from "./ArrowUpRight.js";
 export { Bank as CentralBank } from "./Bank.js";
 export { BarsThree as CentralBarsThree } from "./BarsThree.js";
 export { Bell2 as CentralBell2 } from "./Bell2.js";
+export { Bubble5 as CentralBubble5 } from "./Bubble5.js";
 export { BubbleWideNotification as CentralBubbleWideNotification } from "./BubbleWideNotification.js";
 export { Checkmark2 as CentralCheckmark2 } from "./Checkmark2.js";
 export { Checkmark2Small as CentralCheckmark2Small } from "./Checkmark2Small.js";

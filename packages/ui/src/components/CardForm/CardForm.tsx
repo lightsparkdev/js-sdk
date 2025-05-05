@@ -79,6 +79,7 @@ type CardFormProps = {
   shadow?: CardFormShadow;
   paddingTop?: CardFormPaddingTop | undefined;
   paddingBottom?: CardFormPaddingBottom | undefined;
+  paddingX?: CardFormPaddingX | undefined;
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
   forceMarginAfterSubtitle?: boolean;
@@ -87,6 +88,7 @@ type CardFormProps = {
   centeredContent?: boolean;
   formButtonTopMargin?: number | undefined;
   selectMarginTop?: number | undefined;
+  smDontAdjustWidth?: boolean | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -95,6 +97,7 @@ type ResolvePropsArgs = {
   textAlign?: CardFormTextAlign | undefined;
   paddingTop?: CardFormPaddingTop | undefined;
   paddingBottom?: CardFormPaddingBottom | undefined;
+  paddingX?: CardFormPaddingX | undefined;
 };
 
 function resolveProps(args: ResolvePropsArgs, theme: Theme) {
@@ -112,7 +115,12 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     theme,
   );
 
-  const paddingX = resolveCardFormProp(undefined, args.kind, "paddingX", theme);
+  const paddingX = resolveCardFormProp(
+    args.paddingX,
+    args.kind,
+    "paddingX",
+    theme,
+  );
   const textAlign = resolveCardFormProp(
     args.textAlign,
     args.kind,
@@ -202,6 +210,7 @@ export function CardForm({
   textAlign: textAlignProp,
   paddingTop: paddingTopProp,
   paddingBottom: paddingBottomProp,
+  paddingX: paddingXProp,
   belowFormContent,
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
@@ -211,6 +220,7 @@ export function CardForm({
   contentMarginTop,
   formButtonTopMargin,
   selectMarginTop,
+  smDontAdjustWidth = false,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -233,6 +243,7 @@ export function CardForm({
       shadow: shadowProp,
       paddingTop: paddingTopProp,
       paddingBottom: paddingBottomProp,
+      paddingX: paddingXProp,
     },
     theme,
   );
@@ -321,6 +332,7 @@ export function CardForm({
     smBackgroundColor,
     smBorderWidth,
     forceMarginAfterSubtitle,
+    smDontAdjustWidth,
   };
 
   const Container = full ? CardFormContentFull : CardFormContainer;
@@ -478,6 +490,7 @@ type CardFormInsetProps = {
   paddingX: number;
   paddingTop: number;
   paddingBottom: number;
+  smDontAdjustWidth?: boolean;
   graphicHeader?: boolean;
 };
 
@@ -486,6 +499,7 @@ const formInset = ({
   paddingX,
   paddingTop,
   paddingBottom,
+  smDontAdjustWidth,
   graphicHeader,
 }: CardFormInsetProps) => css`
   margin-left: auto;
@@ -504,15 +518,21 @@ const formInset = ({
     padding: ${graphicHeader ? "24px" : "0"};
   `)}
 
-  ${graphicHeader ? `width: 100%;` : standardContentInset.smCSS}
+  ${graphicHeader || smDontAdjustWidth
+    ? `width: 100%;`
+    : standardContentInset.smCSS}
 
   & ${CardFormFullWidth}, & ${CardFormFullTopContent} {
-    ${bp.sm(`
+    ${smDontAdjustWidth
+      ? ""
+      : bp.sm(`
       width: calc(100% + ${standardContentInset.smPx * 2}px);
       margin-left: -${standardContentInset.smPx}px;
     `)}
 
-    ${bp.minSm(`
+    ${smDontAdjustWidth
+      ? ""
+      : bp.minSm(`
       width: calc(100% + ${paddingX * 2}px);
       margin-left: -${paddingX}px;
     `)}
@@ -542,6 +562,7 @@ type StyledCardFormStyleProps = {
   graphicHeader?: boolean | undefined;
   formButtonTopMargin?: number | undefined;
   selectMarginTop?: number | undefined;
+  smDontAdjustWidth?: boolean | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -562,11 +583,25 @@ const StyledCardFormStyle = ({
   graphicHeader,
   formButtonTopMargin = 32,
   selectMarginTop = inputSpacingPx,
+  smDontAdjustWidth = false,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
     ${graphicHeader
-      ? formInset({ wide, paddingX, paddingTop, paddingBottom, graphicHeader })
-      : formInset({ wide, paddingX, paddingTop, paddingBottom })}
+      ? formInset({
+          wide,
+          paddingX,
+          paddingTop,
+          paddingBottom,
+          graphicHeader,
+          smDontAdjustWidth,
+        })
+      : formInset({
+          wide,
+          paddingX,
+          paddingTop,
+          paddingBottom,
+          smDontAdjustWidth,
+        })}
 
     ${shadow === "soft"
       ? standardCardShadow
@@ -778,8 +813,8 @@ function resolveCardFormProp<T, K extends CardFormThemeKey>(
   return (
     /** props may be unset for a given kind but theme defaults always exist,
      * so this will always resolve a value: */
-    prop ||
-    theme.cardForm.kinds[kind]?.[defaultKey] ||
-    theme.cardForm[defaultKey]
+    prop !== undefined
+      ? prop
+      : theme.cardForm.kinds[kind]?.[defaultKey] || theme.cardForm[defaultKey]
   );
 }

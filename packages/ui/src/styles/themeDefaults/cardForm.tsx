@@ -3,7 +3,7 @@ import type { TokenSizeKey, TypographyTypeKey } from "../tokens/typography.js";
 
 export type CardFormContentMarginTop = 0 | 32;
 export type CardFormPaddingY = 40 | 56;
-export type CardFormPaddingX = 32 | 40 | 56;
+export type CardFormPaddingX = 0 | 32 | 40 | 56;
 export type CardFormPaddingTop = 24 | 32 | 40 | 56;
 export type CardFormPaddingBottom = 24 | 32 | 40 | 56 | 64;
 export type CardFormBorderWidth = 0 | 1;
