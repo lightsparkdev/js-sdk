@@ -59,6 +59,7 @@ export const buttonKinds = [
   "gray",
   "grayGradient",
   "gray99",
+  "white21",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 

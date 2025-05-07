@@ -1,4 +1,10 @@
-export function Uma() {
+import { type PathProps } from "./types.js";
+
+export function Uma({
+  strokeWidth = "1.5",
+  strokeLinecap = "round",
+  strokeLinejoin = "round",
+}: PathProps) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

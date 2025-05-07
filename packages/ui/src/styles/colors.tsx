@@ -22,6 +22,7 @@ const neutral = {
   gray98: "#F9F9F9",
   gray99: "#EDEEF1",
   white: "#FFFFFF",
+  white21: "#FFFFFF21",
 };
 
 export const darkGradient =
@@ -96,6 +97,7 @@ const baseColors = {
   gray3: "#D9DBDF",
   gray4: "#B6BAC3",
   gray6: "#8E95A2",
+  gray7: "#FFFFFF9C",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",
