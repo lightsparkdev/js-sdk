@@ -1,15 +1,31 @@
 import { type ConfigKeys } from "../constants/index.js";
 
 export function getLocalStorageConfigItem(key: ConfigKeys) {
-  return getLocalStorageBoolean(key);
+  const localStorageBoolean = getLocalStorageBoolean(key);
+  // If config not set, just default to false
+  if (localStorageBoolean == null) {
+    return false;
+  }
+
+  return localStorageBoolean;
 }
 
 export function getLocalStorageBoolean(key: string) {
   /* localStorage is not available in all contexts, use try/catch: */
   try {
-    return localStorage.getItem(key) === "1";
+    if (localStorage.getItem(key) === "1") {
+      return true;
+    }
+    // Key is not set
+    else if (localStorage.getItem(key) == null) {
+      return null;
+    }
+    // Key is set but not "1"
+    else {
+      return false;
+    }
   } catch (e) {
-    return false;
+    return null;
   }
 }
 
