@@ -523,8 +523,9 @@ const lightsparkDocsDarkTheme = extend(darkTheme, {
 const bridgeBaseSettings = {
   secondary: colors.grayBlue43,
   mcNeutral: colors.grayBlue43,
-  success: colors.green35,
+  success: colors.green37,
   link: colors.blue39,
+  linkLight: colors.blue10,
   typography: getTypography(TypographyGroup.Bridge, {
     main: "Manrope",
     code: "Roboto Mono",
@@ -534,12 +535,20 @@ const bridgeBaseSettings = {
     defaultSize: "Medium",
     defaultBorderRadius: 999,
     defaultPaddingsY: {
-      ExtraSmall: 13,
-      Small: 13,
+      ExtraSmall: 10,
+      Small: 10,
       Schmedium: 13,
       Medium: 13,
       Mlarge: 13,
       Large: 13,
+    },
+    defaultPaddingsX: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 24,
+      Medium: 24,
+      Mlarge: 24,
+      Large: 24,
     },
     kinds: {
       primary: {
@@ -576,12 +585,21 @@ const bridgeBaseSettings = {
         },
       },
       secondary: {
-        defaultBackgroundColor: "transparent",
-        defaultBorderColor: "grayBlue80",
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "transparent",
         defaultHoverBackgroundColor: "grayBlue94",
-        defaultHoverBorderColor: "grayBlue80",
+        defaultHoverBorderColor: "transparent",
         defaultActiveBackgroundColor: "grayBlue88",
-        defaultActiveBorderColor: "grayBlue80",
+        defaultActiveBorderColor: "transparent",
+      },
+      tertiary: {
+        defaultColor: "gray99",
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "gray99",
+        defaultHoverBackgroundColor: "gray98",
+        defaultHoverBorderColor: "gray98",
+        defaultActiveBackgroundColor: "gray",
+        defaultActiveBorderColor: "gray",
       },
       transparent: {
         defaultColor: "secondary",
@@ -608,6 +626,15 @@ const bridgeBaseSettings = {
         defaultHoverBackgroundColor: "gray98",
         defaultHoverBorderColor: "gray98",
       },
+      linkLight: {
+        defaultColor: "link",
+        defaultBackgroundColor: "linkLight",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "linkLight",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "linkLight",
+        defaultActiveBorderColor: "transparent",
+      },
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
@@ -625,15 +652,16 @@ const bridgeBaseSettings = {
     backgroundColor: "white",
     smBackgroundColor: "bg",
     borderRadius: 32,
+    contentMarginTop: 0,
     defaultDescriptionTypographyMap: {
       default: {
         type: "Body",
-        size: "Large",
+        size: "Medium",
         color: "secondary",
       },
       link: {
         type: "Body",
-        size: "Large",
+        size: "Medium",
         color: "text",
       },
     },
@@ -669,7 +697,7 @@ const bridgeLightTheme = extend(lightTheme, {
   bg: colors.gray98,
   smBg: colors.gray98,
   text: colors.grayBlue9,
-  secondary: colors.grayBlue43,
+  secondary: colors.gray2,
   tertiary: colors.gray3,
   inputBackground: colors.white,
   danger: colors.red50,

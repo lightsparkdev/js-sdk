@@ -3,7 +3,8 @@ import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type ValidatorFn = (value: string) => string | false;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ValidatorFn = (value: string, fields?: Fields<any>) => string | false;
 type Validators = {
   [key: string]: (msg?: string, ...args: unknown[]) => ValidatorFn;
 };
@@ -20,9 +21,12 @@ const defaultMsgs = {
   state: "Please enter a valid two-letter state abbreviation.",
   name: "Name must be at least three characters.",
   code: "Code must be eight characters long.",
-  password: "Password must be at least eight characters.",
+  password:
+    "Password must be at least 12 characters, must contain at least two types of characters: lowercase, uppercase, numbers, special",
   required: "This field is required.",
   umaAddress: "Please enter a valid UMA address.",
+  matchesField: "Target field does not match.",
+  clabe: "Please enter a valid CLABE.",
 };
 
 const regexp = {
@@ -31,6 +35,7 @@ const regexp = {
   email: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
   state:
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
+  clabe: /^[0-9]{18}$/,
 };
 
 export const v: Validators = {
@@ -62,6 +67,10 @@ export const v: Validators = {
     (msg = defaultMsgs.umaAddress) =>
     (value) =>
       !isValidUmaAddress(value) ? msg : false,
+  clabe:
+    (msg = defaultMsgs.clabe) =>
+    (value) =>
+      !regexp.clabe.test(value) ? msg : false,
   required:
     (msg = defaultMsgs.required) =>
     (value) =>
@@ -73,6 +82,14 @@ export const v: Validators = {
       return value.trim().length < len
         ? msg || `Must be at least ${len} characters long.`
         : false;
+    },
+  matchesField:
+    (msg = defaultMsgs.matchesField, targetField = "") =>
+    (value, fields) => {
+      if (typeof targetField !== "string") {
+        return msg;
+      }
+      return value !== fields?.[targetField] ? msg : false;
     },
 };
 
@@ -95,6 +112,7 @@ const defaultValidators: Record<string, ValidatorFn[]> = {
   code: [v.required("Please enter a code."), v.code()],
   email: [v.required("Email is required."), v.email()],
   phoneNumber: [v.required("Phone number is required."), v.phone()],
+  multiInput: [v.required("This field is required.")],
   birthdayDay: [v.min("Day is required.", 1)],
   birthdayMonth: [v.min("Day is required.", 1)],
   birthdayYear: [v.min("Day is required.", 4)],
@@ -120,6 +138,7 @@ const defaultFormatters: Record<string, (value: string) => string> = {
 function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
   fieldName: keyof T,
   fieldValue: string,
+  fields: Fields<T>,
   validatorsArg?: boolean | ValidatorFn[],
 ) {
   /* Using default validation for fields can be enabled conditionally for convenience. Enabled by
@@ -129,7 +148,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
     const validators = defaultValidators[fieldName as string];
     if (validators) {
       for (const validator of validators) {
-        const errorMsg = validator(fieldValue);
+        const errorMsg = validator(fieldValue, fields);
         if (errorMsg) {
           return errorMsg;
         }
@@ -141,7 +160,7 @@ function getFirstFieldError<V extends FieldValueArg, T extends FieldArgs<V>>(
       return null;
     }
     for (const validator of validatorsArg) {
-      const errorMsg = validator(fieldValue);
+      const errorMsg = validator(fieldValue, fields);
       if (errorMsg) {
         return errorMsg;
       }
@@ -197,6 +216,7 @@ export default function useFields<
       const fieldError = getFirstFieldError(
         fieldName,
         fieldValue,
+        fields,
         customValidators,
       );
       /**
@@ -211,7 +231,7 @@ export default function useFields<
       }
       return fieldError;
     },
-    [defaultFields, blurredFields],
+    [defaultFields, blurredFields, fields],
   );
 
   const checkFieldsForError = useCallback(
@@ -266,10 +286,16 @@ export default function useFields<
           },
           {} as Partial<T>,
         );
-        return {
+
+        const updated = {
           ...latestFields,
           ...formatted,
         };
+        const fieldsChanged =
+          JSON.stringify(updated) !== JSON.stringify(latestFields);
+
+        /* Prevent rerender if fields are identical - return same ref to ensure memoized: */
+        return fieldsChanged ? updated : latestFields;
       });
       checkFieldsForError(updatedFields);
     },
@@ -284,10 +310,12 @@ export default function useFields<
       const firstFieldError = getFirstFieldError(
         fieldName,
         fieldValue,
+        fields,
         customValidators,
       );
       return firstFieldError;
     });
+
     return valid;
   }, [fields, defaultFields]);
 
@@ -320,7 +348,9 @@ export default function useFields<
         });
       }
     });
-    mergeWithFields(newFields as Partial<T>);
+    if (Object.keys(newFields).length > 0) {
+      mergeWithFields(newFields as Partial<T>);
+    }
     prevDefaultFields.current = defaultFields;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultFields, mergeWithFields]);
@@ -333,7 +363,6 @@ export default function useFields<
     blurredFields,
     getUpdateField,
     allFieldsValid,
-    checkFieldForError,
     fieldErrors,
     /* needs to be a new object to ensure downstream effects are notified on updates: */
     fields: {

@@ -2,7 +2,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { ComponentProps, FormEvent, ReactNode } from "react";
-import { useCallback } from "react";
+import { Fragment, useCallback } from "react";
 import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
@@ -47,6 +47,7 @@ import { StyledButtonRowButton } from "../ButtonRow.js";
 import { Checkbox, type CheckboxProps } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { StyledFileInput } from "../FileInput.js";
+import { Flex } from "../Flex.js";
 import { LoadingWrapper } from "../Loading.js";
 import { StyledSelect } from "../Select.js";
 import { type TextIconAligner } from "../TextIconAligner.js";
@@ -60,8 +61,10 @@ type CardFormProps = {
   children?: ReactNode;
   disabled?: boolean;
   topContent?: ReactNode;
+  aboveHeaderContent?: ReactNode;
   title?: string;
   titleSize?: TokenSizeKey;
+  titleMarginLeft?: number | undefined;
   titleRightIcon?:
     | ComponentProps<typeof TextIconAligner>["rightIcon"]
     | undefined;
@@ -76,9 +79,16 @@ type CardFormProps = {
   shadow?: CardFormShadow;
   paddingTop?: CardFormPaddingTop | undefined;
   paddingBottom?: CardFormPaddingBottom | undefined;
+  paddingX?: CardFormPaddingX | undefined;
   belowFormContent?: ToReactNodesArgs | undefined;
   belowFormContentGap?: BelowCardFormContentGap | undefined;
   forceMarginAfterSubtitle?: boolean;
+  contentMarginTop?: number | undefined;
+  graphicHeader?: React.ReactNode;
+  centeredContent?: boolean;
+  formButtonTopMargin?: number | undefined;
+  selectMarginTop?: number | undefined;
+  smDontAdjustWidth?: boolean | undefined;
 };
 
 type ResolvePropsArgs = {
@@ -87,6 +97,7 @@ type ResolvePropsArgs = {
   textAlign?: CardFormTextAlign | undefined;
   paddingTop?: CardFormPaddingTop | undefined;
   paddingBottom?: CardFormPaddingBottom | undefined;
+  paddingX?: CardFormPaddingX | undefined;
 };
 
 function resolveProps(args: ResolvePropsArgs, theme: Theme) {
@@ -96,13 +107,20 @@ function resolveProps(args: ResolvePropsArgs, theme: Theme) {
     "paddingTop",
     theme,
   );
+
   const paddingBottom = resolveCardFormProp(
     args.paddingBottom,
     args.kind,
     "paddingBottom",
     theme,
   );
-  const paddingX = resolveCardFormProp(undefined, args.kind, "paddingX", theme);
+
+  const paddingX = resolveCardFormProp(
+    args.paddingX,
+    args.kind,
+    "paddingX",
+    theme,
+  );
   const textAlign = resolveCardFormProp(
     args.textAlign,
     args.kind,
@@ -175,8 +193,10 @@ export function CardForm({
   children,
   disabled,
   topContent = null,
+  aboveHeaderContent,
   title,
   titleSize = "Large",
+  titleMarginLeft,
   description,
   full = false,
   onSubmit,
@@ -190,10 +210,17 @@ export function CardForm({
   textAlign: textAlignProp,
   paddingTop: paddingTopProp,
   paddingBottom: paddingBottomProp,
+  paddingX: paddingXProp,
   belowFormContent,
   belowFormContentGap = 0,
   forceMarginAfterSubtitle = true,
   afterTitleMargin = 40,
+  graphicHeader,
+  centeredContent = false,
+  contentMarginTop,
+  formButtonTopMargin,
+  selectMarginTop,
+  smDontAdjustWidth = false,
 }: CardFormProps) {
   const theme = useTheme();
   const {
@@ -216,6 +243,7 @@ export function CardForm({
       shadow: shadowProp,
       paddingTop: paddingTopProp,
       paddingBottom: paddingBottomProp,
+      paddingX: paddingXProp,
     },
     theme,
   );
@@ -247,28 +275,44 @@ export function CardForm({
 
   const CardFormContentTarget = full ? CardFormContentFull : CardFormContent;
 
+  const headerData = [
+    aboveHeaderContent ? (
+      <Fragment key="card-form-above-header">{aboveHeaderContent}</Fragment>
+    ) : null,
+    title ? (
+      <CardHeadline
+        hasTopContent={Boolean(topContent)}
+        afterTitleMargin={afterTitleMargin}
+        contentMarginTop={contentMarginTop}
+        key="card-form-title"
+        titleMarginLeft={titleMarginLeft}
+      >
+        <Headline
+          content={[
+            title,
+            ...(titleRightIcon
+              ? [icon({ name: titleRightIcon.name, ml: 4 })]
+              : []),
+          ]}
+          display="inline-flex"
+          size={titleSize}
+        />
+      </CardHeadline>
+    ) : null,
+    formattedDescription ? (
+      <CardFormSubtitle key="card-form-subtitle">
+        {formattedDescription}
+      </CardFormSubtitle>
+    ) : null,
+  ];
+
   const content = (
     <CardFormContentTarget>
       {topContent}
-      {title && (
-        <CardHeadline
-          hasTopContent={Boolean(topContent)}
-          afterTitleMargin={afterTitleMargin}
-        >
-          <Headline
-            content={[
-              title,
-              ...(titleRightIcon
-                ? [icon({ name: titleRightIcon.name, ml: 4 })]
-                : []),
-            ]}
-            display="inline-flex"
-            size={titleSize}
-          />
-        </CardHeadline>
-      )}
-      {formattedDescription && (
-        <CardFormSubtitle>{formattedDescription}</CardFormSubtitle>
+      {centeredContent ? (
+        <CenteredHeader>{headerData}</CenteredHeader>
+      ) : (
+        headerData
       )}
       {children}
     </CardFormContentTarget>
@@ -288,30 +332,47 @@ export function CardForm({
     smBackgroundColor,
     smBorderWidth,
     forceMarginAfterSubtitle,
+    smDontAdjustWidth,
   };
 
   const Container = full ? CardFormContentFull : CardFormContainer;
 
   return (
-    <Container>
+    <Container paddingBottom={paddingBottom}>
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <StyledCardForm
-          onSubmit={onSubmitForm}
-          noValidate
-          {...commonProps}
-          forceMarginAfterSubtitle={forceMarginAfterSubtitle}
-        >
-          {content}
-        </StyledCardForm>
+        <Flex column align="center" height={full ? "100%" : "auto"}>
+          {graphicHeader && graphicHeader}
+          <StyledCardForm
+            onSubmit={onSubmitForm}
+            noValidate
+            {...commonProps}
+            forceMarginAfterSubtitle={forceMarginAfterSubtitle}
+            graphicHeader={graphicHeader ? true : false}
+            formButtonTopMargin={formButtonTopMargin}
+            selectMarginTop={selectMarginTop}
+          >
+            {content}
+          </StyledCardForm>
+        </Flex>
       )}
-      <BelowCardFormContent gap={belowFormContentGap}>
-        {belowFormContentNodes}
-      </BelowCardFormContent>
+      {belowFormContentNodes && (
+        <BelowCardFormContent gap={belowFormContentGap}>
+          {belowFormContentNodes}
+        </BelowCardFormContent>
+      )}
     </Container>
   );
 }
+
+const CenteredHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  justify-content: center;
+`;
 
 const CardFormContainer = styled.div`
   display: flex;
@@ -324,11 +385,12 @@ const CardFormContent = styled.div`
   align-self: center;
 `;
 
-const CardFormContentFull = styled.div`
+const CardFormContentFull = styled.div<{ paddingBottom?: number | undefined }>`
   display: flex;
   flex-direction: column;
   align-self: center;
   height: 100%;
+  padding-bottom: ${({ paddingBottom }) => paddingBottom ?? 0}px;
 `;
 
 type BelowCardFormContentProps = {
@@ -406,10 +468,15 @@ const StyledCardFormDataFieldValue = styled.div`
 `;
 
 export const CardFormFullWidth = styled.div``;
-export const CardFormFullTopContent = styled.div`
-  ${bp.minSm(`
-    border-radius: 16px 16px 0 0;
+
+type CardFormFullTopContentProps = {
+  borderRadius?: string;
+};
+export const CardFormFullTopContent = styled.div<CardFormFullTopContentProps>`
+  ${({ borderRadius = "16px 16px 0 0" }) =>
+    bp.minSm(`
     overflow: hidden;
+    border-radius: ${borderRadius};
   `)}
 `;
 
@@ -423,6 +490,8 @@ type CardFormInsetProps = {
   paddingX: number;
   paddingTop: number;
   paddingBottom: number;
+  smDontAdjustWidth?: boolean;
+  graphicHeader?: boolean;
 };
 
 const formInset = ({
@@ -430,6 +499,8 @@ const formInset = ({
   paddingX,
   paddingTop,
   paddingBottom,
+  smDontAdjustWidth,
+  graphicHeader,
 }: CardFormInsetProps) => css`
   margin-left: auto;
   margin-right: auto;
@@ -444,18 +515,24 @@ const formInset = ({
   `)}
 
   ${bp.sm(`
-    padding: 0;
+    padding: ${graphicHeader ? "24px" : "0"};
   `)}
 
-  ${standardContentInset.smCSS}
+  ${graphicHeader || smDontAdjustWidth
+    ? `width: 100%;`
+    : standardContentInset.smCSS}
 
   & ${CardFormFullWidth}, & ${CardFormFullTopContent} {
-    ${bp.sm(`
+    ${smDontAdjustWidth
+      ? ""
+      : bp.sm(`
       width: calc(100% + ${standardContentInset.smPx * 2}px);
       margin-left: -${standardContentInset.smPx}px;
     `)}
 
-    ${bp.minSm(`
+    ${smDontAdjustWidth
+      ? ""
+      : bp.minSm(`
       width: calc(100% + ${paddingX * 2}px);
       margin-left: -${paddingX}px;
     `)}
@@ -482,6 +559,10 @@ type StyledCardFormStyleProps = {
   smBackgroundColor: CardFormBackgroundColor;
   smBorderWidth: CardFormBorderWidth;
   forceMarginAfterSubtitle: boolean | undefined;
+  graphicHeader?: boolean | undefined;
+  formButtonTopMargin?: number | undefined;
+  selectMarginTop?: number | undefined;
+  smDontAdjustWidth?: boolean | undefined;
 };
 
 const StyledCardFormStyle = ({
@@ -499,9 +580,29 @@ const StyledCardFormStyle = ({
   smBackgroundColor,
   smBorderWidth,
   forceMarginAfterSubtitle = true,
+  graphicHeader,
+  formButtonTopMargin = 32,
+  selectMarginTop = inputSpacingPx,
+  smDontAdjustWidth = false,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
-    ${formInset({ wide, paddingX, paddingTop, paddingBottom })}
+    ${graphicHeader
+      ? formInset({
+          wide,
+          paddingX,
+          paddingTop,
+          paddingBottom,
+          graphicHeader,
+          smDontAdjustWidth,
+        })
+      : formInset({
+          wide,
+          paddingX,
+          paddingTop,
+          paddingBottom,
+          smDontAdjustWidth,
+        })}
+
     ${shadow === "soft"
       ? standardCardShadow
       : shadow === "hard"
@@ -522,7 +623,11 @@ const StyledCardFormStyle = ({
     `)}
 
     ${bp.minSm(`
-      border-radius: ${borderRadius}px;
+      border-radius: ${
+        graphicHeader
+          ? `0 0 ${borderRadius}px ${borderRadius}px`
+          : `${borderRadius}px`
+      };
     `)}
 
     ${CardHeadline}, ${CardFormSubtitle} {
@@ -542,7 +647,7 @@ const StyledCardFormStyle = ({
     }
 
     ${StyledSelect}, ${ToggleContainer} {
-      margin-top: ${inputSpacingPx}px;
+      margin-top: ${selectMarginTop}px;
     }
 
     ${CardFormFieldLabel} {
@@ -578,7 +683,9 @@ const StyledCardFormStyle = ({
       }
 
       & > ${ButtonSelector()}, & > ${select(CardFormNearButtonColumn)} {
-        ${formButtonTopMarginStyle}
+        ${formButtonTopMargin !== undefined
+          ? `margin-top: ${formButtonTopMargin}px;`
+          : formButtonTopMarginStyle}
       }
     }
   `;
@@ -593,10 +700,15 @@ const StyledCardFormDiv =
 const CardHeadline = styled.div<{
   hasTopContent: boolean;
   afterTitleMargin: number;
+  contentMarginTop?: number | undefined;
+  titleMarginLeft?: number | undefined;
 }>`
   padding: 0 ${Spacing.px.xs};
 
-  ${({ hasTopContent }) => (hasTopContent ? "margin-top: 24px;" : "")}
+  ${({ hasTopContent, contentMarginTop }) =>
+    hasTopContent || contentMarginTop !== undefined
+      ? `margin-top: ${contentMarginTop ?? 32}px;`
+      : ""}
 
   & + *:not(${CardFormSubtitle.toString()}) {
     margin-top: ${({ afterTitleMargin }) => afterTitleMargin}px;
@@ -605,6 +717,9 @@ const CardHeadline = styled.div<{
   & + ${CardFormSubtitle} {
     margin-top: 12px;
   }
+
+  ${({ titleMarginLeft }) =>
+    titleMarginLeft !== undefined && `margin-left: ${titleMarginLeft}px;`}
 `;
 
 type CardFormTextWithLinkProps = {
@@ -698,8 +813,8 @@ function resolveCardFormProp<T, K extends CardFormThemeKey>(
   return (
     /** props may be unset for a given kind but theme defaults always exist,
      * so this will always resolve a value: */
-    prop ||
-    theme.cardForm.kinds[kind]?.[defaultKey] ||
-    theme.cardForm[defaultKey]
+    prop !== undefined
+      ? prop
+      : theme.cardForm.kinds[kind]?.[defaultKey] || theme.cardForm[defaultKey]
   );
 }

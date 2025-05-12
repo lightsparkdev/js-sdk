@@ -53,7 +53,8 @@
     "lint": "eslint .",
     "package:checks": "yarn publint && yarn attw --pack .",
     "postversion": "yarn build",
-    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail src/**/tests/**/*.test.ts",
+    "test-cmd": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
+    "test": "yarn test-cmd -- src/**/tests/**/*.test.ts",
     "types:watch": "tsc-absolute --watch",
     "types": "tsc"
   },

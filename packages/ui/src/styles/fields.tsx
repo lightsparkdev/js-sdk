@@ -1,7 +1,9 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import { useLayoutEffect, useRef, useState } from "react";
+import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { type PartialSimpleTypographyProps } from "../components/typography/types.js";
+import type { ToReactNodesArgs } from "../utils/toReactNodes/toReactNodes.js";
+import { toReactNodes } from "../utils/toReactNodes/toReactNodes.js";
 import { colors } from "./colors.js";
 import { standardBorderRadius, subtext } from "./common.js";
 import {
@@ -18,7 +20,6 @@ import { z } from "./z-index.js";
 export const maxFieldWidth = "100%";
 export const fieldWidth = "100%";
 export const inputSpacingPx = 24;
-
 export const formButtonTopMargin = "32px";
 export const formButtonTopMarginStyle = css`
   margin-top: ${formButtonTopMargin};
@@ -236,19 +237,27 @@ export const aboveFieldError = ({
 const inputSubtextSeconds = 0.25;
 export function InputSubtext({
   text,
+  content,
   hasError = false,
+  hasSuccess = false,
   tooltipId,
+  hideNonErrorsIfBlurred = false,
+  focused = false,
 }: {
-  text?: string | undefined;
+  text?: string | ToReactNodesArgs | undefined;
+  content?: ReactNode | undefined;
   hasError?: boolean;
+  hasSuccess?: boolean;
   tooltipId?: string | undefined;
+  hideNonErrorsIfBlurred?: boolean | undefined;
+  focused?: boolean | undefined;
 }) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [subtext, setSubtext] = useState(text);
   const [visible, setVisible] = useState(Boolean(text));
 
   useLayoutEffect(() => {
-    if (text) {
+    if (text || content) {
       setSubtext(text);
       setVisible(true);
       if (timeoutRef.current) {
@@ -260,26 +269,55 @@ export function InputSubtext({
         setSubtext(undefined);
       }, inputSubtextSeconds * 1000);
     }
-  }, [text]);
+  }, [text, content]);
 
   return (
     <StyledInputSubtext
-      visible={visible}
+      visible={visible && (hasError || focused || !hideNonErrorsIfBlurred)}
       hasError={hasError}
+      hasSuccess={hasSuccess}
       cursorPointer={Boolean(tooltipId)}
+      usingContent={content !== undefined}
     >
-      {tooltipId ? <span data-tooltip-id={tooltipId}>{subtext}</span> : subtext}
+      {tooltipId ? (
+        <span data-tooltip-id={tooltipId}>
+          <InputSubtextContent text={subtext} content={content} />
+        </span>
+      ) : (
+        <InputSubtextContent text={subtext} content={content} />
+      )}
     </StyledInputSubtext>
   );
 }
 
+function InputSubtextContent({
+  text,
+  content,
+}: {
+  text: string | ToReactNodesArgs | undefined;
+  content?: ReactNode | undefined;
+}) {
+  if (content) {
+    return content;
+  }
+
+  if (typeof text === "string") {
+    return <>{text}</>;
+  }
+
+  return toReactNodes(text);
+}
+
 export const StyledInputSubtext = styled.div<{
   hasError: boolean;
+  hasSuccess: boolean;
   visible: boolean;
   cursorPointer: boolean;
+  usingContent?: boolean;
 }>`
   margin-top: ${({ visible }) => (visible ? "8px" : "0px")};
-  margin-left: ${({ visible }) => (visible ? "8px" : "0px")};
+  margin-left: ${({ visible, usingContent }) =>
+    visible && !usingContent ? "8px" : "0px"};
   font-size: 12px;
   font-size: ${({ visible }) => (visible ? "12px" : "0px")};
   opacity: ${({ visible }) => (visible ? "1" : "0")};
@@ -288,7 +326,8 @@ export const StyledInputSubtext = styled.div<{
     font-size ${inputSubtextSeconds}s cubic-bezier(0.25, 0.87, 0.56, 1.23),
     opacity ${inputSubtextSeconds * 0.8}s cubic-bezier(0.25, 0.87, 0.56, 1.23),
     margin ${inputSubtextSeconds}s cubic-bezier(0.25, 0.87, 0.56, 1.23);
-  color: ${({ hasError, theme }) => (hasError ? theme.danger : theme.text)};
+  color: ${({ hasError, hasSuccess, theme }) =>
+    hasError ? theme.danger : hasSuccess ? theme.success : theme.text};
   cursor: ${({ cursorPointer }) => (cursorPointer ? "pointer" : "auto")};
 `;
 

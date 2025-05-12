@@ -148,6 +148,11 @@ export const defaultButtonsTheme = {
       defaultBorderColor: "blue39",
       defaultColor: "gray98",
     },
+    white21: {
+      defaultBackgroundColor: "white21",
+      defaultColor: "white",
+      defaultBorderColor: "transparent",
+    },
     blue43: {
       defaultColor: "white",
     },

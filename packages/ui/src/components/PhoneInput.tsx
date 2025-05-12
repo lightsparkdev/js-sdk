@@ -52,6 +52,7 @@ type PhoneInputProps = {
     isValid,
   }: PhoneInputOnChangeArg) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
   error?: string | undefined;
   typography?: PartialSimpleTypographyProps | undefined;
   defaultCountryCode?: CountryCode;
@@ -61,6 +62,7 @@ export function PhoneInput({
   typography,
   onChange: onChangeProp,
   onBlur: onBlurProp,
+  onFocus: onFocusProp,
   error: errorProp,
   pxPerChar = 6,
   defaultCountryCode = "US",
@@ -140,6 +142,11 @@ export function PhoneInput({
       pattern="[0-9,]*"
       inputMode="numeric"
       value={formattedValue}
+      onFocus={(focusEvent) => {
+        if (onFocusProp) {
+          onFocusProp(focusEvent);
+        }
+      }}
       onBlur={(blurEvent) => {
         setWasBlurred(true);
         if (onBlurProp) {

@@ -45,6 +45,7 @@ export const buttonKinds = [
   "ghost",
   "transparent",
   "green33",
+  "green37",
   "purple55",
   "blue43",
   "blue39",
@@ -57,6 +58,8 @@ export const buttonKinds = [
   "roundIcon",
   "gray",
   "grayGradient",
+  "gray99",
+  "white21",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 
@@ -92,6 +95,7 @@ export type ButtonProps = {
   onBlur?: ((event: FocusEvent<HTMLElement>) => void) | undefined;
   mt?: number | "auto";
   ml?: number | "auto";
+  mb?: number | "auto";
   fullWidth?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
@@ -269,6 +273,7 @@ export const Button = forwardRef<
     disabled = false,
     mt = 0,
     ml = 0,
+    mb = 0,
     type = "button",
     newTab = false,
     zIndex = undefined,
@@ -374,6 +379,11 @@ export const Button = forwardRef<
       marginLeft: ml
         ? typeof ml === "number"
           ? `${ml}px`
+          : "auto"
+        : undefined,
+      marginBottom: mb
+        ? typeof mb === "number"
+          ? `${mb}px`
           : "auto"
         : undefined,
     },

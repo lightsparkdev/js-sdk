@@ -13,6 +13,9 @@ export type CheckboxProps = {
   id?: string;
   label?: ToReactNodesArgs | undefined;
   mt?: number;
+  mb?: number;
+  ml?: number;
+  mr?: number;
   alignItems?: "center" | "flex-start";
   disabled?: boolean;
   typography?: PartialSimpleTypographyProps;
@@ -24,6 +27,9 @@ export function Checkbox({
   id,
   label,
   mt = 0,
+  mb = 0,
+  ml = 0,
+  mr = 0,
   alignItems = "center",
   disabled = false,
   typography: typographyProp,
@@ -41,7 +47,7 @@ export function Checkbox({
   const content = toReactNodes(nodesWithTypography);
 
   return (
-    <CheckboxContainer mt={mt} alignItems={alignItems}>
+    <CheckboxContainer mt={mt} mb={mb} ml={ml} mr={mr} alignItems={alignItems}>
       <StyledCheckbox
         id={id}
         type="checkbox"
@@ -82,10 +88,16 @@ const StyledCheckbox = styled.input<{ checked: boolean; disabled: boolean }>`
 
 export const CheckboxContainer = styled.span<{
   mt: number;
+  mb: number;
+  ml: number;
+  mr: number;
   alignItems: string;
 }>`
   display: flex;
   ${({ mt }) => (mt === 0 ? "" : `margin-top: ${mt}px;`)}
+  ${({ mb }) => (mb === 0 ? "" : `margin-bottom: ${mb}px;`)}
+  ${({ ml }) => (ml === 0 ? "" : `margin-left: ${ml}px;`)}
+  ${({ mr }) => (mr === 0 ? "" : `margin-right: ${mr}px;`)}
   align-items: ${({ alignItems }) => alignItems};
 
   & + & {

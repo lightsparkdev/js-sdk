@@ -6,16 +6,18 @@ import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 
-type IconWidth = 40 | 36 | 30 | 20 | 16.5 | 14;
+export type IconWidth = 48 | 40 | 36 | 30 | 24 | 20 | 16.5 | 14;
 
 type IconWithCircleBackgroundProps = {
   iconName?: IconName;
   iconWidth?: IconWidth | undefined;
   iconColor?: ThemeOrColorKey | undefined;
   to?: NewRoutesType | undefined;
+  padding?: number | undefined;
   darkBg?: boolean;
   noBg?: boolean;
   bgColor?: ThemeOrColorKey | undefined;
+  hoverActiveBg?: boolean;
   shouldRotate?: boolean;
   onClick?: () => void;
   disabled?: boolean;
@@ -28,9 +30,11 @@ export function IconWithCircleBackground({
   iconWidth = 40,
   to,
   onClick,
+  padding,
   darkBg = false,
   shouldRotate = false,
   noBg = false,
+  hoverActiveBg = false,
   disabled = false,
   bgColor,
   iconColor,
@@ -47,7 +51,9 @@ export function IconWithCircleBackground({
     >
       <StyledIconWithCircleBackground
         size={iconWidth}
+        padding={padding}
         darkBg={darkBg}
+        hoverActiveBg={hoverActiveBg}
         shouldRotate={shouldRotate}
         noBg={noBg}
         bgColor={bgColor}
@@ -55,7 +61,7 @@ export function IconWithCircleBackground({
         <Icon
           name={iconName}
           width={iconWidth}
-          color={iconColor ? iconColor : darkBg ? "white" : "grayBlue9"}
+          color={iconColor ? iconColor : "secondary"}
           iconProps={{
             strokeWidth: iconStrokeWidth,
             fill: opaque ? "currentColor" : "none",
@@ -77,10 +83,12 @@ export function IconWithCircleBackground({
 
 type StyledIconWithCircleBackgroundProps = {
   size: IconWidth;
+  padding?: number | undefined;
   darkBg: boolean;
   shouldRotate: boolean;
   noBg: boolean;
   bgColor: ThemeOrColorKey | undefined;
+  hoverActiveBg: boolean;
 };
 
 const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackgroundProps>`
@@ -92,13 +100,23 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
       : bgColor
       ? getColor(theme, bgColor)
       : getColor(theme, "grayBlue94")};
+
+  &:hover {
+    ${({ theme, hoverActiveBg }) =>
+      hoverActiveBg ? `background: ${getColor(theme, "grayBlue94")}` : ""};
+  }
+  &:active {
+    ${({ theme, hoverActiveBg }) =>
+      hoverActiveBg ? `background: ${getColor(theme, "grayBlue78")}` : ""};
+  }
+
   border-radius: 50%;
-  padding: ${({ size }) => getPadding(size)}px;
+  padding: ${({ size, padding }) => padding ?? getPadding(size)}px;
   display: flex;
   justify-content: center;
-  ${({ size }) =>
-    `width: ${size + getPadding(size) * 2}px; height: ${
-      size + getPadding(size) * 2
+  ${({ size, padding }) =>
+    `width: ${size + (padding ?? getPadding(size)) * 2}px; height: ${
+      size + (padding ?? getPadding(size)) * 2
     }px;`}
 
   @keyframes IconWithCircleBackgroundRotate {
@@ -118,6 +136,9 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
 `;
 
 function getPadding(size: IconWidth) {
+  if (size === 48) {
+    return 38;
+  }
   if (size === 40) {
     return 20;
   }

@@ -21,6 +21,8 @@ interface Props {
   padding?: string | undefined;
   kind?: DrawerKind | undefined;
   top?: number | undefined;
+  alignBottom?: boolean | undefined;
+  disableTouchMove?: boolean;
 }
 
 export const Drawer = (props: Props) => {
@@ -46,7 +48,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchMove = (event: React.TouchEvent) => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -71,7 +73,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchStart = () => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -79,7 +81,7 @@ export const Drawer = (props: Props) => {
   };
 
   const handleTouchEnd = () => {
-    if (props.nonDismissable) {
+    if (props.nonDismissable || props.disableTouchMove) {
       return;
     }
 
@@ -108,7 +110,11 @@ export const Drawer = (props: Props) => {
         ref={drawerContainerRef}
         top={props.top}
       >
-        <DrawerInnerContainer kind={props.kind} padding={props.padding}>
+        <DrawerInnerContainer
+          kind={props.kind}
+          padding={props.padding}
+          alignBottom={props.alignBottom}
+        >
           {props.grabber && !props.nonDismissable && (
             <Grabber onClick={handleClose}>
               <GrabberBar />
@@ -219,15 +225,17 @@ const DrawerContainer = styled.div<{
 const DrawerInnerContainer = styled.div<{
   kind?: DrawerKind | undefined;
   padding?: string | undefined;
+  alignBottom?: boolean | undefined;
 }>`
+  ${(props) => (props.alignBottom ? "margin-top: auto;" : "")}
   position: relative;
   display: flex;
   flex-direction: column;
   width: ${(props) =>
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
-  height: 100%;
   ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
+  height: auto;
   border-radius: ${(props) =>
     props.kind === "floating"
       ? Spacing.px.lg

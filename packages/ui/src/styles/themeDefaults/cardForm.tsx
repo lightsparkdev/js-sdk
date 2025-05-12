@@ -1,10 +1,11 @@
 import type { ThemeOrColorKey } from "../themes.js";
 import type { TokenSizeKey, TypographyTypeKey } from "../tokens/typography.js";
 
+export type CardFormContentMarginTop = 0 | 32;
 export type CardFormPaddingY = 40 | 56;
-export type CardFormPaddingX = 32 | 40 | 56;
-export type CardFormPaddingTop = 24 | 32 | 40 | 56;
-export type CardFormPaddingBottom = 32 | 40 | 56 | 64;
+export type CardFormPaddingX = 0 | 32 | 40 | 56;
+export type CardFormPaddingTop = 0 | 24 | 32 | 40 | 56;
+export type CardFormPaddingBottom = 0 | 24 | 32 | 40 | 56 | 64;
 export type CardFormBorderWidth = 0 | 1;
 export type CardFormBorderRadius = 8 | 24 | 32;
 export type CardFormShadow = "soft" | "hard" | "none";
@@ -13,6 +14,7 @@ export type CardFormBorderColor = "vlcNeutral" | "grayBlue94";
 export type CardFormBackgroundColor = "bg" | "white";
 
 const cardFormThemeBaseProps = {
+  contentMarginTop: 32 as CardFormContentMarginTop,
   paddingX: 56 as CardFormPaddingX,
   paddingTop: 56 as CardFormPaddingTop,
   paddingBottom: 56 as CardFormPaddingBottom,

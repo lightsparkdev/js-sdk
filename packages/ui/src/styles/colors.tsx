@@ -8,6 +8,7 @@ const neutral = {
   gray20: "#333333",
   gray25: "#404040",
   gray30: "#4D4D4D",
+  gray35: "#5A616F",
   gray40: "#666666",
   gray50: "#808080",
   gray60: "#999999",
@@ -21,6 +22,7 @@ const neutral = {
   gray98: "#F9F9F9",
   gray99: "#EDEEF1",
   white: "#FFFFFF",
+  white21: "#FFFFFF21",
 };
 
 export const darkGradient =
@@ -40,6 +42,7 @@ const baseColors = {
   green: "#46ac4a",
   green33: "#179257",
   green35: "#19981E",
+  green37: "#179A1C",
   // blue
   blue10: "#E4EFFB",
   blue43: "#145BC6",
@@ -48,6 +51,7 @@ const baseColors = {
   blue37: "#21529c",
   blue50: "#2483D1",
   blue58: "#28BFFF",
+  blue32: "#0052A4",
   // less than 50% saturated blue
   grayBlue5: "#0c0d0f",
   grayBlue9: "#16171A",
@@ -93,6 +97,7 @@ const baseColors = {
   gray3: "#D9DBDF",
   gray4: "#B6BAC3",
   gray6: "#8E95A2",
+  gray7: "#FFFFFF9C",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",
