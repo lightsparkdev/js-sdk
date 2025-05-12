@@ -1,0 +1,36 @@
+---
+"@lightsparkdev/ui": patch
+---
+
+- **BirthdayInput**
+  - Dropped internal validity state; added `formatDateToText` hint formatter and “must be before today” validation.
+- **TextInput**
+  - Introduced `success` & `contentError` props, `hideNonErrorsIfBlurred`, configurable `iconOffsets`, `iconStrokeWidths`.
+- **PhoneInput**
+  - Added `onFocus` callback.
+- **QRCode**
+  - Swapped in new `LogoMark` asset (vs. `FramedLogoOnCircle`), adjusted image sizing.
+- **Drawer & Modal**
+  - Added `alignBottom` and `disableTouchMove` flags to support bottom-aligned, non-dismissable drawers.
+- **Button & Checkbox**
+  - New kinds: `green37`, `gray99`, `white21`.
+  - Added margin props (`mb`, `ml`, `mr`) for fine-grained spacing.
+- **CardForm**
+  - Major refactor: dozens of new props (`aboveHeaderContent`, `graphicHeader`, `centeredContent`, `paddingX`, `contentMarginTop`, `formButtonTopMargin`, `selectMarginTop`, `smDontAdjustWidth`, etc.).
+  - Extracted `CardFormHeadline`/`CenteredHeader`, wrapped forms in a `Flex` when using graphic headers.
+- **InputSubtext**
+  - Now supports rich React-node `content`, distinguishes error vs. success styling, and respects “hide if blurred” logic.
+- **Toasts**
+  - Added optional `type` (`error` | `success` | `info`) to color toast backgrounds.
+- **Hooks**
+  - **`useFields`**: validator signature now `(value, fields?)`; added `matchesField` and `clabe` validators; smarter merge to prevent unnecessary rerenders.
+  - **`useQueryParamBooleans`**: new hook for parsing multiple boolean query parameters at once.
+- **Icons**
+  - Introduced dozens of new icons (e.g. `LogoMark`, `LightningBoltOutline`, `NonagonCheckmark`, `NubankLogo`) plus a full “central” icon set under `icons/central/`.
+  - Standardized on a `PathProps` interface for configurable strokes.
+- **Styles & Theme**
+  - **Colors**: added `gray35`, `gray7`, `white21`, `green37`, `blue32`, `linkLight`.
+  - **Layout helper**: `buildStandardContentInset` gains an `smDontAdjustWidth` opt-out.
+  - Tweaked `smHeaderLogoMarginLeft` (30px → 20px).
+  - **Button themes**: added `white21`, `linkLight`, and `tertiary` kinds.
+  - **CardForm theme**: now allows zero padding for new layout options.
