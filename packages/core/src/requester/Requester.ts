@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import type { Client as WsClient } from "graphql-ws";
 import { createClient } from "graphql-ws";
-import NodeWebSocket from "ws";
 import { Observable } from "zen-observable-ts";
 
 import type Query from "./Query.js";
@@ -33,7 +32,8 @@ type BodyData = {
 };
 
 class Requester {
-  private readonly wsClient: WsClient;
+  private wsClient: Promise<WsClient>;
+  private resolveWsClient: ((value: WsClient) => void) | null = null;
   constructor(
     private readonly nodeKeyCache: NodeKeyCache,
     private readonly schemaEndpoint: string,
@@ -44,22 +44,43 @@ class Requester {
     private readonly signingKey?: SigningKey,
     private readonly fetchImpl: typeof fetch = fetch,
   ) {
+    this.wsClient = new Promise<WsClient>((resolve) => {
+      this.resolveWsClient = resolve;
+    });
+    void this.initWsClient(baseUrl, authProvider);
+    autoBind(this);
+  }
+
+  private async initWsClient(baseUrl: string, authProvider: AuthProvider) {
+    if (!this.resolveWsClient) {
+      /* If resolveWsClient is null assume already initialized: */
+      return this.wsClient;
+    }
+
     let websocketImpl;
-    if (typeof WebSocket === "undefined" && typeof window === "undefined") {
-      websocketImpl = NodeWebSocket;
+    if (isNode && typeof WebSocket === "undefined") {
+      const wsModule = await import("ws");
+      websocketImpl = wsModule.default;
     }
     let websocketProtocol = "wss";
     if (baseUrl.startsWith("http://")) {
       websocketProtocol = "ws";
     }
-    this.wsClient = createClient({
+
+    const wsClient = createClient({
       url: `${websocketProtocol}://${this.stripProtocol(this.baseUrl)}/${
         this.schemaEndpoint
       }`,
       connectionParams: () => authProvider.addWsConnectionParams({}),
       webSocketImpl: websocketImpl,
     });
-    autoBind(this);
+
+    if (this.resolveWsClient) {
+      this.resolveWsClient(wsClient);
+      this.resolveWsClient = null;
+    }
+
+    return wsClient;
   }
 
   public async executeQuery<T>(query: Query<T>): Promise<T | null> {
@@ -106,11 +127,31 @@ class Requester {
 
     return new Observable<{ data: T }>((observer) => {
       logger.trace(`Requester.subscribe observer`, observer);
-      return this.wsClient.subscribe(bodyData, {
-        next: (data) => observer.next(data as { data: T }),
-        error: (err) => observer.error(err),
-        complete: () => observer.complete(),
-      });
+
+      let cleanup: (() => void) | null = null;
+      let canceled = false;
+
+      void (async () => {
+        try {
+          const wsClient = await this.wsClient;
+          if (!canceled) {
+            cleanup = wsClient.subscribe(bodyData, {
+              next: (data) => observer.next(data as { data: T }),
+              error: (err) => observer.error(err),
+              complete: () => observer.complete(),
+            });
+          }
+        } catch (err) {
+          observer.error(err);
+        }
+      })();
+
+      return () => {
+        canceled = true;
+        if (cleanup) {
+          cleanup();
+        }
+      };
     });
   }
 
