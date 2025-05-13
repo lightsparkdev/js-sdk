@@ -136,11 +136,12 @@ export function BirthdayInput({
         typography={{
           size: "Medium",
         }}
-        borderRadius={16}
         hint={formatDateToText(date)}
         error={
           birthdayFieldBlurred && isInvalid ? invalidBirthdayError : undefined
         }
+        borderRadius={16}
+        borderWidth={0.5}
       />
     </>
   );
