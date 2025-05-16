@@ -143,7 +143,7 @@ export function BirthdayInput({
         onChange={handleChange}
         inputMode="numeric"
         typography={{
-          size: "Medium",
+          size: "Large",
         }}
         hint={formatDateToText(date)}
         error={
