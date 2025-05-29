@@ -41,6 +41,7 @@
     "apps/examples/*"
   ],
   "dependencies": {
+    "@amplitude/session-replay-browser": "^1.22.6",
     "@changesets/cli": "^2.27.1",
     "@manypkg/cli": "^0.21.0",
     "@octokit/auth-action": "^4.0.1",
