@@ -98,6 +98,7 @@ const baseColors = {
   gray4: "#B6BAC3",
   gray6: "#8E95A2",
   gray7: "#FFFFFF9C",
+  gray70: "#ffffff70",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",
