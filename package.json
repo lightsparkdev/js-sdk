@@ -40,10 +40,10 @@
     "apps/private/*",
     "apps/examples/*"
   ],
-  "dependencies": {
+  "devDependencies": {
     "@amplitude/session-replay-browser": "^1.22.6",
-    "@changesets/cli": "^2.27.1",
-    "@manypkg/cli": "^0.21.0",
+    "@changesets/cli": "^2.29.4",
+    "@manypkg/cli": "^0.24.0",
     "@octokit/auth-action": "^4.0.1",
     "octokit": "^4.0.2",
     "ts-prune": "^0.10.3",
