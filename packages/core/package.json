@@ -60,7 +60,6 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
