@@ -40,6 +40,7 @@ import { CreateTestModeInvoice } from "./graphql/CreateTestModeInvoice.js";
 import { CreateTestModePayment } from "./graphql/CreateTestModePayment.js";
 import { CreateUmaInvitation } from "./graphql/CreateUmaInvitation.js";
 import { CreateUmaInvitationWithIncentives } from "./graphql/CreateUmaInvitationWithIncentives.js";
+import { CreateUmaInvitationWithPayment } from "./graphql/CreateUmaInvitationWithPayment.js";
 import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
@@ -1736,6 +1737,53 @@ class LightsparkClient {
   ) {
     coreLogger.setEnabled(enabled, level);
     logger.setEnabled(enabled, level);
+  }
+
+  /**
+   * Creates an UMA invitation with an attached payment.
+   *
+   * @param inviterUma The UMA of the inviter.
+   * @param amountToSend The amount and currency to send in the smallest unit of the currency (i.e. cents for USD).
+   * @param expiresAt The expiration date/time (Date).
+   * @returns The invitation that was created, or null if creation failed.
+   */
+  public async createUmaInvitationWithPayment(
+    inviterUma: string,
+    amountToSend: {
+      amount: number;
+      currency: {
+        code: string;
+        name: string;
+        symbol: string;
+        decimals: number;
+      };
+    },
+    expiresAt: Date,
+  ): Promise<UmaInvitation | null> {
+    return await this.executeRawQuery({
+      queryPayload: CreateUmaInvitationWithPayment,
+      variables: {
+        inviterUma,
+        paymentAmount: amountToSend.amount,
+        paymentCurrency: amountToSend.currency,
+        expiresAt: expiresAt.toISOString(),
+      },
+      constructObject: (responseJson: {
+        create_uma_invitation_with_payment: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.create_uma_invitation_with_payment?.invitation) {
+          throw new LightsparkException(
+            "CreateUmaInvitationWithPaymentError",
+            "Unable to create UMA invitation with payment",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.create_uma_invitation_with_payment.invitation,
+        );
+      },
+    });
   }
 }
 
