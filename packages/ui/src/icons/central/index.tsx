@@ -75,3 +75,4 @@ export { TrashCan as CentralTrashCan } from "./TrashCan.js";
 export { TriangleExclamation as CentralTriangleExclamation } from "./TriangleExclamation.js";
 export { TriangleExclamationFilled as CentralTriangleExclamationFilled } from "./TriangleExclamationFilled.js";
 export { WeakStrengthIcon as CentralWeakStrengthIcon } from "./WeakStrength.js";
+export { Wrench as CentralWrench } from "./Wrench.js";
