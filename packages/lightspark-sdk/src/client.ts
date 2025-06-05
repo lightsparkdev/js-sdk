@@ -29,6 +29,7 @@ import NodeKeyLoaderCache from "./NodeKeyLoaderCache.js";
 import { type SigningKeyLoaderArgs } from "./SigningKeyLoader.js";
 import { BitcoinFeeEstimate as BitcoinFeeEstimateQuery } from "./graphql/BitcoinFeeEstimate.js";
 import { CancelInvoice } from "./graphql/CancelInvoice.js";
+import { CancelUmaInvitation } from "./graphql/CancelUmaInvitation.js";
 import { ClaimUmaInvitation } from "./graphql/ClaimUmaInvitation.js";
 import { ClaimUmaInvitationWithIncentives } from "./graphql/ClaimUmaInvitationWithIncentives.js";
 import { CreateApiToken } from "./graphql/CreateApiToken.js";
@@ -1781,6 +1782,38 @@ class LightsparkClient {
         }
         return UmaInvitationFromJson(
           responseJson.create_uma_invitation_with_payment.invitation,
+        );
+      },
+    });
+  }
+
+  /**
+   * Cancels an UMA invitation by its invite code.
+   *
+   * @param invitationCode The code of the invitation to cancel.
+   * @returns The cancelled invitation, or null if cancellation failed.
+   */
+  public async cancelUmaInvitation(
+    invitationCode: string,
+  ): Promise<UmaInvitation | null> {
+    return await this.executeRawQuery({
+      queryPayload: CancelUmaInvitation,
+      variables: {
+        inviteCode: invitationCode,
+      },
+      constructObject: (responseJson: {
+        cancel_uma_invitation: {
+          invitation: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+        } | null;
+      }) => {
+        if (!responseJson.cancel_uma_invitation?.invitation) {
+          throw new LightsparkException(
+            "CancelUmaInvitationError",
+            "Unable to cancel UMA invitation",
+          );
+        }
+        return UmaInvitationFromJson(
+          responseJson.cancel_uma_invitation.invitation,
         );
       },
     });
