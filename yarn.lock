@@ -10376,6 +10376,7 @@ __metadata:
     "@changesets/cli": "npm:^2.29.4"
     "@manypkg/cli": "npm:^0.24.0"
     "@octokit/auth-action": "npm:^4.0.1"
+    human-id: "npm:^4.1.1"
     octokit: "npm:^4.0.2"
     ts-prune: "npm:^0.10.3"
     turbo: "npm:^2.4.4"
