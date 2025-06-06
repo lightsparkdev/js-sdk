@@ -3,7 +3,7 @@ import { parse as parseConfig } from "@changesets/config";
 import * as git from "@changesets/git";
 import parseChangeset from "@changesets/parse";
 import * as fs from "fs";
-import humanId from "human-id";
+import { humanId } from "human-id";
 
 const configText = fs.readFileSync(".changeset/config.json", {
   encoding: "utf8",

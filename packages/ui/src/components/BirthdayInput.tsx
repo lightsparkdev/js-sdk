@@ -58,7 +58,9 @@ export function isValidBirthday(
   }
 
   const today = dayjs().startOf("day");
-  return date.isBefore(today);
+
+  // Reject dates before 1800 & after today
+  return date.isBefore(today) && date.year() >= 1800;
 }
 
 export function formatDateToText(dateStr: string): string {
@@ -68,7 +70,6 @@ export function formatDateToText(dateStr: string): string {
   const month = parts[0];
   const day = parts[1];
   const year = parts[2];
-
   if (month && !day && !year) {
     if (month.length === 2) {
       const monthNum = parseInt(month);
@@ -98,6 +99,13 @@ export function formatDateToText(dateStr: string): string {
   return date.isValid() ? date.format("MMMM D, YYYY") : "";
 }
 
+function formatDateForDisplay(date: string): string {
+  if (!date) return "";
+  const parts = date.split("/");
+  if (parts.length === 1) return parts[0];
+  return parts.join(" / ");
+}
+
 export function BirthdayInput({
   date,
   setDate,
@@ -108,18 +116,19 @@ export function BirthdayInput({
   const handleChange = (newValue: string): void => {
     let value = newValue;
 
-    value = value.replace(/[^0-9/]/g, "");
+    value = value.replace(/[^0-9]/g, "");
+    let formattedValue = "";
+    if (value.length > 0) {
+      formattedValue = value.slice(0, 2);
+    }
+    if (value.length > 2) {
+      formattedValue += "/" + value.slice(2, 4);
+    }
+    if (value.length > 4) {
+      formattedValue += "/" + value.slice(4, 8);
+    }
 
-    if (value.length > 2 && value.charAt(2) !== "/") {
-      value = value.slice(0, 2) + "/" + value.slice(2);
-    }
-    if (value.length > 5 && value.charAt(5) !== "/") {
-      value = value.slice(0, 5) + "/" + value.slice(5);
-    }
-    if (value.length > 10) {
-      value = value.slice(0, 10);
-    }
-    setDate(value);
+    setDate(formattedValue);
   };
 
   const isCompleteDate = date.length === 10;
@@ -128,19 +137,21 @@ export function BirthdayInput({
   return (
     <>
       <TextInput
-        maxLength={10}
+        maxLength={14}
         placeholder="MM / DD / YYYY"
-        value={date}
+        value={formatDateForDisplay(date)}
         onChange={handleChange}
         inputMode="numeric"
         typography={{
-          size: "Medium",
+          size: "Large",
         }}
-        borderRadius={16}
         hint={formatDateToText(date)}
         error={
           birthdayFieldBlurred && isInvalid ? invalidBirthdayError : undefined
         }
+        borderRadius={16}
+        borderWidth={0.5}
+        paddingY={14}
       />
     </>
   );
