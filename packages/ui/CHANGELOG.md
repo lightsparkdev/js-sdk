@@ -1,5 +1,14 @@
 # @lightsparkdev/ui
 
+## 1.1.3
+
+### Patch Changes
+
+- 7ae2525: - Updates to BirthdayInput
+  - Add icons
+- Updated dependencies [7ae2525]
+  - @lightsparkdev/core@1.4.1
+
 ## 1.1.2
 
 ### Patch Changes

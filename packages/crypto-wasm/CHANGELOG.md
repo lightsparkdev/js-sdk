@@ -1,5 +1,12 @@
 # @lightsparkdev/crypto-wasm
 
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies [7ae2525]
+  - @lightsparkdev/core@1.4.1
+
 ## 0.1.14
 
 ### Patch Changes
