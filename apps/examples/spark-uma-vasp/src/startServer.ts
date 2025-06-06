@@ -1,5 +1,4 @@
 import { SparkWallet } from "@buildonspark/spark-sdk";
-import { InMemoryNonceValidator, InMemoryPublicKeyCache } from "@uma-sdk/core";
 import UmaConfig from "./UmaConfig.js";
 import DemoUserService from "./demo/DemoUserService.js";
 import InMemorySendingVaspRequestCache from "./demo/InMemorySendingVaspRequestCache.js";
@@ -20,10 +19,8 @@ SparkWallet.initialize({
   const umaServer = createUmaServer(
     config,
     sparkWallet as SparkWallet, // Something is wonky with the types here, but this works in practice.
-    new InMemoryPublicKeyCache(),
     new InMemorySendingVaspRequestCache(),
     userService,
-    new InMemoryNonceValidator(twoDaysAgo.getTime()),
   );
 
   let port = 8080;
