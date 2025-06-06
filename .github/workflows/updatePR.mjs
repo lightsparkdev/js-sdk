@@ -27,10 +27,8 @@ const { data: comments } = await github.rest.issues.listComments({
 let comment = comments.find((comment) => comment.user.id === 41898282);
 
 let changesetRawStr = process.env.CHANGESET.replace(/\n/g, "\\n");
-console.log("changesetRawStr", changesetRawStr);
 
 changesetRawStr = changesetRawStr.replace(/^'(.*)'$/, "$1");
-const hasUndef = changesetRawStr.includes("undefined");
 const changeset = JSON.parse(changesetRawStr);
 
 const changedPackagesLines = changeset.changedPackages
