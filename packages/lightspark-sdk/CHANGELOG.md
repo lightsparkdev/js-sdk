@@ -1,16 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.9.3
-
-### Patch Changes
-
-- 7ae2525: - Add createUmaInvitationWithPayment
-  - Add cancelUmaInvitation
-  - Remove unneeded crypto-browserify as dependency
-- Updated dependencies [7ae2525]
-  - @lightsparkdev/core@1.4.1
-  - @lightsparkdev/crypto-wasm@0.1.15
-
 ## 1.9.2
 
 ### Patch Changes

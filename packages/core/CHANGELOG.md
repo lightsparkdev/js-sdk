@@ -1,11 +1,5 @@
 # @lightsparkdev/core
 
-## 1.4.1
-
-### Patch Changes
-
-- 7ae2525: - Remove unneeded crypto-browserify as dependency
-
 ## 1.4.0
 
 ### Minor Changes
