@@ -22,6 +22,7 @@ export const CurrencyUnit = {
   MXN: "MXN",
   PHP: "PHP",
   EUR: "EUR",
+  GBP: "GBP",
 
   Bitcoin: "BITCOIN",
   Microbitcoin: "MICROBITCOIN",
@@ -32,6 +33,7 @@ export const CurrencyUnit = {
   Usd: "USD",
   Mxn: "MXN",
   Php: "PHP",
+  Gbp: "GBP",
 } as const;
 
 export type CurrencyUnitType = (typeof CurrencyUnit)[keyof typeof CurrencyUnit];
@@ -61,6 +63,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.MXN]: (v: number) => v,
   [CurrencyUnit.PHP]: (v: number) => v,
   [CurrencyUnit.EUR]: (v: number) => v,
+  [CurrencyUnit.GBP]: (v: number) => v,
 };
 
 /* Round without decimals since we're returning cents: */
@@ -89,6 +92,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toBitcoinConversion,
     [CurrencyUnit.PHP]: toBitcoinConversion,
     [CurrencyUnit.EUR]: toBitcoinConversion,
+    [CurrencyUnit.GBP]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000,
@@ -101,6 +105,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toMicrobitcoinConversion,
     [CurrencyUnit.PHP]: toMicrobitcoinConversion,
     [CurrencyUnit.EUR]: toMicrobitcoinConversion,
+    [CurrencyUnit.GBP]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000,
@@ -113,6 +118,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toMillibitcoinConversion,
     [CurrencyUnit.PHP]: toMillibitcoinConversion,
     [CurrencyUnit.EUR]: toMillibitcoinConversion,
+    [CurrencyUnit.GBP]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000_000,
@@ -125,6 +131,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toMillisatoshiConversion,
     [CurrencyUnit.PHP]: toMillisatoshiConversion,
     [CurrencyUnit.EUR]: toMillisatoshiConversion,
+    [CurrencyUnit.GBP]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000_000,
@@ -137,6 +144,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toNanobitcoinConversion,
     [CurrencyUnit.PHP]: toNanobitcoinConversion,
     [CurrencyUnit.EUR]: toNanobitcoinConversion,
+    [CurrencyUnit.GBP]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000,
@@ -149,11 +157,13 @@ const CONVERSION_MAP = {
     [CurrencyUnit.MXN]: toSatoshiConversion,
     [CurrencyUnit.PHP]: toSatoshiConversion,
     [CurrencyUnit.EUR]: toSatoshiConversion,
+    [CurrencyUnit.GBP]: toSatoshiConversion,
   },
   [CurrencyUnit.USD]: standardUnitConversionObj,
   [CurrencyUnit.MXN]: standardUnitConversionObj,
   [CurrencyUnit.PHP]: standardUnitConversionObj,
   [CurrencyUnit.EUR]: standardUnitConversionObj,
+  [CurrencyUnit.GBP]: standardUnitConversionObj,
 };
 
 export function convertCurrencyAmountValue(
@@ -219,6 +229,7 @@ export type CurrencyMap = {
   [CurrencyUnit.MXN]: number;
   [CurrencyUnit.PHP]: number;
   [CurrencyUnit.EUR]: number;
+  [CurrencyUnit.GBP]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
     sats: string;
@@ -234,6 +245,7 @@ export type CurrencyMap = {
     [CurrencyUnit.MXN]: string;
     [CurrencyUnit.PHP]: string;
     [CurrencyUnit.EUR]: string;
+    [CurrencyUnit.GBP]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
   isZero: boolean;
@@ -430,6 +442,7 @@ function convertCurrencyAmountValues(
     mxn: CurrencyUnit.MXN,
     php: CurrencyUnit.PHP,
     eur: CurrencyUnit.EUR,
+    gbp: CurrencyUnit.GBP,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -479,7 +492,7 @@ export function mapCurrencyAmount(
    * preferred_currency_unit on CurrencyAmount types: */
   const conversionOverride = getPreferredConversionOverride(currencyAmountArg);
 
-  const { sats, msats, btc, usd, mxn, php, mibtc, mlbtc, nbtc, eur } =
+  const { sats, msats, btc, usd, mxn, php, mibtc, mlbtc, nbtc, eur, gbp } =
     convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
   const mapWithCurrencyUnits = {
@@ -490,6 +503,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.MXN]: mxn,
     [CurrencyUnit.PHP]: php,
     [CurrencyUnit.EUR]: eur,
+    [CurrencyUnit.GBP]: gbp,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -534,6 +548,10 @@ export function mapCurrencyAmount(
       [CurrencyUnit.EUR]: formatCurrencyStr({
         value: eur,
         unit: CurrencyUnit.EUR,
+      }),
+      [CurrencyUnit.GBP]: formatCurrencyStr({
+        value: gbp,
+        unit: CurrencyUnit.GBP,
       }),
       [CurrencyUnit.FUTURE_VALUE]: "-",
     },
@@ -611,6 +629,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "PHP";
     case CurrencyUnit.EUR:
       return "EUR";
+    case CurrencyUnit.GBP:
+      return "GBP";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -665,6 +685,7 @@ export function formatCurrencyStr(
       CurrencyUnit.MXN,
       CurrencyUnit.PHP,
       CurrencyUnit.EUR,
+      CurrencyUnit.GBP,
     ] as string[];
     /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
      * divided by 100 for proper display format: */
