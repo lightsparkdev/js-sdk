@@ -14,7 +14,7 @@ const twoDaysAgo = new Date();
 twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 SparkWallet.initialize({
   options: {
-    network: "REGTEST", // Change to "MAINNET" or "TESTNET" as needed
+    network: config.sparkWalletNetwork || "REGTEST", // Change to "MAINNET" or "TESTNET" as needed
   },
 }).then(({ mnemonic, wallet: sparkWallet }) => {
   const umaServer = createUmaServer(

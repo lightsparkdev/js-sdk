@@ -6,11 +6,30 @@ export default class UmaConfig {
     public readonly umaSigningCertChain: string,
     public readonly umaSigningPubKeyHex: string,
     public readonly umaSigningPrivKeyHex: string,
-    public readonly clientBaseURL: string | undefined,
+    public readonly sparkWalletNetwork:
+      | "MAINNET"
+      | "TESTNET"
+      | "REGTEST"
+      | "LOCAL"
+      | undefined,
     public readonly sendingVaspDomain: string | undefined,
   ) {}
 
   static fromEnvironment(): UmaConfig {
+    const network =
+      process.env.LIGHTSPARK_SPARK_WALLET_NETWORK?.toLocaleUpperCase();
+    if (
+      network &&
+      network !== "MAINNET" &&
+      network !== "TESTNET" &&
+      network !== "REGTEST" &&
+      network !== "LOCAL"
+    ) {
+      throw new Error(
+        `Invalid LIGHTSPARK_SPARK_WALLET_NETWORK environment variable: ${network}. Expected one of MAINNET, TESTNET, REGTEST, or LOCAL.`,
+      );
+    }
+
     return new UmaConfig(
       requireEnv("LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN"),
       requireEnv("LIGHTSPARK_UMA_ENCRYPTION_PUBKEY"),
@@ -18,7 +37,7 @@ export default class UmaConfig {
       requireEnv("LIGHTSPARK_UMA_SIGNING_CERT_CHAIN"),
       requireEnv("LIGHTSPARK_UMA_SIGNING_PUBKEY"),
       requireEnv("LIGHTSPARK_UMA_SIGNING_PRIVKEY"),
-      process.env.LIGHTSPARK_EXAMPLE_BASE_URL,
+      network as "MAINNET" | "TESTNET" | "REGTEST" | "LOCAL" | undefined,
       process.env.LIGHTSPARK_UMA_VASP_DOMAIN,
     );
   }
