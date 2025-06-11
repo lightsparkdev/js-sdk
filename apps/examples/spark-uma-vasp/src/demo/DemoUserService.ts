@@ -19,7 +19,7 @@ export default class DemoUserService implements UserService {
       emailAddress: process.env.LIGHTSPARK_UMA_RECEIVER_USER_EMAIL,
       name: process.env.LIGHTSPARK_UMA_RECEIVER_USER_NAME,
       kycStatus: KycStatus.Verified,
-      sparkIdentityPubkey: DEMO_SPARK_IDENTITY_PUBKEY,
+      sparkIdentityPubkey: process.env.LIGHTSPARK_SPARK_USER_PUBKEY || DEMO_SPARK_IDENTITY_PUBKEY,
     });
   }
 
