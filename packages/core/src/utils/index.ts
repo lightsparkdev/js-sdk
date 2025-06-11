@@ -16,3 +16,4 @@ export * from "./sleep.js";
 export * from "./strings.js";
 export * from "./typeGuards.js";
 export * from "./types.js";
+export * from "./zipcodeToState.js";
