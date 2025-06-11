@@ -11,6 +11,7 @@ COPY packages/lightspark-sdk/package.json ./packages/lightspark-sdk/
 COPY packages/core/package.json packages/core/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
+COPY .yarn/releases ./.yarn/releases
 
 RUN corepack enable
 RUN corepack prepare --activate
