@@ -147,7 +147,7 @@ export default class ReceivingVasp {
         payeeData: payeeData,
         payeeIdentifier: payeeIdentifier,
         receiverChannelUtxos: undefined,
-        receiverFeesMillisats: undefined,
+        receiverFeesMillisats: receivingCurrency ? 0 : undefined,
         receivingVaspPrivateKey: undefined,
       });
       return { httpStatus: 200, data: response.toJsonSchemaObject() };
