@@ -9,6 +9,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY apps/examples/spark-uma-vasp/package.json ./apps/examples/spark-uma-vasp/
 COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
+COPY .yarn/releases ./.yarn/releases
 
 RUN corepack enable
 RUN corepack prepare --activate
