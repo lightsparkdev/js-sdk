@@ -31,10 +31,10 @@ export default class UmaConfig {
     }
 
     return new UmaConfig(
-      requireEnv("LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN"),
+      requireEnv("LIGHTSPARK_UMA_ENCRYPTION_CERT_CHAIN").replaceAll(/\\n/g, "\n"),
       requireEnv("LIGHTSPARK_UMA_ENCRYPTION_PUBKEY"),
       requireEnv("LIGHTSPARK_UMA_ENCRYPTION_PRIVKEY"),
-      requireEnv("LIGHTSPARK_UMA_SIGNING_CERT_CHAIN"),
+      requireEnv("LIGHTSPARK_UMA_SIGNING_CERT_CHAIN").replaceAll(/\\n/g, "\n"),
       requireEnv("LIGHTSPARK_UMA_SIGNING_PUBKEY"),
       requireEnv("LIGHTSPARK_UMA_SIGNING_PRIVKEY"),
       network as "MAINNET" | "TESTNET" | "REGTEST" | "LOCAL" | undefined,
