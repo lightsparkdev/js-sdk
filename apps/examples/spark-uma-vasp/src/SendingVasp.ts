@@ -483,7 +483,7 @@ export default class SendingVasp {
         isAmountInReceivingCurrency: !isAmountInMsats,
         amount: amount,
         payerIdentifier: sendingUma,
-        payerKycStatus: user.kycStatus,
+        payerKycStatus: uma.KycStatus.NotVerified,
         trInfo: undefined,
         payerUtxos: [],
         payerNodePubKey: "", // Should fill this in.
@@ -879,11 +879,8 @@ export default class SendingVasp {
     vaspDomain: string,
     isUma: boolean,
   ): PayerProfile {
+    // This service can only ever provide the identifier because users are dynamic.
     return {
-      name: requiredPayerData.name?.mandatory ? user.name ?? "" : undefined,
-      email: requiredPayerData.email?.mandatory
-        ? user.emailAddress ?? ""
-        : undefined,
       identifier:
         isUma || !!requiredPayerData.identifier
           ? `$${user.umaUserName}@${vaspDomain}`

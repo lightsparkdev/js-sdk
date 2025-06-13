@@ -18,7 +18,6 @@ import { fullUrlForRequest } from "./networking/expressAdapters.js";
 
 export const createUmaServer = (
   config: UmaConfig,
-  sparkWallet: SparkWallet,
   pubKeyCache: InMemoryPublicKeyCache,
   sendingVaspRequestCache: SendingVaspRequestCache,
   userService: UserService,
@@ -45,7 +44,6 @@ export const createUmaServer = (
   sendingVasp.registerRoutes(app);
   const receivingVasp = new ReceivingVasp(
     config,
-    sparkWallet,
     pubKeyCache,
     userService,
     nonceCache,

@@ -1,25 +1,26 @@
 import { SparkWallet } from "@buildonspark/spark-sdk";
 import * as uma from "@uma-sdk/core";
 import { decode } from "bolt11";
+import { createHash } from "crypto";
 import { Express } from "express";
 import asyncHandler from "express-async-handler";
+import { PAYER_DATA_OPTIONS } from "./PayerDataOptions.js";
+import UmaConfig from "./UmaConfig.js";
+import { User } from "./User.js";
+import UserService from "./UserService.js";
 import { SATS_CURRENCY } from "./currencies.js";
+import SparkAddressUserService from "./demo/SparkAddressService.js";
+import { HttpResponse } from "./networking/HttpResponse.js";
 import {
   fullUrlForRequest,
   hostNameWithPort,
   isDomainLocalhost,
   sendResponse,
 } from "./networking/expressAdapters.js";
-import { HttpResponse } from "./networking/HttpResponse.js";
-import { PAYER_DATA_OPTIONS } from "./PayerDataOptions.js";
-import UmaConfig from "./UmaConfig.js";
-import { User } from "./User.js";
-import UserService from "./UserService.js";
 
 export default class ReceivingVasp {
   constructor(
     private readonly config: UmaConfig,
-    private readonly sparkWallet: SparkWallet,
     private readonly pubKeyCache: uma.PublicKeyCache,
     private readonly userService: UserService,
     private readonly nonceCache: uma.NonceValidator,
@@ -152,7 +153,7 @@ export default class ReceivingVasp {
     }
 
     const [minSendableSats, maxSendableSats] =
-      await this.userService.getReceivableMsatsRangeForUser(user.id);
+      await this.userService.getReceivableMsatsRangeForUser(user.sparkAddress);
 
     try {
       const response = await uma.getLnurlpResponse({
@@ -163,7 +164,7 @@ export default class ReceivingVasp {
         minSendableSats,
         maxSendableSats,
         privateKeyBytes: this.config.umaSigningPrivKey(),
-        receiverKycStatus: user.kycStatus,
+        receiverKycStatus: uma.KycStatus.NotVerified,
         payerDataOptions: PAYER_DATA_OPTIONS,
         currencyOptions: [SATS_CURRENCY],
       });
@@ -281,7 +282,7 @@ export default class ReceivingVasp {
 
     const isSendingAmountMsats = !payreq.sendingAmountCurrencyCode;
     const [minSendableSats, maxSendableSats] =
-      await this.userService.getReceivableMsatsRangeForUser(user.id);
+      await this.userService.getReceivableMsatsRangeForUser(user.sparkAddress);
     const isCurrencyAmountInBounds = isSendingAmountMsats
       ? payreq.amount >= minSendableSats &&
         payreq.amount / 1000 <= maxSendableSats
@@ -314,12 +315,24 @@ export default class ReceivingVasp {
     const umaInvoiceCreator = {
       createUmaInvoice: async (amountMsats: number, metadata: string) => {
         console.log(`Creating invoice for ${amountMsats} msats.`);
-        const invoiceRequest = await this.sparkWallet.createLightningInvoice({
+        const addressNetwork =
+          SparkAddressUserService.getNetworkForSparkAddress(user.sparkAddress);
+        if (!addressNetwork) {
+          throw new uma.UmaError(
+            "Invalid Spark address.",
+            uma.ErrorCode.USER_NOT_FOUND,
+          );
+        }
+        const { wallet } = await SparkWallet.initialize({
+          options: {
+            network: addressNetwork,
+          },
+        });
+        const invoiceRequest = await wallet.createLightningInvoice({
           amountSats: Math.round(amountMsats / 1000),
           expirySeconds: expirationTimeSec,
-          receiverIdentityPubkey: user.sparkIdentityPubkey,
-          // Pushing to SDK shortly:
-          // descriptionHash: createHash("sha256").update(metadata).digest("hex"),
+          receiverIdentityPubkey: user.sparkIdentityPubKey,
+          descriptionHash: createHash("sha256").update(metadata).digest("hex"),
         });
         console.log(`Created invoice: ${invoiceRequest.id}`);
         return invoiceRequest.invoice.encodedInvoice;
@@ -343,7 +356,7 @@ export default class ReceivingVasp {
         receiverChannelUtxos: [],
         receiverFeesMillisats: 0,
         receiverNodePubKey: isUmaRequest
-          ? await this.getReceiverNodePubKey(user.sparkIdentityPubkey)
+          ? await this.getReceiverNodePubKey(umaInvoiceCreator)
           : undefined,
         payeeData: payeeData,
         receivingVaspPrivateKey: isUmaRequest
@@ -369,10 +382,10 @@ export default class ReceivingVasp {
    * Handler for a normal LNURL (non-UMA) LNURLp request.
    */
   private async handleLnurlPayreq(
-    userId: string,
+    sparkAddress: string,
     requestUrl: URL,
   ): Promise<HttpResponse> {
-    const user = await this.userService.getUserById(userId);
+    const user = await this.userService.getUserById(sparkAddress);
     if (!user) {
       throw new uma.UmaError("User not found.", uma.ErrorCode.USER_NOT_FOUND);
     }
@@ -403,21 +416,20 @@ export default class ReceivingVasp {
     const portString =
       port === "80" || port === "443" || port === "" ? "" : `:${port}`;
     const umaOrLnurl = isUma ? "uma" : "lnurl";
-    const path = `/api/${umaOrLnurl}/payreq/${user.id}`;
+    const path = `/api/${umaOrLnurl}/payreq/${user.sparkAddress}`;
     return `${protocol}://${fullUrl.hostname}${portString}${path}`;
   }
 
-  private async getReceiverNodePubKey(
-    receiverIdentityPubkey: string,
-  ): Promise<string> {
+  private async getReceiverNodePubKey(umaInvoiceCreator: {
+    createUmaInvoice: (
+      amountMsats: number,
+      metadata: string,
+    ) => Promise<string>;
+  }): Promise<string> {
     // TODO: There's probably a better way to get this...
-    const invoiceRequest = await this.sparkWallet.createLightningInvoice({
-      amountSats: 1000,
-      // receiverIdentityPubkey: user.sparkIdentityPubkey,
-      // TODO: Metadata hash...
-    });
-    const invoice = decode(invoiceRequest.invoice.encodedInvoice);
-    return invoice.payeeNodeKey || receiverIdentityPubkey;
+    const encodedInvoice = await umaInvoiceCreator.createUmaInvoice(1000, "");
+    const invoice = decode(encodedInvoice);
+    return invoice.payeeNodeKey || "";
   }
 
   private getPayeeData(
@@ -425,12 +437,8 @@ export default class ReceivingVasp {
     user: User,
     requestUrl: URL,
   ) {
-    const name = options?.name?.mandatory ? user.umaUserName : undefined;
-    const email = options?.email?.mandatory ? user.emailAddress : undefined;
     return {
-      name: name,
-      email: email,
-      identifier: `${user.umaUserName}@${requestUrl.hostname}`,
+      identifier: `$${user.umaUserName}@${requestUrl.hostname}`,
     };
   }
 }

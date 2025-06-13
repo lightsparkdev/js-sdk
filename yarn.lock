@@ -1799,12 +1799,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@buildonspark/lrc20-sdk@npm:0.0.55":
-  version: 0.0.55
-  resolution: "@buildonspark/lrc20-sdk@npm:0.0.55"
+"@buildonspark/lrc20-sdk@npm:0.0.57":
+  version: 0.0.57
+  resolution: "@buildonspark/lrc20-sdk@npm:0.0.57"
   dependencies:
     "@bitcoinerlab/secp256k1": ^1.1.1
     "@noble/curves": ^1.8.0
+    "@noble/hashes": ^1.7.1
     "@sapphire/utilities": ^3.17.0
     "@scure/bip32": ^1.6.2
     "@scure/bip39": ^1.5.4
@@ -1812,21 +1813,19 @@ __metadata:
     bitcoinjs-lib: ^6.1.5
     buffer: ^6.0.3
     class-transformer: ^0.5.1
-    ecpair: ^2.1.0
-    stream: ^0.0.3
     ts-proto: ^2.6.1
     varuint-bitcoin: ^1.1.2
-  checksum: d39174c02e0b1e5db809ddf27de3e310dbf8a216e3ce4e5e9caea8bbf2c917b568e6d9f0e50e09a03e3af66cd8bddff8eb6c9ecbc73379f9f9ca745d8830229b
+  checksum: 68ca78561e7b6e109d136d47b2ac721f0ab07c415da33eeea43b4c77f868495230fb22004de13bbe60d8a48603f493bb27e402b69bc2de4644c6234fb2d9a747
   languageName: node
   linkType: hard
 
-"@buildonspark/spark-sdk@npm:^0.1.34":
-  version: 0.1.34
-  resolution: "@buildonspark/spark-sdk@npm:0.1.34"
+"@buildonspark/spark-sdk@npm:^0.1.35":
+  version: 0.1.37
+  resolution: "@buildonspark/spark-sdk@npm:0.1.37"
   dependencies:
     "@bitcoinerlab/secp256k1": ^1.1.1
     "@bufbuild/protobuf": ^2.2.5
-    "@buildonspark/lrc20-sdk": 0.0.55
+    "@buildonspark/lrc20-sdk": 0.0.57
     "@lightsparkdev/core": ^1.4.1
     "@noble/curves": ^1.8.0
     "@noble/hashes": ^1.7.1
@@ -1856,7 +1855,7 @@ __metadata:
     react: ">=18.2.0"
     react-native: ">=0.71.0"
     react-native-get-random-values: ">=1.11.0"
-  checksum: d1c79d0de518bc68927636b9d24e961abd314b688685ea34027ac21974f9cda2b72d43b6459b71a60131d90aa5f49f4bc823a4945f7acee2c144425e585c8722
+  checksum: f34ab32012039d3ff06ecf82d26be0abcb42ae9c082e54b6ccda1a4095c43304d0d52e3e5a33ec13561a439294d0f694a504809ab0663c38cdb3259a61cd29ef
   languageName: node
   linkType: hard
 
@@ -4291,7 +4290,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/spark-uma-vasp@workspace:apps/examples/spark-uma-vasp"
   dependencies:
-    "@buildonspark/spark-sdk": ^0.1.34
+    "@buildonspark/spark-sdk": ^0.1.35
     "@lightsparkdev/tsconfig": "*"
     "@types/body-parser": ^1.19.5
     "@types/express": ^4.17.21
@@ -8021,15 +8020,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"base-x@npm:^3.0.2":
-  version: 3.0.11
-  resolution: "base-x@npm:3.0.11"
-  dependencies:
-    safe-buffer: ^5.0.1
-  checksum: c2e3c443fd07cb9b9d3e179a9e9c581daa31881005841fe8d6a834e534505890fedf03465ccf14512da60e3f7be00fe66167806b159ba076d2c03952ae7460c4
-  languageName: node
-  linkType: hard
-
 "base-x@npm:^4.0.0":
   version: 4.0.1
   resolution: "base-x@npm:4.0.1"
@@ -8432,32 +8422,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bs58@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "bs58@npm:4.0.1"
-  dependencies:
-    base-x: ^3.0.2
-  checksum: b3c5365bb9e0c561e1a82f1a2d809a1a692059fae016be233a6127ad2f50a6b986467c3a50669ce4c18929dcccb297c5909314dd347a25a68c21b68eb3e95ac2
-  languageName: node
-  linkType: hard
-
 "bs58@npm:^5.0.0":
   version: 5.0.0
   resolution: "bs58@npm:5.0.0"
   dependencies:
     base-x: ^4.0.0
   checksum: 2475cb0684e07077521aac718e604a13e0f891d58cff923d437a2f7e9e28703ab39fce9f84c7c703ab369815a675f11e3bd394d38643bfe8969fbe42e6833d45
-  languageName: node
-  linkType: hard
-
-"bs58check@npm:<3.0.0":
-  version: 2.1.2
-  resolution: "bs58check@npm:2.1.2"
-  dependencies:
-    bs58: ^4.0.0
-    create-hash: ^1.1.0
-    safe-buffer: ^5.1.2
-  checksum: 43bdf08a5dd04581b78f040bc4169480e17008da482ffe2a6507327bbc4fc5c28de0501f7faf22901cfe57fbca79cbb202ca529003fedb4cb8dccd265b38e54d
   languageName: node
   linkType: hard
 
@@ -9223,13 +9193,6 @@ __metadata:
   version: 1.3.1
   resolution: "component-emitter@npm:1.3.1"
   checksum: 94550aa462c7bd5a61c1bc480e28554aa306066930152d1b1844a0dd3845d4e5db7e261ddec62ae184913b3e59b55a2ad84093b9d3596a8f17c341514d6c483d
-  languageName: node
-  linkType: hard
-
-"component-emitter@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "component-emitter@npm:2.0.0"
-  checksum: 017715272fcf82203932237260451df4c7c27e32a51a4a291faf6f503d6ef9e8583add993850cb5b98cc0c1b0846ff0c68938ad3ef1d544f9b480a290e74fb4f
   languageName: node
   linkType: hard
 
@@ -10641,17 +10604,6 @@ __metadata:
     "@noble/curves": ^1.2.0
     "@noble/hashes": ^1.3.2
   checksum: 36e906ea7657dae4c1062493f0ce0d30fab577d319cfcae391440efecc20e5ba4d5c5e1ecfd7c93215cca24553c6d88c19b021bb3669a2befee44dec03364978
-  languageName: node
-  linkType: hard
-
-"ecpair@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "ecpair@npm:2.1.0"
-  dependencies:
-    randombytes: ^2.1.0
-    typeforce: ^1.18.0
-    wif: ^2.0.6
-  checksum: 924a776808f91d2fdd33a7033f84e3bbfe668ae98c0b9764c7b923e018accd8de57012bf20e419e0a5ef73ec3ec3738a654e71abe12f537b2fd7bcf02b93659f
   languageName: node
   linkType: hard
 
@@ -21131,15 +21083,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stream@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "stream@npm:0.0.3"
-  dependencies:
-    component-emitter: ^2.0.0
-  checksum: d59f108098c6bb40cec13dc0d4a9c435498b1f451d0f825e0e7145e83c8579bcf45f1bde0f621b89c925546bfff85ce09d591279e937bb87b1d0a88594fbe7dd
-  languageName: node
-  linkType: hard
-
 "string-length@npm:^4.0.1":
   version: 4.0.2
   resolution: "string-length@npm:4.0.2"
@@ -22495,7 +22438,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typeforce@npm:^1.11.3, typeforce@npm:^1.18.0":
+"typeforce@npm:^1.11.3":
   version: 1.18.0
   resolution: "typeforce@npm:1.18.0"
   checksum: e3b21e27e76cb05f32285bef7c30a29760e79c622cfe4aa3c179ce49d1c7895b7154c8deedb9fe4599b1fd0428d35860d43e0776da1c04861168f3ad7ed99c70
@@ -23592,15 +23535,6 @@ __metadata:
   bin:
     node-which: bin/which.js
   checksum: f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
-  languageName: node
-  linkType: hard
-
-"wif@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "wif@npm:2.0.6"
-  dependencies:
-    bs58check: <3.0.0
-  checksum: 8c3147ef98d56f394d66f0477f699fba7fc18dd0d1c2c5d0f8408be41acffed589fa82447d80eae5afc9a3cbd943bc3eebb337b9f114955adeaad02a244f4f9a
   languageName: node
   linkType: hard
 
