@@ -3,6 +3,14 @@
 import { type Query, isObject } from "@lightsparkdev/core";
 import IncentivesIneligibilityReason from "./IncentivesIneligibilityReason.js";
 import IncentivesStatus from "./IncentivesStatus.js";
+import { UmaCurrencyAmount } from "./UmaCurrencyAmount.js";
+
+export enum UmaInvitationStatus {
+  PENDING = "PENDING",
+  CLAIMED = "CLAIMED",
+  CANCELLED = "CANCELLED",
+  EXPIRED = "EXPIRED",
+}
 
 /** This is an object representing an UMA.ME invitation. **/
 interface UmaInvitation {
@@ -38,6 +46,18 @@ interface UmaInvitation {
 
   /** The reason why the invitation is not eligible for incentives, if applicable. **/
   incentivesIneligibilityReason?: IncentivesIneligibilityReason | undefined;
+
+  /** The status of the invitation. **/
+  status: UmaInvitationStatus;
+
+  /** Payment amount in lowest currency unit. Null if no payment attached. **/
+  paymentAmount?: UmaCurrencyAmount | undefined;
+
+  /** When the invitation was cancelled, if applicable. **/
+  cancelledAt?: string | undefined;
+
+  /** When the invitation expires. Null if no expiration set. **/
+  expiresAt?: string | undefined;
 }
 
 export const UmaInvitationFromJson = (obj: any): UmaInvitation => {
@@ -56,12 +76,24 @@ export const UmaInvitationFromJson = (obj: any): UmaInvitation => {
     incentivesIneligibilityReason: !!obj[
       "uma_invitation_incentives_ineligibility_reason"
     ]
-      ? IncentivesIneligibilityReason[
-          obj["uma_invitation_incentives_ineligibility_reason"]
-        ] ?? IncentivesIneligibilityReason.FUTURE_VALUE
+      ? (obj[
+          "uma_invitation_incentives_ineligibility_reason"
+        ] as IncentivesIneligibilityReason) ??
+        IncentivesIneligibilityReason.FUTURE_VALUE
       : null,
+    status:
+      (obj["uma_invitation_status"] as UmaInvitationStatus) ??
+      (() => {
+        throw new Error("Required field 'uma_invitation_status' is missing");
+      })(),
+    paymentAmount: obj["uma_invitation_payment_amount"]
+      ? UmaCurrencyAmount.fromJson(obj["uma_invitation_payment_amount"])
+      : undefined,
+    cancelledAt: obj["uma_invitation_cancelled_at"],
+    expiresAt: obj["uma_invitation_expires_at"],
   } as UmaInvitation;
 };
+
 export const UmaInvitationToJson = (obj: UmaInvitation): any => {
   return {
     __typename: "UmaInvitation",
@@ -75,6 +107,12 @@ export const UmaInvitationToJson = (obj: UmaInvitation): any => {
     uma_invitation_incentives_status: obj.incentivesStatus,
     uma_invitation_incentives_ineligibility_reason:
       obj.incentivesIneligibilityReason,
+    uma_invitation_status: obj.status,
+    uma_invitation_payment_amount: obj.paymentAmount
+      ? obj.paymentAmount.toJson()
+      : undefined,
+    uma_invitation_cancelled_at: obj.cancelledAt,
+    uma_invitation_expires_at: obj.expiresAt,
   };
 };
 
@@ -90,6 +128,18 @@ fragment UmaInvitationFragment on UmaInvitation {
     uma_invitation_invitee_uma: invitee_uma
     uma_invitation_incentives_status: incentives_status
     uma_invitation_incentives_ineligibility_reason: incentives_ineligibility_reason
+    uma_invitation_status: status
+    uma_invitation_payment_amount: payment_amount {
+        value
+        currency {
+            code
+            symbol
+            decimals
+            name
+        }
+    }
+    uma_invitation_cancelled_at: cancelled_at
+    uma_invitation_expires_at: expires_at
 }`;
 
 export const getUmaInvitationQuery = (id: string): Query<UmaInvitation> => {
