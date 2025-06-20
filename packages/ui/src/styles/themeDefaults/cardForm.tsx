@@ -10,7 +10,7 @@ export type CardFormBorderWidth = 0 | 1;
 export type CardFormBorderRadius = 8 | 24 | 32;
 export type CardFormShadow = "soft" | "hard" | "none";
 export type CardFormTextAlign = "center" | "left";
-export type CardFormBorderColor = "vlcNeutral" | "grayBlue94";
+export type CardFormBorderColor = "vlcNeutral" | "grayBlue94" | "gray3";
 export type CardFormBackgroundColor = "bg" | "white";
 
 const cardFormThemeBaseProps = {

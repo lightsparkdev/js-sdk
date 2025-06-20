@@ -678,7 +678,7 @@ const bridgeBaseSettings = {
       primary: {
         borderWidth: 1,
         smBorderWidth: 0,
-        borderColor: "grayBlue94",
+        borderColor: "gray3",
         paddingTop: 24,
         paddingBottom: 64,
         paddingX: 40,
@@ -687,7 +687,7 @@ const bridgeBaseSettings = {
       secondary: {
         borderWidth: 1,
         smBorderWidth: 0,
-        borderColor: "grayBlue94",
+        borderColor: "gray3",
         paddingTop: 32,
         paddingBottom: 64,
         paddingX: 32,
