@@ -1,5 +1,14 @@
 # @lightsparkdev/ui
 
+## 1.1.4
+
+### Patch Changes
+
+- 52a274f: - Updates to Button, CardForm, IconWithCircleBackground
+  - Updates to colors, theme defaults
+- Updated dependencies [52a274f]
+  - @lightsparkdev/core@1.4.2
+
 ## 1.1.3
 
 ### Patch Changes

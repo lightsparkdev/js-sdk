@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.4.2
+
+### Patch Changes
+
+- 52a274f: - Add GBP as valid CurrencyUnit
+  - Add zipcodeToState util
+
 ## 1.4.1
 
 ### Patch Changes

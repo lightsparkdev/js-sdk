@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.4
+
+### Patch Changes
+
+- 52a274f: - Regenerate GQL objects, add UmaCurrencyAmount object, update UmaInvitation with additional statuses
+- Updated dependencies [52a274f]
+  - @lightsparkdev/core@1.4.2
+  - @lightsparkdev/crypto-wasm@0.1.16
+
 ## 1.9.3
 
 ### Patch Changes
