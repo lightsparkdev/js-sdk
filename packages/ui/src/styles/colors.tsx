@@ -93,12 +93,17 @@ const baseColors = {
   // neutral
   secondary: neutral.black,
   gray: "#242526",
+  grayhover: "#2D2E30",
+  grayactive: "#38393B",
   gray2: "#6D7685",
   gray3: "#D9DBDF",
   gray4: "#B6BAC3",
   gray6: "#8E95A2",
   gray7: "#FFFFFF9C",
   gray70: "#ffffff70",
+  gray75: "#4A4E5A",
+  gray75hover: "#535762",
+  gray75active: "#5C606B",
   // transparent
   transparent: "transparent",
   transparenta02: "#00000005",

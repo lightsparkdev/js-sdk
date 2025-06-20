@@ -2,7 +2,7 @@ import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { ComponentProps, FormEvent, ReactNode } from "react";
-import { Fragment, useCallback } from "react";
+import { Fragment, useCallback, useEffect, useMemo } from "react";
 import { Link } from "../../router.js";
 import { bp } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
@@ -47,7 +47,6 @@ import { StyledButtonRowButton } from "../ButtonRow.js";
 import { Checkbox, type CheckboxProps } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { StyledFileInput } from "../FileInput.js";
-import { Flex } from "../Flex.js";
 import { LoadingWrapper } from "../Loading.js";
 import { StyledSelect } from "../Select.js";
 import { type TextIconAligner } from "../TextIconAligner.js";
@@ -85,6 +84,7 @@ type CardFormProps = {
   forceMarginAfterSubtitle?: boolean;
   contentMarginTop?: number | undefined;
   graphicHeader?: React.ReactNode;
+  statusHeaderProps?: StatusHeaderProps;
   centeredContent?: boolean;
   formButtonTopMargin?: number | undefined;
   selectMarginTop?: number | undefined;
@@ -216,6 +216,7 @@ export function CardForm({
   forceMarginAfterSubtitle = true,
   afterTitleMargin = 40,
   graphicHeader,
+  statusHeaderProps,
   centeredContent = false,
   contentMarginTop,
   formButtonTopMargin,
@@ -337,25 +338,44 @@ export function CardForm({
 
   const Container = full ? CardFormContentFull : CardFormContainer;
 
+  const statusHeader = useMemo(
+    () => (statusHeaderProps ? <StatusHeader {...statusHeaderProps} /> : null),
+    [statusHeaderProps],
+  );
+
+  useEffect(() => {
+    document
+      .querySelector("meta[name='theme-color']")
+      ?.setAttribute("content", statusHeader ? theme.linkLight : theme.bg);
+
+    return () => {
+      document
+        .querySelector("meta[name='theme-color']")
+        ?.setAttribute("content", theme.bg);
+    };
+  }, [statusHeader, theme.linkLight, theme.bg]);
+
   return (
     <Container paddingBottom={paddingBottom}>
       {hasChildForm ? (
         <StyledCardFormDiv {...commonProps}>{content}</StyledCardFormDiv>
       ) : (
-        <Flex column align="center" height={full ? "100%" : "auto"}>
+        <StyledCardFormContainer full={full} statusHeader={!!statusHeader}>
+          {statusHeader}
           {graphicHeader && graphicHeader}
           <StyledCardForm
             onSubmit={onSubmitForm}
             noValidate
             {...commonProps}
             forceMarginAfterSubtitle={forceMarginAfterSubtitle}
-            graphicHeader={graphicHeader ? true : false}
+            graphicHeader={!!graphicHeader}
+            statusHeader={!!statusHeader}
             formButtonTopMargin={formButtonTopMargin}
             selectMarginTop={selectMarginTop}
           >
             {content}
           </StyledCardForm>
-        </Flex>
+        </StyledCardFormContainer>
       )}
       {belowFormContentNodes && (
         <BelowCardFormContent gap={belowFormContentGap}>
@@ -365,6 +385,56 @@ export function CardForm({
     </Container>
   );
 }
+
+interface StatusHeaderProps {
+  content: ToReactNodesArgs;
+  onClick?: () => void;
+}
+
+const StatusHeader = ({ content, onClick }: StatusHeaderProps) => {
+  return (
+    <StatusHeaderContainer onClick={onClick}>
+      {toReactNodes(content)}
+    </StatusHeaderContainer>
+  );
+};
+
+const StatusHeaderContainer = styled.div<{
+  onClick?: (() => void) | undefined;
+}>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ onClick }) => (onClick ? "pointer" : "default")};
+  gap: 2px;
+  width: 100%;
+  min-height: 49px;
+  background-color: ${({ theme }) => theme.linkLight};
+  padding: ${Spacing.px.xs} ${Spacing.px.lg};
+
+  ${bp.minSm(`
+    margin-bottom: ${Spacing.px.xs};
+    width: fit-content;
+    border-radius: 32px;
+  `)}
+`;
+
+const StyledCardFormContainer = styled.div<{
+  full?: boolean;
+  statusHeader?: boolean;
+}>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: ${({ full }) => (full ? "100%" : "auto")};
+  background-color: ${({ statusHeader, theme }) =>
+    statusHeader ? theme.linkLight : theme.bg};
+  ${bp.minSm(`
+    background-color: #F9F9F9;
+  `)}
+`;
 
 const CenteredHeader = styled.div`
   display: flex;
@@ -526,14 +596,16 @@ const formInset = ({
     ${smDontAdjustWidth
       ? ""
       : bp.sm(`
-      width: calc(100% + ${standardContentInset.smPx * 2}px);
+      padding-right: ${standardContentInset.smPx}px;
+      padding-left: ${standardContentInset.smPx}px;
       margin-left: -${standardContentInset.smPx}px;
     `)}
 
     ${smDontAdjustWidth
       ? ""
       : bp.minSm(`
-      width: calc(100% + ${paddingX * 2}px);
+      padding-right: ${paddingX}px;
+      padding-left: ${paddingX}px;
       margin-left: -${paddingX}px;
     `)}
   }
@@ -560,6 +632,7 @@ type StyledCardFormStyleProps = {
   smBorderWidth: CardFormBorderWidth;
   forceMarginAfterSubtitle: boolean | undefined;
   graphicHeader?: boolean | undefined;
+  statusHeader?: boolean | undefined;
   formButtonTopMargin?: number | undefined;
   selectMarginTop?: number | undefined;
   smDontAdjustWidth?: boolean | undefined;
@@ -581,6 +654,7 @@ const StyledCardFormStyle = ({
   smBorderWidth,
   forceMarginAfterSubtitle = true,
   graphicHeader,
+  statusHeader,
   formButtonTopMargin = 32,
   selectMarginTop = inputSpacingPx,
   smDontAdjustWidth = false,
@@ -620,6 +694,14 @@ const StyledCardFormStyle = ({
       box-shadow: none;
       background-color: ${getColor(theme, smBackgroundColor)};
       border-width: ${smBorderWidth}px;
+      border-radius: ${
+        statusHeader ? `${borderRadius}px ${borderRadius}px 0 0` : 0
+      };
+      ${
+        statusHeader
+          ? `box-shadow: 0 -0.5px 0 0px ${getColor(theme, borderColor)};`
+          : ""
+      }
     `)}
 
     ${bp.minSm(`

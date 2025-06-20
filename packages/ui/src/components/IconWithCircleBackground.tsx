@@ -23,6 +23,7 @@ type IconWithCircleBackgroundProps = {
   disabled?: boolean;
   iconStrokeWidth?: number;
   opaque?: boolean;
+  showNewTag?: boolean;
 };
 
 export function IconWithCircleBackground({
@@ -40,6 +41,7 @@ export function IconWithCircleBackground({
   iconColor,
   iconStrokeWidth,
   opaque = false,
+  showNewTag = false,
 }: IconWithCircleBackgroundProps) {
   const content = (
     <Flex
@@ -48,6 +50,7 @@ export function IconWithCircleBackground({
       disabled={disabled}
       as={onClick ? "button" : "div"}
       asButtonType="button"
+      position="relative"
     >
       <StyledIconWithCircleBackground
         size={iconWidth}
@@ -68,6 +71,7 @@ export function IconWithCircleBackground({
           }}
         />
       </StyledIconWithCircleBackground>
+      {showNewTag && <NewTag data-testid="icon-new-tag">NEW</NewTag>}
     </Flex>
   );
   return to ? (
@@ -150,3 +154,26 @@ function getPadding(size: IconWidth) {
   }
   return 16;
 }
+
+const NewTag = styled.div`
+  position: absolute;
+  right: 8px;
+  bottom: -4px;
+
+  display: flex;
+  padding: 2px 4px;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+
+  border-radius: 4px;
+  background: #179a1c;
+
+  color: #f9f9f9;
+  font-family: Manrope;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 12px; /* 133.333% */
+  letter-spacing: 0.72px;
+`;

@@ -21,21 +21,27 @@ function buildStandardContentInset(
     ${bp.sm(`
       margin-left: auto;
       margin-right: auto;
-      width: ${smDontAdjustWidth ? "100%" : `calc(100% - ${smPx * 2}px)`};
+      width: 100%;
+      padding-right: ${smDontAdjustWidth ? 0 : smPx}px;
+      padding-left: ${smDontAdjustWidth ? 0 : smPx}px;
     `)}
   `;
   const minSmMaxLgCSS = css`
     ${bp.minSmMaxLg(`
       margin-left: auto;
       margin-right: auto;
-      width: calc(100% - ${minSmMaxLgPx * 2}px);
+      width: 100%;
+      padding-right: ${smDontAdjustWidth ? 0 : minSmMaxLgPx}px;
+      padding-left: ${smDontAdjustWidth ? 0 : minSmMaxLgPx}px;
     `)}
   `;
   const lgCSS = css`
     ${bp.lg(`
       margin-left: auto;
       margin-right: auto;
-      width: calc(100% - ${lgPx * 2}px);
+      width: 100%;
+      padding-right: ${smDontAdjustWidth ? 0 : lgPx}px;
+      padding-left: ${smDontAdjustWidth ? 0 : lgPx}px;
       max-width: 1280px;
     `)}
   `;
