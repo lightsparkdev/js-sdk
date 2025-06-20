@@ -1,5 +1,15 @@
 # @lightsparkdev/oauth-app
 
+## 0.0.53
+
+### Patch Changes
+
+- Updated dependencies [52a274f]
+- Updated dependencies [52a274f]
+  - @lightsparkdev/lightspark-sdk@1.9.4
+  - @lightsparkdev/ui@1.1.4
+  - @lightsparkdev/oauth@0.1.58
+
 ## 0.0.52
 
 ### Patch Changes
