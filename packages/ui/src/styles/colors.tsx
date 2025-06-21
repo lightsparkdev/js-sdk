@@ -86,6 +86,7 @@ const baseColors = {
   // yellow
   primary,
   warning: primary,
+  warningYellow: "#E08A00",
   warningText: "#BB6B01",
   warningBackground: "#FBEECB",
   // orange
