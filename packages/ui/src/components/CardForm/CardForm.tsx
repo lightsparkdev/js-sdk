@@ -84,7 +84,7 @@ type CardFormProps = {
   forceMarginAfterSubtitle?: boolean;
   contentMarginTop?: number | undefined;
   graphicHeader?: React.ReactNode;
-  statusHeaderProps?: StatusHeaderProps;
+  statusHeaderProps?: StatusHeaderProps | undefined;
   centeredContent?: boolean;
   formButtonTopMargin?: number | undefined;
   selectMarginTop?: number | undefined;
@@ -386,7 +386,7 @@ export function CardForm({
   );
 }
 
-interface StatusHeaderProps {
+export interface StatusHeaderProps {
   content: ToReactNodesArgs;
   onClick?: () => void;
 }
