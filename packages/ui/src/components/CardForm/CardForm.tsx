@@ -584,10 +584,6 @@ const formInset = ({
     width: ${wide ? 700 : 408}px;
   `)}
 
-  ${bp.sm(`
-    padding: ${graphicHeader ? "24px" : "0"};
-  `)}
-
   ${graphicHeader || smDontAdjustWidth
     ? `width: 100%;`
     : standardContentInset.smCSS}
