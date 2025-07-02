@@ -1,0 +1,27 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "@lightsparkdev/core#build",
+        "@lightsparkdev/lightspark-sdk#build"
+      ]
+    },
+    "build:deps": {
+      "dependsOn": [
+        "@lightsparkdev/core#build",
+        "@lightsparkdev/lightspark-sdk#build"
+      ]
+    },
+    "start": {
+      "dependsOn": [
+        "@lightsparkdev/core#build",
+        "@lightsparkdev/lightspark-sdk#build"
+      ],
+      "with": [
+        "@lightsparkdev/core#build:watch",
+        "@lightsparkdev/lightspark-sdk#build:watch"
+      ]
+    }
+  }
+}

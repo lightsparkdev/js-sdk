@@ -1,8 +1,10 @@
 #! /bin/bash
 
 # Need an initial build since the next command executes in any order
-build_cmd="turbo run build"
-start_cmd="turbo run build:watch start types:watch lint:watch --parallel --concurrency 200"
+build_cmd="turbo run build:deps"
+# We don't use turbo's watch mode here because it's inefficient to restart
+# these tasks on file change. Instead we rely task level watch mode.
+start_cmd="turbo run start types:watch lint:watch --parallel --concurrency 200"
 
 # Predefined filters
 examples_filters="--filter=...{./apps/examples/*}"
@@ -38,4 +40,3 @@ else
 fi
 
 echo $build_cmd && eval $build_cmd && echo $start_cmd && eval $start_cmd
-
