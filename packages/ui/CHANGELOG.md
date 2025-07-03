@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.1.5
+
+### Patch Changes
+
+- 7a1f6cc: - Theme updates
+
 ## 1.1.4
 
 ### Patch Changes
