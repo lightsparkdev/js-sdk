@@ -525,7 +525,10 @@ const ModalDescription = styled.div`
 
 const ModalButtonRow = styled.div`
   margin-top: ${Spacing.px.lg};
-  ${bp.minSm(`display: flex;`)}
+  display: flex;
+  ${bp.sm(`
+    flex-direction: column;
+  `)}
   gap: 10px;
 
   ${ButtonSelector()} {

@@ -11,6 +11,10 @@
       "cache": false,
       "persistent": true
     },
+    /* Meant for placeholder scripts that enable building only workspace's dependencies instead of the workspace too */
+    "build:deps": {
+      "dependsOn": ["^build"]
+    },
     "build-sb": {
       "outputs": ["storybook-static/**"]
     },
@@ -46,7 +50,8 @@
     },
     "lint:watch": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     },
     "package:checks": {
       "dependsOn": []
@@ -70,7 +75,8 @@
     },
     "types:watch": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["^build"]
     }
   }
 }

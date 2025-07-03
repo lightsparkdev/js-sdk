@@ -61,6 +61,7 @@ export const buttonKinds = [
   "gray99",
   "white21",
   "locked",
+  "warningLight",
 ] as const;
 export type ButtonKind = (typeof buttonKinds)[number];
 

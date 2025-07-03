@@ -79,6 +79,8 @@ const baseThemeColors = {
   text: colors.black,
   vlcNeutral: colors.gray95,
   warning: colors.warning,
+  errorBackground: colors.errorBackground,
+  errorText: colors.errorText,
   transparent: colors.transparent,
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
@@ -161,6 +163,8 @@ const darkBaseTheme: BaseTheme = {
   typography: getTypography(TypographyGroup.Lightspark),
   vlcNeutral: colors.gray20,
   warning: colors.warning,
+  errorBackground: colors.errorBackground,
+  errorText: colors.errorText,
   transparent: colors.transparent,
 
   buttons: defaultButtonsTheme,
@@ -643,6 +647,15 @@ const bridgeBaseSettings = {
         defaultHoverBorderColor: "gray75hover",
         defaultActiveBackgroundColor: "gray75active",
         defaultActiveBorderColor: "gray75active",
+      },
+      warningLight: {
+        defaultColor: "errorText",
+        defaultBackgroundColor: "errorBackground",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "errorBackground",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "errorBackground",
+        defaultActiveBorderColor: "transparent",
       },
     },
   }),

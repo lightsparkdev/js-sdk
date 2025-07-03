@@ -41,6 +41,7 @@ export { Globus as CentralGlobus } from "./Globus.js";
 export { Group3 as CentralGroup3 } from "./Group3.js";
 export { Key2 as CentralKey2 } from "./Key2.js";
 export { Leading as CentralLeading } from "./Leading.js";
+export { Link as CentralLink } from "./Link.js";
 export { Loader as CentralLoader } from "./Loader.js";
 export { Lock as CentralLock } from "./Lock.js";
 export { MagnifyingGlass as CentralMagnifyingGlass } from "./MagnifyingGlass.js";
