@@ -4,7 +4,6 @@ import autoBind from "auto-bind";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 import type { Client as WsClient } from "graphql-ws";
-import { createClient } from "graphql-ws";
 import { Observable } from "zen-observable-ts";
 
 import type Query from "./Query.js";
@@ -18,7 +17,7 @@ import type { SigningKey } from "../crypto/SigningKey.js";
 import LightsparkException from "../LightsparkException.js";
 import { logger } from "../Logger.js";
 import { b64encode } from "../utils/base64.js";
-import { isNode } from "../utils/environment.js";
+import { isBare, isNode } from "../utils/environment.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
 dayjs.extend(utc);
@@ -32,8 +31,8 @@ type BodyData = {
 };
 
 class Requester {
-  private wsClient: Promise<WsClient>;
-  private resolveWsClient: ((value: WsClient) => void) | null = null;
+  private wsClient: Promise<WsClient | null>;
+  private resolveWsClient: ((value: WsClient | null) => void) | null = null;
   constructor(
     private readonly nodeKeyCache: NodeKeyCache,
     private readonly schemaEndpoint: string,
@@ -44,7 +43,7 @@ class Requester {
     private readonly signingKey?: SigningKey,
     private readonly fetchImpl: typeof fetch = fetch,
   ) {
-    this.wsClient = new Promise<WsClient>((resolve) => {
+    this.wsClient = new Promise<WsClient | null>((resolve) => {
       this.resolveWsClient = resolve;
     });
     void this.initWsClient(baseUrl, authProvider);
@@ -57,6 +56,11 @@ class Requester {
       return this.wsClient;
     }
 
+    if (isBare) {
+      /* graphql-ws library is currently not supported in Bare environment, see LIG-7942 */
+      return null;
+    }
+
     let websocketImpl;
     if (isNode && typeof WebSocket === "undefined") {
       const wsModule = await import("ws");
@@ -66,6 +70,9 @@ class Requester {
     if (baseUrl.startsWith("http://")) {
       websocketProtocol = "ws";
     }
+
+    const graphqlWsModule = await import("graphql-ws");
+    const { createClient } = graphqlWsModule;
 
     const wsClient = createClient({
       url: `${websocketProtocol}://${this.stripProtocol(this.baseUrl)}/${
@@ -99,6 +106,7 @@ class Requester {
     variables: { [key: string]: unknown } = {},
   ) {
     logger.trace(`Requester.subscribe variables`, variables);
+
     const operationNameRegex = /^\s*(query|mutation|subscription)\s+(\w+)/i;
     const operationMatch = queryPayload.match(operationNameRegex);
     if (!operationMatch || operationMatch.length < 3) {
@@ -134,6 +142,15 @@ class Requester {
       void (async () => {
         try {
           const wsClient = await this.wsClient;
+
+          if (!wsClient) {
+            /* graphql-ws library is currently not supported in Bare environment, see LIG-7942 */
+            throw new LightsparkException(
+              "WebSocketNotInitialized",
+              "WebSocket client is not initialized or is not available in the current environment.",
+            );
+          }
+
           if (!canceled) {
             cleanup = wsClient.subscribe(bodyData, {
               next: (data) => observer.next(data as { data: T }),
