@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.6
+
+### Patch Changes
+
+- e9152bc: - Theme, typography updates
+- Updated dependencies [e9152bc]
+  - @lightsparkdev/core@1.4.3
+
 ## 1.1.5
 
 ### Patch Changes
