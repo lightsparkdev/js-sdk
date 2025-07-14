@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/lightspark-sdk",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -69,8 +69,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@lightsparkdev/core": "1.4.2",
-    "@lightsparkdev/crypto-wasm": "0.1.16",
+    "@lightsparkdev/core": "1.4.3",
+    "@lightsparkdev/crypto-wasm": "0.1.17",
     "dayjs": "^1.11.7",
     "dotenv": "^16.3.1",
     "graphql": "^16.6.0",

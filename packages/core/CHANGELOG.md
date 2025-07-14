@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.4.3
+
+### Patch Changes
+
+- e9152bc: - Add INR support to utils/currency
+  - Avoid loading graphql-ws in Bare environment due to lack of support there
+
 ## 1.4.2
 
 ### Patch Changes
