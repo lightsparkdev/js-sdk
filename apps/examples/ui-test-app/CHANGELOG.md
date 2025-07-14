@@ -1,5 +1,12 @@
 # @lightsparkdev/ui-test-app
 
+## 0.0.24
+
+### Patch Changes
+
+- Updated dependencies [7a1f6cc]
+  - @lightsparkdev/ui@1.1.5
+
 ## 0.0.23
 
 ### Patch Changes
