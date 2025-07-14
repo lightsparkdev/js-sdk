@@ -845,3 +845,24 @@ export function localeToCurrencySymbol(locale: string) {
   const { symbol } = separateCurrencyStrParts(formatted);
   return symbol;
 }
+
+/**
+ * Formats an amount from the smallest currency unit to a display string
+ * @param amount - The amount in the smallest currency unit (No decimals)
+ * @param currency - The currency object with code and decimals
+ * @returns Formatted string like "12.50 USD" or empty string if invalid
+ */
+export function formatInviteAmount(
+  amount: number | null | undefined,
+  currency: UmaCurrency | null | undefined,
+): string {
+  if (!amount || !currency) {
+    return "";
+  }
+
+  const displayAmount = (amount / Math.pow(10, currency.decimals)).toFixed(
+    currency.decimals,
+  );
+
+  return `${displayAmount} ${currency.code}`;
+}
