@@ -7,6 +7,7 @@ export { ArrowsRepeatLeftRight as CentralArrowsRepeatLeftRight } from "./ArrowsR
 export { ArrowUpDown as CentralArrowUpDown } from "./ArrowUpDown.js";
 export { ArrowUpRight as CentralArrowUpRight } from "./ArrowUpRight.js";
 export { Bank as CentralBank } from "./Bank.js";
+export { BankBold as CentralBankBold } from "./BankBold.js";
 export { BarsThree as CentralBarsThree } from "./BarsThree.js";
 export { Bell2 as CentralBell2 } from "./Bell2.js";
 export { Bubble5 as CentralBubble5 } from "./Bubble5.js";
@@ -67,6 +68,7 @@ export { ShapesPlusXSquareCircleFill as CentralShapesPlusXSquareCircleFill } fro
 export { ShareAndroid as CentralShareAndroid } from "./ShareAndroid.js";
 export { ShareIOS as CentralShareIOS } from "./ShareIOS.js";
 export { ShieldCheck as CentralShieldCheck } from "./ShieldCheck.js";
+export { ShieldCheckLite as CentralShieldCheckLite } from "./ShieldCheckLite.js";
 export { SparklesSoft as CentralSparklesSoft } from "./SparklesSoft.js";
 export { SquareArrowTopRight2 as CentralSquareArrowTopRight2 } from "./SquareArrowTopRight2.js";
 export { SquareBehindSquare1 as CentralSquareBehindSquare1 } from "./SquareBehindSquare1.js";
