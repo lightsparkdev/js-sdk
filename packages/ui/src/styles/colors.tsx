@@ -40,6 +40,7 @@ const baseColors = {
   // green
   success: "#17C27C",
   green: "#46ac4a",
+  green10: "#e6f4e6",
   green33: "#179257",
   green35: "#19981E",
   green37: "#179A1C",
@@ -75,8 +76,10 @@ const baseColors = {
   grayBlue95: "#F2F3F5",
   grayBlue96: "#F2F5F7",
   // purple
+  purple10: "#e6e8f8",
   purple43: "#820AD1",
   purple55: "#8B38DE",
+  purple60: "#7366c5",
   // red
   red50: "#E31A1A",
   red42a10: "#D800271A",
