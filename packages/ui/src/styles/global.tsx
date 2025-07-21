@@ -15,6 +15,8 @@ const getFontImport = (theme: Theme) => {
   const manropeStr = "Manrope:wght@200..800";
   const montserratStr = "Montserrat:ital,wght@0,100..900;1,100..900";
   const robotoMonoStr = "Roboto+Mono:ital,wght@0,100..700;1,100..700";
+  const suisseIntlStr = "Suisse+Intl:wght@100..900";
+  const suisseIntlMonoStr = "Suisse+Intl+Mono:wght@100..900";
 
   if (theme.typography.fontFamilies.main === "Inter") {
     fontStrs.push(interStr);
@@ -22,10 +24,14 @@ const getFontImport = (theme: Theme) => {
     fontStrs.push(manropeStr);
   } else if (theme.typography.fontFamilies.main === "Montserrat") {
     fontStrs.push(montserratStr);
+  } else if (theme.typography.fontFamilies.main === "Suisse Intl") {
+    fontStrs.push(suisseIntlStr);
   }
 
   if (theme.typography.fontFamilies.code === "Roboto Mono") {
     fontStrs.push(robotoMonoStr);
+  } else if (theme.typography.fontFamilies.code === "Suisse Intl Mono") {
+    fontStrs.push(suisseIntlMonoStr);
   }
 
   if (fontStrs.length) {

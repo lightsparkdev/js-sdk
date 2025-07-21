@@ -39,6 +39,8 @@ export enum Themes {
   UmameDocsDark = "umameDocsDark",
   BridgeLight = "bridgeLight",
   BridgeDark = "bridgeDark",
+  NageLight = "nageLight",
+  NageDark = "nageDark",
 }
 
 export function isTheme(theme: unknown): theme is Themes {
@@ -730,6 +732,171 @@ const bridgeDarkTheme = extend(darkTheme, {
   type: Themes.BridgeDark,
 });
 
+const nageBaseSettings = {
+  secondary: colors.grayBlue43,
+  mcNeutral: colors.grayBlue43,
+  success: colors.green37,
+  link: colors.blue39,
+  linkLight: colors.blue10,
+  typography: getTypography(TypographyGroup.Nage, {
+    main: "Suisse Intl",
+    code: "Suisse Intl Mono",
+  }),
+  buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+    defaultTypographyType: "Title",
+    defaultSize: "Medium",
+    defaultBorderRadius: 999,
+    defaultPaddingsY: {
+      ExtraSmall: 10,
+      Small: 10,
+      Schmedium: 13,
+      Medium: 13,
+      Mlarge: 13,
+      Large: 13,
+    },
+    defaultPaddingsX: {
+      ExtraSmall: 16,
+      Small: 16,
+      Schmedium: 24,
+      Medium: 24,
+      Mlarge: 24,
+      Large: 24,
+    },
+    kinds: {
+      primary: {
+        defaultColor: "bg",
+        defaultBackgroundColor: "blue39",
+        defaultBorderColor: "blue39",
+        defaultHoverBackgroundColor: "blue37",
+        defaultHoverBorderColor: "blue37",
+        defaultActiveBackgroundColor: "blue22",
+        defaultActiveBorderColor: "blue22",
+      },
+      ghost: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultHoverBackgroundColor: "transparent",
+        defaultBorderColor: "transparent",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "transparent",
+        defaultPaddingsY: {
+          ExtraSmall: 0,
+          Small: 0,
+          Schmedium: 0,
+          Medium: 0,
+          Mlarge: 0,
+          Large: 0,
+        },
+        defaultPaddingsX: {
+          ExtraSmall: 0,
+          Small: 0,
+          Schmedium: 0,
+          Medium: 0,
+          Mlarge: 0,
+          Large: 0,
+        },
+      },
+      secondary: {
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "grayBlue94",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "grayBlue88",
+        defaultActiveBorderColor: "transparent",
+      },
+      tertiary: {
+        defaultColor: "gray99",
+        defaultBackgroundColor: "gray99",
+        defaultBorderColor: "gray99",
+        defaultHoverBackgroundColor: "gray98",
+        defaultHoverBorderColor: "gray98",
+        defaultActiveBackgroundColor: "gray",
+        defaultActiveBorderColor: "gray",
+      },
+      transparent: {
+        defaultColor: "secondary",
+        defaultBackgroundColor: "transparent",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "transparenta02",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "transparenta08",
+        defaultActiveBorderColor: "transparent",
+      },
+      gray: {
+        defaultColor: "gray",
+        defaultBackgroundColor: "gray",
+        defaultBorderColor: "gray",
+        defaultHoverBackgroundColor: "grayhover",
+        defaultHoverBorderColor: "grayhover",
+        defaultActiveBackgroundColor: "grayactive",
+        defaultActiveBorderColor: "grayactive",
+      },
+      grayGradient: {
+        defaultColor: "gray98",
+        defaultBackgroundColor: "gray98",
+        defaultBorderColor: "gray98",
+        defaultHoverBackgroundColor: "gray98",
+        defaultHoverBorderColor: "gray98",
+      },
+      linkLight: {
+        defaultColor: "link",
+        defaultBackgroundColor: "linkLight",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "linkLight",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "linkLight",
+        defaultActiveBorderColor: "transparent",
+      },
+      locked: {
+        defaultColor: "gray75",
+        defaultBackgroundColor: "gray75",
+        defaultBorderColor: "gray75",
+        defaultHoverBackgroundColor: "gray75hover",
+        defaultHoverBorderColor: "gray75hover",
+        defaultActiveBackgroundColor: "gray75active",
+        defaultActiveBorderColor: "gray75active",
+      },
+      warningLight: {
+        defaultColor: "errorText",
+        defaultBackgroundColor: "errorBackground",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "errorBackground",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "errorBackground",
+        defaultActiveBorderColor: "transparent",
+      },
+    },
+  }),
+  loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
+    defaultIconName: "UmaBridgeLoading",
+    kinds: {
+      primary: {
+        defaultIconName: "UmaBridgeLoading",
+      },
+      secondary: {
+        defaultIconName: "UmaBridgeLoadingTransparent",
+      },
+    },
+  }),
+};
+
+const nageLightTheme = extend(lightTheme, {
+  ...nageBaseSettings,
+  type: Themes.NageLight,
+  bg: colors.gray97,
+  smBg: colors.gray97,
+  text: colors.grayBlue9,
+  secondary: colors.gray2,
+  tertiary: colors.gray6,
+  inputBackground: colors.white,
+  danger: colors.red50,
+});
+
+const nageDarkTheme = extend(darkTheme, {
+  ...nageBaseSettings,
+  type: Themes.NageDark,
+});
+
 export const themes = {
   [Themes.Light]: lightTheme,
   [Themes.Dark]: darkTheme,
@@ -741,6 +908,8 @@ export const themes = {
   [Themes.UmameDocsDark]: umameDocsDarkTheme,
   [Themes.BridgeLight]: bridgeLightTheme,
   [Themes.BridgeDark]: bridgeDarkTheme,
+  [Themes.NageLight]: nageLightTheme,
+  [Themes.NageDark]: nageDarkTheme,
 } as const;
 
 function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
@@ -855,6 +1024,7 @@ export const isDark = (theme: Theme) =>
   [
     Themes.Dark,
     Themes.BridgeDark,
+    Themes.NageDark,
     Themes.LightsparkDocsDark,
     Themes.UmameDocsDark,
     Themes.UmaAuthSdkDark,
@@ -863,6 +1033,7 @@ export const isLight = (theme: Theme) =>
   [
     Themes.Light,
     Themes.BridgeLight,
+    Themes.NageLight,
     Themes.LightsparkDocsLight,
     Themes.UmameDocsLight,
     Themes.UmaAuthSdkLight,
@@ -870,6 +1041,9 @@ export const isLight = (theme: Theme) =>
 
 export const isBridge = (theme: Theme) =>
   [Themes.BridgeLight, Themes.BridgeDark].includes(theme.type);
+
+export const isNage = (theme: Theme) =>
+  [Themes.NageLight, Themes.NageDark].includes(theme.type);
 
 export const themeOr =
   (lightValue: string, darkValue: string) =>
