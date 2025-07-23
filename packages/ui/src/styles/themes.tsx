@@ -739,8 +739,8 @@ const nageBaseSettings = {
   link: colors.blue39,
   linkLight: colors.blue10,
   typography: getTypography(TypographyGroup.Nage, {
-    main: "Suisse Intl",
-    code: "Suisse Intl Mono",
+    main: "SuisseIntl",
+    code: "SuisseIntl-Mono",
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Title",

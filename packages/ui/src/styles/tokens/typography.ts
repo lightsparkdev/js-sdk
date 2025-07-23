@@ -313,6 +313,7 @@ type TypographyTokens = {
   paragraphIndent: string;
   textCase: string;
   textDecoration: string;
+  fontFeatureSettings?: string;
 };
 
 type TypographyTypes = {
@@ -4509,6 +4510,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4520,6 +4522,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4531,6 +4534,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Headline]: {
@@ -4544,6 +4548,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4555,6 +4560,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4566,6 +4572,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Title]: {
@@ -4579,6 +4586,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4590,6 +4598,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4601,6 +4610,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Body]: {
@@ -4614,6 +4624,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4625,6 +4636,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4636,6 +4648,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.BodyStrong]: {
@@ -4649,6 +4662,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4660,6 +4674,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4671,6 +4686,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Label]: {
@@ -4684,6 +4700,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4695,6 +4712,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4706,6 +4724,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.LabelModerate]: {
@@ -4719,6 +4738,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4730,6 +4750,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4741,6 +4762,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.LabelStrong]: {
@@ -4754,6 +4776,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4765,6 +4788,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4776,6 +4800,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Overline]: {
@@ -4789,6 +4814,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.code}`,
@@ -4800,6 +4826,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.code}`,
@@ -4811,6 +4838,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
       },
@@ -4826,6 +4854,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4837,6 +4866,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4848,6 +4878,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Headline]: {
@@ -4861,6 +4892,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4872,6 +4904,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4883,6 +4916,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Title]: {
@@ -4896,6 +4930,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4907,6 +4942,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4918,6 +4954,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Body]: {
@@ -4931,6 +4968,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4942,6 +4980,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4953,6 +4992,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.BodyStrong]: {
@@ -4966,6 +5006,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4977,6 +5018,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -4988,6 +5030,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Label]: {
@@ -5001,6 +5044,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5012,6 +5056,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5023,6 +5068,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.LabelModerate]: {
@@ -5036,6 +5082,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5047,6 +5094,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5058,6 +5106,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.LabelStrong]: {
@@ -5071,6 +5120,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5082,6 +5132,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
@@ -5093,6 +5144,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.none}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
         [TypographyType.Overline]: {
@@ -5106,6 +5158,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.code}`,
@@ -5117,6 +5170,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.code}`,
@@ -5128,6 +5182,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
             textCase: `${TEXT_CASE.uppercase}`,
             textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
           },
         },
       },
@@ -5180,6 +5235,8 @@ function mayTokensToStyles(tokens: Record<string, string>) {
           return `text-indent: ${entry[1]};`;
         case "textCase":
           return `text-transform: ${entry[1]};`;
+        case "fontFeatureSettings":
+          return `font-feature-settings: ${entry[1]};`;
         default:
           return `${entry[0]}: ${entry[1]};`;
       }

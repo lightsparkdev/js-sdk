@@ -24,13 +24,13 @@ const getFontImport = (theme: Theme) => {
     fontStrs.push(manropeStr);
   } else if (theme.typography.fontFamilies.main === "Montserrat") {
     fontStrs.push(montserratStr);
-  } else if (theme.typography.fontFamilies.main === "Suisse Intl") {
+  } else if (theme.typography.fontFamilies.main === "SuisseIntl") {
     fontStrs.push(suisseIntlStr);
   }
 
   if (theme.typography.fontFamilies.code === "Roboto Mono") {
     fontStrs.push(robotoMonoStr);
-  } else if (theme.typography.fontFamilies.code === "Suisse Intl Mono") {
+  } else if (theme.typography.fontFamilies.code === "SuisseIntl-Mono") {
     fontStrs.push(suisseIntlMonoStr);
   }
 
@@ -43,8 +43,72 @@ const getFontImport = (theme: Theme) => {
   return importStr;
 };
 
+const getFontFaces = (theme: Theme) => {
+  let fontFacesStr = "";
+  if (theme.typography.fontFamilies.main === "SuisseIntl") {
+    fontFacesStr += `
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Light.woff2") format("woff2");
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
+        font-weight: 450;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "SuisseIntl";
+        src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+    `;
+  }
+  if (theme.typography.fontFamilies.code === "SuisseIntl-Mono") {
+    fontFacesStr += `
+      @font-face {
+        font-family: "SuisseIntl-Mono";
+        src: url("/fonts/SuisseIntlMono-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+    `;
+  }
+
+  return fontFacesStr;
+};
+
 export const globalComponentStyles = ({ theme }: ThemeProp) => css`
   ${getFontImport(theme)};
+  ${getFontFaces(theme)};
 
   html {
     font-size: ${rootFontSizeRems}rem;
