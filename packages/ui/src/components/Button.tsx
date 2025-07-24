@@ -340,7 +340,7 @@ export const Button = forwardRef<
             {renderTypography(typography.type, {
               children: text,
               color: typography.color,
-              size,
+              size: typography.size,
             })}
           </div>
         )}
