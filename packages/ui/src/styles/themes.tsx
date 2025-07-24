@@ -868,13 +868,13 @@ const nageBaseSettings = {
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
-    defaultIconName: "UmaBridgeLoading",
+    defaultIconName: "CentralLoadingCircle",
     kinds: {
       primary: {
-        defaultIconName: "UmaBridgeLoading",
+        defaultIconName: "CentralLoadingCircle",
       },
       secondary: {
-        defaultIconName: "UmaBridgeLoadingTransparent",
+        defaultIconName: "CentralLoadingCircle",
       },
     },
   }),
