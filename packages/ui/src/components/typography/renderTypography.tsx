@@ -2,6 +2,7 @@ import React, { type ComponentProps, type ElementType } from "react";
 import { type TypographyTypeKey } from "../../styles/tokens/typography.js";
 import { BodyString } from "./base/Body.js";
 import { BodyStrongString } from "./base/BodyStrong.js";
+import { BtnString } from "./base/Btn.js";
 import { CodeString } from "./base/Code.js";
 import { DisplayString } from "./base/Display.js";
 import { HeadlineString } from "./base/Headline.js";
@@ -23,6 +24,7 @@ export const typographyMap = {
   Overline: OverlineString,
   Code: CodeString,
   "Code Strong": CodeString,
+  Btn: BtnString,
 } as const;
 
 type TypographyMapType = typeof typographyMap;

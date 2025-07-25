@@ -14,6 +14,7 @@ export const allowedButtonTypographyTypes = [
   "Label",
   "Label Moderate",
   "Label Strong",
+  "Btn",
 ] as const;
 export type AllowedButtonTypographyTypes =
   (typeof allowedButtonTypographyTypes)[number];

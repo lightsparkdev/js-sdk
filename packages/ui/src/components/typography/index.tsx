@@ -20,6 +20,7 @@ export { StyledOverline } from "./base/Overline.js";
 export { StyledTitle } from "./base/Title.js";
 export { Body } from "./Body.js";
 export { BodyStrong } from "./BodyStrong.js";
+export { Btn } from "./Btn.js";
 export { Code } from "./Code.js";
 export { Display } from "./Display.js";
 export { Headline } from "./Headline.js";

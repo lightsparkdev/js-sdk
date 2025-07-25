@@ -1,35 +1,38 @@
 import { type PathProps } from "../types.js";
 
-export function Link({
-  strokeWidth = "1.5",
+export function Passport({
+  strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
-        d="M8.125 4.60308L8.93038 3.79768C10.9385 1.78965 14.1941 1.78965 16.2021 3.79768C18.2101 5.80569 18.2101 9.06133 16.2021 11.0693L15.3949 11.8766"
+        d="M19.5 3.5H4.5V20.5H19.5V3.5Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M11.873 15.3985L11.0692 16.2023C9.06117 18.2103 5.80554 18.2103 3.79752 16.2023C1.7895 14.1943 1.78949 10.9387 3.79752 8.93067L4.60722 8.12094"
+        d="M9.5 16H14.5"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M7.9165 12.0833L12.0832 7.91666"
+        d="M14.5 10.5C14.5 11.8807 13.3807 13 12 13C10.6193 13 9.5 11.8807 9.5 10.5C9.5 9.11929 10.6193 8 12 8C13.3807 8 14.5 9.11929 14.5 10.5Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

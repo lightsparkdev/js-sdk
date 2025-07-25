@@ -1,35 +1,38 @@
 import { type PathProps } from "../types.js";
 
-export function Link({
-  strokeWidth = "1.5",
+export function CryptoWallet({
+  strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
-        d="M8.125 4.60308L8.93038 3.79768C10.9385 1.78965 14.1941 1.78965 16.2021 3.79768C18.2101 5.80569 18.2101 9.06133 16.2021 11.0693L15.3949 11.8766"
+        d="M6 13.75L9 15.5V19L6 20.75L3 19V15.5L6 13.75Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M11.873 15.3985L11.0692 16.2023C9.06117 18.2103 5.80554 18.2103 3.79752 16.2023C1.7895 14.1943 1.78949 10.9387 3.79752 8.93067L4.60722 8.12094"
+        d="M4 6.5C4 5.11929 5.11929 4 6.5 4H16V9M4 6.5C4 7.88071 5.11929 9 6.5 9H16M4 6.5V10.5M16 9H20V20H13"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M7.9165 12.0833L12.0832 7.91666"
+        d="M15.5 14.5H15.51M15.75 14.5C15.75 14.6381 15.6381 14.75 15.5 14.75C15.3619 14.75 15.25 14.6381 15.25 14.5C15.25 14.3619 15.3619 14.25 15.5 14.25C15.6381 14.25 15.75 14.3619 15.75 14.5Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );

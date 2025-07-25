@@ -22,7 +22,7 @@ type ToastQueueArg = {
   duration: number | null;
   id: string;
   expires: number;
-  type?: "error" | "success" | "info";
+  type?: "error" | "success" | "info" | "black";
 };
 
 type Toast = ToastQueueArg & {
@@ -253,6 +253,8 @@ export function Toasts({
                     ? colors.red50
                     : toast.type === "success"
                     ? colors.green37
+                    : toast.type === "black"
+                    ? colors.black
                     : undefined
                 }
                 isActive={toast.isActive}

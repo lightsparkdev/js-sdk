@@ -1,35 +1,45 @@
 import { type PathProps } from "../types.js";
 
-export function Link({
-  strokeWidth = "1.5",
+export function BellOff({
+  strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
-        d="M8.125 4.60308L8.93038 3.79768C10.9385 1.78965 14.1941 1.78965 16.2021 3.79768C18.2101 5.80569 18.2101 9.06133 16.2021 11.0693L15.3949 11.8766"
+        d="M16 17C16 19.2091 14.2091 21 12 21C9.79086 21 8 19.2091 8 17"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M11.873 15.3985L11.0692 16.2023C9.06117 18.2103 5.80554 18.2103 3.79752 16.2023C1.7895 14.1943 1.78949 10.9387 3.79752 8.93067L4.60722 8.12094"
+        d="M6 6.19177C5.35964 7.14102 4.93708 8.25397 4.80754 9.46305L4 17H17"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M7.9165 12.0833L12.0832 7.91666"
+        d="M19.6786 14L19.1925 9.46301C18.7986 5.78732 15.6967 3 12 3C10.9336 3 9.91668 3.23195 9 3.65027"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
+      />
+      <path
+        d="M3 3L21 21"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap={strokeLinecap}
+        strokeLinejoin={strokeLinejoin}
       />
     </svg>
   );

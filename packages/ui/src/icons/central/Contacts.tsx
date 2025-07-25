@@ -1,35 +1,38 @@
 import { type PathProps } from "../types.js";
 
-export function Link({
-  strokeWidth = "1.5",
+export function Contacts({
+  strokeWidth = "2",
   strokeLinecap = "round",
   strokeLinejoin = "round",
 }: PathProps) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
       <path
-        d="M8.125 4.60308L8.93038 3.79768C10.9385 1.78965 14.1941 1.78965 16.2021 3.79768C18.2101 5.80569 18.2101 9.06133 16.2021 11.0693L15.3949 11.8766"
+        d="M19 21H5V18H19V3H5V17.5"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M11.873 15.3985L11.0692 16.2023C9.06117 18.2103 5.80554 18.2103 3.79752 16.2023C1.7895 14.1943 1.78949 10.9387 3.79752 8.93067L4.60722 8.12094"
+        d="M12.0015 12C10.4866 12 10.116 12.6357 10.028 12.8934C10.0088 12.9494 10.0528 13 10.112 13H13.891C13.9502 13 13.9941 12.9494 13.975 12.8934C13.887 12.6357 13.5164 12 12.0015 12Z"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
       <path
-        d="M7.9165 12.0833L12.0832 7.91666"
+        d="M12.75 8.75C12.75 9.16421 12.4142 9.5 12 9.5C11.5858 9.5 11.25 9.16421 11.25 8.75M12.75 8.75C12.75 8.33579 12.4142 8 12 8C11.5858 8 11.25 8.33579 11.25 8.75M12.75 8.75H11.25"
         stroke="currentColor"
         strokeWidth={strokeWidth}
         strokeLinecap={strokeLinecap}
         strokeLinejoin={strokeLinejoin}
-        vectorEffect="non-scaling-stroke"
       />
     </svg>
   );
