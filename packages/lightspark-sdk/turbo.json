@@ -3,6 +3,9 @@
   "tasks": {
     "package:checks": {
       "dependsOn": ["build"]
+    },
+    "build:watch": {
+      "with": ["@lightsparkdev/core#build:watch"]
     }
   }
 }

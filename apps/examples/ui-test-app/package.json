@@ -20,7 +20,6 @@
     "lint": "eslint .",
     "postversion": "yarn build",
     "start": "yarn vite",
-    "preview": "yarn tsc && yarn vite preview",
     "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
     "types": "echo \"TODO: Some imports depend on the inheriting app config. May not be possible to run types here separately unless we fix that.\"",
     "types:watch": "echo \"TODO: Some imports depend on the inheriting app config. May not be possible to run types here separately unless we fix that.\""
