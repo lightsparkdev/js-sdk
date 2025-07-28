@@ -16,6 +16,8 @@ export { default as BitcoinNetwork } from "./BitcoinNetwork.js";
 export { default as BlockchainBalance } from "./BlockchainBalance.js";
 export { default as CancelInvoiceInput } from "./CancelInvoiceInput.js";
 export { default as CancelInvoiceOutput } from "./CancelInvoiceOutput.js";
+export { default as CancelUmaInvitationInput } from "./CancelUmaInvitationInput.js";
+export { default as CancelUmaInvitationOutput } from "./CancelUmaInvitationOutput.js";
 export { default as Channel } from "./Channel.js";
 export {
   default as ChannelClosingTransaction,
@@ -114,6 +116,7 @@ export { default as LightsparkNodeToChannelsConnection } from "./LightsparkNodeT
 export { default as LightsparkNodeToDailyLiquidityForecastsConnection } from "./LightsparkNodeToDailyLiquidityForecastsConnection.js";
 export { default as LightsparkNodeWithOSK } from "./LightsparkNodeWithOSK.js";
 export { default as LightsparkNodeWithRemoteSigning } from "./LightsparkNodeWithRemoteSigning.js";
+export { default as LookupUmaAddressInput } from "./LookupUmaAddressInput.js";
 export { default as MultiSigAddressValidationParameters } from "./MultiSigAddressValidationParameters.js";
 export { default as Node, getNodeQuery } from "./Node.js";
 export { default as NodeAddress } from "./NodeAddress.js";
@@ -195,10 +198,13 @@ export { default as TransactionFailures } from "./TransactionFailures.js";
 export { default as TransactionStatus } from "./TransactionStatus.js";
 export { default as TransactionType } from "./TransactionType.js";
 export { default as TransactionUpdate } from "./TransactionUpdate.js";
+export { default as UmaCurrency, getUmaCurrencyQuery } from "./UmaCurrency.js";
+export { default as UmaCurrencyAmount } from "./UmaCurrencyAmount.js";
 export {
   default as UmaInvitation,
   getUmaInvitationQuery,
 } from "./UmaInvitation.js";
+export { default as UmaInvitationStatus } from "./UmaInvitationStatus.js";
 export { default as UpdateChannelPerCommitmentPointInput } from "./UpdateChannelPerCommitmentPointInput.js";
 export { default as UpdateChannelPerCommitmentPointOutput } from "./UpdateChannelPerCommitmentPointOutput.js";
 export { default as UpdateNodeSharedSecretInput } from "./UpdateNodeSharedSecretInput.js";

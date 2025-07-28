@@ -40,6 +40,8 @@ export enum WebhookEventType {
   HIGH_BALANCE = "HIGH_BALANCE",
 
   CHANNEL_OPENING_FEES = "CHANNEL_OPENING_FEES",
+
+  HOLD_INVOICE_ACCEPTED = "HOLD_INVOICE_ACCEPTED",
 }
 
 export default WebhookEventType;

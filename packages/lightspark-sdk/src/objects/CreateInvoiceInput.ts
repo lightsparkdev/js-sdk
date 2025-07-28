@@ -16,10 +16,7 @@ interface CreateInvoiceInput {
 
   invoiceType?: InvoiceType | undefined;
 
-  /**
-   * The expiry of the invoice in seconds. Default value is 86400 (1 day) for AMP invoice, or
-   * 3600 (1 hour) for STANDARD invoice.
-   **/
+  /** The expiry of the invoice in seconds. Default value is 86400 (1 day). **/
   expirySecs?: number | undefined;
 
   /**
@@ -28,6 +25,13 @@ interface CreateInvoiceInput {
    * REQUEST_INVOICE_PAYMENT_HASH.
    **/
   paymentHash?: string | undefined;
+
+  /**
+   * The 32-byte nonce used to generate the invoice preimage if applicable. It will later be
+   * included in RELEASE_PAYMENT_PREIMAGE webhook to help recover the raw preimage. This can only
+   * be specified when `payment_hash` is specified.
+   **/
+  preimageNonce?: string | undefined;
 }
 
 export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
@@ -41,6 +45,7 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
     paymentHash: obj["create_invoice_input_payment_hash"],
+    preimageNonce: obj["create_invoice_input_preimage_nonce"],
   } as CreateInvoiceInput;
 };
 export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
@@ -51,6 +56,7 @@ export const CreateInvoiceInputToJson = (obj: CreateInvoiceInput): any => {
     create_invoice_input_invoice_type: obj.invoiceType,
     create_invoice_input_expiry_secs: obj.expirySecs,
     create_invoice_input_payment_hash: obj.paymentHash,
+    create_invoice_input_preimage_nonce: obj.preimageNonce,
   };
 };
 

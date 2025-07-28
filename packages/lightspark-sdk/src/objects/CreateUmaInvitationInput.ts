@@ -6,6 +6,9 @@ interface CreateUmaInvitationInput {
    * receiving the invitation.
    **/
   inviterUma: string;
+
+  /** The optional first name of the user creating the invitation. **/
+  inviterFirstName?: string | undefined;
 }
 
 export const CreateUmaInvitationInputFromJson = (
@@ -13,6 +16,7 @@ export const CreateUmaInvitationInputFromJson = (
 ): CreateUmaInvitationInput => {
   return {
     inviterUma: obj["create_uma_invitation_input_inviter_uma"],
+    inviterFirstName: obj["create_uma_invitation_input_inviter_first_name"],
   } as CreateUmaInvitationInput;
 };
 export const CreateUmaInvitationInputToJson = (
@@ -20,6 +24,7 @@ export const CreateUmaInvitationInputToJson = (
 ): any => {
   return {
     create_uma_invitation_input_inviter_uma: obj.inviterUma,
+    create_uma_invitation_input_inviter_first_name: obj.inviterFirstName,
   };
 };
 

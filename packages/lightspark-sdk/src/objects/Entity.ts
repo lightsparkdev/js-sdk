@@ -1417,6 +1417,16 @@ fragment EntityFragment on Entity {
             id
         }
     }
+    ... on UmaCurrency {
+        __typename
+        uma_currency_id: id
+        uma_currency_created_at: created_at
+        uma_currency_updated_at: updated_at
+        uma_currency_code: code
+        uma_currency_symbol: symbol
+        uma_currency_name: name
+        uma_currency_decimals: decimals
+    }
     ... on UmaInvitation {
         __typename
         uma_invitation_id: id
@@ -1425,9 +1435,20 @@ fragment EntityFragment on Entity {
         uma_invitation_code: code
         uma_invitation_url: url
         uma_invitation_inviter_uma: inviter_uma
+        uma_invitation_inviter_first_name: inviter_first_name
         uma_invitation_invitee_uma: invitee_uma
         uma_invitation_incentives_status: incentives_status
         uma_invitation_incentives_ineligibility_reason: incentives_ineligibility_reason
+        uma_invitation_status: status
+        uma_invitation_payment_amount: payment_amount {
+            __typename
+            uma_currency_amount_value: value
+            uma_currency_amount_currency: currency {
+                id
+            }
+        }
+        uma_invitation_cancelled_at: cancelled_at
+        uma_invitation_expires_at: expires_at
     }
     ... on Wallet {
         __typename

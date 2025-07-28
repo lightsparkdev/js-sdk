@@ -14,6 +14,9 @@ interface CreateInvitationWithIncentivesInput {
 
   /** The region of the user creating the invitation. **/
   inviterRegion: RegionCode;
+
+  /** The optional first name of the user creating the invitation. **/
+  inviterFirstName?: string | undefined;
 }
 
 export const CreateInvitationWithIncentivesInputFromJson = (
@@ -27,6 +30,8 @@ export const CreateInvitationWithIncentivesInputFromJson = (
       RegionCode[
         obj["create_invitation_with_incentives_input_inviter_region"]
       ] ?? RegionCode.FUTURE_VALUE,
+    inviterFirstName:
+      obj["create_invitation_with_incentives_input_inviter_first_name"],
   } as CreateInvitationWithIncentivesInput;
 };
 export const CreateInvitationWithIncentivesInputToJson = (
@@ -37,6 +42,8 @@ export const CreateInvitationWithIncentivesInputToJson = (
     create_invitation_with_incentives_input_inviter_phone_hash:
       obj.inviterPhoneHash,
     create_invitation_with_incentives_input_inviter_region: obj.inviterRegion,
+    create_invitation_with_incentives_input_inviter_first_name:
+      obj.inviterFirstName,
   };
 };
 
