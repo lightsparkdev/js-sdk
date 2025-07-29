@@ -61,8 +61,12 @@ const baseColors = {
   "black-04": "#0000000a",
   // gray scale
   "gray-050": "#f8f8f7",
+  "gray-090": "#eeeeec",
   "gray-100": "#f0f0ee",
   "gray-200": "#deded9",
+  "gray-210": "#dfdfdd",
+  "gray-250": "#d6d6d4",
+  "gray-275": "#c9cac7",
   "gray-300": "#c1c0b8",
   "gray-400": "#989898",
   "gray-500": "#7c7c7c",
@@ -150,7 +154,11 @@ const baseColors = {
   warning: primary,
   warningYellow: "#E08A00",
   warningText: "#BB6B01",
+  warningText2: "#E09000",
   warningBackground: "#FBEECB",
+  warningBackground2: "#FFFDEA",
+  warningBackgroundHover: "#F5F2E0",
+  warningBackgroundActive: "#E5E4D3",
   // orange
   danger: "#FD2C0F",
   // neutral
