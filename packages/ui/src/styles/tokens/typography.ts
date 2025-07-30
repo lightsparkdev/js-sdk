@@ -4622,6 +4622,18 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             textDecoration: `${TEXT_DECORATION.none}`,
             fontFeatureSettings: '"ss01"',
           },
+          [TokenSize.ExtraSmall]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Nage]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
+          },
         },
         [TypographyType.Body]: {
           [TokenSize.Large]: {
@@ -5043,6 +5055,18 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
             fontFeatureSettings: '"ss01"',
           },
           [TokenSize.Small]: {
+            fontFamily: `${fontFamilies.main}`,
+            fontWeight: `${FONT_WEIGHTS.main.Bold}`,
+            lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["md"]}`,
+            fontSize: `${FONT_SIZE[TypographyGroup.Nage]["md"]}`,
+            letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
+            paragraphSpacing: `${PARAGRAPH_SPACING[0]}`,
+            paragraphIndent: `${PARAGRAPH_INDENT[0]}`,
+            textCase: `${TEXT_CASE.none}`,
+            textDecoration: `${TEXT_DECORATION.none}`,
+            fontFeatureSettings: '"ss01"',
+          },
+          [TokenSize.ExtraSmall]: {
             fontFamily: `${fontFamilies.main}`,
             fontWeight: `${FONT_WEIGHTS.main.Bold}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["md"]}`,

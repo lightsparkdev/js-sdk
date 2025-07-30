@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, type ComponentProps } from "react";
 
 import { type useClipboard } from "../../hooks/useClipboard.js";
 import { bp, useBreakpoints } from "../../styles/breakpoints.js";
@@ -15,7 +15,11 @@ import { StyledButtonRow } from "../ButtonRow.js";
 import { CardPageFullWidth } from "../CardPage.js";
 import { Dropdown } from "../Dropdown.js";
 import { Modal } from "../Modal.js";
-import { Table, type TableProps } from "../Table/Table.js";
+import {
+  Table,
+  type CustomTableComponents,
+  type TableProps,
+} from "../Table/Table.js";
 import { TextIconAligner } from "../TextIconAligner.js";
 import { Label } from "../typography/Label.js";
 import { LabelModerate } from "../typography/LabelModerate.js";
@@ -81,6 +85,15 @@ interface ShowMoreOptions<QueryVariablesType, QueryResultType> {
   pageSizeVariables?: string[] | undefined;
 }
 
+interface CustomDataManagerTableComponents extends CustomTableComponents {
+  filterContainerComponent?: React.ComponentType<
+    React.ComponentProps<typeof DataManagerTableFilterContainer>
+  >;
+  dataManagerTableHeaderComponent?: React.ComponentType<
+    React.ComponentProps<typeof DataManagerTableHeader>
+  >;
+}
+
 export type DataManagerTableProps<
   T extends Record<string, unknown>,
   QueryVariablesType,
@@ -104,6 +117,9 @@ export type DataManagerTableProps<
   header?: JSX.Element;
   cardPageFullWidth?: boolean | undefined;
   cardPageMt?: number;
+  filterDropdownAlign?: "left" | "right" | "center";
+  filterButtonProps?: ComponentProps<typeof Button>;
+  customComponents?: CustomDataManagerTableComponents;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -176,7 +192,7 @@ export function DataManagerTable<
   });
   const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
   const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
-  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
     props.filterOptions
       ? initialFilterState(props.filterOptions.filters)
@@ -367,7 +383,7 @@ export function DataManagerTable<
     setNumFiltersApplied(numFiltersApplied);
 
     // Note: we only want to apply the filter states updated with validation results.
-    setShowFilters(false);
+    setShowFilterEditor(false);
     setIsLoading(true);
 
     const newFetchVariables = getFilterQueryVariables(
@@ -617,7 +633,7 @@ export function DataManagerTable<
       <FilterContentFooter>
         <Button text="Clear" onClick={handleClearFilters} />
         <FilterContentFooterRight>
-          <Button text="Cancel" onClick={() => setShowFilters(false)} />
+          <Button text="Cancel" onClick={() => setShowFilterEditor(false)} />
           <Button text="Apply" kind="primary" onClick={onApply} />
         </FilterContentFooterRight>
       </FilterContentFooter>
@@ -637,43 +653,50 @@ export function DataManagerTable<
   } as const;
 
   if (props.filterOptions) {
+    const FilterContainerComponent =
+      props.customComponents?.filterContainerComponent ||
+      DataManagerTableFilterContainer;
     filters = (
-      <>
-        <DataManagerTableFilterContainer>
-          {isSm ? (
-            <Fragment>
-              <Button
-                {...commonButtonProps}
-                onClick={() => setShowFilters(!showFilters)}
-              />
-              <Modal
-                visible={showFilters}
-                onClose={() => setShowFilters(false)}
-                smKind="fullscreen"
-              >
-                {filterContent}
-              </Modal>
-            </Fragment>
-          ) : (
-            <Dropdown
-              borderRadius={12}
-              maxDropdownItemsWidth={400}
-              dropdownContent={
-                <FilterDropdownContent>{filterContent}</FilterDropdownContent>
-              }
-              isOpen={showFilters}
-              onOpen={() => {
-                setShowFilters(true);
-              }}
-              onClose={() => {
-                setShowFilters(false);
-              }}
-              button={commonButtonProps}
-              align="right"
+      <FilterContainerComponent>
+        {isSm ? (
+          <Fragment>
+            <Button
+              {...commonButtonProps}
+              {...props.filterButtonProps}
+              onClick={() => setShowFilterEditor(!showFilterEditor)}
             />
-          )}
-        </DataManagerTableFilterContainer>
-      </>
+            <Modal
+              visible={showFilterEditor}
+              onClose={() => setShowFilterEditor(false)}
+              smKind="fullscreen"
+            >
+              {filterContent}
+            </Modal>
+          </Fragment>
+        ) : (
+          <Dropdown
+            borderRadius={12}
+            maxDropdownItemsWidth={400}
+            dropdownContent={
+              <FilterDropdownContent visible={showFilterEditor}>
+                {filterContent}
+              </FilterDropdownContent>
+            }
+            isOpen={showFilterEditor}
+            onOpen={() => {
+              setShowFilterEditor(true);
+            }}
+            onClose={() => {
+              setShowFilterEditor(false);
+            }}
+            button={{
+              ...commonButtonProps,
+              ...props.filterButtonProps,
+            }}
+            align={props.filterDropdownAlign || "right"}
+          />
+        )}
+      </FilterContainerComponent>
     );
   }
 
@@ -780,13 +803,17 @@ export function DataManagerTable<
     );
   }
 
+  const DataManagerTableHeaderComponent =
+    props.customComponents?.dataManagerTableHeaderComponent ||
+    DataManagerTableHeader;
+
   const content = (
     <>
       {props.showHeader && (
-        <DataManagerTableHeader>
+        <DataManagerTableHeaderComponent>
           {props.header}
           {filters}
-        </DataManagerTableHeader>
+        </DataManagerTableHeaderComponent>
       )}
       <Table {...props} loading={isLoading} />
       {footer}
@@ -806,7 +833,9 @@ export function DataManagerTable<
   );
 }
 
-const StyledDataManagerTable = styled.div``;
+const StyledDataManagerTable = styled.div`
+  width: 100%;
+`;
 
 const commonPadding = `
   ${bp.lg(`
@@ -875,7 +904,7 @@ const DataManagerTableFilterContainer = styled.div`
   ${commonPadding}
 `;
 
-const FilterDropdownContent = styled.div`
+const FilterDropdownContent = styled.div<{ visible: boolean }>`
   width: 400px;
   background: ${({ theme }) => theme.bg};
   border: 0.5px solid
@@ -884,6 +913,7 @@ const FilterDropdownContent = styled.div`
   box-shadow:
     0px 1px 4px 0px rgba(0, 0, 0, 0.1),
     0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+  ${({ visible }) => !visible && "display: none;"}
 `;
 
 const FilterContentInner = styled.div<{ isSm?: boolean }>`
