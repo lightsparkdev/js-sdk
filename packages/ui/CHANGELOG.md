@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.1.7
+
+### Patch Changes
+
+- 56d34fb: Adding new base nage design system and theming
+
 ## 1.1.6
 
 ### Patch Changes
