@@ -17,9 +17,8 @@ export enum CurrencyUnit {
    * commonly used in Lightning transactions. *
    */
   SATOSHI = "SATOSHI",
-  /**
-   * 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when possible. *
-   */
+  /** 0.001 Satoshi, or 10e-11 Bitcoin. We recommend using the Satoshi unit instead when
+   * possible. **/
   MILLISATOSHI = "MILLISATOSHI",
   /** United States Dollar. **/
   USD = "USD",
@@ -27,6 +26,12 @@ export enum CurrencyUnit {
   MXN = "MXN",
   /** Philippine Peso. **/
   PHP = "PHP",
+  /** Euro. **/
+  EUR = "EUR",
+  /** British Pound. **/
+  GBP = "GBP",
+  /** Indian Rupee. **/
+  INR = "INR",
   /**
    * 0.000000001 (10e-9) Bitcoin or a billionth of a Bitcoin. We recommend using the Satoshi unit
    * instead when possible. *

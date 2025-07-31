@@ -6,7 +6,6 @@
       "outputs": ["dist/**", "build/**"]
     },
     "build:watch": {
-      "dependsOn": ["^build:watch"],
       "outputs": ["dist/**", "build/**"],
       "cache": false,
       "persistent": true
@@ -56,10 +55,13 @@
     "package:checks": {
       "dependsOn": []
     },
+    "preview": {
+      "cache": false,
+      "persistent": true
+    },
     "start": {
       "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
+      "persistent": true
     },
     "test": {
       "dependsOn": ["^build"]

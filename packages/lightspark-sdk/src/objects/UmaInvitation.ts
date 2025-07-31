@@ -3,14 +3,12 @@
 import { type Query, isObject } from "@lightsparkdev/core";
 import IncentivesIneligibilityReason from "./IncentivesIneligibilityReason.js";
 import IncentivesStatus from "./IncentivesStatus.js";
-import { UmaCurrencyAmount } from "./UmaCurrencyAmount.js";
-
-export enum UmaInvitationStatus {
-  PENDING = "PENDING",
-  CLAIMED = "CLAIMED",
-  CANCELLED = "CANCELLED",
-  EXPIRED = "EXPIRED",
-}
+import type UmaCurrencyAmount from "./UmaCurrencyAmount.js";
+import {
+  UmaCurrencyAmountFromJson,
+  UmaCurrencyAmountToJson,
+} from "./UmaCurrencyAmount.js";
+import UmaInvitationStatus from "./UmaInvitationStatus.js";
 
 /** This is an object representing an UMA.ME invitation. **/
 interface UmaInvitation {
@@ -38,8 +36,14 @@ interface UmaInvitation {
   /** The current status of the incentives that may be tied to this invitation. **/
   incentivesStatus: IncentivesStatus;
 
+  /** The status of the invitation. **/
+  status: UmaInvitationStatus;
+
   /** The typename of the object **/
   typename: string;
+
+  /** The optional first name of the person who created the invitation. **/
+  inviterFirstName?: string | undefined;
 
   /** The UMA of the user who claimed the invitation. **/
   inviteeUma?: string | undefined;
@@ -47,16 +51,19 @@ interface UmaInvitation {
   /** The reason why the invitation is not eligible for incentives, if applicable. **/
   incentivesIneligibilityReason?: IncentivesIneligibilityReason | undefined;
 
-  /** The status of the invitation. **/
-  status: UmaInvitationStatus;
-
-  /** Payment amount in lowest currency unit. Null if no payment attached. **/
+  /**
+   * The payment amount with the invitation denominated in the lowest currency unit. If there is
+   * no payment attached, this is null.
+   **/
   paymentAmount?: UmaCurrencyAmount | undefined;
 
-  /** When the invitation was cancelled, if applicable. **/
+  /** The date and time when the invitation was cancelled, if it was cancelled. **/
   cancelledAt?: string | undefined;
 
-  /** When the invitation expires. Null if no expiration set. **/
+  /**
+   * The date and time after which an invitation can no longer be claimed. None, if no expiration
+   * is set *
+   */
   expiresAt?: string | undefined;
 }
 
@@ -71,29 +78,26 @@ export const UmaInvitationFromJson = (obj: any): UmaInvitation => {
     incentivesStatus:
       IncentivesStatus[obj["uma_invitation_incentives_status"]] ??
       IncentivesStatus.FUTURE_VALUE,
+    status:
+      UmaInvitationStatus[obj["uma_invitation_status"]] ??
+      UmaInvitationStatus.FUTURE_VALUE,
     typename: "UmaInvitation",
+    inviterFirstName: obj["uma_invitation_inviter_first_name"],
     inviteeUma: obj["uma_invitation_invitee_uma"],
     incentivesIneligibilityReason: !!obj[
       "uma_invitation_incentives_ineligibility_reason"
     ]
-      ? (obj[
-          "uma_invitation_incentives_ineligibility_reason"
-        ] as IncentivesIneligibilityReason) ??
-        IncentivesIneligibilityReason.FUTURE_VALUE
+      ? IncentivesIneligibilityReason[
+          obj["uma_invitation_incentives_ineligibility_reason"]
+        ] ?? IncentivesIneligibilityReason.FUTURE_VALUE
       : null,
-    status:
-      (obj["uma_invitation_status"] as UmaInvitationStatus) ??
-      (() => {
-        throw new Error("Required field 'uma_invitation_status' is missing");
-      })(),
-    paymentAmount: obj["uma_invitation_payment_amount"]
-      ? UmaCurrencyAmount.fromJson(obj["uma_invitation_payment_amount"])
+    paymentAmount: !!obj["uma_invitation_payment_amount"]
+      ? UmaCurrencyAmountFromJson(obj["uma_invitation_payment_amount"])
       : undefined,
     cancelledAt: obj["uma_invitation_cancelled_at"],
     expiresAt: obj["uma_invitation_expires_at"],
   } as UmaInvitation;
 };
-
 export const UmaInvitationToJson = (obj: UmaInvitation): any => {
   return {
     __typename: "UmaInvitation",
@@ -103,13 +107,14 @@ export const UmaInvitationToJson = (obj: UmaInvitation): any => {
     uma_invitation_code: obj.code,
     uma_invitation_url: obj.url,
     uma_invitation_inviter_uma: obj.inviterUma,
+    uma_invitation_inviter_first_name: obj.inviterFirstName,
     uma_invitation_invitee_uma: obj.inviteeUma,
     uma_invitation_incentives_status: obj.incentivesStatus,
     uma_invitation_incentives_ineligibility_reason:
       obj.incentivesIneligibilityReason,
     uma_invitation_status: obj.status,
     uma_invitation_payment_amount: obj.paymentAmount
-      ? obj.paymentAmount.toJson()
+      ? UmaCurrencyAmountToJson(obj.paymentAmount)
       : undefined,
     uma_invitation_cancelled_at: obj.cancelledAt,
     uma_invitation_expires_at: obj.expiresAt,
@@ -125,17 +130,16 @@ fragment UmaInvitationFragment on UmaInvitation {
     uma_invitation_code: code
     uma_invitation_url: url
     uma_invitation_inviter_uma: inviter_uma
+    uma_invitation_inviter_first_name: inviter_first_name
     uma_invitation_invitee_uma: invitee_uma
     uma_invitation_incentives_status: incentives_status
     uma_invitation_incentives_ineligibility_reason: incentives_ineligibility_reason
     uma_invitation_status: status
     uma_invitation_payment_amount: payment_amount {
-        value
-        currency {
-            code
-            symbol
-            decimals
-            name
+        __typename
+        uma_currency_amount_value: value
+        uma_currency_amount_currency: currency {
+            id
         }
     }
     uma_invitation_cancelled_at: cancelled_at

@@ -51,6 +51,7 @@ import { IncomingPaymentsForInvoice } from "./graphql/IncomingPaymentsForInvoice
 import { InvoiceForPaymentHash } from "./graphql/InvoiceForPaymentHash.js";
 import { LightningFeeEstimateForInvoice } from "./graphql/LightningFeeEstimateForInvoice.js";
 import { LightningFeeEstimateForNode } from "./graphql/LightningFeeEstimateForNode.js";
+import { LookupUmaAddress } from "./graphql/LookupUmaAddress.js";
 import type { AccountDashboard } from "./graphql/MultiNodeDashboard.js";
 import { MultiNodeDashboard } from "./graphql/MultiNodeDashboard.js";
 import { OutgoingPaymentsForInvoice } from "./graphql/OutgoingPaymentsForInvoice.js";
@@ -1815,6 +1816,18 @@ class LightsparkClient {
         return UmaInvitationFromJson(
           responseJson.cancel_uma_invitation.invitation,
         );
+      },
+    });
+  }
+
+  public async lookupUmaAddress(umaAddress: string): Promise<boolean> {
+    return await this.executeRawQuery({
+      queryPayload: LookupUmaAddress,
+      variables: { uma_address: umaAddress },
+      constructObject: (responseJson: {
+        lookup_uma_address: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      }) => {
+        return responseJson.lookup_uma_address;
       },
     });
   }

@@ -20,6 +20,7 @@ module.exports.buildConfig = ({
   rollupOptions,
   chunks = { "/node_modules/": "vendor" },
   proxyTarget = "http://127.0.0.1:5000",
+  preview = {},
 }) => {
   function manualChunks(id) {
     for (const [path, name] of Object.entries(chunks)) {
@@ -121,5 +122,6 @@ module.exports.buildConfig = ({
         src: path.resolve(dirname, "./src"),
       },
     },
+    preview,
   });
 };

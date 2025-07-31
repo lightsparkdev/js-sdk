@@ -35,6 +35,7 @@ import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
 import { InfoIconTooltip } from "../InfoIconTooltip.js";
 import { Loading } from "../Loading.js";
+import { type PartialSimpleTypographyProps } from "../typography/types.js";
 
 export type TableColumnHeaderInfo = string | { name: string; tooltip?: string };
 
@@ -96,6 +97,14 @@ interface Column<T extends Record<string, unknown>> {
   accessorKey: keyof T;
 }
 
+export type CustomTableComponents = {
+  table?: React.ComponentType<React.ComponentProps<typeof StyledTable>>;
+  clipboardTextField?: {
+    typography?: PartialSimpleTypographyProps;
+    iconName?: IconName;
+  };
+};
+
 export type TableProps<T extends Record<string, unknown>> = {
   columns: Column<T>[];
   data: T[];
@@ -106,6 +115,7 @@ export type TableProps<T extends Record<string, unknown>> = {
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   rowHoverEffect?: "border" | "background" | "none" | undefined;
+  customComponents?: CustomTableComponents;
   minHeight?: number;
 };
 
@@ -116,6 +126,7 @@ export function Table<T extends Record<string, unknown>>({
   onClickRow,
   emptyState,
   clipboardCallbacks,
+  customComponents,
   rowHoverEffect = "border",
   minHeight = 300,
 }: TableProps<T>) {
@@ -279,6 +290,12 @@ export function Table<T extends Record<string, unknown>>({
                   icon
                   iconSide="right"
                   clipboardCallbacks={clipboardCallbacks}
+                  typography={
+                    customComponents?.clipboardTextField?.typography
+                      ? customComponents.clipboardTextField.typography
+                      : undefined
+                  }
+                  iconName={customComponents?.clipboardTextField?.iconName}
                 />
               </HoverableCellWrapper>
             );
@@ -286,7 +303,13 @@ export function Table<T extends Record<string, unknown>>({
           return <span>{content}</span>;
         },
       })),
-    [columns, canWriteToClipboard, onClickCopy, clipboardCallbacks],
+    [
+      columns,
+      canWriteToClipboard,
+      onClickCopy,
+      clipboardCallbacks,
+      customComponents,
+    ],
   );
 
   const tableInstance = useReactTable({
@@ -321,62 +344,69 @@ export function Table<T extends Record<string, unknown>>({
     }
   }
 
+  const thead = (
+    <thead>
+      {
+        // Loop over the header rows
+        tableInstance.getHeaderGroups().map((headerGroup) => {
+          return (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </th>
+              ))}
+            </tr>
+          );
+        })
+      }
+    </thead>
+  );
+
+  const tbody = (
+    <tbody>
+      {
+        // Loop over the table rows
+        tableInstance.getRowModel().rows.map((row) => {
+          return (
+            <tr
+              key={row.id}
+              onClick={(event) => onClickDataRow(event, row)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  onClickDataRow(event, row);
+                }
+              }}
+              tabIndex={0}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  );
+
+  const TableComponent = customComponents?.table || StyledTable;
+
   return (
     <TableWrapper minHeight={minHeight}>
-      <StyledTable
+      <TableComponent
         clickable={Boolean(onClickRow)}
         rowHoverEffect={rowHoverEffect}
       >
-        <thead>
-          {
-            // Loop over the header rows
-            tableInstance.getHeaderGroups().map((headerGroup) => {
-              return (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              );
-            })
-          }
-        </thead>
-        <tbody>
-          {
-            // Loop over the table rows
-            tableInstance.getRowModel().rows.map((row) => {
-              return (
-                <tr
-                  key={row.id}
-                  onClick={(event) => onClickDataRow(event, row)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      onClickDataRow(event, row);
-                    }
-                  }}
-                  tabIndex={0}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })
-          }
-        </tbody>
-      </StyledTable>
+        {thead}
+        {tbody}
+      </TableComponent>
       {emptyState}
       {loading && <Loading />}
     </TableWrapper>
@@ -393,7 +423,7 @@ const TableWrapper = styled.div<TableWrapperProps>`
   ${overflowAutoWithoutScrollbars}
 `;
 
-type StyledTableProps = {
+export type StyledTableProps = {
   clickable: boolean;
   rowHoverEffect: "border" | "background" | "none" | undefined;
 };

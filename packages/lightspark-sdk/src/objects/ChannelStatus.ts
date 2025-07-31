@@ -22,8 +22,8 @@ export enum ChannelStatus {
    */
   UNBALANCED_FOR_SEND = "UNBALANCED_FOR_SEND",
   /**
-   * The channel is behaving properly, but its remote balance is much lower than its local balance
-   * so it is not balanced properly for receiving funds. *
+   * The channel is behaving properly, but its remote balance is much lower than its
+   * local balance so it is not balanced properly for receiving funds. *
    */
   UNBALANCED_FOR_RECEIVE = "UNBALANCED_FOR_RECEIVE",
   /**

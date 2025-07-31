@@ -311,8 +311,8 @@ export const Button = forwardRef<
         <Icon
           {...icon}
           width={icon.width || defaultIconWidth}
-          square
-          color={typography.color}
+          square={icon.square === undefined ? true : icon.square}
+          color={icon.color || typography.color}
         />
       </ButtonIcon>
     );
@@ -340,7 +340,7 @@ export const Button = forwardRef<
             {renderTypography(typography.type, {
               children: text,
               color: typography.color,
-              size,
+              size: typography.size,
             })}
           </div>
         )}

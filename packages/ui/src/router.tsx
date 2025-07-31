@@ -60,6 +60,7 @@ export type LinkProps = {
 export function replaceParams(
   to: NewRoutesType,
   params: LinkProps["params"],
+  hash?: RouteHash,
 ): NewRoutesType {
   if (params) {
     let toWithParams = to;
@@ -82,6 +83,12 @@ export function replaceParams(
     }
     to = toWithParams;
   }
+
+  // Append hash if provided
+  if (hash) {
+    to = `${to}#${hash}` as NewRoutesType;
+  }
+
   return to;
 }
 
@@ -117,8 +124,7 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
     let toStr;
     let newTab = Boolean(newTabProp);
     if (isString(to)) {
-      toStr = replaceParams(to, params);
-      toStr += hash ? `#${hash}` : "";
+      toStr = replaceParams(to, params, hash);
     } else if (externalLink) {
       const definedExternalLink = externalLink;
       if (
@@ -181,10 +187,11 @@ type NavigateProps = Omit<LinkProps, "children"> & {
 export function Navigate({
   to,
   params,
+  hash,
   state,
   replace = false,
 }: NavigateProps) {
-  to = replaceParams(to, params);
+  to = replaceParams(to, params, hash);
   return <RNavigate to={to} state={state} replace={replace} />;
 }
 
@@ -196,9 +203,10 @@ export function useNavigate() {
       to: NewRoutesType | -1,
       params?: LinkProps["params"],
       options?: NavigateOptions,
+      hash?: RouteHash,
     ) => {
       if (typeof to === "string") {
-        to = replaceParams(to, params);
+        to = replaceParams(to, params, hash);
         // need a separate return here to satisfy router internal types
         return navigate(to, options);
       }

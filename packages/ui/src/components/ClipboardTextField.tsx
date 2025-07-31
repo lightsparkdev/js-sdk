@@ -9,11 +9,13 @@ import { applyTypography } from "../styles/typography.js";
 import { lineClamp as lineClampCSS } from "../styles/utils.js";
 import { elide, type ElideArgs } from "../utils/strings.js";
 import { Icon } from "./Icon/Icon.js";
+import { type IconName } from "./Icon/types.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 type ClipboardTextFieldProps = {
   value: string;
   icon?: boolean;
+  iconName?: IconName | undefined;
   id?: string;
   stopPropagation?: boolean;
   /* Note maxLines forces box layout: */
@@ -30,6 +32,7 @@ type ClipboardTextFieldProps = {
 export function ClipboardTextField({
   value,
   icon,
+  iconName,
   id,
   stopPropagation,
   maxLines,
@@ -104,7 +107,7 @@ export function ClipboardTextField({
     >
       {icon && iconSide === "left" ? (
         <Icon
-          name="Copy"
+          name={iconName || "Copy"}
           width={lineHeight * 0.7}
           mr={lineHeight * 0.3}
           color={iconColor}
@@ -113,7 +116,7 @@ export function ClipboardTextField({
       {valueNode}
       {icon && iconSide === "right" ? (
         <Icon
-          name="Copy"
+          name={iconName || "Copy"}
           width={lineHeight * 0.7}
           ml={lineHeight * 0.3}
           color={iconColor}
