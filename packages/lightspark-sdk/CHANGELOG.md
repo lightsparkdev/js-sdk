@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.6
+
+### Patch Changes
+
+- 56d34fb: - Regenerated Graphql Objects and added new lookup uma address endpoint that allows users to validate umas.
+
 ## 1.9.5
 
 ### Patch Changes
