@@ -97,6 +97,7 @@ type DropdownProps = {
   onClickDropdownItems?: () => void;
   closeOnScroll?: boolean;
   align?: "left" | "right" | "center";
+  verticalPlacement?: "top" | "bottom";
   footer?: ReactNode | null;
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   onOpen?: () => void;
@@ -120,6 +121,7 @@ export function Dropdown({
   minDropdownItemsWidth = 200,
   maxDropdownItemsWidth = 300,
   align = "center" as const,
+  verticalPlacement = "bottom",
   footer = null,
   dropdownContent = null,
   borderRadius = 8,
@@ -139,6 +141,7 @@ export function Dropdown({
     useLiveRef<HTMLButtonElement>();
   const dropdownItemsRef = useRef<HTMLUListElement | null>(null);
   const [dropdownItemsWidth, setDropdownItemsWidth] = useState(0);
+  const [dropdownItemsHeight, setDropdownItemsHeight] = useState(0);
   const nodeRef = useRef<null | HTMLDivElement>(null);
   const [nodeReady, setNodeReady] = useState(false);
 
@@ -233,6 +236,7 @@ export function Dropdown({
       const dropdownItemsRect =
         dropdownItemsRef.current.getBoundingClientRect();
       setDropdownItemsWidth(dropdownItemsRect.width);
+      setDropdownItemsHeight(dropdownItemsRect.height);
     }
   }, [dropdownButtonRef]);
 
@@ -294,7 +298,7 @@ export function Dropdown({
   }, [onClickDropdownItems, setOpen]);
 
   const dropdownTopMargin = 8;
-  const dropdownItemOffsetTop =
+  let dropdownItemOffsetTop =
     dropdownCoords.top + dropdownButtonHeight + dropdownTopMargin;
 
   let dropdownItemOffsetLeft = 0;
@@ -304,6 +308,11 @@ export function Dropdown({
       dropdownCoords.left - (dropdownItemsWidth - dropdownButtonWidth) / 2;
   } else if (align === "right") {
     dropdownItemOffsetLeft = dropdownCoords.right - dropdownItemsWidth;
+  }
+
+  if (verticalPlacement === "top") {
+    dropdownItemOffsetTop =
+      dropdownCoords.top - dropdownItemsHeight - dropdownTopMargin;
   }
 
   const commonButtonProps = {

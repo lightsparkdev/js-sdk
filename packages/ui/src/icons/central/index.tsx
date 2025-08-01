@@ -48,6 +48,7 @@ export { CirclePlus as CentralCirclePlus } from "./CirclePlus.js";
 export { CircleQuestionmark as CentralCircleQuestionmark } from "./CircleQuestionmark.js";
 export { CircleQuestionmarkFilled as CentralCircleQuestionmarkFilled } from "./CircleQuestionmarkFilled.js";
 export { CircleX as CentralCircleX } from "./CircleX.js";
+export { Clipboard2 as CentralClipboard2 } from "./Clipboard2.js";
 export { Clock as CentralClock } from "./Clock.js";
 export { Contacts as CentralContacts } from "./Contacts.js";
 export { CrossLarge as CentralCrossLarge } from "./CrossLarge.js";
