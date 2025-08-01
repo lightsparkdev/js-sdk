@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState, type ComponentProps } from "react";
 
 import { type useClipboard } from "../../hooks/useClipboard.js";
 import { bp, useBreakpoints } from "../../styles/breakpoints.js";
+import { colors } from "../../styles/colors.js";
 import {
   standardBorderRadius,
   standardContentInset,
@@ -14,6 +15,7 @@ import { Button, StyledButton } from "../Button.js";
 import { StyledButtonRow } from "../ButtonRow.js";
 import { CardPageFullWidth } from "../CardPage.js";
 import { Dropdown } from "../Dropdown.js";
+import { Icon } from "../Icon/Icon.js";
 import { Modal } from "../Modal.js";
 import {
   Table,
@@ -21,6 +23,7 @@ import {
   type TableProps,
 } from "../Table/Table.js";
 import { TextIconAligner } from "../TextIconAligner.js";
+import { Body } from "../typography/Body.js";
 import { Label } from "../typography/Label.js";
 import { LabelModerate } from "../typography/LabelModerate.js";
 import {
@@ -120,6 +123,14 @@ export type DataManagerTableProps<
   filterDropdownAlign?: "left" | "right" | "center";
   filterButtonProps?: ComponentProps<typeof Button>;
   customComponents?: CustomDataManagerTableComponents;
+  paginationDisplayOptions?:
+    | {
+        showPaginationPreviousNext?: boolean | undefined;
+        pageSizeStringTemplate?: string | undefined;
+        showPageNumberButtons?: boolean | undefined;
+      }
+    | undefined;
+  minHeight?: number | undefined;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -183,6 +194,15 @@ export function DataManagerTable<
       : true;
   const cardPageMt =
     typeof props.cardPageMt === "undefined" ? 24 : props.cardPageMt;
+  const showPaginationPreviousNext =
+    typeof props.paginationDisplayOptions?.showPaginationPreviousNext ===
+    "boolean"
+      ? props.paginationDisplayOptions.showPaginationPreviousNext
+      : true;
+  const pageSizeString =
+    typeof props.paginationDisplayOptions?.pageSizeStringTemplate === "string"
+      ? props.paginationDisplayOptions.pageSizeStringTemplate
+      : "Show {pageSize} items";
   const breakPoint = useBreakpoints();
   const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
@@ -475,6 +495,42 @@ export function DataManagerTable<
     setIsLoading(false);
   };
 
+  const currentPage =
+    Math.floor((pageCursorState.startResult || 0) / pageSize) + 1;
+
+  const handleChangePage = async (page: number) => {
+    const pageCursorIndex = (page - 1) * pageSize + 1 - pageSize;
+    const cachedCursorState =
+      pageCursorState.cursorCache[pageSize][pageCursorIndex];
+
+    // If the page is not yet queried, don't allow jumping ahead.
+    // Also don't requery for the current page.
+    if (
+      !props.filterOptions ||
+      (pageCursorIndex > 0 && !cachedCursorState) ||
+      page === currentPage
+    ) {
+      return;
+    }
+
+    const { refetch } = props.filterOptions;
+
+    setIsLoading(true);
+    const newFetchVariables: QueryVariablesType = {
+      ...fetchVariables,
+      after: cachedCursorState,
+    };
+    setFetchVariables(newFetchVariables);
+
+    try {
+      await refetch(newFetchVariables);
+    } catch (e) {
+      setIsLoading(false);
+      throw e;
+    }
+    setIsLoading(false);
+  };
+
   const handleChangePageSize = async (size: number) => {
     setPageSize(size);
 
@@ -704,6 +760,8 @@ export function DataManagerTable<
   if (props.pageSizes?.length > 1) {
     showMoreDropdown = (
       <Dropdown
+        align="right"
+        verticalPlacement="top"
         getCSS={({ isOpen }) => ({
           height: "fit-content",
           alignSelf: "center",
@@ -717,7 +775,7 @@ export function DataManagerTable<
           }),
           getContent: ({ isOpen }) => (
             <TextIconAligner
-              content={`Show ${pageSize} items`}
+              content={pageSizeString.replace("{pageSize}", `${pageSize}`)}
               typography={{ size: "ExtraSmall" }}
               rightIcon={{
                 name: "Chevron",
@@ -761,7 +819,10 @@ export function DataManagerTable<
       ? props.resultCount
       : props.resultCount + "+";
 
-    const resultsString = (
+    const resultsString = props.paginationDisplayOptions
+      ?.showPageNumberButtons ? (
+      <div></div>
+    ) : (
       <div>
         <Label>Viewing </Label>
         <LabelModerate>{`${startResult}-${endResult}`}</LabelModerate>
@@ -775,29 +836,118 @@ export function DataManagerTable<
       ? startResult + pageSize - 1 < props.resultCount
       : false;
     const hasPrev = startResult > 1;
+
+    const pageNumbers = Array.from(
+      { length: Math.ceil(props.resultCount / pageSize) },
+      (_, i) => i,
+    );
+
+    const pageNumberButtons = props.paginationDisplayOptions
+      ?.showPageNumberButtons ? (
+      <PageNumberPaginationButtonsContainer>
+        <Button
+          icon={{
+            name: "CentralChevronLeftSmall",
+            width: 24,
+            color: "text",
+          }}
+          kind="ghost"
+          paddingY="short"
+          onClick={() => void handlePrev()}
+          disabled={!hasPrev}
+        />
+        {/* Get first two page numbers based on page size and current page */}
+        {pageNumbers.slice(0, 2).map((pageNumber) => (
+          <PageNumberButton
+            key={pageNumber}
+            onClick={() => void handleChangePage(pageNumber + 1)}
+            isCurrentPage={currentPage === pageNumber + 1}
+          >
+            <Body content={`${pageNumber + 1}`} />
+          </PageNumberButton>
+        ))}
+        {/* Show ellipsis if more than 1 page between 2nd and current page */}
+        {pageNumbers.length > 4 && currentPage - 2 > 1 && (
+          <Icon
+            name="CentralDotGrid1x3Horizontal"
+            width={18}
+            ml={7}
+            mr={7}
+            color="text"
+          />
+        )}
+        {/* Show current page number if not first two pages or last */}
+        {currentPage - 1 > 1 && currentPage < pageNumbers.length && (
+          <PageNumberButton
+            key={currentPage}
+            isCurrentPage
+            onClick={() => void handleChangePage(currentPage)}
+          >
+            <Body content={`${currentPage}`} />
+          </PageNumberButton>
+        )}
+        {/* Show ellipsis if more than 1 page between current or 2nd page and the last page */}
+        {pageNumbers.length > 4 && currentPage + 1 < pageNumbers.length && (
+          <Icon
+            name="CentralDotGrid1x3Horizontal"
+            width={18}
+            ml={7}
+            mr={7}
+            color="text"
+          />
+        )}
+        {/* Show last page number */}
+        {pageNumbers.length > 4 && (
+          <PageNumberButton
+            key={pageNumbers.length}
+            isCurrentPage={currentPage === pageNumbers.length}
+            onClick={() => void handleChangePage(pageNumbers.length)}
+          >
+            <Body content={`${pageNumbers.length}`} />
+          </PageNumberButton>
+        )}
+        <Button
+          icon={{
+            name: "CentralChevronRightSmall",
+            width: 24,
+            color: "text",
+          }}
+          kind="ghost"
+          paddingY="short"
+          onClick={() => void handleNext()}
+          disabled={!hasNext}
+        />
+      </PageNumberPaginationButtonsContainer>
+    ) : (
+      <></>
+    );
+
     footer = (
       <DataManagerTableFooter>
         {resultsString}
+        {pageNumberButtons}
         <PaginationContainer>
           {showMoreDropdown}
-          <PaginationButtonsContainer>
-            <Button
-              text="Previous"
-              paddingY="short"
-              onClick={() => {
-                void handlePrev();
-              }}
-              disabled={!hasPrev}
-            />
-            <Button
-              text="Next"
-              paddingY="short"
-              onClick={() => {
-                void handleNext();
-              }}
-              disabled={!hasNext}
-            />
-          </PaginationButtonsContainer>
+          {showPaginationPreviousNext && (
+            <PaginationButtonsContainer>
+              <Button
+                text="Previous"
+                paddingY="short"
+                onClick={() => {
+                  void handlePrev();
+                }}
+                disabled={!hasPrev}
+              />
+              <Button
+                text="Next"
+                paddingY="short"
+                onClick={() => {
+                  void handleNext();
+                }}
+                disabled={!hasNext}
+              />
+            </PaginationButtonsContainer>
+          )}
         </PaginationContainer>
       </DataManagerTableFooter>
     );
@@ -886,6 +1036,34 @@ const PaginationButtonsContainer = styled.div`
   flex-direction: row;
   margin-left: ${Spacing.px.md};
   gap: ${Spacing.px.xs};
+`;
+
+const PageNumberPaginationButtonsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const PageNumberButton = styled.button<{ isCurrentPage: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  cursor: pointer;
+  ${standardBorderRadius(8)}
+  border: none;
+  background-color: transparent;
+  &:hover {
+    border: 0.5px solid ${colors["black-10"]};
+  }
+  ${({ isCurrentPage }) =>
+    isCurrentPage
+      ? `
+      border: 0.5px solid ${colors["black-10"]};
+    `
+      : ""}
 `;
 
 const DataManagerTableFilterContainer = styled.div`
