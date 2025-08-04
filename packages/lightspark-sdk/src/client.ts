@@ -791,7 +791,7 @@ class LightsparkClient {
    * @param withdrawalMode The strategy that should be used to withdraw the funds from this node.
    * @returns An estimated amount for the L1 withdrawal fees for the specified node, amount, and strategy.
    */
-  public async getWithrawalFeeEstimate(
+  public async getWithdrawalFeeEstimate(
     nodeId: string,
     amountSats: number,
     withdrawalMode: WithdrawalMode,
@@ -1820,8 +1820,14 @@ class LightsparkClient {
     });
   }
 
+  /**
+   * Looks up a UMA address to check if it exists.
+   *
+   * @param umaAddress The UMA address to look up.
+   * @returns True if the UMA address exists, false otherwise.
+   */
   public async lookupUmaAddress(umaAddress: string): Promise<boolean> {
-    return await this.executeRawQuery({
+    const result = await this.executeRawQuery({
       queryPayload: LookupUmaAddress,
       variables: { uma_address: umaAddress },
       constructObject: (responseJson: {
@@ -1830,6 +1836,7 @@ class LightsparkClient {
         return responseJson.lookup_uma_address;
       },
     });
+    return result ?? false;
   }
 }
 
