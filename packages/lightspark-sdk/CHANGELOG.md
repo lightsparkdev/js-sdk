@@ -1,5 +1,11 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.7
+
+### Patch Changes
+
+- f5247b0: - Regenerated Graphql Objects and added new code field onto UmaCurrency query.
+
 ## 1.9.6
 
 ### Patch Changes

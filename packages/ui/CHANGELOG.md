@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.1.8
+
+### Patch Changes
+
+- f5247b0: Adding additional nage dashboard designs and components
+
 ## 1.1.7
 
 ### Patch Changes
