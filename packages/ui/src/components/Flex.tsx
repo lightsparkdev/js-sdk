@@ -48,6 +48,7 @@ type FlexProps = {
   pl?: number | undefined;
   gap?: number | undefined;
   position?: "absolute" | "relative" | undefined;
+  grow?: string | number | undefined;
 };
 
 export function Flex({
@@ -74,6 +75,7 @@ export function Flex({
   height,
   width,
   position,
+  grow,
 }: FlexProps) {
   const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
   const align = alignProp ? alignProp : center ? "center" : "stretch";
@@ -102,6 +104,7 @@ export function Flex({
       height={height}
       width={width}
       position={position}
+      grow={grow}
       {...asButtonProps}
     >
       {children}
@@ -141,6 +144,7 @@ type StyledFlexProps = {
   height?: FlexProps["height"];
   width?: FlexProps["width"];
   position?: FlexProps["position"];
+  grow?: FlexProps["grow"];
 };
 
 export const StyledFlex = styled.div<StyledFlexProps>`
@@ -186,4 +190,5 @@ export const StyledFlex = styled.div<StyledFlexProps>`
   ${({ width }) =>
     width && (isNumber(width) ? `width: ${width}px;` : `width: ${width};`)}
   ${({ position }) => position && `position: ${position};`}
+  ${({ grow }) => grow && `flex-grow: ${grow};`}
 `;

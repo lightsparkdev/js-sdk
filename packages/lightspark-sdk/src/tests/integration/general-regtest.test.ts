@@ -609,7 +609,7 @@ describe(p2SuiteName, () => {
   );
 
   test("Should get a withdrawal fee estimate", async () => {
-    const fee = await lightsparkClient.getWithrawalFeeEstimate(
+    const fee = await lightsparkClient.getWithdrawalFeeEstimate(
       getRegtestNodeId(),
       100,
       WithdrawalMode.WALLET_THEN_CHANNELS,

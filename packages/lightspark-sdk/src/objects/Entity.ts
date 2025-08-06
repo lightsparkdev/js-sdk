@@ -1444,7 +1444,7 @@ fragment EntityFragment on Entity {
             __typename
             uma_currency_amount_value: value
             uma_currency_amount_currency: currency {
-                id
+                code
             }
         }
         uma_invitation_cancelled_at: cancelled_at

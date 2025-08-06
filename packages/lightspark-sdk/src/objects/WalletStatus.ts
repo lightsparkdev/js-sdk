@@ -33,8 +33,8 @@ export enum WalletStatus {
   TERMINATING = "TERMINATING",
   /**
    * The wallet has been terminated and is not available in the Lightspark infrastructure anymore.
-   * It is not connected to the Lightning network and its funds can only be accessed using the Funds
-   * Recovery flow. *
+   *  It is not connected to the Lightning network and its funds can only be accessed using the
+   * Funds Recovery flow. *
    */
   TERMINATED = "TERMINATED",
 }
