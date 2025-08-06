@@ -79,7 +79,7 @@ type CommonSimpleDropdownButton = {
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
 };
 
-type SimpleDropdownButton =
+export type SimpleDropdownButton =
   | (CommonSimpleDropdownButton & {
       label: string;
     })

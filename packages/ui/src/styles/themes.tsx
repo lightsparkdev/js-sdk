@@ -834,7 +834,7 @@ const nageLightTheme = extend(lightTheme, {
   text: colors["gray-950"],
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
-  inputBackground: colors.white,
+  inputBackground: colors["gray-050"],
   danger: colors.red50,
 });
 
