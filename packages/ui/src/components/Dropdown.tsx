@@ -72,7 +72,7 @@ type DropdownItemType = {
 
 type DropdownGetProps = WithTheme<{ isOpen: boolean }>;
 
-type DropdownBorderRadius = 8 | 12;
+type DropdownBorderRadius = 6 | 8 | 12;
 
 type CommonSimpleDropdownButton = {
   id?: string;
@@ -100,6 +100,7 @@ type DropdownProps = {
   verticalPlacement?: "top" | "bottom";
   footer?: ReactNode | null;
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
+  getDropdownItemsCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   onOpen?: () => void;
   onClose?: () => void;
   isOpen?: boolean;
@@ -113,6 +114,7 @@ export function Dropdown({
   horizontalScrollRef,
   onClickDropdownItems,
   getCSS,
+  getDropdownItemsCSS,
   isOpen: isOpenProp,
   onOpen,
   onClose,
@@ -368,6 +370,8 @@ export function Dropdown({
   }
 
   const containerCSS = getCSS && getCSS({ isOpen, theme });
+  const dropdownItemsCSS =
+    getDropdownItemsCSS && getDropdownItemsCSS({ isOpen, theme });
 
   return (
     <div
@@ -386,6 +390,7 @@ export function Dropdown({
               maxWidth={maxDropdownItemsWidth}
               hasItems={dropdownItems ? dropdownItems.length > 0 : false}
               borderRadius={borderRadius}
+              css={dropdownItemsCSS}
             >
               {dropdownItems?.map((dropdownItem, i) => {
                 return (
