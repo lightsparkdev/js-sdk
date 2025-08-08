@@ -23,6 +23,7 @@ import {
   type TextInputBorderRadius,
 } from "../styles/fields.js";
 import {
+  getBackgroundColor,
   getFontColor,
   type FontColorKey,
   type ThemeOrColorKey,
@@ -30,6 +31,7 @@ import {
 import { applyTypography } from "../styles/typography.js";
 import { z } from "../styles/z-index.js";
 import type { ToReactNodesArgs } from "../utils/toReactNodes/toReactNodes.js";
+import { toReactNodes } from "../utils/toReactNodes/toReactNodes.js";
 import { CheckboxContainer } from "./Checkbox.js";
 import { Icon, IconContainer } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
@@ -37,6 +39,7 @@ import { Loading } from "./Loading.js";
 import { ToggleContainer } from "./Toggle.js";
 import { Tooltip } from "./Tooltip.js";
 import { UnstyledButton } from "./UnstyledButton.js";
+import { type TypographyPropsWithoutChildren } from "./typography/renderTypography.js";
 import {
   type PartialSimpleTypographyProps,
   type RequiredSimpleTypographyProps,
@@ -52,6 +55,16 @@ export const iconWidths = [8, 12, 16, 20] as const;
 export type IconWidth = (typeof iconWidths)[number];
 export const iconStrokeWidths = [1, 1.5, 2] as const;
 export type IconStrokeWidth = (typeof iconStrokeWidths)[number];
+
+export type TextLabelOptions = {
+  backgroundColor?: ThemeOrColorKey;
+  borderRadius?: TextInputBorderRadius;
+  paddingX?: number;
+  paddingY?: number;
+  typography?: TypographyPropsWithoutChildren;
+  position?: "absolute" | "relative";
+  marginBottom?: number;
+};
 
 export type TextInputProps = {
   disabled?: boolean | undefined;
@@ -101,6 +114,7 @@ export type TextInputProps = {
   hideNonErrorsIfBlurred?: boolean | undefined;
   hintTooltip?: string | undefined;
   label?: string;
+  labelOptions?: TextLabelOptions;
   rightButtonText?: string | undefined;
   onRightButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   typography?: PartialSimpleTypographyProps | undefined;
@@ -342,7 +356,14 @@ export function TextInput(textInputProps: TextInputProps) {
   return (
     <StyledTextInput widthProp={textInputWidth} marginTop={props.marginTop}>
       {props.label ? (
-        <TextInputLabel hasError={hasError}>{props.label}</TextInputLabel>
+        <TextInputLabel hasError={hasError} labelOptions={props.labelOptions}>
+          {props.labelOptions?.typography
+            ? toReactNodes({
+                text: props.label,
+                typography: props.labelOptions.typography,
+              })
+            : props.label}
+        </TextInputLabel>
       ) : null}
       {select && (
         <TextInputSelect
@@ -486,18 +507,46 @@ const RightButton = styled(UnstyledButton)`
   padding: 8px 10px;
 `;
 
-const TextInputLabel = styled.label<{ hasError: boolean }>`
-  ${standardBorderRadius(8)}
+const TextInputLabel = styled.label<{
+  hasError: boolean;
+  labelOptions?: TextLabelOptions | undefined;
+}>`
+  ${({ labelOptions }) =>
+    labelOptions?.borderRadius
+      ? `${labelOptions.borderRadius}px`
+      : standardBorderRadius(8)};
   font-size: 10px;
-  position: absolute;
+  position: ${({ labelOptions }) => labelOptions?.position || "absolute"};
   z-index: ${z.textInput + 1};
-  background-color: ${({ theme }) => theme.bg};
+  background-color: ${({ theme, labelOptions }) =>
+    labelOptions?.backgroundColor
+      ? getBackgroundColor(theme, labelOptions.backgroundColor)
+      : theme.bg};
   color: ${({ theme, hasError }) =>
     hasError ? theme.danger : theme.mcNeutral};
   font-weight: 600;
-  padding: 4px 6px;
-  left: 12px;
-  top: -10px;
+  padding-left: ${({ labelOptions }) =>
+    labelOptions?.paddingX === undefined
+      ? "6px"
+      : `${labelOptions.paddingX}px`};
+  padding-right: ${({ labelOptions }) =>
+    labelOptions?.paddingX === undefined
+      ? "6px"
+      : `${labelOptions.paddingX}px`};
+  padding-top: ${({ labelOptions }) =>
+    labelOptions?.paddingY === undefined
+      ? "4px"
+      : `${labelOptions.paddingY}px`};
+  padding-bottom: ${({ labelOptions }) =>
+    labelOptions?.paddingY === undefined
+      ? "4px"
+      : `${labelOptions.paddingY}px`};
+  left: ${({ labelOptions }) =>
+    labelOptions?.position === "relative" ? "0" : "12px"};
+  top: ${({ labelOptions }) =>
+    labelOptions?.position === "relative" ? "0" : "-10px"};
+  margin-bottom: ${({ labelOptions }) =>
+    labelOptions?.marginBottom ? `${labelOptions.marginBottom}px` : "0"};
 `;
 
 export const TextInputHalfRow = styled.div`
@@ -514,6 +563,8 @@ const StyledTextInput = styled.div<{
   widthProp: string;
   marginTop: number | undefined;
 }>`
+  display: flex;
+  flex-direction: column;
   width: ${({ widthProp }) => widthProp};
   position: relative;
   /* Apply marginTop to every TextInput when specified */
