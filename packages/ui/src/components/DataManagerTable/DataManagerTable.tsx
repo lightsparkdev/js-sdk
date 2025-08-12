@@ -1056,7 +1056,10 @@ const PageNumberButton = styled.button<{ isCurrentPage: boolean }>`
   border: none;
   background-color: transparent;
   &:hover {
-    border: 0.5px solid ${colors["black-10"]};
+    background-color: ${colors["black-04"]};
+  }
+  &:active {
+    background-color: ${colors["black-10"]};
   }
   ${({ isCurrentPage }) =>
     isCurrentPage

@@ -811,6 +811,14 @@ const nageBaseSettings = {
         defaultActiveBackgroundColor: "warningBackgroundActive",
         defaultActiveBorderColor: "warningBackgroundActive",
       },
+      transparent: {
+        defaultBackgroundColor: "transparent",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "black-04",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "black-10",
+        defaultActiveBorderColor: "transparent",
+      },
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
@@ -834,7 +842,7 @@ const nageLightTheme = extend(lightTheme, {
   text: colors["gray-950"],
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
-  inputBackground: colors.white,
+  inputBackground: colors["gray-050"],
   danger: colors.red50,
 });
 
