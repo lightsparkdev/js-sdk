@@ -84,7 +84,26 @@ export class RemoteSigningWebhookHandler {
     if (!response) {
       return;
     }
-    const variables = JSON.parse(response.variables);
+
+    /* WASM returns a double-encoded JSON string for variables: */
+    let jsonVariablesString: string;
+    let variables: {
+      [key: string]: unknown;
+    };
+    try {
+      jsonVariablesString = JSON.parse(response.variables);
+    } catch (e) {
+      throw new LightsparkSigningException(
+        "Unable to get JSON variables string from response",
+      );
+    }
+    try {
+      variables = JSON.parse(jsonVariablesString);
+    } catch (e) {
+      throw new LightsparkSigningException(
+        "Unable to parse JSON variables from response",
+      );
+    }
     return this.client.executeRawQuery({
       queryPayload: response.query,
       variables,

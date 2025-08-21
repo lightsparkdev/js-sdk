@@ -21,6 +21,7 @@ export { Bell as CentralBell } from "./Bell.js";
 export { Bell2 as CentralBell2 } from "./Bell2.js";
 export { BellOff as CentralBellOff } from "./BellOff.js";
 export { Blackpoint as CentralBlackpoint } from "./Blackpoint.js";
+export { Brackets1 as CentralBrackets1 } from "./Brackets1.js";
 export { Bubble5 as CentralBubble5 } from "./Bubble5.js";
 export { BubbleWideNotification as CentralBubbleWideNotification } from "./BubbleWideNotification.js";
 export { Checkmark2 as CentralCheckmark2 } from "./Checkmark2.js";
@@ -88,6 +89,7 @@ export { MediumStrengthIcon as CentralMediumStrengthIcon } from "./MediumStrengt
 export { Megaphone as CentralMegaphone } from "./Megaphone.js";
 export { MinusLarge as CentralMinusLarge } from "./MinusLarge.js";
 export { MinusSmall as CentralMinusSmall } from "./MinusSmall.js";
+export { Moon as CentralMoon } from "./Moon.js";
 export { Mouse as CentralMouse } from "./Mouse.js";
 export { Offline as CentralOffline } from "./Offline.js";
 export { Paperclip1 as CentralPaperclip1 } from "./Paperclip1.js";

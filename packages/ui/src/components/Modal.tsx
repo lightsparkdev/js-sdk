@@ -121,6 +121,7 @@ type ModalProps = {
   drawerCloseButton?: boolean;
   drawerAlignBottom?: boolean | undefined;
   drawerDisableTouchMove?: boolean | undefined;
+  voidOverlayBackground?: boolean | undefined;
 };
 
 export function Modal({
@@ -161,6 +162,7 @@ export function Modal({
   drawerCloseButton = true,
   drawerAlignBottom,
   drawerDisableTouchMove,
+  voidOverlayBackground,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
   const [visibleChanged, setVisibleChanged] = useState(false);
@@ -428,7 +430,10 @@ export function Modal({
     content = (
       <Fragment>
         {!(smKind === "fullscreen" && bp.isSm()) ? (
-          <ModalOverlay ref={overlayRef} />
+          <ModalOverlay
+            ref={overlayRef}
+            voidOverlayBackground={voidOverlayBackground ?? false}
+          />
         ) : null}
         <ModalContainer
           aria-modal
@@ -486,14 +491,15 @@ const DefaultFocusTarget = styled(UnstyledButton)`
   height: 0;
 `;
 
-const ModalOverlay = styled.div`
+const ModalOverlay = styled.div<{ voidOverlayBackground?: boolean }>`
   position: fixed;
   bottom: 0;
   left: 0;
   z-index: ${z.modalOverlay};
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
+  background: ${({ voidOverlayBackground }) =>
+    voidOverlayBackground ? "transparent" : "rgba(0, 0, 0, 0.5)"};
 `;
 
 const ModalContainer = styled.div<{ top: number }>`

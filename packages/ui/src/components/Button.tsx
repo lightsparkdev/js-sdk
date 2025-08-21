@@ -99,6 +99,7 @@ export type ButtonProps = {
   ml?: number | "auto";
   mb?: number | "auto";
   fullWidth?: boolean | undefined;
+  spaceBetween?: boolean | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
   tooltipText?: string | undefined;
@@ -272,6 +273,7 @@ export const Button = forwardRef<
     loading = false,
     loadingKind = "primary",
     fullWidth = false,
+    spaceBetween = false,
     disabled = false,
     mt = 0,
     ml = 0,
@@ -325,7 +327,7 @@ export const Button = forwardRef<
         css={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: spaceBetween ? "space-between" : "center",
           gap: "8px",
         }}
       >
