@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.9.8
-
-### Patch Changes
-
-- 21b1acc: fix: wasm returned a double stringified json object where the webhook signing handler only expected it to be stringifed once. This change parses the string twice.
-
 ## 1.9.7
 
 ### Patch Changes
