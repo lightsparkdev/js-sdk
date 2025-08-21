@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.1.9
+
+### Patch Changes
+
+- 21b1acc: feat: New UI elements for Lightspark FE
+
 ## 1.1.8
 
 ### Patch Changes
