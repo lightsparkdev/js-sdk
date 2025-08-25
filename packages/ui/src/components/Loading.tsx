@@ -1,6 +1,7 @@
 import { useTheme, type Theme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { type LoadingThemeKey } from "../styles/themeDefaults/loading.js";
+import { type FontColorKey } from "../styles/themes.js";
 import { Icon } from "./Icon/Icon.js";
 
 export const loadingKinds = ["primary", "secondary"] as const;
@@ -12,6 +13,7 @@ type Props = {
   ml?: number;
   mt?: number;
   kind?: LoadingKind;
+  color?: FontColorKey | undefined;
 };
 
 export function Loading({
@@ -20,6 +22,7 @@ export function Loading({
   ml = 0,
   mt = 0,
   kind = "primary",
+  color = undefined,
 }: Props) {
   const theme = useTheme();
   const iconName = resolveLoadingProp(null, kind, "defaultIconName", theme);
@@ -27,7 +30,7 @@ export function Loading({
   return (
     <LoadingWrapper center={center} ml={ml} mt={mt}>
       <Rotate>
-        <Icon name={iconName} width={size} />
+        <Icon name={iconName} width={size} color={color} />
       </Rotate>
     </LoadingWrapper>
   );
