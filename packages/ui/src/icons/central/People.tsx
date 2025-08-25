@@ -6,13 +6,7 @@ export function People({
   strokeLinejoin = "round",
 }: PathProps) {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M15.749 6.5C15.749 8.57107 14.0701 10.25 11.999 10.25C9.92795 10.25 8.24902 8.57107 8.24902 6.5C8.24902 4.42893 9.92795 2.75 11.999 2.75C14.0701 2.75 15.749 4.42893 15.749 6.5Z"
         stroke="currentColor"

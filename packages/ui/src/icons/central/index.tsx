@@ -71,6 +71,7 @@ export { Gift as CentralGift } from "./Gift.js";
 export { Globus as CentralGlobus } from "./Globus.js";
 export { Group3 as CentralGroup3 } from "./Group3.js";
 export { Heart2 as CentralHeart2 } from "./Heart2.js";
+export { Home as CentralHome } from "./Home.js";
 export { HomeLine as CentralHomeLine } from "./HomeLine.js";
 export { Initiatives as CentralInitiatives } from "./Initiatives.js";
 export { Invite as CentralInvite } from "./Invite.js";
