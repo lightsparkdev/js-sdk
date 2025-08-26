@@ -1,5 +1,12 @@
 # @lightsparkdev/core
 
+## 1.4.4
+
+### Patch Changes
+
+- 031eb1b: - Resolve circular dependencies
+  - React Native compatible entrypoint
+
 ## 1.4.3
 
 ### Patch Changes
