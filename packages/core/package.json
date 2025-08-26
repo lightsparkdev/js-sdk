@@ -24,6 +24,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "react-native": "./dist/react-native/index.js",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
@@ -39,6 +40,7 @@
     "src/*",
     "dist/*",
     "dist/utils/*",
+    "dist/react-native/*",
     "CHANGELOG.md"
   ],
   "scripts": {
