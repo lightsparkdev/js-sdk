@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.9
+
+### Patch Changes
+
+- 031eb1b: - Resolve circular dependencies
+- Updated dependencies [031eb1b]
+  - @lightsparkdev/core@1.4.4
+  - @lightsparkdev/crypto-wasm@0.1.18
+
 ## 1.9.8
 
 ### Patch Changes
