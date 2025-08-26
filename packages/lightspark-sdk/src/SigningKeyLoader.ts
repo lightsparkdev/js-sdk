@@ -8,7 +8,7 @@ import {
   type Requester,
 } from "@lightsparkdev/core";
 import { RecoverNodeSigningKey } from "./graphql/RecoverNodeSigningKey.js";
-import { BitcoinNetwork } from "./index.js";
+import { BitcoinNetwork } from "./objects/BitcoinNetwork.js";
 
 const SIGNING_KEY_PATH = "m/5";
 

@@ -1,6 +1,5 @@
 import { beforeEach, jest } from "@jest/globals";
 
-import type { Client as WsClient } from "graphql-ws";
 import type AuthProvider from "../../auth/AuthProvider.js";
 import type { CryptoInterface } from "../../crypto/crypto.js";
 import type NodeKeyCache from "../../crypto/NodeKeyCache.js";
@@ -16,7 +15,7 @@ await jest.unstable_mockModule("graphql-ws", () => ({
   createClient: jest.fn(),
 }));
 /* Since Requester uses graphql-ws we need a dynamic import after the above mock */
-const { Requester } = await import("../index.js");
+const { default: Requester } = await import("../Requester.js");
 
 describe("Requester", () => {
   const schemaEndpoint = "graphql";
@@ -257,26 +256,7 @@ describe("Requester", () => {
       expect(() => requester.subscribe("invalid")).toThrow(LightsparkException);
     });
 
-    it("returns an Observable for a valid subscription", async () => {
-      // Mock wsClient and its subscribe method
-      const wsClient = {
-        subscribe: jest.fn(
-          (
-            _body,
-            handlers: { next?: (data: unknown) => void; complete?: () => void },
-          ) => {
-            setTimeout(() => {
-              handlers.next?.({ data: { foo: "bar" } });
-              handlers.complete?.();
-            }, 10);
-            return jest.fn();
-          },
-        ),
-      } as unknown as WsClient;
-
-      const { createClient } = await import("graphql-ws");
-      (createClient as jest.Mock).mockReturnValue(wsClient);
-
+    it("emits error when wsClient is not initialized", async () => {
       const requester = new Requester(
         nodeKeyCache,
         schemaEndpoint,
@@ -287,25 +267,36 @@ describe("Requester", () => {
         signingKey,
         fetchImpl,
       );
+      // Resolve internal wsClient promise to null so the observable emits an error.
+      (
+        requester as unknown as {
+          resolveWsClient: ((v: unknown) => void) | null;
+        }
+      ).resolveWsClient?.(null);
 
-      const observable = requester.subscribe<{ foo: string }>(
-        "subscription TestSub { foo }",
-      );
+      const observable = requester.subscribe("subscription TestSub { foo }");
 
-      const results: { foo: string }[] = [];
       await new Promise<void>((resolve) => {
         observable.subscribe({
-          next: (data) => {
-            results.push(data.data);
+          next: () => {
+            throw new Error(
+              "Should not emit next when wsClient is uninitialized",
+            );
+          },
+          error: (err) => {
+            expect(err).toBeInstanceOf(LightsparkException);
+            expect(String((err as Error).message)).toMatch(
+              /WebSocket client is not initialized/,
+            );
+            resolve();
           },
           complete: () => {
-            expect(results).toEqual([{ foo: "bar" }]);
-            resolve();
+            throw new Error(
+              "Should not complete when wsClient is uninitialized",
+            );
           },
         });
       });
-
-      expect(wsClient.subscribe).toHaveBeenCalled();
     });
   });
 

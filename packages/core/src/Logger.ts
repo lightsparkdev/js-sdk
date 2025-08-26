@@ -1,5 +1,6 @@
-import { ConfigKeys, getLocalStorageConfigItem } from "./index.js";
+import { ConfigKeys } from "./constants/index.js";
 import { isBrowser, isTest } from "./utils/environment.js";
+import { getLocalStorageConfigItem } from "./utils/localStorage.js";
 
 type GetLoggingEnabled = (() => Promise<boolean> | boolean) | undefined;
 

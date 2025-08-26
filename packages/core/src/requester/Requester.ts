@@ -17,7 +17,7 @@ import type { SigningKey } from "../crypto/SigningKey.js";
 import LightsparkException from "../LightsparkException.js";
 import { logger } from "../Logger.js";
 import { b64encode } from "../utils/base64.js";
-import { isBare, isNode } from "../utils/environment.js";
+import { isNode } from "../utils/environment.js";
 
 const DEFAULT_BASE_URL = "api.lightspark.com";
 dayjs.extend(utc);
@@ -31,14 +31,14 @@ type BodyData = {
 };
 
 class Requester {
-  private wsClient: Promise<WsClient | null>;
-  private resolveWsClient: ((value: WsClient | null) => void) | null = null;
+  protected wsClient: Promise<WsClient | null>;
+  protected resolveWsClient: ((value: WsClient | null) => void) | null = null;
   constructor(
     private readonly nodeKeyCache: NodeKeyCache,
-    private readonly schemaEndpoint: string,
+    protected readonly schemaEndpoint: string,
     private readonly sdkUserAgent: string,
     private readonly authProvider: AuthProvider = new StubAuthProvider(),
-    private readonly baseUrl: string = DEFAULT_BASE_URL,
+    protected readonly baseUrl: string = DEFAULT_BASE_URL,
     private readonly cryptoImpl: CryptoInterface = DefaultCrypto,
     private readonly signingKey?: SigningKey,
     private readonly fetchImpl: typeof fetch = fetch,
@@ -50,44 +50,11 @@ class Requester {
     autoBind(this);
   }
 
-  private async initWsClient(baseUrl: string, authProvider: AuthProvider) {
-    if (!this.resolveWsClient) {
-      /* If resolveWsClient is null assume already initialized: */
-      return this.wsClient;
-    }
-
-    if (isBare) {
-      /* graphql-ws library is currently not supported in Bare environment, see LIG-7942 */
-      return null;
-    }
-
-    let websocketImpl;
-    if (isNode && typeof WebSocket === "undefined") {
-      const wsModule = await import("ws");
-      websocketImpl = wsModule.default;
-    }
-    let websocketProtocol = "wss";
-    if (baseUrl.startsWith("http://")) {
-      websocketProtocol = "ws";
-    }
-
-    const graphqlWsModule = await import("graphql-ws");
-    const { createClient } = graphqlWsModule;
-
-    const wsClient = createClient({
-      url: `${websocketProtocol}://${this.stripProtocol(this.baseUrl)}/${
-        this.schemaEndpoint
-      }`,
-      connectionParams: () => authProvider.addWsConnectionParams({}),
-      webSocketImpl: websocketImpl,
-    });
-
-    if (this.resolveWsClient) {
-      this.resolveWsClient(wsClient);
-      this.resolveWsClient = null;
-    }
-
-    return wsClient;
+  protected initWsClient(
+    baseUrl: string,
+    authProvider: AuthProvider,
+  ): Promise<WsClient | null> {
+    return Promise.resolve(null);
   }
 
   public async executeQuery<T>(query: Query<T>): Promise<T | null> {
@@ -293,7 +260,7 @@ class Requester {
     return `${this.sdkUserAgent} ${platform}/${platformVersion}`;
   }
 
-  private stripProtocol(url: string): string {
+  protected stripProtocol(url: string): string {
     return url.replace(/.*?:\/\//g, "");
   }
 

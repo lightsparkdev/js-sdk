@@ -5,13 +5,7 @@ export function UmaPaymentLoadingSpinner({
   strokeLinecap = "round",
 }: PathProps) {
   return (
-    <svg
-      width="88"
-      height="88"
-      viewBox="0 0 88 88"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
       <ellipse
         cx="43.9983"
         cy="43.9994"
