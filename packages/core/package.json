@@ -51,6 +51,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
     "lint": "eslint .",
+    "circular-deps": "madge --circular --extensions ts,tsx src",
     "package:checks": "yarn publint && yarn attw --pack .",
     "postversion": "yarn build",
     "test-cmd": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail",
@@ -81,6 +82,7 @@
     "eslint-watch": "^8.0.0",
     "jest": "^29.6.2",
     "lodash-es": "^4.17.21",
+    "madge": "^6.1.0",
     "prettier": "3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",
     "publint": "^0.3.9",
@@ -88,6 +90,16 @@
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.2.4",
     "typescript": "^5.6.2"
+  },
+  "madge": {
+    "detectiveOptions": {
+      "ts": {
+        "skipTypeImports": true
+      },
+      "tsx": {
+        "skipTypeImports": true
+      }
+    }
   },
   "engines": {
     "node": ">=18"
