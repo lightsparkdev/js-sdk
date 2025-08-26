@@ -68,7 +68,6 @@ import { SingleNodeDashboard as SingleNodeDashboardQuery } from "./graphql/Singl
 import { TransactionSubscription } from "./graphql/TransactionSubscription.js";
 import { TransactionsForNode } from "./graphql/TransactionsForNode.js";
 import { WithdrawalFeeEstimate } from "./graphql/WithdrawalFeeEstimate.js";
-import { RiskRating, TransactionStatus } from "./index.js";
 import { logger } from "./logger.js";
 import Account from "./objects/Account.js";
 import { ApiTokenFromJson } from "./objects/ApiToken.js";
@@ -92,12 +91,14 @@ import type PaymentDirection from "./objects/PaymentDirection.js";
 import { PaymentRequestFromJson } from "./objects/PaymentRequest.js";
 import Permission from "./objects/Permission.js";
 import type RegionCode from "./objects/RegionCode.js";
+import RiskRating from "./objects/RiskRating.js";
 import type SingleNodeDashboard from "./objects/SingleNodeDashboard.js";
 import type Transaction from "./objects/Transaction.js";
 import {
   TransactionFromJson,
   getTransactionQuery,
 } from "./objects/Transaction.js";
+import TransactionStatus from "./objects/TransactionStatus.js";
 import type TransactionUpdate from "./objects/TransactionUpdate.js";
 import { TransactionUpdateFromJson } from "./objects/TransactionUpdate.js";
 import type UmaInvitation from "./objects/UmaInvitation.js";
