@@ -1,13 +1,5 @@
 # @lightsparkdev/ui
 
-## 1.1.10
-
-### Patch Changes
-
-- 031eb1b: - Icon, component updates
-- Updated dependencies [031eb1b]
-  - @lightsparkdev/core@1.4.4
-
 ## 1.1.9
 
 ### Patch Changes

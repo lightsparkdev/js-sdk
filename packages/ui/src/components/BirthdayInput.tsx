@@ -145,7 +145,14 @@ export function BirthdayInput({
         typography={{
           size: "Large",
         }}
-        hint={formatDateToText(date)}
+        hint={{
+          text: formatDateToText(date),
+          typography: {
+            type: "Label",
+            size: "Medium",
+            color: "secondary",
+          },
+        }}
         error={
           birthdayFieldBlurred && isInvalid ? invalidBirthdayError : undefined
         }
