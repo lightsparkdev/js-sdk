@@ -9,6 +9,7 @@ export const PayInvoice = `
     $timeout_secs: Int!
     $maximum_fees_msats: Long!
     $amount_msats: Long
+    $idempotency_key: String
   ) {
     pay_invoice(
       input: {
@@ -17,6 +18,7 @@ export const PayInvoice = `
         timeout_secs: $timeout_secs
         maximum_fees_msats: $maximum_fees_msats
         amount_msats: $amount_msats
+        idempotency_key: $idempotency_key
       }
     ) {
       payment {
