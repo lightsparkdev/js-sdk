@@ -866,6 +866,7 @@ class LightsparkClient {
     maximumFeesMsats: number,
     timeoutSecs: number = 60,
     amountMsats: number | undefined = undefined,
+    idempotencyKey: string | undefined = undefined,
   ): Promise<OutgoingPayment | undefined> {
     if (!this.nodeKeyCache.hasKey(payerNodeId)) {
       throw new LightsparkSigningException("Paying node is not unlocked");
@@ -878,6 +879,9 @@ class LightsparkClient {
     };
     if (amountMsats !== undefined) {
       variables.amount_msats = amountMsats;
+    }
+    if (idempotencyKey !== undefined) {
+      variables.idempotency_key = idempotencyKey;
     }
     const response = await this.requester.makeRawRequest(
       PayInvoice,

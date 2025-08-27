@@ -79,6 +79,7 @@ export type TextInputProps = {
         side?: IconSide | undefined;
         offset?: IconOffset | undefined;
         strokeWidth?: IconStrokeWidth | undefined;
+        color?: ThemeOrColorKey | undefined;
       }
     | undefined;
   maxLength?: number;
