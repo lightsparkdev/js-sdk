@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.9.10
-
-### Patch Changes
-
-- 1ee5899: feat: exposing idempotency field on payInvoice method
-
 ## 1.9.9
 
 ### Patch Changes
