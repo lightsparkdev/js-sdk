@@ -4726,7 +4726,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Label]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["lg"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -4738,7 +4738,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["md"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["md"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -4750,7 +4750,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["xs"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -4762,7 +4762,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.ExtraSmall]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["3xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["2xs"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -5194,7 +5194,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
         [TypographyType.Label]: {
           [TokenSize.Large]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["xl"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["lg"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -5206,7 +5206,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Medium]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["md"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["md"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
@@ -5218,7 +5218,7 @@ function getTypographyTypes(fontFamilies: FontFamilies): TypographyTypes {
           },
           [TokenSize.Small]: {
             fontFamily: `${fontFamilies.main}`,
-            fontWeight: `${FONT_WEIGHTS.main.Medium}`,
+            fontWeight: `${FONT_WEIGHTS.main.Book}`,
             lineHeight: `${LINE_HEIGHTS[TypographyGroup.Nage]["xs"]}`,
             fontSize: `${FONT_SIZE[TypographyGroup.Nage]["xs"]}`,
             letterSpacing: `${LETTER_SPACING[TypographyGroup.Nage].normal}`,
