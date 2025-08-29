@@ -170,6 +170,10 @@ function resolveProps(props: ButtonProps, theme: Theme) {
   const size = resolveProp(sizeProp, kind, "defaultSize", theme);
   const defaultPaddingsY = resolveProp(null, kind, "defaultPaddingsY", theme);
   const defaultPaddingY = defaultPaddingsY[size];
+  const numericDefaultPaddingY =
+    typeof defaultPaddingY === "number"
+      ? defaultPaddingY
+      : defaultPaddingY[paddingYType];
   const defaultPaddingsX = resolveProp(null, kind, "defaultPaddingsX", theme);
   const defaultPaddingX = defaultPaddingsX[size];
 
@@ -219,11 +223,12 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     kind,
     size,
     typography,
-    paddingY:
-      typeof defaultPaddingY === "number"
-        ? defaultPaddingY
-        : defaultPaddingY[paddingYType],
-    paddingX: defaultPaddingX,
+    ...(props.text
+      ? {
+          paddingY: numericDefaultPaddingY,
+          paddingX: defaultPaddingX,
+        }
+      : { paddingY: numericDefaultPaddingY, paddingX: numericDefaultPaddingY }),
     borderRadius:
       kind === "roundSingleChar" || kind === "roundIcon"
         ? 999

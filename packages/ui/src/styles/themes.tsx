@@ -840,6 +840,7 @@ const nageLightTheme = extend(lightTheme, {
   bg: colors["gray-100"],
   smBg: colors["gray-100"],
   text: colors["gray-950"],
+  info: colors["gray-950"],
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
   inputBackground: colors["gray-050"],
