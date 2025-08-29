@@ -35,6 +35,10 @@ import { smHeaderLogoMarginLeft } from "../styles/constants.js";
 import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
+import {
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../utils/toReactNodes/toReactNodes.js";
 import { Button } from "./Button.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
@@ -47,7 +51,7 @@ type DropdownItemGetProps = WithTheme<{
 }>;
 
 type DropdownItemType = {
-  label: string;
+  label: ToReactNodesArgs;
   getIcon?:
     | (({ theme, dropdownItem }: DropdownItemGetProps) =>
         | {
@@ -394,7 +398,7 @@ export function Dropdown({
             >
               {dropdownItems?.map((dropdownItem, i) => {
                 return (
-                  <li key={dropdownItem.label} onBlur={handleBlur}>
+                  <li key={dropdownItem.to} onBlur={handleBlur}>
                     <DropdownItem
                       dropdownItem={dropdownItem}
                       onClick={handleClickDropdownItems}
@@ -486,7 +490,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
         hash={dropdownItem.hash}
       >
         {dropdownItemIconNode}
-        {dropdownItem.label}
+        {toReactNodes(dropdownItem.label)}
       </DropdownItemLink>
     );
   }
@@ -495,7 +499,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
     return (
       <DropdownItemDiv selected={false} css={cssProp} withHoverColor={false}>
         {dropdownItemIconNode}
-        {dropdownItem.label}
+        {toReactNodes(dropdownItem.label)}
         <div css={{ marginLeft: "auto" }}>
           {"options" in dropdownItem.toggle ? (
             <MultiToggle {...dropdownItem.toggle} />
@@ -514,7 +518,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
       onClick={onClickDropdownItem}
     >
       {dropdownItemIconNode}
-      {dropdownItem.label}
+      {toReactNodes(dropdownItem.label)}
     </DropdownItemDiv>
   );
 }
