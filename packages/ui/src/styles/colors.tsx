@@ -150,6 +150,8 @@ const baseColors = {
   red42a20: "#D800272D",
   red42a30: "#D800273F",
   errorText: "#E41C1B",
+  errorText2: "#D80027",
+  errorText3: "#FF4444",
   errorBackground: "#FEE2E1",
   // yellow
   primary,
