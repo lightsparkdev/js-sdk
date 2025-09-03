@@ -97,6 +97,7 @@ const isMultilineCell = (value: unknown): value is MultilineCell => {
 interface Column<T extends Record<string, unknown>> {
   header: TableColumnHeaderInfo;
   accessorKey: keyof T;
+  function?: (context: CellContext<T, TableCell>) => ReactNode;
 }
 
 export type CustomTableComponents = {
@@ -169,6 +170,10 @@ export function Table<T extends Record<string, unknown>>({
           ),
         accessorKey: column.accessorKey.toString(),
         cell: (context: CellContext<T, TableCell>) => {
+          if (column.function && typeof column.function === "function") {
+            return column.function(context);
+          }
+
           const value = context.getValue();
 
           let content: ReactNode = null;
