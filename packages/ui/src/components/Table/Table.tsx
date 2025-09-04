@@ -30,7 +30,9 @@ import {
 } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { type ElideObjArgs } from "../../utils/strings.js";
+import { type ToReactNodesArgs } from "../../utils/toReactNodes/toReactNodes.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
+import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
 import { InfoIconTooltip } from "../InfoIconTooltip.js";
@@ -95,6 +97,7 @@ const isMultilineCell = (value: unknown): value is MultilineCell => {
 interface Column<T extends Record<string, unknown>> {
   header: TableColumnHeaderInfo;
   accessorKey: keyof T;
+  function?: (context: CellContext<T, TableCell>) => ReactNode;
 }
 
 export type CustomTableComponents = {
@@ -117,6 +120,10 @@ export type TableProps<T extends Record<string, unknown>> = {
   rowHoverEffect?: "border" | "background" | "none" | undefined;
   customComponents?: CustomTableComponents;
   minHeight?: number;
+  tripleDotsMenuItems?: {
+    text: ToReactNodesArgs;
+    onClick: (row: T) => void;
+  }[];
 };
 
 export function Table<T extends Record<string, unknown>>({
@@ -127,6 +134,7 @@ export function Table<T extends Record<string, unknown>>({
   emptyState,
   clipboardCallbacks,
   customComponents,
+  tripleDotsMenuItems,
   rowHoverEffect = "border",
   minHeight = 300,
 }: TableProps<T>) {
@@ -162,6 +170,10 @@ export function Table<T extends Record<string, unknown>>({
           ),
         accessorKey: column.accessorKey.toString(),
         cell: (context: CellContext<T, TableCell>) => {
+          if (column.function && typeof column.function === "function") {
+            return column.function(context);
+          }
+
           const value = context.getValue();
 
           let content: ReactNode = null;
@@ -311,6 +323,30 @@ export function Table<T extends Record<string, unknown>>({
       customComponents,
     ],
   );
+
+  if (tripleDotsMenuItems) {
+    mappedColumns.push({
+      header: (context: HeaderContext<T, TableCell>) => "",
+      accessorKey: "tripleDots",
+      cell: (context) => (
+        <Dropdown
+          button={{
+            icon: {
+              name: "CentralDotGrid1x3Vertical",
+            },
+            kind: "ghost",
+          }}
+          align="right"
+          dropdownItems={
+            tripleDotsMenuItems?.map((item) => ({
+              label: item.text,
+              onClick: () => item.onClick(context.row.original),
+            })) || []
+          }
+        />
+      ),
+    });
+  }
 
   const tableInstance = useReactTable({
     columns: mappedColumns,

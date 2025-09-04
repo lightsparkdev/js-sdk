@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 import { Fragment, useEffect, useState, type ComponentProps } from "react";
 
+import { CurrencyUnit } from "@lightsparkdev/core";
+import { useSearchParams } from "react-router-dom";
 import { type useClipboard } from "../../hooks/useClipboard.js";
 import { bp, useBreakpoints } from "../../styles/breakpoints.js";
 import { colors } from "../../styles/colors.js";
@@ -131,6 +133,7 @@ export type DataManagerTableProps<
       }
     | undefined;
   minHeight?: number | undefined;
+  enableURLFilters?: boolean | undefined;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -183,11 +186,224 @@ type PageCursorState = {
   };
 };
 
+// Utility functions for URL state management
+function saveFiltersToURL<T extends Record<string, unknown>>(
+  searchParams: URLSearchParams,
+  filters: Filter<T>[],
+  filterStates: DataManagerTableState<T>,
+  currentPage: number,
+): URLSearchParams {
+  const newSearchParams = new URLSearchParams(searchParams);
+
+  // Clear all existing filter-related params first
+  filters.forEach((filter) => {
+    newSearchParams.delete(String(filter.accessorKey));
+  });
+
+  // Set new filter values based on filter accessorKeys
+  filters.forEach((filter) => {
+    const filterState = filterStates[filter.accessorKey];
+    if (filterState && filterState.isApplied) {
+      if (
+        filter.type === FilterType.STRING ||
+        filter.type === FilterType.ENUM ||
+        filter.type === FilterType.ID
+      ) {
+        const appliedValues = (
+          filterState as StringFilterState | EnumFilterState | IdFilterState
+        ).appliedValues;
+        if (appliedValues && appliedValues.length > 0) {
+          newSearchParams.set(
+            String(filter.accessorKey),
+            appliedValues.join(","),
+          );
+        }
+      } else if (filter.type === FilterType.BOOLEAN) {
+        const appliedValue = (filterState as BooleanFilterState).value;
+        if (appliedValue !== undefined) {
+          newSearchParams.set(String(filter.accessorKey), String(appliedValue));
+        }
+      } else if (filter.type === FilterType.DATE) {
+        const dateFilter = filterState as DateFilterState;
+        if (dateFilter.start || dateFilter.end) {
+          // For date filters, save both start and end dates
+          const startStr = dateFilter.start
+            ? dateFilter.start.toISOString()
+            : "";
+          const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
+          newSearchParams.set(
+            String(filter.accessorKey),
+            `${startStr},${endStr}`,
+          );
+        }
+      } else if (filter.type === FilterType.CURRENCY) {
+        const currencyFilter = filterState as CurrencyFilterState;
+        if (currencyFilter.min_amount || currencyFilter.max_amount) {
+          // For currency filters, we'll save a simple representation
+          const minValue = currencyFilter.min_amount?.value;
+          const maxValue = currencyFilter.max_amount?.value;
+          if (minValue !== undefined || maxValue !== undefined) {
+            const currencyValue =
+              minValue !== undefined && maxValue !== undefined
+                ? `${minValue}-${maxValue}`
+                : minValue !== undefined
+                ? `>${minValue}`
+                : `<${maxValue}`;
+            newSearchParams.set(String(filter.accessorKey), currencyValue);
+          }
+        }
+      }
+    }
+  });
+
+  return newSearchParams;
+}
+
+function loadFiltersFromURL<T extends Record<string, unknown>>(
+  searchParams: URLSearchParams,
+  filters: Filter<T>[],
+  currentFilterStates: DataManagerTableState<T>,
+): DataManagerTableState<T> {
+  const newFilterStates = { ...currentFilterStates };
+
+  // Update each filter based on URL params
+  filters.forEach((filter) => {
+    const paramValue = searchParams.get(String(filter.accessorKey));
+
+    if (paramValue !== null && paramValue !== undefined && paramValue !== "") {
+      // URL has a value for this filter
+      if (filter.type === FilterType.STRING) {
+        const stringFilter = newFilterStates[
+          filter.accessorKey
+        ] as StringFilterState;
+        // Handle comma-separated values for multi-value filters
+        const appliedValues = paramValue.includes(",")
+          ? paramValue.split(",").filter((v) => v.trim() !== "")
+          : [paramValue];
+        newFilterStates[filter.accessorKey] = {
+          ...stringFilter,
+          appliedValues,
+          isApplied: true,
+        } as StringFilterState;
+      } else if (filter.type === FilterType.ENUM) {
+        const enumFilter = newFilterStates[
+          filter.accessorKey
+        ] as EnumFilterState;
+        // Handle comma-separated values for multi-value filters
+        const appliedValues = paramValue.includes(",")
+          ? paramValue.split(",").filter((v) => v.trim() !== "")
+          : [paramValue];
+        newFilterStates[filter.accessorKey] = {
+          ...enumFilter,
+          appliedValues,
+          isApplied: true,
+        } as EnumFilterState;
+      } else if (filter.type === FilterType.ID) {
+        const idFilter = newFilterStates[filter.accessorKey] as IdFilterState;
+        // Handle comma-separated values for multi-value filters
+        const appliedValues = paramValue.includes(",")
+          ? paramValue.split(",").filter((v) => v.trim() !== "")
+          : [paramValue];
+        newFilterStates[filter.accessorKey] = {
+          ...idFilter,
+          appliedValues,
+          isApplied: true,
+        } as IdFilterState;
+      } else if (filter.type === FilterType.BOOLEAN) {
+        const booleanFilter = newFilterStates[
+          filter.accessorKey
+        ] as BooleanFilterState;
+        const boolValue = paramValue === "true";
+        newFilterStates[filter.accessorKey] = {
+          ...booleanFilter,
+          value: boolValue,
+          isApplied: true,
+        } as BooleanFilterState;
+      } else if (filter.type === FilterType.DATE) {
+        const dateFilter = newFilterStates[
+          filter.accessorKey
+        ] as DateFilterState;
+        // Parse start and end dates from comma-separated ISO strings
+        if (paramValue.includes(",")) {
+          const [startStr, endStr] = paramValue.split(",");
+          const startDate = startStr ? new Date(startStr) : null;
+          const endDate = endStr ? new Date(endStr) : null;
+
+          if (
+            (startDate && !isNaN(startDate.getTime())) ||
+            (endDate && !isNaN(endDate.getTime()))
+          ) {
+            newFilterStates[filter.accessorKey] = {
+              ...dateFilter,
+              start: startDate,
+              end: endDate,
+              isApplied: true,
+            } as DateFilterState;
+          }
+        } else {
+          // Single date value (no comma)
+          const dateValue = new Date(paramValue);
+          if (!isNaN(dateValue.getTime())) {
+            newFilterStates[filter.accessorKey] = {
+              ...dateFilter,
+              start: dateValue,
+              end: null,
+              isApplied: true,
+            } as DateFilterState;
+          }
+        }
+      } else if (filter.type === FilterType.CURRENCY) {
+        const currencyFilter = newFilterStates[
+          filter.accessorKey
+        ] as CurrencyFilterState;
+        // Parse currency range from string like "100-200", ">100", "<200"
+        if (paramValue.includes("-")) {
+          const [min, max] = paramValue.split("-").map((v) => parseInt(v));
+          if (!isNaN(min) && !isNaN(max)) {
+            newFilterStates[filter.accessorKey] = {
+              ...currencyFilter,
+              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
+              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
+              isApplied: true,
+            } as CurrencyFilterState;
+          }
+        } else if (paramValue.startsWith(">")) {
+          const min = parseInt(paramValue.substring(1));
+          if (!isNaN(min)) {
+            newFilterStates[filter.accessorKey] = {
+              ...currencyFilter,
+              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
+              max_amount: null,
+              isApplied: true,
+            } as CurrencyFilterState;
+          }
+        } else if (paramValue.startsWith("<")) {
+          const max = parseInt(paramValue.substring(1));
+          if (!isNaN(max)) {
+            newFilterStates[filter.accessorKey] = {
+              ...currencyFilter,
+              min_amount: null,
+              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
+              isApplied: true,
+            } as CurrencyFilterState;
+          }
+        }
+      }
+    } else {
+      // URL doesn't have a value for this filter, reset to default
+      newFilterStates[filter.accessorKey] = getDefaultFilterState(filter);
+    }
+  });
+
+  return newFilterStates;
+}
+
 export function DataManagerTable<
   T extends Record<string, unknown>,
   QueryVariablesType,
   QueryResultType,
 >(props: DataManagerTableProps<T, QueryVariablesType, QueryResultType>) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const isCardPageFullWidth =
     typeof props.cardPageFullWidth === "boolean"
       ? props.cardPageFullWidth
@@ -227,6 +443,62 @@ export function DataManagerTable<
   useEffect(() => {
     setIsLoading(Boolean(props.loading));
   }, [props.loading]);
+
+  // Sync filter states with URL query parameters
+  useEffect(() => {
+    if (!props.filterOptions || !props.enableURLFilters) return;
+
+    const { filters, getFilterQueryVariables } = props.filterOptions;
+
+    // Load filter states from URL query parameters
+    const newFilterStates = loadFiltersFromURL(
+      searchParams,
+      filters,
+      filterStates,
+    );
+    setFilterStates(newFilterStates);
+
+    const newFetchVariables = getFilterQueryVariables(
+      filters,
+      newFilterStates,
+      pageSize,
+    );
+    setFetchVariables(newFetchVariables);
+
+    // Update the count of applied filters
+    const numFiltersApplied = Object.values(newFilterStates).reduce(
+      (acc, state) => {
+        return state.isApplied ? acc + 1 : acc;
+      },
+      0,
+    );
+    setNumFiltersApplied(numFiltersApplied);
+
+    // Refetch data if filters changed and we have filter options
+    if (
+      props.filterOptions &&
+      Object.values(newFilterStates).some((state) => state.isApplied)
+    ) {
+      setIsLoading(true);
+
+      // Clear start result number when filters change
+      setPageCursorState((prevState) => ({
+        ...prevState,
+        startResult: undefined,
+      }));
+
+      // Refetch with new filter variables
+      props.filterOptions
+        .refetch(newFetchVariables)
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((e) => {
+          setIsLoading(false);
+          throw e;
+        });
+    }
+  }, [searchParams, props.filterOptions, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When data is fetched, the nextPageCursor associated with the results changes.
   // We then need to update the current result number and the cursor cache.
@@ -411,8 +683,18 @@ export function DataManagerTable<
       appliedFilterStates,
       pageSize,
     );
-
     setFetchVariables(newFetchVariables);
+
+    if (props.enableURLFilters) {
+      // Update url query params with the applied filters using utility function
+      const newSearchParams = saveFiltersToURL(
+        searchParams,
+        filters,
+        appliedFilterStates,
+        currentPage,
+      );
+      setSearchParams(newSearchParams);
+    }
 
     // Clear start result number when filters are applied
     setPageCursorState((prevState) => ({
