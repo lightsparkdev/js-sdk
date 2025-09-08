@@ -744,6 +744,7 @@ const nageBaseSettings = {
     defaultTypographyType: "Btn",
     defaultSize: "Medium",
     defaultBorderRadius: 8,
+    defaultGap: 16,
     defaultPaddingsY: {
       ExtraSmall: 6,
       Small: 6,

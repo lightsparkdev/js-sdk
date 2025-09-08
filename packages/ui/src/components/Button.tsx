@@ -99,7 +99,8 @@ export type ButtonProps = {
   ml?: number | "auto";
   mb?: number | "auto";
   fullWidth?: boolean | undefined;
-  spaceBetween?: boolean | undefined;
+  justifyContent?: "space-between" | "center" | "flex-start" | "flex-end";
+  gap?: number | undefined;
   type?: "button" | "submit";
   newTab?: boolean;
   tooltipText?: string | undefined;
@@ -161,6 +162,7 @@ function resolveProps(props: ButtonProps, theme: Theme) {
   const {
     kind = defaultKind,
     size: sizeProp,
+    gap: gapProp,
     paddingY: paddingYType = "regular",
     borderRadius,
     typography: typographyProp,
@@ -208,6 +210,7 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     kind,
     "defaultActiveBorderColor",
   );
+  const gap = resolveProp(props.gap, kind, "defaultGap", theme);
 
   const typography = {
     type:
@@ -239,6 +242,7 @@ function resolveProps(props: ButtonProps, theme: Theme) {
     hoverBorderColor,
     activeBackgroundColor,
     activeBorderColor,
+    gap,
   };
 }
 
@@ -274,11 +278,12 @@ export const Button = forwardRef<
     hoverBorderColor,
     activeBackgroundColor,
     activeBorderColor,
+    justifyContent,
+    gap,
     iconSide = "left",
     loading = false,
     loadingKind = "primary",
     fullWidth = false,
-    spaceBetween = false,
     disabled = false,
     mt = 0,
     ml = 0,
@@ -332,8 +337,8 @@ export const Button = forwardRef<
         css={{
           display: "flex",
           alignItems: "center",
-          justifyContent: spaceBetween ? "space-between" : "center",
-          gap: "8px",
+          justifyContent,
+          gap: gap ? `${gap}px` : undefined,
         }}
       >
         {iconSide === "left" && currentIcon}

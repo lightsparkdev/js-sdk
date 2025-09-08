@@ -29,6 +29,7 @@ export const buttonsThemeBase = {
   defaultTypographyType: "Body Strong" as AllowedButtonTypographyTypes,
   defaultColor: "text" as ThemeOrColorKey,
   defaultBorderRadius: 32 as ButtonBorderRadius,
+  defaultGap: 8,
   defaultBackgroundColor: "bg" as BackgroundColorKeyArg,
   defaultBorderColor: "bg" as BackgroundColorKeyArg,
   defaultHoverBackgroundColor: "bg" as BackgroundColorKeyArg,
