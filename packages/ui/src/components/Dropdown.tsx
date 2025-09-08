@@ -103,6 +103,7 @@ type DropdownProps = {
   align?: "left" | "right" | "center";
   verticalPlacement?: "top" | "bottom";
   footer?: ReactNode | null;
+  getFooterCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   getDropdownItemsCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   onOpen?: () => void;
@@ -129,6 +130,7 @@ export function Dropdown({
   align = "center" as const,
   verticalPlacement = "bottom",
   footer = null,
+  getFooterCSS,
   dropdownContent = null,
   borderRadius = 8,
 }: DropdownProps) {
@@ -376,6 +378,7 @@ export function Dropdown({
   const containerCSS = getCSS && getCSS({ isOpen, theme });
   const dropdownItemsCSS =
     getDropdownItemsCSS && getDropdownItemsCSS({ isOpen, theme });
+  const footerCSS = getFooterCSS && getFooterCSS({ isOpen, theme });
 
   return (
     <div
@@ -407,7 +410,11 @@ export function Dropdown({
                 );
               })}
               {dropdownContent}
-              {footer && <DropdownFooter>{footer}</DropdownFooter>}
+              {footer && (
+                <DropdownFooter {...(footerCSS && { css: footerCSS })}>
+                  {footer}
+                </DropdownFooter>
+              )}
             </DropdownItems>,
             nodeRef.current,
           )
@@ -416,10 +423,15 @@ export function Dropdown({
   );
 }
 
-const DropdownFooter = styled.div`
-  padding: 24px 16px 0;
-  border-top: 1px solid ${({ theme }) => theme.c2Neutral};
-  margin-top: 16px;
+const DropdownFooter = styled.div<{ css?: CSSObject }>`
+  ${({ css, theme }) =>
+    css
+      ? css
+      : `
+    padding: 24px 16px 0;
+    border-top: 1px solid ${theme.c2Neutral};
+    margin-top: 16px;
+  `}
 `;
 
 type DropdownItemsProps = {

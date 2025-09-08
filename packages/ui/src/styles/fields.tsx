@@ -109,7 +109,37 @@ export const defaultTextInputTypography = {
   color: "text",
 } as const;
 
-export type TextInputBorderRadius = 8 | 16 | 999;
+export type TextInputBorderRadius =
+  | 8
+  | 16
+  | 999
+  | {
+      topLeft?: number;
+      topRight?: number;
+      bottomLeft?: number;
+      bottomRight?: number;
+    };
+
+export const getBorderRadiusCSS = (
+  borderRadius?: TextInputBorderRadius,
+): string => {
+  if (!borderRadius) {
+    return "8px  ";
+  }
+
+  if (typeof borderRadius === "number") {
+    return `${borderRadius}px  `;
+  }
+
+  // Handle partial border radius object
+  const {
+    topLeft = 8,
+    topRight = 8,
+    bottomLeft = 8,
+    bottomRight = 8,
+  } = borderRadius;
+  return `${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px`;
+};
 
 export const textInputStyle = ({
   theme,
@@ -140,7 +170,7 @@ export const textInputStyle = ({
   borderRadius?: TextInputBorderRadius | undefined;
   borderWidth?: number | undefined;
 }>) => css`
-  border-radius: ${borderRadius ?? 8}px;
+  border-radius: ${getBorderRadiusCSS(borderRadius)};
   background-color: ${disabled ? theme.vlcNeutral : theme.inputBackground};
   cursor: ${disabled ? "not-allowed" : "auto"};
   box-sizing: border-box;

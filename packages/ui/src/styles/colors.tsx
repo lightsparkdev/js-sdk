@@ -62,6 +62,7 @@ const baseColors = {
   // gray scale
   "gray-040": "#fafaf9",
   "gray-050": "#f8f8f7",
+  "gray-075": "#F4F4F3",
   "gray-090": "#eeeeec",
   "gray-100": "#f0f0ee",
   "gray-200": "#deded9",
