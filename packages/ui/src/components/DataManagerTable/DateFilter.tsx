@@ -148,7 +148,7 @@ export const DateFilter = ({
                 });
               }
             }}
-            zIndex={z.modalContainer}
+            zIndex={z.dropdown}
           />
         </TimeAndGranularity>
       ),
@@ -323,7 +323,7 @@ export const DateFilter = ({
                   );
                 }
               }}
-              zIndex={z.modalContainer}
+              zIndex={z.dropdown}
             />
             {dateRangeOptions[customDateRangeData.type].components}
           </>
