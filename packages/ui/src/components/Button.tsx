@@ -278,7 +278,7 @@ export const Button = forwardRef<
     hoverBorderColor,
     activeBackgroundColor,
     activeBorderColor,
-    justifyContent,
+    justifyContent = "center",
     gap,
     iconSide = "left",
     loading = false,
