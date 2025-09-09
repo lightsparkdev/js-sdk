@@ -134,6 +134,7 @@ export type DataManagerTableProps<
     | undefined;
   minHeight?: number | undefined;
   enableURLFilters?: boolean | undefined;
+  refetchOnPropsChange?: (string | number | boolean)[] | undefined;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -499,6 +500,13 @@ export function DataManagerTable<
         });
     }
   }, [searchParams, props.filterOptions, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle refetching data when props from the parent component change.
+  useEffect(() => {
+    if (props.refetchOnPropsChange && props.filterOptions) {
+      void handleApplyFilters(filterStates, props.filterOptions, pageSize);
+    }
+  }, [...(props.refetchOnPropsChange || [])]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When data is fetched, the nextPageCursor associated with the results changes.
   // We then need to update the current result number and the cursor cache.
