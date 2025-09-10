@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { Fragment, useEffect, useState, type ComponentProps } from "react";
 
+import { css } from "@emotion/react";
 import { CurrencyUnit } from "@lightsparkdev/core";
 import { useSearchParams } from "react-router-dom";
 import { type useClipboard } from "../../hooks/useClipboard.js";
@@ -1261,7 +1262,7 @@ export function DataManagerTable<
   );
 
   return (
-    <StyledDataManagerTable>
+    <StyledDataManagerTable fullHeight={props.fullHeight}>
       {isCardPageFullWidth ? (
         <CardPageFullWidth css={{ marginTop: `${cardPageMt}px` }}>
           {content}
@@ -1273,8 +1274,15 @@ export function DataManagerTable<
   );
 }
 
-const StyledDataManagerTable = styled.div`
+const StyledDataManagerTable = styled.div<{ fullHeight: boolean | undefined }>`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  ${({ fullHeight }) =>
+    fullHeight &&
+    css`
+      flex-grow: 1;
+    `}
 `;
 
 const commonPadding = `
