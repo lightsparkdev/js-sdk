@@ -59,6 +59,7 @@ const baseColors = {
   "black-20": "#00000033",
   "black-10": "#0000001a",
   "black-04": "#0000000a",
+  "black-02": "#00000005",
   // gray scale
   "gray-040": "#fafaf9",
   "gray-050": "#f8f8f7",

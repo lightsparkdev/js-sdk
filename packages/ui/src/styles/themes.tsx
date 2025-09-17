@@ -84,6 +84,7 @@ const baseThemeColors = {
   errorBackground: colors.errorBackground,
   errorText: colors.errorText,
   transparent: colors.transparent,
+  border: colors["black-10"],
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
 export const themeOrColorKeyValues = [
@@ -168,6 +169,7 @@ const darkBaseTheme: BaseTheme = {
   errorBackground: colors.errorBackground,
   errorText: colors.errorText,
   transparent: colors.transparent,
+  border: colors["black-10"],
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
@@ -733,12 +735,16 @@ const bridgeDarkTheme = extend(darkTheme, {
 });
 
 const nageBaseSettings = {
-  secondary: colors.grayBlue43,
+  secondary: colors["gray-500"],
+  tertiary: colors["gray-400"],
   mcNeutral: colors.grayBlue43,
   success: colors.green37,
   typography: getTypography(TypographyGroup.Nage, {
     main: "SuisseIntl",
     code: "SuisseIntl-Mono",
+  }),
+  controls: extendBase(lightBaseTheme, {
+    border: colors["black-10"],
   }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Btn",

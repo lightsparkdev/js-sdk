@@ -16,9 +16,9 @@ import {
   type CustomDateRangeData,
 } from "./date_utils.js";
 
-type DateOrNull = Date | null;
+export type DateOrNull = Date | null;
 
-type Dates = DateOrNull | [DateOrNull, DateOrNull];
+export type Dates = DateOrNull | [DateOrNull, DateOrNull];
 
 function getInitialDateState(dateRangeOperation: DateRangeOperation) {
   switch (dateRangeOperation) {

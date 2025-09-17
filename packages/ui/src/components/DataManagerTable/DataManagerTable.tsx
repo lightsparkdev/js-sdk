@@ -1,8 +1,16 @@
 import styled from "@emotion/styled";
-import { Fragment, useEffect, useState, type ComponentProps } from "react";
+import {
+  Fragment,
+  useEffect,
+  useState,
+  type ComponentProps,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
+import { type CSSInterpolation } from "@emotion/css";
 import { css } from "@emotion/react";
-import { CurrencyUnit } from "@lightsparkdev/core";
+import { CurrencyUnit, ensureArray } from "@lightsparkdev/core";
 import { useSearchParams } from "react-router-dom";
 import { type useClipboard } from "../../hooks/useClipboard.js";
 import { bp, useBreakpoints } from "../../styles/breakpoints.js";
@@ -17,7 +25,8 @@ import { z } from "../../styles/z-index.js";
 import { Button, StyledButton } from "../Button.js";
 import { StyledButtonRow } from "../ButtonRow.js";
 import { CardPageFullWidth } from "../CardPage.js";
-import { Dropdown } from "../Dropdown.js";
+import { Dropdown, type DropdownItemType } from "../Dropdown.js";
+import { Flex } from "../Flex.js";
 import { Icon } from "../Icon/Icon.js";
 import { Modal } from "../Modal.js";
 import {
@@ -26,6 +35,7 @@ import {
   type TableProps,
 } from "../Table/Table.js";
 import { TextIconAligner } from "../TextIconAligner.js";
+import { type TextInput } from "../TextInput.js";
 import { Body } from "../typography/Body.js";
 import { Label } from "../typography/Label.js";
 import { LabelModerate } from "../typography/LabelModerate.js";
@@ -41,6 +51,7 @@ import {
 } from "./CurrencyFilter.js";
 import {
   DateFilter,
+  DatePreset,
   getDefaultDateFilterState,
   type DateFilterState,
 } from "./DateFilter.js";
@@ -62,6 +73,7 @@ import {
   isIdFilterState,
   type IdFilterState,
 } from "./IdFilter.js";
+import { PillFilter } from "./PillFilter.js";
 import {
   StringFilter,
   getDefaultStringFilterState,
@@ -98,6 +110,13 @@ interface CustomDataManagerTableComponents extends CustomTableComponents {
   dataManagerTableHeaderComponent?: React.ComponentType<
     React.ComponentProps<typeof DataManagerTableHeader>
   >;
+  dropdownComponent?: React.ComponentType<
+    React.ComponentProps<typeof Dropdown>
+  >;
+  textInputComponent?: React.ComponentType<
+    React.ComponentProps<typeof TextInput>
+  >;
+  customCalendarCss?: CSSInterpolation | undefined;
 }
 
 export type DataManagerTableProps<
@@ -125,6 +144,7 @@ export type DataManagerTableProps<
   cardPageMt?: number;
   filterDropdownAlign?: "left" | "right" | "center";
   filterButtonProps?: ComponentProps<typeof Button>;
+  filterEditorStyle?: "default" | "pills";
   customComponents?: CustomDataManagerTableComponents;
   paginationDisplayOptions?:
     | {
@@ -440,6 +460,9 @@ export function DataManagerTable<
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
 
+  const DropdownComponent =
+    props.customComponents?.dropdownComponent || Dropdown;
+
   const isSm = breakPoint.isSm();
 
   useEffect(() => {
@@ -597,14 +620,11 @@ export function DataManagerTable<
           // Update UI filter state as a result of applying if needed
           if (isIdFilterState(filterState)) {
             const appliedValues = (validResult as IdFilterState).appliedValues;
-            const isApplied = !!appliedValues?.length;
             updateFilterState(filter)({
               ...filterStates[filter.accessorKey],
               value: "",
               appliedValues: appliedValues ? [...appliedValues] : [],
-              isApplied,
             });
-            filterState.isApplied = isApplied;
           }
         } else {
           // Set error messages on each state
@@ -644,17 +664,12 @@ export function DataManagerTable<
             ...filterStates[filter.accessorKey],
             value: "",
             appliedValues: updatedAppliedValues,
-            isApplied: !!updatedAppliedValues.length,
           } as StringFilterState;
 
           // Apply the result of the validation for refetching data
           appliedFilterStates[filter.accessorKey] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
-        } else if (filterState.appliedValues?.length === 0) {
-          // If there are no more applied values, remove the filter
-          updateFilterState(filter)(getDefaultStringFilterState());
-          filterState.isApplied = false;
         }
       } else if (isEnumFilterState(filterState)) {
         if (filterState.value) {
@@ -662,17 +677,12 @@ export function DataManagerTable<
             ...filterStates[filter.accessorKey],
             value: "",
             appliedValues: filterState.appliedValues,
-            isApplied: !!filterState.appliedValues?.length,
           } as EnumFilterState;
 
           // Apply the result of the validation for refetching data
           appliedFilterStates[filter.accessorKey] = newFilterState;
           // Update UI filter state as a result of applying if needed
           updateFilterState(filter)(newFilterState);
-        } else if (filterState.appliedValues?.length === 0) {
-          // If there are no more applied values, remove the filter
-          updateFilterState(filter)(getDefaultEnumFilterState());
-          filterState.isApplied = false;
         }
       }
     }
@@ -995,7 +1005,11 @@ export function DataManagerTable<
       name: "Sort",
     },
     text: !isFilterButtonSmall
-      ? `Filter${numFiltersApplied > 0 ? ` | ${numFiltersApplied}` : ""}`
+      ? `Filter${
+          numFiltersApplied > 0 && props.filterEditorStyle !== "pills"
+            ? ` | ${numFiltersApplied}`
+            : ""
+        }`
       : undefined,
   } as const;
 
@@ -1003,8 +1017,9 @@ export function DataManagerTable<
     const FilterContainerComponent =
       props.customComponents?.filterContainerComponent ||
       DataManagerTableFilterContainer;
-    filters = (
-      <FilterContainerComponent>
+
+    const defaultFilterContent = (
+      <>
         {isSm ? (
           <Fragment>
             <Button
@@ -1021,7 +1036,7 @@ export function DataManagerTable<
             </Modal>
           </Fragment>
         ) : (
-          <Dropdown
+          <DropdownComponent
             borderRadius={12}
             maxDropdownItemsWidth={400}
             dropdownContent={
@@ -1043,6 +1058,119 @@ export function DataManagerTable<
             align={props.filterDropdownAlign || "right"}
           />
         )}
+      </>
+    );
+
+    const pillFilters = props.filterOptions
+      ? props.filterOptions.filters
+          .filter((filter: Filter<T>) => {
+            // If the filter is not applied, don't show it in the pills.
+            return filterStates[filter.accessorKey]?.isApplied;
+          })
+          .map((filter: Filter<T>) => {
+            return (
+              <PillFilter
+                key={filter.label}
+                filter={filter}
+                state={filterStates[filter.accessorKey] as EnumFilterState}
+                onDelete={() => {
+                  setFilterStates((prevStates) => {
+                    const newStates = { ...prevStates };
+                    newStates[filter.accessorKey] =
+                      getDefaultFilterState<T>(filter);
+                    void handleApplyFilters(
+                      newStates,
+                      props.filterOptions!,
+                      pageSize,
+                    );
+                    return newStates;
+                  });
+                }}
+                customComponents={{
+                  customDropdown: props.customComponents?.dropdownComponent,
+                  customTextInput: props.customComponents?.textInputComponent,
+                  customCalendarCss: props.customComponents?.customCalendarCss,
+                }}
+                onUpdateFilter={(newFilterState) => {
+                  setFilterStates((prevStates) => {
+                    const newStates = { ...prevStates };
+                    newStates[filter.accessorKey] = newFilterState;
+                    void handleApplyFilters(
+                      newStates,
+                      props.filterOptions!,
+                      pageSize,
+                    );
+                    setShowFilterEditor(false);
+                    return newStates;
+                  });
+                }}
+              />
+            );
+          })
+      : [];
+
+    const pillsFilterContent = (
+      <PillFiltersContainer>
+        <Flex gap={4} align="center">
+          {pillFilters}
+          <DropdownComponent
+            borderRadius={12}
+            maxDropdownItemsWidth={200}
+            dropdownItems={getPillDropdownItems({
+              filterOptions: props.filterOptions,
+              filterStates,
+              setFilterStates,
+              handleApplyFilters,
+              pageSize,
+              setShowFilterEditor,
+              customDropdownComponent:
+                props.customComponents?.dropdownComponent,
+            })}
+            isOpen={showFilterEditor}
+            onOpen={() => {
+              setShowFilterEditor(true);
+            }}
+            onClose={() => {
+              setShowFilterEditor(false);
+            }}
+            button={{
+              ...commonButtonProps,
+              ...props.filterButtonProps,
+              iconSide: "left",
+            }}
+            align={props.filterDropdownAlign || "right"}
+          />
+        </Flex>
+        <Flex>
+          {numFiltersApplied > 0 && (
+            <Button
+              {...commonButtonProps}
+              {...props.filterButtonProps}
+              icon={{
+                name: "CentralCrossSmall",
+                width: 16,
+                color: "text",
+                iconProps: {
+                  strokeWidth: 3,
+                },
+              }}
+              text="Clear"
+              typography={{
+                color: "secondary",
+              }}
+              onClick={handleClearFilters}
+              kind="transparent"
+            />
+          )}
+        </Flex>
+      </PillFiltersContainer>
+    );
+
+    filters = (
+      <FilterContainerComponent>
+        {(!props.filterEditorStyle || props.filterEditorStyle === "default") &&
+          defaultFilterContent}
+        {props.filterEditorStyle === "pills" && pillsFilterContent}
       </FilterContainerComponent>
     );
   }
@@ -1274,6 +1402,172 @@ export function DataManagerTable<
   );
 }
 
+function getPillDropdownItems<
+  T extends Record<string, unknown>,
+  QueryVariablesType,
+  QueryResultType,
+>({
+  filterOptions,
+  filterStates,
+  setFilterStates,
+  handleApplyFilters,
+  pageSize,
+  setShowFilterEditor,
+  customDropdownComponent,
+}: {
+  filterOptions: FilterOptions<T, QueryVariablesType, QueryResultType>;
+  filterStates: DataManagerTableState<T>;
+  setFilterStates: Dispatch<SetStateAction<DataManagerTableState<T>>>;
+  handleApplyFilters: (
+    filterStates: DataManagerTableState<T>,
+    filterOptions: FilterOptions<T, QueryVariablesType, QueryResultType>,
+    pageSize: number,
+  ) => Promise<void>;
+  pageSize: number;
+  setShowFilterEditor: Dispatch<SetStateAction<boolean>>;
+  customDropdownComponent?:
+    | React.ComponentType<React.ComponentProps<typeof Dropdown>>
+    | undefined;
+}) {
+  const getDropdownItemForFilter = (filter: Filter<T>): DropdownItemType => {
+    let filterSubDropdownOptions: DropdownItemType[] = [];
+    if (filter.type === FilterType.ENUM) {
+      filterSubDropdownOptions = filter.enumValues.map((option) => ({
+        label: option.label,
+        onClick: () => {
+          const optionValues = ensureArray(option.value);
+          const state = filterStates[filter.accessorKey] as EnumFilterState;
+          let updatedAppliedValues: string[] = [];
+          if (filter.isMulti) {
+            updatedAppliedValues = state.appliedValues
+              ? [
+                  ...state.appliedValues.filter(
+                    (appliedValue) => appliedValue !== option.value,
+                  ),
+                  ...optionValues,
+                ]
+              : [...optionValues];
+          } else {
+            updatedAppliedValues = [...optionValues];
+          }
+
+          setFilterStates((prevStates: DataManagerTableState<T>) => {
+            const newStates = { ...prevStates };
+            newStates[filter.accessorKey] = {
+              ...getDefaultFilterState<T>(filter),
+              value: updatedAppliedValues.join(", "),
+              isApplied: true,
+              appliedValues: updatedAppliedValues,
+            } as unknown as FilterState;
+            void handleApplyFilters(newStates, filterOptions, pageSize);
+            setShowFilterEditor(false);
+            return newStates;
+          });
+        },
+      }));
+    }
+
+    return {
+      label: filter.label,
+      getIcon: ({ dropdownItem, theme }) => ({
+        name: "CentralChevronRightSm",
+        width: 18,
+        color: theme.secondary,
+      }),
+      iconSide: "right",
+      onClick: () => {
+        if (filter.type === FilterType.STRING) {
+          const state = filterStates[filter.accessorKey] as StringFilterState;
+          let updatedAppliedValues: string[] = [];
+          updatedAppliedValues =
+            filter.isMulti && state.appliedValues
+              ? [
+                  ...state.appliedValues.filter(
+                    (appliedValue) => appliedValue !== (filter.value as string),
+                  ),
+                ]
+              : [];
+
+          setFilterStates((prevStates: DataManagerTableState<T>) => {
+            const newStates = { ...prevStates };
+            newStates[filter.accessorKey] = {
+              ...getDefaultFilterState<T>(filter),
+              value: updatedAppliedValues.join(", "),
+              isApplied: true,
+              appliedValues: updatedAppliedValues,
+            } as unknown as FilterState;
+            void handleApplyFilters(newStates, filterOptions, pageSize);
+            setShowFilterEditor(false);
+            return newStates;
+          });
+        } else if (filter.type === FilterType.BOOLEAN) {
+          setFilterStates((prevStates: DataManagerTableState<T>) => {
+            const newStates = { ...prevStates };
+            newStates[filter.accessorKey] = {
+              ...getDefaultFilterState<T>(filter),
+              value: filter.value as boolean,
+              isApplied: true,
+            } as unknown as FilterState;
+            void handleApplyFilters(newStates, filterOptions, pageSize);
+            setShowFilterEditor(false);
+            return newStates;
+          });
+        } else if (filter.type === FilterType.ID) {
+          const state = filterStates[filter.accessorKey] as IdFilterState;
+          let updatedAppliedValues: string[] = [];
+          updatedAppliedValues =
+            filter.isMulti && state.appliedValues
+              ? [
+                  ...state.appliedValues.filter(
+                    (appliedValue) => appliedValue !== (filter.value as string),
+                  ),
+                ]
+              : [];
+          setFilterStates((prevStates: DataManagerTableState<T>) => {
+            const newStates = { ...prevStates };
+            newStates[filter.accessorKey] = {
+              ...getDefaultFilterState<T>(filter),
+              value: updatedAppliedValues.join(", "),
+              isApplied: true,
+              appliedValues: updatedAppliedValues,
+            } as unknown as FilterState;
+            void handleApplyFilters(newStates, filterOptions, pageSize);
+            setShowFilterEditor(false);
+            return newStates;
+          });
+        } else if (filter.type === FilterType.CURRENCY) {
+          // TODO: Currency filter state, design tbd
+        } else if (filter.type === FilterType.DATE) {
+          setFilterStates((prevStates: DataManagerTableState<T>) => {
+            const newStates = { ...prevStates };
+            newStates[filter.accessorKey] = {
+              ...getDefaultFilterState<T>(filter),
+              preset: DatePreset.Custom,
+              start: null,
+              end: null,
+              isApplied: true,
+            } as unknown as FilterState;
+            void handleApplyFilters(newStates, filterOptions, pageSize);
+            setShowFilterEditor(false);
+            return newStates;
+          });
+        }
+      },
+      subDropdown:
+        filterSubDropdownOptions.length > 0
+          ? {
+              subItems: filterSubDropdownOptions,
+              customDropdown: customDropdownComponent,
+            }
+          : undefined,
+    };
+  };
+
+  return filterOptions.filters.map((filter) =>
+    getDropdownItemForFilter(filter),
+  );
+}
+
 const StyledDataManagerTable = styled.div<{ fullHeight: boolean | undefined }>`
   width: 100%;
   display: flex;
@@ -1414,4 +1708,13 @@ const FilterContentFooter = styled.div`
 const FilterContentFooterRight = styled.div`
   display: flex;
   gap: ${Spacing.px.xs};
+`;
+
+const PillFiltersContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: ${Spacing.px["2xs"]};
 `;
