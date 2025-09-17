@@ -104,7 +104,11 @@ async function handleRemoteSigningWebhook(
   signatureHeader: string,
 ) {
   const validator = {
-    should_sign: (webhook: WebhookEvent) => true,
+    should_sign: async (webhook: WebhookEvent) => {
+      // Simulate async policy, e.g., fetch account config or check DB
+      await new Promise((r) => setTimeout(r, 1));
+      return webhook.event_type === WebhookEventType.REMOTE_SIGNING;
+    },
   };
 
   const remoteSigningHandler = new RemoteSigningWebhookHandler(

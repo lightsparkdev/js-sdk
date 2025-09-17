@@ -42,7 +42,7 @@ const parseWebhook = (data: Uint8Array): WebhookEvent => {
 };
 
 type Validator = {
-  should_sign: (event: WebhookEvent) => boolean;
+  should_sign: (event: WebhookEvent) => boolean | Promise<boolean>;
 };
 
 export class RemoteSigningWebhookHandler {
@@ -71,15 +71,25 @@ export class RemoteSigningWebhookHandler {
       );
     }
 
+    // Pre-parse to expose a typed event to the validator and allow async decisions.
+    const event = await verifyAndParseWebhook(
+      data,
+      webhookSignature,
+      webhookSecret,
+    );
+
+    const decision = await this.validator.should_sign(event);
+
     const { wasm_handle_remote_signing_webhook_event } = await import(
       "@lightsparkdev/crypto-wasm"
     );
+
     const response = wasm_handle_remote_signing_webhook_event(
       data,
       webhookSignature,
       webhookSecret,
       this.#masterSeed,
-      this.validator,
+      { should_sign: () => decision },
     );
     if (!response) {
       return;
