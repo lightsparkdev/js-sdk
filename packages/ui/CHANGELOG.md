@@ -1,5 +1,11 @@
 # @lightsparkdev/ui
 
+## 1.1.11
+
+### Patch Changes
+
+- 1ee5899: feat: adding hint for birthday input
+
 ## 1.1.10
 
 ### Patch Changes
