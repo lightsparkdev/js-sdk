@@ -52,6 +52,7 @@ export const buttonKinds = [
   "linkLight",
   "danger",
   "warning",
+  "warningLight",
   "tertiary",
   "quaternary",
   "roundSingleChar",

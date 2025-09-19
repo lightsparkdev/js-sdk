@@ -140,6 +140,10 @@ export const defaultButtonsTheme = {
       defaultActiveBackgroundColor: "red42a30",
       defaultActiveBorderColor: "transparent",
     },
+    warningLight: {
+      defaultColor: "danger",
+      defaultBackgroundColor: "warningBackground",
+    },
     tertiary: {
       defaultColor: "bg",
       defaultBackgroundColor: "grayBlue9",

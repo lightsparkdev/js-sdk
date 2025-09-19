@@ -118,6 +118,7 @@ const baseColors = {
   blue50: "#2483D1",
   blue58: "#28BFFF",
   blue32: "#0052A4",
+  blue34: "#0071b9",
   blue90: "#0C3C6F",
   blue60: "#4CA1E7",
   // less than 50% saturated blue
@@ -148,6 +149,7 @@ const baseColors = {
   purple60: "#7366c5",
   // red
   errorBackground: "#FEE2E1",
+  errorBackground2: "#FBE5E9",
   errorText: "#E41C1B",
   errorText2: "#D80027",
   errorText3: "#FF4444",
