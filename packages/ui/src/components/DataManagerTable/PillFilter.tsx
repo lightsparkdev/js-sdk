@@ -264,7 +264,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
             />
             <Button
               kind="primary"
-              text="Apply filter"
+              text="Apply"
               typography={{
                 type: "Btn",
               }}
@@ -307,16 +307,28 @@ function FilterDropdown<T extends Record<string, unknown>>({
   } else if (isDateFilterAndState(filterAndState)) {
     const { state } = filterAndState;
 
-    const updateStateWithCustomRange = (dates: Dates) => {
-      if (
-        !(dates instanceof Array && dates.length === 2) ||
-        dates[0] === null ||
-        dates[1] === null
-      ) {
-        throw new Error("Invalid date range");
+    const isValidDateRange = (dates: Dates): dates is [Date, Date] => {
+      return (
+        dates instanceof Array &&
+        dates.length === 2 &&
+        dates[0] !== null &&
+        dates[1] !== null
+      );
+    };
+
+    const handleCalendarChange = (dates: Dates) => {
+      if (!isValidDateRange(dates)) {
+        return;
       }
 
       setDates(dates);
+    };
+
+    const updateCalendarState = (dates: Dates) => {
+      if (!isValidDateRange(dates)) {
+        return;
+      }
+
       const start = dayjs
         .utc(dates[0])
         .add(dayjs().utcOffset(), "minutes")
@@ -347,20 +359,24 @@ function FilterDropdown<T extends Record<string, unknown>>({
           getContent: ({ isOpen, theme }) => {
             return (
               <Value>
-                <Label size="Small" content={getFilterValue(state)} />
+                <Label
+                  size="Small"
+                  content={getFilterValue(state)}
+                  color={state.start && state.end ? "text" : "secondary"}
+                />
               </Value>
             );
           },
         }}
         dropdownContent={
           <>
-            {isOpen && (
+            <div>
               <DateTimeRangePicker
-                onChange={updateStateWithCustomRange}
-                isCalendarOpen={isOpen}
+                onChange={handleCalendarChange}
+                isCalendarOpen={true}
+                closeWidgets={false}
                 value={dates}
                 locale="en-US"
-                shouldOpenWidgets={() => true}
                 autoFocus
                 formatShortWeekday={(locale, date) => {
                   return capitalize(
@@ -379,7 +395,25 @@ function FilterDropdown<T extends Record<string, unknown>>({
                   </NextPrevCalendarButtons>
                 }
               />
-            )}
+              <Flex
+                pt={Spacing["3xs"]}
+                pr={Spacing.sm}
+                pb={Spacing.sm}
+                pl={Spacing.sm}
+              >
+                <Button
+                  kind="primary"
+                  typography={{
+                    type: "Btn",
+                  }}
+                  fullWidth
+                  text="Apply"
+                  onClick={() => {
+                    updateCalendarState(dates);
+                  }}
+                />
+              </Flex>
+            </div>
           </>
         }
       />
