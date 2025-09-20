@@ -116,7 +116,7 @@ function formatDateValue(date: Date) {
 
 function getFilterValue(state: FilterState) {
   if (isEnumFilterState(state)) {
-    return state.appliedValues?.join(", ") || "";
+    return state.appliedValues?.join(", ").replaceAll("_", " ") || "";
   } else if (isStringFilterState(state)) {
     return state.appliedValues?.join(", ") || "";
   } else if (isIdFilterState(state)) {
@@ -218,11 +218,26 @@ function FilterDropdown<T extends Record<string, unknown>>({
   ) {
     const TextInputComponent = customComponents?.customTextInput || TextInput;
 
-    const { state } = filterAndState;
+    const { filter, state } = filterAndState;
     const handleApplyFilter = () => {
+      let updatedAppliedValues: string[] = [];
+      if (filter.isMulti) {
+        updatedAppliedValues = state.appliedValues
+          ? [
+              ...state.appliedValues.filter(
+                (appliedValue) => appliedValue !== stringFilterValue,
+              ),
+              stringFilterValue,
+            ]
+          : [stringFilterValue];
+      } else {
+        updatedAppliedValues = [stringFilterValue];
+      }
+
       onUpdateFilter({
         ...state,
-        appliedValues: state.appliedValues,
+        appliedValues: updatedAppliedValues,
+        value: stringFilterValue,
         isApplied: true,
       } as unknown as FilterState);
       setIsOpen(false);
@@ -439,6 +454,7 @@ const Property = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0px ${Spacing.px.xs};
+  white-space: nowrap;
 `;
 
 const Operator = styled.div`
@@ -455,6 +471,7 @@ const Value = styled.div`
   justify-content: center;
   align-items: center;
   padding: 0px ${Spacing.px.xs};
+  white-space: nowrap;
 `;
 
 const DeleteButton = styled.div`

@@ -1111,7 +1111,7 @@ export function DataManagerTable<
 
     const pillsFilterContent = (
       <PillFiltersContainer>
-        <Flex gap={4} align="center">
+        <Flex gap={4} align="center" flexWrap="wrap">
           {pillFilters}
           <DropdownComponent
             borderRadius={12}
@@ -1486,6 +1486,8 @@ function getPillDropdownItems<
                     (appliedValue) => appliedValue !== (filter.value as string),
                   ),
                 ]
+              : state.appliedValues
+              ? [...state.appliedValues]
               : [];
 
           setFilterStates((prevStates: DataManagerTableState<T>) => {
@@ -1522,6 +1524,8 @@ function getPillDropdownItems<
                     (appliedValue) => appliedValue !== (filter.value as string),
                   ),
                 ]
+              : state.appliedValues
+              ? [...state.appliedValues]
               : [];
           setFilterStates((prevStates: DataManagerTableState<T>) => {
             const newStates = { ...prevStates };
