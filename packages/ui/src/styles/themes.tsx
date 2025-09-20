@@ -84,6 +84,7 @@ const baseThemeColors = {
   errorBackground: colors.errorBackground,
   errorText: colors.errorText,
   transparent: colors.transparent,
+  border: colors["black-10"],
 };
 type ThemeColorKey = keyof typeof baseThemeColors;
 export const themeOrColorKeyValues = [
@@ -168,6 +169,7 @@ const darkBaseTheme: BaseTheme = {
   errorBackground: colors.errorBackground,
   errorText: colors.errorText,
   transparent: colors.transparent,
+  border: colors["black-10"],
 
   buttons: defaultButtonsTheme,
   loading: defaultLoadingTheme,
@@ -733,17 +735,22 @@ const bridgeDarkTheme = extend(darkTheme, {
 });
 
 const nageBaseSettings = {
-  secondary: colors.grayBlue43,
+  secondary: colors["gray-500"],
+  tertiary: colors["gray-400"],
   mcNeutral: colors.grayBlue43,
   success: colors.green37,
   typography: getTypography(TypographyGroup.Nage, {
     main: "SuisseIntl",
     code: "SuisseIntl-Mono",
   }),
+  controls: extendBase(lightBaseTheme, {
+    border: colors["black-10"],
+  }),
   buttons: merge<typeof buttonsThemeBase>(buttonsThemeBase, {
     defaultTypographyType: "Btn",
     defaultSize: "Medium",
     defaultBorderRadius: 8,
+    defaultGap: 16,
     defaultPaddingsY: {
       ExtraSmall: 6,
       Small: 6,
@@ -819,6 +826,15 @@ const nageBaseSettings = {
         defaultActiveBackgroundColor: "black-10",
         defaultActiveBorderColor: "transparent",
       },
+      danger: {
+        defaultColor: "gray-050",
+        defaultBackgroundColor: "errorText",
+        defaultBorderColor: "transparent",
+        defaultHoverBackgroundColor: "errorText2",
+        defaultHoverBorderColor: "transparent",
+        defaultActiveBackgroundColor: "errorText3",
+        defaultActiveBorderColor: "transparent",
+      },
     },
   }),
   loading: merge<typeof loadingThemeBase>(loadingThemeBase, {
@@ -840,6 +856,7 @@ const nageLightTheme = extend(lightTheme, {
   bg: colors["gray-100"],
   smBg: colors["gray-100"],
   text: colors["gray-950"],
+  info: colors["gray-950"],
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
   inputBackground: colors["gray-050"],

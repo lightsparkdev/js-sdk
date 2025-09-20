@@ -30,7 +30,9 @@ import {
 } from "../../styles/utils.js";
 import { type NewRoutesType } from "../../types/index.js";
 import { type ElideObjArgs } from "../../utils/strings.js";
+import { type ToReactNodesArgs } from "../../utils/toReactNodes/toReactNodes.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
+import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
 import { type IconName } from "../Icon/types.js";
 import { InfoIconTooltip } from "../InfoIconTooltip.js";
@@ -95,6 +97,7 @@ const isMultilineCell = (value: unknown): value is MultilineCell => {
 interface Column<T extends Record<string, unknown>> {
   header: TableColumnHeaderInfo;
   accessorKey: keyof T;
+  function?: (context: CellContext<T, TableCell>) => ReactNode;
 }
 
 export type CustomTableComponents = {
@@ -117,6 +120,22 @@ export type TableProps<T extends Record<string, unknown>> = {
   rowHoverEffect?: "border" | "background" | "none" | undefined;
   customComponents?: CustomTableComponents;
   minHeight?: number;
+  tripleDotsMenuItems?: {
+    text: ToReactNodesArgs;
+    onClick: (row: T) => void;
+  }[];
+  loadingStyle?:
+    | {
+        style: "spinner";
+      }
+    | {
+        style: "progress-bar";
+        timeMs: number;
+      }
+    | {
+        style: "none";
+      };
+  fullHeight?: boolean;
 };
 
 export function Table<T extends Record<string, unknown>>({
@@ -127,8 +146,11 @@ export function Table<T extends Record<string, unknown>>({
   emptyState,
   clipboardCallbacks,
   customComponents,
+  tripleDotsMenuItems,
   rowHoverEffect = "border",
   minHeight = 300,
+  loadingStyle = { style: "spinner" },
+  fullHeight = false,
 }: TableProps<T>) {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -162,6 +184,10 @@ export function Table<T extends Record<string, unknown>>({
           ),
         accessorKey: column.accessorKey.toString(),
         cell: (context: CellContext<T, TableCell>) => {
+          if (column.function && typeof column.function === "function") {
+            return column.function(context);
+          }
+
           const value = context.getValue();
 
           let content: ReactNode = null;
@@ -312,6 +338,30 @@ export function Table<T extends Record<string, unknown>>({
     ],
   );
 
+  if (tripleDotsMenuItems) {
+    mappedColumns.push({
+      header: (context: HeaderContext<T, TableCell>) => "",
+      accessorKey: "tripleDots",
+      cell: (context) => (
+        <Dropdown
+          button={{
+            icon: {
+              name: "CentralDotGrid1x3Vertical",
+            },
+            kind: "ghost",
+          }}
+          align="right"
+          dropdownItems={
+            tripleDotsMenuItems?.map((item) => ({
+              label: item.text,
+              onClick: () => item.onClick(context.row.original),
+            })) || []
+          }
+        />
+      ),
+    });
+  }
+
   const tableInstance = useReactTable({
     columns: mappedColumns,
     data,
@@ -370,7 +420,7 @@ export function Table<T extends Record<string, unknown>>({
 
   const tbody = (
     <tbody>
-      {
+      {(!loading || ["none", "spinner"].includes(loadingStyle.style)) &&
         // Loop over the table rows
         tableInstance.getRowModel().rows.map((row) => {
           return (
@@ -391,15 +441,14 @@ export function Table<T extends Record<string, unknown>>({
               ))}
             </tr>
           );
-        })
-      }
+        })}
     </tbody>
   );
 
   const TableComponent = customComponents?.table || StyledTable;
 
   return (
-    <TableWrapper minHeight={minHeight}>
+    <TableWrapper minHeight={minHeight} fullHeight={fullHeight}>
       <TableComponent
         clickable={Boolean(onClickRow)}
         rowHoverEffect={rowHoverEffect}
@@ -407,20 +456,66 @@ export function Table<T extends Record<string, unknown>>({
         {thead}
         {tbody}
       </TableComponent>
-      {emptyState}
-      {loading && <Loading />}
+      {!loading && emptyState}
+      {loading && loadingStyle.style === "spinner" && <Loading />}
+      {loading && loadingStyle.style === "progress-bar" && (
+        <ProgressBar timeMs={loadingStyle.timeMs} />
+      )}
     </TableWrapper>
   );
 }
 
+function ProgressBar({ timeMs }: { timeMs: number }) {
+  return (
+    <ProgressBarContainer>
+      <ProgressBarInner timeMs={timeMs} />
+    </ProgressBarContainer>
+  );
+}
+
+const ProgressBarContainer = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 3px;
+  background: ${({ theme }) => theme.bg};
+`;
+
+const ProgressBarInner = styled.div<{ timeMs: number }>`
+  height: 100%;
+  background: ${({ theme }) => theme.text};
+
+  @keyframes progressBar {
+    0% {
+      width: 0%;
+    }
+    50% {
+      width: 90%;
+    }
+    100% {
+      width: 95%;
+    }
+  }
+
+  animation: progressBar ${({ timeMs }) => timeMs}ms ease-out forwards;
+`;
+
 type TableWrapperProps = {
   minHeight: number;
+  fullHeight: boolean;
 };
 
 const TableWrapper = styled.div<TableWrapperProps>`
   position: relative;
   min-height: ${({ minHeight }) => minHeight}px;
   ${overflowAutoWithoutScrollbars}
+  ${({ fullHeight }) =>
+    fullHeight &&
+    css`
+      height: 100%;
+    `}
 `;
 
 export type StyledTableProps = {

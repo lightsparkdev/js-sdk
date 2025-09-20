@@ -16,6 +16,7 @@ type TextAreaProps = {
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   readOnly?: boolean;
+  resize?: "none" | "vertical" | "horizontal" | "both";
 };
 
 const defaultProps = {
@@ -33,6 +34,7 @@ export function TextArea({
   disabled = defaultProps.disabled,
   minHeight,
   readOnly = false,
+  resize = "none",
 }: TextAreaProps) {
   return (
     <Fragment>
@@ -41,6 +43,7 @@ export function TextArea({
         id={id}
         value={value}
         minHeight={minHeight}
+        resize={resize}
         onChange={(event) => {
           onChange(event.target.value, event);
         }}
@@ -57,10 +60,11 @@ export function TextArea({
 const StyledTextArea = styled.textarea<{
   disabled: boolean;
   hasError: boolean;
+  resize?: "none" | "vertical" | "horizontal" | "both";
   minHeight?: number | undefined;
 }>`
   ${textInputStyle}
-  resize: none;
+  resize: ${({ resize }) => resize || "none"};
   min-height: ${({ minHeight }) =>
     typeof minHeight === "number" ? `${minHeight}px` : "initial"};
 `;

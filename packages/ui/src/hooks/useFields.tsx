@@ -27,6 +27,7 @@ const defaultMsgs = {
   umaAddress: "Please enter a valid UMA address.",
   matchesField: "Target field does not match.",
   clabe: "Please enter a valid CLABE.",
+  upi: "Please enter a valid UPI.",
 };
 
 const regexp = {
@@ -36,6 +37,7 @@ const regexp = {
   state:
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
   clabe: /^[0-9]{18}$/,
+  upi: /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/,
 };
 
 export const v: Validators = {
@@ -71,6 +73,10 @@ export const v: Validators = {
     (msg = defaultMsgs.clabe) =>
     (value) =>
       !regexp.clabe.test(value) ? msg : false,
+  upi:
+    (msg = defaultMsgs.upi) =>
+    (value) =>
+      !regexp.upi.test(value) ? msg : false,
   required:
     (msg = defaultMsgs.required) =>
     (value) =>

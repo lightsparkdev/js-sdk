@@ -28,8 +28,12 @@ export type SelectProps<
 > = ReactSelectProps<Option, IsMulti, Group> & {
   zIndex?: number | undefined;
   label?: string | undefined;
+  getMenuStyles?: StylesConfig<Option, IsMulti, Group>["menu"];
   getOptionStyles?: StylesConfig<Option, IsMulti, Group>["option"];
   getControlStyles?: StylesConfig<Option, IsMulti, Group>["control"];
+  getPlaceholderStyles?: StylesConfig<Option, IsMulti, Group>["placeholder"];
+  getInputStyles?: StylesConfig<Option, IsMulti, Group>["input"];
+  getSingleValueStyles?: StylesConfig<Option, IsMulti, Group>["singleValue"];
   selectRef?: Ref<SelectInstance<Option, IsMulti, Group>> | undefined;
 };
 
@@ -43,8 +47,12 @@ export function Select<
   label,
   openMenuOnFocus = true,
   tabSelectsValue = false,
+  getMenuStyles,
   getOptionStyles,
   getControlStyles,
+  getPlaceholderStyles,
+  getInputStyles,
+  getSingleValueStyles,
   ...rest
 }: SelectProps<Option, IsMulti, Group>) {
   const theme = useTheme();
@@ -60,19 +68,20 @@ export function Select<
     control: (styles, state) => {
       const controlStyles = getControlStyles
         ? getControlStyles(styles, state)
-        : {};
+        : {
+            padding:
+              state.menuIsOpen || state.isFocused
+                ? `${textInputPaddingPx - 1}px`
+                : textInputPadding,
+            background: theme.bg,
+            minHeight: 0,
+            fontSize: 14,
+            borderWidth: state.menuIsOpen || state.isFocused ? "2px" : "1px",
+          };
       return {
         ...styles,
         transition: "none",
-        padding:
-          state.menuIsOpen || state.isFocused
-            ? `${textInputPaddingPx - 1}px`
-            : textInputPadding,
         boxShadow: "none",
-        background: theme.bg,
-        minHeight: 0,
-        fontSize: 14,
-        borderWidth: state.menuIsOpen || state.isFocused ? "2px" : "1px",
         "&:hover": {
           borderColor: state.menuIsOpen
             ? textInputBorderColorFocused({ theme })
@@ -93,40 +102,47 @@ export function Select<
       display: "none",
     }),
     menu: (styles, state) => {
+      const menuStyles = getMenuStyles
+        ? getMenuStyles(styles, state)
+        : {
+            ...styles,
+            overflow: "hidden",
+            border: `2px solid ${theme.lcNeutral}`,
+            backgroundColor: theme.bg,
+            boxShadow: "0px 3px 6px 1px rgba(0,0,0,0.05)",
+            borderColor: theme.hcNeutral,
+            width: "max-content",
+            minWidth: "100%",
+          };
       return {
         ...styles,
-        overflow: "hidden",
-        border: `2px solid ${theme.lcNeutral}`,
-        backgroundColor: theme.bg,
-        boxShadow: "0px 3px 6px 1px rgba(0,0,0,0.05)",
-        borderColor: theme.hcNeutral,
-        width: "max-content",
-        minWidth: "100%",
+        ...menuStyles,
       };
     },
     option: (styles, props) => {
       const optionStyles = getOptionStyles
         ? getOptionStyles(styles, props)
-        : {};
+        : {
+            color: props.isFocused
+              ? getColor(theme, defaultTextInputTypography.color)
+              : props.isDisabled
+              ? textInputPlaceholderColor({ theme })
+              : getColor(theme, defaultTextInputTypography.color),
+            fontWeight: 600,
+            cursor: "pointer",
+            backgroundColor: props.isFocused
+              ? themeOr(theme.c05Neutral, theme.c2Neutral)({ theme })
+              : theme.bg,
+            WebkitTapHighlightColor: theme.c1Neutral,
+            "&:active": {
+              backgroundColor: themeOr(
+                theme.c05Neutral,
+                theme.c5Neutral,
+              )({ theme }),
+            },
+          };
       return {
         ...styles,
-        color: props.isFocused
-          ? getColor(theme, defaultTextInputTypography.color)
-          : props.isDisabled
-          ? textInputPlaceholderColor({ theme })
-          : getColor(theme, defaultTextInputTypography.color),
-        fontWeight: 600,
-        cursor: "pointer",
-        backgroundColor: props.isFocused
-          ? themeOr(theme.c05Neutral, theme.c2Neutral)({ theme })
-          : theme.bg,
-        WebkitTapHighlightColor: theme.c1Neutral,
-        "&:active": {
-          backgroundColor: themeOr(
-            theme.c05Neutral,
-            theme.c5Neutral,
-          )({ theme }),
-        },
         ...optionStyles,
       };
     },
@@ -135,26 +151,47 @@ export function Select<
       fontSize: 14,
       zIndex: zIndex || z.selectFocused,
     }),
-    singleValue: (styles) => ({
-      ...styles,
-      color: theme.text,
-      fontWeight: 600,
-      fontSize: 14,
-    }),
-    placeholder: (styles) => ({
-      ...styles,
-      color: theme.mcNeutral,
-    }),
+    singleValue: (styles, state) => {
+      const singleValueStyles = getSingleValueStyles
+        ? getSingleValueStyles(styles, state)
+        : {
+            color: theme.text,
+            fontWeight: 600,
+            fontSize: 14,
+          };
+      return {
+        ...styles,
+        ...singleValueStyles,
+      };
+    },
+    placeholder: (styles, state) => {
+      const placeholderStyles = getPlaceholderStyles
+        ? getPlaceholderStyles(styles, state)
+        : {
+            color: theme.mcNeutral,
+          };
+      return {
+        ...styles,
+        ...placeholderStyles,
+      };
+    },
     valueContainer: (styles) => ({
       ...styles,
       padding: 0,
     }),
-    input: (styles) => ({
-      ...styles,
-      color: theme.text,
-      fontWeight: 600,
-      fontSize: 14,
-    }),
+    input: (styles, state) => {
+      const inputStyles = getInputStyles
+        ? getInputStyles(styles, state)
+        : {
+            color: theme.text,
+            fontWeight: 600,
+            fontSize: 14,
+          };
+      return {
+        ...styles,
+        ...inputStyles,
+      };
+    },
   };
   return (
     <StyledSelect>

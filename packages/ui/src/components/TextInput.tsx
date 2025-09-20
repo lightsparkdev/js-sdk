@@ -17,6 +17,7 @@ import { standardBorderRadius } from "../styles/common.js";
 import {
   InputSubtext,
   defaultTextInputTypography,
+  getBorderRadiusCSS,
   inputSpacingPx,
   textInputPlaceholderColor,
   textInputStyle,
@@ -47,6 +48,22 @@ import {
 
 const selectLeftOffset = 10;
 
+const getPartialBorderRadiusCSS = (
+  partialBorderRadius?: PartialBorderRadius,
+): string => {
+  if (!partialBorderRadius) {
+    return "";
+  }
+
+  const {
+    topLeft = 0,
+    topRight = 0,
+    bottomLeft = 0,
+    bottomRight = 0,
+  } = partialBorderRadius;
+  return `border-radius: ${topLeft}px ${topRight}px ${bottomRight}px ${bottomLeft}px;`;
+};
+
 export const iconSides = ["left", "right"] as const;
 export type IconSide = (typeof iconSides)[number];
 export const iconOffsets = ["small", "medium", "large"] as const;
@@ -64,6 +81,13 @@ export type TextLabelOptions = {
   typography?: TypographyPropsWithoutChildren;
   position?: "absolute" | "relative";
   marginBottom?: number;
+};
+
+export type PartialBorderRadius = {
+  topLeft?: number;
+  topRight?: number;
+  bottomLeft?: number;
+  bottomRight?: number;
 };
 
 export type TextInputProps = {
@@ -117,6 +141,7 @@ export type TextInputProps = {
   label?: string;
   labelOptions?: TextLabelOptions;
   rightButtonText?: string | undefined;
+  rightText?: string | undefined;
   onRightButtonClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   typography?: PartialSimpleTypographyProps | undefined;
   select?:
@@ -131,6 +156,7 @@ export type TextInputProps = {
       }
     | undefined;
   borderRadius?: TextInputBorderRadius | undefined;
+  partialBorderRadius?: PartialBorderRadius | undefined;
   borderWidth?: number | undefined;
   width?: "full" | "short" | undefined;
   paddingX?: number;
@@ -282,6 +308,7 @@ export function TextInput(textInputProps: TextInputProps) {
           }
         }}
         borderRadius={props.borderRadius}
+        partialBorderRadius={props.partialBorderRadius}
         borderWidth={props.borderWidth}
         enterKeyHint={props.enterKeyHint}
         autoFocus={props.autoFocus}
@@ -291,6 +318,11 @@ export function TextInput(textInputProps: TextInputProps) {
           <RightButton onClick={props.onRightButtonClick}>
             {props.rightButtonText}
           </RightButton>
+        </RightButtonAligner>
+      )}
+      {props.rightText && (
+        <RightButtonAligner paddingX={rightIconOffset}>
+          <RightTextBody focused={focused}>{props.rightText}</RightTextBody>
         </RightButtonAligner>
       )}
     </InputContainer>
@@ -470,11 +502,13 @@ interface InputProps {
   activeOutlineColor?: ThemeOrColorKey | undefined;
   typography: RequiredSimpleTypographyProps;
   borderRadius?: TextInputBorderRadius | undefined;
+  partialBorderRadius?: PartialBorderRadius | undefined;
   borderWidth?: number | undefined;
 }
 
 const Input = styled.input<InputProps>`
   ${textInputStyle};
+  ${({ partialBorderRadius }) => getPartialBorderRadiusCSS(partialBorderRadius)}
   // disable autofill styles in chrome https://stackoverflow.com/a/68240841/9808766
   &:-webkit-autofill,
   &:-webkit-autofill:focus,
@@ -508,14 +542,19 @@ const RightButton = styled(UnstyledButton)`
   padding: 8px 10px;
 `;
 
+const RightTextBody = styled.label<{ focused: boolean }>`
+  font-size: 14px;
+  font-weight: ${({ focused }) => (focused ? 600 : 400)};
+`;
+
 const TextInputLabel = styled.label<{
   hasError: boolean;
   labelOptions?: TextLabelOptions | undefined;
 }>`
-  ${({ labelOptions }) =>
+  border-radius: ${({ labelOptions }) =>
     labelOptions?.borderRadius
-      ? `${labelOptions.borderRadius}px`
-      : standardBorderRadius(8)};
+      ? getBorderRadiusCSS(labelOptions.borderRadius)
+      : "8px"};
   font-size: 10px;
   position: ${({ labelOptions }) => labelOptions?.position || "absolute"};
   z-index: ${z.textInput + 1};

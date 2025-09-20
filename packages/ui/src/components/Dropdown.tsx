@@ -35,7 +35,12 @@ import { smHeaderLogoMarginLeft } from "../styles/constants.js";
 import { themeOr, type ThemeProp, type WithTheme } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
 import { type NewRoutesType } from "../types/index.js";
+import {
+  toReactNodes,
+  type ToReactNodesArgs,
+} from "../utils/toReactNodes/toReactNodes.js";
 import { Button } from "./Button.js";
+import { Flex } from "./Flex.js";
 import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 import { MultiToggle } from "./MultiToggle.js";
@@ -46,8 +51,8 @@ type DropdownItemGetProps = WithTheme<{
   dropdownItem: DropdownItemType;
 }>;
 
-type DropdownItemType = {
-  label: string;
+export type DropdownItemType = {
+  label: ToReactNodesArgs;
   getIcon?:
     | (({ theme, dropdownItem }: DropdownItemGetProps) =>
         | {
@@ -57,6 +62,7 @@ type DropdownItemType = {
           }
         | undefined)
     | undefined;
+  iconSide?: "left" | "right";
   onClick?: ((dropdownItem: DropdownItemType) => void) | undefined;
   getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
   to?: NewRoutesType | undefined;
@@ -68,6 +74,14 @@ type DropdownItemType = {
     | ComponentProps<typeof Toggle>
     | undefined;
   hash?: RouteHash;
+  subDropdown?:
+    | {
+        subItems: DropdownItemType[];
+        customDropdown?:
+          | React.ComponentType<React.ComponentProps<typeof Dropdown>>
+          | undefined;
+      }
+    | undefined;
 };
 
 type DropdownGetProps = WithTheme<{ isOpen: boolean }>;
@@ -76,7 +90,9 @@ type DropdownBorderRadius = 6 | 8 | 12;
 
 type CommonSimpleDropdownButton = {
   id?: string;
-  getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
+  getCSS?:
+    | (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation)
+    | undefined;
 };
 
 export type SimpleDropdownButton =
@@ -97,8 +113,10 @@ type DropdownProps = {
   onClickDropdownItems?: () => void;
   closeOnScroll?: boolean;
   align?: "left" | "right" | "center";
+  dropdownItemOffsetTop?: number;
   verticalPlacement?: "top" | "bottom";
   footer?: ReactNode | null;
+  getFooterCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   getDropdownItemsCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
   onOpen?: () => void;
@@ -123,8 +141,10 @@ export function Dropdown({
   minDropdownItemsWidth = 200,
   maxDropdownItemsWidth = 300,
   align = "center" as const,
+  dropdownItemOffsetTop: dropdownItemOffsetTopProp = 0,
   verticalPlacement = "bottom",
   footer = null,
+  getFooterCSS,
   dropdownContent = null,
   borderRadius = 8,
 }: DropdownProps) {
@@ -301,9 +321,11 @@ export function Dropdown({
 
   const dropdownTopMargin = 8;
   let dropdownItemOffsetTop =
-    dropdownCoords.top + dropdownButtonHeight + dropdownTopMargin;
-
-  let dropdownItemOffsetLeft = 0;
+    dropdownCoords.top +
+    dropdownButtonHeight +
+    dropdownTopMargin +
+    dropdownItemOffsetTopProp;
+  let dropdownItemOffsetLeft = dropdownCoords.left;
 
   if (align === "center") {
     dropdownItemOffsetLeft =
@@ -372,6 +394,7 @@ export function Dropdown({
   const containerCSS = getCSS && getCSS({ isOpen, theme });
   const dropdownItemsCSS =
     getDropdownItemsCSS && getDropdownItemsCSS({ isOpen, theme });
+  const footerCSS = getFooterCSS && getFooterCSS({ isOpen, theme });
 
   return (
     <div
@@ -394,16 +417,22 @@ export function Dropdown({
             >
               {dropdownItems?.map((dropdownItem, i) => {
                 return (
-                  <li key={dropdownItem.label} onBlur={handleBlur}>
+                  <li key={dropdownItem.to} onBlur={handleBlur}>
                     <DropdownItem
                       dropdownItem={dropdownItem}
+                      dropdownButtonHeight={dropdownButtonHeight}
                       onClick={handleClickDropdownItems}
+                      getDropdownCss={getCSS}
                     />
                   </li>
                 );
               })}
               {dropdownContent}
-              {footer && <DropdownFooter>{footer}</DropdownFooter>}
+              {footer && (
+                <DropdownFooter {...(footerCSS && { css: footerCSS })}>
+                  {footer}
+                </DropdownFooter>
+              )}
             </DropdownItems>,
             nodeRef.current,
           )
@@ -412,10 +441,15 @@ export function Dropdown({
   );
 }
 
-const DropdownFooter = styled.div`
-  padding: 24px 16px 0;
-  border-top: 1px solid ${({ theme }) => theme.c2Neutral};
-  margin-top: 16px;
+const DropdownFooter = styled.div<{ css?: CSSObject }>`
+  ${({ css, theme }) =>
+    css
+      ? css
+      : `
+    padding: 24px 16px 0;
+    border-top: 1px solid ${theme.c2Neutral};
+    margin-top: 16px;
+  `}
 `;
 
 type DropdownItemsProps = {
@@ -446,20 +480,31 @@ const DropdownItems = styled.ul<DropdownItemsProps>`
 
 type DropdownItemProps = {
   dropdownItem: DropdownItemType & { selected?: boolean };
+  dropdownButtonHeight: number;
   onClick?: () => void;
+  getDropdownCss?:
+    | (({ isOpen, theme }: DropdownGetProps) => CSSObject)
+    | undefined;
   getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
 };
 
-function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
+function DropdownItem({
+  dropdownItem,
+  dropdownButtonHeight,
+  onClick,
+  getDropdownCss,
+}: DropdownItemProps) {
   const theme = useTheme();
+  const [showSubDropdown, setShowSubDropdown] = useState(false);
 
+  const iconSide = dropdownItem.iconSide || "left";
   const dropdownItemIcon =
     dropdownItem.getIcon && dropdownItem.getIcon({ dropdownItem, theme });
   const dropdownItemIconNode = dropdownItemIcon ? (
     <Icon
       name={dropdownItemIcon.name}
       width={dropdownItemIcon.width || 12}
-      mr={10}
+      mr={iconSide === "left" ? 10 : 0}
     />
   ) : null;
 
@@ -470,6 +515,31 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
     dropdownItem.onClick && dropdownItem.onClick(dropdownItem);
     onClick && onClick();
   }, [dropdownItem, onClick]);
+
+  const onMouseEnter = useCallback(() => {
+    dropdownItem.subDropdown && setShowSubDropdown(true);
+  }, [dropdownItem]);
+
+  const onMouseLeave = useCallback(() => {
+    dropdownItem.subDropdown && setShowSubDropdown(false);
+  }, [dropdownItem]);
+
+  const iconAndLabel = (
+    <>
+      {iconSide === "left" && (
+        <>
+          {dropdownItemIconNode}
+          {toReactNodes(dropdownItem.label)}
+        </>
+      )}
+      {iconSide === "right" && (
+        <Flex justify="space-between" align="center" width="100%">
+          {toReactNodes(dropdownItem.label)}
+          {dropdownItemIconNode}
+        </Flex>
+      )}
+    </>
+  );
 
   // to may be '' for the current route so check !== undefined
   if (dropdownItem.to !== undefined || dropdownItem.externalLink) {
@@ -485,8 +555,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
         css={cssProp}
         hash={dropdownItem.hash}
       >
-        {dropdownItemIconNode}
-        {dropdownItem.label}
+        {iconAndLabel}
       </DropdownItemLink>
     );
   }
@@ -494,8 +563,7 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
   if (dropdownItem.toggle) {
     return (
       <DropdownItemDiv selected={false} css={cssProp} withHoverColor={false}>
-        {dropdownItemIconNode}
-        {dropdownItem.label}
+        {iconAndLabel}
         <div css={{ marginLeft: "auto" }}>
           {"options" in dropdownItem.toggle ? (
             <MultiToggle {...dropdownItem.toggle} />
@@ -507,14 +575,40 @@ function DropdownItem({ dropdownItem, onClick }: DropdownItemProps) {
     );
   }
 
+  if (dropdownItem.subDropdown) {
+    const DropdownComponent =
+      dropdownItem.subDropdown.customDropdown || Dropdown;
+    return (
+      <DropdownItemDiv
+        selected={false}
+        css={cssProp}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        {iconAndLabel}
+        <DropdownComponent
+          button={{
+            label: "",
+            getCSS: getDropdownCss,
+          }}
+          dropdownItems={dropdownItem.subDropdown.subItems}
+          align="left"
+          dropdownItemOffsetTop={-dropdownButtonHeight}
+          isOpen={showSubDropdown}
+          onOpen={() => setShowSubDropdown(true)}
+          onClose={() => setShowSubDropdown(false)}
+        />
+      </DropdownItemDiv>
+    );
+  }
+
   return (
     <DropdownItemDiv
       selected={false}
       css={cssProp}
       onClick={onClickDropdownItem}
     >
-      {dropdownItemIconNode}
-      {dropdownItem.label}
+      {iconAndLabel}
     </DropdownItemDiv>
   );
 }

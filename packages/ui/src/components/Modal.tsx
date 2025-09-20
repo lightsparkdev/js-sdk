@@ -19,6 +19,7 @@ import {
   standardContentInset,
   standardFocusOutline,
 } from "../styles/common.js";
+import { getColor, type ThemeOrColorKey } from "../styles/themes.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { overflowAutoWithoutScrollbars } from "../styles/utils.js";
 import { z } from "../styles/z-index.js";
@@ -121,7 +122,7 @@ type ModalProps = {
   drawerCloseButton?: boolean;
   drawerAlignBottom?: boolean | undefined;
   drawerDisableTouchMove?: boolean | undefined;
-  voidOverlayBackground?: boolean | undefined;
+  overlayBackground?: ThemeOrColorKey | undefined;
 };
 
 export function Modal({
@@ -162,7 +163,7 @@ export function Modal({
   drawerCloseButton = true,
   drawerAlignBottom,
   drawerDisableTouchMove,
-  voidOverlayBackground,
+  overlayBackground,
 }: ModalProps) {
   const visibleChangedRef = useRef(false);
   const [visibleChanged, setVisibleChanged] = useState(false);
@@ -432,7 +433,7 @@ export function Modal({
         {!(smKind === "fullscreen" && bp.isSm()) ? (
           <ModalOverlay
             ref={overlayRef}
-            voidOverlayBackground={voidOverlayBackground ?? false}
+            overlayBackground={overlayBackground}
           />
         ) : null}
         <ModalContainer
@@ -491,15 +492,19 @@ const DefaultFocusTarget = styled(UnstyledButton)`
   height: 0;
 `;
 
-const ModalOverlay = styled.div<{ voidOverlayBackground?: boolean }>`
+const ModalOverlay = styled.div<{
+  overlayBackground?: ThemeOrColorKey | undefined;
+}>`
   position: fixed;
   bottom: 0;
   left: 0;
   z-index: ${z.modalOverlay};
   width: 100vw;
   height: 100vh;
-  background: ${({ voidOverlayBackground }) =>
-    voidOverlayBackground ? "transparent" : "rgba(0, 0, 0, 0.5)"};
+  background: ${({ overlayBackground, theme }) =>
+    overlayBackground
+      ? getColor(theme, overlayBackground)
+      : "rgba(0, 0, 0, 0.5)"};
 `;
 
 const ModalContainer = styled.div<{ top: number }>`

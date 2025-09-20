@@ -49,6 +49,7 @@ type FlexProps = {
   gap?: number | undefined;
   position?: "absolute" | "relative" | undefined;
   grow?: string | number | undefined;
+  flexWrap?: "wrap" | "nowrap" | undefined;
 };
 
 export function Flex({
@@ -76,6 +77,7 @@ export function Flex({
   width,
   position,
   grow,
+  flexWrap,
 }: FlexProps) {
   const justify = justifyProp ? justifyProp : center ? "center" : "stretch";
   const align = alignProp ? alignProp : center ? "center" : "stretch";
@@ -105,6 +107,7 @@ export function Flex({
       width={width}
       position={position}
       grow={grow}
+      flexWrap={flexWrap}
       {...asButtonProps}
     >
       {children}
@@ -145,6 +148,7 @@ type StyledFlexProps = {
   width?: FlexProps["width"];
   position?: FlexProps["position"];
   grow?: FlexProps["grow"];
+  flexWrap?: FlexProps["flexWrap"];
 };
 
 export const StyledFlex = styled.div<StyledFlexProps>`
@@ -191,4 +195,5 @@ export const StyledFlex = styled.div<StyledFlexProps>`
     width && (isNumber(width) ? `width: ${width}px;` : `width: ${width};`)}
   ${({ position }) => position && `position: ${position};`}
   ${({ grow }) => grow && `flex-grow: ${grow};`}
+  ${({ flexWrap }) => flexWrap && `flex-wrap: ${flexWrap};`}
 `;

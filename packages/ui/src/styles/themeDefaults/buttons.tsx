@@ -5,7 +5,7 @@ import { type TokenSizeKey } from "../tokens/typography.js";
 export type PaddingYKey = "short" | "regular";
 export type PaddingY = number | { [key in PaddingYKey]: number };
 
-export const buttonBorderRadiuses = [8, 32, 999, "100%"] as const;
+export const buttonBorderRadiuses = [4, 8, 32, 999, "100%"] as const;
 export type ButtonBorderRadius = (typeof buttonBorderRadiuses)[number];
 export const allowedButtonTypographyTypes = [
   "Body",
@@ -29,6 +29,7 @@ export const buttonsThemeBase = {
   defaultTypographyType: "Body Strong" as AllowedButtonTypographyTypes,
   defaultColor: "text" as ThemeOrColorKey,
   defaultBorderRadius: 32 as ButtonBorderRadius,
+  defaultGap: 8,
   defaultBackgroundColor: "bg" as BackgroundColorKeyArg,
   defaultBorderColor: "bg" as BackgroundColorKeyArg,
   defaultHoverBackgroundColor: "bg" as BackgroundColorKeyArg,
@@ -138,6 +139,10 @@ export const defaultButtonsTheme = {
       defaultHoverBorderColor: "transparent",
       defaultActiveBackgroundColor: "red42a30",
       defaultActiveBorderColor: "transparent",
+    },
+    warningLight: {
+      defaultColor: "danger",
+      defaultBackgroundColor: "warningBackground",
     },
     tertiary: {
       defaultColor: "bg",
