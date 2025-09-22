@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.11
+
+### Patch Changes
+
+- 8fd199a: - Adding async validator for remote signing
+- Updated dependencies [8fd199a]
+  - @lightsparkdev/core@1.4.5
+  - @lightsparkdev/crypto-wasm@0.1.19
+
 ## 1.9.10
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.4.5
+
+### Patch Changes
+
+- 8fd199a: - Add USDT to supported currencies
+
 ## 1.4.4
 
 ### Patch Changes

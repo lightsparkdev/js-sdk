@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.12
+
+### Patch Changes
+
+- 8fd199a: - Component and theme updates
+- Updated dependencies [8fd199a]
+  - @lightsparkdev/core@1.4.5
+
 ## 1.1.11
 
 ### Patch Changes
