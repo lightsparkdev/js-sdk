@@ -1,8 +1,4 @@
-import {
-  LightsparkSigningException,
-  hexToBytes,
-  isNode,
-} from "@lightsparkdev/core";
+import { LightsparkSigningException, isNode } from "@lightsparkdev/core";
 import type LightsparkClient from "./client.js";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
@@ -18,22 +14,23 @@ export interface WebhookEvent {
 
 export const verifyAndParseWebhook = async (
   data: Uint8Array,
-  hexdigest: string,
-  webhook_secret: string,
+  hexDigest: string,
+  webhookSecret: string,
 ): Promise<WebhookEvent> => {
   /* dynamic import to avoid bundling crypto in browser */
   const { createHmac, timingSafeEqual } = await import("crypto");
-  const expectedBuffer = createHmac("sha256", webhook_secret)
-    .update(data)
-    .digest();
-  const expected = new Uint8Array(expectedBuffer.length);
-  expected.set(expectedBuffer);
+  const sig = new Uint8Array(
+    createHmac("sha256", webhookSecret).update(data).digest(),
+  );
 
-  const provided = hexToBytes(hexdigest);
-
+  const digestBytes = new Uint8Array(Buffer.from(hexDigest, "hex"));
   if (
-    provided.length !== expected.length ||
-    !timingSafeEqual(provided, expected)
+    // Ensure there are no extra chars, since Buffer.from silently drops them.
+    // Each byte is represented by two hex characters.
+    digestBytes.length !== hexDigest.length / 2 ||
+    // timingSafeEqual checks this, but throws a different error.
+    sig.length !== digestBytes.length ||
+    !timingSafeEqual(sig, digestBytes)
   ) {
     throw new Error("Webhook message hash does not match signature");
   }
