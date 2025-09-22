@@ -1,4 +1,8 @@
-import { LightsparkSigningException, isNode } from "@lightsparkdev/core";
+import {
+  LightsparkSigningException,
+  hexToBytes,
+  isNode,
+} from "@lightsparkdev/core";
 import type LightsparkClient from "./client.js";
 import { WebhookEventType } from "./objects/WebhookEventType.js";
 
@@ -18,10 +22,19 @@ export const verifyAndParseWebhook = async (
   webhook_secret: string,
 ): Promise<WebhookEvent> => {
   /* dynamic import to avoid bundling crypto in browser */
-  const { createHmac } = await import("crypto");
-  const sig = createHmac("sha256", webhook_secret).update(data).digest("hex");
+  const { createHmac, timingSafeEqual } = await import("crypto");
+  const expectedBuffer = createHmac("sha256", webhook_secret)
+    .update(data)
+    .digest();
+  const expected = new Uint8Array(expectedBuffer.length);
+  expected.set(expectedBuffer);
 
-  if (sig.toLowerCase() !== hexdigest.toLowerCase()) {
+  const provided = hexToBytes(hexdigest);
+
+  if (
+    provided.length !== expected.length ||
+    !timingSafeEqual(provided, expected)
+  ) {
     throw new Error("Webhook message hash does not match signature");
   }
 
