@@ -131,6 +131,7 @@ export { TradingViewCandles as CentralTradingViewCandles } from "./TradingViewCa
 export { TrashCan as CentralTrashCan } from "./TrashCan.js";
 export { TriangleExclamation as CentralTriangleExclamation } from "./TriangleExclamation.js";
 export { TriangleExclamationFilled as CentralTriangleExclamationFilled } from "./TriangleExclamationFilled.js";
+export { Turtle as CentralTurtle } from "./Turtle.js";
 export { Vignette as CentralVignette } from "./Vignette.js";
 export { WeakStrengthIcon as CentralWeakStrengthIcon } from "./WeakStrength.js";
 export { Wrench as CentralWrench } from "./Wrench.js";

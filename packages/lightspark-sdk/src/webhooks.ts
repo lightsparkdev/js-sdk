@@ -14,14 +14,24 @@ export interface WebhookEvent {
 
 export const verifyAndParseWebhook = async (
   data: Uint8Array,
-  hexdigest: string,
-  webhook_secret: string,
+  hexDigest: string,
+  webhookSecret: string,
 ): Promise<WebhookEvent> => {
   /* dynamic import to avoid bundling crypto in browser */
-  const { createHmac } = await import("crypto");
-  const sig = createHmac("sha256", webhook_secret).update(data).digest("hex");
+  const { createHmac, timingSafeEqual } = await import("crypto");
+  const sig = new Uint8Array(
+    createHmac("sha256", webhookSecret).update(data).digest(),
+  );
 
-  if (sig.toLowerCase() !== hexdigest.toLowerCase()) {
+  const digestBytes = new Uint8Array(Buffer.from(hexDigest, "hex"));
+  if (
+    // Ensure there are no extra chars, since Buffer.from silently drops them.
+    // Each byte is represented by two hex characters.
+    digestBytes.length !== hexDigest.length / 2 ||
+    // timingSafeEqual checks this, but throws a different error.
+    sig.length !== digestBytes.length ||
+    !timingSafeEqual(sig, digestBytes)
+  ) {
     throw new Error("Webhook message hash does not match signature");
   }
 
