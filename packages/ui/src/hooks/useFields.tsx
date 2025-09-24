@@ -28,6 +28,9 @@ const defaultMsgs = {
   matchesField: "Target field does not match.",
   clabe: "Please enter a valid CLABE.",
   upi: "Please enter a valid UPI.",
+  domain: "Please enter a valid domain.",
+  domainName: "Please enter a valid domain name.",
+  url: "Please enter a valid URL.",
 };
 
 const regexp = {
@@ -38,6 +41,10 @@ const regexp = {
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
   clabe: /^[0-9]{18}$/,
   upi: /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/,
+  domain:
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
+  domainName: /^[a-zA-Z0-9-]+$/,
+  url: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
 };
 
 export const v: Validators = {
@@ -45,6 +52,18 @@ export const v: Validators = {
     (msg = defaultMsgs.email) =>
     (value) =>
       !regexp.email.test(value) ? msg : false,
+  domain:
+    (msg = defaultMsgs.domain) =>
+    (value) =>
+      !regexp.domain.test(value) || value.length > 253 ? msg : false,
+  domainName:
+    (msg = defaultMsgs.domainName) =>
+    (value) =>
+      !regexp.domainName.test(value) || value.length > 63 ? msg : false,
+  url:
+    (msg = defaultMsgs.url) =>
+    (value) =>
+      !regexp.url.test(value) ? msg : false,
   phone:
     (msg = defaultMsgs.phone) =>
     (value) =>
@@ -375,6 +394,7 @@ export default function useFields<
       ...fields,
     },
     mergeWithFields,
+    checkFieldForError,
     setFieldBlurred,
     getSetFieldBlurred,
     setFieldErrors,
