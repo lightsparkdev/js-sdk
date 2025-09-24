@@ -66,6 +66,7 @@ export { EmptyStrengthIcon as CentralEmptyStrengthIcon } from "./EmptyStrength.j
 export { EyeOpen as CentralEyeOpen } from "./EyeOpen.js";
 export { EyeSlash as CentralEyeSlash } from "./EyeSlash.js";
 export { FileBend as CentralFileBend } from "./FileBend.js";
+export { Filter2 as CentralFilter2 } from "./Filter2.js";
 export { FingerPrint1 as CentralFingerPrint1 } from "./FingerPrint1.js";
 export { Gift as CentralGift } from "./Gift.js";
 export { Globus as CentralGlobus } from "./Globus.js";

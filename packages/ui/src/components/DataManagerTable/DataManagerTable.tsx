@@ -235,45 +235,35 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
         const appliedValues = (
           filterState as StringFilterState | EnumFilterState | IdFilterState
         ).appliedValues;
-        if (appliedValues && appliedValues.length > 0) {
-          newSearchParams.set(
-            String(filter.accessorKey),
-            appliedValues.join(","),
-          );
-        }
+        newSearchParams.set(
+          String(filter.accessorKey),
+          appliedValues?.join(",") || "",
+        );
       } else if (filter.type === FilterType.BOOLEAN) {
-        const appliedValue = (filterState as BooleanFilterState).value;
-        if (appliedValue !== undefined) {
-          newSearchParams.set(String(filter.accessorKey), String(appliedValue));
-        }
+        const appliedValue = (filterState as BooleanFilterState).value || "";
+        newSearchParams.set(String(filter.accessorKey), String(appliedValue));
       } else if (filter.type === FilterType.DATE) {
         const dateFilter = filterState as DateFilterState;
-        if (dateFilter.start || dateFilter.end) {
-          // For date filters, save both start and end dates
-          const startStr = dateFilter.start
-            ? dateFilter.start.toISOString()
-            : "";
-          const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
-          newSearchParams.set(
-            String(filter.accessorKey),
-            `${startStr},${endStr}`,
-          );
-        }
+        // For date filters, save both start and end dates
+        const startStr = dateFilter.start ? dateFilter.start.toISOString() : "";
+        const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
+        newSearchParams.set(
+          String(filter.accessorKey),
+          `${startStr},${endStr}`,
+        );
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = filterState as CurrencyFilterState;
-        if (currencyFilter.min_amount || currencyFilter.max_amount) {
-          // For currency filters, we'll save a simple representation
-          const minValue = currencyFilter.min_amount?.value;
-          const maxValue = currencyFilter.max_amount?.value;
-          if (minValue !== undefined || maxValue !== undefined) {
-            const currencyValue =
-              minValue !== undefined && maxValue !== undefined
-                ? `${minValue}-${maxValue}`
-                : minValue !== undefined
-                ? `>${minValue}`
-                : `<${maxValue}`;
-            newSearchParams.set(String(filter.accessorKey), currencyValue);
-          }
+        // For currency filters, we'll save a simple representation
+        const minValue = currencyFilter.min_amount?.value;
+        const maxValue = currencyFilter.max_amount?.value;
+        if (minValue !== undefined || maxValue !== undefined) {
+          const currencyValue =
+            minValue !== undefined && maxValue !== undefined
+              ? `${minValue}-${maxValue}`
+              : minValue !== undefined
+              ? `>${minValue}`
+              : `<${maxValue}`;
+          newSearchParams.set(String(filter.accessorKey), currencyValue);
         }
       }
     }
@@ -351,29 +341,24 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
           const [startStr, endStr] = paramValue.split(",");
           const startDate = startStr ? new Date(startStr) : null;
           const endDate = endStr ? new Date(endStr) : null;
-
-          if (
+          const isValidParams =
             (startDate && !isNaN(startDate.getTime())) ||
-            (endDate && !isNaN(endDate.getTime()))
-          ) {
-            newFilterStates[filter.accessorKey] = {
-              ...dateFilter,
-              start: startDate,
-              end: endDate,
-              isApplied: true,
-            } as DateFilterState;
-          }
+            (endDate && !isNaN(endDate.getTime()));
+          newFilterStates[filter.accessorKey] = {
+            ...dateFilter,
+            start: isValidParams ? startDate : null,
+            end: isValidParams ? endDate : null,
+            isApplied: true,
+          } as DateFilterState;
         } else {
           // Single date value (no comma)
           const dateValue = new Date(paramValue);
-          if (!isNaN(dateValue.getTime())) {
-            newFilterStates[filter.accessorKey] = {
-              ...dateFilter,
-              start: dateValue,
-              end: null,
-              isApplied: true,
-            } as DateFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...dateFilter,
+            start: !isNaN(dateValue.getTime()) ? dateValue : null,
+            end: null,
+            isApplied: true,
+          } as DateFilterState;
         }
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = newFilterStates[
@@ -382,39 +367,45 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         // Parse currency range from string like "100-200", ">100", "<200"
         if (paramValue.includes("-")) {
           const [min, max] = paramValue.split("-").map((v) => parseInt(v));
-          if (!isNaN(min) && !isNaN(max)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
-              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          const isValidParams = !isNaN(min) && !isNaN(max);
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: isValidParams
+              ? { value: min, unit: CurrencyUnit.SATOSHI }
+              : null,
+            max_amount: isValidParams
+              ? { value: max, unit: CurrencyUnit.SATOSHI }
+              : null,
+            isApplied: true,
+          } as CurrencyFilterState;
         } else if (paramValue.startsWith(">")) {
           const min = parseInt(paramValue.substring(1));
-          if (!isNaN(min)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
-              max_amount: null,
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: !isNaN(min)
+              ? { value: min, unit: CurrencyUnit.SATOSHI }
+              : null,
+            max_amount: null,
+            isApplied: true,
+          } as CurrencyFilterState;
         } else if (paramValue.startsWith("<")) {
           const max = parseInt(paramValue.substring(1));
-          if (!isNaN(max)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: null,
-              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: null,
+            max_amount: !isNaN(max)
+              ? { value: max, unit: CurrencyUnit.SATOSHI }
+              : null,
+            isApplied: true,
+          } as CurrencyFilterState;
         }
       }
     } else {
-      // URL doesn't have a value for this filter, reset to default
-      newFilterStates[filter.accessorKey] = getDefaultFilterState(filter);
+      const isKeyInURL = searchParams.has(String(filter.accessorKey));
+      newFilterStates[filter.accessorKey] = {
+        ...getDefaultFilterState(filter),
+        isApplied: isKeyInURL,
+      };
     }
   });
 
@@ -452,6 +443,8 @@ export function DataManagerTable<
     cursorCache: {},
   });
   const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
+  const [hasLoadedFiltersFromURL, setHasLoadedFiltersFromURL] =
+    useState<boolean>(false);
   const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
   const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
@@ -526,14 +519,20 @@ export function DataManagerTable<
           throw e;
         });
     }
+
+    setHasLoadedFiltersFromURL(true);
   }, [searchParams, props.filterOptions, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle refetching data when props from the parent component change.
   useEffect(() => {
-    if (props.refetchOnPropsChange && props.filterOptions) {
+    if (
+      props.refetchOnPropsChange &&
+      props.filterOptions &&
+      hasLoadedFiltersFromURL
+    ) {
       void handleApplyFilters(filterStates, props.filterOptions, pageSize);
     }
-  }, [...(props.refetchOnPropsChange || [])]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [...(props.refetchOnPropsChange || []), hasLoadedFiltersFromURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When data is fetched, the nextPageCursor associated with the results changes.
   // We then need to update the current result number and the cursor cache.
