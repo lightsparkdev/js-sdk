@@ -1,11 +1,5 @@
 # @lightsparkdev/ui
 
-## 1.1.13
-
-### Patch Changes
-
-- 7aac87e: indicate slow payout status to bridge users
-
 ## 1.1.12
 
 ### Patch Changes

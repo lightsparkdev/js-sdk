@@ -47,7 +47,7 @@
     "@octokit/auth-action": "^4.0.1",
     "@types/prismjs": "^1.26.0",
     "human-id": "^4.1.1",
-    "octokit": "^4.0.2",
+    "octokit": "^5.0.3",
     "prismjs": "^1.29.0",
     "ts-prune": "^0.10.3",
     "turbo": "^2.5.4"

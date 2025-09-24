@@ -1,11 +1,5 @@
 # @lightsparkdev/lightspark-sdk
 
-## 1.9.12
-
-### Patch Changes
-
-- 7aac87e: Changing webhook signature verification to use a constant time comparison
-
 ## 1.9.11
 
 ### Patch Changes
