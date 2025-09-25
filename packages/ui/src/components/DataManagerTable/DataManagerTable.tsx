@@ -110,9 +110,6 @@ interface CustomDataManagerTableComponents extends CustomTableComponents {
   dataManagerTableHeaderComponent?: React.ComponentType<
     React.ComponentProps<typeof DataManagerTableHeader>
   >;
-  dropdownComponent?: React.ComponentType<
-    React.ComponentProps<typeof Dropdown>
-  >;
   textInputComponent?: React.ComponentType<
     React.ComponentProps<typeof TextInput>
   >;
@@ -216,11 +213,9 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
   filterStates: DataManagerTableState<T>,
   currentPage: number,
 ): URLSearchParams {
-  const newSearchParams = new URLSearchParams(searchParams);
-
   // Clear all existing filter-related params first
   filters.forEach((filter) => {
-    newSearchParams.delete(String(filter.accessorKey));
+    searchParams.delete(String(filter.accessorKey));
   });
 
   // Set new filter values based on filter accessorKeys
@@ -235,22 +230,19 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
         const appliedValues = (
           filterState as StringFilterState | EnumFilterState | IdFilterState
         ).appliedValues;
-        newSearchParams.set(
+        searchParams.set(
           String(filter.accessorKey),
           appliedValues?.join(",") || "",
         );
       } else if (filter.type === FilterType.BOOLEAN) {
         const appliedValue = (filterState as BooleanFilterState).value || "";
-        newSearchParams.set(String(filter.accessorKey), String(appliedValue));
+        searchParams.set(String(filter.accessorKey), String(appliedValue));
       } else if (filter.type === FilterType.DATE) {
         const dateFilter = filterState as DateFilterState;
         // For date filters, save both start and end dates
         const startStr = dateFilter.start ? dateFilter.start.toISOString() : "";
         const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
-        newSearchParams.set(
-          String(filter.accessorKey),
-          `${startStr},${endStr}`,
-        );
+        searchParams.set(String(filter.accessorKey), `${startStr},${endStr}`);
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = filterState as CurrencyFilterState;
         // For currency filters, we'll save a simple representation
@@ -263,13 +255,13 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
               : minValue !== undefined
               ? `>${minValue}`
               : `<${maxValue}`;
-          newSearchParams.set(String(filter.accessorKey), currencyValue);
+          searchParams.set(String(filter.accessorKey), currencyValue);
         }
       }
     }
   });
 
-  return newSearchParams;
+  return searchParams;
 }
 
 function loadFiltersFromURL<T extends Record<string, unknown>>(
