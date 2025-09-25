@@ -102,6 +102,9 @@ interface Column<T extends Record<string, unknown>> {
 
 export type CustomTableComponents = {
   table?: React.ComponentType<React.ComponentProps<typeof StyledTable>>;
+  dropdownComponent?: React.ComponentType<
+    React.ComponentProps<typeof Dropdown>
+  >;
   clipboardTextField?: {
     typography?: PartialSimpleTypographyProps;
     iconName?: IconName;
@@ -339,11 +342,13 @@ export function Table<T extends Record<string, unknown>>({
   );
 
   if (tripleDotsMenuItems) {
+    const DropdownComponent = customComponents?.dropdownComponent || Dropdown;
+
     mappedColumns.push({
       header: (context: HeaderContext<T, TableCell>) => "",
       accessorKey: "tripleDots",
       cell: (context) => (
-        <Dropdown
+        <DropdownComponent
           button={{
             icon: {
               name: "CentralDotGrid1x3Vertical",

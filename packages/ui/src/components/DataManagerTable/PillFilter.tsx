@@ -116,11 +116,11 @@ function formatDateValue(date: Date) {
 
 function getFilterValue(state: FilterState) {
   if (isEnumFilterState(state)) {
-    return state.appliedValues?.join(", ").replaceAll("_", " ") || "";
+    return state.appliedValues?.join(", ").replaceAll("_", " ") || "Empty";
   } else if (isStringFilterState(state)) {
-    return state.appliedValues?.join(", ") || "";
+    return state.appliedValues?.join(", ") || "Empty";
   } else if (isIdFilterState(state)) {
-    return state.appliedValues?.join(", ") || "";
+    return state.appliedValues?.join(", ") || "Empty";
   } else if (isDateFilterState(state)) {
     return state.start && state.end
       ? `${formatDateValue(state.start)} - ${formatDateValue(state.end)}`
@@ -179,6 +179,12 @@ function FilterDropdown<T extends Record<string, unknown>>({
                 <Label
                   size="Small"
                   content={capitalize(getFilterValue(state))}
+                  color={
+                    state.appliedValues?.length &&
+                    state.appliedValues.length > 0
+                      ? "text"
+                      : "secondary"
+                  }
                 />
               </Value>
             );
@@ -256,7 +262,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
               <Value>
                 <Label
                   size="Small"
-                  content={filterValue.length > 0 ? filterValue : "Empty"}
+                  content={filterValue}
                   color={filterValue.length > 0 ? "text" : "secondary"}
                 />
               </Value>
@@ -388,8 +394,10 @@ function FilterDropdown<T extends Record<string, unknown>>({
             <div>
               <DateTimeRangePicker
                 onChange={handleCalendarChange}
-                isCalendarOpen={true}
-                closeWidgets={false}
+                isCalendarOpen={isOpen}
+                shouldCloseWidgets={() => isOpen === false}
+                shouldOpenWidgets={() => isOpen === true}
+                onFocus={() => setIsOpen(true)}
                 value={dates}
                 locale="en-US"
                 autoFocus
