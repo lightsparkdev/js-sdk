@@ -263,7 +263,12 @@ function FilterDropdown<T extends Record<string, unknown>>({
                 <Label
                   size="Small"
                   content={filterValue}
-                  color={filterValue.length > 0 ? "text" : "secondary"}
+                  color={
+                    state.appliedValues?.length &&
+                    state.appliedValues.length > 0
+                      ? "text"
+                      : "secondary"
+                  }
                 />
               </Value>
             );
