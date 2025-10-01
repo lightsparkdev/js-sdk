@@ -91,7 +91,7 @@ export function Flex({
       column={column}
       as={as}
       onClick={disabled ? undefined : onClick}
-      cursorProp={onClick ? (disabled ? "not-allowed" : "pointer") : "unset"}
+      cursorProp={onClick ? (disabled ? "not-allowed" : "pointer") : undefined}
       overflowProp={overflow}
       whiteSpace={whiteSpace}
       mr={mr}
@@ -131,7 +131,7 @@ type StyledFlexProps = {
   justify: NonNullable<FlexProps["justify"]>;
   align: NonNullable<FlexProps["align"]>;
   column: boolean;
-  cursorProp: "pointer" | "not-allowed" | "initial" | "unset";
+  cursorProp: "pointer" | "not-allowed" | "initial" | "unset" | undefined;
   overflowProp: FlexProps["overflow"];
   whiteSpace: FlexProps["whiteSpace"];
   mt: FlexProps["mt"];
@@ -172,7 +172,7 @@ export const StyledFlex = styled.div<StyledFlexProps>`
   ${({ column }) => column && `flex-direction: column;`}
   ${({ justify }) => `justify-content: ${justify};`}
   ${({ align }) => `align-items: ${align};`}
-  ${({ cursorProp }) => `cursor: ${cursorProp};`}
+  ${({ cursorProp }) => cursorProp && `cursor: ${cursorProp};`}
   ${({ overflowProp }) =>
     overflowProp ? `overflow: ${overflowProp}; max-width: 100%;` : ""}
   ${({ whiteSpace }) => (whiteSpace ? `white-space: ${whiteSpace};` : "")}
