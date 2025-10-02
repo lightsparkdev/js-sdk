@@ -513,7 +513,7 @@ export function DataManagerTable<
     }
 
     setHasLoadedFiltersFromURL(true);
-  }, [searchParams, props.filterOptions, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle refetching data when props from the parent component change.
   useEffect(() => {
