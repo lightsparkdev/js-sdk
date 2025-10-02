@@ -1282,7 +1282,7 @@ export function DataManagerTable<
             </PageNumberButton>
           ))}
           {/* Show ellipsis if more than 1 page between 2nd and current page */}
-          {pageNumbers.length > 4 && currentPage - 2 > 1 && (
+          {pageNumbers.length >= 4 && currentPage - 2 > 1 && (
             <Icon
               name="CentralDotGrid1x3Horizontal"
               width={18}
@@ -1302,7 +1302,7 @@ export function DataManagerTable<
             </PageNumberButton>
           )}
           {/* Show ellipsis if more than 1 page between current or 2nd page and the last page */}
-          {pageNumbers.length > 4 && currentPage + 1 < pageNumbers.length && (
+          {pageNumbers.length >= 4 && currentPage + 1 < pageNumbers.length && (
             <Icon
               name="CentralDotGrid1x3Horizontal"
               width={18}
@@ -1312,7 +1312,7 @@ export function DataManagerTable<
             />
           )}
           {/* Show last page number */}
-          {pageNumbers.length > 4 && (
+          {pageNumbers.length >= 3 && (
             <PageNumberButton
               key={pageNumbers.length}
               isCurrentPage={currentPage === pageNumbers.length}
