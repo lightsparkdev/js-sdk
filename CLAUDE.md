@@ -1,158 +1,163 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in the js/ directory.
 
-## Repository Overview
+## Overview
 
-This is the JavaScript/TypeScript monorepo for Lightspark's Lightning Network and UMA services. It contains public SDKs, internal applications, and supporting packages using Yarn workspaces and Turbo for build orchestration.
+JavaScript/TypeScript monorepo for Lightspark's Lightning Network and UMA services. Public SDKs, internal applications, and shared packages using Yarn workspaces + Turbo.
 
-## Main Components
+## Structure
 
-- **packages/** - Shared libraries and public SDKs
-  - **core/** - Core utilities and auth providers  
-  - **lightspark-sdk/** - Main public Lightning SDK
-  - **ui/** - Shared UI components and design system
-  - **private/** - Internal utilities and GraphQL clients
-- **apps/examples/** - Public example applications and CLI tools
-- **apps/private/** - Internal applications (site, ops, uma-bridge, etc.)
+- **packages/** - Shared libraries
+  - **core/** - Auth, utilities
+  - **lightspark-sdk/** - Public Lightning SDK
+  - **ui/** - React components, design system
+  - **private/** - Internal utilities, GraphQL clients
+- **apps/examples/** - Public examples and CLI tools
+- **apps/private/** - Internal apps (site, ops, uma-bridge)
 
-## Essential Development Commands
+## Essential Commands
 
-### Install and Setup
+### Setup
 ```bash
-# Use nvm for Node version management
-nvm use || nvm install
-
-# Enable and prepare Yarn via corepack  
-corepack enable && corepack prepare --activate
-
-# Install all workspace dependencies
-yarn
+nvm use || nvm install  # Match Node version
+corepack enable && corepack prepare --activate  # Enable Yarn
+yarn  # Install all workspace dependencies
 ```
 
-### Development
+### Development Workflow
 ```bash
-# Start specific apps (replaces app names with @lightsparkdev/name)
-yarn start site uma-bridge ops
+# Start applications
+yarn start site uma-bridge ops  # Specific apps (@lightsparkdev/ prefix implied)
+yarn start private              # All private apps
+yarn start examples             # All examples
 
-# Or use predefined filters
-yarn start private     # Start all private apps
-yarn start examples    # Start all example apps
+# Code quality
+yarn lint && yarn format        # Lint + Prettier
+yarn checks                     # Full validation: deps, lint, format, test, circular-deps
 
-# Individual commands
-yarn build             # Build all workspaces
-yarn dev               # Start dev servers with watchers
-yarn test              # Run all tests
-yarn lint              # Lint all workspaces
-yarn format            # Format code with Prettier
-yarn gql-codegen       # Generate GraphQL TypeScript types
-yarn checks            # Full validation suite (deps, lint, format, test, circular-deps)
+# Building
+yarn build                      # Build all workspaces with Turbo caching
+yarn build --force              # Rebuild without cache
+
+# Testing
+yarn test                       # Run all tests
+yarn workspace @lightsparkdev/ui test  # Test specific workspace
+
+# GraphQL codegen
+yarn gql-codegen                # Regenerate TypeScript types from schemas
 ```
 
-### Specific Workspace Commands
+### Workspace Targeting
 ```bash
-# From root - target specific workspace
-yarn workspace @lightsparkdev/uma-bridge start
-yarn workspace @lightsparkdev/ui test
+# From repo root
+yarn workspace @lightsparkdev/<name> <command>
 
-# From workspace directory - runs locally
+# From workspace directory
 cd apps/private/uma-bridge && yarn start
 ```
 
-## Architecture Patterns
+## Architecture & Patterns
 
-### Monorepo Structure
-- Yarn workspaces with Turbo for build caching and parallelization  
-- Package dependencies managed via workspace protocol (`"@lightsparkdev/ui": "*"`)
-- Shared configurations via `@lightsparkdev/tsconfig`, `@lightsparkdev/eslint-config`
-- Build artifacts cached in `dist/` directories
+### Monorepo Management
+- **Yarn workspaces** with workspace protocol (`"@lightsparkdev/ui": "*"`)
+- **Turbo** orchestrates builds with caching and parallelization
+- Shared configs: `@lightsparkdev/{tsconfig,eslint-config}`
+- Build artifacts in `dist/`, ignored by git
 
-### GraphQL Integration
-- Generated TypeScript types via GraphQL Code Generator
-- Schema variants for different API surfaces (internal, third-party, etc.)
-- Fragments and operations defined per application
+### GraphQL
+- TypeScript types auto-generated via GraphQL Code Generator
+- Schema variants per API surface (internal, third-party)
+- Fragments/operations defined per app
 - Real-time subscriptions for transaction updates
+- **After Python schema changes**: run `yarn gql-codegen` from root
 
-### React Applications  
-- Vite for bundling and development
-- Emotion for CSS-in-JS styling
-- React Router for navigation
-- React Query for API state management
-- Zustand for client state
-
-### Testing Strategy
-- Jest for unit/integration testing
-- Cypress for E2E testing on applications
-- React Testing Library for component testing
-- Test configs extend shared base configurations
-
-## Key Configuration Files
-
-- **turbo.json** - Build pipeline, caching, and task dependencies
-- **package.json** - Workspace definitions and scripts
-- **packages/eslint-config/** - Shared linting rules
-- **packages/tsconfig/** - TypeScript configuration presets
-
-## Development Standards
-
-### Code Quality
-- ESLint for code standards (extends shared configs)
-- Prettier for formatting with import organization
-- TypeScript strict mode enabled
-- Circular dependency detection via madge
-
-### Build Process  
-- Turbo orchestrates builds with proper dependency ordering
-- TypeScript builds generate declarations in `dist/`
-- Vite applications build to `dist/` with static assets
-- Build caching prevents unnecessary rebuilds
+### React Stack
+- **Vite** - Dev server and bundler
+- **Emotion** - CSS-in-JS styling
+- **React Router** - Navigation
+- **React Query** - Server state
+- **Zustand** - Client state
 
 ### Testing
-- Unit tests colocated with source code
-- Integration tests in dedicated test directories  
-- E2E tests use Cypress with custom commands
-- Test files use `.test.ts` or `.spec.ts` extensions
+- **Jest** - Unit/integration tests
+- **React Testing Library** - Component tests
+- **Cypress** - E2E tests
+- Tests colocated with source (`.test.ts`, `.spec.ts`)
 
-## Common Development Tasks
+## Configuration Files
 
-### Adding New Packages
-1. Create in appropriate `packages/` subdirectory
+- **turbo.json** - Build pipeline, task dependencies, caching
+- **package.json** (root) - Workspace definitions, scripts
+- **packages/eslint-config/** - Shared linting rules
+- **packages/tsconfig/** - TypeScript presets
+
+## Code Standards
+
+- **TypeScript strict mode** enabled
+- **ESLint** extends shared configs
+- **Prettier** with import organization
+- **Circular dependency detection** via madge
+- **Prefer Edit tool** over inline rewrites for existing code
+
+## Common Task Workflows
+
+### Adding New Package
+1. Create directory in `packages/` or `apps/`
 2. Add workspace reference in root `package.json`
-3. Set up `package.json` with proper dependencies
-4. Configure build scripts in `turbo.json`
+3. Create `package.json` with dependencies (use workspace protocol for internal deps)
+4. Add build config to `turbo.json` if needed
+5. Run `yarn` to link workspace
 
-### GraphQL Updates
+### GraphQL Type Updates
+After Python backend schema changes:
 ```bash
-# After schema changes, regenerate types
-yarn gql-codegen
-
-# For specific applications  
-yarn workspace @lightsparkdev/uma-bridge gql-codegen
+yarn gql-codegen  # All workspaces
+yarn workspace @lightsparkdev/uma-bridge gql-codegen  # Specific app
 ```
 
 ### Debugging Build Issues
 ```bash
-# Clean all build artifacts and caches
-yarn clean-all
-
-# Force rebuild without cache
-yarn build --force
-
-# Reset lockfile (last resort)
-yarn clean-resolve
+yarn clean-all         # Remove dist/ and caches
+yarn build --force     # Bypass Turbo cache
+yarn clean-resolve     # Nuclear option: reset lockfile
 ```
 
-### UMA Bridge Specific
-- Lint command: `yarn run lint --filter=@lightsparkdev/ui --filter=@lightsparkdev/uma-bridge`
-- Uses Vite for development with proxy configuration
-- Integrates with multiple payment providers (Plaid, Tazapay, etc.)
+### UMA Bridge Development
+```bash
+# Lint bridge + UI package
+yarn run lint --filter=@lightsparkdev/ui --filter=@lightsparkdev/uma-bridge
+
+# Start with Vite dev server (proxy configured for backend)
+yarn workspace @lightsparkdev/uma-bridge start
+```
+
+Integrates with: Plaid, Tazapay, Striga, other payment providers
+
+### Adding Dependencies
+```bash
+# Workspace-specific
+yarn workspace @lightsparkdev/<name> add <package>
+
+# Root-level (affects all workspaces)
+yarn add -W <package>
+```
 
 ## Release Process
 
-Public packages use Changesets for versioning:
-1. Changes merged to main trigger Copybara sync to public repo
-2. Release PR automatically created/updated  
-3. Add changesets via bot comments on Release PR
-4. Merge Release PR publishes to npm
+**Public packages** (SDK, core utilities):
+- Changesets for version management
+- Copybara syncs to public repo on main merge
+- Release PR auto-created
+- Merge Release PR → npm publish
 
-Internal packages in `private/` subdirectories are not published publicly.
+**Private packages** (`packages/private/`, `apps/private/`):
+- Not published to npm
+- Versioned internally only
+
+## Troubleshooting
+
+**Import errors**: Check workspace dependencies use `"*"` not version numbers
+**Type errors after GraphQL changes**: Run `yarn gql-codegen`
+**Stale build artifacts**: `yarn clean-all && yarn build`
+**Turbo cache issues**: Add `--force` flag to bypass cache
