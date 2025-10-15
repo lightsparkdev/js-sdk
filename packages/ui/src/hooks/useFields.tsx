@@ -108,6 +108,14 @@ export const v: Validators = {
         ? msg || `Must be at least ${len} characters long.`
         : false;
     },
+  length:
+    (msg, length = 3) =>
+    (value) => {
+      const len = typeof length === "number" ? length : 3;
+      return value.trim().length !== len
+        ? msg || `Must be ${len} characters long.`
+        : false;
+    },
   matchesField:
     (msg = defaultMsgs.matchesField, targetField = "") =>
     (value, fields) => {
