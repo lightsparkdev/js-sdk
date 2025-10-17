@@ -3,15 +3,17 @@ import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ValidatorFn = (value: string, fields?: Fields<any>) => string | false;
+type ValidatorFn = (
+  value: string,
+  fields?: Fields<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+) => string | false;
 type Validators = {
   [key: string]: (msg?: string, ...args: unknown[]) => ValidatorFn;
 };
 
 type FieldValue = string;
-type FieldValueArg = FieldValue | [FieldValue, boolean | ValidatorFn[]];
-type FieldArgs<V extends FieldValueArg> = Record<string, V>;
+export type FieldValueArg = FieldValue | [FieldValue, boolean | ValidatorFn[]];
+export type FieldArgs<V extends FieldValueArg> = Record<string, V>;
 type Fields<T> = Record<keyof T, FieldValue>;
 
 const defaultMsgs = {
