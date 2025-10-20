@@ -110,6 +110,14 @@ export const v: Validators = {
         ? msg || `Must be at least ${len} characters long.`
         : false;
     },
+  max:
+    (msg, maxLength = 3) =>
+    (value) => {
+      const len = typeof maxLength === "number" ? maxLength : 3;
+      return value.trim().length > len
+        ? msg || `Must be less than ${len} characters long.`
+        : false;
+    },
   length:
     (msg, length = 3) =>
     (value) => {

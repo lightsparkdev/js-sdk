@@ -25,6 +25,14 @@ export const CurrencyUnit = {
   GBP: "GBP",
   INR: "INR",
   BRL: "BRL",
+  CAD: "CAD",
+  DKK: "DKK",
+  HKD: "HKD",
+  IDR: "IDR",
+  MYR: "MYR",
+  SGD: "SGD",
+  THB: "THB",
+  VND: "VND",
   USDT: "USDT",
 
   Bitcoin: "BITCOIN",
@@ -72,6 +80,14 @@ const standardUnitConversionObj = {
   [CurrencyUnit.GBP]: (v: number) => v,
   [CurrencyUnit.INR]: (v: number) => v,
   [CurrencyUnit.BRL]: (v: number) => v,
+  [CurrencyUnit.CAD]: (v: number) => v,
+  [CurrencyUnit.DKK]: (v: number) => v,
+  [CurrencyUnit.HKD]: (v: number) => v,
+  [CurrencyUnit.IDR]: (v: number) => v,
+  [CurrencyUnit.MYR]: (v: number) => v,
+  [CurrencyUnit.SGD]: (v: number) => v,
+  [CurrencyUnit.THB]: (v: number) => v,
+  [CurrencyUnit.VND]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
 };
 
@@ -104,6 +120,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toBitcoinConversion,
     [CurrencyUnit.INR]: toBitcoinConversion,
     [CurrencyUnit.BRL]: toBitcoinConversion,
+    [CurrencyUnit.CAD]: toBitcoinConversion,
+    [CurrencyUnit.DKK]: toBitcoinConversion,
+    [CurrencyUnit.HKD]: toBitcoinConversion,
+    [CurrencyUnit.IDR]: toBitcoinConversion,
+    [CurrencyUnit.MYR]: toBitcoinConversion,
+    [CurrencyUnit.SGD]: toBitcoinConversion,
+    [CurrencyUnit.THB]: toBitcoinConversion,
+    [CurrencyUnit.VND]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
@@ -120,6 +144,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toMicrobitcoinConversion,
     [CurrencyUnit.INR]: toMicrobitcoinConversion,
     [CurrencyUnit.BRL]: toMicrobitcoinConversion,
+    [CurrencyUnit.CAD]: toMicrobitcoinConversion,
+    [CurrencyUnit.DKK]: toMicrobitcoinConversion,
+    [CurrencyUnit.HKD]: toMicrobitcoinConversion,
+    [CurrencyUnit.IDR]: toMicrobitcoinConversion,
+    [CurrencyUnit.MYR]: toMicrobitcoinConversion,
+    [CurrencyUnit.SGD]: toMicrobitcoinConversion,
+    [CurrencyUnit.THB]: toMicrobitcoinConversion,
+    [CurrencyUnit.VND]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
@@ -136,6 +168,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toMillibitcoinConversion,
     [CurrencyUnit.INR]: toMillibitcoinConversion,
     [CurrencyUnit.BRL]: toMillibitcoinConversion,
+    [CurrencyUnit.CAD]: toMillibitcoinConversion,
+    [CurrencyUnit.DKK]: toMillibitcoinConversion,
+    [CurrencyUnit.HKD]: toMillibitcoinConversion,
+    [CurrencyUnit.IDR]: toMillibitcoinConversion,
+    [CurrencyUnit.MYR]: toMillibitcoinConversion,
+    [CurrencyUnit.SGD]: toMillibitcoinConversion,
+    [CurrencyUnit.THB]: toMillibitcoinConversion,
+    [CurrencyUnit.VND]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
@@ -152,6 +192,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toMillisatoshiConversion,
     [CurrencyUnit.INR]: toMillisatoshiConversion,
     [CurrencyUnit.BRL]: toMillisatoshiConversion,
+    [CurrencyUnit.CAD]: toMillisatoshiConversion,
+    [CurrencyUnit.DKK]: toMillisatoshiConversion,
+    [CurrencyUnit.HKD]: toMillisatoshiConversion,
+    [CurrencyUnit.IDR]: toMillisatoshiConversion,
+    [CurrencyUnit.MYR]: toMillisatoshiConversion,
+    [CurrencyUnit.SGD]: toMillisatoshiConversion,
+    [CurrencyUnit.THB]: toMillisatoshiConversion,
+    [CurrencyUnit.VND]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
@@ -168,6 +216,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toNanobitcoinConversion,
     [CurrencyUnit.INR]: toNanobitcoinConversion,
     [CurrencyUnit.BRL]: toNanobitcoinConversion,
+    [CurrencyUnit.CAD]: toNanobitcoinConversion,
+    [CurrencyUnit.DKK]: toNanobitcoinConversion,
+    [CurrencyUnit.HKD]: toNanobitcoinConversion,
+    [CurrencyUnit.IDR]: toNanobitcoinConversion,
+    [CurrencyUnit.MYR]: toNanobitcoinConversion,
+    [CurrencyUnit.SGD]: toNanobitcoinConversion,
+    [CurrencyUnit.THB]: toNanobitcoinConversion,
+    [CurrencyUnit.VND]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
@@ -184,6 +240,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.GBP]: toSatoshiConversion,
     [CurrencyUnit.INR]: toSatoshiConversion,
     [CurrencyUnit.BRL]: toSatoshiConversion,
+    [CurrencyUnit.CAD]: toSatoshiConversion,
+    [CurrencyUnit.DKK]: toSatoshiConversion,
+    [CurrencyUnit.HKD]: toSatoshiConversion,
+    [CurrencyUnit.IDR]: toSatoshiConversion,
+    [CurrencyUnit.MYR]: toSatoshiConversion,
+    [CurrencyUnit.SGD]: toSatoshiConversion,
+    [CurrencyUnit.THB]: toSatoshiConversion,
+    [CurrencyUnit.VND]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
   },
   [CurrencyUnit.USD]: standardUnitConversionObj,
@@ -193,6 +257,14 @@ const CONVERSION_MAP = {
   [CurrencyUnit.GBP]: standardUnitConversionObj,
   [CurrencyUnit.INR]: standardUnitConversionObj,
   [CurrencyUnit.BRL]: standardUnitConversionObj,
+  [CurrencyUnit.CAD]: standardUnitConversionObj,
+  [CurrencyUnit.DKK]: standardUnitConversionObj,
+  [CurrencyUnit.HKD]: standardUnitConversionObj,
+  [CurrencyUnit.IDR]: standardUnitConversionObj,
+  [CurrencyUnit.MYR]: standardUnitConversionObj,
+  [CurrencyUnit.SGD]: standardUnitConversionObj,
+  [CurrencyUnit.THB]: standardUnitConversionObj,
+  [CurrencyUnit.VND]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
 };
 
@@ -262,6 +334,14 @@ export type CurrencyMap = {
   [CurrencyUnit.GBP]: number;
   [CurrencyUnit.INR]: number;
   [CurrencyUnit.BRL]: number;
+  [CurrencyUnit.CAD]: number;
+  [CurrencyUnit.DKK]: number;
+  [CurrencyUnit.HKD]: number;
+  [CurrencyUnit.IDR]: number;
+  [CurrencyUnit.MYR]: number;
+  [CurrencyUnit.SGD]: number;
+  [CurrencyUnit.THB]: number;
+  [CurrencyUnit.VND]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
@@ -281,6 +361,14 @@ export type CurrencyMap = {
     [CurrencyUnit.GBP]: string;
     [CurrencyUnit.INR]: string;
     [CurrencyUnit.BRL]: string;
+    [CurrencyUnit.CAD]: string;
+    [CurrencyUnit.DKK]: string;
+    [CurrencyUnit.HKD]: string;
+    [CurrencyUnit.IDR]: string;
+    [CurrencyUnit.MYR]: string;
+    [CurrencyUnit.SGD]: string;
+    [CurrencyUnit.THB]: string;
+    [CurrencyUnit.VND]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
@@ -481,6 +569,14 @@ function convertCurrencyAmountValues(
     gbp: CurrencyUnit.GBP,
     inr: CurrencyUnit.INR,
     brl: CurrencyUnit.BRL,
+    cad: CurrencyUnit.CAD,
+    dkk: CurrencyUnit.DKK,
+    hkd: CurrencyUnit.HKD,
+    idr: CurrencyUnit.IDR,
+    myr: CurrencyUnit.MYR,
+    sgd: CurrencyUnit.SGD,
+    thb: CurrencyUnit.THB,
+    vnd: CurrencyUnit.VND,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -545,6 +641,14 @@ export function mapCurrencyAmount(
     gbp,
     inr,
     brl,
+    cad,
+    dkk,
+    hkd,
+    idr,
+    myr,
+    sgd,
+    thb,
+    vnd,
     usdt,
   } = convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
@@ -559,6 +663,14 @@ export function mapCurrencyAmount(
     [CurrencyUnit.GBP]: gbp,
     [CurrencyUnit.INR]: inr,
     [CurrencyUnit.BRL]: brl,
+    [CurrencyUnit.CAD]: cad,
+    [CurrencyUnit.DKK]: dkk,
+    [CurrencyUnit.HKD]: hkd,
+    [CurrencyUnit.IDR]: idr,
+    [CurrencyUnit.MYR]: myr,
+    [CurrencyUnit.SGD]: sgd,
+    [CurrencyUnit.THB]: thb,
+    [CurrencyUnit.VND]: vnd,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -616,6 +728,38 @@ export function mapCurrencyAmount(
       [CurrencyUnit.BRL]: formatCurrencyStr({
         value: brl,
         unit: CurrencyUnit.BRL,
+      }),
+      [CurrencyUnit.CAD]: formatCurrencyStr({
+        value: cad,
+        unit: CurrencyUnit.CAD,
+      }),
+      [CurrencyUnit.DKK]: formatCurrencyStr({
+        value: dkk,
+        unit: CurrencyUnit.DKK,
+      }),
+      [CurrencyUnit.HKD]: formatCurrencyStr({
+        value: hkd,
+        unit: CurrencyUnit.HKD,
+      }),
+      [CurrencyUnit.IDR]: formatCurrencyStr({
+        value: idr,
+        unit: CurrencyUnit.IDR,
+      }),
+      [CurrencyUnit.MYR]: formatCurrencyStr({
+        value: myr,
+        unit: CurrencyUnit.MYR,
+      }),
+      [CurrencyUnit.SGD]: formatCurrencyStr({
+        value: sgd,
+        unit: CurrencyUnit.SGD,
+      }),
+      [CurrencyUnit.THB]: formatCurrencyStr({
+        value: thb,
+        unit: CurrencyUnit.THB,
+      }),
+      [CurrencyUnit.VND]: formatCurrencyStr({
+        value: vnd,
+        unit: CurrencyUnit.VND,
       }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
@@ -703,6 +847,24 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "INR";
     case CurrencyUnit.USDT:
       return "USDT";
+    case CurrencyUnit.BRL:
+      return "BRL";
+    case CurrencyUnit.CAD:
+      return "CAD";
+    case CurrencyUnit.DKK:
+      return "DKK";
+    case CurrencyUnit.HKD:
+      return "HKD";
+    case CurrencyUnit.IDR:
+      return "IDR";
+    case CurrencyUnit.MYR:
+      return "MYR";
+    case CurrencyUnit.SGD:
+      return "SGD";
+    case CurrencyUnit.THB:
+      return "THB";
+    case CurrencyUnit.VND:
+      return "VND";
   }
   return "Unsupported CurrencyUnit";
 };
