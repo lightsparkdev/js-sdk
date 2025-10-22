@@ -126,6 +126,15 @@ export const v: Validators = {
         ? msg || `Must be ${len} characters long.`
         : false;
     },
+  minLengthOrEmpty:
+    (msg, length = 3) =>
+    (value) => {
+      const len = typeof length === "number" ? length : 3;
+      const trimmed = value.trim();
+      return trimmed.length > 0 && trimmed.length < len
+        ? msg || `Must be at least ${len} characters or empty.`
+        : false;
+    },
   matchesField:
     (msg = defaultMsgs.matchesField, targetField = "") =>
     (value, fields) => {
