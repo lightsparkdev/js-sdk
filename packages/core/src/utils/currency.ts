@@ -920,6 +920,7 @@ export function formatCurrencyStr(
       CurrencyUnit.PHP,
       CurrencyUnit.EUR,
       CurrencyUnit.GBP,
+      CurrencyUnit.INR,
     ] as string[];
     /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
      * divided by 100 for proper display format: */
