@@ -1,0 +1,49 @@
+[env]
+MISE_NODE_COREPACK = true
+
+[tools]
+node = "latest"
+
+[tasks.deps]
+description = "Install all JS dependencies"
+run = "yarn install"
+
+[tasks.dev]
+description = "Start all development servers"
+run = "yarn dev"
+
+[tasks.build]
+description = "Build all packages and apps"
+run = "yarn build"
+
+[tasks.lint]
+description = "Lint all packages"
+run = "yarn lint"
+
+[tasks.format]
+description = "Check formatting"
+run = "yarn format"
+
+[tasks.format-fix]
+description = "Fix formatting issues"
+run = "yarn format:fix"
+
+[tasks.test]
+description = "Run all tests"
+run = "yarn test"
+
+[tasks.clean]
+description = "Clean all build artifacts"
+run = "yarn clean-all"
+
+[tasks.ops]
+description = "Start ops frontend development server"
+run = "cd apps/private/ops && yarn start"
+
+[tasks.ops-minikube]
+description = "Start ops frontend connected to minikube"
+run = "cd apps/private/ops && yarn start:minikube"
+
+[tasks.gql-codegen]
+description = "Generate GraphQL code"
+run = "yarn gql-codegen"
