@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.4.6
+
+### Patch Changes
+
+- 3efb4c1: Adding additional currency mappings
+
 ## 1.4.5
 
 ### Patch Changes
