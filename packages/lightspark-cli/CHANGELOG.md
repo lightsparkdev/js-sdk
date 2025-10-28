@@ -1,15 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.1.13
-
-### Patch Changes
-
-- Updated dependencies [3efb4c1]
-- Updated dependencies [3efb4c1]
-  - @lightsparkdev/core@1.4.6
-  - @lightsparkdev/lightspark-sdk@1.9.13
-  - @lightsparkdev/crypto-wasm@0.1.20
-
 ## 0.1.12
 
 ### Patch Changes
