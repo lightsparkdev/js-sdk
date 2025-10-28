@@ -784,6 +784,7 @@ const nageBaseSettings = {
         defaultBorderColor: "transparent",
         defaultHoverBorderColor: "transparent",
         defaultActiveBackgroundColor: "transparent",
+        defaultActiveBorderColor: "transparent",
         defaultPaddingsY: {
           ExtraSmall: 0,
           Small: 0,

@@ -532,6 +532,37 @@ class LightsparkClient {
     type: InvoiceType | undefined = undefined,
     expirySecs: number | undefined = undefined,
   ): Promise<string | undefined> {
+    const invoice = await this.createInvoiceWithDetails(
+      nodeId,
+      amountMsats,
+      memo,
+      type,
+      expirySecs,
+    );
+    return invoice?.data?.encodedPaymentRequest;
+  }
+
+  /**
+   * Creates an invoice for the given node, returning the full Invoice object instead of
+   * the encoded payment request.
+   *
+   *
+   * @param nodeId The node ID for which to create an invoice.
+   * @param amountMsats The amount of the invoice in msats. You can create a zero-amount invoice to accept any payment amount.
+   * @param memo A string memo to include in the invoice as a description.
+   * @param type The type of invoice to create. Defaults to a normal payment invoice, but you can pass InvoiceType.AMP
+   *     to create an [AMP invoice](https://docs.lightning.engineering/lightning-network-tools/lnd/amp), which can be
+   *     paid multiple times.
+   * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
+   * @returns An Invoice object, or undefined if the invoice could not be created.
+   */
+  public async createInvoiceWithDetails(
+    nodeId: string,
+    amountMsats: number,
+    memo: string,
+    type: InvoiceType | undefined = undefined,
+    expirySecs: number | undefined = undefined,
+  ): Promise<Invoice | undefined> {
     const variables = {
       node_id: nodeId,
       amount_msats: amountMsats,
@@ -545,7 +576,7 @@ class LightsparkClient {
       CreateInvoice,
       variables,
     );
-    return response.create_invoice?.invoice.data?.encoded_payment_request;
+    return InvoiceFromJson(response.create_invoice?.invoice);
   }
 
   /**

@@ -613,7 +613,8 @@ const StyledTextInput = styled.div<{
 
   /* eg forms, should be left consistent: */
   & + & {
-    margin-top: ${inputSpacingPx}px;
+    margin-top: ${({ marginTop }) =>
+      marginTop !== undefined ? `${marginTop}px` : `${inputSpacingPx}px`};
   }
 
   ${TextInputHalfRow.toString()} & + & {

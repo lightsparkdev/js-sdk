@@ -110,9 +110,6 @@ interface CustomDataManagerTableComponents extends CustomTableComponents {
   dataManagerTableHeaderComponent?: React.ComponentType<
     React.ComponentProps<typeof DataManagerTableHeader>
   >;
-  dropdownComponent?: React.ComponentType<
-    React.ComponentProps<typeof Dropdown>
-  >;
   textInputComponent?: React.ComponentType<
     React.ComponentProps<typeof TextInput>
   >;
@@ -156,6 +153,7 @@ export type DataManagerTableProps<
   minHeight?: number | undefined;
   enableURLFilters?: boolean | undefined;
   refetchOnPropsChange?: (string | number | boolean)[] | undefined;
+  showFooter?: boolean | undefined;
 };
 
 export type DataManagerTableState<T extends Record<string, unknown>> = Record<
@@ -215,11 +213,9 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
   filterStates: DataManagerTableState<T>,
   currentPage: number,
 ): URLSearchParams {
-  const newSearchParams = new URLSearchParams(searchParams);
-
   // Clear all existing filter-related params first
   filters.forEach((filter) => {
-    newSearchParams.delete(String(filter.accessorKey));
+    searchParams.delete(String(filter.accessorKey));
   });
 
   // Set new filter values based on filter accessorKeys
@@ -234,51 +230,38 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
         const appliedValues = (
           filterState as StringFilterState | EnumFilterState | IdFilterState
         ).appliedValues;
-        if (appliedValues && appliedValues.length > 0) {
-          newSearchParams.set(
-            String(filter.accessorKey),
-            appliedValues.join(","),
-          );
-        }
+        searchParams.set(
+          String(filter.accessorKey),
+          appliedValues?.join(",") || "",
+        );
       } else if (filter.type === FilterType.BOOLEAN) {
-        const appliedValue = (filterState as BooleanFilterState).value;
-        if (appliedValue !== undefined) {
-          newSearchParams.set(String(filter.accessorKey), String(appliedValue));
-        }
+        const appliedValue = (filterState as BooleanFilterState).value || "";
+        searchParams.set(String(filter.accessorKey), String(appliedValue));
       } else if (filter.type === FilterType.DATE) {
         const dateFilter = filterState as DateFilterState;
-        if (dateFilter.start || dateFilter.end) {
-          // For date filters, save both start and end dates
-          const startStr = dateFilter.start
-            ? dateFilter.start.toISOString()
-            : "";
-          const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
-          newSearchParams.set(
-            String(filter.accessorKey),
-            `${startStr},${endStr}`,
-          );
-        }
+        // For date filters, save both start and end dates
+        const startStr = dateFilter.start ? dateFilter.start.toISOString() : "";
+        const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
+        searchParams.set(String(filter.accessorKey), `${startStr},${endStr}`);
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = filterState as CurrencyFilterState;
-        if (currencyFilter.min_amount || currencyFilter.max_amount) {
-          // For currency filters, we'll save a simple representation
-          const minValue = currencyFilter.min_amount?.value;
-          const maxValue = currencyFilter.max_amount?.value;
-          if (minValue !== undefined || maxValue !== undefined) {
-            const currencyValue =
-              minValue !== undefined && maxValue !== undefined
-                ? `${minValue}-${maxValue}`
-                : minValue !== undefined
-                ? `>${minValue}`
-                : `<${maxValue}`;
-            newSearchParams.set(String(filter.accessorKey), currencyValue);
-          }
+        // For currency filters, we'll save a simple representation
+        const minValue = currencyFilter.min_amount?.value;
+        const maxValue = currencyFilter.max_amount?.value;
+        if (minValue !== undefined || maxValue !== undefined) {
+          const currencyValue =
+            minValue !== undefined && maxValue !== undefined
+              ? `${minValue}-${maxValue}`
+              : minValue !== undefined
+              ? `>${minValue}`
+              : `<${maxValue}`;
+          searchParams.set(String(filter.accessorKey), currencyValue);
         }
       }
     }
   });
 
-  return newSearchParams;
+  return searchParams;
 }
 
 function loadFiltersFromURL<T extends Record<string, unknown>>(
@@ -350,29 +333,24 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
           const [startStr, endStr] = paramValue.split(",");
           const startDate = startStr ? new Date(startStr) : null;
           const endDate = endStr ? new Date(endStr) : null;
-
-          if (
+          const isValidParams =
             (startDate && !isNaN(startDate.getTime())) ||
-            (endDate && !isNaN(endDate.getTime()))
-          ) {
-            newFilterStates[filter.accessorKey] = {
-              ...dateFilter,
-              start: startDate,
-              end: endDate,
-              isApplied: true,
-            } as DateFilterState;
-          }
+            (endDate && !isNaN(endDate.getTime()));
+          newFilterStates[filter.accessorKey] = {
+            ...dateFilter,
+            start: isValidParams ? startDate : null,
+            end: isValidParams ? endDate : null,
+            isApplied: true,
+          } as DateFilterState;
         } else {
           // Single date value (no comma)
           const dateValue = new Date(paramValue);
-          if (!isNaN(dateValue.getTime())) {
-            newFilterStates[filter.accessorKey] = {
-              ...dateFilter,
-              start: dateValue,
-              end: null,
-              isApplied: true,
-            } as DateFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...dateFilter,
+            start: !isNaN(dateValue.getTime()) ? dateValue : null,
+            end: null,
+            isApplied: true,
+          } as DateFilterState;
         }
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = newFilterStates[
@@ -381,39 +359,45 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         // Parse currency range from string like "100-200", ">100", "<200"
         if (paramValue.includes("-")) {
           const [min, max] = paramValue.split("-").map((v) => parseInt(v));
-          if (!isNaN(min) && !isNaN(max)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
-              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          const isValidParams = !isNaN(min) && !isNaN(max);
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: isValidParams
+              ? { value: min, unit: CurrencyUnit.SATOSHI }
+              : null,
+            max_amount: isValidParams
+              ? { value: max, unit: CurrencyUnit.SATOSHI }
+              : null,
+            isApplied: true,
+          } as CurrencyFilterState;
         } else if (paramValue.startsWith(">")) {
           const min = parseInt(paramValue.substring(1));
-          if (!isNaN(min)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
-              max_amount: null,
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: !isNaN(min)
+              ? { value: min, unit: CurrencyUnit.SATOSHI }
+              : null,
+            max_amount: null,
+            isApplied: true,
+          } as CurrencyFilterState;
         } else if (paramValue.startsWith("<")) {
           const max = parseInt(paramValue.substring(1));
-          if (!isNaN(max)) {
-            newFilterStates[filter.accessorKey] = {
-              ...currencyFilter,
-              min_amount: null,
-              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
-              isApplied: true,
-            } as CurrencyFilterState;
-          }
+          newFilterStates[filter.accessorKey] = {
+            ...currencyFilter,
+            min_amount: null,
+            max_amount: !isNaN(max)
+              ? { value: max, unit: CurrencyUnit.SATOSHI }
+              : null,
+            isApplied: true,
+          } as CurrencyFilterState;
         }
       }
     } else {
-      // URL doesn't have a value for this filter, reset to default
-      newFilterStates[filter.accessorKey] = getDefaultFilterState(filter);
+      const isKeyInURL = searchParams.has(String(filter.accessorKey));
+      newFilterStates[filter.accessorKey] = {
+        ...getDefaultFilterState(filter),
+        isApplied: isKeyInURL,
+      };
     }
   });
 
@@ -441,6 +425,8 @@ export function DataManagerTable<
     typeof props.paginationDisplayOptions?.pageSizeStringTemplate === "string"
       ? props.paginationDisplayOptions.pageSizeStringTemplate
       : "Show {pageSize} items";
+  const showFooter =
+    typeof props.showFooter === "boolean" ? props.showFooter : true;
   const breakPoint = useBreakpoints();
   const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
@@ -449,6 +435,8 @@ export function DataManagerTable<
     cursorCache: {},
   });
   const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
+  const [hasLoadedFiltersFromURL, setHasLoadedFiltersFromURL] =
+    useState<boolean>(false);
   const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
   const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
@@ -523,14 +511,20 @@ export function DataManagerTable<
           throw e;
         });
     }
-  }, [searchParams, props.filterOptions, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    setHasLoadedFiltersFromURL(true);
+  }, [searchParams, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle refetching data when props from the parent component change.
   useEffect(() => {
-    if (props.refetchOnPropsChange && props.filterOptions) {
+    if (
+      props.refetchOnPropsChange &&
+      props.filterOptions &&
+      hasLoadedFiltersFromURL
+    ) {
       void handleApplyFilters(filterStates, props.filterOptions, pageSize);
     }
-  }, [...(props.refetchOnPropsChange || [])]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [...(props.refetchOnPropsChange || []), hasLoadedFiltersFromURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // When data is fetched, the nextPageCursor associated with the results changes.
   // We then need to update the current result number and the cursor cache.
@@ -1216,160 +1210,163 @@ export function DataManagerTable<
   }
 
   let footer: React.ReactNode;
-  if (props.showMoreOptions) {
-    footer = (
-      <DataManagerTableFooter>
-        <Button
-          text="Show more"
-          paddingY="short"
-          onClick={() =>
-            void handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20))
-          }
-        />
-        {showMoreDropdown}
-      </DataManagerTableFooter>
-    );
-  } else if (props.resultCount) {
-    const startResult = pageCursorState.startResult || 1;
-    const endResult = Math.min(props.resultCount, startResult + pageSize - 1);
-    const isFullCount = props.isFullCount ?? true;
 
-    const countString = isFullCount
-      ? props.resultCount
-      : props.resultCount + "+";
-
-    const resultsString = props.paginationDisplayOptions
-      ?.showPageNumberButtons ? (
-      <div></div>
-    ) : (
-      <div>
-        <Label>Viewing </Label>
-        <LabelModerate>{`${startResult}-${endResult}`}</LabelModerate>
-        <Label> of </Label>
-        <LabelModerate>{`${countString}`}</LabelModerate>
-        <Label> results</Label>
-      </div>
-    );
-
-    const hasNext = props.resultCount
-      ? startResult + pageSize - 1 < props.resultCount
-      : false;
-    const hasPrev = startResult > 1;
-
-    const pageNumbers = Array.from(
-      { length: Math.ceil(props.resultCount / pageSize) },
-      (_, i) => i,
-    );
-
-    const pageNumberButtons = props.paginationDisplayOptions
-      ?.showPageNumberButtons ? (
-      <PageNumberPaginationButtonsContainer>
-        <Button
-          icon={{
-            name: "CentralChevronLeftSmall",
-            width: 24,
-            color: "text",
-          }}
-          kind="ghost"
-          paddingY="short"
-          onClick={() => void handlePrev()}
-          disabled={!hasPrev}
-        />
-        {/* Get first two page numbers based on page size and current page */}
-        {pageNumbers.slice(0, 2).map((pageNumber) => (
-          <PageNumberButton
-            key={pageNumber}
-            onClick={() => void handleChangePage(pageNumber + 1)}
-            isCurrentPage={currentPage === pageNumber + 1}
-          >
-            <Body content={`${pageNumber + 1}`} />
-          </PageNumberButton>
-        ))}
-        {/* Show ellipsis if more than 1 page between 2nd and current page */}
-        {pageNumbers.length > 4 && currentPage - 2 > 1 && (
-          <Icon
-            name="CentralDotGrid1x3Horizontal"
-            width={18}
-            ml={7}
-            mr={7}
-            color="text"
+  if (showFooter) {
+    if (props.showMoreOptions) {
+      footer = (
+        <DataManagerTableFooter>
+          <Button
+            text="Show more"
+            paddingY="short"
+            onClick={() =>
+              void handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20))
+            }
           />
-        )}
-        {/* Show current page number if not first two pages or last */}
-        {currentPage - 1 > 1 && currentPage < pageNumbers.length && (
-          <PageNumberButton
-            key={currentPage}
-            isCurrentPage
-            onClick={() => void handleChangePage(currentPage)}
-          >
-            <Body content={`${currentPage}`} />
-          </PageNumberButton>
-        )}
-        {/* Show ellipsis if more than 1 page between current or 2nd page and the last page */}
-        {pageNumbers.length > 4 && currentPage + 1 < pageNumbers.length && (
-          <Icon
-            name="CentralDotGrid1x3Horizontal"
-            width={18}
-            ml={7}
-            mr={7}
-            color="text"
-          />
-        )}
-        {/* Show last page number */}
-        {pageNumbers.length > 4 && (
-          <PageNumberButton
-            key={pageNumbers.length}
-            isCurrentPage={currentPage === pageNumbers.length}
-            onClick={() => void handleChangePage(pageNumbers.length)}
-          >
-            <Body content={`${pageNumbers.length}`} />
-          </PageNumberButton>
-        )}
-        <Button
-          icon={{
-            name: "CentralChevronRightSmall",
-            width: 24,
-            color: "text",
-          }}
-          kind="ghost"
-          paddingY="short"
-          onClick={() => void handleNext()}
-          disabled={!hasNext}
-        />
-      </PageNumberPaginationButtonsContainer>
-    ) : (
-      <></>
-    );
-
-    footer = (
-      <DataManagerTableFooter>
-        {resultsString}
-        {pageNumberButtons}
-        <PaginationContainer>
           {showMoreDropdown}
-          {showPaginationPreviousNext && (
-            <PaginationButtonsContainer>
-              <Button
-                text="Previous"
-                paddingY="short"
-                onClick={() => {
-                  void handlePrev();
-                }}
-                disabled={!hasPrev}
-              />
-              <Button
-                text="Next"
-                paddingY="short"
-                onClick={() => {
-                  void handleNext();
-                }}
-                disabled={!hasNext}
-              />
-            </PaginationButtonsContainer>
+        </DataManagerTableFooter>
+      );
+    } else if (props.resultCount) {
+      const startResult = pageCursorState.startResult || 1;
+      const endResult = Math.min(props.resultCount, startResult + pageSize - 1);
+      const isFullCount = props.isFullCount ?? true;
+
+      const countString = isFullCount
+        ? props.resultCount
+        : props.resultCount + "+";
+
+      const resultsString = props.paginationDisplayOptions
+        ?.showPageNumberButtons ? (
+        <div></div>
+      ) : (
+        <div>
+          <Label>Viewing </Label>
+          <LabelModerate>{`${startResult}-${endResult}`}</LabelModerate>
+          <Label> of </Label>
+          <LabelModerate>{`${countString}`}</LabelModerate>
+          <Label> results</Label>
+        </div>
+      );
+
+      const hasNext = props.resultCount
+        ? startResult + pageSize - 1 < props.resultCount
+        : false;
+      const hasPrev = startResult > 1;
+
+      const pageNumbers = Array.from(
+        { length: Math.ceil(props.resultCount / pageSize) },
+        (_, i) => i,
+      );
+
+      const pageNumberButtons = props.paginationDisplayOptions
+        ?.showPageNumberButtons ? (
+        <PageNumberPaginationButtonsContainer>
+          <Button
+            icon={{
+              name: "CentralChevronLeftSmall",
+              width: 24,
+              color: "text",
+            }}
+            kind="ghost"
+            paddingY="short"
+            onClick={() => void handlePrev()}
+            disabled={!hasPrev}
+          />
+          {/* Get first two page numbers based on page size and current page */}
+          {pageNumbers.slice(0, 2).map((pageNumber) => (
+            <PageNumberButton
+              key={pageNumber}
+              onClick={() => void handleChangePage(pageNumber + 1)}
+              isCurrentPage={currentPage === pageNumber + 1}
+            >
+              <Body content={`${pageNumber + 1}`} />
+            </PageNumberButton>
+          ))}
+          {/* Show ellipsis if more than 1 page between 2nd and current page */}
+          {pageNumbers.length >= 4 && currentPage - 2 > 1 && (
+            <Icon
+              name="CentralDotGrid1x3Horizontal"
+              width={18}
+              ml={7}
+              mr={7}
+              color="text"
+            />
           )}
-        </PaginationContainer>
-      </DataManagerTableFooter>
-    );
+          {/* Show current page number if not first two pages or last */}
+          {currentPage - 1 > 1 && currentPage < pageNumbers.length && (
+            <PageNumberButton
+              key={currentPage}
+              isCurrentPage
+              onClick={() => void handleChangePage(currentPage)}
+            >
+              <Body content={`${currentPage}`} />
+            </PageNumberButton>
+          )}
+          {/* Show ellipsis if more than 1 page between current or 2nd page and the last page */}
+          {pageNumbers.length >= 4 && currentPage + 1 < pageNumbers.length && (
+            <Icon
+              name="CentralDotGrid1x3Horizontal"
+              width={18}
+              ml={7}
+              mr={7}
+              color="text"
+            />
+          )}
+          {/* Show last page number */}
+          {pageNumbers.length >= 3 && (
+            <PageNumberButton
+              key={pageNumbers.length}
+              isCurrentPage={currentPage === pageNumbers.length}
+              onClick={() => void handleChangePage(pageNumbers.length)}
+            >
+              <Body content={`${pageNumbers.length}`} />
+            </PageNumberButton>
+          )}
+          <Button
+            icon={{
+              name: "CentralChevronRightSmall",
+              width: 24,
+              color: "text",
+            }}
+            kind="ghost"
+            paddingY="short"
+            onClick={() => void handleNext()}
+            disabled={!hasNext}
+          />
+        </PageNumberPaginationButtonsContainer>
+      ) : (
+        <></>
+      );
+
+      footer = (
+        <DataManagerTableFooter>
+          {resultsString}
+          {pageNumberButtons}
+          <PaginationContainer>
+            {showMoreDropdown}
+            {showPaginationPreviousNext && (
+              <PaginationButtonsContainer>
+                <Button
+                  text="Previous"
+                  paddingY="short"
+                  onClick={() => {
+                    void handlePrev();
+                  }}
+                  disabled={!hasPrev}
+                />
+                <Button
+                  text="Next"
+                  paddingY="short"
+                  onClick={() => {
+                    void handleNext();
+                  }}
+                  disabled={!hasNext}
+                />
+              </PaginationButtonsContainer>
+            )}
+          </PaginationContainer>
+        </DataManagerTableFooter>
+      );
+    }
   }
 
   const DataManagerTableHeaderComponent =

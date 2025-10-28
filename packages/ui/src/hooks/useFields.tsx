@@ -3,15 +3,17 @@ import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ValidatorFn = (value: string, fields?: Fields<any>) => string | false;
+type ValidatorFn = (
+  value: string,
+  fields?: Fields<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+) => string | false;
 type Validators = {
   [key: string]: (msg?: string, ...args: unknown[]) => ValidatorFn;
 };
 
 type FieldValue = string;
-type FieldValueArg = FieldValue | [FieldValue, boolean | ValidatorFn[]];
-type FieldArgs<V extends FieldValueArg> = Record<string, V>;
+export type FieldValueArg = FieldValue | [FieldValue, boolean | ValidatorFn[]];
+export type FieldArgs<V extends FieldValueArg> = Record<string, V>;
 type Fields<T> = Record<keyof T, FieldValue>;
 
 const defaultMsgs = {
@@ -28,6 +30,9 @@ const defaultMsgs = {
   matchesField: "Target field does not match.",
   clabe: "Please enter a valid CLABE.",
   upi: "Please enter a valid UPI.",
+  domain: "Please enter a valid domain.",
+  domainName: "Please enter a valid domain name.",
+  url: "Please enter a valid URL.",
 };
 
 const regexp = {
@@ -38,6 +43,10 @@ const regexp = {
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
   clabe: /^[0-9]{18}$/,
   upi: /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/,
+  domain:
+    /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/,
+  domainName: /^[a-zA-Z0-9-]+$/,
+  url: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
 };
 
 export const v: Validators = {
@@ -45,6 +54,18 @@ export const v: Validators = {
     (msg = defaultMsgs.email) =>
     (value) =>
       !regexp.email.test(value) ? msg : false,
+  domain:
+    (msg = defaultMsgs.domain) =>
+    (value) =>
+      !regexp.domain.test(value) || value.length > 253 ? msg : false,
+  domainName:
+    (msg = defaultMsgs.domainName) =>
+    (value) =>
+      !regexp.domainName.test(value) || value.length > 63 ? msg : false,
+  url:
+    (msg = defaultMsgs.url) =>
+    (value) =>
+      !regexp.url.test(value) ? msg : false,
   phone:
     (msg = defaultMsgs.phone) =>
     (value) =>
@@ -87,6 +108,31 @@ export const v: Validators = {
       const len = typeof minLength === "number" ? minLength : 3;
       return value.trim().length < len
         ? msg || `Must be at least ${len} characters long.`
+        : false;
+    },
+  max:
+    (msg, maxLength = 3) =>
+    (value) => {
+      const len = typeof maxLength === "number" ? maxLength : 3;
+      return value.trim().length > len
+        ? msg || `Must be less than ${len} characters long.`
+        : false;
+    },
+  length:
+    (msg, length = 3) =>
+    (value) => {
+      const len = typeof length === "number" ? length : 3;
+      return value.trim().length !== len
+        ? msg || `Must be ${len} characters long.`
+        : false;
+    },
+  minLengthOrEmpty:
+    (msg, length = 3) =>
+    (value) => {
+      const len = typeof length === "number" ? length : 3;
+      const trimmed = value.trim();
+      return trimmed.length > 0 && trimmed.length < len
+        ? msg || `Must be at least ${len} characters or empty.`
         : false;
     },
   matchesField:
@@ -375,6 +421,7 @@ export default function useFields<
       ...fields,
     },
     mergeWithFields,
+    checkFieldForError,
     setFieldBlurred,
     getSetFieldBlurred,
     setFieldErrors,

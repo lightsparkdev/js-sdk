@@ -8,51 +8,79 @@ interface BirthdayInputProps {
   date: string;
   invalidBirthdayError: string;
   setDate: (date: string) => void;
+  dateFormat?: "US" | "INTL";
 }
+
+const DATE_FORMATS = {
+  US: {
+    format: "MM/DD/YYYY",
+    placeholder: "MM / DD / YYYY",
+    positions: { first: [0, 2], second: [2, 4], year: [4, 8] },
+  },
+  INTL: {
+    format: "DD/MM/YYYY",
+    placeholder: "DD / MM / YYYY",
+    positions: { first: [0, 2], second: [2, 4], year: [4, 8] },
+  },
+} as const;
 
 /**
  * Formats a birthday string.  Will return undefined if the birthday is not valid.
  * @param dayOrDate - The day or date to format
  * @param month - The month to format
  * @param year - The year to format
+ * @param dateFormat - The format to use ("US" or "INTL")
  * @returns The formatted birthday string
  */
 export function formatBirthday(
   dayOrDate: string,
   month?: string,
   year?: string,
+  dateFormat: "US" | "INTL" = "US",
 ): string | undefined {
   let birthdayStr: string;
   if (month && year) {
-    birthdayStr = `${month}/${dayOrDate}/${year}`;
+    if (dateFormat === "INTL") {
+      birthdayStr = `${dayOrDate}/${month}/${year}`;
+    } else {
+      birthdayStr = `${month}/${dayOrDate}/${year}`;
+    }
   } else {
     birthdayStr = dayOrDate;
   }
-  return isValidBirthday(birthdayStr)
-    ? dayjs(birthdayStr).startOf("day").format("YYYY-MM-DD")
+  return isValidBirthday(birthdayStr, undefined, undefined, dateFormat)
+    ? dayjs(birthdayStr, DATE_FORMATS[dateFormat].format)
+        .startOf("day")
+        .format("YYYY-MM-DD")
     : undefined;
 }
 
 /**
- * Valides a date string.  the required format is MM/DD/YYYY, or the components can be passed in separately.
+ * Valides a date string.  the required format is MM/DD/YYYY or DD/MM/YYYY, or the components can be passed in separately.
  * @param dayOrDate - The day or date to check
  * @param month - The month to check
  * @param year - The year to check
+ * @param dateFormat - The format to use ("US" or "INTL")
  * @returns Whether the birthday is valid
  */
 export function isValidBirthday(
   dayOrDate: string,
   month?: string,
   year?: string,
+  dateFormat: "US" | "INTL" = "US",
 ): boolean {
   let birthdayStr: string;
   if (month && year) {
-    birthdayStr = `${month}/${dayOrDate}/${year}`;
+    if (dateFormat === "INTL") {
+      birthdayStr = `${dayOrDate}/${month}/${year}`;
+    } else {
+      birthdayStr = `${month}/${dayOrDate}/${year}`;
+    }
   } else {
     birthdayStr = dayOrDate;
   }
 
-  const date = dayjs(birthdayStr, "MM/DD/YYYY", true);
+  const date = dayjs(birthdayStr, DATE_FORMATS[dateFormat].format, true);
   if (!date.isValid()) {
     return false;
   }
@@ -63,19 +91,26 @@ export function isValidBirthday(
   return date.isBefore(today) && date.year() >= 1800;
 }
 
-export function formatDateToText(dateStr: string): string {
+export function formatDateToText(
+  dateStr: string,
+  dateFormat: "US" | "INTL" = "US",
+): string {
   if (!dateStr.trim()) return "";
 
   const parts = dateStr.split("/");
-  const month = parts[0];
-  const day = parts[1];
+  const first = parts[0];
+  const second = parts[1];
   const year = parts[2];
-  if (month && !day && !year) {
-    if (month.length === 2) {
-      const monthNum = parseInt(month);
-      if (monthNum >= 1 && monthNum <= 12) {
+
+  const month = dateFormat === "INTL" ? second : first;
+  const day = dateFormat === "INTL" ? first : second;
+
+  if (first && !second && !year) {
+    if (first.length === 2) {
+      const firstNum = parseInt(first);
+      if (dateFormat === "US" && firstNum >= 1 && firstNum <= 12) {
         return dayjs()
-          .month(monthNum - 1)
+          .month(firstNum - 1)
           .format("MMMM");
       }
     }
@@ -95,7 +130,7 @@ export function formatDateToText(dateStr: string): string {
     }
   }
 
-  const date = dayjs(dateStr, "MM/DD/YYYY", true);
+  const date = dayjs(dateStr, DATE_FORMATS[dateFormat].format, true);
   return date.isValid() ? date.format("MMMM D, YYYY") : "";
 }
 
@@ -110,7 +145,9 @@ export function BirthdayInput({
   date,
   setDate,
   invalidBirthdayError,
+  dateFormat = "US",
 }: BirthdayInputProps) {
+  const formatConfig = DATE_FORMATS[dateFormat];
   const birthdayFieldBlurred = Boolean(date.trim());
 
   const handleChange = (newValue: string): void => {
@@ -132,13 +169,14 @@ export function BirthdayInput({
   };
 
   const isCompleteDate = date.length === 10;
-  const isInvalid = isCompleteDate && !isValidBirthday(date);
+  const isInvalid =
+    isCompleteDate && !isValidBirthday(date, undefined, undefined, dateFormat);
 
   return (
     <>
       <TextInput
         maxLength={14}
-        placeholder="MM / DD / YYYY"
+        placeholder={formatConfig.placeholder}
         value={formatDateForDisplay(date)}
         onChange={handleChange}
         inputMode="numeric"
@@ -146,7 +184,7 @@ export function BirthdayInput({
           size: "Large",
         }}
         hint={{
-          text: formatDateToText(date),
+          text: formatDateToText(date, dateFormat),
           typography: {
             type: "Label",
             size: "Medium",
