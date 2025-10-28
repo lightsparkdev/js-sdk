@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.14
+
+### Patch Changes
+
+- 3efb4c1: Component enhancements to birthday input, tables, icons
+- Updated dependencies [3efb4c1]
+  - @lightsparkdev/core@1.4.6
+
 ## 1.1.13
 
 ### Patch Changes
