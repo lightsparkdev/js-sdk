@@ -539,7 +539,7 @@ class LightsparkClient {
       type,
       expirySecs,
     );
-    return invoice?.data.encodedPaymentRequest;
+    return invoice?.data?.encodedPaymentRequest;
   }
 
   /**

@@ -1,5 +1,7 @@
 // Copyright ©, 2023-present, Lightspark Group, Inc. - All Rights Reserved
 
+import { FRAGMENT as InvoiceFragment } from "../objects/Invoice.js";
+
 export const CreateInvoice = `
   mutation CreateInvoice(
     $node_id: ID!
@@ -10,10 +12,10 @@ export const CreateInvoice = `
   ) {
     create_invoice(input: { node_id: $node_id, amount_msats: $amount_msats, memo: $memo, invoice_type: $type, expiry_secs: $expiry_secs }) {
       invoice {
-        data {
-          encoded_payment_request
-        }
+        ...InvoiceFragment
       }
     }
   }
+
+${InvoiceFragment}
 `;
