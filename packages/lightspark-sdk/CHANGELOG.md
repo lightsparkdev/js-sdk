@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.13
+
+### Patch Changes
+
+- 3efb4c1: adding createInvoiceWithDetails to get the full invoice object instead of just the bolt11 invoice
+- Updated dependencies [3efb4c1]
+  - @lightsparkdev/core@1.4.6
+  - @lightsparkdev/crypto-wasm@0.1.20
+
 ## 1.9.12
 
 ### Patch Changes
