@@ -52,6 +52,7 @@ export { CircleX as CentralCircleX } from "./CircleX.js";
 export { Clipboard2 as CentralClipboard2 } from "./Clipboard2.js";
 export { Clock as CentralClock } from "./Clock.js";
 export { Contacts as CentralContacts } from "./Contacts.js";
+export { CookieCute as CentralCookieCute } from "./CookieCute.js";
 export { CrossLarge as CentralCrossLarge } from "./CrossLarge.js";
 export { CrossSmall as CentralCrossSmall } from "./CrossSmall.js";
 export { CryptoWallet as CentralCryptoWallet } from "./CryptoWallet.js";
