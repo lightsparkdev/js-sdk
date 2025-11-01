@@ -38,11 +38,11 @@ run = "yarn clean-all"
 
 [tasks.ops]
 description = "Start ops frontend development server"
-run = "cd apps/private/ops && yarn start"
+run = "yarn start ops"
 
 [tasks.ops-minikube]
 description = "Start ops frontend connected to minikube"
-run = "cd apps/private/ops && yarn start:minikube"
+run = "VITE_PROXY_TARGET=http://app.minikube.local yarn start ops"
 
 [tasks.gql-codegen]
 description = "Generate GraphQL code"
