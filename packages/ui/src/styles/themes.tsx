@@ -736,7 +736,7 @@ const bridgeDarkTheme = extend(darkTheme, {
 
 const nageBaseSettings = {
   secondary: colors["gray-500"],
-  tertiary: colors["gray-400"],
+  tertiary: colors.gray6,
   mcNeutral: colors.grayBlue43,
   success: colors.green37,
   typography: getTypography(TypographyGroup.Nage, {
