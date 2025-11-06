@@ -273,6 +273,7 @@ export function InputSubtext({
   tooltipId,
   hideNonErrorsIfBlurred = false,
   focused = false,
+  subTextPaddingX,
 }: {
   text?: string | ToReactNodesArgs | undefined;
   content?: ReactNode | undefined;
@@ -281,6 +282,7 @@ export function InputSubtext({
   tooltipId?: string | undefined;
   hideNonErrorsIfBlurred?: boolean | undefined;
   focused?: boolean | undefined;
+  subTextPaddingX?: number | undefined;
 }) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [subtext, setSubtext] = useState(text);
@@ -308,6 +310,7 @@ export function InputSubtext({
       hasSuccess={hasSuccess}
       cursorPointer={Boolean(tooltipId)}
       usingContent={content !== undefined}
+      subTextPaddingX={subTextPaddingX}
     >
       {tooltipId ? (
         <span data-tooltip-id={tooltipId}>
@@ -344,6 +347,7 @@ export const StyledInputSubtext = styled.div<{
   visible: boolean;
   cursorPointer: boolean;
   usingContent?: boolean;
+  subTextPaddingX?: number | undefined;
 }>`
   margin-top: ${({ visible }) => (visible ? "8px" : "0px")};
   margin-left: ${({ visible, usingContent }) =>
@@ -359,6 +363,13 @@ export const StyledInputSubtext = styled.div<{
   color: ${({ hasError, hasSuccess, theme }) =>
     hasError ? theme.danger : hasSuccess ? theme.success : theme.text};
   cursor: ${({ cursorPointer }) => (cursorPointer ? "pointer" : "auto")};
+  ${({ subTextPaddingX }) =>
+    subTextPaddingX
+      ? `
+        padding-left: ${subTextPaddingX}px;
+        padding-right: ${subTextPaddingX}px;
+      `
+      : ""};
 `;
 
 export const labelStyle = ({
