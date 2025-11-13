@@ -44,6 +44,14 @@ run = "yarn start ops"
 description = "Start ops frontend connected to minikube"
 run = "VITE_PROXY_TARGET=http://app.minikube.local yarn start ops"
 
+[tasks.site]
+description = "Start CN2 frontend connected to minikube"
+run = "yarn start site"
+
+[tasks.site-minikube]
+description = "Start CN2 frontend connected to minikube"
+run = "VITE_PROXY_TARGET=http://app.minikube.local yarn start site"
+
 [tasks.gql-codegen]
 description = "Generate GraphQL code"
 run = "yarn gql-codegen"
