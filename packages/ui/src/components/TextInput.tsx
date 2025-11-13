@@ -161,6 +161,7 @@ export type TextInputProps = {
   width?: "full" | "short" | undefined;
   paddingX?: number;
   paddingY?: number;
+  subTextPaddingX?: number | undefined;
   marginTop?: number | undefined;
   // Outline that appears outside/offset when the input is focused
   activeOutline?: boolean;
@@ -425,6 +426,7 @@ export function TextInput(textInputProps: TextInputProps) {
         tooltipId={hintTooltipId}
         hideNonErrorsIfBlurred={props.hideNonErrorsIfBlurred}
         focused={focused}
+        subTextPaddingX={props.subTextPaddingX}
       />
       {props.hintTooltip ? (
         <Tooltip id={hintTooltipId} content={props.hintTooltip} place="right" />

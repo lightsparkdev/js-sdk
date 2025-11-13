@@ -3,7 +3,7 @@ import { diff } from "deep-object-diff";
 import { isObject } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type ValidatorFn = (
+export type ValidatorFn = (
   value: string,
   fields?: Fields<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
 ) => string | false;

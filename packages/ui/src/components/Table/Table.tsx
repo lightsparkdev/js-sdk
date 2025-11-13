@@ -117,7 +117,7 @@ export type TableProps<T extends Record<string, unknown>> = {
   loading?: boolean;
   onClickRow?: (
     row: Row<T>,
-  ) => { link?: string; to?: NewRoutesType; params: RouteParams } | void;
+  ) => { link?: string; to?: NewRoutesType; params?: RouteParams } | void;
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   rowHoverEffect?: "border" | "background" | "none" | undefined;

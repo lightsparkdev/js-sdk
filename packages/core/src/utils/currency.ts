@@ -921,6 +921,7 @@ export function formatCurrencyStr(
       CurrencyUnit.EUR,
       CurrencyUnit.GBP,
       CurrencyUnit.INR,
+      CurrencyUnit.BRL,
     ] as string[];
     /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
      * divided by 100 for proper display format: */
