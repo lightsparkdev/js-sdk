@@ -33,6 +33,12 @@ export const CurrencyUnit = {
   SGD: "SGD",
   THB: "THB",
   VND: "VND",
+  NGN: "NGN",
+  ZAR: "ZAR",
+  KES: "KES",
+  TZS: "TZS",
+  UGX: "UGX",
+  BWP: "BWP",
   USDT: "USDT",
 
   Bitcoin: "BITCOIN",
@@ -88,6 +94,12 @@ const standardUnitConversionObj = {
   [CurrencyUnit.SGD]: (v: number) => v,
   [CurrencyUnit.THB]: (v: number) => v,
   [CurrencyUnit.VND]: (v: number) => v,
+  [CurrencyUnit.NGN]: (v: number) => v,
+  [CurrencyUnit.ZAR]: (v: number) => v,
+  [CurrencyUnit.KES]: (v: number) => v,
+  [CurrencyUnit.TZS]: (v: number) => v,
+  [CurrencyUnit.UGX]: (v: number) => v,
+  [CurrencyUnit.BWP]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
 };
 
@@ -128,6 +140,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toBitcoinConversion,
     [CurrencyUnit.THB]: toBitcoinConversion,
     [CurrencyUnit.VND]: toBitcoinConversion,
+    [CurrencyUnit.NGN]: toBitcoinConversion,
+    [CurrencyUnit.ZAR]: toBitcoinConversion,
+    [CurrencyUnit.KES]: toBitcoinConversion,
+    [CurrencyUnit.TZS]: toBitcoinConversion,
+    [CurrencyUnit.UGX]: toBitcoinConversion,
+    [CurrencyUnit.BWP]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
@@ -152,6 +170,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toMicrobitcoinConversion,
     [CurrencyUnit.THB]: toMicrobitcoinConversion,
     [CurrencyUnit.VND]: toMicrobitcoinConversion,
+    [CurrencyUnit.NGN]: toMicrobitcoinConversion,
+    [CurrencyUnit.ZAR]: toMicrobitcoinConversion,
+    [CurrencyUnit.KES]: toMicrobitcoinConversion,
+    [CurrencyUnit.TZS]: toMicrobitcoinConversion,
+    [CurrencyUnit.UGX]: toMicrobitcoinConversion,
+    [CurrencyUnit.BWP]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
@@ -176,6 +200,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toMillibitcoinConversion,
     [CurrencyUnit.THB]: toMillibitcoinConversion,
     [CurrencyUnit.VND]: toMillibitcoinConversion,
+    [CurrencyUnit.NGN]: toMillibitcoinConversion,
+    [CurrencyUnit.ZAR]: toMillibitcoinConversion,
+    [CurrencyUnit.KES]: toMillibitcoinConversion,
+    [CurrencyUnit.TZS]: toMillibitcoinConversion,
+    [CurrencyUnit.UGX]: toMillibitcoinConversion,
+    [CurrencyUnit.BWP]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
@@ -200,6 +230,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toMillisatoshiConversion,
     [CurrencyUnit.THB]: toMillisatoshiConversion,
     [CurrencyUnit.VND]: toMillisatoshiConversion,
+    [CurrencyUnit.NGN]: toMillisatoshiConversion,
+    [CurrencyUnit.ZAR]: toMillisatoshiConversion,
+    [CurrencyUnit.KES]: toMillisatoshiConversion,
+    [CurrencyUnit.TZS]: toMillisatoshiConversion,
+    [CurrencyUnit.UGX]: toMillisatoshiConversion,
+    [CurrencyUnit.BWP]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
@@ -224,6 +260,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toNanobitcoinConversion,
     [CurrencyUnit.THB]: toNanobitcoinConversion,
     [CurrencyUnit.VND]: toNanobitcoinConversion,
+    [CurrencyUnit.NGN]: toNanobitcoinConversion,
+    [CurrencyUnit.ZAR]: toNanobitcoinConversion,
+    [CurrencyUnit.KES]: toNanobitcoinConversion,
+    [CurrencyUnit.TZS]: toNanobitcoinConversion,
+    [CurrencyUnit.UGX]: toNanobitcoinConversion,
+    [CurrencyUnit.BWP]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
@@ -248,6 +290,12 @@ const CONVERSION_MAP = {
     [CurrencyUnit.SGD]: toSatoshiConversion,
     [CurrencyUnit.THB]: toSatoshiConversion,
     [CurrencyUnit.VND]: toSatoshiConversion,
+    [CurrencyUnit.NGN]: toSatoshiConversion,
+    [CurrencyUnit.ZAR]: toSatoshiConversion,
+    [CurrencyUnit.KES]: toSatoshiConversion,
+    [CurrencyUnit.TZS]: toSatoshiConversion,
+    [CurrencyUnit.UGX]: toSatoshiConversion,
+    [CurrencyUnit.BWP]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
   },
   [CurrencyUnit.USD]: standardUnitConversionObj,
@@ -265,6 +313,12 @@ const CONVERSION_MAP = {
   [CurrencyUnit.SGD]: standardUnitConversionObj,
   [CurrencyUnit.THB]: standardUnitConversionObj,
   [CurrencyUnit.VND]: standardUnitConversionObj,
+  [CurrencyUnit.NGN]: standardUnitConversionObj,
+  [CurrencyUnit.ZAR]: standardUnitConversionObj,
+  [CurrencyUnit.KES]: standardUnitConversionObj,
+  [CurrencyUnit.TZS]: standardUnitConversionObj,
+  [CurrencyUnit.UGX]: standardUnitConversionObj,
+  [CurrencyUnit.BWP]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
 };
 
@@ -342,6 +396,12 @@ export type CurrencyMap = {
   [CurrencyUnit.SGD]: number;
   [CurrencyUnit.THB]: number;
   [CurrencyUnit.VND]: number;
+  [CurrencyUnit.NGN]: number;
+  [CurrencyUnit.ZAR]: number;
+  [CurrencyUnit.KES]: number;
+  [CurrencyUnit.TZS]: number;
+  [CurrencyUnit.UGX]: number;
+  [CurrencyUnit.BWP]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
@@ -369,6 +429,12 @@ export type CurrencyMap = {
     [CurrencyUnit.SGD]: string;
     [CurrencyUnit.THB]: string;
     [CurrencyUnit.VND]: string;
+    [CurrencyUnit.NGN]: string;
+    [CurrencyUnit.ZAR]: string;
+    [CurrencyUnit.KES]: string;
+    [CurrencyUnit.TZS]: string;
+    [CurrencyUnit.UGX]: string;
+    [CurrencyUnit.BWP]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
@@ -577,6 +643,12 @@ function convertCurrencyAmountValues(
     sgd: CurrencyUnit.SGD,
     thb: CurrencyUnit.THB,
     vnd: CurrencyUnit.VND,
+    ngn: CurrencyUnit.NGN,
+    zar: CurrencyUnit.ZAR,
+    kes: CurrencyUnit.KES,
+    tzs: CurrencyUnit.TZS,
+    ugx: CurrencyUnit.UGX,
+    bwp: CurrencyUnit.BWP,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -649,6 +721,12 @@ export function mapCurrencyAmount(
     sgd,
     thb,
     vnd,
+    ngn,
+    zar,
+    kes,
+    tzs,
+    ugx,
+    bwp,
     usdt,
   } = convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
@@ -671,6 +749,12 @@ export function mapCurrencyAmount(
     [CurrencyUnit.SGD]: sgd,
     [CurrencyUnit.THB]: thb,
     [CurrencyUnit.VND]: vnd,
+    [CurrencyUnit.NGN]: ngn,
+    [CurrencyUnit.ZAR]: zar,
+    [CurrencyUnit.KES]: kes,
+    [CurrencyUnit.TZS]: tzs,
+    [CurrencyUnit.UGX]: ugx,
+    [CurrencyUnit.BWP]: bwp,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -760,6 +844,30 @@ export function mapCurrencyAmount(
       [CurrencyUnit.VND]: formatCurrencyStr({
         value: vnd,
         unit: CurrencyUnit.VND,
+      }),
+      [CurrencyUnit.NGN]: formatCurrencyStr({
+        value: ngn,
+        unit: CurrencyUnit.NGN,
+      }),
+      [CurrencyUnit.ZAR]: formatCurrencyStr({
+        value: zar,
+        unit: CurrencyUnit.ZAR,
+      }),
+      [CurrencyUnit.KES]: formatCurrencyStr({
+        value: kes,
+        unit: CurrencyUnit.KES,
+      }),
+      [CurrencyUnit.TZS]: formatCurrencyStr({
+        value: tzs,
+        unit: CurrencyUnit.TZS,
+      }),
+      [CurrencyUnit.UGX]: formatCurrencyStr({
+        value: ugx,
+        unit: CurrencyUnit.UGX,
+      }),
+      [CurrencyUnit.BWP]: formatCurrencyStr({
+        value: bwp,
+        unit: CurrencyUnit.BWP,
       }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
@@ -865,6 +973,18 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "THB";
     case CurrencyUnit.VND:
       return "VND";
+    case CurrencyUnit.NGN:
+      return "NGN";
+    case CurrencyUnit.ZAR:
+      return "ZAR";
+    case CurrencyUnit.KES:
+      return "KES";
+    case CurrencyUnit.TZS:
+      return "TZS";
+    case CurrencyUnit.UGX:
+      return "UGX";
+    case CurrencyUnit.BWP:
+      return "BWP";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -922,6 +1042,12 @@ export function formatCurrencyStr(
       CurrencyUnit.GBP,
       CurrencyUnit.INR,
       CurrencyUnit.BRL,
+      CurrencyUnit.NGN,
+      CurrencyUnit.ZAR,
+      CurrencyUnit.KES,
+      CurrencyUnit.TZS,
+      CurrencyUnit.UGX,
+      CurrencyUnit.BWP,
     ] as string[];
     /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
      * divided by 100 for proper display format: */
