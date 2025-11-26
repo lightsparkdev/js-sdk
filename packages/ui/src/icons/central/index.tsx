@@ -24,6 +24,7 @@ export { Blackpoint as CentralBlackpoint } from "./Blackpoint.js";
 export { Brackets1 as CentralBrackets1 } from "./Brackets1.js";
 export { Bubble5 as CentralBubble5 } from "./Bubble5.js";
 export { BubbleWideNotification as CentralBubbleWideNotification } from "./BubbleWideNotification.js";
+export { ChecklistMagnifyingGlass as CentralChecklistMagnifyingGlass } from "./ChecklistMagnifyingGlass.js";
 export { Checkmark2 as CentralCheckmark2 } from "./Checkmark2.js";
 export { Checkmark2Small as CentralCheckmark2Small } from "./Checkmark2Small.js";
 export { ChevronBottom as CentralChevronBottom } from "./ChevronBottom.js";
@@ -109,6 +110,7 @@ export { PhoneDynamicIsland as CentralPhoneDynamicIsland } from "./PhoneDynamicI
 export { PlusLarge as CentralPlusLarge } from "./PlusLarge.js";
 export { PlusSmall as CentralPlusSmall } from "./PlusSmall.js";
 export { PointChart as CentralPointChart } from "./PointChart.js";
+export { Postcard as CentralPostcard } from "./Postcard.js";
 export { QrCode as CentralQrCode } from "./QrCode.js";
 export { ReceiptBill as CentralReceiptBill } from "./ReceiptBill.js";
 export { RunShortcut as CentralRunShortcut } from "./RunShortcut.js";
