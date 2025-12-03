@@ -107,6 +107,7 @@ export { PeopleCircle as CentralPeopleCircle } from "./PeopleCircle.js";
 export { PeopleCircleStroke as CentralPeopleCircleStroke } from "./PeopleCircleStroke.js";
 export { Phone as CentralPhone } from "./Phone.js";
 export { PhoneDynamicIsland as CentralPhoneDynamicIsland } from "./PhoneDynamicIsland.js";
+export { PhoneFilled as CentralPhoneFilled } from "./PhoneFilled.js";
 export { PlusLarge as CentralPlusLarge } from "./PlusLarge.js";
 export { PlusSmall as CentralPlusSmall } from "./PlusSmall.js";
 export { PointChart as CentralPointChart } from "./PointChart.js";
