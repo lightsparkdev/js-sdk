@@ -554,6 +554,8 @@ class LightsparkClient {
    *     to create an [AMP invoice](https://docs.lightning.engineering/lightning-network-tools/lnd/amp), which can be
    *     paid multiple times.
    * @param expirySecs The number of seconds until the invoice expires. Defaults to 86400 (1 day).
+   * @param paymentHash An optional payment hash to use for the invoice.
+   * @param preimageNonce An optional 32 byte nonce used to generate the payment hash.
    * @returns An Invoice object, or undefined if the invoice could not be created.
    */
   public async createInvoiceWithDetails(
@@ -562,6 +564,8 @@ class LightsparkClient {
     memo: string,
     type: InvoiceType | undefined = undefined,
     expirySecs: number | undefined = undefined,
+    paymentHash: string | undefined = undefined,
+    preimageNonce: string | undefined = undefined,
   ): Promise<Invoice | undefined> {
     const variables = {
       node_id: nodeId,
@@ -571,6 +575,12 @@ class LightsparkClient {
     };
     if (expirySecs !== undefined) {
       variables["expiry_secs"] = expirySecs;
+    }
+    if (paymentHash !== undefined) {
+      variables["payment_hash"] = paymentHash;
+    }
+    if (preimageNonce !== undefined) {
+      variables["preimage_nonce"] = preimageNonce;
     }
     const response = await this.requester.makeRawRequest(
       CreateInvoice,
