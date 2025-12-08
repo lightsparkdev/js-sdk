@@ -1,5 +1,14 @@
 # @lightsparkdev/ui
 
+## 1.1.15
+
+### Patch Changes
+
+- 8e4690a: - Add new icons
+- Updated dependencies [8e4690a]
+- Updated dependencies [8e4690a]
+  - @lightsparkdev/core@1.4.7
+
 ## 1.1.14
 
 ### Patch Changes
