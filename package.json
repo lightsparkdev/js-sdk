@@ -26,6 +26,7 @@
     "lint:fix": "turbo run lint:fix",
     "package:checks": "turbo run package:checks",
     "release": "turbo build && changeset publish",
+    "start:minikube": "VITE_PROXY_TARGET=http://app.minikube.local yarn start",
     "start:prod": "VITE_PROXY_TARGET=https://app.lightspark.com yarn start",
     "preview": "turbo run preview",
     "start": "./start.sh",

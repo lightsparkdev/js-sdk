@@ -9,8 +9,18 @@ export const CreateInvoice = `
     $memo: String
     $type: InvoiceType = null
     $expiry_secs: Int = null
+    $payment_hash: Hash32 = null
+    $preimage_nonce: Hash32 = null
   ) {
-    create_invoice(input: { node_id: $node_id, amount_msats: $amount_msats, memo: $memo, invoice_type: $type, expiry_secs: $expiry_secs }) {
+    create_invoice(input: {
+      node_id: $node_id,
+      amount_msats: $amount_msats,
+      memo: $memo,
+      invoice_type: $type,
+      expiry_secs: $expiry_secs,
+      payment_hash: $payment_hash,
+      preimage_nonce: $preimage_nonce
+    }) {
       invoice {
         ...InvoiceFragment
       }

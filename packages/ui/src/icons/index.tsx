@@ -113,6 +113,7 @@ export { Person } from "./Person.js";
 export { PersonCircle } from "./PersonCircle.js";
 export { PersonPlus } from "./PersonPlus.js";
 export { PiggyBank } from "./PiggyBank.js";
+export { Pix } from "./Pix.js";
 export { Plus } from "./Plus.js";
 export { PythonTwoTone } from "./PythonTwoTone.js";
 export { QRCodeIcon } from "./QRCodeIcon.js";
