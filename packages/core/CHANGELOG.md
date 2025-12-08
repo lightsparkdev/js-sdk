@@ -1,5 +1,13 @@
 # @lightsparkdev/core
 
+## 1.4.7
+
+### Patch Changes
+
+- 8e4690a: - Add new currencies to currency utils
+- 8e4690a: - Added payment hash parameters to create_invoice. This is for RK customers to specify payment hash upfront when creating
+  an invoice so that a round-trip to the RK to fetch the payment hash doesn't have to be made mid-request.
+
 ## 1.4.6
 
 ### Patch Changes
