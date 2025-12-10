@@ -188,6 +188,14 @@ const baseColors = {
   transparent: "transparent",
   transparenta02: "#00000005",
   transparenta08: "#00000014",
+  // hardcore radioactive green
+  radioactiveGreen: "#39FF14",
+  radioactiveGreenDark: "#2ECC0F",
+  radioactiveGreenDarker: "#23990B",
+  radioactiveGreenLight: "#5FFF45",
+  radioactiveGreen10: "#39FF1419",
+  radioactiveGreen20: "#39FF1433",
+  radioactiveGreen30: "#39FF144D",
 } as const;
 
 /* We only want `as const` to affect keys, the values should be widened to strings: */
