@@ -45,6 +45,7 @@ import { CreateUmaInvitationWithPayment } from "./graphql/CreateUmaInvitationWit
 import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
+import { FailHtlcs } from "./graphql/FailHtlcs.js";
 import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
 import { IncomingPaymentsForInvoice } from "./graphql/IncomingPaymentsForInvoice.js";
@@ -76,6 +77,8 @@ import type ComplianceProvider from "./objects/ComplianceProvider.js";
 import type CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
+import type FailHtlcsOutput from "./objects/FailHtlcsOutput.js";
+import { FailHtlcsOutputFromJson } from "./objects/FailHtlcsOutput.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import type IncomingPayment from "./objects/IncomingPayment.js";
@@ -734,6 +737,28 @@ class LightsparkClient {
       return undefined;
     }
     return InvoiceFromJson(invoiceJson);
+  }
+
+  /**
+   * Fails all pending HTLCs (Hash Time Locked Contracts) for a given invoice.
+   *
+   * @param invoiceId The ID of the invoice for which to fail HTLCs.
+   * @param cancelInvoice Whether to also cancel the invoice after failing the HTLCs.
+   * @returns The output containing the invoice ID, or undefined if the operation failed.
+   */
+  public async failHtlcs(
+    invoiceId: string,
+    cancelInvoice: boolean,
+  ): Promise<FailHtlcsOutput | undefined> {
+    const response = await this.requester.makeRawRequest(FailHtlcs, {
+      invoice_id: invoiceId,
+      cancel_invoice: cancelInvoice,
+    });
+    const output = response.fail_htlcs;
+    if (!output) {
+      return undefined;
+    }
+    return FailHtlcsOutputFromJson(output);
   }
 
   /**
