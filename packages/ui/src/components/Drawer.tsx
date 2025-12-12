@@ -190,6 +190,7 @@ const DrawerContainer = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: scroll;
 
   ${(props) => props.top && `top: ${props.top}px;`}
 
@@ -234,7 +235,9 @@ const DrawerInnerContainer = styled.div<{
   width: ${(props) =>
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
-  ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
+  ${(props) => (props.kind === "floating" ? `bottom: 0;` : "")}
+  margin-bottom: ${Spacing.px.md};
+  margin-top: ${Spacing.px.md};
   height: auto;
   border-radius: ${(props) =>
     props.kind === "floating"
