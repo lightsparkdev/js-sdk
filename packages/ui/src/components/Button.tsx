@@ -340,6 +340,7 @@ export const Button = forwardRef<
           alignItems: "center",
           justifyContent,
           gap: gap ? `${gap}px` : undefined,
+          overflow: "hidden",
         }}
       >
         {iconSide === "left" && currentIcon}
