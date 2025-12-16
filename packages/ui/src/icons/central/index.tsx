@@ -30,6 +30,8 @@ export { Checkmark2Small as CentralCheckmark2Small } from "./Checkmark2Small.js"
 export { ChevronBottom as CentralChevronBottom } from "./ChevronBottom.js";
 export { ChevronBottomSm as CentralChevronBottomSm } from "./ChevronBottomSm.js";
 export { ChevronBottomXs as CentralChevronBottomXs } from "./ChevronBottomXs.js";
+export { ChevronDoubleDown as CentralChevronDoubleDown } from "./ChevronDoubleDown.js";
+export { ChevronDoubleUp as CentralChevronDoubleUp } from "./ChevronDoubleUp.js";
 export { ChevronDownSmall as CentralChevronDownSmall } from "./ChevronDownSmall.js";
 export { ChevronLeft as CentralChevronLeft } from "./ChevronLeft.js";
 export { ChevronLeftSm as CentralChevronLeftSm } from "./ChevronLeftSm.js";
