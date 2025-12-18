@@ -420,9 +420,9 @@ export function Modal({
         handleBack={handleBack}
         kind={drawerKind ?? "default"}
         padding={drawerPadding !== undefined ? `${drawerPadding}px` : undefined}
-        top={top}
         alignBottom={drawerAlignBottom}
         disableTouchMove={drawerDisableTouchMove ?? false}
+        top={top}
       >
         {modalContent}
       </Drawer>
@@ -500,7 +500,7 @@ const ModalOverlay = styled.div<{
   left: 0;
   z-index: ${z.modalOverlay};
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   background: ${({ overlayBackground, theme }) =>
     overlayBackground
       ? getColor(theme, overlayBackground)
