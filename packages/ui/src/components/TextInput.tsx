@@ -111,7 +111,9 @@ export type TextInputProps = {
   onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
   onChange: (newValue: string, event: ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
-  onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  onFocus?:
+    | ((event: FocusEvent<HTMLInputElement, Element>) => void)
+    | undefined;
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
   onKeyDown?: (
     keyValue: string,

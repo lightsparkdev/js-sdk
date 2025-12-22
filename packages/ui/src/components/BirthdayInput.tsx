@@ -1,6 +1,7 @@
 import { TextInput } from "@lightsparkdev/ui/src/components";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat.js";
+import { type FocusEvent, useEffect, useRef } from "react";
 
 dayjs.extend(customParseFormat);
 
@@ -9,6 +10,8 @@ interface BirthdayInputProps {
   invalidBirthdayError: string;
   setDate: (date: string) => void;
   dateFormat?: "US" | "INTL";
+  onFocus?: (event: FocusEvent<HTMLInputElement, Element>) => void;
+  onError?: (error: string) => void;
 }
 
 const DATE_FORMATS = {
@@ -146,9 +149,25 @@ export function BirthdayInput({
   setDate,
   invalidBirthdayError,
   dateFormat = "US",
+  onFocus,
+  onError,
 }: BirthdayInputProps) {
   const formatConfig = DATE_FORMATS[dateFormat];
   const birthdayFieldBlurred = Boolean(date.trim());
+
+  const isCompleteDate = date.length === 10;
+  const isInvalid =
+    isCompleteDate && !isValidBirthday(date, undefined, undefined, dateFormat);
+  const showError = birthdayFieldBlurred && isInvalid;
+
+  // Track previous error state to detect when error first appears
+  const prevShowErrorRef = useRef(false);
+  useEffect(() => {
+    if (showError && !prevShowErrorRef.current && onError) {
+      onError(invalidBirthdayError);
+    }
+    prevShowErrorRef.current = showError;
+  }, [showError, onError, invalidBirthdayError]);
 
   const handleChange = (newValue: string): void => {
     let value = newValue;
@@ -168,10 +187,6 @@ export function BirthdayInput({
     setDate(formattedValue);
   };
 
-  const isCompleteDate = date.length === 10;
-  const isInvalid =
-    isCompleteDate && !isValidBirthday(date, undefined, undefined, dateFormat);
-
   return (
     <>
       <TextInput
@@ -179,6 +194,7 @@ export function BirthdayInput({
         placeholder={formatConfig.placeholder}
         value={formatDateForDisplay(date)}
         onChange={handleChange}
+        onFocus={onFocus}
         inputMode="numeric"
         typography={{
           size: "Large",
@@ -191,9 +207,7 @@ export function BirthdayInput({
             color: "secondary",
           },
         }}
-        error={
-          birthdayFieldBlurred && isInvalid ? invalidBirthdayError : undefined
-        }
+        error={showError ? invalidBirthdayError : undefined}
         borderRadius={16}
         borderWidth={0.5}
         paddingY={14}
