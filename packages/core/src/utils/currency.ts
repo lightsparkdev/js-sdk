@@ -1255,6 +1255,13 @@ export function formatCurrencyStr(
     const unitStr = isUmaCurrencyAmount(amount)
       ? amount.currency.code
       : abbrCurrencyUnit(unit as CurrencyUnitType);
+
+    // Skip appending if the formatted string already contains the currency code
+    // This happens for currencies like XOF where Intl.NumberFormat uses the code as the symbol
+    if (formattedStr.includes(unitStr)) {
+      return formattedStr;
+    }
+
     const unitSuffix = options?.appendUnits?.plural && num > 1 ? "s" : "";
     const unitStrWithSuffix = `${unitStr}${unitSuffix}`;
     formattedStr += ` ${
