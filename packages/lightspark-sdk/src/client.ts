@@ -1231,15 +1231,20 @@ class LightsparkClient {
     amountSats: number,
     bitcoinAddress: string,
     mode: WithdrawalMode,
+    idempotencyKey: string | undefined = undefined,
   ): Promise<WithdrawalRequest> {
+    const variables: Record<string, string | number> = {
+      node_id: nodeId,
+      amount_sats: amountSats,
+      bitcoin_address: bitcoinAddress,
+      withdrawal_mode: mode,
+    };
+    if (idempotencyKey !== undefined) {
+      variables.idempotency_key = idempotencyKey;
+    }
     const response = await this.requester.makeRawRequest(
       RequestWithdrawal,
-      {
-        node_id: nodeId,
-        amount_sats: amountSats,
-        bitcoin_address: bitcoinAddress,
-        withdrawal_mode: mode,
-      },
+      variables,
       nodeId,
     );
     return WithdrawalRequestFromJson(response.request_withdrawal.request);
