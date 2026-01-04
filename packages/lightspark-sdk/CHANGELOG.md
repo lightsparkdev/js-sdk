@@ -1,5 +1,14 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.15
+
+### Patch Changes
+
+- 9a7776b: Adding ability to fail HTLCs and add an idempotency key to requestWithdrawal
+- Updated dependencies [9a7776b]
+  - @lightsparkdev/core@1.4.8
+  - @lightsparkdev/crypto-wasm@0.1.22
+
 ## 1.9.14
 
 ### Patch Changes

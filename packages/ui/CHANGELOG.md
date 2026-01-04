@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.16
+
+### Patch Changes
+
+- 9a7776b: UI updates and fixes for bank linking, kyc, 2fa, filters
+- Updated dependencies [9a7776b]
+  - @lightsparkdev/core@1.4.8
+
 ## 1.1.15
 
 ### Patch Changes
