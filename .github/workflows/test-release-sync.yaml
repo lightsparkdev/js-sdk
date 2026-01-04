@@ -155,6 +155,7 @@ jobs:
     name: Release
     needs: ["checks", "build"]
     permissions:
+      id-token: write
       contents: write
       pull-requests: write
     if: "success() && github.event_name == 'push'"
