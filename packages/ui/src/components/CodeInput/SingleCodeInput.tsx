@@ -8,6 +8,7 @@ import type {
   Ref,
 } from "react";
 import { textInputStyle } from "../../styles/fields.js";
+import type { CodeInputVariant } from "./CodeInput.js";
 
 type CounterProps = {
   id?: string;
@@ -34,6 +35,7 @@ type CounterProps = {
   disabled?: boolean;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   width: string;
+  variant?: CodeInputVariant;
 };
 
 const defaultWidth = "42px";
@@ -55,8 +57,37 @@ export function SingleCodeInput({
   disabled,
   onBlur,
   width = defaultWidth,
+  variant = "default",
 }: CounterProps): JSX.Element {
   const theme = useTheme();
+
+  const commonCSS = css`
+    text-align: center;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      display: none;
+      margin: 0;
+    }
+    -moz-appearance: textfield; /* Firefox */
+  `;
+
+  const unifiedCSS = css`
+    ${commonCSS}
+    width: ${width};
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: ${theme.text};
+    outline: none;
+    caret-color: ${theme.info};
+
+    &::placeholder {
+      color: ${theme.secondary};
+    }
+  `;
+
   const defaultCSS = css(
     `
       ${
@@ -70,7 +101,6 @@ export function SingleCodeInput({
       width: ${width};
       max-width: ${defaultWidth};
       padding: ${vPadding}px 0px;
-      text-align: center;
       &:not(:last-of-type):not(:focus-visible) {
         border-right: none;
       }
@@ -89,16 +119,12 @@ export function SingleCodeInput({
       &:active {
         padding: ${vPadding - 1}px 0px !important;
       }
-
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        display: none;
-        margin: 0;
-      }
-      -moz-appearance:textfield; /* Firefox */
     `,
+    commonCSS,
     cssProp,
   );
+
+  const inputStyles = variant === "unified" ? unifiedCSS : defaultCSS;
 
   return (
     <input
@@ -107,16 +133,17 @@ export function SingleCodeInput({
       onChange={(event) => onChange(event, id)}
       value={value}
       ref={inputRef}
-      type={type}
+      type={variant === "unified" ? "text" : type}
       aria-label={ariaLabel}
       onKeyUp={(event) => onKeyUp(event, id)}
       onKeyDown={(event) => onKeyDown(event, id)}
       onPaste={(event) => onPaste(event)}
       max={max}
-      css={defaultCSS}
+      css={inputStyles}
       onBlur={onBlur}
       inputMode="numeric"
       pattern="[0-9]*"
+      placeholder={variant === "unified" ? "-" : undefined}
     />
   );
 }

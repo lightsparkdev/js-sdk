@@ -2,6 +2,8 @@
 
 import styled from "@emotion/styled";
 import { useRef, useState } from "react";
+import { useIOSScrollLock } from "../hooks/useIOSScrollLock.js";
+import { useKeyboardOffset } from "../hooks/useKeyboardOffset.js";
 import { standardFocusOutline } from "../styles/common.js";
 import { Spacing } from "../styles/tokens/spacing.js";
 import { z } from "../styles/z-index.js";
@@ -32,6 +34,10 @@ export const Drawer = (props: Props) => {
   const [fractionVisible, setFractionVisible] = useState<number>(1);
   const [grabbing, setGrabbing] = useState(false);
   const drawerContainerRef = useRef<null | HTMLDivElement>(null);
+
+  useIOSScrollLock();
+
+  const keyboardOffset = useKeyboardOffset();
 
   const handleClose = () => {
     if (props.nonDismissable) {
@@ -99,6 +105,7 @@ export const Drawer = (props: Props) => {
         isOpen={isOpen}
         fractionVisible={fractionVisible}
         onClick={handleClose}
+        onTouchMove={(e) => e.preventDefault()}
       />
       <DrawerContainer
         isOpen={isOpen}
@@ -108,6 +115,8 @@ export const Drawer = (props: Props) => {
         totalDeltaY={totalDeltaY}
         grabbing={grabbing}
         ref={drawerContainerRef}
+        keyboardOffset={keyboardOffset}
+        data-drawer-scrollable
         top={props.top}
       >
         <DrawerInnerContainer
@@ -151,10 +160,9 @@ export const Drawer = (props: Props) => {
 
 const Background = styled.div<{ isOpen: boolean; fractionVisible: number }>`
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  max-height: 100dvh;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: ${z.modalOverlay};
 
@@ -178,19 +186,18 @@ const DrawerContainer = styled.div<{
   isOpen: boolean;
   totalDeltaY: number;
   grabbing: boolean;
+  keyboardOffset: number;
   top?: number | undefined;
 }>`
   position: fixed;
   max-height: 100dvh;
   width: 100%;
-  right: 0;
-  bottom: 0;
+  bottom: ${(props) => props.keyboardOffset ?? 0}px;
   transform: translateY(${(props) => `${props.totalDeltaY}px`});
   z-index: ${z.modalContainer};
   display: flex;
   flex-direction: column;
   align-items: center;
-
   ${(props) => props.top && `top: ${props.top}px;`}
 
   // Only smooth transition when not grabbing, otherwise dragging will feel very laggy
@@ -234,7 +241,9 @@ const DrawerInnerContainer = styled.div<{
   width: ${(props) =>
     props.kind === "floating" ? `calc(100% - ${Spacing.md * 2}px)` : "100%"};
   min-width: 320px;
-  ${(props) => (props.kind === "floating" ? `bottom: ${Spacing.px.md};` : "")}
+  ${(props) => (props.kind === "floating" ? `bottom: 0;` : "")}
+  margin-bottom: ${Spacing.px.md};
+  margin-top: ${Spacing.px.md};
   height: auto;
   border-radius: ${(props) =>
     props.kind === "floating"

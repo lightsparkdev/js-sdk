@@ -94,6 +94,15 @@ interface FilterOptions<
   ) => QueryVariablesType;
   refetch: (fetchVariables: QueryVariablesType) => Promise<QueryResultType>;
   initialQueryVariables: QueryVariablesType;
+  /**
+   * Called when a filter state changes.
+   * Use setFilterStates to modify other filters (e.g., for mutual exclusivity).
+   */
+  onFilterStateChange?: (
+    changedKey: keyof T,
+    newState: FilterState,
+    setFilterStates: Dispatch<SetStateAction<DataManagerTableState<T>>>,
+  ) => void;
 }
 
 interface ShowMoreOptions<QueryVariablesType, QueryResultType> {
@@ -860,6 +869,19 @@ export function DataManagerTable<
     }
   };
 
+  const createFilterStateUpdater =
+    (filter: Filter<T>) => (state: FilterState) => {
+      setFilterStates((prevState) => ({
+        ...prevState,
+        [filter.accessorKey]: state,
+      }));
+      props.filterOptions?.onFilterStateChange?.(
+        filter.accessorKey,
+        state,
+        setFilterStates,
+      );
+    };
+
   const filterSections = props.filterOptions
     ? props.filterOptions.filters.map((filter: Filter<T>) => {
         switch (filter.type) {
@@ -867,12 +889,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <DateFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   state={filterStates[filter.accessorKey] as DateFilterState}
                 />
               </div>
@@ -881,12 +898,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <EnumFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   options={filter.enumValues}
                   label={filter.label}
                   placeholder={filter.placeholder}
@@ -899,12 +911,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <StringFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   label={filter.label}
                   placeholder={filter.placeholder}
                   state={filterStates[filter.accessorKey] as StringFilterState}
@@ -915,12 +922,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <IdFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   label={filter.label}
                   placeholder={filter.placeholder}
                   state={filterStates[filter.accessorKey] as IdFilterState}
@@ -931,12 +933,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <BooleanFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   label={filter.label}
                   state={filterStates[filter.accessorKey] as BooleanFilterState}
                 />
@@ -946,12 +943,7 @@ export function DataManagerTable<
             return (
               <div key={filter.label}>
                 <CurrencyFilter
-                  updateFilterState={(state) => {
-                    setFilterStates((prevState) => ({
-                      ...prevState,
-                      [filter.accessorKey]: state,
-                    }));
-                  }}
+                  updateFilterState={createFilterStateUpdater(filter)}
                   label={filter.label}
                   state={
                     filterStates[filter.accessorKey] as CurrencyFilterState
@@ -1087,8 +1079,20 @@ export function DataManagerTable<
                 }}
                 onUpdateFilter={(newFilterState) => {
                   setFilterStates((prevStates) => {
-                    const newStates = { ...prevStates };
+                    let newStates = { ...prevStates };
                     newStates[filter.accessorKey] = newFilterState;
+                    // Call onFilterStateChange to allow mutual exclusivity logic
+                    props.filterOptions?.onFilterStateChange?.(
+                      filter.accessorKey,
+                      newFilterState,
+                      (updater) => {
+                        if (typeof updater === "function") {
+                          newStates = updater(newStates);
+                        } else {
+                          newStates = updater;
+                        }
+                      },
+                    );
                     void handleApplyFilters(
                       newStates,
                       props.filterOptions!,
@@ -1119,6 +1123,7 @@ export function DataManagerTable<
               setShowFilterEditor,
               customDropdownComponent:
                 props.customComponents?.dropdownComponent,
+              onFilterStateChange: props.filterOptions.onFilterStateChange,
             })}
             isOpen={showFilterEditor}
             onOpen={() => {
@@ -1411,6 +1416,7 @@ function getPillDropdownItems<
   pageSize,
   setShowFilterEditor,
   customDropdownComponent,
+  onFilterStateChange,
 }: {
   filterOptions: FilterOptions<T, QueryVariablesType, QueryResultType>;
   filterStates: DataManagerTableState<T>;
@@ -1425,7 +1431,31 @@ function getPillDropdownItems<
   customDropdownComponent?:
     | React.ComponentType<React.ComponentProps<typeof Dropdown>>
     | undefined;
+  onFilterStateChange?: FilterOptions<
+    T,
+    QueryVariablesType,
+    QueryResultType
+  >["onFilterStateChange"];
 }) {
+  // Helper to apply a new filter state with mutual exclusivity support
+  const applyFilterState = (filter: Filter<T>, newFilterState: FilterState) => {
+    setFilterStates((prevStates: DataManagerTableState<T>) => {
+      let newStates = { ...prevStates };
+      newStates[filter.accessorKey] = newFilterState;
+      // Call onFilterStateChange for mutual exclusivity logic
+      onFilterStateChange?.(filter.accessorKey, newFilterState, (updater) => {
+        if (typeof updater === "function") {
+          newStates = updater(newStates);
+        } else {
+          newStates = updater;
+        }
+      });
+      void handleApplyFilters(newStates, filterOptions, pageSize);
+      setShowFilterEditor(false);
+      return newStates;
+    });
+  };
+
   const getDropdownItemForFilter = (filter: Filter<T>): DropdownItemType => {
     let filterSubDropdownOptions: DropdownItemType[] = [];
     if (filter.type === FilterType.ENUM) {
@@ -1448,18 +1478,12 @@ function getPillDropdownItems<
             updatedAppliedValues = [...optionValues];
           }
 
-          setFilterStates((prevStates: DataManagerTableState<T>) => {
-            const newStates = { ...prevStates };
-            newStates[filter.accessorKey] = {
-              ...getDefaultFilterState<T>(filter),
-              value: updatedAppliedValues.join(", "),
-              isApplied: true,
-              appliedValues: updatedAppliedValues,
-            } as unknown as FilterState;
-            void handleApplyFilters(newStates, filterOptions, pageSize);
-            setShowFilterEditor(false);
-            return newStates;
-          });
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            value: updatedAppliedValues.join(", "),
+            isApplied: true,
+            appliedValues: updatedAppliedValues,
+          } as unknown as FilterState);
         },
       }));
     }
@@ -1487,30 +1511,18 @@ function getPillDropdownItems<
               ? [...state.appliedValues]
               : [];
 
-          setFilterStates((prevStates: DataManagerTableState<T>) => {
-            const newStates = { ...prevStates };
-            newStates[filter.accessorKey] = {
-              ...getDefaultFilterState<T>(filter),
-              value: updatedAppliedValues.join(", "),
-              isApplied: true,
-              appliedValues: updatedAppliedValues,
-            } as unknown as FilterState;
-            void handleApplyFilters(newStates, filterOptions, pageSize);
-            setShowFilterEditor(false);
-            return newStates;
-          });
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            value: updatedAppliedValues.join(", "),
+            isApplied: true,
+            appliedValues: updatedAppliedValues,
+          } as unknown as FilterState);
         } else if (filter.type === FilterType.BOOLEAN) {
-          setFilterStates((prevStates: DataManagerTableState<T>) => {
-            const newStates = { ...prevStates };
-            newStates[filter.accessorKey] = {
-              ...getDefaultFilterState<T>(filter),
-              value: filter.value as boolean,
-              isApplied: true,
-            } as unknown as FilterState;
-            void handleApplyFilters(newStates, filterOptions, pageSize);
-            setShowFilterEditor(false);
-            return newStates;
-          });
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            value: filter.value as boolean,
+            isApplied: true,
+          } as unknown as FilterState);
         } else if (filter.type === FilterType.ID) {
           const state = filterStates[filter.accessorKey] as IdFilterState;
           let updatedAppliedValues: string[] = [];
@@ -1524,34 +1536,23 @@ function getPillDropdownItems<
               : state.appliedValues
               ? [...state.appliedValues]
               : [];
-          setFilterStates((prevStates: DataManagerTableState<T>) => {
-            const newStates = { ...prevStates };
-            newStates[filter.accessorKey] = {
-              ...getDefaultFilterState<T>(filter),
-              value: updatedAppliedValues.join(", "),
-              isApplied: true,
-              appliedValues: updatedAppliedValues,
-            } as unknown as FilterState;
-            void handleApplyFilters(newStates, filterOptions, pageSize);
-            setShowFilterEditor(false);
-            return newStates;
-          });
+
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            value: updatedAppliedValues.join(", "),
+            isApplied: true,
+            appliedValues: updatedAppliedValues,
+          } as unknown as FilterState);
         } else if (filter.type === FilterType.CURRENCY) {
           // TODO: Currency filter state, design tbd
         } else if (filter.type === FilterType.DATE) {
-          setFilterStates((prevStates: DataManagerTableState<T>) => {
-            const newStates = { ...prevStates };
-            newStates[filter.accessorKey] = {
-              ...getDefaultFilterState<T>(filter),
-              preset: DatePreset.Custom,
-              start: null,
-              end: null,
-              isApplied: true,
-            } as unknown as FilterState;
-            void handleApplyFilters(newStates, filterOptions, pageSize);
-            setShowFilterEditor(false);
-            return newStates;
-          });
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            preset: DatePreset.Custom,
+            start: null,
+            end: null,
+            isApplied: true,
+          } as unknown as FilterState);
         }
       },
       subDropdown:

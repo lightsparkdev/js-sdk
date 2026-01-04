@@ -36,7 +36,7 @@ const defaultMsgs = {
 };
 
 const regexp = {
-  phone: /^[2-9]{1}[0-9]{9}$/,
+  phone: /^[0-9]{7,15}$/,
   postalCode: /(^\d{5}$)|(^\d{5}-\d{4}$)/,
   email: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
   state:

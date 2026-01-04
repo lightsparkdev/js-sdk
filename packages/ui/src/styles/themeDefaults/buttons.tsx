@@ -5,7 +5,7 @@ import { type TokenSizeKey } from "../tokens/typography.js";
 export type PaddingYKey = "short" | "regular";
 export type PaddingY = number | { [key in PaddingYKey]: number };
 
-export const buttonBorderRadiuses = [4, 8, 32, 999, "100%"] as const;
+export const buttonBorderRadiuses = [0, 4, 8, 32, 999, "100%"] as const;
 export type ButtonBorderRadius = (typeof buttonBorderRadiuses)[number];
 export const allowedButtonTypographyTypes = [
   "Body",

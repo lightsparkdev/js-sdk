@@ -436,3 +436,22 @@ describe("formatCurrencyStr", () => {
     ).toBe("$1,000.12 MXN");
   });
 });
+
+it("should not append XOF if it's already in the formatted string", () => {
+  /* This test verifies the fix for PQA-394 where XOF was appearing twice.
+   * If Intl.NumberFormat formats with currencyDisplay: 'code', it will include
+   * XOF in the output, and we shouldn't append it again. */
+  const formatted = formatCurrencyStr(
+    { value: 221900, unit: CurrencyUnit.XOF },
+    { appendUnits: { plural: false, lowercase: false } },
+  );
+
+  /* Count occurrences of 'XOF' or 'CFA' in the result */
+  const xofCount = (formatted.match(/XOF/g) || []).length;
+  const cfaCount = (formatted.match(/CFA/g) || []).length;
+
+  /* Should have either XOF or CFA, but not both, and only once */
+  expect(xofCount + cfaCount).toBeGreaterThan(0);
+  expect(xofCount).toBeLessThanOrEqual(1);
+  expect(cfaCount).toBeLessThanOrEqual(1);
+});

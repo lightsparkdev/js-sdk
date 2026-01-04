@@ -45,6 +45,7 @@ import { CreateUmaInvitationWithPayment } from "./graphql/CreateUmaInvitationWit
 import { CreateUmaInvoice } from "./graphql/CreateUmaInvoice.js";
 import { DecodeInvoice } from "./graphql/DecodeInvoice.js";
 import { DeleteApiToken } from "./graphql/DeleteApiToken.js";
+import { FailHtlcs } from "./graphql/FailHtlcs.js";
 import { FetchUmaInvitation } from "./graphql/FetchUmaInvitation.js";
 import { FundNode } from "./graphql/FundNode.js";
 import { IncomingPaymentsForInvoice } from "./graphql/IncomingPaymentsForInvoice.js";
@@ -76,6 +77,8 @@ import type ComplianceProvider from "./objects/ComplianceProvider.js";
 import type CreateApiTokenOutput from "./objects/CreateApiTokenOutput.js";
 import type CurrencyAmount from "./objects/CurrencyAmount.js";
 import { CurrencyAmountFromJson } from "./objects/CurrencyAmount.js";
+import type FailHtlcsOutput from "./objects/FailHtlcsOutput.js";
+import { FailHtlcsOutputFromJson } from "./objects/FailHtlcsOutput.js";
 import type FeeEstimate from "./objects/FeeEstimate.js";
 import { FeeEstimateFromJson } from "./objects/FeeEstimate.js";
 import type IncomingPayment from "./objects/IncomingPayment.js";
@@ -737,6 +740,28 @@ class LightsparkClient {
   }
 
   /**
+   * Fails all pending HTLCs (Hash Time Locked Contracts) for a given invoice.
+   *
+   * @param invoiceId The ID of the invoice for which to fail HTLCs.
+   * @param cancelInvoice Whether to also cancel the invoice after failing the HTLCs.
+   * @returns The output containing the invoice ID, or undefined if the operation failed.
+   */
+  public async failHtlcs(
+    invoiceId: string,
+    cancelInvoice: boolean,
+  ): Promise<FailHtlcsOutput | undefined> {
+    const response = await this.requester.makeRawRequest(FailHtlcs, {
+      invoice_id: invoiceId,
+      cancel_invoice: cancelInvoice,
+    });
+    const output = response.fail_htlcs;
+    if (!output) {
+      return undefined;
+    }
+    return FailHtlcsOutputFromJson(output);
+  }
+
+  /**
    * Decodes an encoded lightning invoice string.
    *
    * @param encodedInvoice The string encoded invoice to decode.
@@ -1206,15 +1231,20 @@ class LightsparkClient {
     amountSats: number,
     bitcoinAddress: string,
     mode: WithdrawalMode,
+    idempotencyKey: string | undefined = undefined,
   ): Promise<WithdrawalRequest> {
+    const variables: Record<string, string | number> = {
+      node_id: nodeId,
+      amount_sats: amountSats,
+      bitcoin_address: bitcoinAddress,
+      withdrawal_mode: mode,
+    };
+    if (idempotencyKey !== undefined) {
+      variables.idempotency_key = idempotencyKey;
+    }
     const response = await this.requester.makeRawRequest(
       RequestWithdrawal,
-      {
-        node_id: nodeId,
-        amount_sats: amountSats,
-        bitcoin_address: bitcoinAddress,
-        withdrawal_mode: mode,
-      },
+      variables,
       nodeId,
     );
     return WithdrawalRequestFromJson(response.request_withdrawal.request);

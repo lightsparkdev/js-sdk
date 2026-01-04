@@ -41,6 +41,7 @@ export enum Themes {
   BridgeDark = "bridgeDark",
   NageLight = "nageLight",
   NageDark = "nageDark",
+  Hardcore = "hardcore",
 }
 
 export function isTheme(theme: unknown): theme is Themes {
@@ -869,6 +870,100 @@ const nageDarkTheme = extend(darkTheme, {
   type: Themes.NageDark,
 });
 
+const hardcoreButtons = merge<typeof buttonsThemeBase>(buttonsThemeBase, {
+  defaultTypographyType: "Title",
+  defaultSize: "Medium",
+  defaultBorderRadius: 0,
+  kinds: {
+    primary: {
+      defaultColor: "black",
+      defaultBackgroundColor: "radioactiveGreen",
+      defaultBorderColor: "radioactiveGreen",
+      defaultHoverBackgroundColor: "radioactiveGreenLight",
+      defaultHoverBorderColor: "radioactiveGreenLight",
+      defaultActiveBackgroundColor: "radioactiveGreenDark",
+      defaultActiveBorderColor: "radioactiveGreenDark",
+    },
+    secondary: {
+      defaultColor: "radioactiveGreen",
+      defaultBackgroundColor: "transparent",
+      defaultBorderColor: "radioactiveGreen",
+      defaultHoverBackgroundColor: "radioactiveGreen10",
+      defaultHoverBorderColor: "radioactiveGreenLight",
+      defaultActiveBackgroundColor: "radioactiveGreen20",
+      defaultActiveBorderColor: "radioactiveGreenDark",
+    },
+    tertiary: {
+      defaultColor: "radioactiveGreen",
+      defaultBackgroundColor: "gray10",
+      defaultBorderColor: "radioactiveGreen",
+      defaultHoverBackgroundColor: "gray15",
+      defaultHoverBorderColor: "radioactiveGreenLight",
+      defaultActiveBackgroundColor: "gray20",
+      defaultActiveBorderColor: "radioactiveGreenDark",
+    },
+    ghost: {
+      defaultColor: "radioactiveGreen",
+      defaultBackgroundColor: "transparent",
+      defaultBorderColor: "radioactiveGreen",
+      defaultHoverBackgroundColor: "radioactiveGreen10",
+      defaultHoverBorderColor: "radioactiveGreenLight",
+    },
+    danger: {
+      defaultColor: "black",
+      defaultBackgroundColor: "danger",
+      defaultBorderColor: "danger",
+      defaultHoverBackgroundColor: "red50",
+      defaultHoverBorderColor: "red50",
+    },
+  },
+});
+
+const hardcoreBaseTheme: BaseTheme = {
+  ...darkBaseTheme,
+  type: Themes.Hardcore,
+  bg: colors.black,
+  smBg: colors.black,
+  text: colors.radioactiveGreen,
+  hcNeutral: colors.radioactiveGreen,
+  mcNeutral: colors.radioactiveGreenDark,
+  lcNeutral: colors.radioactiveGreenDarker,
+  vlcNeutral: colors.gray15,
+  secondary: colors.radioactiveGreenDark,
+  tertiary: colors.radioactiveGreen,
+  primary: colors.radioactiveGreen,
+  link: colors.radioactiveGreenLight,
+  linkLight: colors.radioactiveGreen10,
+  success: colors.radioactiveGreen,
+  info: colors.radioactiveGreen,
+  c05Neutral: colors.radioactiveGreenDarker,
+  c1Neutral: colors.radioactiveGreenDarker,
+  c15Neutral: colors.radioactiveGreenDark,
+  c2Neutral: colors.radioactiveGreenDark,
+  c3Neutral: colors.radioactiveGreen,
+  c4Neutral: colors.radioactiveGreenLight,
+  border: colors.radioactiveGreen30,
+  inputBackground: colors.black,
+  typography: getTypography(TypographyGroup.Hardcore, {
+    main: "Roboto Mono",
+    code: "Roboto Mono",
+  }),
+  buttons: hardcoreButtons,
+  badge: {
+    bg: "c15Neutral" as ThemeOrColorKey,
+  },
+};
+
+const hardcoreTheme = extend(hardcoreBaseTheme, {
+  header: extendBase(hardcoreBaseTheme, {}),
+  nav: extendBase(hardcoreBaseTheme, {}),
+  content: extendBase(hardcoreBaseTheme, {}),
+  controls: extendBase(hardcoreBaseTheme, {
+    bg: colors.gray10,
+    smBg: colors.gray10,
+  }),
+});
+
 export const themes = {
   [Themes.Light]: lightTheme,
   [Themes.Dark]: darkTheme,
@@ -882,6 +977,7 @@ export const themes = {
   [Themes.BridgeDark]: bridgeDarkTheme,
   [Themes.NageLight]: nageLightTheme,
   [Themes.NageDark]: nageDarkTheme,
+  [Themes.Hardcore]: hardcoreTheme,
 } as const;
 
 function extend(obj: BaseTheme, rest: Partial<LightsparkTheme>) {
@@ -1000,6 +1096,7 @@ export const isDark = (theme: Theme) =>
     Themes.LightsparkDocsDark,
     Themes.UmameDocsDark,
     Themes.UmaAuthSdkDark,
+    Themes.Hardcore,
   ].includes(theme.type);
 export const isLight = (theme: Theme) =>
   [

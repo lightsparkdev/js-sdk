@@ -11,6 +11,7 @@ import type {
 import { createRef, useCallback, useRef, useState } from "react";
 import { isChrome, isMobile, isMobileSafari } from "react-device-detect";
 import { textInputBorderColor } from "../../styles/fields.js";
+import { Spacing } from "../../styles/tokens/spacing.js";
 import { SingleCodeInput } from "./SingleCodeInput.js";
 
 type InputState = {
@@ -21,6 +22,7 @@ type InputState = {
 
 export type OnSubmitCode = (code: string) => void;
 export type OnChangeCode = (code: string) => void;
+export type CodeInputVariant = "default" | "unified";
 type CodeInputProps = {
   onChange?: OnChangeCode | undefined;
   onSubmit?: OnSubmitCode | undefined;
@@ -28,6 +30,7 @@ type CodeInputProps = {
   inputCSS?: SerializedStyles;
   autoFocus?: boolean;
   onBlur?: (() => void) | undefined;
+  variant?: CodeInputVariant;
 };
 
 function codeFromInputState(inputState: InputState): string {
@@ -60,6 +63,7 @@ export function CodeInput({
   inputCSS,
   autoFocus = true,
   onBlur,
+  variant = "default",
 }: CodeInputProps): JSX.Element {
   const componentId = useRef(nanoid(5));
   const inputRefs = useRef<InputRefs>({});
@@ -397,10 +401,19 @@ export function CodeInput({
         ariaLabel={`Code input ${i + 1} of ${codeLength}`}
         cssProp={inputCSS}
         onBlur={onBlurCb}
-        width={`${(100 / inputsPerGroup).toFixed(2)}%`}
+        width={
+          variant === "unified"
+            ? "12px"
+            : `${(100 / inputsPerGroup).toFixed(2)}%`
+        }
         max={9}
+        variant={variant}
       />,
     );
+  }
+
+  if (variant === "unified") {
+    return <UnifiedCodeInputContainer>{inputs}</UnifiedCodeInputContainer>;
   }
 
   return (
@@ -440,4 +453,21 @@ const CodeInputGroupSeparator = styled.div`
   background-color: ${textInputBorderColor};
   border-radius: 2px;
   margin: 0 ${separatorMargin}px;
+`;
+
+const UnifiedCodeInputContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: ${Spacing.px.xs};
+  padding: 12px 24px;
+  border: 0.5px solid ${({ theme }) => theme.border};
+  border-radius: 16px;
+  background-color: ${({ theme }) => theme.bg};
+  width: 100%;
+
+  &:focus-within {
+    border: 2px solid ${({ theme }) => theme.text};
+  }
 `;

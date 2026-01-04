@@ -37,7 +37,7 @@ type FlexProps = {
     | "pre-line"
     | undefined;
   height?: number | "auto" | "100%" | undefined;
-  width?: number | "auto" | "100%" | undefined;
+  width?: number | "auto" | "50%" | "100%" | undefined;
   mt?: number | "auto" | undefined;
   mr?: number | "auto" | undefined;
   mb?: number | "auto" | undefined;
