@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.4.8
+
+### Patch Changes
+
+- 9a7776b: Adding currency support for XOF, XAF, MWK, RWF
+
 ## 1.4.7
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/nodejs-scripts",
-  "version": "0.0.36",
+  "version": "0.0.37",
   "private": true,
   "description": "Example NodeJS scripts for Lightspark JS SDKs",
   "main": "index.js",
@@ -33,8 +33,8 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.4.7",
-    "@lightsparkdev/lightspark-sdk": "1.9.14",
+    "@lightsparkdev/core": "1.4.8",
+    "@lightsparkdev/lightspark-sdk": "1.9.15",
     "commander": "^11.0.0",
     "dayjs": "^1.11.7",
     "lodash-es": "^4.17.21"
