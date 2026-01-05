@@ -22,6 +22,7 @@ const defaultMsgs = {
   postalCode: "Please enter a valid zip code.",
   state: "Please enter a valid two-letter state abbreviation.",
   name: "Name must be at least three characters.",
+  humanName: "Name must be at least 1 character and cannot contain digits",
   code: "Code must be eight characters long.",
   password:
     "Password must be at least 12 characters, must contain at least two types of characters: lowercase, uppercase, numbers, special",
@@ -39,6 +40,7 @@ const regexp = {
   phone: /^[0-9]{7,15}$/,
   postalCode: /(^\d{5}$)|(^\d{5}-\d{4}$)/,
   email: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+  humanName: /^[^0-9]+$/,
   state:
     /^(A[LKSZRAEP]|C[AOT]|D[EC]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/,
   clabe: /^[0-9]{18}$/,
@@ -82,6 +84,10 @@ export const v: Validators = {
     (msg = defaultMsgs.name) =>
     (value) =>
       value.trim().length < 3 ? msg : false,
+  humanName:
+    (msg = defaultMsgs.humanName) =>
+    (value) =>
+      value.trim().length < 1 || !regexp.humanName.test(value) ? msg : false,
   code:
     (msg = defaultMsgs.code) =>
     (value) =>
@@ -161,6 +167,7 @@ const defaultValidators: Record<string, ValidatorFn[]> = {
   ],
   city: [v.required("City is required.")],
   name: [v.required("Name is required."), v.name()],
+  humanName: [v.required("Name is required."), v.humanName()],
   code: [v.required("Please enter a code."), v.code()],
   email: [v.required("Email is required."), v.email()],
   phoneNumber: [v.required("Phone number is required."), v.phone()],
