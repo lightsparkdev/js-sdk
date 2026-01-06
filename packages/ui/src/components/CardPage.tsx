@@ -28,6 +28,7 @@ type Props = {
   maxContentWidth?: number;
   rightContent?: React.ReactNode;
   preHeaderContent?: React.ReactNode;
+  headerRightContent?: React.ReactNode;
   expandRight?: boolean;
   id?: string;
 };
@@ -43,6 +44,9 @@ export function CardPage(props: Props) {
       <Heading type="h1" m0>
         {props.title}
       </Heading>
+      {props.headerRightContent && (
+        <CardPageHeaderRight>{props.headerRightContent}</CardPageHeaderRight>
+      )}
     </CardPageHeader>
   ) : null;
 
@@ -348,6 +352,11 @@ const CardPageHeader = styled.div<{ headerMarginBottom?: number }>`
   & + ${StyledButtonRow} {
     margin-top: 16px;
   }
+`;
+
+const CardPageHeaderRight = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 export const CardPageContent = styled.div<CardPageContentProps>`
