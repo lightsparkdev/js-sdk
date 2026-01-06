@@ -16,6 +16,7 @@ export { ArrowUpRight as CentralArrowUpRight } from "./ArrowUpRight.js";
 export { At as CentralAt } from "./At.js";
 export { Bank as CentralBank } from "./Bank.js";
 export { BankBold as CentralBankBold } from "./BankBold.js";
+export { BankSolid as CentralBankSolid } from "./BankSolid.js";
 export { BarsThree as CentralBarsThree } from "./BarsThree.js";
 export { Bell as CentralBell } from "./Bell.js";
 export { Bell2 as CentralBell2 } from "./Bell2.js";
