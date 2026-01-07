@@ -460,6 +460,7 @@ const CardFormContentFull = styled.div<{ paddingBottom?: number | undefined }>`
   flex-direction: column;
   align-self: center;
   height: 100%;
+  width: 100%;
   padding-bottom: ${({ paddingBottom }) => paddingBottom ?? 0}px;
 `;
 
