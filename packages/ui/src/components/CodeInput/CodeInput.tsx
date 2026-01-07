@@ -331,6 +331,27 @@ export function CodeInput({
 
   const inputsPerGroup = Math.ceil(codeLength / 2);
 
+  /**
+   * When clicking on the unified code input container, handle focus appropriately
+   * Uses onMouseDown instead of onClick because mousedown fires before focus,
+   * allowing us to prevent the default focus behavior and redirect to the correct input.
+   */
+  const onContainerMouseDown = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLInputElement;
+      const isClickingFilledInput =
+        target.tagName === "INPUT" && inputState[target.id]?.value !== "";
+      if (!isClickingFilledInput) {
+        event.preventDefault();
+        const firstEmptyIndex = codeFromInputState(inputState).length;
+        const targetIndex =
+          firstEmptyIndex < codeLength ? firstEmptyIndex : codeLength - 1;
+        getRef(getInputId(targetIndex), inputRefs)?.focus();
+      }
+    },
+    [codeLength, getInputId, inputState, inputRefs],
+  );
+
   const inputs = [];
   for (let i = 0; i < codeLength; i += 1) {
     const inputId = getInputId(i);
@@ -413,7 +434,11 @@ export function CodeInput({
   }
 
   if (variant === "unified") {
-    return <UnifiedCodeInputContainer>{inputs}</UnifiedCodeInputContainer>;
+    return (
+      <UnifiedCodeInputContainer onMouseDown={onContainerMouseDown}>
+        {inputs}
+      </UnifiedCodeInputContainer>
+    );
   }
 
   return (
