@@ -1,7 +1,6 @@
-import styled from "@emotion/styled";
-import { Spacing } from "../../styles/tokens/spacing.js";
 import { Button } from "../Button.js";
 import { TextInput } from "../TextInput.js";
+import { AppliedButtonsContainer } from "./AppliedButtonsContainer.js";
 import { Filter, type FilterState } from "./Filter.js";
 import { FilterType } from "./filters.js";
 
@@ -148,10 +147,3 @@ export const IdFilter = ({
     </>
   );
 };
-
-const AppliedButtonsContainer = styled.div`
-  margin-top: ${Spacing.px.sm};
-  display: flex;
-  gap: ${Spacing.px.xs};
-  flex-wrap: wrap;
-`;
