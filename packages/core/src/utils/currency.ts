@@ -43,6 +43,9 @@ export const CurrencyUnit = {
   XAF: "XAF",
   MWK: "MWK",
   RWF: "RWF",
+  ZMW: "ZMW",
+  AED: "AED",
+  GTQ: "GTQ",
   USDT: "USDT",
   USDC: "USDC",
 
@@ -58,6 +61,7 @@ export const CurrencyUnit = {
   Gbp: "GBP",
   Inr: "INR",
   Brl: "BRL",
+  Aed: "AED",
   Usdt: "USDT",
   Usdc: "USDC",
 } as const;
@@ -110,6 +114,9 @@ const standardUnitConversionObj = {
   [CurrencyUnit.XAF]: (v: number) => v,
   [CurrencyUnit.MWK]: (v: number) => v,
   [CurrencyUnit.RWF]: (v: number) => v,
+  [CurrencyUnit.ZMW]: (v: number) => v,
+  [CurrencyUnit.AED]: (v: number) => v,
+  [CurrencyUnit.GTQ]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
 };
@@ -161,6 +168,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toBitcoinConversion,
     [CurrencyUnit.MWK]: toBitcoinConversion,
     [CurrencyUnit.RWF]: toBitcoinConversion,
+    [CurrencyUnit.ZMW]: toBitcoinConversion,
+    [CurrencyUnit.AED]: toBitcoinConversion,
+    [CurrencyUnit.GTQ]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
   },
@@ -196,6 +206,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toMicrobitcoinConversion,
     [CurrencyUnit.MWK]: toMicrobitcoinConversion,
     [CurrencyUnit.RWF]: toMicrobitcoinConversion,
+    [CurrencyUnit.ZMW]: toMicrobitcoinConversion,
+    [CurrencyUnit.AED]: toMicrobitcoinConversion,
+    [CurrencyUnit.GTQ]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
   },
@@ -231,6 +244,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toMillibitcoinConversion,
     [CurrencyUnit.MWK]: toMillibitcoinConversion,
     [CurrencyUnit.RWF]: toMillibitcoinConversion,
+    [CurrencyUnit.ZMW]: toMillibitcoinConversion,
+    [CurrencyUnit.AED]: toMillibitcoinConversion,
+    [CurrencyUnit.GTQ]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
   },
@@ -266,6 +282,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toMillisatoshiConversion,
     [CurrencyUnit.MWK]: toMillisatoshiConversion,
     [CurrencyUnit.RWF]: toMillisatoshiConversion,
+    [CurrencyUnit.ZMW]: toMillisatoshiConversion,
+    [CurrencyUnit.AED]: toMillisatoshiConversion,
+    [CurrencyUnit.GTQ]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
   },
@@ -301,6 +320,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toNanobitcoinConversion,
     [CurrencyUnit.MWK]: toNanobitcoinConversion,
     [CurrencyUnit.RWF]: toNanobitcoinConversion,
+    [CurrencyUnit.ZMW]: toNanobitcoinConversion,
+    [CurrencyUnit.AED]: toNanobitcoinConversion,
+    [CurrencyUnit.GTQ]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
   },
@@ -336,6 +358,9 @@ const CONVERSION_MAP = {
     [CurrencyUnit.XAF]: toSatoshiConversion,
     [CurrencyUnit.MWK]: toSatoshiConversion,
     [CurrencyUnit.RWF]: toSatoshiConversion,
+    [CurrencyUnit.ZMW]: toSatoshiConversion,
+    [CurrencyUnit.AED]: toSatoshiConversion,
+    [CurrencyUnit.GTQ]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
   },
@@ -364,6 +389,9 @@ const CONVERSION_MAP = {
   [CurrencyUnit.XAF]: standardUnitConversionObj,
   [CurrencyUnit.MWK]: standardUnitConversionObj,
   [CurrencyUnit.RWF]: standardUnitConversionObj,
+  [CurrencyUnit.ZMW]: standardUnitConversionObj,
+  [CurrencyUnit.AED]: standardUnitConversionObj,
+  [CurrencyUnit.GTQ]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
 };
@@ -452,6 +480,9 @@ export type CurrencyMap = {
   [CurrencyUnit.XAF]: number;
   [CurrencyUnit.MWK]: number;
   [CurrencyUnit.RWF]: number;
+  [CurrencyUnit.ZMW]: number;
+  [CurrencyUnit.AED]: number;
+  [CurrencyUnit.GTQ]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
@@ -490,6 +521,9 @@ export type CurrencyMap = {
     [CurrencyUnit.XAF]: string;
     [CurrencyUnit.MWK]: string;
     [CurrencyUnit.RWF]: string;
+    [CurrencyUnit.ZMW]: string;
+    [CurrencyUnit.AED]: string;
+    [CurrencyUnit.GTQ]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
@@ -709,6 +743,9 @@ function convertCurrencyAmountValues(
     xaf: CurrencyUnit.XAF,
     mwk: CurrencyUnit.MWK,
     rwf: CurrencyUnit.RWF,
+    zmw: CurrencyUnit.ZMW,
+    aed: CurrencyUnit.AED,
+    gtq: CurrencyUnit.GTQ,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -792,6 +829,9 @@ export function mapCurrencyAmount(
     xaf,
     mwk,
     rwf,
+    zmw,
+    aed,
+    gtq,
     usdt,
     usdc,
   } = convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
@@ -825,6 +865,9 @@ export function mapCurrencyAmount(
     [CurrencyUnit.XAF]: xaf,
     [CurrencyUnit.MWK]: mwk,
     [CurrencyUnit.RWF]: rwf,
+    [CurrencyUnit.ZMW]: zmw,
+    [CurrencyUnit.AED]: aed,
+    [CurrencyUnit.GTQ]: gtq,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -956,6 +999,18 @@ export function mapCurrencyAmount(
         value: rwf,
         unit: CurrencyUnit.RWF,
       }),
+      [CurrencyUnit.ZMW]: formatCurrencyStr({
+        value: zmw,
+        unit: CurrencyUnit.ZMW,
+      }),
+      [CurrencyUnit.AED]: formatCurrencyStr({
+        value: aed,
+        unit: CurrencyUnit.AED,
+      }),
+      [CurrencyUnit.GTQ]: formatCurrencyStr({
+        value: gtq,
+        unit: CurrencyUnit.GTQ,
+      }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
         unit: CurrencyUnit.USDT,
@@ -1086,6 +1141,12 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "MWK";
     case CurrencyUnit.RWF:
       return "RWF";
+    case CurrencyUnit.ZMW:
+      return "ZMW";
+    case CurrencyUnit.AED:
+      return "AED";
+    case CurrencyUnit.GTQ:
+      return "GTQ";
   }
   return "Unsupported CurrencyUnit";
 };
