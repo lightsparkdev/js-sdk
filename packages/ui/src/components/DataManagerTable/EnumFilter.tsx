@@ -1,9 +1,8 @@
-import styled from "@emotion/styled";
 import { ensureArray } from "@lightsparkdev/core";
-import { Spacing } from "../../styles/tokens/spacing.js";
 import { z } from "../../styles/z-index.js";
 import { Button } from "../Button.js";
 import Select from "../Select.js";
+import { AppliedButtonsContainer } from "./AppliedButtonsContainer.js";
 import { Filter, type FilterState } from "./Filter.js";
 import { FilterType, type EnumFilterValue } from "./filters.js";
 
@@ -105,10 +104,3 @@ export const EnumFilter = ({
     </>
   );
 };
-
-const AppliedButtonsContainer = styled.div`
-  margin-top: ${Spacing.px.sm};
-  display: flex;
-  gap: ${Spacing.px.xs};
-  flex-wrap: wrap;
-`;

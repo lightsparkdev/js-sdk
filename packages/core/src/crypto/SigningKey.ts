@@ -1,4 +1,4 @@
-import secp256k1 from "secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1";
 import { createSha256Hash } from "../utils/createHash.js";
 import { hexToBytes } from "../utils/hex.js";
 import type { CryptoInterface } from "./crypto.js";
@@ -46,7 +46,7 @@ export class Secp256k1SigningKey extends SigningKey {
   async sign(data: Uint8Array) {
     const keyBytes = new Uint8Array(hexToBytes(this.privateKey));
     const hash = await createSha256Hash(data);
-    const signResult = secp256k1.ecdsaSign(hash, keyBytes);
-    return secp256k1.signatureExport(signResult.signature);
+    const sig = secp256k1.sign(hash, keyBytes);
+    return sig.toBytes("der");
   }
 }

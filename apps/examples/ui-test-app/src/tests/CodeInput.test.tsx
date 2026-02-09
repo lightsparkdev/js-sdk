@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import { CodeInput } from "@lightsparkdev/ui/components/CodeInput/CodeInput";
 import { fireEvent, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { render } from "./render";
 
 describe("CodeInput", () => {
@@ -8,10 +9,13 @@ describe("CodeInput", () => {
     const mockClipboardReadWithoutNumbers = jest.fn(() =>
       Promise.resolve("sdkjfnsd"),
     );
-    Object.assign(navigator, {
-      clipboard: {
+    // `userEvent.setup()` may install `navigator.clipboard` as a getter-only prop.
+    // Use `defineProperty` so this mock is resilient regardless of that setup.
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
         readText: mockClipboardReadWithoutNumbers,
       },
+      configurable: true,
     });
   });
 
@@ -133,5 +137,62 @@ describe("CodeInput", () => {
     expect(inputFields[2]).toHaveValue(4);
     expect(inputFields[3]).toHaveValue(null);
     expect(inputFields[2]).toHaveFocus();
+  });
+
+  it("redirects focus to first empty input when clicking on empty input in unified variant", async () => {
+    const user = userEvent.setup();
+    render(<CodeInput codeLength={6} variant="unified" />);
+    const inputFields = screen.getAllByRole("textbox");
+    expect(inputFields).toHaveLength(6);
+
+    // Enter some digits in the first two positions
+    fireEvent.keyDown(inputFields[0], { key: "1" });
+    fireEvent.keyDown(inputFields[1], { key: "2" });
+
+    // Now focus should be on the third input (index 2)
+    expect(inputFields[2]).toHaveFocus();
+
+    // Simulate clicking on the 5th input (index 4) - an empty position
+    // onMouseDown should redirect focus to the first empty input (index 2)
+    await user.click(inputFields[4]);
+    expect(inputFields[2]).toHaveFocus();
+  });
+
+  it("allows clicking on any filled input in unified variant", async () => {
+    const user = userEvent.setup();
+    render(<CodeInput codeLength={6} variant="unified" />);
+    const inputFields = screen.getAllByRole("textbox");
+
+    // Enter some digits
+    fireEvent.keyDown(inputFields[0], { key: "1" });
+    fireEvent.keyDown(inputFields[1], { key: "2" });
+    fireEvent.keyDown(inputFields[2], { key: "3" });
+
+    // Focus should be on the 4th input (index 3)
+    expect(inputFields[3]).toHaveFocus();
+
+    // Clicking on a filled input (index 1) should work normally - no redirect
+    await user.click(inputFields[1]);
+    expect(inputFields[1]).toHaveFocus();
+
+    // Can also click on index 0
+    await user.click(inputFields[0]);
+    expect(inputFields[0]).toHaveFocus();
+
+    // Can also click on index 2
+    await user.click(inputFields[2]);
+    expect(inputFields[2]).toHaveFocus();
+  });
+
+  it("focuses first input when all inputs are empty in unified variant", () => {
+    render(<CodeInput codeLength={6} variant="unified" />);
+    const inputFields = screen.getAllByRole("textbox");
+
+    // Blur the auto-focused first input
+    fireEvent.blur(inputFields[0]);
+
+    // Click on a middle input when all are empty
+    fireEvent.mouseDown(inputFields[3]);
+    expect(inputFields[0]).toHaveFocus();
   });
 });

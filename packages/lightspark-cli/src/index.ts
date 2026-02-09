@@ -16,12 +16,12 @@ import {
   getCredentialsFromEnvOrThrow,
   type EnvCredentials,
 } from "@lightsparkdev/lightspark-sdk/env";
+import { secp256k1 } from "@noble/curves/secp256k1";
 import type { OptionValues } from "commander";
 import { Command, InvalidArgumentError } from "commander";
 import { randomBytes } from "crypto";
 import * as fs from "fs/promises";
 import qrcode from "qrcode-terminal";
-import secp256k1 from "secp256k1";
 import {
   bytesToHex,
   getCryptoLibNetwork,
@@ -621,13 +621,22 @@ const generateNodeKeys = async (options: OptionValues) => {
   console.log(`Extended public key:\n${extendedPublicKey}`);
 };
 
+const isValidPrivateKey = (key: Uint8Array): boolean => {
+  try {
+    secp256k1.getPublicKey(key);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const generateSecp256k1Keypair = () => {
-  let privateKey;
+  let privateKey: Uint8Array;
   do {
     privateKey = new Uint8Array(randomBytes(32));
-  } while (!secp256k1.privateKeyVerify(privateKey));
+  } while (!isValidPrivateKey(privateKey));
 
-  const publicKey = secp256k1.publicKeyCreate(privateKey);
+  const publicKey = secp256k1.getPublicKey(privateKey);
 
   const publicKeyAsHex = bytesToHex(publicKey);
   const privateKeyAsHex = bytesToHex(privateKey);
