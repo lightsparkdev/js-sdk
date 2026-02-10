@@ -15,7 +15,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
       - name: "Setup Node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
