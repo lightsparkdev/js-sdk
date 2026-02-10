@@ -170,6 +170,7 @@ jobs:
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
+          # npm trusted publishing requires node >=22.14.0
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
