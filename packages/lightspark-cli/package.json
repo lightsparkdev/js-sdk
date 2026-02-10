@@ -2,6 +2,10 @@
   "name": "@lightsparkdev/lightspark-cli",
   "version": "0.1.16",
   "description": "CLI for the Lightspark JS sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git"
+  },
   "main": "./dist/index.js",
   "bin": {
     "lightspark": "./dist/index.js"
