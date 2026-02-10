@@ -26,7 +26,7 @@ jobs:
         run: "git branch --track main origin/main"
 
       - name: Setup node
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:

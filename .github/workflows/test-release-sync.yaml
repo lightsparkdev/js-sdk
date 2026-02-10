@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 2
 
       - name: "Setup Node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
@@ -77,7 +77,7 @@ jobs:
           ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node v${{ matrix.node-version }}"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
@@ -129,7 +129,7 @@ jobs:
           ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
       - name: "Setup Node v${{ matrix.node-version }}"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
@@ -166,11 +166,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Setup Node"
-        uses: "actions/setup-node@v3"
+        uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
-          node-version-file: ".nvmrc"
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
@@ -185,7 +186,6 @@ jobs:
           publish: yarn release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       # If the Version Packages PR has been created in the changesets step we should check if our workspace
       # package.json files have been updated from dependency bumps and update the lock file if so:
