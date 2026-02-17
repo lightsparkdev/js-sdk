@@ -1,16 +1,5 @@
 # @lightsparkdev/lightspark-cli
 
-## 0.1.16
-
-### Patch Changes
-
-- 97769ad: - Replace secp256k1 with @noble/curves: Same dependency swap — secp256k1 replaced with @noble/curves for key generation and validation. Removes native build
-  requirement.
-- Updated dependencies [97769ad]
-  - @lightsparkdev/core@1.4.9
-  - @lightsparkdev/crypto-wasm@0.1.23
-  - @lightsparkdev/lightspark-sdk@1.9.16
-
 ## 0.1.15
 
 ### Patch Changes
