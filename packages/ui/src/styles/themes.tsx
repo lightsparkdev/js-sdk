@@ -735,15 +735,17 @@ const bridgeDarkTheme = extend(darkTheme, {
   type: Themes.BridgeDark,
 });
 
+const nageTypography = getTypography(TypographyGroup.Nage, {
+  main: "SuisseIntl",
+  code: "SuisseIntl-Mono",
+});
+
 const nageBaseSettings = {
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
   mcNeutral: colors.grayBlue43,
   success: colors.green37,
-  typography: getTypography(TypographyGroup.Nage, {
-    main: "SuisseIntl",
-    code: "SuisseIntl-Mono",
-  }),
+  typography: nageTypography,
   controls: extendBase(lightBaseTheme, {
     border: colors["black-10"],
   }),
@@ -863,11 +865,23 @@ const nageLightTheme = extend(lightTheme, {
   tertiary: colors.gray6,
   inputBackground: colors["gray-050"],
   danger: colors.red50,
+  content: extendBase(lightBaseTheme, {
+    bg: colors.white,
+    smBg: colors.white,
+    typography: nageTypography,
+    buttons: nageBaseSettings.buttons,
+    loading: nageBaseSettings.loading,
+  }),
 });
 
 const nageDarkTheme = extend(darkTheme, {
   ...nageBaseSettings,
   type: Themes.NageDark,
+  content: extendBase(darkBaseTheme, {
+    typography: nageTypography,
+    buttons: nageBaseSettings.buttons,
+    loading: nageBaseSettings.loading,
+  }),
 });
 
 const hardcoreButtons = merge<typeof buttonsThemeBase>(buttonsThemeBase, {
@@ -920,7 +934,7 @@ const hardcoreButtons = merge<typeof buttonsThemeBase>(buttonsThemeBase, {
 });
 
 const hardcoreBaseTheme: BaseTheme = {
-  ...darkBaseTheme,
+  ...nageDarkTheme,
   type: Themes.Hardcore,
   bg: colors.black,
   smBg: colors.black,
