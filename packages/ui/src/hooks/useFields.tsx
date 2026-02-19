@@ -33,6 +33,7 @@ const defaultMsgs = {
   domain: "Please enter a valid domain.",
   domainName: "Please enter a valid domain name.",
   url: "Please enter a valid URL.",
+  digitsOnly: "Must contain only digits.",
 };
 
 const regexp = {
@@ -143,6 +144,10 @@ export const v: Validators = {
       }
       return value !== fields?.[targetField] ? msg : false;
     },
+  digitsOnly:
+    (msg = defaultMsgs.digitsOnly) =>
+    (value) =>
+      value.length > 0 && !/^\d+$/.test(value) ? msg : false,
 };
 
 /* Optional validation is colocated here for consistency.
