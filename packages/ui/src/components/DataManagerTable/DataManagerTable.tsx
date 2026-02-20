@@ -560,7 +560,11 @@ export function DataManagerTable<
       // Otherwise, update the result number and cursor cache with the new cursor
       setPageCursorState((prevState) => {
         // Only update if the cursor has changed
-        if (prevState.nextPageCursor === props.nextPageCursor) return prevState;
+        if (
+          prevState.nextPageCursor === props.nextPageCursor &&
+          prevState.startResult !== undefined
+        )
+          return prevState;
 
         // Either start at 1 or add the page size to the result number
         const startResult =
@@ -999,7 +1003,7 @@ export function DataManagerTable<
       : undefined,
   } as const;
 
-  if (props.filterOptions) {
+  if (props.filterOptions && props.filterOptions.filters.length > 0) {
     const FilterContainerComponent =
       props.customComponents?.filterContainerComponent ||
       DataManagerTableFilterContainer;
