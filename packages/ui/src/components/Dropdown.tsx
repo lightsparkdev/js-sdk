@@ -417,7 +417,12 @@ export function Dropdown({
             >
               {dropdownItems?.map((dropdownItem, i) => {
                 return (
-                  <li key={dropdownItem.to} onBlur={handleBlur}>
+                  <li
+                    key={`${dropdownItem.to ?? ""}${
+                      dropdownItem.hash ? `#${dropdownItem.hash}` : ""
+                    }-${i}`}
+                    onBlur={handleBlur}
+                  >
                     <DropdownItem
                       dropdownItem={dropdownItem}
                       dropdownButtonHeight={dropdownButtonHeight}
