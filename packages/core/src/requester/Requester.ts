@@ -15,7 +15,7 @@ import { DefaultCrypto, LightsparkSigningException } from "../crypto/crypto.js";
 import type NodeKeyCache from "../crypto/NodeKeyCache.js";
 import type { SigningKey } from "../crypto/SigningKey.js";
 import LightsparkException from "../LightsparkException.js";
-import { logger } from "../Logger.js";
+import { logger } from "../logger/index.js";
 import { b64encode } from "../utils/base64.js";
 import { isNode } from "../utils/environment.js";
 
