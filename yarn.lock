@@ -2219,7 +2219,7 @@ __metadata:
     prettier: "npm:3.0.3"
     prettier-plugin-organize-imports: "npm:^3.2.4"
     qrcode-terminal: "npm:^0.12.0"
-    ts-node: "npm:^10.9.1"
+    ts-node: "npm:^10.9.2"
     tsc-absolute: "npm:^1.0.1"
     typescript: "npm:^5.6.2"
   bin:
@@ -2269,6 +2269,7 @@ __metadata:
     "@lightsparkdev/core": "npm:1.4.8"
     "@lightsparkdev/eslint-config": "npm:*"
     "@lightsparkdev/lightspark-sdk": "npm:1.9.15"
+    "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
     commander: "npm:^11.0.0"
@@ -2280,7 +2281,7 @@ __metadata:
     prettier: "npm:3.0.3"
     prettier-plugin-organize-imports: "npm:^3.2.4"
     ts-jest: "npm:^29.1.1"
-    ts-node: "npm:^10.9.1"
+    ts-node: "npm:^10.9.2"
     tsc-absolute: "npm:^1.0.1"
     typescript: "npm:^5.6.2"
   languageName: unknown
@@ -2296,7 +2297,7 @@ __metadata:
     "@lightsparkdev/eslint-config": "npm:*"
     "@lightsparkdev/lightspark-sdk": "npm:1.9.15"
     "@lightsparkdev/oauth": "npm:*"
-    "@lightsparkdev/tsconfig": "npm:*"
+    "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@lightsparkdev/ui": "npm:1.1.16"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
@@ -2347,7 +2348,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": "npm:1.4.8"
     "@lightsparkdev/lightspark-sdk": "npm:1.9.15"
-    "@lightsparkdev/tsconfig": "npm:*"
+    "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/jest": "npm:^29.5.3"
     "@types/node": "npm:^20.2.5"
     "@types/supertest": "npm:^2.0.14"
@@ -2360,7 +2361,7 @@ __metadata:
     prettier-plugin-organize-imports: "npm:^3.2.4"
     supertest: "npm:^6.3.3"
     ts-jest: "npm:^29.1.1"
-    ts-node: "npm:^10.9.1"
+    ts-node: "npm:^10.9.2"
     tsc-absolute: "npm:^1.0.1"
     typescript: "npm:^5.6.2"
   languageName: unknown
@@ -2372,11 +2373,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/tsconfig@npm:*, @lightsparkdev/tsconfig@npm:0.0.1, @lightsparkdev/tsconfig@workspace:packages/tsconfig":
+"@lightsparkdev/tsconfig@npm:0.0.1, @lightsparkdev/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/tsconfig@workspace:packages/tsconfig"
   dependencies:
+    "@arethetypeswrong/cli": "npm:^0.17.4"
     "@types/node": "npm:^20.2.5"
+    publint: "npm:^0.3.9"
   languageName: unknown
   linkType: soft
 
@@ -2392,7 +2395,7 @@ __metadata:
     "@emotion/styled": "npm:^11.11.0"
     "@lightsparkdev/core": "npm:1.4.8"
     "@lightsparkdev/eslint-config": "npm:*"
-    "@lightsparkdev/tsconfig": "npm:*"
+    "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@lightsparkdev/ui": "npm:1.1.16"
     "@lightsparkdev/vite": "npm:*"
     "@testing-library/jest-dom": "npm:^6.1.2"
@@ -2502,7 +2505,7 @@ __metadata:
     nodemon: "npm:^2.0.22"
     prettier: "npm:3.0.3"
     prettier-plugin-organize-imports: "npm:^3.2.4"
-    ts-node: "npm:^10.9.1"
+    ts-node: "npm:^10.9.2"
     tsc-absolute: "npm:^1.0.1"
     typescript: "npm:^5.6.2"
   bin:
@@ -2516,7 +2519,7 @@ __metadata:
   dependencies:
     "@lightsparkdev/core": "npm:1.4.8"
     "@lightsparkdev/lightspark-sdk": "npm:1.9.15"
-    "@lightsparkdev/tsconfig": "npm:*"
+    "@lightsparkdev/tsconfig": "npm:0.0.1"
     "@types/body-parser": "npm:^1.19.5"
     "@types/express": "npm:^4.17.21"
     "@types/supertest": "npm:^2.0.14"
@@ -2530,7 +2533,7 @@ __metadata:
     prettier-plugin-organize-imports: "npm:^3.2.4"
     supertest: "npm:^6.3.3"
     ts-jest: "npm:^29.1.1"
-    ts-node: "npm:^10.9.1"
+    ts-node: "npm:^10.9.2"
     typescript: "npm:^5.6.2"
     uuid: "npm:^9.0.0"
     zod: "npm:^3.22.4"
@@ -14251,9 +14254,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.1":
-  version: 10.9.1
-  resolution: "ts-node@npm:10.9.1"
+"ts-node@npm:^10.9.2":
+  version: 10.9.2
+  resolution: "ts-node@npm:10.9.2"
   dependencies:
     "@cspotcode/source-map-support": "npm:^0.8.0"
     "@tsconfig/node10": "npm:^1.0.7"
@@ -14285,7 +14288,7 @@ __metadata:
     ts-node-script: dist/bin-script.js
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
-  checksum: 10/bee56d4dc96ccbafc99dfab7b73fbabc62abab2562af53cdea91c874a301b9d11e42bc33c0a032a6ed6d813dbdc9295ec73dde7b73ea4ebde02b0e22006f7e04
+  checksum: 10/a91a15b3c9f76ac462f006fa88b6bfa528130dcfb849dd7ef7f9d640832ab681e235b8a2bc58ecde42f72851cc1d5d4e22c901b0c11aa51001ea1d395074b794
   languageName: node
   linkType: hard
 
