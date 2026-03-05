@@ -30,7 +30,7 @@ jobs:
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
-          node-version-file: ".nvmrc"
+          node-version: "20.x"
 
       - name: yarn install with cache
         uses: ./.github/actions/yarn-nm-install
