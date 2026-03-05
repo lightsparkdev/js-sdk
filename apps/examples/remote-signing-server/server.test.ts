@@ -1,7 +1,10 @@
 import { jest } from "@jest/globals";
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import supertest from "supertest";
-import settings from "../settings.json" assert { type: "json" };
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const settings = require("../settings.json");
 import { app } from "./src/index.js";
 
 describe("Test server routes", () => {
