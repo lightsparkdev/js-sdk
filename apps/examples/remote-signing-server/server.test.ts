@@ -2,10 +2,12 @@ import { jest } from "@jest/globals";
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import supertest from "supertest";
 import { createRequire } from "node:module";
+import { app } from "./src/index.js";
 
 const require = createRequire(import.meta.url);
-const settings = require("../settings.json");
-import { app } from "./src/index.js";
+const settings = require("../settings.json") as {
+  remoteSigningServer: { port: number };
+};
 
 describe("Test server routes", () => {
   let server: ReturnType<typeof app.listen>;

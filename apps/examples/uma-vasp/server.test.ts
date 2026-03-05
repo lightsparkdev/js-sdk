@@ -3,7 +3,9 @@ import supertest from "supertest";
 import { createUmaServer } from "./src/server.js";
 
 const require = createRequire(import.meta.url);
-const settings = require("../settings.json");
+const settings = require("../settings.json") as {
+  umaVasp: { port: number };
+};
 import UmaConfig from "./src/UmaConfig.js";
 import { AccountTokenAuthProvider, LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import DemoUserService from "./src/demo/DemoUserService.js";
