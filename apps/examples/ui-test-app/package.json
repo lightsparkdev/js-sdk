@@ -40,7 +40,7 @@
     "@emotion/babel-plugin": "^11.11.0",
     "@emotion/jest": "^11.13.0",
     "@lightsparkdev/eslint-config": "*",
-    "@lightsparkdev/tsconfig": "*",
+    "@lightsparkdev/tsconfig": "0.0.1",
     "@lightsparkdev/vite": "*",
     "@testing-library/jest-dom": "^6.1.2",
     "@types/jest": "^29.5.3",

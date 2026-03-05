@@ -1,5 +1,5 @@
 {
-  "extends": "../../../packages/tsconfig/react-app.json",
+  "extends": "@lightsparkdev/tsconfig/react-app.json",
   "compilerOptions": {
     "baseUrl": "src",
     "types": ["node", "vite/client"]
