@@ -19,7 +19,7 @@ RUN corepack prepare --activate
 # Install the dependencies
 RUN yarn workspace @lightsparkdev/uma-vasp install
 
-COPY turbo.json LICENSE .nvmrc ./
+COPY turbo.json LICENSE ./
 COPY apps/examples/uma-vasp ./apps/examples/uma-vasp/
 COPY packages/lightspark-sdk ./packages/lightspark-sdk/
 COPY packages/core ./packages/core/
