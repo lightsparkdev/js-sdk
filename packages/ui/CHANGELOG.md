@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.18
+
+### Patch Changes
+
+- 449e9de: Fix unique key generation for Dropdown list items to prevent React rendering issues. Fix DataManagerTable pagination state and empty filter rendering. Add `digitsOnly` field validator for numeric-only input fields. Improve font loading to support sub-path deployments via dynamic BASE_URL resolution. Update Nage and Hardcore theme definitions.
+- Updated dependencies [449e9de]
+  - @lightsparkdev/core@1.5.0
+
 ## 1.1.17
 
 ### Patch Changes
