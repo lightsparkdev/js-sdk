@@ -23,6 +23,9 @@
   "scripts": {
     "package:checks": "yarn publint && yarn attw --pack ."
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18"
   }

@@ -48,6 +48,9 @@
   "scripts": {
     "package:checks": "yarn publint"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18"
   }
