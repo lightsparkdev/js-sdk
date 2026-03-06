@@ -41,11 +41,11 @@ export type OnResultFunction = (
   /**
    * The QR values extracted by Zxing
    */
-  result?: Result | undefined | null,
+  result?: Result | null,
   /**
    * The name of the exceptions thrown while reading the QR
    */
-  error?: Error | undefined | null,
+  error?: Error | null,
   /**
    * The instance of the QR browser reader
    */

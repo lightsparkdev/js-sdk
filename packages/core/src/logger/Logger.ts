@@ -10,15 +10,7 @@ export enum LoggingLevel {
   Error,
 }
 
-const LOGGING_LEVEL_NAMES = [
-  "TRACE",
-  "DEBUG",
-  "INFO",
-  "WARN",
-  "ERROR",
-] as const;
-
-type LoggingLevelNameUppercase = (typeof LOGGING_LEVEL_NAMES)[number];
+type LoggingLevelNameUppercase = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR";
 
 export type LoggingLevelName =
   | LoggingLevelNameUppercase
@@ -114,7 +106,7 @@ export class Logger {
         this.options.enabled = getLocalStorageConfigItem(
           ConfigKeys.LoggingEnabled,
         );
-      } catch (e) {
+      } catch {
         /* ignore */
       }
     }

@@ -13,15 +13,6 @@ import {
 } from "./nodes.js";
 import { toReactNodes, type ToReactNodesArgs } from "./toReactNodes.js";
 
-const setReactNodesTypographyMapTypes = [
-  "default",
-  "link",
-  "text",
-  "nextLink",
-  "currencyAmount",
-  "clipboardTextField",
-] as const;
-
 export function isNonTypographicReactNode(
   node: unknown,
 ): node is undefined | null | IconNode {
@@ -29,7 +20,12 @@ export function isNonTypographicReactNode(
 }
 
 type SetReactNodesTypographyMapType =
-  (typeof setReactNodesTypographyMapTypes)[number];
+  | "default"
+  | "link"
+  | "text"
+  | "nextLink"
+  | "currencyAmount"
+  | "clipboardTextField";
 
 type SetReactNodesTypographyMap = {
   [nodeType in SetReactNodesTypographyMapType]?: TypographyPropsWithoutChildren;

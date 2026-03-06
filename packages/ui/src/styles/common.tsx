@@ -56,8 +56,7 @@ function buildStandardContentInset(
 
 export const standardContentInset = buildStandardContentInset(16, 24, 32);
 
-const standardBorderRadiusPx = [0, 4, 6, 8, 12, 16, 18, 32] as const;
-type StandardBorderRadius = (typeof standardBorderRadiusPx)[number];
+type StandardBorderRadius = 0 | 4 | 6 | 8 | 12 | 16 | 18 | 32;
 export const cardBorderRadiusPx = 16;
 
 type BorderRadiusArg = StandardBorderRadius | StandardBorderRadius[];

@@ -18,16 +18,14 @@ describe("RemoteSigningWebhookHandler (integration with wasm)", () => {
 
     const calls: Array<[Parameters<LightsparkClient["executeRawQuery"]>[0]]> =
       [];
-    const executeRawQuery: LightsparkClient["executeRawQuery"] = async (
-      query,
-    ) => {
+    const executeRawQuery: LightsparkClient["executeRawQuery"] = (query) => {
       calls.push([query]);
-      return null;
+      return Promise.resolve(null);
     };
     const client = { executeRawQuery } as unknown as LightsparkClient;
 
     const handler = new RemoteSigningWebhookHandler(client, seedBytes, {
-      should_sign: async () => true,
+      should_sign: () => true,
     });
 
     const res = await handler.handleWebhookRequest(
@@ -52,16 +50,14 @@ describe("RemoteSigningWebhookHandler (integration with wasm)", () => {
 
     const calls: Array<[Parameters<LightsparkClient["executeRawQuery"]>[0]]> =
       [];
-    const executeRawQuery: LightsparkClient["executeRawQuery"] = async (
-      query,
-    ) => {
+    const executeRawQuery: LightsparkClient["executeRawQuery"] = (query) => {
       calls.push([query]);
-      return null;
+      return Promise.resolve(null);
     };
     const client = { executeRawQuery } as unknown as LightsparkClient;
 
     const handler = new RemoteSigningWebhookHandler(client, seedBytes, {
-      should_sign: async () => true,
+      should_sign: () => true,
     });
 
     await handler.handleWebhookRequest(dataBytes, sig, webhookSecret);
@@ -83,16 +79,14 @@ describe("RemoteSigningWebhookHandler (integration with wasm)", () => {
 
     const calls: Array<[Parameters<LightsparkClient["executeRawQuery"]>[0]]> =
       [];
-    const executeRawQuery: LightsparkClient["executeRawQuery"] = async (
-      query,
-    ) => {
+    const executeRawQuery: LightsparkClient["executeRawQuery"] = (query) => {
       calls.push([query]);
-      return null;
+      return Promise.resolve(null);
     };
     const client = { executeRawQuery } as unknown as LightsparkClient;
 
     const handler = new RemoteSigningWebhookHandler(client, seedBytes, {
-      should_sign: async () => false,
+      should_sign: () => false,
     });
 
     await expect(
@@ -130,16 +124,14 @@ describe("RemoteSigningWebhookHandler (integration with wasm)", () => {
 
     const calls: Array<[Parameters<LightsparkClient["executeRawQuery"]>[0]]> =
       [];
-    const executeRawQuery: LightsparkClient["executeRawQuery"] = async (
-      query,
-    ) => {
+    const executeRawQuery: LightsparkClient["executeRawQuery"] = (query) => {
       calls.push([query]);
-      return null;
+      return Promise.resolve(null);
     };
     const client = { executeRawQuery } as unknown as LightsparkClient;
 
     const handler = new RemoteSigningWebhookHandler(client, seedBytes, {
-      should_sign: async () => false,
+      should_sign: () => false,
     });
 
     await handler.handleWebhookRequest(dataBytes, sig, webhookSecret);

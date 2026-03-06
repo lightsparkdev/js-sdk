@@ -44,7 +44,7 @@ export function NextLink({
         const nextLinkModule = await import("next/link.js");
         NextLinkRef.current =
           nextLinkModule.default as unknown as ComponentType<NextLinkProps>;
-      } catch (e) {
+      } catch {
         /* ignore, will fallback to default link */
       }
       setReady(true);

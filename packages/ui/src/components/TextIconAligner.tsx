@@ -11,11 +11,9 @@ import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
-const marginPx = [4, 6, 8, 10, 12] as const;
-type MarginPx = (typeof marginPx)[number];
+type MarginPx = 4 | 6 | 8 | 10 | 12;
 
-const width = [12, 14, 16] as const;
-export type TextIconAlignerIconWidth = (typeof width)[number];
+export type TextIconAlignerIconWidth = 12 | 14 | 16;
 
 type TextIconAlignerProps = {
   content?: ToReactNodesArgs | undefined;

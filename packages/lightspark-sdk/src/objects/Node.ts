@@ -80,8 +80,8 @@ interface Node {
 
   getAddresses(
     client: LightsparkClient,
-    first?: number | undefined,
-    types?: NodeAddressType[] | undefined,
+    first?: number,
+    types?: NodeAddressType[],
   ): Promise<NodeToAddressesConnection>;
 }
 

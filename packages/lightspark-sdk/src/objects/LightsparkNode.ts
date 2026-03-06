@@ -137,17 +137,17 @@ interface LightsparkNode {
 
   getAddresses(
     client: LightsparkClient,
-    first?: number | undefined,
-    types?: NodeAddressType[] | undefined,
+    first?: number,
+    types?: NodeAddressType[],
   ): Promise<NodeToAddressesConnection>;
 
   getChannels(
     client: LightsparkClient,
-    first?: number | undefined,
-    after?: string | undefined,
-    beforeDate?: string | undefined,
-    afterDate?: string | undefined,
-    statuses?: ChannelStatus[] | undefined,
+    first?: number,
+    after?: string,
+    beforeDate?: string,
+    afterDate?: string,
+    statuses?: ChannelStatus[],
   ): Promise<LightsparkNodeToChannelsConnection>;
 
   getDailyLiquidityForecasts(

@@ -144,7 +144,7 @@ export const DateFilter = ({
               if (option) {
                 updateStateWithCustomRange({
                   ...(customDateRangeData as IsInTheLastData),
-                  granularity: option.value as TimeGranularity,
+                  granularity: option.value,
                 });
               }
             }}

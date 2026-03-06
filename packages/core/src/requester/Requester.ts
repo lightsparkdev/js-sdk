@@ -268,7 +268,6 @@ class Requester {
     queryPayload: BodyData,
     headers: { [key: string]: string },
     signingNodeId: string | undefined,
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any -- LIG-3400 */
   ): Promise<Uint8Array> {
     if (!signingNodeId) {
       return new TextEncoder().encode(JSON.stringify(queryPayload));

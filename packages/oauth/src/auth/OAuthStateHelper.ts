@@ -199,7 +199,7 @@ class OAuthStateHelper {
         .catch((error) => {
           console.log(`Token request failed.`, error);
           this.pendingTokenRequest = undefined;
-          reject(error);
+          reject(error instanceof Error ? error : new Error(String(error)));
         });
     });
     return this.pendingTokenRequest;

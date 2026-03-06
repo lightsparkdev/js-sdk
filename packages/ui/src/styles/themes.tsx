@@ -124,7 +124,9 @@ type LightsparkSurfaces = {
 export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
-  export interface Theme extends LightsparkTheme {}
+  export interface Theme extends LightsparkTheme {
+    type: Themes;
+  }
 }
 
 const lightBaseTheme: BaseTheme = baseTheme;
@@ -1029,10 +1031,7 @@ export function isThemeOrColorKey(key: unknown): key is ThemeOrColorKey {
   );
 }
 
-export function getColor(
-  theme: LightsparkTheme,
-  key?: ThemeOrColorKey | undefined,
-) {
+export function getColor(theme: LightsparkTheme, key?: ThemeOrColorKey) {
   if (key && isThemeColorKey(key)) {
     return theme[key];
   } else if (key && Array.isArray(key)) {
@@ -1050,7 +1049,7 @@ export type FontColorKey = ThemeOrColorKey | "inherit";
 
 export function getFontColor(
   theme: LightsparkTheme,
-  key?: FontColorKey | undefined,
+  key?: FontColorKey,
   defaultColor: ThemeColorKey | "inherit" = "inherit",
 ) {
   if (key === "inherit" || (!key && defaultColor === "inherit")) {
@@ -1081,7 +1080,7 @@ export function isBackgroundColorKeyTuple(
 
 export function getBackgroundColor(
   theme: LightsparkTheme,
-  key?: BackgroundColorKeyArg | undefined,
+  key?: BackgroundColorKeyArg,
   defaultColor: BackgroundColorKeyArg = "transparent",
 ) {
   if (isBackgroundColorKeyTuple(key)) {

@@ -32,7 +32,7 @@
     "@lightsparkdev/tsconfig": "0.0.1",
     "@types/chalk": "^2.2.0",
     "@types/node": "^20.2.5",
-    "eslint": "^8.3.0",
+    "eslint": "^9.0.0",
     "eslint-watch": "^8.0.0",
     "nodemon": "^2.0.22",
     "prettier": "3.0.3",

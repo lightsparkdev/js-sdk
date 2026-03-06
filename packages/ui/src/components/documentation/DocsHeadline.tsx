@@ -25,7 +25,10 @@ export const getHeadlineText = (element: React.ReactNode): string => {
   }
 
   throw new Error(
-    "Could not find text in Headline element: " + element?.toString(),
+    "Could not find text in Headline element: " +
+      (typeof element === "object"
+        ? JSON.stringify(element)
+        : String(element as number | boolean)),
   );
 };
 
@@ -60,7 +63,10 @@ const getHeaderId = (element: React.ReactNode): string => {
   }
 
   throw new Error(
-    "Could not find text in Headline element: " + element?.toString(),
+    "Could not find text in Headline element: " +
+      (typeof element === "object"
+        ? JSON.stringify(element)
+        : String(element as number | boolean)),
   );
 };
 

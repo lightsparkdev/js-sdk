@@ -1265,7 +1265,7 @@ export function formatCurrencyStr(
         currency: currencyCode,
       });
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

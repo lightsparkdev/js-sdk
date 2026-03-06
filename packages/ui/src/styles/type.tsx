@@ -5,8 +5,7 @@ import { firstChild, pxToRems } from "../styles/utils.js";
 import { bp } from "./breakpoints.js";
 import { type WithTheme } from "./themes.js";
 
-const HeadingTypes = ["h1", "h2", "h3", "h4"] as const;
-type HeadingType = (typeof HeadingTypes)[number];
+type HeadingType = "h1" | "h2" | "h3" | "h4";
 
 const defaultHeadingSizes: {
   [K in HeadingType]: { size: number; sizeSm: number };
@@ -31,10 +30,8 @@ const defaultHeadingSizes: {
 
 /* The goal here is to constrain allowed spacings and avoid one-offs
    to ensure spacings are as consistent as possible throughout the UI. */
-const marginPx = [0, 8, 12, 16, 24, 32, 40] as const;
-type MarginPx = (typeof marginPx)[number];
-const marginKeys = ["mt", "mb", "mtSm", "mbSm"] as const;
-type MarginKey = (typeof marginKeys)[number];
+type MarginPx = 0 | 8 | 12 | 16 | 24 | 32 | 40;
+type MarginKey = "mt" | "mb" | "mtSm" | "mbSm";
 
 const defaultHeadingMargins: {
   [K in HeadingType]: { [K in MarginKey]: MarginPx };

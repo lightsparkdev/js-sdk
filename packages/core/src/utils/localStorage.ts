@@ -24,7 +24,7 @@ export function getLocalStorageBoolean(key: string) {
     else {
       return false;
     }
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -33,7 +33,7 @@ export function setLocalStorageBoolean(key: string, value: boolean) {
   /* localStorage is not available in all contexts, use try/catch: */
   try {
     localStorage.setItem(key, value ? "1" : "0");
-  } catch (e) {
+  } catch {
     // ignore
   }
 }
@@ -42,7 +42,7 @@ export const deleteLocalStorageItem = (key: string) => {
   /* localStorage is not available in all contexts, use try/catch: */
   try {
     localStorage.removeItem(key);
-  } catch (e) {
+  } catch {
     // ignore
   }
 };
