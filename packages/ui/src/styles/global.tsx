@@ -43,48 +43,59 @@ const getFontImport = (theme: Theme) => {
   return importStr;
 };
 
+const getFontsBase = () => {
+  try {
+    return `${(
+      import.meta as unknown as { env: Record<string, string> }
+    ).env.BASE_URL.replace(/\/$/, "")}/fonts`;
+  } catch {
+    return "/fonts";
+  }
+};
+
 const getFontFaces = (theme: Theme) => {
   let fontFacesStr = "";
   if (theme.typography.fontFamilies.main === "SuisseIntl") {
+    const fontsBase = getFontsBase();
     fontFacesStr += `
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Light.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Light.woff2") format("woff2");
         font-weight: 300;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Regular.woff2") format("woff2");
         font-weight: 400;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Book.woff2") format("woff2");
         font-weight: 450;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Medium.woff2") format("woff2");
         font-weight: 500;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Semibold.woff2") format("woff2");
         font-weight: 600;
         font-style: normal;
         font-display: swap;
       }
       @font-face {
         font-family: "SuisseIntl";
-        src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntl-Bold.woff2") format("woff2");
         font-weight: 700;
         font-style: normal;
         font-display: swap;
@@ -92,10 +103,11 @@ const getFontFaces = (theme: Theme) => {
     `;
   }
   if (theme.typography.fontFamilies.code === "SuisseIntl-Mono") {
+    const fontsBase = getFontsBase();
     fontFacesStr += `
       @font-face {
         font-family: "SuisseIntl-Mono";
-        src: url("/fonts/SuisseIntlMono-Regular.woff2") format("woff2");
+        src: url("${fontsBase}/SuisseIntlMono-Regular.woff2") format("woff2");
         font-weight: 400;
         font-style: normal;
         font-display: swap;

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "noEmit": true,
     "target": "ES2022",
@@ -6,12 +7,10 @@
     "allowJs": true,
     "declaration": true,
     "sourceMap": true,
-    "outDir": "dist",
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noImplicitReturns": true,
-    "baseUrl": "./src",
     "moduleResolution": "node16",
     "types": ["node", "jest"],
     "resolveJsonModule": true,
@@ -21,7 +20,5 @@
     "forceConsistentCasingInFileNames": true,
     "exactOptionalPropertyTypes": true,
     "noFallthroughCasesInSwitch": true
-  },
-  "include": ["src"],
-  "exclude": ["**/tests", "node_modules", "dist"]
+  }
 }

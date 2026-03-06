@@ -267,9 +267,9 @@ const address = await client.createNodeWalletAddress(node1Id);
 console.log(`Got a bitcoin address for ${node1Name}: ${address}`);
 console.log("");
 
-// const withdrawal = await client.requestWithdrawal(node2Id, 1000000, address, WithdrawalMode.WALLET_THEN_CHANNELS);
-// console.log(`Money was withdrawn with ID = ${withdrawal.id}`);
-// console.log("");
+// const withdrawal = await client.requestWithdrawal(node2Id, 1000000, address,
+// WithdrawalMode.WALLET_THEN_CHANNELS); console.log(`Money was withdrawn with ID =
+// ${withdrawal.id}`); console.log("");
 
 // Fetch the channels for Node 1
 const node1 = await client.executeRawQuery(getLightsparkNodeQuery(node1Id));

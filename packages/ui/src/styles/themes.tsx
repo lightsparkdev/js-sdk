@@ -124,7 +124,9 @@ type LightsparkSurfaces = {
 export type LightsparkTheme = BaseTheme & LightsparkSurfaces;
 
 declare module "@emotion/react" {
-  export interface Theme extends LightsparkTheme {}
+  export interface Theme extends LightsparkTheme {
+    type: Themes;
+  }
 }
 
 const lightBaseTheme: BaseTheme = baseTheme;
@@ -735,15 +737,17 @@ const bridgeDarkTheme = extend(darkTheme, {
   type: Themes.BridgeDark,
 });
 
+const nageTypography = getTypography(TypographyGroup.Nage, {
+  main: "SuisseIntl",
+  code: "SuisseIntl-Mono",
+});
+
 const nageBaseSettings = {
   secondary: colors["gray-500"],
   tertiary: colors.gray6,
   mcNeutral: colors.grayBlue43,
   success: colors.green37,
-  typography: getTypography(TypographyGroup.Nage, {
-    main: "SuisseIntl",
-    code: "SuisseIntl-Mono",
-  }),
+  typography: nageTypography,
   controls: extendBase(lightBaseTheme, {
     border: colors["black-10"],
   }),
@@ -863,11 +867,23 @@ const nageLightTheme = extend(lightTheme, {
   tertiary: colors.gray6,
   inputBackground: colors["gray-050"],
   danger: colors.red50,
+  content: extendBase(lightBaseTheme, {
+    bg: colors.white,
+    smBg: colors.white,
+    typography: nageTypography,
+    buttons: nageBaseSettings.buttons,
+    loading: nageBaseSettings.loading,
+  }),
 });
 
 const nageDarkTheme = extend(darkTheme, {
   ...nageBaseSettings,
   type: Themes.NageDark,
+  content: extendBase(darkBaseTheme, {
+    typography: nageTypography,
+    buttons: nageBaseSettings.buttons,
+    loading: nageBaseSettings.loading,
+  }),
 });
 
 const hardcoreButtons = merge<typeof buttonsThemeBase>(buttonsThemeBase, {
@@ -920,7 +936,7 @@ const hardcoreButtons = merge<typeof buttonsThemeBase>(buttonsThemeBase, {
 });
 
 const hardcoreBaseTheme: BaseTheme = {
-  ...darkBaseTheme,
+  ...nageDarkTheme,
   type: Themes.Hardcore,
   bg: colors.black,
   smBg: colors.black,
@@ -1015,10 +1031,7 @@ export function isThemeOrColorKey(key: unknown): key is ThemeOrColorKey {
   );
 }
 
-export function getColor(
-  theme: LightsparkTheme,
-  key?: ThemeOrColorKey | undefined,
-) {
+export function getColor(theme: LightsparkTheme, key?: ThemeOrColorKey) {
   if (key && isThemeColorKey(key)) {
     return theme[key];
   } else if (key && Array.isArray(key)) {
@@ -1036,7 +1049,7 @@ export type FontColorKey = ThemeOrColorKey | "inherit";
 
 export function getFontColor(
   theme: LightsparkTheme,
-  key?: FontColorKey | undefined,
+  key?: FontColorKey,
   defaultColor: ThemeColorKey | "inherit" = "inherit",
 ) {
   if (key === "inherit" || (!key && defaultColor === "inherit")) {
@@ -1067,7 +1080,7 @@ export function isBackgroundColorKeyTuple(
 
 export function getBackgroundColor(
   theme: LightsparkTheme,
-  key?: BackgroundColorKeyArg | undefined,
+  key?: BackgroundColorKeyArg,
   defaultColor: BackgroundColorKeyArg = "transparent",
 ) {
   if (isBackgroundColorKeyTuple(key)) {

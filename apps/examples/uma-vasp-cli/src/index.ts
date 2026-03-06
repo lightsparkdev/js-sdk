@@ -91,7 +91,7 @@ const sendPayment = async (options: OptionValues) => {
     validate: (value) => {
       try {
         return !Number.isNaN(parseFloat(value));
-      } catch (e) {
+      } catch {
         return false;
       }
     },

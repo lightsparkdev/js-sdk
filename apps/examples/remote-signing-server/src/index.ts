@@ -61,7 +61,7 @@ app.post("/lightspark-webhook", (req, res) => {
 
       try {
         credentials = getCredentialsFromEnvOrThrow();
-      } catch (e) {
+      } catch {
         res.status(500).send("Unable to get credentials from env");
         return;
       }
@@ -88,7 +88,7 @@ app.post("/lightspark-webhook", (req, res) => {
       }
 
       res.send("OK");
-    } catch (e) {
+    } catch {
       res.status(500).send("Internal server error");
     }
   })().catch((e) => {

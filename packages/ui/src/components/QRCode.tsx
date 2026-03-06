@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { type ComponentProps, Fragment } from "react";
 import LogoMark from "../static/images/LogoMark.svg?url";
 import UmaLogo from "../static/images/UmaLogoQRCode.svg?url";
-// eslint-disable-next-line no-restricted-imports
+
 import { round } from "@lightsparkdev/core";
 import { QRCodeSVG } from "qrcode.react";
 import { colors } from "../styles/colors.js";

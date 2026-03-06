@@ -40,7 +40,7 @@ export function useClipboard(clipboardArgs: UseClipboardArgs) {
             onWrite();
           }
         }
-      } catch (error) {
+      } catch {
         if (onWriteError) {
           onWriteError();
         }
@@ -54,7 +54,7 @@ export function useClipboard(clipboardArgs: UseClipboardArgs) {
     try {
       const text = await navigator.clipboard.readText();
       return text;
-    } catch (error) {
+    } catch {
       if (onReadError) {
         onReadError();
       }

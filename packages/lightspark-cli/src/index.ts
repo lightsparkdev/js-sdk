@@ -83,7 +83,7 @@ const initEnv = async (options: OptionValues) => {
       await fs.copyFile(filePath, backupFilePath);
       console.log("Created backup env file at " + backupFilePath);
     }
-  } catch (e) {
+  } catch {
     // Do nothing
   }
 
@@ -107,7 +107,7 @@ const initEnv = async (options: OptionValues) => {
 
       console.log(`API token is for bitcoin network ${bitcoinNetwork}`);
       tokenBitcoinNetwork = bitcoinNetwork;
-    } catch (e) {
+    } catch {
       // Do nothing
     }
   }

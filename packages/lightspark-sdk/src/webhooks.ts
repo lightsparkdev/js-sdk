@@ -112,14 +112,14 @@ export class RemoteSigningWebhookHandler {
     };
     try {
       jsonVariablesString = JSON.parse(response.variables);
-    } catch (e) {
+    } catch {
       throw new LightsparkSigningException(
         "Unable to get JSON variables string from response",
       );
     }
     try {
       variables = JSON.parse(jsonVariablesString);
-    } catch (e) {
+    } catch {
       throw new LightsparkSigningException(
         "Unable to parse JSON variables from response",
       );

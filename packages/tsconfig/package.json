@@ -1,9 +1,30 @@
 {
   "name": "@lightsparkdev/tsconfig",
   "version": "0.0.1",
-  "private": true,
+  "description": "Shared TypeScript configurations for Lightspark projects",
+  "license": "Apache-2.0",
+  "files": [
+    "base.json",
+    "react-app.json",
+    "react-package.json",
+    "ts-node-app.json"
+  ],
+  "exports": {
+    "./base.json": "./base.json",
+    "./react-app.json": "./react-app.json",
+    "./react-package.json": "./react-package.json",
+    "./ts-node-app.json": "./ts-node-app.json"
+  },
   "devDependencies": {
-    "@types/node": "^20.2.5"
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@types/node": "^20.2.5",
+    "publint": "^0.3.9"
+  },
+  "scripts": {
+    "package:checks": "yarn publint && yarn attw --pack ."
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=18"

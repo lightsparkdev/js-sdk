@@ -62,9 +62,11 @@ class OAuthTokenRequestHandler extends BaseTokenRequestHandler {
       if (this.isValidTokenResponse(response)) {
         return new TokenResponse(response);
       } else {
-        return Promise.reject<TokenResponse>(
-          new AppAuthError(response.error, new TokenError(response)),
+        const appAuthError = new AppAuthError(
+          response.error,
+          new TokenError(response),
         );
+        return Promise.reject<TokenResponse>(new Error(appAuthError.message));
       }
     });
   }

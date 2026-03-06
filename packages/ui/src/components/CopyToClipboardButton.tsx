@@ -38,7 +38,7 @@ const CopyToClipboardButton = (props: Props) => {
             try {
               await navigator.clipboard.writeText(props.value);
               setTooltipContent("Copied!");
-            } catch (err) {
+            } catch {
               setTooltipContent("Unable to copy");
             }
             setTimeout(() => {

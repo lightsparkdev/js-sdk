@@ -15,7 +15,7 @@ type ResizeProperties = {
 /* Returns an updated contentRect object with the selected properties when they change.
    Only select the properties you need to avoid running a function on every change to the rect. */
 export function useResizeObserver<K extends keyof ResizeProperties>(
-  resizeProperties?: K[] | null | undefined,
+  resizeProperties?: K[] | null,
 ) {
   type RectType = { [P in K]: ResizeProperties[P] } | null;
   const resizeObserver = useRef<ResizeObserver | null>(null);

@@ -1207,9 +1207,22 @@ export function formatCurrencyStr(
       CurrencyUnit.NGN,
       CurrencyUnit.ZAR,
       CurrencyUnit.KES,
-      CurrencyUnit.TZS,
-      CurrencyUnit.UGX,
       CurrencyUnit.BWP,
+      /* Yellowcard 2-decimal African currencies (stored in smallest units): */
+      CurrencyUnit.MWK,
+      CurrencyUnit.ZMW,
+      /* Tazapay currencies: Tazapay standardizes all fiat to 2 decimal places,
+       * so CurrencyAmount values from Tazapay are stored in smallest units (1/100 of base unit)
+       * even for currencies with no real sub-units (e.g. IDR, VND): */
+      CurrencyUnit.IDR,
+      CurrencyUnit.VND,
+      CurrencyUnit.THB,
+      CurrencyUnit.MYR,
+      CurrencyUnit.CAD,
+      CurrencyUnit.DKK,
+      CurrencyUnit.AED,
+      CurrencyUnit.HKD,
+      CurrencyUnit.SGD,
     ] as string[];
     /* centCurrencies are always provided in the smallest unit, e.g. cents for USD. These should be
      * divided by 100 for proper display format: */
@@ -1252,7 +1265,7 @@ export function formatCurrencyStr(
         currency: currencyCode,
       });
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

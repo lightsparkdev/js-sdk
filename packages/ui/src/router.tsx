@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-/* eslint-disable no-restricted-imports */
+
 import type { Theme } from "@emotion/react";
 import type { Interpolation } from "@emotion/styled";
 import styled from "@emotion/styled";
@@ -20,7 +20,6 @@ import { type SimpleTypographyProps } from "./components/typography/types.js";
 import { colors } from "./styles/colors.js";
 import { type NewRoutesType } from "./types/index.js";
 import { isString } from "./utils/strings.js";
-/* eslint-enable no-restricted-imports */
 
 export type QueryParams =
   | {
