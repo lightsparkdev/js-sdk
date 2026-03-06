@@ -283,6 +283,9 @@ jobs:
           repositories: |
             js-sdk
             webdev
+          permissions: |
+            contents: write
+            workflows: write
 
       - name: "Run Copybara"
         env:
@@ -314,7 +317,7 @@ jobs:
 
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
-          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev
+          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev --nogit-destination-rebase
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
