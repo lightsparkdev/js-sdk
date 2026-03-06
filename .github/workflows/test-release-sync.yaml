@@ -275,12 +275,14 @@ jobs:
 
       - name: Generate a token
         id: generate_token
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ secrets.LIGHTSPARK_COPYBARA_APP_ID }}
           private-key: ${{ secrets.LIGHTSPARK_COPYBARA_PRIVATE_KEY }}
           owner: lightsparkdev
-          repositories: webdev
+          repositories: |
+            js-sdk
+            webdev
 
       - name: "Run Copybara"
         env:
