@@ -283,6 +283,9 @@ jobs:
           repositories: |
             js-sdk
             webdev
+          permissions: |
+            contents: write
+            workflows: write
 
       - name: "Run Copybara"
         env:
