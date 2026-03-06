@@ -1,3 +1,3 @@
-import reactLib from "@lightsparkdev/eslint-config/flat/react-lib.mjs";
+import reactLib from "@lightsparkdev/eslint-config/react-lib";
 
 export default [...reactLib];

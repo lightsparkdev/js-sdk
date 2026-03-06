@@ -65,16 +65,16 @@ export default [
       globals: { ...globals.node },
     },
   },
-  // Rule customizations mirroring legacy base
+  // Rule customizations
   {
     plugins: {
       "comment-length": commentLength,
     },
     rules: {
-      // TypeScript equivalents and toggles
-      "default-case": "off",
-      "no-dupe-class-members": "off",
+      // tseslint only turns these off for .ts/.tsx files; disable globally
+      // so JS/CJS files don't get false positives from eslint:recommended
       "no-undef": "off",
+      "no-dupe-class-members": "off",
 
       "@typescript-eslint/consistent-type-imports": [
         "error",
@@ -84,12 +84,10 @@ export default [
         "error",
         { assertionStyle: "as" },
       ],
-      "no-use-before-define": "off",
       "@typescript-eslint/no-use-before-define": [
         "error",
         { functions: false, classes: false, variables: false, typedefs: false },
       ],
-      "no-unused-expressions": "off",
       "@typescript-eslint/no-unused-expressions": [
         "error",
         {
@@ -98,12 +96,10 @@ export default [
           allowTaggedTemplates: true,
         },
       ],
-      "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         { args: "none", ignoreRestSiblings: true },
       ],
-      "no-array-constructor": "off",
       "@typescript-eslint/no-array-constructor": "warn",
       // Temporary workaround for plugin crash under ESLint 9 + TS 5.6
       "@typescript-eslint/no-duplicate-enum-values": "off",
@@ -112,8 +108,6 @@ export default [
         "error",
         { allowInterfaces: "with-single-extends" },
       ],
-
-      // Other overrides
       "no-extra-boolean-cast": "off",
       "comment-length/limit-single-line-comments": ["error", commentOptions],
       "comment-length/limit-multi-line-comments": [

@@ -1,4 +1,4 @@
-import base from '@lightsparkdev/eslint-config/flat/base.mjs';
+import base from '@lightsparkdev/eslint-config/base';
 
 export default [
   ...base,

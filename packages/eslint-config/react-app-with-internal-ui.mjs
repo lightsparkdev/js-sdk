@@ -2,7 +2,7 @@ import { createRequire } from 'node:module';
 import reactApp from './react-app.mjs';
 
 const require = createRequire(import.meta.url);
-const { reactAppRestrictedImports } = require('../constants/react-restricted-imports.js');
+const { reactAppRestrictedImports } = require('./constants/react-restricted-imports.js');
 
 const appWithInternalUiRestricted = {
   ...reactAppRestrictedImports,
