@@ -46,9 +46,8 @@ yarn workspace @lightsparkdev/ui test
 - Shared configs: `@lightsparkdev/{tsconfig,eslint-config}`
 
 ### Enums
-Always use generated TypeScript enums from `src/generated/graphql` rather than raw strings. This ensures type safety and keeps code in sync with the schema.
-
-For unselected state, use `null` (not empty strings or union types like `Type | ""`). Example: `useState<CountryCode | null>(null)`.
+Prefer generated TypeScript enums from `src/generated/graphql` rather than raw strings when
+available. This ensures type safety and keeps code in sync with the schema.
 
 ### GraphQL
 After Python schema changes:
