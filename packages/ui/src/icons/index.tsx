@@ -73,6 +73,7 @@ export { Globe } from "./Globe.js";
 export { Globus } from "./Globus.js";
 export { GoTwoTone } from "./GoTwoTone.js";
 export { GraphQLTwoTone } from "./GraphQLTwoTone.js";
+export { GridLogo } from "./GridLogo.js";
 export { HeartOutline } from "./HeartOutline.js";
 export { Home } from "./Home.js";
 export { Info } from "./Info.js";
