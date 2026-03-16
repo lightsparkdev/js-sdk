@@ -96,6 +96,10 @@ module.exports.buildConfig = ({
           target: proxyTarget,
           changeOrigin: true,
         },
+        "/grid-dashboard-api": {
+          target: proxyTarget,
+          changeOrigin: true,
+        },
         "/graphql/paycore-internal": {
           target:
             proxyTarget === "http://127.0.0.1:5000"
