@@ -1,0 +1,15 @@
+{
+  "name": "base-ui-lint",
+  "version": "1.0.0",
+  "description": "Figma plugin to lint component structures against Base UI anatomy",
+  "scripts": {
+    "build": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017",
+    "watch": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --watch"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.98.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}
+

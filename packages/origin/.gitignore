@@ -1,0 +1,25 @@
+# Override monorepo's blanket lib/ ignore — origin's src/lib/ is source code
+!src/lib/
+
+# Next.js (dev server)
+.next/
+out/
+next-env.d.ts
+
+# Build output
+dist/
+storybook-static/
+
+# Playwright
+playwright-report/
+test-results/
+playwright/.cache/
+.playwright-mcp/
+
+# TypeScript
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local

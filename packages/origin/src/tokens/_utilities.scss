@@ -1,0 +1,6 @@
+@use "mixins" as *;
+
+// Accessibility
+.visually-hidden {
+  @include visually-hidden;
+}

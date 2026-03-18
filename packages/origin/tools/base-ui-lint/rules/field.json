@@ -1,0 +1,37 @@
+{
+  "component": "Field",
+  "matches": [
+    "Field",
+    "FormField",
+    "Input Field",
+    "TextField"
+  ],
+  "parts": {
+    "Label": {
+      "required": true,
+      "parent": null,
+      "aliases": ["FieldLabel", "InputLabel"]
+    },
+    "Control": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Input", "FieldControl", "TextInput"]
+    },
+    "Description": {
+      "required": false,
+      "parent": null,
+      "aliases": ["HelperText", "FieldDescription", "Hint"]
+    },
+    "Error": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ErrorMessage", "FieldError", "ValidationMessage"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Required",
+    "Asterisk"
+  ]
+}
+

@@ -1,0 +1,26 @@
+{
+  "component": "Progress",
+  "matches": [
+    "Progress",
+    "ProgressBar",
+    "Progress Bar"
+  ],
+  "parts": {
+    "Track": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ProgressTrack", "Background", "Rail"]
+    },
+    "Indicator": {
+      "required": true,
+      "parent": "Track",
+      "aliases": ["ProgressIndicator", "Fill", "Bar", "Value"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Percentage",
+    "Text"
+  ]
+}
+

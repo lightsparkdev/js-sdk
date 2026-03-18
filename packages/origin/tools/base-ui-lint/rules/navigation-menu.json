@@ -1,0 +1,52 @@
+{
+  "component": "NavigationMenu",
+  "matches": [
+    "Navigation Menu",
+    "NavigationMenu",
+    "Nav Menu",
+    "NavMenu"
+  ],
+  "parts": {
+    "List": {
+      "required": true,
+      "parent": null,
+      "aliases": ["NavigationMenuList", "NavList", "Items"]
+    },
+    "Item": {
+      "required": true,
+      "parent": "List",
+      "aliases": ["NavigationMenuItem", "NavItem"]
+    },
+    "Trigger": {
+      "required": false,
+      "parent": "Item",
+      "aliases": ["NavigationMenuTrigger"]
+    },
+    "Content": {
+      "required": false,
+      "parent": "Item",
+      "aliases": ["NavigationMenuContent", "Panel", "Dropdown"]
+    },
+    "Link": {
+      "required": false,
+      "parent": "Item",
+      "aliases": ["NavigationMenuLink", "NavLink"]
+    },
+    "Viewport": {
+      "required": false,
+      "parent": null,
+      "aliases": ["NavigationMenuViewport"]
+    },
+    "Indicator": {
+      "required": false,
+      "parent": null,
+      "aliases": ["NavigationMenuIndicator", "ActiveIndicator"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Arrow",
+    "Chevron"
+  ]
+}
+

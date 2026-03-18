@@ -1,0 +1,93 @@
+/// Apply the "label" text style
+@mixin text-label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-book);
+  line-height: var(--font-leading-20);
+  letter-spacing: var(--font-tracking-normal);
+}
+
+/// Reset button styles for custom buttons
+@mixin button-reset {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+/// Visually hidden but accessible to screen readers
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/// Corner smoothing (continuous corners)
+/// @param {String} $radius - The border-radius value
+/// @param {String} $level ['default'] - Smoothing level (reserved for future use):
+///   'default' = squircle (~60% Figma smoothing, iOS-style)
+///   'full'    = superellipse(3) (~100% Figma smoothing)
+///
+/// Currently outputs border-radius only. When corner-shape reaches ~90%
+/// browser support (Safari is actively implementing), uncomment the
+/// @supports block below to enable native continuous corners.
+@mixin smooth-corners($radius, $level: "default") {
+  border-radius: $radius;
+
+  // @supports (corner-shape: squircle) {
+  //   @if $level == 'full' {
+  //     corner-shape: superellipse(3);
+  //   } @else {
+  //     corner-shape: squircle;
+  //   }
+  // }
+}
+
+/// Surface with hover overlay (preserves base color)
+/// Works with both data-disabled attribute and native :disabled
+/// @param {String} $base - The base background color
+@mixin surface-with-hover($base) {
+  background-color: $base;
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]):not(:disabled) {
+      background: linear-gradient(var(--surface-hover), var(--surface-hover)),
+        $base;
+    }
+  }
+}
+
+// ============================================================================
+// Input Focus/State Mixins
+// Use these for consistent input styling across all form components
+// ============================================================================
+
+/// Input focus state - secondary border + subtle shadow
+/// @example
+///   .input:focus-within { @include input-focus; }
+@mixin input-focus {
+  border-color: var(--border-secondary);
+  box-shadow: var(--input-focus);
+}
+
+/// Input critical/error state - red border + pink shadow
+/// @example
+///   .input[data-invalid] { @include input-critical; }
+@mixin input-critical {
+  border-color: var(--border-critical);
+  box-shadow: var(--input-focus-critical);
+}

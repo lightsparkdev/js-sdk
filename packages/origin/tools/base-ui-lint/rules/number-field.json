@@ -1,0 +1,38 @@
+{
+  "component": "NumberField",
+  "matches": [
+    "NumberField",
+    "Number Field",
+    "NumberInput",
+    "Number Input",
+    "Stepper"
+  ],
+  "parts": {
+    "Input": {
+      "required": true,
+      "parent": null,
+      "aliases": ["NumberFieldInput", "Field", "Value"]
+    },
+    "Increment": {
+      "required": false,
+      "parent": null,
+      "aliases": ["IncrementButton", "StepUp", "Plus", "Add"]
+    },
+    "Decrement": {
+      "required": false,
+      "parent": null,
+      "aliases": ["DecrementButton", "StepDown", "Minus", "Subtract"]
+    },
+    "Group": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ButtonGroup", "Steppers", "Controls"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Icon",
+    "Description"
+  ]
+}
+

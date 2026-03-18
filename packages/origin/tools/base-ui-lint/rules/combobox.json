@@ -1,0 +1,55 @@
+{
+  "component": "Combobox",
+  "matches": [
+    "Combobox"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ComboboxTrigger", "Input"]
+    },
+    "Portal": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ComboboxPortal"]
+    },
+    "Positioner": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ComboboxPositioner"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ComboboxPopup", "Listbox", "Dropdown", "Options"]
+    },
+    "Option": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["ComboboxOption", "Item", "ListItem"]
+    },
+    "OptionIndicator": {
+      "required": false,
+      "parent": "Option",
+      "aliases": ["ComboboxOptionIndicator", "Check", "Checkmark"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ComboboxGroupLabel", "Group", "Category"]
+    },
+    "Arrow": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ComboboxArrow", "Chevron", "Caret"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Placeholder",
+    "Label",
+    "Description"
+  ]
+}
+

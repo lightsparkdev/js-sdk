@@ -1,0 +1,35 @@
+{
+  "component": "Toast",
+  "matches": [
+    "Toast",
+    "Notification",
+    "Snackbar"
+  ],
+  "parts": {
+    "Title": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToastTitle", "Header", "Heading"]
+    },
+    "Description": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ToastDescription", "Message", "Body", "Content"]
+    },
+    "Action": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToastAction", "Button", "CTA"]
+    },
+    "Close": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToastClose", "Dismiss", "CloseButton"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Avatar"
+  ]
+}
+

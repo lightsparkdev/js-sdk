@@ -1,0 +1,21 @@
+{
+  "component": "Fieldset",
+  "matches": [
+    "Fieldset",
+    "FieldSet",
+    "Field Set"
+  ],
+  "parts": {
+    "Legend": {
+      "required": false,
+      "parent": null,
+      "aliases": ["FieldsetLegend", "Title", "Label", "Heading"]
+    }
+  },
+  "ignored": [
+    "Description",
+    "Fields",
+    "Content"
+  ]
+}
+

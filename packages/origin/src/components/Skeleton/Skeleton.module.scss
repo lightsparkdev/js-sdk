@@ -1,0 +1,65 @@
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  50% {
+    background-position: 0% 0;
+  }
+
+  50.01%,
+  100% {
+    background-position: 100% 0;
+  }
+}
+
+%shimmer-fill {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--surface-alpha-secondary) 0%,
+    var(--surface-alpha-secondary) 35%,
+    var(--surface-alpha-primary) 50%,
+    var(--surface-alpha-secondary) 65%,
+    var(--surface-alpha-secondary) 100%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  animation: skeleton-shimmer 2s ease-in-out infinite;
+}
+
+.group {
+  position: relative;
+}
+
+.standalone {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--corner-radius-sm);
+
+  &::before {
+    @extend %shimmer-fill;
+  }
+}
+
+.grouped {
+  border-radius: var(--corner-radius-sm);
+  -webkit-mask: linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0);
+
+  &::before {
+    @extend %shimmer-fill;
+
+    z-index: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standalone::before,
+  .grouped::before {
+    animation: none;
+    background: var(--surface-alpha-secondary);
+  }
+}

@@ -1,0 +1,111 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  align-items: flex-start;
+}
+
+.list {
+  position: relative;
+  display: flex;
+  gap: var(--spacing-2xs);
+  align-items: flex-start;
+  overflow: clip;
+  @include smooth-corners(var(--corner-radius-sm));
+}
+
+.list.default {
+  padding: var(--spacing-3xs);
+  // TODO: [A11y] text/secondary on surface/sunken = 3.7:1 contrast (needs 4.5:1)
+  // Flag for token audit - consider darker text or lighter surface
+  background: var(--surface-secondary);
+}
+
+.list.minimal {
+  padding: var(--spacing-4xs);
+}
+
+// Animated indicator (pill background for selected tab)
+// Base UI provides --active-tab-* CSS variables that update on tab change
+.indicator {
+  position: absolute;
+  top: var(--active-tab-top);
+  left: var(--active-tab-left);
+  width: var(--active-tab-width);
+  height: var(--active-tab-height);
+  background: var(--surface-panel);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-xs));
+  box-shadow: var(--shadow-sm);
+  transition: top, left, width, height;
+  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.tab {
+  position: relative;
+  z-index: 1; // Above indicator
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 var(--spacing-md);
+  border: var(--stroke-xs) solid transparent;
+  @include smooth-corners(var(--corner-radius-xs));
+  background: transparent;
+  cursor: pointer;
+  @include label;
+  color: var(--text-secondary);
+  text-align: center;
+
+  // Focused state (keyboard navigation)
+  &:focus-visible {
+    background: var(--surface-panel);
+    border-color: var(--border-secondary);
+    outline: none;
+    box-shadow: var(--input-focus);
+    color: var(--text-primary);
+  }
+
+  // Selected/Active state - text color only (indicator provides background)
+  &[data-active] {
+    color: var(--text-primary);
+  }
+
+  // Disabled state
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+@media (hover: hover) {
+  // Hover state (unselected) - text color change only
+  .tab:hover:not([aria-disabled="true"]):not([data-active]) {
+    color: var(--text-primary);
+  }
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--spacing-4xl) 0;
+  overflow: clip;
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+
+  &[data-hidden] {
+    display: none;
+  }
+}

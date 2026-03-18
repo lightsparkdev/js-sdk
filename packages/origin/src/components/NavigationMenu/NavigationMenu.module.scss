@@ -1,0 +1,467 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  min-width: max-content;
+}
+
+.list {
+  display: flex;
+  gap: var(--spacing-3xs);
+  position: relative;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  list-style: none;
+}
+
+// Nav Item - Link variant
+.link {
+  @include label;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding-inline: var(--spacing-sm);
+  @include smooth-corners(var(--corner-radius-sm));
+  color: var(--text-primary);
+  text-decoration: none;
+  user-select: none;
+  outline: none;
+  border: var(--stroke-xs) solid transparent;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    background-color: var(--surface-secondary);
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    outline: none;
+  }
+
+  // Active state indicates current page - no background by default
+  &[data-active] {
+    // Visual indicator handled by hover state
+  }
+
+  // Active + Hover state
+  &[data-active]:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Nav Item - Action variant (text button for actions)
+.action {
+  @include label;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding-inline: var(--spacing-sm);
+  border: var(--stroke-xs) solid transparent;
+  @include smooth-corners(var(--corner-radius-sm));
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    background-color: var(--surface-secondary);
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    outline: none;
+  }
+
+  // Active state - no background by default
+  &[data-active] {
+    // Visual indicator handled by hover state
+  }
+
+  // Active + Hover state
+  &[data-active]:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Nav Item - Action Icon variant (icon-only button)
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--stroke-xs) solid transparent;
+  @include smooth-corners(var(--corner-radius-sm));
+  background-color: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    background-color: var(--surface-secondary);
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    outline: none;
+  }
+
+  // Active state - no background by default
+  &[data-active] {
+    // Visual indicator handled by hover state
+  }
+
+  // Active + Hover state
+  &[data-active]:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Nav Item - Button/Trigger variant
+.trigger {
+  @include label;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-none);
+  height: 36px;
+  padding-inline: var(--spacing-2xs);
+  border: var(--stroke-xs) solid transparent;
+  @include smooth-corners(var(--corner-radius-sm));
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 150ms ease;
+
+  // Optical balance when icon is present
+  // Figma uses a label wrapper with 2px padding, we simplify with asymmetric padding + gap
+  &:has(.icon) {
+    padding-inline-start: var(--spacing-xs); // 8px (6px outer + 2px optical)
+    padding-inline-end: var(--spacing-2xs); // 6px
+    gap: var(--spacing-4xs); // 2px between label and icon
+  }
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    background-color: var(--surface-secondary);
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    outline: none;
+  }
+
+  // Open state - no background by default, icon rotation handled in .icon
+  &[data-popup-open] {
+    // Background only on highlighted state
+  }
+
+  // Open + Highlighted state (hover while open)
+  &[data-popup-open]:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:disabled {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Chevron icon in trigger
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--icon-secondary);
+  transition: transform 200ms ease;
+
+  &[data-popup-open] {
+    transform: rotate(180deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.positioner {
+  // Timing variables used by Base UI for coordinated transitions
+  --easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration: 0.35s;
+
+  box-sizing: border-box;
+  outline: 0;
+
+  // Critical: These CSS variables are set by Base UI and enable smooth repositioning
+  width: var(--positioner-width);
+  height: var(--positioner-height);
+  max-width: var(--available-width);
+
+  // Smooth transition when moving between triggers
+  transition-property: top, left, right, bottom;
+  transition-duration: var(--duration);
+  transition-timing-function: var(--easing);
+
+  // Disable transitions when Base UI sets data-instant
+  &[data-instant] {
+    transition: none;
+  }
+
+  // Safe hover area to prevent menu closing when moving from trigger to popup
+  &::before {
+    content: "";
+    position: absolute;
+  }
+
+  &[data-side="top"]::before {
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 10px;
+  }
+
+  &[data-side="bottom"]::before {
+    left: 0;
+    right: 0;
+    top: -10px;
+    height: 10px;
+  }
+
+  &[data-side="left"]::before {
+    top: 0;
+    bottom: 0;
+    right: -10px;
+    width: 10px;
+  }
+
+  &[data-side="right"]::before {
+    top: 0;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Popup surface
+.popup {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-lg);
+  outline: 0;
+  overflow: hidden;
+  min-width: 200px;
+  transform-origin: var(--transform-origin);
+
+  // Critical: These CSS variables are set by Base UI for dynamic sizing
+  width: var(--popup-width);
+  height: var(--popup-height);
+
+  transition-property: opacity, transform, width, height;
+  transition-duration: var(--duration);
+  transition-timing-function: var(--easing);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  &[data-ending-style] {
+    transition-timing-function: ease;
+    transition-duration: 0.15s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+// Content inside popup
+.content {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+  padding: var(--spacing-3xs);
+  width: 100%;
+  height: 100%;
+  transition:
+    opacity calc(var(--duration) * 0.5) ease,
+    transform var(--duration) var(--easing);
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+
+  // Slide animation when switching between menu items
+  &[data-starting-style] {
+    &[data-activation-direction="left"] {
+      transform: translateX(-50%);
+    }
+    &[data-activation-direction="right"] {
+      transform: translateX(50%);
+    }
+  }
+
+  &[data-ending-style] {
+    &[data-activation-direction="left"] {
+      transform: translateX(50%);
+    }
+    &[data-activation-direction="right"] {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.arrow {
+  display: flex;
+  fill: var(--surface-primary);
+  stroke: var(--border-primary);
+  stroke-width: var(--stroke-xs);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+// Popup Item
+.popupItem {
+  @include body;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding: var(--spacing-xs);
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &:hover,
+  &[data-highlighted] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.popupItemTrailing {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  color: var(--icon-secondary);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupLabel {
+  @include label-xs;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding-block-start: var(--spacing-xs);
+  padding-block-end: 0;
+  padding-inline: var(--spacing-sm);
+  color: var(--text-secondary);
+}
+
+.separator {
+  position: relative;
+  height: var(--spacing-3xs);
+  margin-inline: calc(-1 * var(--spacing-3xs));
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 50%;
+    left: 0;
+    right: 0;
+    height: var(--stroke-xs);
+    background-color: var(--border-primary);
+  }
+}

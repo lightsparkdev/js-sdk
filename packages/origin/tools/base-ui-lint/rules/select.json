@@ -1,0 +1,85 @@
+{
+  "component": "Select",
+  "matches": [
+    "Select",
+    "Select / Trigger",
+    "Select / Popup",
+    "Select / Menu",
+    "Select / Item",
+    "Select / Menu / Item"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Select / Trigger", "SelectTrigger"]
+    },
+    "Value": {
+      "required": true,
+      "parent": "Trigger",
+      "aliases": ["Placeholder", "SelectedValue", "Text"]
+    },
+    "Icon": {
+      "required": true,
+      "parent": "Trigger",
+      "aliases": ["Indicator", "Chevron", "_Select Indicator", "SelectIcon"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Menu", "Select / Menu", "Dropdown", "SelectPopup"]
+    },
+    "List": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["Options", "Items", "SelectList"]
+    },
+    "Item": {
+      "required": true,
+      "parent": "List",
+      "aliases": ["Option", "Select / Menu / Item", "SelectItem"]
+    },
+    "ItemText": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["Label", "ItemLabel", "Text"]
+    },
+    "ItemIndicator": {
+      "required": false,
+      "parent": "Item",
+      "aliases": ["Checkmark", "Check", "_Select Trailing", "Indicator"]
+    },
+    "Separator": {
+      "required": false,
+      "parent": "List",
+      "aliases": ["Divider", "Select / Menu / Item / Separator"]
+    },
+    "Group": {
+      "required": false,
+      "parent": "List",
+      "aliases": ["ItemGroup", "SelectGroup"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Group",
+      "aliases": ["GroupTitle", "GroupHeader"]
+    },
+    "ScrollUpArrow": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ScrollUp", "_Select Scroll / Up"]
+    },
+    "ScrollDownArrow": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ScrollDown", "_Select Scroll / Down"]
+    }
+  },
+  "ignored": [
+    "Leading",
+    "Description",
+    "Container",
+    "Vector"
+  ]
+}
+

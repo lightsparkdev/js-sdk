@@ -1,0 +1,38 @@
+{
+  "component": "Toolbar",
+  "matches": [
+    "Toolbar"
+  ],
+  "parts": {
+    "Button": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToolbarButton", "Action", "Item"]
+    },
+    "Separator": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToolbarSeparator", "Divider"]
+    },
+    "ToggleGroup": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToolbarToggleGroup", "ButtonGroup"]
+    },
+    "ToggleItem": {
+      "required": false,
+      "parent": "ToggleGroup",
+      "aliases": ["ToolbarToggleItem", "Toggle"]
+    },
+    "Link": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToolbarLink"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Label"
+  ]
+}
+

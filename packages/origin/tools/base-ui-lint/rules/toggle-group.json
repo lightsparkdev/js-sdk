@@ -1,0 +1,23 @@
+{
+  "component": "ToggleGroup",
+  "matches": [
+    "ToggleGroup",
+    "Toggle Group",
+    "ButtonGroup",
+    "Button Group"
+  ],
+  "parts": {
+    "Item": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Toggle", "ToggleItem", "Button"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Icon",
+    "Text",
+    "Separator"
+  ]
+}
+

@@ -1,0 +1,32 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-md); // 16px
+  min-width: 320px;
+  max-width: 420px;
+  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
+    var(--spacing-md); // 8px 8px 8px 16px
+  background-color: var(--surface-panel);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(10px);
+  box-shadow: var(--shadow-lg);
+}
+
+.label {
+  @include body;
+  flex: 1 0 0;
+  min-width: 0; // Allow text truncation
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}

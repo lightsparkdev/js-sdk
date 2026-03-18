@@ -1,0 +1,63 @@
+@use "../../tokens/text-styles" as *;
+
+.root {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  row-gap: var(--spacing-md);
+  width: 100%;
+}
+
+.track {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: relative;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  background: var(--color-alpha-black-06);
+}
+
+.indicator {
+  height: 100%;
+  background: var(--surface-inverse);
+  transition: width 200ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  [data-indeterminate] & {
+    width: 30%;
+    animation: indeterminate 1.5s ease-in-out infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      width: 100%;
+      opacity: 0.3;
+    }
+  }
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.label {
+  grid-column: 1;
+  grid-row: 2;
+  @include label;
+  color: var(--text-primary);
+}
+
+.value {
+  grid-column: 2;
+  grid-row: 2;
+  @include body;
+  color: var(--text-primary);
+}

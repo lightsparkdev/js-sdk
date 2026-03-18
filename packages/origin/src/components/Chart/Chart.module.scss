@@ -1,0 +1,914 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  position: relative;
+  width: 100%;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Grid
+
+.gridLine {
+  stroke: var(--text-primary);
+  stroke-opacity: var(--chart-grid-opacity, 0.18);
+  stroke-width: 1;
+  stroke-dasharray: 1 3;
+}
+
+// Lines
+
+.lineAnimate {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: line-draw 800ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes line-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+// Cursor + active dots
+
+.cursorLine {
+  stroke: var(--text-primary);
+  stroke-opacity: var(--chart-cursor-opacity, 0.1);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.activeDot {
+  pointer-events: none;
+}
+
+// Axis labels
+
+.axisLabel {
+  @include label-chart;
+
+  font-size: 11px;
+  fill: var(--text-primary);
+  fill-opacity: var(--chart-label-opacity, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+// Tooltip
+
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+  padding: var(--spacing-3xs) var(--spacing-2xs);
+  background-color: var(--surface-panel);
+  border: var(--stroke-xs) solid var(--border-primary);
+  border-radius: var(--corner-radius-xs);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, var(--chart-tooltip-shadow-opacity, 0.06));
+  z-index: 10;
+  white-space: nowrap;
+
+  &.tooltipSimple,
+  &.tooltipCompact {
+    display: block;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+    gap: 0;
+  }
+}
+
+.tooltipLabel {
+  @include label-chart;
+
+  margin: 0;
+  color: var(--text-secondary);
+  padding-bottom: var(--spacing-3xs);
+  margin-bottom: var(--spacing-4xs);
+  border-bottom: var(--stroke-xs) solid var(--border-primary);
+  margin-inline: calc(-1 * var(--spacing-2xs));
+  padding-inline: var(--spacing-2xs);
+}
+
+.tooltipItems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+}
+
+.tooltipItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.tooltipIndicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltipName {
+  @include body-sm;
+
+  color: var(--text-secondary);
+}
+
+.tooltipValue {
+  @include tooltip-chart;
+
+  color: var(--text-primary);
+  margin-inline-start: auto;
+}
+
+.tooltipFooter {
+  border-top: var(--stroke-xs) solid var(--border-primary);
+  margin: var(--spacing-4xs) calc(-1 * var(--spacing-2xs)) 0;
+  padding: var(--spacing-3xs) var(--spacing-2xs) 0;
+}
+
+// Reference lines
+
+.referenceLine {
+  pointer-events: none;
+}
+
+.referenceLineLabel {
+  @include label-chart;
+
+  pointer-events: none;
+}
+
+// Bar chart
+
+.barAnimate {
+  animation: bar-grow 500ms cubic-bezier(0.33, 1, 0.68, 1) both;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.barAnimateHorizontal {
+  animation: bar-grow-horizontal 500ms cubic-bezier(0.33, 1, 0.68, 1) both;
+  transform-box: fill-box;
+  transform-origin: left center;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes bar-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bar-grow-horizontal {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+// Sankey
+
+.sankeyLink {
+  transition: stroke-opacity 200ms ease;
+  cursor: default;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.sankeyNode {
+  transition: opacity 200ms ease;
+  cursor: default;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.sankeyLabel {
+  @include label-chart;
+
+  font-size: 11px;
+  fill: var(--text-primary);
+  pointer-events: none;
+}
+
+.sankeyValueLabel {
+  fill-opacity: 0.45;
+  font-variant-numeric: tabular-nums;
+}
+
+.sankeyStageLabel {
+  @include label-chart;
+
+  font-size: 10px;
+  fill: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sankeyAnimate {
+  animation: sankey-fade-in 400ms cubic-bezier(0.33, 1, 0.68, 1) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes sankey-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+// Scatter dots
+
+.scatterDotAnimate {
+  opacity: 0;
+  animation: chart-fade-in 400ms ease both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+// Legend (shared across chart types)
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs) var(--spacing-md);
+  padding-top: var(--spacing-xs);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  cursor: default;
+}
+
+.legendDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  @include label-chart;
+
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+// Pie / Donut
+
+.pieRoot {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.pieSegment {
+  cursor: pointer;
+  transition: transform 200ms cubic-bezier(0.33, 1, 0.68, 1);
+  opacity: 0;
+  animation: chart-fade-in 400ms ease both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@keyframes chart-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pieCenter {
+  @include label-lg;
+
+  fill: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pieCenterLabel {
+  @include label-chart;
+
+  fill: var(--text-secondary);
+}
+
+.pieLegend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  cursor: default;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--state-focus);
+    @include smooth-corners(var(--corner-radius-xs));
+  }
+}
+
+.pieLegendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pieLegendName {
+  @include label-sm;
+
+  color: var(--text-secondary);
+}
+
+.pieLegendValue {
+  @include tooltip-chart;
+
+  color: var(--text-primary);
+  margin-inline-start: auto;
+}
+
+// Loading / empty states
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-tertiary);
+
+  @include label-chart;
+
+  font-size: 12px;
+}
+
+// Shared empty for HTML-based charts
+
+.chartEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  color: var(--text-tertiary);
+
+  @include label-chart;
+
+  font-size: 12px;
+}
+
+// Screen reader only
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Gauge
+
+.gauge {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  row-gap: var(--spacing-sm);
+  width: 100%;
+}
+
+.gaugeHeader {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.gaugeTrailing {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+}
+
+.gaugeTrailingText {
+  @include body;
+
+  color: var(--text-primary);
+}
+
+.gaugeValue {
+  @include label;
+
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.gaugeTrackWrap {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  position: relative;
+  padding-top: 12px;
+  padding-bottom: 24px;
+}
+
+.gaugeTrack {
+  display: flex;
+  gap: var(--spacing-4xs);
+  height: 8px;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface-primary);
+}
+
+.gaugeSegment {
+  height: 100%;
+}
+
+.gaugeFill {
+  position: absolute;
+  inset: 0;
+  right: auto;
+  border-radius: inherit;
+  transition:
+    width 400ms cubic-bezier(0.33, 1, 0.68, 1),
+    background-color 200ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.gaugeMarkerWrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gaugeMarker {
+  width: 2px;
+  background-color: var(--stroke-primary);
+  flex: 1;
+}
+
+.gaugeMarkerLabel {
+  @include label-chart;
+
+  font-size: 11px;
+  color: var(--text-primary);
+  margin-top: var(--spacing-4xs);
+  flex-shrink: 0;
+}
+
+// Gauge: minimal variant
+.gaugeMinimal {
+  gap: var(--spacing-3xs);
+
+  .gaugeValue {
+    @include tooltip-chart;
+
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+  }
+
+  .gaugeTrackWrap {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .gaugeTrack {
+    height: 2px;
+  }
+}
+
+// BarList
+
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3xs);
+}
+
+.barListRow {
+  position: relative;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+
+  &[data-clickable] {
+    cursor: pointer;
+
+    &:hover .barListBar {
+      opacity: 0.8;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--border-primary);
+      outline-offset: -2px;
+    }
+  }
+}
+
+.barListBar {
+  position: absolute;
+  inset: 0;
+  transition: opacity 150ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.barListContent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--spacing-3xs) var(--spacing-xs);
+  gap: var(--spacing-sm);
+}
+
+.barListName {
+  @include body-sm;
+
+  color: var(--bar-list-name-color, var(--text-primary));
+  font-size: var(--bar-list-name-size, var(--font-size-xs, 12px));
+  font-weight: var(--bar-list-name-weight, var(--font-weight-regular, 400));
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barListLink {
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.barListRank {
+  @include tooltip-chart;
+
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.barListValues {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+
+.barListValue {
+  @include tooltip-chart;
+
+  color: var(--bar-list-value-color, var(--text-primary));
+  font-size: var(--bar-list-value-size, var(--font-size-xs, 12px));
+  font-weight: var(--bar-list-value-weight, var(--font-weight-regular, 400));
+  font-variant-numeric: tabular-nums;
+}
+
+.barListSecondary {
+  @include body-sm;
+
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.barListChange {
+  @include body-sm;
+
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.barListChangeUp {
+  color: var(--text-success, var(--surface-green-strong));
+}
+
+.barListChangeDown {
+  color: var(--text-critical, var(--surface-red-strong, var(--text-tertiary)));
+}
+
+.barListEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  color: var(--text-tertiary);
+
+  @include label-chart;
+
+  font-size: 12px;
+}
+
+// Uptime
+
+.uptime {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3xs);
+}
+
+.uptimeBars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-4xs);
+  width: 100%;
+}
+
+.uptimeBar {
+  width: 3px;
+  flex-shrink: 0;
+  height: 100%;
+  transition: height 150ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &[data-active] {
+    height: calc(100% + 4px);
+  }
+}
+
+.uptimeTooltip {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+}
+
+.uptimeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.uptimeLabel {
+  @include label-chart;
+
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+// Inline tooltip variants
+
+%tooltipInlineBase {
+  @include tooltip-chart;
+
+  line-height: 1;
+}
+
+.tooltipInlineValue {
+  @extend %tooltipInlineBase;
+
+  color: var(--text-primary);
+}
+
+.tooltipInlineSep,
+.tooltipInlineTime {
+  @extend %tooltipInlineBase;
+
+  color: var(--text-secondary);
+}
+
+// Split (Distribution)
+
+.splitRoot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.splitBarWrap {
+  display: flex;
+  overflow: hidden;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-primary);
+    outline-offset: 2px;
+  }
+}
+
+.splitSegment {
+  min-width: 2px;
+  transition: opacity 150ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &[data-clickable] {
+    cursor: pointer;
+  }
+}
+
+.splitDetailedLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm) var(--spacing-xl);
+  padding-top: var(--spacing-xs);
+}
+
+.splitDetailedItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3xs);
+}
+
+.splitDetailedLabel {
+  @include label-sm;
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.splitDetailedValue {
+  @include body;
+
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.splitDetailedCount {
+  @include body-sm;
+
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.splitTooltipInline {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+}
+
+.splitTooltipLabel {
+  @include body-sm;
+
+  color: var(--text-secondary);
+}
+
+.splitTooltipValue {
+  @include tooltip-chart;
+
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+// Funnel
+
+.funnelFlowAnimate {
+  animation: funnel-flow-reveal 600ms cubic-bezier(0.33, 1, 0.68, 1) both;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes funnel-flow-reveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.funnelSkeletonWrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 0;
+}
+
+// Waterfall
+
+.waterfallConnector {
+  pointer-events: none;
+}
+
+.waterfallValue {
+  fill-opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+// LiveDot
+
+.liveDot {
+  display: inline-block;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.liveDotPulse {
+  animation: live-dot-pulse 1.5s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes live-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+// LiveValue
+
+.liveValue {
+  font-variant-numeric: tabular-nums;
+}

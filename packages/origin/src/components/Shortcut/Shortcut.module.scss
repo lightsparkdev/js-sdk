@@ -1,0 +1,22 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4xs);
+}
+
+.key {
+  @include body-sm;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding-inline: var(--spacing-3xs);
+  @include smooth-corners(var(--corner-radius-2xs));
+  background-color: var(--surface-secondary);
+  color: var(--text-secondary);
+  font-feature-settings: "salt" 1;
+}

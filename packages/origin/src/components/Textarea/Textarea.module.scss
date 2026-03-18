@@ -1,0 +1,69 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  position: relative;
+}
+
+.textarea {
+  @include body;
+
+  display: block;
+  box-sizing: border-box;
+  field-sizing: content;
+  width: 100%;
+  min-height: 66px;
+  padding: var(--spacing-sm);
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &:focus {
+    @include input-focus;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &[data-invalid] {
+    @include input-critical;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.handle {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-tertiary);
+  cursor: ns-resize;
+  touch-action: none;
+  border: none;
+  background: none;
+  padding: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--border-secondary);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}

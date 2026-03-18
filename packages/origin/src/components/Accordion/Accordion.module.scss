@@ -1,0 +1,91 @@
+@use "../../tokens/text-styles" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow: hidden;
+
+  &:not(:last-child) {
+    border-bottom: var(--stroke-sm) solid var(--border-primary);
+  }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-md) 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+
+  &:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: -2px;
+  }
+}
+
+.title {
+  flex: 1;
+  @include label;
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .trigger:hover .title {
+    text-decoration: underline;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--icon-primary);
+  transition: transform 200ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.item[data-open] .icon {
+  transform: rotate(180deg);
+}
+
+.panel {
+  width: 100%;
+  height: var(--accordion-panel-height);
+  overflow: hidden;
+  transition: height 200ms ease-out;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.content {
+  padding-bottom: var(--spacing-sm);
+  @include body;
+  color: var(--text-primary);
+}

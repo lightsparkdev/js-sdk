@@ -1,0 +1,24 @@
+{
+  "component": "Avatar",
+  "matches": [
+    "Avatar"
+  ],
+  "parts": {
+    "Image": {
+      "required": false,
+      "parent": null,
+      "aliases": ["AvatarImage", "Photo", "Picture"]
+    },
+    "Fallback": {
+      "required": true,
+      "parent": null,
+      "aliases": ["AvatarFallback", "Initials", "Placeholder", "Default"]
+    }
+  },
+  "ignored": [
+    "Badge",
+    "Status",
+    "Icon"
+  ]
+}
+

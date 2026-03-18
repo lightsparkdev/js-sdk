@@ -1,0 +1,242 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  --_gap: var(--spacing-xs);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 36px;
+  background: transparent;
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  // PhoneInput uses overflow: visible for dropdown positioning; safe here.
+  overflow: hidden;
+  gap: var(--_gap);
+  padding: 0 var(--spacing-sm);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:has(> .input:focus) {
+    @include input-focus;
+  }
+
+  &[data-invalid] {
+    border-color: var(--border-critical);
+
+    &:has(> .input:focus) {
+      @include input-critical;
+    }
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  // 5px = (36px height - 2px border - 24px button) / 2
+  &:has(> .button:last-child),
+  &:has(> .selectTrigger:last-child) {
+    padding-right: 5px;
+  }
+
+  &:has(> .button:first-child),
+  &:has(> .selectTrigger:first-child) {
+    padding-left: 5px;
+  }
+
+  &:has(> .cap:first-child) {
+    padding-left: 0;
+
+    > .input {
+      padding-left: var(--spacing-sm);
+    }
+  }
+
+  &:has(> .cap:last-child) {
+    padding-right: 0;
+
+    > .input {
+      padding-right: var(--spacing-sm);
+    }
+  }
+}
+
+.addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--icon-secondary);
+  cursor: text;
+}
+
+.cap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-secondary);
+  padding: var(--spacing-none) var(--spacing-sm);
+  @include input;
+  color: var(--text-secondary);
+  border-right: var(--stroke-sm) solid var(--border-primary);
+  align-self: stretch;
+  cursor: text;
+  flex-shrink: 0;
+
+  // Negative margin cancels the gap; border is the visual separator
+  &:first-child {
+    margin-right: calc(-1 * var(--_gap));
+  }
+
+  &:last-child {
+    border-right: none;
+    border-left: var(--stroke-sm) solid var(--border-primary);
+    margin-left: calc(-1 * var(--_gap));
+    margin-right: 0;
+  }
+
+  > .button {
+    height: 100%;
+    padding: var(--spacing-none) var(--spacing-sm);
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    @include btn;
+  }
+
+  &:has(> .button:only-child) {
+    padding: 0;
+    background: transparent;
+  }
+}
+
+.input {
+  box-sizing: border-box;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  @include input;
+  color: var(--text-primary);
+  outline: none;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+.button {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 24px;
+  min-width: 24px;
+  padding: var(--spacing-none) var(--spacing-xs);
+  // 3px nests optically inside the container's 6px radius
+  border-radius: 3px;
+  color: var(--text-primary);
+  @include label-sm;
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background: var(--surface-hover);
+    }
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+.buttonOutline {
+  background: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.selectTrigger {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 24px;
+  max-width: 240px;
+  padding: var(--spacing-none) var(--spacing-2xs);
+  // 3px nests optically inside the container's 6px radius
+  border-radius: 3px;
+  @include label-sm;
+  color: var(--text-primary);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background: var(--surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    background: var(--surface-hover);
+    border: var(--stroke-xs) solid var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    outline: none;
+  }
+
+  &[data-invalid] {
+    color: var(--text-critical);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.selectTriggerOutline {
+  background: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.selectTriggerLabel {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--spacing-none) var(--spacing-4xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectTriggerIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-secondary);
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  @include input;
+  color: var(--text-secondary);
+  user-select: none;
+}

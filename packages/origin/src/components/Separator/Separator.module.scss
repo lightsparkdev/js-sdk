@@ -1,0 +1,34 @@
+.root {
+  border: 0;
+  background-color: var(--border-primary);
+  flex-shrink: 0;
+}
+
+.default {
+  &.horizontal {
+    height: var(--stroke-sm);
+  }
+
+  &.vertical {
+    width: var(--stroke-sm);
+  }
+}
+
+.hairline {
+  &.horizontal {
+    height: var(--stroke-xs);
+  }
+
+  &.vertical {
+    width: var(--stroke-xs);
+  }
+}
+
+.horizontal {
+  width: 100%;
+}
+
+.vertical {
+  height: 100%;
+  align-self: stretch;
+}

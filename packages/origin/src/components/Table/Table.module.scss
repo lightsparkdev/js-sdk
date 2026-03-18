@@ -1,0 +1,303 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+// ============================================================================
+// Root
+// ============================================================================
+
+.root {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+
+  .caption {
+    @include visually-hidden;
+  }
+
+  // Compact density overrides
+  &[data-size="compact"] {
+    .headerCell {
+      height: 32px;
+    }
+
+    .cell {
+      height: 36px;
+    }
+  }
+}
+
+// ============================================================================
+// Header
+// ============================================================================
+
+.headerCell {
+  @include label-sm;
+  height: 40px;
+  padding: 0 var(--spacing-md);
+  text-align: left;
+  color: var(--text-secondary);
+  border-bottom: var(--stroke-xs) solid var(--border-primary);
+  font-weight: normal;
+  vertical-align: middle;
+  position: relative;
+
+  // Checkbox column - narrower padding
+  &--checkbox {
+    width: 40px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  // Sortable header
+  &--sortable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      .sortIcon {
+        opacity: 1;
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--state-focus);
+      @include smooth-corners(var(--corner-radius-xs));
+    }
+  }
+}
+
+.headerCellContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3xs);
+  overflow: hidden;
+
+  .headerCell--right & {
+    justify-content: flex-end;
+  }
+}
+
+.headerCellLeading {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.headerCellLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sortIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  color: var(--icon-tertiary);
+  transition: opacity 150ms ease;
+
+  .headerCell[data-sorted] & {
+    opacity: 1;
+    color: var(--icon-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// ============================================================================
+// Body
+// ============================================================================
+
+.row {
+  .root[data-clickable] &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &--interactive {
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--state-focus);
+    }
+  }
+
+  &--last {
+    .cell {
+      border-bottom: none;
+    }
+  }
+}
+
+// ============================================================================
+// Cell
+// ============================================================================
+
+.cell {
+  @include body;
+  height: 48px;
+  padding: 0 var(--spacing-md);
+  text-align: left;
+  color: var(--text-primary);
+  border-bottom: var(--stroke-xs) solid var(--border-primary);
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  // Checkbox column - narrower padding
+  &--checkbox {
+    width: 40px;
+    padding: 0 var(--spacing-sm);
+  }
+
+  // Right alignment
+  &--right {
+    text-align: right;
+  }
+}
+
+// ============================================================================
+// Cell Layout (with leading/trailing slots)
+// ============================================================================
+
+.cellLayout {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cellLayoutContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.cellSlot {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+// ============================================================================
+// Cell Content (label + description)
+// ============================================================================
+
+.cellContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.cellLabel {
+  @include body;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3xs);
+  color: var(--text-primary);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.cellLabelText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.cellDescription {
+  @include body-sm;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cellIndicator {
+  width: 8px;
+  height: 8px;
+  @include smooth-corners(var(--corner-radius-2xs));
+  background-color: var(--icon-primary);
+  flex-shrink: 0;
+}
+
+// ============================================================================
+// Footer
+// ============================================================================
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 40px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-top: var(--stroke-xs) solid var(--border-primary);
+
+  &[data-size="compact"] {
+    height: 32px;
+  }
+}
+
+// ============================================================================
+// Resize Handle
+// ============================================================================
+
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  background-color: transparent;
+  transition: background-color 150ms ease;
+
+  &:hover,
+  &--resizing {
+    background-color: var(--border-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// ============================================================================
+// Checkbox (show on hover or when selected)
+// ============================================================================
+
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 150ms ease;
+
+  // Show when any row is selected (table has data-has-selection)
+  .root[data-has-selection] & {
+    opacity: 1;
+  }
+
+  // Show on row hover
+  .row:hover & {
+    opacity: 1;
+  }
+
+  // Show on header cell hover
+  .headerCell:hover & {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "component": "RadioGroup",
+  "matches": [
+    "Radio Group",
+    "RadioGroup"
+  ],
+  "parts": {
+    "Item": {
+      "required": true,
+      "parent": null,
+      "aliases": ["RadioGroupItem", "Radio", "Option"]
+    },
+    "Indicator": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["RadioGroupIndicator", "Dot", "Circle", "Check"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Description",
+    "Text"
+  ],
+  "note": "RadioGroup contains multiple radio items. Each item needs an Indicator."
+}
+

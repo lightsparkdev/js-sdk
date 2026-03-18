@@ -1,0 +1,80 @@
+@use "../../tokens/text-styles" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-md) 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+
+  &:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: -2px;
+  }
+
+  &[data-disabled] {
+    cursor: default;
+    opacity: 0.5;
+  }
+}
+
+.label {
+  flex: 1;
+  @include label;
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .trigger:not([data-disabled]):hover .label {
+    text-decoration: underline;
+  }
+}
+
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  color: var(--icon-primary);
+  transition: transform 200ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.root[data-open] .icon {
+  transform: rotate(180deg);
+}
+
+.panel {
+  width: 100%;
+  height: var(--collapsible-panel-height);
+  overflow: hidden;
+  transition: height 200ms ease-out;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    height: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.content {
+  padding-bottom: var(--spacing-sm);
+  @include body;
+  color: var(--text-primary);
+}

@@ -1,0 +1,92 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  @include label-sm;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: var(--spacing-4xs) var(--spacing-2xs);
+  @include smooth-corners(var(--corner-radius-xs));
+}
+
+.gray {
+  background-color: var(--surface-secondary);
+  color: var(--text-primary);
+
+  &.vibrant {
+    background-color: var(--surface-neutral);
+    color: var(--text-inverse);
+  }
+}
+
+.purple {
+  background-color: var(--surface-purple);
+  color: var(--text-purple);
+
+  &.vibrant {
+    background-color: var(--surface-purple-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.blue {
+  background-color: var(--surface-blue);
+  color: var(--text-blue);
+
+  &.vibrant {
+    background-color: var(--surface-blue-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.sky {
+  background-color: var(--surface-sky);
+  color: var(--text-sky);
+
+  &.vibrant {
+    background-color: var(--surface-sky-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.pink {
+  background-color: var(--surface-pink);
+  color: var(--text-pink);
+
+  &.vibrant {
+    background-color: var(--surface-pink-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.green {
+  background-color: var(--surface-green);
+  color: var(--text-green);
+
+  &.vibrant {
+    background-color: var(--surface-green-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.yellow {
+  background-color: var(--surface-yellow);
+  color: var(--text-yellow);
+
+  &.vibrant {
+    background-color: var(--surface-yellow-strong);
+    color: var(--text-inverse);
+  }
+}
+
+.red {
+  background-color: var(--surface-red);
+  color: var(--text-red);
+
+  &.vibrant {
+    background-color: var(--surface-red-strong);
+    color: var(--text-inverse);
+  }
+}

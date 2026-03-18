@@ -1,0 +1,73 @@
+// Generated from _text-styles.scss — run: npm run figma:styles
+
+@use "text-styles" as *;
+
+// Text style classes
+.headline {
+  @include headline;
+}
+.headline-sm {
+  @include headline-sm;
+}
+
+.body-lg {
+  @include body-lg;
+}
+.body {
+  @include body;
+}
+.body-sm {
+  @include body-sm;
+}
+
+.label-xl {
+  @include label-xl;
+}
+.label-lg {
+  @include label-lg;
+}
+.label {
+  @include label;
+}
+.label-sm {
+  @include label-sm;
+}
+.label-xs {
+  @include label-xs;
+}
+.label-chart {
+  @include label-chart;
+}
+.tooltip-chart {
+  @include tooltip-chart;
+}
+
+.code {
+  @include code;
+}
+
+.btn-lg {
+  @include btn-lg;
+}
+.btn {
+  @include btn;
+}
+.btn-sm {
+  @include btn-sm;
+}
+
+.link-lg {
+  @include link-lg;
+  color: var(--text-link);
+  text-decoration: underline;
+}
+.link {
+  @include link;
+  color: var(--text-link);
+  text-decoration: underline;
+}
+.link-sm {
+  @include link-sm;
+  color: var(--text-link);
+  text-decoration: underline;
+}

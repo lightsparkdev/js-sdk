@@ -1,0 +1,25 @@
+{
+  "component": "Collapsible",
+  "matches": [
+    "Collapsible",
+    "Expandable"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["CollapsibleTrigger", "Header", "Toggle"]
+    },
+    "Panel": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "CollapsibleContent", "Body"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Label",
+    "Chevron"
+  ]
+}
+

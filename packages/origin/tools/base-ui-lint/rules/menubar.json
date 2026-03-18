@@ -1,0 +1,57 @@
+{
+  "component": "Menubar",
+  "matches": [
+    "Menubar",
+    "MenuBar",
+    "Menu Bar"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["MenubarTrigger", "MenuButton"]
+    },
+    "Portal": {
+      "required": false,
+      "parent": null,
+      "aliases": ["MenubarPortal"]
+    },
+    "Positioner": {
+      "required": false,
+      "parent": null,
+      "aliases": ["MenubarPositioner"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["MenubarPopup", "Menu", "Dropdown"]
+    },
+    "Item": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["MenubarItem", "Option", "Action"]
+    },
+    "Separator": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["MenubarSeparator", "Divider"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["MenubarGroupLabel", "Group"]
+    },
+    "SubmenuTrigger": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["MenubarSubmenuTrigger", "Submenu"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Label",
+    "Shortcut",
+    "Arrow"
+  ]
+}
+

@@ -1,0 +1,43 @@
+{
+  "component": "PreviewCard",
+  "matches": [
+    "Preview Card",
+    "PreviewCard",
+    "Hover Card",
+    "HoverCard"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["PreviewCardTrigger", "HoverCardTrigger", "Target"]
+    },
+    "Portal": {
+      "required": false,
+      "parent": null,
+      "aliases": ["PreviewCardPortal"]
+    },
+    "Positioner": {
+      "required": false,
+      "parent": null,
+      "aliases": ["PreviewCardPositioner"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["PreviewCardPopup", "Content", "Card"]
+    },
+    "Arrow": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["PreviewCardArrow"]
+    }
+  },
+  "ignored": [
+    "Image",
+    "Title",
+    "Description",
+    "Avatar"
+  ]
+}
+

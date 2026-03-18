@@ -1,0 +1,18 @@
+{
+  "component": "Textarea",
+  "matches": [
+    "Textarea",
+    "TextArea",
+    "Text Area",
+    "Multiline Input"
+  ],
+  "parts": {},
+  "ignored": [
+    "Label",
+    "Placeholder",
+    "CharacterCount",
+    "Counter"
+  ],
+  "note": "Textarea is a simple component with no required sub-parts. Use Field for labeled textareas."
+}
+

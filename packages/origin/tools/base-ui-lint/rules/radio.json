@@ -1,0 +1,25 @@
+{
+  "component": "Radio",
+  "matches": [
+    "Radio",
+    "RadioButton"
+  ],
+  "parts": {
+    "Item": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Radio", "RadioItem", "Option"]
+    },
+    "Indicator": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["RadioIndicator", "Dot", "Circle", "Check"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Description",
+    "Text"
+  ]
+}
+
