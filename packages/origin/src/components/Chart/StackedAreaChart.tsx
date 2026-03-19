@@ -12,12 +12,15 @@ import {
   stackData,
   thinIndices,
   axisPadForLabels,
+  formatChartDatumValue,
   type Point,
 } from "./utils";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import { useResizeWidth, useChartInteraction } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
 import {
+  type ChartDatum,
+  type ChartDatumValue,
   type Series,
   type ResolvedSeries,
   type TooltipProp,
@@ -37,7 +40,7 @@ const clickIndexMeta = (index: number) => ({ index });
 
 export interface StackedAreaChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
-  data: Record<string, unknown>[];
+  data: ChartDatum[];
   series: [Series, Series, ...Series[]];
   xKey?: string;
   height?: number;
@@ -61,16 +64,13 @@ export interface StackedAreaChartProps
   ariaLabel?: string;
   /** Disables interaction, cursor, dots, and tooltip. */
   interactive?: boolean;
-  onActiveChange?: (
-    index: number | null,
-    datum: Record<string, unknown> | null,
-  ) => void;
+  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
   /** Called when a data point is clicked. */
-  onClickDatum?: (index: number, datum: Record<string, unknown>) => void;
+  onClickDatum?: (index: number, datum: ChartDatum) => void;
   /** Analytics name for event tracking. */
   analyticsName?: string;
   formatValue?: (value: number) => string;
-  formatXLabel?: (value: unknown) => string;
+  formatXLabel?: (value: ChartDatumValue) => string;
   formatYLabel?: (value: number) => string;
 }
 
@@ -264,7 +264,9 @@ export const StackedArea = React.forwardRef<
       const x =
         data.length === 1 ? plotWidth / 2 : (i / (data.length - 1)) * plotWidth;
       const raw = data[i][xKey];
-      const text = formatXLabel ? formatXLabel(raw) : String(raw ?? "");
+      const text = formatXLabel
+        ? formatXLabel(raw)
+        : formatChartDatumValue(raw);
       return { x, text, index: i };
     });
   }, [xKey, data, plotWidth, formatXLabel]);
@@ -306,7 +308,7 @@ export const StackedArea = React.forwardRef<
       return "";
     const d = data[scrub.activeIndex];
     const parts: string[] = [];
-    if (xKey) parts.push(String(d[xKey] ?? ""));
+    if (xKey) parts.push(formatChartDatumValue(d[xKey]));
     for (const s of series)
       parts.push(`${s.label}: ${fmtValue(Number(d[s.key]))}`);
     return parts.join(", ");
@@ -590,7 +592,9 @@ export const StackedArea = React.forwardRef<
                         <p className={styles.tooltipLabel}>
                           {formatXLabel
                             ? formatXLabel(data[scrub.activeIndex][xKey])
-                            : String(data[scrub.activeIndex][xKey] ?? "")}
+                            : formatChartDatumValue(
+                                data[scrub.activeIndex][xKey],
+                              )}
                         </p>
                       )}
                       <div className={styles.tooltipItems}>

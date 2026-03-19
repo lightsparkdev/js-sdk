@@ -1,5 +1,16 @@
 import type * as React from "react";
 
+export type ChartDatumValue =
+  | string
+  | number
+  | boolean
+  | bigint
+  | Date
+  | null
+  | undefined;
+
+export type ChartDatum = Record<string, ChartDatumValue>;
+
 export interface Series {
   /** Data key in the data object for this series. */
   key: string;
@@ -47,10 +58,7 @@ export type TooltipProp =
   | "simple"
   | "compact"
   | "detailed"
-  | ((
-      datum: Record<string, unknown>,
-      series: ResolvedSeries[],
-    ) => React.ReactNode);
+  | ((datum: ChartDatum, series: ResolvedSeries[]) => React.ReactNode);
 
 export type TooltipMode = "off" | "simple" | "compact" | "detailed" | "custom";
 

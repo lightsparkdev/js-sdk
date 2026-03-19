@@ -88,7 +88,7 @@ function drawSpline(ctx: CanvasRenderingContext2D, pts: [number, number][]) {
     h.push(pts[i + 1][0] - pts[i][0]);
     delta.push(h[i] === 0 ? 0 : (pts[i + 1][1] - pts[i][1]) / h[i]);
   }
-  const m: number[] = new Array(n);
+  const m = new Array<number>(n).fill(0);
   m[0] = delta[0];
   m[n - 1] = delta[n - 2];
   for (let i = 1; i < n - 1; i++) {

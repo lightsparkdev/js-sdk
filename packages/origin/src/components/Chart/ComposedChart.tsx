@@ -13,12 +13,15 @@ import {
   linearInterpolator,
   thinIndices,
   axisPadForLabels,
+  formatChartDatumValue,
   type Point,
 } from "./utils";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import { useResizeWidth, useChartInteraction } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
 import {
+  type ChartDatum,
+  type ChartDatumValue,
   type Series,
   type ResolvedSeries,
   type TooltipProp,
@@ -55,7 +58,7 @@ type ResolvedComposedSeries = {
 
 export interface ComposedChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
-  data: Record<string, unknown>[];
+  data: ChartDatum[];
   series: ComposedSeries[];
   xKey?: string;
   height?: number;
@@ -77,16 +80,13 @@ export interface ComposedChartProps
   ariaLabel?: string;
   /** Disables interaction, cursor, dots, and tooltip. */
   interactive?: boolean;
-  onActiveChange?: (
-    index: number | null,
-    datum: Record<string, unknown> | null,
-  ) => void;
+  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
   /** Called when a data point is clicked. */
-  onClickDatum?: (index: number, datum: Record<string, unknown>) => void;
+  onClickDatum?: (index: number, datum: ChartDatum) => void;
   /** Analytics name for event tracking. */
   analyticsName?: string;
   formatValue?: (value: number) => string;
-  formatXLabel?: (value: unknown) => string;
+  formatXLabel?: (value: ChartDatumValue) => string;
   formatYLabel?: (value: number) => string;
   /** Formatter for the right Y axis labels. */
   formatYLabelRight?: (value: number) => string;
@@ -378,7 +378,7 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
         return "";
       const d = data[scrub.activeIndex];
       const parts: string[] = [];
-      if (xKey) parts.push(String(d[xKey] ?? ""));
+      if (xKey) parts.push(formatChartDatumValue(d[xKey]));
       series.forEach((s) => {
         const v = Number(d[s.key]);
         parts.push(`${s.label}: ${isNaN(v) ? "no data" : fmtValue(v)}`);
@@ -698,7 +698,7 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
                         >
                           {formatXLabel
                             ? formatXLabel(data[i][xKey])
-                            : String(data[i][xKey] ?? "")}
+                            : formatChartDatumValue(data[i][xKey])}
                         </text>
                       ));
                     })()}
@@ -735,7 +735,9 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
                           <p className={styles.tooltipLabel}>
                             {formatXLabel
                               ? formatXLabel(data[scrub.activeIndex][xKey])
-                              : String(data[scrub.activeIndex][xKey] ?? "")}
+                              : formatChartDatumValue(
+                                  data[scrub.activeIndex][xKey],
+                                )}
                           </p>
                         )}
                         <div className={styles.tooltipItems}>

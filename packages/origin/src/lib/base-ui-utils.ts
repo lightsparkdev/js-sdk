@@ -44,6 +44,19 @@ export { useRender } from "@base-ui/react/use-render";
 
 const EMPTY_OBJECT = Object.freeze({});
 
+function stringifyDataAttributeValue(value: unknown): string | null {
+  if (typeof value === "string") return value;
+  if (
+    typeof value === "number" ||
+    typeof value === "bigint" ||
+    typeof value === "symbol"
+  ) {
+    return String(value);
+  }
+  if (value instanceof Date) return value.toISOString();
+  return null;
+}
+
 // -----------------------------------------------------------------------------
 // Copied from @base-ui/react/esm/utils/getStateAttributesProps.js
 // Source: https://github.com/mui/base-ui
@@ -71,7 +84,10 @@ export function getStateAttributesProps<S extends Record<string, unknown>>(
     if (value === true) {
       props[`data-${key.toLowerCase()}`] = "";
     } else if (value) {
-      props[`data-${key.toLowerCase()}`] = (value as object).toString();
+      const stringValue = stringifyDataAttributeValue(value);
+      if (stringValue !== null) {
+        props[`data-${key.toLowerCase()}`] = stringValue;
+      }
     }
   }
   return props;

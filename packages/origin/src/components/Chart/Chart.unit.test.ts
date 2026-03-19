@@ -20,6 +20,7 @@ import {
   measureLabelWidth,
   dynamicTickTarget,
   axisPadForLabels,
+  formatChartDatumValue,
   type Point,
 } from "./utils";
 import {
@@ -681,6 +682,35 @@ describe("measureLabelWidth", () => {
 // ---------------------------------------------------------------------------
 // dynamicTickTarget
 // ---------------------------------------------------------------------------
+
+describe("formatChartDatumValue", () => {
+  it("returns empty string for null and undefined", () => {
+    expect(formatChartDatumValue(null)).toBe("");
+    expect(formatChartDatumValue(undefined)).toBe("");
+  });
+
+  it("passes strings through unchanged", () => {
+    expect(formatChartDatumValue("hello")).toBe("hello");
+  });
+
+  it("converts primitive values to strings", () => {
+    expect(formatChartDatumValue(42)).toBe("42");
+    expect(formatChartDatumValue(true)).toBe("true");
+    expect(formatChartDatumValue(false)).toBe("false");
+    expect(formatChartDatumValue(BigInt(9007199254740991))).toBe(
+      "9007199254740991",
+    );
+  });
+
+  it("preserves default Date string formatting", () => {
+    const value = new Date("2025-01-15T00:00:00.000Z");
+    expect(formatChartDatumValue(value)).toBe(String(value));
+  });
+
+  it("returns an empty string for unexpected object values", () => {
+    expect(formatChartDatumValue({ bad: "value" })).toBe("");
+  });
+});
 
 describe("dynamicTickTarget", () => {
   it("returns at least 2", () => {

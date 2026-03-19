@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { CurveInterpolator } from "./utils";
-import type { TooltipMode } from "./types";
+import type { ChartDatum, TooltipMode } from "./types";
 import { PAD_RIGHT, TOOLTIP_GAP } from "./types";
 
 export function useResizeWidth() {
@@ -33,12 +33,9 @@ export interface ChartInteractionOptions {
   padLeft: number;
   tooltipMode: TooltipMode;
   interpolatorsRef: React.RefObject<CurveInterpolator[]>;
-  data: Record<string, unknown>[];
-  onActiveChange?: (
-    index: number | null,
-    datum: Record<string, unknown> | null,
-  ) => void;
-  onActivate?: (index: number, datum: Record<string, unknown>) => void;
+  data: ChartDatum[];
+  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
+  onActivate?: (index: number, datum: ChartDatum) => void;
 }
 
 export function useChartInteraction(opts: ChartInteractionOptions) {

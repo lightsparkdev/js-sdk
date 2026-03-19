@@ -9,10 +9,13 @@ import {
   dynamicTickTarget,
   measureLabelWidth,
   axisPadForLabels,
+  formatChartDatumValue,
 } from "./utils";
 import { useResizeWidth } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
 import {
+  type ChartDatum,
+  type ChartDatumValue,
   type Series,
   type ResolvedSeries,
   type TooltipProp,
@@ -37,7 +40,7 @@ const EMPTY_TICKS = { min: 0, max: 1, ticks: [0, 1] } as const;
 const clickIndexMeta = (index: number) => ({ index });
 
 export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
-  data: Record<string, unknown>[];
+  data: ChartDatum[];
   dataKey?: string;
   series?: Series[];
   xKey?: string;
@@ -53,12 +56,9 @@ export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Shaded bands spanning a value range. Rendered behind bars. */
   referenceBands?: ReferenceBand[];
   ariaLabel?: string;
-  onActiveChange?: (
-    index: number | null,
-    datum: Record<string, unknown> | null,
-  ) => void;
+  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
   formatValue?: (value: number) => string;
-  formatXLabel?: (value: unknown) => string;
+  formatXLabel?: (value: ChartDatumValue) => string;
   formatYLabel?: (value: number) => string;
   /** Fixed Y-axis domain. Overrides auto-computed domain from data. */
   yDomain?: [number, number];
@@ -69,7 +69,7 @@ export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Content to display when data is empty. */
   empty?: React.ReactNode;
   /** Click handler called with the active data index and datum. */
-  onClickDatum?: (index: number, datum: Record<string, unknown>) => void;
+  onClickDatum?: (index: number, datum: ChartDatum) => void;
   analyticsName?: string;
   /** Disables interaction, cursor, dots, and tooltip. */
   interactive?: boolean;
@@ -80,7 +80,7 @@ export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
    * `undefined` to keep the default.
    */
   getBarColor?: (
-    datum: Record<string, unknown>,
+    datum: ChartDatum,
     index: number,
     seriesKey: string,
   ) => string | undefined;
@@ -206,7 +206,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
   const padLeft = React.useMemo(() => {
     if (isHorizontal) {
       if (!showCategoryAxis || !xKey) return 12;
-      const fmt = formatXLabel ?? ((v: unknown) => String(v ?? ""));
+      const fmt = formatXLabel ?? formatChartDatumValue;
       const maxWidth = Math.max(
         ...data.map((d) => measureLabelWidth(fmt(d[xKey]))),
       );
@@ -378,7 +378,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
     if (activeIndex === null || activeIndex >= data.length) return "";
     const d = data[activeIndex];
     const parts: string[] = [];
-    if (xKey) parts.push(String(d[xKey] ?? ""));
+    if (xKey) parts.push(formatChartDatumValue(d[xKey]));
     series.forEach((s) => {
       const v = Number(d[s.key]);
       parts.push(`${s.label}: ${isNaN(v) ? "no data" : fmtValue(v)}`);
@@ -907,7 +907,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                         >
                           {formatXLabel
                             ? formatXLabel(data[i][xKey])
-                            : String(data[i][xKey] ?? "")}
+                            : formatChartDatumValue(data[i][xKey])}
                         </text>
                       ) : (
                         <text
@@ -920,7 +920,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                         >
                           {formatXLabel
                             ? formatXLabel(data[i][xKey])
-                            : String(data[i][xKey] ?? "")}
+                            : formatChartDatumValue(data[i][xKey])}
                         </text>
                       ),
                     );
@@ -953,7 +953,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                       <span className={styles.tooltipInlineTime}>
                         {formatXLabel
                           ? formatXLabel(data[activeIndex][xKey])
-                          : String(data[activeIndex][xKey] ?? "")}
+                          : formatChartDatumValue(data[activeIndex][xKey])}
                       </span>
                     )
                   ) : tooltipMode === "compact" ? (
@@ -981,7 +981,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                           <span className={styles.tooltipInlineTime}>
                             {formatXLabel
                               ? formatXLabel(data[activeIndex][xKey])
-                              : String(data[activeIndex][xKey] ?? "")}
+                              : formatChartDatumValue(data[activeIndex][xKey])}
                           </span>
                         </>
                       )}
@@ -992,7 +992,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                         <p className={styles.tooltipLabel}>
                           {formatXLabel
                             ? formatXLabel(data[activeIndex][xKey])
-                            : String(data[activeIndex][xKey] ?? "")}
+                            : formatChartDatumValue(data[activeIndex][xKey])}
                         </p>
                       )}
                       <div className={styles.tooltipItems}>

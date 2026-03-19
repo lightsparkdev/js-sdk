@@ -13,12 +13,15 @@ import {
   linearInterpolator,
   thinIndices,
   axisPadForLabels,
+  formatChartDatumValue,
   type Point,
 } from "./utils";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import { useResizeWidth, useChartInteraction } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
 import {
+  type ChartDatum,
+  type ChartDatumValue,
   type Series,
   type ResolvedSeries,
   type TooltipProp,
@@ -43,7 +46,7 @@ export interface LineChartProps extends React.ComponentPropsWithoutRef<"div"> {
   /**
    * Array of data objects. Each object should contain keys matching `dataKey` or `series[].key`.
    */
-  data: Record<string, unknown>[];
+  data: ChartDatum[];
   /** Data key for single-series charts. Pass this OR `series`, not both. */
   dataKey?: string;
   /** Series configuration for multi-series charts. */
@@ -85,7 +88,7 @@ export interface LineChartProps extends React.ComponentPropsWithoutRef<"div"> {
    * Comparison data for "this period vs last period" overlays. Rendered as dashed lines behind the
    * main paths.
    */
-  compareData?: Record<string, unknown>[];
+  compareData?: ChartDatum[];
   /** Legend label for comparison series. Defaults to "Previous". */
   compareLabel?: string;
   /** Show a legend below the chart for multi-series. */
@@ -99,18 +102,15 @@ export interface LineChartProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Disables interaction, cursor, dots, and tooltip. */
   interactive?: boolean;
   /** Called when the hovered data point changes. Receives `null` on leave. */
-  onActiveChange?: (
-    index: number | null,
-    datum: Record<string, unknown> | null,
-  ) => void;
+  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
   /** Called when a data point is clicked. */
-  onClickDatum?: (index: number, datum: Record<string, unknown>) => void;
+  onClickDatum?: (index: number, datum: ChartDatum) => void;
   /** Analytics name for event tracking. */
   analyticsName?: string;
   /** Format values in tooltips. */
   formatValue?: (value: number) => string;
   /** Format x-axis labels. */
-  formatXLabel?: (value: unknown) => string;
+  formatXLabel?: (value: ChartDatumValue) => string;
   /** Format y-axis labels. */
   formatYLabel?: (value: number) => string;
   /** Connect across null/NaN gaps. When false, gaps break the line. */
@@ -396,7 +396,9 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
             ? plotWidth / 2
             : (i / (data.length - 1)) * plotWidth;
         const raw = data[i][xKey];
-        const text = formatXLabel ? formatXLabel(raw) : String(raw ?? "");
+        const text = formatXLabel
+          ? formatXLabel(raw)
+          : formatChartDatumValue(raw);
         return { x, text, index: i };
       });
     }, [xKey, data, plotWidth, formatXLabel]);
@@ -455,8 +457,10 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
     const svgDesc = React.useMemo(() => {
       if (series.length === 0 || data.length === 0) return undefined;
       const names = series.map((s) => s.label).join(", ");
-      const first = xKey ? String(data[0][xKey] ?? "") : "";
-      const last = xKey ? String(data[data.length - 1][xKey] ?? "") : "";
+      const first = xKey ? formatChartDatumValue(data[0][xKey]) : "";
+      const last = xKey
+        ? formatChartDatumValue(data[data.length - 1][xKey])
+        : "";
       const range = first && last ? ` from ${first} to ${last}` : "";
       return `Line chart with ${data.length} data points showing ${names}${range}.`;
     }, [series, data, xKey]);
@@ -466,7 +470,7 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
         return "";
       const d = data[scrub.activeIndex];
       const parts: string[] = [];
-      if (xKey) parts.push(String(d[xKey] ?? ""));
+      if (xKey) parts.push(formatChartDatumValue(d[xKey]));
       series.forEach((s) => {
         const v = Number(d[s.key]);
         parts.push(`${s.label}: ${isNaN(v) ? "no data" : fmtValue(v)}`);
@@ -928,7 +932,9 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
                         <span className={styles.tooltipInlineTime}>
                           {formatXLabel
                             ? formatXLabel(data[scrub.activeIndex][xKey])
-                            : String(data[scrub.activeIndex][xKey] ?? "")}
+                            : formatChartDatumValue(
+                                data[scrub.activeIndex][xKey],
+                              )}
                         </span>
                       )
                     ) : tooltipMode === "compact" ? (
@@ -956,7 +962,9 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
                             <span className={styles.tooltipInlineTime}>
                               {formatXLabel
                                 ? formatXLabel(data[scrub.activeIndex][xKey])
-                                : String(data[scrub.activeIndex][xKey] ?? "")}
+                                : formatChartDatumValue(
+                                    data[scrub.activeIndex][xKey],
+                                  )}
                             </span>
                           </>
                         )}
@@ -967,7 +975,9 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
                           <p className={styles.tooltipLabel}>
                             {formatXLabel
                               ? formatXLabel(data[scrub.activeIndex][xKey])
-                              : String(data[scrub.activeIndex][xKey] ?? "")}
+                              : formatChartDatumValue(
+                                  data[scrub.activeIndex][xKey],
+                                )}
                           </p>
                         )}
                         <div className={styles.tooltipItems}>

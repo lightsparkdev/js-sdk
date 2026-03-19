@@ -1,3 +1,5 @@
+import type { ChartDatum } from "./types";
+
 export const CHART_LABEL_FONT =
   '11px "Suisse Intl Mono", "SF Mono", Menlo, monospace';
 const LABEL_PADDING = 16;
@@ -50,6 +52,20 @@ export function axisPadForLabels(labels: string[]): number {
     MIN_AXIS_PAD,
     Math.ceil(maxWidth) + AXIS_LABEL_GAP + AXIS_LABEL_INSET,
   );
+}
+
+export function formatChartDatumValue(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "bigint"
+  ) {
+    return String(value);
+  }
+  if (value instanceof Date) return String(value);
+  return "";
 }
 
 export function filerp(
@@ -157,7 +173,7 @@ function computeMonotoneTangents(points: Point[]): TangentResult {
     slopes.push(dxi === 0 ? 0 : (points[i + 1].y - points[i].y) / dxi);
   }
 
-  const m: number[] = new Array(n);
+  const m = new Array<number>(n).fill(0);
   m[0] = slopes[0];
   m[n - 1] = slopes[n - 2];
   for (let i = 1; i < n - 1; i++) {
@@ -322,12 +338,9 @@ export interface StackedBand {
   topline: number[];
 }
 
-export function stackData(
-  data: Record<string, unknown>[],
-  keys: string[],
-): StackedBand[] {
+export function stackData(data: ChartDatum[], keys: string[]): StackedBand[] {
   const result: StackedBand[] = [];
-  const cumulative = new Array(data.length).fill(0);
+  const cumulative = new Array<number>(data.length).fill(0);
 
   for (const key of keys) {
     const baseline = [...cumulative];
