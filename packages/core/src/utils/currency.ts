@@ -1359,11 +1359,8 @@ export function formatCurrencyStr(
       /* Yellowcard 2-decimal African currencies (stored in smallest units): */
       CurrencyUnit.MWK,
       CurrencyUnit.ZMW,
-      /* Tazapay currencies: Tazapay standardizes all fiat to 2 decimal places,
-       * so CurrencyAmount values from Tazapay are stored in smallest units (1/100 of base unit)
-       * even for currencies with no real sub-units (e.g. IDR, VND): */
+      /* Tazapay currencies with 2 decimal places (stored in smallest units): */
       CurrencyUnit.IDR,
-      CurrencyUnit.VND,
       CurrencyUnit.THB,
       CurrencyUnit.MYR,
       CurrencyUnit.CAD,
