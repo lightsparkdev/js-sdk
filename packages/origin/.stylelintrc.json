@@ -30,7 +30,9 @@
     "property-no-unknown": null,
     "property-no-deprecated": null,
     "no-invalid-position-declaration": null,
-    "declaration-block-single-line-max-declarations": null
+    "declaration-block-single-line-max-declarations": null,
+
+    "no-descending-specificity": null
   },
   "ignoreFiles": ["src/tokens/_variables.scss", "src/tokens/_effects.scss", "src/tokens/_text-styles.scss"]
 }
