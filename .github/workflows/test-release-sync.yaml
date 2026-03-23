@@ -64,7 +64,41 @@ jobs:
           echo "VERIFIED_LOCK_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
   checks:
-    # Wait to see if the lock file should be updated before running checks:
+    # Lint, format, type-check, package:checks — only needs to run on a modern Node.
+    # Some dev tools (e.g. stylelint 17 via meow) require Node >= 20.
+    needs: "update-lock-file"
+    runs-on: "ubuntu-22.04"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v3"
+        with:
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+
+      - name: "Setup Node"
+        uses: "actions/setup-node@v4"
+        env:
+          SKIP_YARN_COREPACK_CHECK: true
+        with:
+          node-version: "22.x"
+
+      - name: Install dependencies with yarn cache
+        uses: ./.github/actions/yarn-nm-install
+        with:
+          cwd: "."
+
+      - run: "yarn checks"
+
+      - name: "Notify failure on Slack"
+        if: "failure() && github.event_name == 'push'"
+        run: |
+          curl --data-binary @- --header "Content-Type: application/json" --silent "${{ secrets.SLACK_WEBHOOK_ENGINT }}" <<EOF
+          {
+            "text": ":x: ${{ github.workflow }} workflow by ${{ github.actor }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id}}|failed> in ${{ github.job }} on <${{ github.server_url }}/${{ github.repository }}/commit/$GITHUB_SHA|${{ github.ref_name }}>"
+          }
+          EOF
+
+  # Unit tests run on the full Node matrix to verify runtime compatibility.
+  test:
     needs: "update-lock-file"
     runs-on: "ubuntu-22.04"
     strategy:
@@ -102,7 +136,7 @@ jobs:
           echo 'export BITCOIN_NETWORK="REGTEST"' >> ~/.lightsparkapienv
           echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
 
-      - run: "yarn checks"
+      - run: "yarn test-cmd"
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
@@ -116,24 +150,20 @@ jobs:
   # turbo doesn't seem to parallelize builds with checks although they don't depend on one another,
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
-    # Wait to see if the lock file should be updated before running checks:
     needs: "update-lock-file"
     runs-on: "ubuntu-22.04"
-    strategy:
-      matrix:
-        node-version: ["18.x", "22.x"]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
           ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
 
-      - name: "Setup Node v${{ matrix.node-version }}"
+      - name: "Setup Node"
         uses: "actions/setup-node@v4"
         env:
           SKIP_YARN_COREPACK_CHECK: true
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "22.x"
 
       - name: Install dependencies with yarn cache
         uses: ./.github/actions/yarn-nm-install
@@ -153,7 +183,7 @@ jobs:
 
   release:
     name: Release
-    needs: ["checks", "build"]
+    needs: ["checks", "test", "build"]
     permissions:
       id-token: write
       contents: write
