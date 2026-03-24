@@ -14,21 +14,33 @@ on:
 
 jobs:
   update-lock-file:
-    if: github.head_ref != 'changeset-release/main'
-    name: "Update lock file for PRs before checks and build"
+    # Only auto-update the lock file on the develop→main sync PR (where webdev
+    # dependency changes land). All other PRs must commit a correct lock file
+    # themselves — enforced by --immutable in downstream jobs.
+    if: github.head_ref == 'develop'
+    name: "Update lock file for develop→main sync PR"
     runs-on: "ubuntu-22.04"
-    permissions:
-      contents: write
-      pull-requests: write
     outputs:
       VERIFIED_LOCK_COMMIT: ${{ steps.sync-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
     steps:
+      - name: "Generate a token"
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.LIGHTSPARK_COPYBARA_APP_ID }}
+          private-key: ${{ secrets.LIGHTSPARK_COPYBARA_PRIVATE_KEY }}
+          owner: lightsparkdev
+          repositories: js-sdk
+
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
           # use branch name instead of triggering ref so we can commit to the PR branch:
           ref: ${{ github.head_ref }}
           fetch-depth: 2
+          # Use app token so lock file commits trigger CI re-runs
+          # (GITHUB_TOKEN commits don't trigger workflows)
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v4"
@@ -67,12 +79,13 @@ jobs:
     # Lint, format, type-check, package:checks — only needs to run on a modern Node.
     # Some dev tools (e.g. stylelint 17 via meow) require Node >= 20.
     needs: "update-lock-file"
+    if: "!failure() && !cancelled()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
-          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT || github.event.pull_request.head.sha || github.sha }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v4"
@@ -100,6 +113,7 @@ jobs:
   # Unit tests run on the full Node matrix to verify runtime compatibility.
   test:
     needs: "update-lock-file"
+    if: "!failure() && !cancelled()"
     runs-on: "ubuntu-22.04"
     strategy:
       matrix:
@@ -108,7 +122,7 @@ jobs:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
-          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT || github.event.pull_request.head.sha || github.sha }}
 
       - name: "Setup Node v${{ matrix.node-version }}"
         uses: "actions/setup-node@v4"
@@ -151,12 +165,13 @@ jobs:
   # or else there's something in CI that prevents it from doing it well. Faster to keep them separate.
   build:
     needs: "update-lock-file"
+    if: "!failure() && !cancelled()"
     runs-on: "ubuntu-22.04"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
         with:
-          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT }}
+          ref: ${{ needs.update-lock-file.outputs.VERIFIED_LOCK_COMMIT || github.event.pull_request.head.sha || github.sha }}
 
       - name: "Setup Node"
         uses: "actions/setup-node@v4"
