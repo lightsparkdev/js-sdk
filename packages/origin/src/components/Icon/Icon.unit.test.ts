@@ -32,22 +32,17 @@ describe("Icon registry", () => {
 });
 
 describe("Vendored icon files", () => {
-  it("CentralIconBase exists with required files", () => {
-    const baseDir = join(ICONS_DIR, "CentralIconBase");
-    expect(existsSync(join(baseDir, "index.mjs")), "missing index.mjs").toBe(
-      true,
-    );
-    expect(existsSync(join(baseDir, "index.d.ts")), "missing index.d.ts").toBe(
-      true,
-    );
+  it("CentralIconBase.tsx exists", () => {
+    expect(
+      existsSync(join(ICONS_DIR, "CentralIconBase.tsx")),
+      "missing CentralIconBase.tsx",
+    ).toBe(true);
   });
 
   const iconsWithOwnFiles = registryKeys.filter((k) => k !== "IconChevronDown");
 
-  it.each(iconsWithOwnFiles)("%s has index.mjs and index.d.ts", (name) => {
-    const dir = join(ICONS_DIR, name);
-    expect(existsSync(join(dir, "index.mjs")), `${name}/index.mjs`).toBe(true);
-    expect(existsSync(join(dir, "index.d.ts")), `${name}/index.d.ts`).toBe(
+  it.each(iconsWithOwnFiles)("%s.tsx exists", (name) => {
+    expect(existsSync(join(ICONS_DIR, `${name}.tsx`)), `${name}.tsx`).toBe(
       true,
     );
   });
