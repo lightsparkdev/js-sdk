@@ -13,7 +13,7 @@ if (!CLIENT_ID || !CLIENT_SECRET) {
   );
 }
 
-export class OAuthProvider {
+class OAuthProvider {
   readonly oauthHelper = new OAuthStateHelper(
     CLIENT_ID,
     CLIENT_SECRET,
@@ -38,3 +38,5 @@ export class OAuthProvider {
     return this.oauthHelper.isAuthorized();
   }
 }
+
+export { OAuthProvider };

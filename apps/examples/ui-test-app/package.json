@@ -44,7 +44,7 @@
     "@lightsparkdev/vite": "*",
     "@testing-library/jest-dom": "^6.1.2",
     "@types/jest": "^29.5.3",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^4.0.1",
     "babel-jest": "^29.6.4",
     "eslint": "^9.0.0",
     "eslint-watch": "^8.0.0",
@@ -58,7 +58,7 @@
     "ts-jest": "^29.1.1",
     "tsc-absolute": "^1.0.1",
     "typescript": "^5.6.2",
-    "vite": "^8.0.3"
+    "vite": "^5.1.6"
   },
   "madge": {
     "detectiveOptions": {
@@ -71,6 +71,6 @@
     }
   },
   "engines": {
-    "node": ">=20.19"
+    "node": ">=18"
   }
 }

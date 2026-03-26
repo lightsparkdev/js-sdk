@@ -1,10 +1,10 @@
-import react from "@vitejs/plugin-react";
-import childProcess from "child_process";
-import fs from "fs";
-import path from "path";
-import { visualizer } from "rollup-plugin-visualizer";
-import { defineConfig } from "vite";
-import svgr from "vite-plugin-svgr";
+const react = require("@vitejs/plugin-react").default;
+const childProcess = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const { defineConfig } = require("vite");
+const svgr = require("vite-plugin-svgr").default;
+const { visualizer } = require("rollup-plugin-visualizer");
 
 const currentCommit = childProcess
   .execSync("git rev-parse HEAD")
@@ -14,11 +14,11 @@ const currentCommit = childProcess
 
 const basename = process.env.VITE_BASENAME || "/";
 
-export const buildConfig = ({
+module.exports.buildConfig = ({
   port = 3000,
   base = basename,
   dirname,
-  rolldownOptions,
+  rollupOptions,
   chunks = { "/node_modules/": "vendor" },
   proxyTarget = "http://127.0.0.1:5000",
   preview = {},
@@ -226,8 +226,11 @@ export const buildConfig = ({
       include: ["@lightsparkdev/crypto-wasm"],
     },
     build: {
-      rolldownOptions: { output: { manualChunks }, ...rolldownOptions },
+      rollupOptions: { output: { manualChunks }, ...rollupOptions },
       assetsDir: "static",
+      commonjsOptions: {
+        include: [/@lightsparkdev\/crypto-wasm/, /node_modules/],
+      },
     },
     resolve: {
       alias: {
