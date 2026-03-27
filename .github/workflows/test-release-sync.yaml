@@ -210,7 +210,7 @@ jobs:
       id-token: write
       contents: write
       pull-requests: write
-    if: "success() && github.event_name == 'push'"
+    if: "!failure() && !cancelled() && github.event_name == 'push'"
     runs-on: "ubuntu-22.04"
     environment: npm
     steps:
