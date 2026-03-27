@@ -10,7 +10,8 @@
     "build-sb": "turbo run build-sb",
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
-    "checks": "yarn deps:check && turbo gql-codegen && turbo run lint format test circular-deps package:checks",
+    "checks": "yarn deps:check && turbo gql-codegen && turbo run lint format circular-deps package:checks",
+    "test-cmd": "turbo run test",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
     "clean-all": "./clean-all.sh",
@@ -52,6 +53,17 @@
     "prismjs": "^1.29.0",
     "ts-prune": "^0.10.3",
     "turbo": "^2.5.4"
+  },
+  "dependenciesMeta": {
+    "@central-icons-react/round-filled-radius-3-stroke-1.5": {
+      "built": false
+    },
+    "@central-icons-react/round-outlined-radius-0-stroke-1.5": {
+      "built": false
+    },
+    "@central-icons-react/round-outlined-radius-3-stroke-1.5": {
+      "built": false
+    }
   },
   "engines": {
     "node": ">=18"

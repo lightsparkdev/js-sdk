@@ -1,0 +1,83 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 64px;
+  max-height: var(--_textarea-group-max-height, none);
+  background: transparent;
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-lg));
+  // clip instead of hidden: avoids creating a scroll context so the
+  // textarea can own its own overflow-y scrolling independently.
+  overflow: clip;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:has(> .textarea:focus) {
+    @include input-focus;
+  }
+
+  &[data-invalid] {
+    border-color: var(--border-critical);
+
+    &:has(> .textarea:focus) {
+      @include input-critical;
+    }
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  flex-shrink: 0;
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-2xs);
+}
+
+.textarea {
+  @include body;
+  box-sizing: border-box;
+  display: block;
+  // Progressive enhancement: auto-grows with content in supported browsers.
+  // Falls back to standard rows-based sizing in older browsers.
+  field-sizing: content;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  resize: none;
+  overflow-y: auto;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding: var(--spacing-sm);
+}

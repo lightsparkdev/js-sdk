@@ -1,0 +1,117 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+// Root - base styles (no card surface for simple variant)
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+// Structured variant - has card surface
+.structured {
+  background-color: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-xl));
+  overflow: clip;
+}
+
+// Simple variant - no card surface, just padding + gap
+.simple {
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+}
+
+// Header (structured variant)
+// Default: pt 32px, pb 16px
+// With BackButton: pt 24px, pb 16px, gap 16px
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-block-start: var(--spacing-2xl);
+  padding-block-end: var(--spacing-md);
+  padding-inline: var(--spacing-xl);
+
+  // When BackButton is present, reduce top padding
+  &:has(.backButton) {
+    padding-block-start: var(--spacing-xl);
+  }
+}
+
+// Back button
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background-color: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-sm), var(--input-focus);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// TitleGroup (wraps Title + Subtitle)
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3xs);
+  width: 100%;
+}
+
+// Title
+.title {
+  @include headline-sm;
+
+  margin: 0;
+  color: var(--text-primary);
+}
+
+// Subtitle
+.subtitle {
+  @include body;
+
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+// Body
+.body {
+  @include body;
+
+  width: 100%;
+  color: var(--text-primary);
+}
+
+// Body in structured variant has padding (default, not fullwidth)
+.bodyStructured {
+  padding-block: var(--spacing-sm);
+  padding-inline: var(--spacing-xl);
+}
+
+// Footer (structured variant)
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding-block-start: var(--spacing-sm);
+  padding-block-end: var(--spacing-xl);
+  padding-inline: var(--spacing-xl);
+}

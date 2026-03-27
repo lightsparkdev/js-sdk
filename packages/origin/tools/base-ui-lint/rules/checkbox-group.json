@@ -1,0 +1,22 @@
+{
+  "component": "CheckboxGroup",
+  "matches": [
+    "Checkbox Group",
+    "CheckboxGroup"
+  ],
+  "parts": {
+    "Root": {
+      "required": false,
+      "parent": null,
+      "aliases": ["CheckboxGroupRoot", "Container", "Group"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Description",
+    "Checkbox",
+    "Item"
+  ],
+  "note": "CheckboxGroup is a container for multiple Checkbox components. Individual checkboxes use Checkbox rules."
+}
+

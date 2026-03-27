@@ -1,0 +1,20 @@
+{
+  "component": "Toggle",
+  "matches": [
+    "Toggle",
+    "ToggleButton"
+  ],
+  "parts": {
+    "Indicator": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ToggleIndicator", "Icon", "Check"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Icon",
+    "Text"
+  ]
+}
+

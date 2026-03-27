@@ -1,0 +1,82 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: inline-flex;
+  align-items: center;
+}
+
+.list {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-3xs);
+  overflow: clip;
+  background: var(--surface-secondary);
+  @include smooth-corners(var(--corner-radius-sm));
+}
+
+.list > .link + .link {
+  margin-inline-start: var(--spacing-2xs);
+}
+
+.group {
+  position: relative;
+  display: inline-flex;
+  gap: var(--spacing-2xs);
+  align-items: center;
+}
+
+.group + .group {
+  margin-inline-start: var(--spacing-xs);
+  padding-inline-start: var(--spacing-xs);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: calc(-1 * var(--spacing-3xs));
+    bottom: calc(-1 * var(--spacing-3xs));
+    inset-inline-start: 0;
+    width: var(--stroke-xs);
+    background: var(--border-secondary);
+  }
+}
+
+.link {
+  @include label;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 var(--spacing-md);
+  border: var(--stroke-xs) solid transparent;
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  outline: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    color 150ms ease;
+
+  &[aria-current="page"] {
+    background: var(--surface-panel);
+    border-color: var(--border-primary);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    background: var(--surface-panel);
+    border-color: var(--border-secondary);
+    box-shadow: var(--input-focus);
+    color: var(--text-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link {
+    transition: none;
+  }
+}

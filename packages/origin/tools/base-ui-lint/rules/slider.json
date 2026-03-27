@@ -1,0 +1,33 @@
+{
+  "component": "Slider",
+  "matches": [
+    "Slider",
+    "Range Slider"
+  ],
+  "parts": {
+    "Track": {
+      "required": true,
+      "parent": null,
+      "aliases": ["SliderTrack", "Rail"]
+    },
+    "Range": {
+      "required": false,
+      "parent": "Track",
+      "aliases": ["SliderRange", "Fill", "Progress", "ActiveTrack"]
+    },
+    "Thumb": {
+      "required": true,
+      "parent": "Track",
+      "aliases": ["SliderThumb", "Handle", "Knob"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Value",
+    "Min",
+    "Max",
+    "Tick",
+    "Mark"
+  ]
+}
+

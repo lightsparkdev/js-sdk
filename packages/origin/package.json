@@ -1,0 +1,113 @@
+{
+  "name": "@lightsparkdev/origin",
+  "version": "0.14.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Origin Design System v2 - Base UI + Figma-first approach",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightsparkdev/webdev.git",
+    "directory": "js/packages/origin"
+  },
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./dist/styles.css",
+    "./tokens/*": "./src/tokens/*"
+  },
+  "files": [
+    "dist/",
+    "src/components/",
+    "src/tokens/",
+    "src/lib/",
+    "src/index.ts",
+    "public/fonts/",
+    "skills/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "yarn build:styles",
+    "build:styles": "sass src/styles/public.scss dist/styles.css --no-source-map",
+    "build:watch": "sass --watch src/styles/public.scss dist/styles.css --no-source-map",
+    "clean": "rm -rf dist",
+    "dev": "next dev",
+    "format": "prettier src --check",
+    "format:fix": "prettier src --write",
+    "lint": "eslint src/ && stylelint 'src/**/*.scss'",
+    "lint:fix": "eslint --fix src/ && stylelint --fix 'src/**/*.scss'",
+    "lint:styles": "stylelint 'src/**/*.scss'",
+    "lint:watch": "esw src/ -w --ext .ts,.tsx --color",
+    "package:checks": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm internal-resolution-error --exclude-entrypoints ./styles.css",
+    "storybook": "storybook dev -p 6006",
+    "build-sb": "echo 'Origin storybook requires @storybook/nextjs — run locally with: yarn storybook'",
+    "test": "vitest run",
+    "test:ct": "playwright test -c playwright-ct.config.ts",
+    "test:ct:ui": "playwright test -c playwright-ct.config.ts --ui",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "tokens:build": "node scripts/build-tokens.js",
+    "icons:extract": "node scripts/extract-icons.mjs",
+    "types": "tsc",
+    "types:watch": "tsc --watch",
+    "check:baseui": "node scripts/check-baseui-version.js",
+    "prepack": "yarn build:styles"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.1.0",
+    "@base-ui/utils": "^0.2.3",
+    "@tanstack/react-table": "^8.21.3",
+    "ajv": "^8.18.0",
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "next": ">=13",
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "sass": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.4",
+    "@axe-core/playwright": "^4.11.0",
+    "@central-icons-react/round-filled-radius-3-stroke-1.5": "^1.1.153",
+    "@central-icons-react/round-outlined-radius-0-stroke-1.5": "^1.1.153",
+    "@central-icons-react/round-outlined-radius-3-stroke-1.5": "^1.1.153",
+    "@lightsparkdev/eslint-config": "*",
+    "@lightsparkdev/tsconfig": "0.0.1",
+    "@playwright/experimental-ct-react": "^1.57.0",
+    "@storybook/nextjs": "^10.1.10",
+    "@storybook/react": "^10.1.10",
+    "@testing-library/dom": "^9.2.0",
+    "@testing-library/jest-dom": "^6.1.2",
+    "@testing-library/react": "^14.0.0",
+    "@types/node": "^20.2.5",
+    "@types/react": "^18.2.12",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "dotenv": "^16.3.1",
+    "eslint": "^9.0.0",
+    "eslint-watch": "^8.0.0",
+    "jsdom": "^25.0.1",
+    "match-sorter": "^8.2.0",
+    "next": "^13.5.10",
+    "prettier": "3.0.3",
+    "publint": "^0.3.9",
+    "react": "^18.2.0",
+    "react-dom": "^18.1.0",
+    "sass": "^1.80.0",
+    "storybook": "^10.1.10",
+    "stylelint": "^17.1.1",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "typescript": "^5.6.2",
+    "vitest": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

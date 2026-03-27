@@ -1,0 +1,57 @@
+{
+  "component": "ContextMenu",
+  "matches": [
+    "Context Menu",
+    "ContextMenu",
+    "Right Click Menu"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ContextMenuTrigger", "Target", "Area"]
+    },
+    "Portal": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ContextMenuPortal"]
+    },
+    "Positioner": {
+      "required": false,
+      "parent": null,
+      "aliases": ["ContextMenuPositioner"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["ContextMenuPopup", "Menu", "Content"]
+    },
+    "Item": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["ContextMenuItem", "Option", "Action"]
+    },
+    "Separator": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ContextMenuSeparator", "Divider"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ContextMenuGroupLabel", "Group"]
+    },
+    "SubmenuTrigger": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["ContextMenuSubmenuTrigger", "Submenu"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Label",
+    "Shortcut",
+    "Arrow"
+  ]
+}
+

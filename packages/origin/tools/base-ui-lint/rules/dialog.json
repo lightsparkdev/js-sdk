@@ -1,0 +1,41 @@
+{
+  "component": "Dialog",
+  "matches": [
+    "Dialog",
+    "Modal"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": false,
+      "parent": null,
+      "aliases": ["DialogTrigger", "ModalTrigger", "OpenButton"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "Modal", "DialogContent", "ModalContent", "Panel"]
+    },
+    "Title": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["Header", "DialogTitle", "ModalTitle", "Heading"]
+    },
+    "Description": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["Body", "DialogDescription", "ModalDescription", "Content"]
+    },
+    "Close": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["CloseButton", "DialogClose", "ModalClose", "Dismiss"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Actions",
+    "Footer",
+    "Divider"
+  ]
+}
+

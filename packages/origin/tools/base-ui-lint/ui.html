@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 12px;
+      color: #333;
+      background: #fff;
+      padding: 12px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: 12px;
+    }
+    
+    .header h1 {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .component-name {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    
+    .base-ui-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 16px;
+    }
+    
+    .message {
+      padding: 16px;
+      text-align: center;
+      color: #666;
+      background: #f5f5f5;
+      border-radius: 6px;
+    }
+    
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .result-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 4px;
+      background: #f8f8f8;
+    }
+    
+    .result-item.correct {
+      background: #e8f5e9;
+    }
+    
+    .result-item.rename {
+      background: #fff3e0;
+    }
+    
+    .result-item.missing {
+      background: #ffebee;
+    }
+    
+    .result-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    
+    .result-icon.correct { color: #4caf50; }
+    .result-icon.rename { color: #ff9800; }
+    .result-icon.missing { color: #f44336; }
+    
+    .result-content {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .result-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    
+    .result-status {
+      font-size: 11px;
+      color: #666;
+    }
+    
+    .result-fix {
+      font-size: 11px;
+      color: #1976d2;
+      margin-top: 4px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e5e5;
+    }
+    
+    button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    
+    button.primary {
+      background: #18a0fb;
+      color: white;
+    }
+    
+    button.primary:hover {
+      background: #0d8de8;
+    }
+    
+    button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    button.secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    button.secondary:hover {
+      background: #e0e0e0;
+    }
+    
+    .summary {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 11px;
+    }
+    
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .summary-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .summary-dot.correct { background: #4caf50; }
+    .summary-dot.rename { background: #ff9800; }
+    .summary-dot.missing { background: #f44336; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Base UI Lint</h1>
+  </div>
+  
+  <div id="content">
+    <div class="message">Select a component to lint</div>
+  </div>
+  
+  <div class="actions">
+    <button class="primary" id="fix-btn" disabled>Fix All</button>
+    <button class="secondary" id="refresh-btn">Refresh</button>
+  </div>
+  
+  <script>
+    const content = document.getElementById('content');
+    const fixBtn = document.getElementById('fix-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    
+    let hasFixableIssues = false;
+    
+    // Handle messages from plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      
+      if (msg.type === 'lint-results') {
+        renderResults(msg);
+      }
+    };
+    
+    function renderResults(data) {
+      const { results, component, baseUIComponent, message } = data;
+      
+      if (message) {
+        content.innerHTML = `<div class="message">${escapeHtml(message)}</div>`;
+        fixBtn.disabled = true;
+        hasFixableIssues = false;
+        return;
+      }
+      
+      // Count by status
+      const counts = { correct: 0, rename: 0, missing: 0 };
+      results.forEach(r => counts[r.status]++);
+      
+      hasFixableIssues = counts.rename > 0;
+      fixBtn.disabled = !hasFixableIssues;
+      
+      let html = '';
+      
+      // Component header
+      html += `<div class="component-name">Selected: ${escapeHtml(component)}</div>`;
+      html += `<div class="base-ui-name">Base UI: ${escapeHtml(baseUIComponent)}</div>`;
+      
+      // Summary
+      html += `<div class="summary">`;
+      html += `<div class="summary-item"><span class="summary-dot correct"></span>${counts.correct} correct</div>`;
+      html += `<div class="summary-item"><span class="summary-dot rename"></span>${counts.rename} to rename</div>`;
+      html += `<div class="summary-item"><span class="summary-dot missing"></span>${counts.missing} missing</div>`;
+      html += `</div>`;
+      
+      // Results list
+      html += `<div class="results">`;
+      
+      for (const result of results) {
+        const icon = result.status === 'correct' ? '✓' : 
+                     result.status === 'rename' ? '!' : '✗';
+        
+        html += `<div class="result-item ${result.status}">`;
+        html += `<div class="result-icon ${result.status}">${icon}</div>`;
+        html += `<div class="result-content">`;
+        html += `<div class="result-name">${escapeHtml(result.expectedPart)}</div>`;
+        
+        if (result.status === 'correct') {
+          html += `<div class="result-status">Found: ${escapeHtml(result.foundName || '')}</div>`;
+        } else if (result.status === 'rename') {
+          const nodeCount = result.nodes ? result.nodes.length : 1;
+          html += `<div class="result-status">Found: "${escapeHtml(result.foundName || '')}" (${nodeCount} instance${nodeCount !== 1 ? 's' : ''})</div>`;
+          html += `<div class="result-fix">→ Will rename ${nodeCount} node${nodeCount !== 1 ? 's' : ''} to "${escapeHtml(result.suggestedName || '')}"</div>`;
+        } else if (result.status === 'missing') {
+          html += `<div class="result-status">Not found</div>`;
+          if (result.suggestion) {
+            html += `<div class="result-fix">→ ${escapeHtml(result.suggestion)}</div>`;
+          }
+        }
+        
+        html += `</div></div>`;
+      }
+      
+      html += `</div>`;
+      
+      content.innerHTML = html;
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+    }
+    
+    // Button handlers
+    fixBtn.onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'apply-fixes' } }, '*');
+    };
+    
+    refreshBtn.onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'run-lint' } }, '*');
+    };
+  </script>
+</body>
+</html>
+

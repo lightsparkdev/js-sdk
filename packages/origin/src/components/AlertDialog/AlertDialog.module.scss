@@ -1,0 +1,84 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: var(--surface-backdrop);
+  transition: opacity 200ms ease-out;
+
+  &[data-open] {
+    opacity: 1;
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.popup {
+  position: fixed;
+  // 38% optical center -- feels slightly above midpoint like Linear/Vercel
+  top: 38%;
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  max-width: calc(100vw - var(--spacing-2xl));
+  overflow: clip;
+  background-color: var(--surface-panel);
+  border: var(--stroke-xs) solid var(--border-secondary);
+  @include smooth-corners(var(--corner-radius-md));
+  box-shadow: var(--shadow-lg);
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+
+  &[data-open] {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.title {
+  @include headline-sm;
+  width: 100%;
+  padding: var(--spacing-2xl) var(--spacing-xl) var(--spacing-3xs);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.description {
+  @include body;
+  width: 100%;
+  padding: 0 var(--spacing-xl) var(--spacing-md);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-xs);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-xl)
+    var(--spacing-xl);
+}

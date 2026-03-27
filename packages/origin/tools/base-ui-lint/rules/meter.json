@@ -1,0 +1,24 @@
+{
+  "component": "Meter",
+  "matches": [
+    "Meter"
+  ],
+  "parts": {
+    "Track": {
+      "required": true,
+      "parent": null,
+      "aliases": ["MeterTrack", "Background", "Rail"]
+    },
+    "Indicator": {
+      "required": true,
+      "parent": "Track",
+      "aliases": ["MeterIndicator", "Fill", "Value", "Bar"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Value",
+    "Text"
+  ]
+}
+

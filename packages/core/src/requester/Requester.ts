@@ -284,7 +284,7 @@ class Requester {
       query,
       variables,
       operationName,
-      nonce,
+      nonce: nonce.toString(),
       expires_at: expiration,
     };
 

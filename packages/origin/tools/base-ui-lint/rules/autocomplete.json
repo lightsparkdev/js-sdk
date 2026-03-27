@@ -1,0 +1,60 @@
+{
+  "component": "Autocomplete",
+  "matches": [
+    "Autocomplete"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["AutocompleteTrigger", "Input", "SearchInput"]
+    },
+    "Portal": {
+      "required": false,
+      "parent": null,
+      "aliases": ["AutocompletePortal"]
+    },
+    "Positioner": {
+      "required": false,
+      "parent": null,
+      "aliases": ["AutocompletePositioner"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["AutocompletePopup", "Listbox", "Dropdown", "Options"]
+    },
+    "Option": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["AutocompleteOption", "Item", "ListItem"]
+    },
+    "OptionIndicator": {
+      "required": false,
+      "parent": "Option",
+      "aliases": ["AutocompleteOptionIndicator", "Check", "Checkmark"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["AutocompleteGroupLabel", "Group", "Category"]
+    },
+    "NoOptions": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["Empty", "NoResults"]
+    },
+    "Clear": {
+      "required": false,
+      "parent": null,
+      "aliases": ["AutocompleteClear", "ClearButton"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Placeholder",
+    "Label",
+    "Description"
+  ]
+}
+

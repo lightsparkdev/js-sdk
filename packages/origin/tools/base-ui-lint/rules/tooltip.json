@@ -1,0 +1,28 @@
+{
+  "component": "Tooltip",
+  "matches": [
+    "Tooltip"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["TooltipTrigger", "Target"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "TooltipContent", "Panel", "Tip"]
+    },
+    "Arrow": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["TooltipArrow", "Pointer", "Caret"]
+    }
+  },
+  "ignored": [
+    "Text",
+    "Icon"
+  ]
+}
+

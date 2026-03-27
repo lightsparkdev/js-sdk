@@ -123,3 +123,6 @@ example/vendor/
 package-lock.json
 
 stats.html
+
+# Dev proxy cookies (contains ALB session tokens)
+.dev-proxy-cookies

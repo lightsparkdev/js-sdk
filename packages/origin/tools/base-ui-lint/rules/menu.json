@@ -1,0 +1,70 @@
+{
+  "component": "Menu",
+  "matches": [
+    "Menu",
+    "Dropdown",
+    "DropdownMenu",
+    "Context Menu",
+    "ContextMenu"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["MenuTrigger", "DropdownTrigger", "Button"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "MenuContent", "Dropdown", "Panel"]
+    },
+    "Item": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["MenuItem", "Option", "Action"]
+    },
+    "ItemText": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["Label", "Text", "Title"]
+    },
+    "ItemIndicator": {
+      "required": false,
+      "parent": "Item",
+      "aliases": ["Checkmark", "Check", "Indicator"]
+    },
+    "Separator": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["Divider", "MenuSeparator"]
+    },
+    "Group": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["MenuGroup", "ItemGroup"]
+    },
+    "GroupLabel": {
+      "required": false,
+      "parent": "Group",
+      "aliases": ["GroupTitle", "GroupHeader", "Label"]
+    },
+    "Submenu": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["SubMenu", "NestedMenu"]
+    },
+    "SubmenuTrigger": {
+      "required": false,
+      "parent": "Submenu",
+      "aliases": ["SubMenuTrigger", "NestedTrigger"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Shortcut",
+    "Arrow",
+    "Leading",
+    "Trailing"
+  ]
+}
+

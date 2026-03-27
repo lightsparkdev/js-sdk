@@ -1,0 +1,41 @@
+{
+  "component": "Accordion",
+  "matches": [
+    "Accordion",
+    "Accordion / Item"
+  ],
+  "parts": {
+    "Item": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Accordion / Item", "AccordionItem"]
+    },
+    "Header": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["ItemHeader", "Accordion Header"]
+    },
+    "Trigger": {
+      "required": true,
+      "parent": "Header",
+      "aliases": ["ItemTrigger", "Accordion Trigger", "Button"]
+    },
+    "Panel": {
+      "required": true,
+      "parent": "Item",
+      "aliases": ["Content", "ItemContent", "AccordionContent", "Accordion Content"]
+    }
+  },
+  "ignored": [
+    "Title",
+    "Label",
+    "Icon",
+    "IconChevronDownSmall",
+    "IconChevronUpSmall",
+    "Description",
+    "Text",
+    "Divider",
+    "Separator"
+  ]
+}
+

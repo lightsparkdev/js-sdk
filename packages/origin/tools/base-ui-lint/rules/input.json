@@ -1,0 +1,19 @@
+{
+  "component": "Input",
+  "matches": [
+    "Input",
+    "TextInput",
+    "Text Input"
+  ],
+  "parts": {},
+  "ignored": [
+    "Icon",
+    "Prefix",
+    "Suffix",
+    "Clear",
+    "Label",
+    "Placeholder"
+  ],
+  "note": "Input is a simple component with no required sub-parts. Use Field for labeled inputs."
+}
+

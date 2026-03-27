@@ -1,0 +1,102 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-width: 32px;
+  padding: 0 var(--spacing-xs);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-xs));
+  background-color: var(--surface-primary);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  overflow: clip;
+  gap: var(--spacing-none);
+  @include body;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+
+  &:focus-visible {
+    outline: none;
+    background-color: var(--surface-hover);
+    border-color: var(--border-secondary);
+    box-shadow:
+      var(--shadow-sm),
+      0 0 0 3px var(--state-focus);
+  }
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-hover);
+    }
+  }
+
+  // Pressed uses same background as hover (intentional per design)
+  &[data-pressed] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// Inside a ToggleGroup, the group owns the border-radius and shadow.
+// Note: uses direct child selector — toggles wrapped in intermediate
+// elements (e.g., Tooltip.Trigger) won't receive group styling.
+.toggleGroup {
+  display: inline-flex;
+  width: fit-content;
+  @include smooth-corners(var(--corner-radius-xs));
+  box-shadow: var(--shadow-sm);
+
+  & > .toggle {
+    border-radius: 0;
+    box-shadow: none;
+
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        position: relative;
+        z-index: 1;
+      }
+    }
+
+    &:focus-visible {
+      // Keep focus ring visible above siblings
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 0 3px var(--state-focus);
+    }
+
+    &:first-child {
+      border-top-left-radius: var(--corner-radius-xs);
+      border-bottom-left-radius: var(--corner-radius-xs);
+    }
+
+    &:last-child {
+      border-top-right-radius: var(--corner-radius-xs);
+      border-bottom-right-radius: var(--corner-radius-xs);
+    }
+
+    // Strip radius from middle children
+    &:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+
+    // Collapse duplicate borders between adjacent toggles
+    & + .toggle {
+      margin-left: calc(-1 * var(--stroke-xs));
+    }
+  }
+}

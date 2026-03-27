@@ -2,7 +2,7 @@
 MISE_NODE_COREPACK = true
 
 [tools]
-node = "20"
+node = "20.19"
 
 [tasks.deps]
 description = "Install all JS dependencies"

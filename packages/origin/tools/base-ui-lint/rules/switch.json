@@ -1,0 +1,21 @@
+{
+  "component": "Switch",
+  "matches": [
+    "Switch",
+    "Toggle Switch"
+  ],
+  "parts": {
+    "Thumb": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Knob", "Handle", "SwitchThumb", "Indicator"]
+    }
+  },
+  "ignored": [
+    "Track",
+    "Label",
+    "Description",
+    "Icon"
+  ]
+}
+

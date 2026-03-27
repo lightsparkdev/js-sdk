@@ -1,0 +1,37 @@
+{
+  "component": "Tabs",
+  "matches": [
+    "Tabs",
+    "Tab",
+    "TabGroup"
+  ],
+  "parts": {
+    "List": {
+      "required": true,
+      "parent": null,
+      "aliases": ["TabList", "TabsNav", "Navigation", "Header"]
+    },
+    "Tab": {
+      "required": true,
+      "parent": "List",
+      "aliases": ["TabTrigger", "TabButton", "Trigger", "Item"]
+    },
+    "Indicator": {
+      "required": false,
+      "parent": "List",
+      "aliases": ["TabIndicator", "ActiveIndicator", "Underline", "Highlight"]
+    },
+    "Panel": {
+      "required": true,
+      "parent": null,
+      "aliases": ["TabPanel", "TabContent", "Content", "TabPane"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Label",
+    "Badge",
+    "Count"
+  ]
+}
+

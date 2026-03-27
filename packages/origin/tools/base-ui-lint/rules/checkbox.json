@@ -1,0 +1,20 @@
+{
+  "component": "Checkbox",
+  "matches": [
+    "Checkbox"
+  ],
+  "parts": {
+    "Indicator": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Check", "Checkmark", "Box", "CheckboxIndicator"]
+    }
+  },
+  "ignored": [
+    "Label",
+    "Description",
+    "Icon",
+    "Text"
+  ]
+}
+

@@ -1,0 +1,240 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+// Note: Menu.Trigger has no default styles - use render prop with Button component
+// Example: <Menu.Trigger render={<Button variant="secondary" />}>Actions</Menu.Trigger>
+
+.positioner {
+  z-index: 1000;
+  outline: 0;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+  padding: var(--spacing-3xs);
+  background-color: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-lg);
+  outline: 0;
+  overflow: hidden;
+  min-width: 200px;
+  transform-origin: var(--transform-origin);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.item {
+  @include body;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.checkboxItem {
+  @include body;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.checkboxIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-primary);
+
+  // Hide content when unchecked but keep space reserved
+  &[data-unchecked] {
+    visibility: hidden;
+  }
+
+  &[data-checked] {
+    visibility: visible;
+  }
+}
+
+// Figma spec: 8x8px dot, --icon-primary, --corner-radius-2xs
+.checkboxIndicatorDot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--icon-primary);
+  @include smooth-corners(var(--corner-radius-2xs));
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.radioItem {
+  @include body;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+}
+
+.radioIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-primary);
+
+  // Hide content when unchecked but keep space reserved
+  &[data-unchecked] {
+    visibility: hidden;
+  }
+
+  &[data-checked] {
+    visibility: visible;
+  }
+}
+
+.separator {
+  position: relative;
+  height: var(--spacing-3xs);
+  margin-inline: calc(-1 * var(--spacing-3xs));
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 50%;
+    left: 0;
+    right: 0;
+    height: var(--stroke-xs);
+    background-color: var(--border-primary);
+  }
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.groupLabel {
+  @include label-xs;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding-block-start: var(--spacing-xs);
+  padding-block-end: 0;
+  padding-inline: var(--spacing-sm);
+  color: var(--text-secondary);
+}
+
+.submenuTrigger {
+  @include body;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  height: 36px;
+  padding-block: var(--spacing-xs);
+  padding-inline-start: var(--spacing-sm);
+  padding-inline-end: var(--spacing-3xs);
+  @include smooth-corners(var(--corner-radius-xs));
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+
+  &[data-highlighted] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-popup-open] {
+    background-color: var(--surface-hover);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  // Arrow icon should be text-secondary
+  > svg:last-child,
+  > [data-icon]:last-child {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+}
+
+.arrow {
+  display: flex;
+  fill: var(--surface-primary);
+  stroke: var(--border-primary);
+  stroke-width: var(--stroke-xs);
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}

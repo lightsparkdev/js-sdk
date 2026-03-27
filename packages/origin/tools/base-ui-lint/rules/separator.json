@@ -1,0 +1,13 @@
+{
+  "component": "Separator",
+  "matches": [
+    "Separator",
+    "Divider",
+    "Hr",
+    "Line"
+  ],
+  "parts": {},
+  "ignored": [],
+  "note": "Separator is a simple component with no sub-parts. It's just a visual divider."
+}
+

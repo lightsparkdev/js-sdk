@@ -1,0 +1,43 @@
+{
+  "component": "Popover",
+  "matches": [
+    "Popover"
+  ],
+  "parts": {
+    "Trigger": {
+      "required": true,
+      "parent": null,
+      "aliases": ["PopoverTrigger", "Button"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "PopoverContent", "Panel"]
+    },
+    "Arrow": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["PopoverArrow", "Pointer", "Caret"]
+    },
+    "Title": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["Header", "PopoverTitle"]
+    },
+    "Description": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["Body", "PopoverDescription", "Content"]
+    },
+    "Close": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["CloseButton", "PopoverClose", "Dismiss"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Actions"
+  ]
+}
+

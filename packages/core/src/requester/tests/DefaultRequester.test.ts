@@ -67,7 +67,7 @@ describe("DefaultRequester", () => {
         }),
       ),
       serializeSigningKey: jest.fn(() => Promise.resolve(new ArrayBuffer(0))),
-      getNonce: jest.fn(() => Promise.resolve(123)),
+      getNonce: jest.fn(() => Promise.resolve(123n)),
       sign: jest.fn(() => Promise.resolve(new ArrayBuffer(0))),
       importPrivateSigningKey: jest.fn(() => Promise.resolve("")),
     } satisfies CryptoInterface;

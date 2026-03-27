@@ -1,0 +1,16 @@
+{
+  "component": "Button",
+  "matches": [
+    "Button"
+  ],
+  "parts": {},
+  "ignored": [
+    "Icon",
+    "Label",
+    "Text",
+    "Spinner",
+    "Loading"
+  ],
+  "note": "Button is a simple component with no required sub-parts. It's just a styled button element."
+}
+

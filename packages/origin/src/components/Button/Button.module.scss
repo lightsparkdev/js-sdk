@@ -1,0 +1,292 @@
+@use "../../tokens/mixins" as *;
+
+.button {
+  --button-icon-size: 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  @include smooth-corners(var(--corner-radius-sm));
+  cursor: pointer;
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-book);
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease,
+    border-color 150ms ease;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--state-focus);
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.dense {
+  --button-icon-size: 12px;
+
+  height: 24px;
+  padding: 0 var(--spacing-2xs);
+  font-size: var(--font-size-xs);
+  line-height: var(--font-leading-12);
+  @include smooth-corners(var(--corner-radius-xs));
+
+  &.iconOnly {
+    width: 24px;
+    padding: 0;
+  }
+}
+
+.compact {
+  height: 32px;
+  padding: 0 var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  line-height: var(--font-leading-12);
+
+  &.iconOnly {
+    width: 32px;
+    padding: 0;
+  }
+}
+
+.default {
+  height: 36px;
+  padding: 0 var(--spacing-xs);
+  font-size: var(--font-size-base);
+  line-height: var(--font-leading-20);
+
+  &.iconOnly {
+    width: 36px;
+    padding: 0;
+  }
+}
+
+.filled {
+  background-color: var(--surface-inverse);
+  color: var(--text-inverse);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-inverse);
+      background-image: linear-gradient(
+        var(--surface-inverse-hover),
+        var(--surface-inverse-hover)
+      );
+    }
+  }
+
+  &[data-disabled] {
+    opacity: 0.15;
+  }
+}
+
+.secondary {
+  background-color: var(--surface-alpha-secondary);
+  color: var(--text-primary);
+  // Reserve border space so focus doesn't shift layout
+  border: var(--stroke-xs) solid transparent;
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-alpha-secondary);
+      background-image: linear-gradient(
+        var(--surface-hover),
+        var(--surface-hover)
+      );
+    }
+  }
+
+  &:focus-visible {
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+  }
+
+  &[data-disabled] {
+    opacity: 0.15;
+  }
+}
+
+.outline {
+  background-color: var(--surface-primary);
+  color: var(--text-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    box-shadow:
+      0px 1px 2px 0px rgba(0, 0, 0, 0.08),
+      0 0 0 3px var(--state-focus);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+
+  // Inside a ButtonGroup the container owns the shadow
+  [data-button-group] > & {
+    box-shadow: none;
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px var(--state-focus);
+    }
+  }
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--text-primary);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-hover);
+    }
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.critical {
+  background-color: var(--surface-red-strong);
+  color: var(--text-inverse);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-red-strong);
+      background-image: linear-gradient(
+        var(--surface-inverse-hover),
+        var(--surface-inverse-hover)
+      );
+    }
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 3px var(--state-focus-critical);
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.link {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  height: auto;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-regular);
+  text-decoration: none;
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      text-decoration: underline;
+    }
+  }
+
+  &:focus-visible {
+    text-decoration: underline;
+    box-shadow: none;
+    outline: none;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+
+  // Size-specific overrides for link variant (uses link text styles)
+  &.default {
+    height: auto;
+    padding: 0;
+    font-size: var(--font-size-base);
+    line-height: var(--font-leading-20);
+  }
+
+  &.compact {
+    height: auto;
+    padding: 0;
+    font-size: var(--font-size-xs);
+    line-height: var(--font-leading-18);
+  }
+
+  // Dense link inherits compact link styling (no dense link in Figma spec)
+  &.dense {
+    height: auto;
+    padding: 0;
+    font-size: var(--font-size-xs);
+    line-height: var(--font-leading-18);
+  }
+}
+
+.loading {
+  position: relative;
+  pointer-events: none;
+
+  // Loading buttons are disabled but should not look faded - the action is "in flight"
+  &[data-disabled] {
+    opacity: 1;
+    cursor: wait;
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contentHidden {
+  visibility: hidden;
+}
+
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leadingIcon,
+.trailingIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg {
+    width: var(--button-icon-size);
+    height: var(--button-icon-size);
+  }
+}
+
+.iconOnly .content {
+  svg {
+    width: var(--button-icon-size);
+    height: var(--button-icon-size);
+  }
+}
+
+.label {
+  flex-shrink: 0;
+  padding: 0 var(--spacing-3xs);
+}

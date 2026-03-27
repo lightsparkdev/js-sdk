@@ -1,0 +1,130 @@
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: inline-flex;
+  align-items: stretch;
+
+  // Border-radius merging (horizontal default)
+  > *:not(:first-child):not(:last-child) {
+    border-radius: 0;
+  }
+
+  > *:first-child:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  > *:last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  // Ensure hovered/focused button sits above its neighbors
+  > *:hover,
+  > *:focus-visible {
+    z-index: 1;
+    position: relative;
+  }
+}
+
+// -- Filled variant ----------------------------------------------------------
+// Buttons sit flush; thin separators between them use --border-inverse.
+
+.filled {
+  > * {
+    position: relative;
+  }
+
+  // Separator line between adjacent buttons (horizontal)
+  > * + *::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--stroke-xs);
+    background-color: var(--border-inverse);
+  }
+}
+
+// -- Outline variant ----------------------------------------------------------
+// Shadow moves from individual buttons to the container. Borders collapse via
+// negative margin so adjacent buttons don't double up.
+
+.outline {
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-sm);
+
+  // Collapse adjacent borders horizontally
+  > * + * {
+    margin-left: calc(-1 * var(--stroke-xs));
+  }
+}
+
+// -- Secondary variant --------------------------------------------------------
+// No container shadow or border-radius. Thin separators between buttons
+// using --border-primary, same pseudo-element technique as filled.
+
+.secondary {
+  > * {
+    position: relative;
+  }
+
+  // Separator line between adjacent buttons (horizontal)
+  > * + *::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--stroke-xs);
+    background-color: var(--border-primary);
+  }
+}
+
+// -- Vertical orientation ----------------------------------------------------
+
+.vertical {
+  flex-direction: column;
+
+  // Reset horizontal radius overrides
+  > *:first-child:not(:last-child) {
+    border-top-right-radius: var(--corner-radius-sm);
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  > *:last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: var(--corner-radius-sm);
+  }
+
+  // Filled vertical: separator runs horizontally
+  &.filled > * + *::before {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: var(--stroke-xs);
+  }
+
+  // Outline vertical: collapse borders vertically instead of horizontally
+  &.outline > * + * {
+    margin-left: 0;
+    margin-top: calc(-1 * var(--stroke-xs));
+  }
+
+  // Secondary vertical: separator runs horizontally
+  &.secondary > * + *::before {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: var(--stroke-xs);
+  }
+}

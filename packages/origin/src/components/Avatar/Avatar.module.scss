@@ -1,0 +1,171 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  user-select: none;
+  vertical-align: middle;
+  border: var(--stroke-xs) solid var(--border-primary);
+}
+
+// Sizes
+.size16 {
+  width: 16px;
+  height: 16px;
+}
+
+.size20 {
+  width: 20px;
+  height: 20px;
+}
+
+.size24 {
+  width: 24px;
+  height: 24px;
+}
+
+.size32 {
+  width: 32px;
+  height: 32px;
+}
+
+.size40 {
+  width: 40px;
+  height: 40px;
+}
+
+.size48 {
+  width: 48px;
+  height: 48px;
+}
+
+// Variants - Shape
+// Avatar uses 100% corner smoothing ('full') in Figma
+.squircle {
+  &.size16 {
+    @include smooth-corners(5px, "full");
+  }
+
+  &.size20 {
+    @include smooth-corners(var(--corner-radius-sm), "full");
+  }
+
+  &.size24 {
+    @include smooth-corners(7px, "full");
+  }
+
+  &.size32 {
+    @include smooth-corners(10px, "full");
+  }
+
+  &.size40 {
+    @include smooth-corners(11px, "full");
+  }
+
+  &.size48 {
+    @include smooth-corners(13px, "full");
+  }
+}
+
+.circle {
+  border-radius: var(--corner-radius-round);
+}
+
+// Colors
+.blue {
+  background-color: var(--surface-blue-strong);
+}
+
+.purple {
+  background-color: var(--surface-purple-strong);
+}
+
+.sky {
+  background-color: var(--surface-sky-strong);
+}
+
+.pink {
+  background-color: var(--surface-pink-strong);
+}
+
+.green {
+  background-color: var(--surface-green-strong);
+}
+
+.yellow {
+  background-color: var(--surface-yellow-strong);
+}
+
+.red {
+  background-color: var(--surface-red-strong);
+}
+
+.gray {
+  background-color: var(--surface-neutral);
+}
+
+// Image - fades in when loaded via Base UI transition attributes
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  transition: opacity 200ms ease;
+
+  &[data-starting-style] {
+    opacity: 0;
+  }
+}
+
+// Fallback (initials) - fades out when image loads via Base UI transition attributes
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-inverse);
+  text-align: center;
+  font-weight: var(--font-weight-book);
+  transition: opacity 200ms ease;
+
+  &[data-ending-style] {
+    opacity: 0;
+  }
+
+  // Typography scales with avatar size
+  .size16 & {
+    @include label-xs;
+    color: var(--text-inverse);
+  }
+
+  .size20 & {
+    @include label-sm;
+    color: var(--text-inverse);
+  }
+
+  .size24 & {
+    @include label-sm;
+    color: var(--text-inverse);
+  }
+
+  .size32 & {
+    @include label-sm;
+    color: var(--text-inverse);
+  }
+
+  .size40 & {
+    @include label;
+    color: var(--text-inverse);
+  }
+
+  .size48 & {
+    @include label-lg;
+    color: var(--text-inverse);
+  }
+}

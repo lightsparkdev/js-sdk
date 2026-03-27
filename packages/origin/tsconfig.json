@@ -1,0 +1,30 @@
+{
+  "extends": "@lightsparkdev/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "ES2017",
+    "isolatedModules": true,
+    "incremental": true,
+    "exactOptionalPropertyTypes": false,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@test-utils": ["./test-utils"],
+      "@test-utils/*": ["./test-utils/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "node_modules",
+    "tools",
+    "src/app",
+    "**/*.stories.tsx",
+    "**/*.test-stories.tsx",
+    "**/*.test.tsx",
+    "**/*.unit.test.tsx",
+    "test-utils",
+    "playwright"
+  ]
+}

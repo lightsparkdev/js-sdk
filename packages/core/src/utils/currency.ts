@@ -45,7 +45,14 @@ export const CurrencyUnit = {
   RWF: "RWF",
   ZMW: "ZMW",
   AED: "AED",
+  BDT: "BDT",
+  COP: "COP",
+  EGP: "EGP",
+  GHS: "GHS",
   GTQ: "GTQ",
+  HTG: "HTG",
+  JMD: "JMD",
+  PKR: "PKR",
   USDT: "USDT",
   USDC: "USDC",
 
@@ -62,6 +69,14 @@ export const CurrencyUnit = {
   Inr: "INR",
   Brl: "BRL",
   Aed: "AED",
+  Bdt: "BDT",
+  Cop: "COP",
+  Egp: "EGP",
+  Ghs: "GHS",
+  Gtq: "GTQ",
+  Htg: "HTG",
+  Jmd: "JMD",
+  Pkr: "PKR",
   Usdt: "USDT",
   Usdc: "USDC",
 } as const;
@@ -116,7 +131,14 @@ const standardUnitConversionObj = {
   [CurrencyUnit.RWF]: (v: number) => v,
   [CurrencyUnit.ZMW]: (v: number) => v,
   [CurrencyUnit.AED]: (v: number) => v,
+  [CurrencyUnit.BDT]: (v: number) => v,
+  [CurrencyUnit.COP]: (v: number) => v,
+  [CurrencyUnit.EGP]: (v: number) => v,
+  [CurrencyUnit.GHS]: (v: number) => v,
   [CurrencyUnit.GTQ]: (v: number) => v,
+  [CurrencyUnit.HTG]: (v: number) => v,
+  [CurrencyUnit.JMD]: (v: number) => v,
+  [CurrencyUnit.PKR]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
 };
@@ -170,7 +192,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toBitcoinConversion,
     [CurrencyUnit.ZMW]: toBitcoinConversion,
     [CurrencyUnit.AED]: toBitcoinConversion,
+    [CurrencyUnit.BDT]: toBitcoinConversion,
+    [CurrencyUnit.COP]: toBitcoinConversion,
+    [CurrencyUnit.EGP]: toBitcoinConversion,
+    [CurrencyUnit.GHS]: toBitcoinConversion,
     [CurrencyUnit.GTQ]: toBitcoinConversion,
+    [CurrencyUnit.HTG]: toBitcoinConversion,
+    [CurrencyUnit.JMD]: toBitcoinConversion,
+    [CurrencyUnit.PKR]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
   },
@@ -208,7 +237,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toMicrobitcoinConversion,
     [CurrencyUnit.ZMW]: toMicrobitcoinConversion,
     [CurrencyUnit.AED]: toMicrobitcoinConversion,
+    [CurrencyUnit.BDT]: toMicrobitcoinConversion,
+    [CurrencyUnit.COP]: toMicrobitcoinConversion,
+    [CurrencyUnit.EGP]: toMicrobitcoinConversion,
+    [CurrencyUnit.GHS]: toMicrobitcoinConversion,
     [CurrencyUnit.GTQ]: toMicrobitcoinConversion,
+    [CurrencyUnit.HTG]: toMicrobitcoinConversion,
+    [CurrencyUnit.JMD]: toMicrobitcoinConversion,
+    [CurrencyUnit.PKR]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
   },
@@ -246,7 +282,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toMillibitcoinConversion,
     [CurrencyUnit.ZMW]: toMillibitcoinConversion,
     [CurrencyUnit.AED]: toMillibitcoinConversion,
+    [CurrencyUnit.BDT]: toMillibitcoinConversion,
+    [CurrencyUnit.COP]: toMillibitcoinConversion,
+    [CurrencyUnit.EGP]: toMillibitcoinConversion,
+    [CurrencyUnit.GHS]: toMillibitcoinConversion,
     [CurrencyUnit.GTQ]: toMillibitcoinConversion,
+    [CurrencyUnit.HTG]: toMillibitcoinConversion,
+    [CurrencyUnit.JMD]: toMillibitcoinConversion,
+    [CurrencyUnit.PKR]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
   },
@@ -284,7 +327,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toMillisatoshiConversion,
     [CurrencyUnit.ZMW]: toMillisatoshiConversion,
     [CurrencyUnit.AED]: toMillisatoshiConversion,
+    [CurrencyUnit.BDT]: toMillisatoshiConversion,
+    [CurrencyUnit.COP]: toMillisatoshiConversion,
+    [CurrencyUnit.EGP]: toMillisatoshiConversion,
+    [CurrencyUnit.GHS]: toMillisatoshiConversion,
     [CurrencyUnit.GTQ]: toMillisatoshiConversion,
+    [CurrencyUnit.HTG]: toMillisatoshiConversion,
+    [CurrencyUnit.JMD]: toMillisatoshiConversion,
+    [CurrencyUnit.PKR]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
   },
@@ -322,7 +372,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toNanobitcoinConversion,
     [CurrencyUnit.ZMW]: toNanobitcoinConversion,
     [CurrencyUnit.AED]: toNanobitcoinConversion,
+    [CurrencyUnit.BDT]: toNanobitcoinConversion,
+    [CurrencyUnit.COP]: toNanobitcoinConversion,
+    [CurrencyUnit.EGP]: toNanobitcoinConversion,
+    [CurrencyUnit.GHS]: toNanobitcoinConversion,
     [CurrencyUnit.GTQ]: toNanobitcoinConversion,
+    [CurrencyUnit.HTG]: toNanobitcoinConversion,
+    [CurrencyUnit.JMD]: toNanobitcoinConversion,
+    [CurrencyUnit.PKR]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
   },
@@ -360,7 +417,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RWF]: toSatoshiConversion,
     [CurrencyUnit.ZMW]: toSatoshiConversion,
     [CurrencyUnit.AED]: toSatoshiConversion,
+    [CurrencyUnit.BDT]: toSatoshiConversion,
+    [CurrencyUnit.COP]: toSatoshiConversion,
+    [CurrencyUnit.EGP]: toSatoshiConversion,
+    [CurrencyUnit.GHS]: toSatoshiConversion,
     [CurrencyUnit.GTQ]: toSatoshiConversion,
+    [CurrencyUnit.HTG]: toSatoshiConversion,
+    [CurrencyUnit.JMD]: toSatoshiConversion,
+    [CurrencyUnit.PKR]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
   },
@@ -391,7 +455,14 @@ const CONVERSION_MAP = {
   [CurrencyUnit.RWF]: standardUnitConversionObj,
   [CurrencyUnit.ZMW]: standardUnitConversionObj,
   [CurrencyUnit.AED]: standardUnitConversionObj,
+  [CurrencyUnit.BDT]: standardUnitConversionObj,
+  [CurrencyUnit.COP]: standardUnitConversionObj,
+  [CurrencyUnit.EGP]: standardUnitConversionObj,
+  [CurrencyUnit.GHS]: standardUnitConversionObj,
   [CurrencyUnit.GTQ]: standardUnitConversionObj,
+  [CurrencyUnit.HTG]: standardUnitConversionObj,
+  [CurrencyUnit.JMD]: standardUnitConversionObj,
+  [CurrencyUnit.PKR]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
 };
@@ -482,7 +553,14 @@ export type CurrencyMap = {
   [CurrencyUnit.RWF]: number;
   [CurrencyUnit.ZMW]: number;
   [CurrencyUnit.AED]: number;
+  [CurrencyUnit.BDT]: number;
+  [CurrencyUnit.COP]: number;
+  [CurrencyUnit.EGP]: number;
+  [CurrencyUnit.GHS]: number;
   [CurrencyUnit.GTQ]: number;
+  [CurrencyUnit.HTG]: number;
+  [CurrencyUnit.JMD]: number;
+  [CurrencyUnit.PKR]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
@@ -523,7 +601,14 @@ export type CurrencyMap = {
     [CurrencyUnit.RWF]: string;
     [CurrencyUnit.ZMW]: string;
     [CurrencyUnit.AED]: string;
+    [CurrencyUnit.BDT]: string;
+    [CurrencyUnit.COP]: string;
+    [CurrencyUnit.EGP]: string;
+    [CurrencyUnit.GHS]: string;
     [CurrencyUnit.GTQ]: string;
+    [CurrencyUnit.HTG]: string;
+    [CurrencyUnit.JMD]: string;
+    [CurrencyUnit.PKR]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
@@ -745,7 +830,14 @@ function convertCurrencyAmountValues(
     rwf: CurrencyUnit.RWF,
     zmw: CurrencyUnit.ZMW,
     aed: CurrencyUnit.AED,
+    bdt: CurrencyUnit.BDT,
+    cop: CurrencyUnit.COP,
+    egp: CurrencyUnit.EGP,
+    ghs: CurrencyUnit.GHS,
     gtq: CurrencyUnit.GTQ,
+    htg: CurrencyUnit.HTG,
+    jmd: CurrencyUnit.JMD,
+    pkr: CurrencyUnit.PKR,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -831,7 +923,14 @@ export function mapCurrencyAmount(
     rwf,
     zmw,
     aed,
+    bdt,
+    cop,
+    egp,
+    ghs,
     gtq,
+    htg,
+    jmd,
+    pkr,
     usdt,
     usdc,
   } = convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
@@ -867,7 +966,14 @@ export function mapCurrencyAmount(
     [CurrencyUnit.RWF]: rwf,
     [CurrencyUnit.ZMW]: zmw,
     [CurrencyUnit.AED]: aed,
+    [CurrencyUnit.BDT]: bdt,
+    [CurrencyUnit.COP]: cop,
+    [CurrencyUnit.EGP]: egp,
+    [CurrencyUnit.GHS]: ghs,
     [CurrencyUnit.GTQ]: gtq,
+    [CurrencyUnit.HTG]: htg,
+    [CurrencyUnit.JMD]: jmd,
+    [CurrencyUnit.PKR]: pkr,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -1007,9 +1113,37 @@ export function mapCurrencyAmount(
         value: aed,
         unit: CurrencyUnit.AED,
       }),
+      [CurrencyUnit.BDT]: formatCurrencyStr({
+        value: bdt,
+        unit: CurrencyUnit.BDT,
+      }),
+      [CurrencyUnit.COP]: formatCurrencyStr({
+        value: cop,
+        unit: CurrencyUnit.COP,
+      }),
+      [CurrencyUnit.EGP]: formatCurrencyStr({
+        value: egp,
+        unit: CurrencyUnit.EGP,
+      }),
+      [CurrencyUnit.GHS]: formatCurrencyStr({
+        value: ghs,
+        unit: CurrencyUnit.GHS,
+      }),
       [CurrencyUnit.GTQ]: formatCurrencyStr({
         value: gtq,
         unit: CurrencyUnit.GTQ,
+      }),
+      [CurrencyUnit.HTG]: formatCurrencyStr({
+        value: htg,
+        unit: CurrencyUnit.HTG,
+      }),
+      [CurrencyUnit.JMD]: formatCurrencyStr({
+        value: jmd,
+        unit: CurrencyUnit.JMD,
+      }),
+      [CurrencyUnit.PKR]: formatCurrencyStr({
+        value: pkr,
+        unit: CurrencyUnit.PKR,
       }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
@@ -1145,8 +1279,22 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "ZMW";
     case CurrencyUnit.AED:
       return "AED";
+    case CurrencyUnit.BDT:
+      return "BDT";
+    case CurrencyUnit.COP:
+      return "COP";
+    case CurrencyUnit.EGP:
+      return "EGP";
+    case CurrencyUnit.GHS:
+      return "GHS";
     case CurrencyUnit.GTQ:
       return "GTQ";
+    case CurrencyUnit.HTG:
+      return "HTG";
+    case CurrencyUnit.JMD:
+      return "JMD";
+    case CurrencyUnit.PKR:
+      return "PKR";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -1211,16 +1359,21 @@ export function formatCurrencyStr(
       /* Yellowcard 2-decimal African currencies (stored in smallest units): */
       CurrencyUnit.MWK,
       CurrencyUnit.ZMW,
-      /* Tazapay currencies: Tazapay standardizes all fiat to 2 decimal places,
-       * so CurrencyAmount values from Tazapay are stored in smallest units (1/100 of base unit)
-       * even for currencies with no real sub-units (e.g. IDR, VND): */
+      /* Tazapay currencies with 2 decimal places (stored in smallest units): */
       CurrencyUnit.IDR,
-      CurrencyUnit.VND,
       CurrencyUnit.THB,
       CurrencyUnit.MYR,
       CurrencyUnit.CAD,
       CurrencyUnit.DKK,
       CurrencyUnit.AED,
+      CurrencyUnit.BDT,
+      CurrencyUnit.COP,
+      CurrencyUnit.EGP,
+      CurrencyUnit.GHS,
+      CurrencyUnit.GTQ,
+      CurrencyUnit.HTG,
+      CurrencyUnit.JMD,
+      CurrencyUnit.PKR,
       CurrencyUnit.HKD,
       CurrencyUnit.SGD,
     ] as string[];

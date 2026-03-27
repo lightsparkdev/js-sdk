@@ -1,0 +1,49 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  gap: var(--spacing-none);
+  padding: var(--spacing-none);
+  @include smooth-corners(var(--corner-radius-sm));
+  overflow: clip;
+}
+
+.trigger {
+  @include label;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding-inline: var(--spacing-sm);
+  border: none;
+  @include smooth-corners(var(--corner-radius-sm));
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+
+  &:focus-visible {
+    @include input-focus;
+    background-color: var(--surface-secondary);
+  }
+
+  &[data-popup-open] {
+    background: transparent;
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

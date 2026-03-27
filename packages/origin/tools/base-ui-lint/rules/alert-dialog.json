@@ -1,0 +1,45 @@
+{
+  "component": "AlertDialog",
+  "matches": [
+    "Alert Dialog",
+    "AlertDialog",
+    "Alert",
+    "Confirm Dialog",
+    "Confirmation"
+  ],
+  "parts": {
+    "Backdrop": {
+      "required": false,
+      "parent": null,
+      "aliases": ["Overlay", "Scrim"]
+    },
+    "Popup": {
+      "required": true,
+      "parent": null,
+      "aliases": ["Content", "AlertDialogContent", "Panel", "Modal"]
+    },
+    "Title": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["Header", "AlertDialogTitle", "Heading"]
+    },
+    "Description": {
+      "required": true,
+      "parent": "Popup",
+      "aliases": ["Body", "AlertDialogDescription", "Message", "Content"]
+    },
+    "Close": {
+      "required": false,
+      "parent": "Popup",
+      "aliases": ["CloseButton", "Cancel", "Dismiss"]
+    }
+  },
+  "ignored": [
+    "Icon",
+    "Actions",
+    "Footer",
+    "Buttons",
+    "Divider"
+  ]
+}
+

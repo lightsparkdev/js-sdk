@@ -1,0 +1,33 @@
+/**
+ * Public stylesheet entrypoint for consuming applications.
+ * Import from `@lightsparkdev/origin/styles.css`.
+ */
+
+// Import fonts (must come first)
+@use "../tokens/fonts";
+
+// Import design tokens (CSS custom properties)
+@use "../tokens/variables";
+
+// Import effect tokens (shadows, focus rings)
+@use "../tokens/effects";
+
+// Import typography text styles
+@use "../tokens/typography";
+
+// Import CSS reset (box-sizing, form elements, icon system)
+@use "../tokens/reset";
+
+// Import utility classes (visually-hidden, etc.)
+@use "../tokens/utilities";
+
+body {
+  margin: 0;
+  font-family: var(--font-family-sans, "Suisse Intl", system-ui, sans-serif);
+  font-size: var(--font-size-base, 14px);
+  line-height: var(--font-leading-20, 20px);
+  color: var(--text-primary, #1a1a1a);
+  background: var(--surface-primary, #ffffff);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

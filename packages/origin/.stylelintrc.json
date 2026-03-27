@@ -1,0 +1,36 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "declaration-no-important": true,
+    
+    "selector-class-pattern": null,
+    "scss/at-mixin-pattern": null,
+    "scss/dollar-variable-pattern": null,
+    "scss/percent-placeholder-pattern": null,
+    "custom-property-pattern": null,
+    "keyframes-name-pattern": null,
+    "scss/at-function-pattern": null,
+    
+    "declaration-empty-line-before": null,
+    "at-rule-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "scss/double-slash-comment-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    
+    "color-function-notation": null,
+    "color-function-alias-notation": null,
+    "alpha-value-notation": null,
+    "color-hex-length": null,
+    "number-max-precision": null,
+    "value-keyword-case": null,
+    "length-zero-no-unit": null,
+    
+    "selector-not-notation": null,
+    "property-no-vendor-prefix": null,
+    "property-no-unknown": null,
+    "property-no-deprecated": null,
+    "no-invalid-position-declaration": null,
+    "declaration-block-single-line-max-declarations": null
+  },
+  "ignoreFiles": ["src/tokens/_variables.scss", "src/tokens/_effects.scss", "src/tokens/_text-styles.scss"]
+}

@@ -1,0 +1,16 @@
+{
+  "component": "Form",
+  "matches": [
+    "Form"
+  ],
+  "parts": {},
+  "ignored": [
+    "Field",
+    "Fieldset",
+    "Submit",
+    "Button",
+    "Actions"
+  ],
+  "note": "Form is a simple wrapper. Individual fields use Field rules."
+}
+

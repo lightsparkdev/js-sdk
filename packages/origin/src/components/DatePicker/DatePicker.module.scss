@@ -1,0 +1,198 @@
+@use "../../tokens/mixins" as *;
+@use "../../tokens/text-styles" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  width: 270px;
+  overflow: hidden;
+  background: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-lg);
+}
+
+// Header: date/time input fields
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  padding: var(--spacing-sm);
+}
+
+// Navigation: month/year title + prev/next buttons
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3xs) var(--spacing-xs) var(--spacing-xs)
+    var(--spacing-sm);
+}
+
+.navTitle {
+  @include label;
+  color: var(--text-primary);
+}
+
+.navButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+}
+
+.navButton {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  @include smooth-corners(var(--corner-radius-sm));
+  color: var(--icon-primary);
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+// Grid (table)
+.grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  padding: 0 var(--spacing-3xs) var(--spacing-3xs);
+  table-layout: fixed;
+}
+
+.weekdayCell {
+  @include label-sm;
+  color: var(--text-tertiary);
+  text-align: center;
+  height: 28px;
+  vertical-align: middle;
+  font-weight: var(--font-weight-book);
+}
+
+.dayCell {
+  padding: var(--spacing-3xs) 0;
+  text-align: center;
+
+  .weekRow:first-child > & {
+    padding-top: 0;
+  }
+
+  .weekRow:last-child > & {
+    padding-bottom: 0;
+  }
+}
+
+.dayButton {
+  @include button-reset;
+  @include body;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 32px;
+  @include smooth-corners(var(--corner-radius-2xs));
+  color: var(--text-primary);
+  user-select: none;
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]):not([data-selected]):not(
+        [data-range-start]
+      ):not([data-range-end]) {
+      background: var(--surface-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+  }
+
+  &[data-today]:not([data-selected]):not([data-range-start]):not(
+      [data-range-end]
+    ):not([data-in-range]) {
+    background: var(--surface-hover);
+  }
+
+  &[data-selected] {
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
+  }
+
+  &[data-range-start] {
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
+    border-radius: var(--corner-radius-2xs) 0 0 var(--corner-radius-2xs);
+  }
+
+  &[data-range-end] {
+    background: var(--surface-inverse);
+    color: var(--text-inverse);
+    border-radius: 0 var(--corner-radius-2xs) var(--corner-radius-2xs) 0;
+  }
+
+  &[data-range-start][data-range-end] {
+    @include smooth-corners(var(--corner-radius-2xs));
+  }
+
+  &[data-in-range] {
+    background: var(--surface-hover);
+    border-radius: 0;
+  }
+
+  // Fade outside-month days unless they're part of the active selection/range
+  &[data-outside-month]:not([data-in-range]):not([data-range-start]):not(
+      [data-range-end]
+    ):not([data-selected]) {
+    opacity: calc(var(--opacity-50) / 100);
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+// Controls: slot for toggle items
+.controls {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-3xs) var(--spacing-xs);
+}
+
+// ControlItem: label + trailing action
+.controlItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3xs) var(--spacing-4xs);
+}
+
+.controlLabel {
+  @include body;
+  color: var(--text-secondary);
+}
+
+// Footer: slot for action buttons
+.footer {
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xs);
+}

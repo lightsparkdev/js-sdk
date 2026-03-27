@@ -1,0 +1,39 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.input {
+  @include input;
+
+  display: block;
+  height: 36px;
+  box-sizing: border-box;
+  padding-inline: var(--spacing-sm);
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  color: var(--text-primary);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &:focus {
+    @include input-focus;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &[data-invalid] {
+    @include input-critical;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
