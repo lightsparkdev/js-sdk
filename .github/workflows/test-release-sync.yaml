@@ -150,7 +150,14 @@ jobs:
           echo 'export BITCOIN_NETWORK="REGTEST"' >> ~/.lightsparkapienv
           echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
 
-      - run: "yarn test-cmd"
+      - name: "Run tests"
+        run: |
+          if [[ "${{ matrix.node-version }}" == "18.x" ]]; then
+            # Origin's vitest config requires Node >= 20 (styleText from node:util)
+            yarn test-cmd --filter='!@lightsparkdev/origin'
+          else
+            yarn test-cmd
+          fi
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
