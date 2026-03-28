@@ -8,8 +8,8 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lightsparkdev/webdev.git",
-    "directory": "js/packages/origin"
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
+    "directory": "packages/origin"
   },
   "type": "module",
   "main": "./src/index.ts",
