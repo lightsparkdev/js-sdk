@@ -28,6 +28,11 @@ export interface WaterfallSegment {
 export interface WaterfallChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
   data: WaterfallSegment[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   formatValue?: (value: number) => string;
   formatYLabel?: (value: number) => string;
   showConnectors?: boolean;
@@ -86,12 +91,13 @@ export const Waterfall = React.forwardRef<HTMLDivElement, WaterfallChartProps>(
       onActiveChange,
       analyticsName,
       interactive: interactiveProp = true,
+      initialWidth,
       className,
       ...props
     },
     ref,
   ) {
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const tooltipRef = React.useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
 

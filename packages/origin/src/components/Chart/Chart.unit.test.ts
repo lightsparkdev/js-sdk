@@ -7,6 +7,8 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { useResizeWidth } from "./hooks";
 import {
   linearScale,
   niceTicks,
@@ -869,5 +871,68 @@ describe("sankeyLinkPath", () => {
     const path = sankeyLinkPath(result.links[0]);
     expect(path).toMatch(/^M/);
     expect(path).toContain("C");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// useResizeWidth
+// ---------------------------------------------------------------------------
+
+describe("useResizeWidth", () => {
+  it("returns 0 when called with no arguments", () => {
+    const { result } = renderHook(() => useResizeWidth());
+    expect(result.current.width).toBe(0);
+    expect(typeof result.current.attachRef).toBe("function");
+  });
+
+  it("returns initialWidth when no observer has fired", () => {
+    const { result } = renderHook(() => useResizeWidth(800));
+    expect(result.current.width).toBe(800);
+  });
+
+  it("returns initialWidth for various values", () => {
+    const { result: r1 } = renderHook(() => useResizeWidth(1024));
+    expect(r1.current.width).toBe(1024);
+
+    const { result: r2 } = renderHook(() => useResizeWidth(320));
+    expect(r2.current.width).toBe(320);
+  });
+
+  it("returns 0 when initialWidth is 0", () => {
+    const { result } = renderHook(() => useResizeWidth(0));
+    expect(result.current.width).toBe(0);
+  });
+
+  it("observer measurement takes over from initialWidth", () => {
+    let observerCallback: ResizeObserverCallback;
+    const mockObserver = {
+      observe: vi.fn(),
+      disconnect: vi.fn(),
+      unobserve: vi.fn(),
+    };
+    vi.stubGlobal(
+      "ResizeObserver",
+      vi.fn((cb: ResizeObserverCallback) => {
+        observerCallback = cb;
+        return mockObserver;
+      }),
+    );
+
+    const { result } = renderHook(() => useResizeWidth(800));
+    expect(result.current.width).toBe(800);
+
+    const fakeNode = { clientWidth: 0 } as HTMLDivElement;
+    act(() => result.current.attachRef(fakeNode));
+
+    act(() => {
+      observerCallback(
+        [{ contentRect: { width: 600 } }] as ResizeObserverEntry[],
+        {} as ResizeObserver,
+      );
+    });
+
+    expect(result.current.width).toBe(600);
+
+    vi.unstubAllGlobals();
   });
 });

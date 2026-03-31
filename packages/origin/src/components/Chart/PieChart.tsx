@@ -17,6 +17,11 @@ export interface PieSegment {
 
 export interface PieChartProps extends React.ComponentPropsWithoutRef<"div"> {
   data: PieSegment[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   height?: number;
   /** Inner radius ratio (0-1). Defaults to 0.65. */
   innerRadius?: number;
@@ -107,6 +112,7 @@ export const Pie = React.forwardRef<HTMLDivElement, PieChartProps>(function Pie(
     analyticsName,
     ariaLabel,
     formatValue,
+    initialWidth,
     className,
     ...props
   },
@@ -123,7 +129,7 @@ export const Pie = React.forwardRef<HTMLDivElement, PieChartProps>(function Pie(
     onClickDatum ? clickIndexMeta : undefined,
   );
 
-  const { width, attachRef } = useResizeWidth();
+  const { width, attachRef } = useResizeWidth(initialWidth);
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
 
   const mergedRef = useMergedRef(ref, attachRef);

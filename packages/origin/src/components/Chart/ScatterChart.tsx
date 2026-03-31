@@ -39,6 +39,11 @@ export interface ScatterSeries {
 export interface ScatterChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
   data: ScatterSeries[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   height?: number;
   grid?: boolean;
   tooltip?: TooltipProp;
@@ -113,6 +118,7 @@ export const Scatter = React.forwardRef<HTMLDivElement, ScatterChartProps>(
       onActiveChange,
       analyticsName,
       interactive = true,
+      initialWidth,
       className,
       ...props
     },
@@ -126,7 +132,7 @@ export const Scatter = React.forwardRef<HTMLDivElement, ScatterChartProps>(
       onClickDatum ? scatterClickMeta : undefined,
     );
 
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const tooltipRef = React.useRef<HTMLDivElement>(null);
     const [activeDot, setActiveDot] = React.useState<ActiveDot | null>(null);
 

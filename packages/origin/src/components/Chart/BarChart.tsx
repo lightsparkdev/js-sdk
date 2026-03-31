@@ -41,6 +41,11 @@ const clickIndexMeta = (index: number) => ({ index });
 
 export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
   data: ChartDatum[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   dataKey?: string;
   series?: Series[];
   xKey?: string;
@@ -116,12 +121,13 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
     animate = true,
     getBarColor,
     orientation = "vertical",
+    initialWidth,
     className,
     ...props
   },
   ref,
 ) {
-  const { width, attachRef } = useResizeWidth();
+  const { width, attachRef } = useResizeWidth(initialWidth);
   const tooltipRef = React.useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
 

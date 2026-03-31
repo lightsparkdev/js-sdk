@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/origin",
-  "version": "0.14.1",
+  "version": "0.14.0",
   "publishConfig": {
     "access": "public"
   },
@@ -8,8 +8,8 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
-    "directory": "packages/origin"
+    "url": "git+https://github.com/lightsparkdev/webdev.git",
+    "directory": "js/packages/origin"
   },
   "type": "module",
   "main": "./src/index.ts",

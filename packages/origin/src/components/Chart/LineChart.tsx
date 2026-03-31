@@ -47,6 +47,11 @@ export interface LineChartProps extends React.ComponentPropsWithoutRef<"div"> {
    * Array of data objects. Each object should contain keys matching `dataKey` or `series[].key`.
    */
   data: ChartDatum[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   /** Data key for single-series charts. Pass this OR `series`, not both. */
   dataKey?: string;
   /** Series configuration for multi-series charts. */
@@ -150,12 +155,13 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
       formatXLabel,
       formatYLabel,
       connectNulls = true,
+      initialWidth,
       className,
       ...props
     },
     ref,
   ) {
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const trackedClick = useTrackedCallback(
       analyticsName,
       "Chart.Line",
