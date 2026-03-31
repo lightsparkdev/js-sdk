@@ -1,11 +1,5 @@
 # Changelog
 
-## 0.14.2
-
-### Patch Changes
-
-- 5ef5b36: - Add initialWidth prop to Origin charts for SSR support
-
 ## 0.14.1
 
 ### Patch Changes
