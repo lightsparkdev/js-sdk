@@ -65,6 +65,9 @@
       "built": false
     }
   },
+  "resolutions": {
+    "axios": "1.7.7"
+  },
   "engines": {
     "node": ">=18"
   },
