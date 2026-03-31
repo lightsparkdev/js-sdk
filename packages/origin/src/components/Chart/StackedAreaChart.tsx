@@ -41,6 +41,11 @@ const clickIndexMeta = (index: number) => ({ index });
 export interface StackedAreaChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
   data: ChartDatum[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   series: [Series, Series, ...Series[]];
   xKey?: string;
   height?: number;
@@ -102,12 +107,13 @@ export const StackedArea = React.forwardRef<
     formatValue,
     formatXLabel,
     formatYLabel,
+    initialWidth,
     className,
     ...props
   },
   ref,
 ) {
-  const { width, attachRef } = useResizeWidth();
+  const { width, attachRef } = useResizeWidth(initialWidth);
   const trackedClick = useTrackedCallback(
     analyticsName,
     "Chart.StackedArea",

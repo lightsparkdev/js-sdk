@@ -44,6 +44,7 @@ export const Line: Story = {
     fill: false,
     fadeLeft: false,
     compareLabel: "",
+    initialWidth: undefined,
   },
   argTypes: {
     curve: { control: "radio", options: ["monotone", "linear"] },
@@ -228,6 +229,7 @@ export const BarGrouped: Story = {
     legend: false,
     loading: false,
     stacked: false,
+    initialWidth: undefined,
   },
   argTypes: {
     orientation: { control: "radio", options: ["vertical", "horizontal"] },

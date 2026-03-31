@@ -25,13 +25,14 @@ const SparklineBar = React.forwardRef<HTMLDivElement, SparklineProps>(
       dataKey,
       color,
       height = 40,
+      initialWidth,
       className,
       analyticsName: _analyticsName,
       ...props
     },
     ref,
   ) {
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const mergedRef = useMergedRef(ref, attachRef);
 
     const key = dataKey ?? "value";

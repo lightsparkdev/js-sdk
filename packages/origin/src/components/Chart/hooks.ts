@@ -3,19 +3,19 @@ import type { CurveInterpolator } from "./utils";
 import type { ChartDatum, TooltipMode } from "./types";
 import { PAD_RIGHT, TOOLTIP_GAP } from "./types";
 
-export function useResizeWidth() {
-  const [width, setWidth] = React.useState(0);
+export function useResizeWidth(initialWidth?: number) {
+  const [measuredWidth, setMeasuredWidth] = React.useState<number | null>(null);
   const observerRef = React.useRef<ResizeObserver | null>(null);
 
   const attachRef = React.useCallback((node: HTMLDivElement | null) => {
     observerRef.current?.disconnect();
     if (node) {
       const observer = new ResizeObserver((entries) => {
-        for (const entry of entries) setWidth(entry.contentRect.width);
+        for (const entry of entries) setMeasuredWidth(entry.contentRect.width);
       });
       observer.observe(node);
       observerRef.current = observer;
-      setWidth(node.clientWidth);
+      setMeasuredWidth(node.clientWidth);
     }
   }, []);
 
@@ -23,6 +23,7 @@ export function useResizeWidth() {
     return () => observerRef.current?.disconnect();
   }, []);
 
+  const width = measuredWidth !== null ? measuredWidth : initialWidth ?? 0;
   return { width, attachRef };
 }
 

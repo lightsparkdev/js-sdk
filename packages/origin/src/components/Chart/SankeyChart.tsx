@@ -23,6 +23,11 @@ export type { SankeyNode, SankeyLink } from "./sankeyLayout";
 export interface SankeyChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
   data: SankeyData;
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   nodeWidth?: number;
   nodePadding?: number;
   height?: number;
@@ -78,6 +83,7 @@ export const Sankey = React.forwardRef<HTMLDivElement, SankeyChartProps>(
       onClickNode,
       onClickLink,
       analyticsName,
+      initialWidth,
       className,
       ...props
     },
@@ -98,7 +104,7 @@ export const Sankey = React.forwardRef<HTMLDivElement, SankeyChartProps>(
       onClickLink ? sankeyLinkClickMeta : undefined,
     );
 
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const [active, setActive] = React.useState<ActiveElement>(null);
     const tooltipRef = React.useRef<HTMLDivElement>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);

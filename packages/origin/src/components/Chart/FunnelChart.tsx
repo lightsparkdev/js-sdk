@@ -19,6 +19,11 @@ export interface FunnelStage {
 export interface FunnelChartProps
   extends React.ComponentPropsWithoutRef<"div"> {
   data: FunnelStage[];
+  /**
+   * Pre-measurement width in pixels. Used as a fallback before
+   * ResizeObserver fires, enabling server-side rendering.
+   */
+  initialWidth?: number;
   formatValue?: (value: number) => string;
   formatRate?: (rate: number) => string;
   showRates?: boolean;
@@ -61,12 +66,13 @@ export const Funnel = React.forwardRef<HTMLDivElement, FunnelChartProps>(
       onClickDatum,
       onActiveChange,
       analyticsName,
+      initialWidth,
       className,
       ...props
     },
     ref,
   ) {
-    const { width, attachRef } = useResizeWidth();
+    const { width, attachRef } = useResizeWidth(initialWidth);
     const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
 
     const onActiveChangeRef = React.useRef(onActiveChange);
