@@ -1,5 +1,13 @@
 # @lightsparkdev/ui
 
+## 1.1.19
+
+### Patch Changes
+
+- d155a43: - Consolidate country flag SVGs into the ui package with new `CountryFlagImg` component and `buildCountryFlagSvgUrls` utility
+- Updated dependencies [d155a43]
+  - @lightsparkdev/core@1.5.1
+
 ## 1.1.18
 
 ### Patch Changes
