@@ -35,8 +35,10 @@ export interface ChartInteractionOptions {
   tooltipMode: TooltipMode;
   interpolatorsRef: React.RefObject<CurveInterpolator[]>;
   data: ChartDatum[];
-  onActiveChange?: (index: number | null, datum: ChartDatum | null) => void;
-  onActivate?: (index: number, datum: ChartDatum) => void;
+  onActiveChange?:
+    | ((index: number | null, datum: ChartDatum | null) => void)
+    | undefined;
+  onActivate?: ((index: number, datum: ChartDatum) => void) | undefined;
 }
 
 export function useChartInteraction(opts: ChartInteractionOptions) {

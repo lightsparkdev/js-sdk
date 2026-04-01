@@ -18,7 +18,7 @@ export interface InteractionInfo {
   name: string;
   component: string;
   interaction: InteractionType;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, unknown> | undefined;
 }
 
 export interface AnalyticsHandler {

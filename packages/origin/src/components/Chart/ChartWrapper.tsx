@@ -7,17 +7,17 @@ import { Skeleton } from "../Skeleton";
 import styles from "./Chart.module.scss";
 
 export interface ChartWrapperProps {
-  ref?: React.Ref<HTMLDivElement>;
-  loading?: boolean;
-  empty?: React.ReactNode;
+  ref?: React.Ref<HTMLDivElement> | undefined;
+  loading?: boolean | undefined;
+  empty?: React.ReactNode | undefined;
   dataLength: number;
-  isEmpty?: boolean;
+  isEmpty?: boolean | undefined;
   height: number;
-  legend?: boolean;
-  series?: ResolvedSeries[];
+  legend?: boolean | undefined;
+  series?: ResolvedSeries[] | undefined;
   children: React.ReactNode;
-  className?: string;
-  ariaLiveContent?: string;
+  className?: string | undefined;
+  ariaLiveContent?: string | undefined;
 }
 
 export function ChartWrapper({
