@@ -32,10 +32,10 @@
       "outputs": ["docs/**"]
     },
     "format": {
-      "dependsOn": []
+      "dependsOn": ["gql-codegen"]
     },
     "format:fix": {
-      "dependsOn": []
+      "dependsOn": ["gql-codegen"]
     },
     "gql-codegen": {
       /* Always run codegen since it depends on files external to the workspace: */
