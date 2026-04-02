@@ -18,7 +18,7 @@
       "outputs": ["storybook-static/**"]
     },
     "circular-deps": {
-      "dependsOn": []
+      "dependsOn": ["gql-codegen"]
     },
     "clean": {
       "cache": false
@@ -42,10 +42,10 @@
       "cache": false
     },
     "lint": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "gql-codegen"]
     },
     "lint:fix": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "gql-codegen"]
     },
     "lint:watch": {
       "cache": false,
@@ -64,7 +64,7 @@
       "persistent": true
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "gql-codegen"]
     },
     "test:ui": {
       "dependsOn": ["^build"]
@@ -73,7 +73,7 @@
       "dependsOn": ["^build"]
     },
     "types": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build", "gql-codegen"]
     },
     "types:watch": {
       "cache": false,
