@@ -255,7 +255,7 @@ jobs:
 
   create-webdev-pr:
     name: Create Webdev PR
-    if: "github.event_name == 'push'"
+    if: "github.event_name == 'push' || github.event_name == 'pull_request'"
     runs-on: "ubuntu-22.04"
     environment: npm
     permissions:
@@ -267,6 +267,7 @@ jobs:
           fetch-depth: 0
 
       - name: Reset develop to main
+        if: "github.event_name == 'push'"
         run: |
           git checkout develop
           git reset --hard origin/main
@@ -317,7 +318,7 @@ jobs:
 
           curl https://lsdev-repo.s3-us-west-2.amazonaws.com/github-actions/copybara_deploy.jar --output ./copybara.jar
           trap on_exit EXIT
-          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev --nogit-destination-rebase
+          java -jar copybara.jar ./copy.bara.sky js-sdk-push-to-webdev
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"
