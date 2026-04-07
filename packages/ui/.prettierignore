@@ -1,4 +1,4 @@
 gql/generated/*
 gql/*.graphql
 dist/
-.tsup/
+.tsdown/
