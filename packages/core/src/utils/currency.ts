@@ -53,6 +53,7 @@ export const CurrencyUnit = {
   HTG: "HTG",
   JMD: "JMD",
   PKR: "PKR",
+  ARS: "ARS",
   USDT: "USDT",
   USDC: "USDC",
   USDB: "USDB",
@@ -78,6 +79,7 @@ export const CurrencyUnit = {
   Htg: "HTG",
   Jmd: "JMD",
   Pkr: "PKR",
+  Ars: "ARS",
   Usdt: "USDT",
   Usdc: "USDC",
   Usdb: "USDB",
@@ -141,6 +143,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.HTG]: (v: number) => v,
   [CurrencyUnit.JMD]: (v: number) => v,
   [CurrencyUnit.PKR]: (v: number) => v,
+  [CurrencyUnit.ARS]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
   [CurrencyUnit.USDB]: (v: number) => v,
@@ -203,6 +206,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toBitcoinConversion,
     [CurrencyUnit.JMD]: toBitcoinConversion,
     [CurrencyUnit.PKR]: toBitcoinConversion,
+    [CurrencyUnit.ARS]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
     [CurrencyUnit.USDB]: toBitcoinConversion,
@@ -249,6 +253,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toMicrobitcoinConversion,
     [CurrencyUnit.JMD]: toMicrobitcoinConversion,
     [CurrencyUnit.PKR]: toMicrobitcoinConversion,
+    [CurrencyUnit.ARS]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
     [CurrencyUnit.USDB]: toMicrobitcoinConversion,
@@ -295,6 +300,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toMillibitcoinConversion,
     [CurrencyUnit.JMD]: toMillibitcoinConversion,
     [CurrencyUnit.PKR]: toMillibitcoinConversion,
+    [CurrencyUnit.ARS]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
     [CurrencyUnit.USDB]: toMillibitcoinConversion,
@@ -341,6 +347,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toMillisatoshiConversion,
     [CurrencyUnit.JMD]: toMillisatoshiConversion,
     [CurrencyUnit.PKR]: toMillisatoshiConversion,
+    [CurrencyUnit.ARS]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
     [CurrencyUnit.USDB]: toMillisatoshiConversion,
@@ -387,6 +394,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toNanobitcoinConversion,
     [CurrencyUnit.JMD]: toNanobitcoinConversion,
     [CurrencyUnit.PKR]: toNanobitcoinConversion,
+    [CurrencyUnit.ARS]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
     [CurrencyUnit.USDB]: toNanobitcoinConversion,
@@ -433,6 +441,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.HTG]: toSatoshiConversion,
     [CurrencyUnit.JMD]: toSatoshiConversion,
     [CurrencyUnit.PKR]: toSatoshiConversion,
+    [CurrencyUnit.ARS]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
     [CurrencyUnit.USDB]: toSatoshiConversion,
@@ -472,6 +481,7 @@ const CONVERSION_MAP = {
   [CurrencyUnit.HTG]: standardUnitConversionObj,
   [CurrencyUnit.JMD]: standardUnitConversionObj,
   [CurrencyUnit.PKR]: standardUnitConversionObj,
+  [CurrencyUnit.ARS]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
   [CurrencyUnit.USDB]: standardUnitConversionObj,
@@ -571,6 +581,7 @@ export type CurrencyMap = {
   [CurrencyUnit.HTG]: number;
   [CurrencyUnit.JMD]: number;
   [CurrencyUnit.PKR]: number;
+  [CurrencyUnit.ARS]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.USDB]: number;
@@ -620,6 +631,7 @@ export type CurrencyMap = {
     [CurrencyUnit.HTG]: string;
     [CurrencyUnit.JMD]: string;
     [CurrencyUnit.PKR]: string;
+    [CurrencyUnit.ARS]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.USDB]: string;
@@ -850,6 +862,7 @@ function convertCurrencyAmountValues(
     htg: CurrencyUnit.HTG,
     jmd: CurrencyUnit.JMD,
     pkr: CurrencyUnit.PKR,
+    ars: CurrencyUnit.ARS,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -944,6 +957,7 @@ export function mapCurrencyAmount(
     htg,
     jmd,
     pkr,
+    ars,
     usdt,
     usdc,
     usdb,
@@ -988,6 +1002,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.HTG]: htg,
     [CurrencyUnit.JMD]: jmd,
     [CurrencyUnit.PKR]: pkr,
+    [CurrencyUnit.ARS]: ars,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -1160,6 +1175,10 @@ export function mapCurrencyAmount(
         value: pkr,
         unit: CurrencyUnit.PKR,
       }),
+      [CurrencyUnit.ARS]: formatCurrencyStr({
+        value: ars,
+        unit: CurrencyUnit.ARS,
+      }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
         unit: CurrencyUnit.USDT,
@@ -1316,6 +1335,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "JMD";
     case CurrencyUnit.PKR:
       return "PKR";
+    case CurrencyUnit.ARS:
+      return "ARS";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -1395,6 +1416,7 @@ export function formatCurrencyStr(
       CurrencyUnit.HTG,
       CurrencyUnit.JMD,
       CurrencyUnit.PKR,
+      CurrencyUnit.ARS,
       CurrencyUnit.HKD,
       CurrencyUnit.SGD,
     ] as string[];
