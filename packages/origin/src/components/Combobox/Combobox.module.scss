@@ -338,12 +338,22 @@
   display: contents;
 }
 
-// Chips container for multi-select
-// Individual chip styling comes from Origin's Chip component (../Chip/Chip.module.scss)
+// `flex: 1` keeps chips + input on one wrapping row. `Combobox.Value` uses
+// `display: contents`, so both become flex children of `.chips`.
 .chips {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--spacing-4xs);
+  column-gap: var(--spacing-4xs);
+  row-gap: var(--spacing-2xs);
+}
+
+.chip {
+  composes: root from "../Chip/Chip.module.scss";
+  composes: sm from "../Chip/Chip.module.scss";
+}
+
+.chip + .input {
+  margin-inline-start: var(--spacing-2xs);
 }

@@ -115,6 +115,84 @@ export const Multiple: Story = {
   ),
 };
 
+function MultipleWithChipsField({
+  defaultValue,
+  label,
+}: {
+  defaultValue?: string[];
+  label: string;
+}) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+        {label}
+      </span>
+      <Combobox.Root items={fruits} multiple defaultValue={defaultValue}>
+        <Combobox.InputWrapper>
+          <Combobox.Chips>
+            <Combobox.Value>
+              {(values: string[]) => (
+                <>
+                  {values.map((value) => (
+                    <Combobox.Chip key={value} aria-label={value}>
+                      {value}
+                      <Combobox.ChipRemove />
+                    </Combobox.Chip>
+                  ))}
+                  <Combobox.Input placeholder="Add fruits" />
+                </>
+              )}
+            </Combobox.Value>
+          </Combobox.Chips>
+        </Combobox.InputWrapper>
+        <Combobox.Portal>
+          <Combobox.Positioner sideOffset={4}>
+            <Combobox.Popup>
+              <Combobox.Empty />
+              <Combobox.List>
+                {(item: string) => (
+                  <Combobox.Item key={item} value={item}>
+                    <Combobox.ItemIndicator />
+                    <Combobox.ItemText>{item}</Combobox.ItemText>
+                  </Combobox.Item>
+                )}
+              </Combobox.List>
+            </Combobox.Popup>
+          </Combobox.Positioner>
+        </Combobox.Portal>
+      </Combobox.Root>
+    </div>
+  );
+}
+
+export const MultipleWithChips: Story = {
+  render: () => (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+        maxWidth: 480,
+      }}
+    >
+      <MultipleWithChipsField label="Empty" />
+      <MultipleWithChipsField label="One chip" defaultValue={["Apple"]} />
+      <MultipleWithChipsField
+        label="Many chips (overflow / wrap)"
+        defaultValue={[
+          "Apple",
+          "Banana",
+          "Cherry",
+          "Date",
+          "Elderberry",
+          "Fig",
+          "Grape",
+        ]}
+      />
+    </div>
+  ),
+};
+
 const groupedFruits = {
   common: ["Apple", "Banana", "Orange"],
   exotic: ["Dragon Fruit", "Mangosteen", "Rambutan"],
