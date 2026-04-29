@@ -10,6 +10,7 @@
   height: 36px;
   box-sizing: border-box;
   padding-inline: var(--spacing-sm);
+  background: transparent;
   border: var(--stroke-sm) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);
