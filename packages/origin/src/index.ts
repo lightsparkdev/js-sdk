@@ -215,6 +215,22 @@ export type { LogoProps } from "./components/Logo";
 export { Loader } from "./components/Loader";
 export type { LoaderProps } from "./components/Loader";
 
+export {
+  LoadMore,
+  useLoadMore,
+  useLoadMoreContext,
+} from "./components/LoadMore";
+export type {
+  LoadMoreRootProps,
+  LoadMoreTriggerProps,
+  LoadMoreSentinelProps,
+  LoadMoreStatusProps,
+  LoadMoreContextValue,
+  UseLoadMoreOptions,
+  UseLoadMoreResult,
+  UseLoadMoreFetchResult,
+} from "./components/LoadMore";
+
 export { Separator } from "./components/Separator";
 export type { SeparatorProps } from "./components/Separator";
 
