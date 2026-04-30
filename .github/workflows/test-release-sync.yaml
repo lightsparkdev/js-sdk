@@ -110,14 +110,15 @@ jobs:
           }
           EOF
 
-  # Unit tests run on the full Node matrix to verify runtime compatibility.
+  # Unit tests run on active Node LTS/current lines. The build toolchain used by
+  # test dependencies requires Node >= 20.19.
   test:
     needs: "update-lock-file"
     if: "!failure() && !cancelled()"
     runs-on: "ubuntu-22.04"
     strategy:
       matrix:
-        node-version: ["18.x", "22.x"]
+        node-version: ["20.x", "22.x"]
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -151,13 +152,7 @@ jobs:
           echo 'export LIGHTSPARK_BASE_URL="https://api.dev.dev.sparkinfra.net"' >> ~/.lightsparkapienv
 
       - name: "Run tests"
-        run: |
-          if [[ "${{ matrix.node-version }}" == "18.x" ]]; then
-            # Origin's vitest config requires Node >= 20 (styleText from node:util)
-            yarn test-cmd --filter='!@lightsparkdev/origin'
-          else
-            yarn test-cmd
-          fi
+        run: "yarn test-cmd"
 
       - name: "Notify failure on Slack"
         if: "failure() && github.event_name == 'push'"

@@ -1,5 +1,5 @@
 import { defineConfig } from "tsdown";
-import { svgr } from "./tsdown-svg-plugin";
+import { svgr } from "./tsdown-svg-plugin.ts";
 
 export default defineConfig({
   entry: [
