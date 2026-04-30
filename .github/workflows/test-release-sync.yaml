@@ -302,7 +302,9 @@ jobs:
 
   create-webdev-pr:
     name: Create Webdev PR
-    if: "github.event_name == 'push'"
+    # Webdev now owns pulling public js-sdk changes via its scheduled/manual
+    # Copybara workflow.
+    if: ${{ false }}
     runs-on: "ubuntu-22.04"
     environment: npm
     permissions:
