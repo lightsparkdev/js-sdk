@@ -71,9 +71,9 @@
     "./src/router": "./src/router.js"
   },
   "scripts": {
-    "build-tsup": "tsup --dts",
-    "build": "yarn tsc && yarn build-tsup",
-    "build:watch": "yarn build-tsup --watch --clean=false",
+    "build:bundle": "tsdown",
+    "build": "yarn tsc && yarn build:bundle",
+    "build:watch": "tsdown --watch --no-clean",
     "circular-deps": "madge --circular --extensions ts,tsx .",
     "clean": "rm -rf .turbo",
     "format:fix": "prettier . --write",
@@ -130,6 +130,7 @@
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
+    "@tsdown/css": "^0.21.7",
     "@types/jest": "^29.5.3",
     "@types/prismjs": "^1.26.0",
     "esbuild": "0.19.1",
@@ -145,7 +146,7 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "ts-jest": "^29.1.1",
     "tsc-absolute": "^1.0.1",
-    "tsup": "^8.2.4",
+    "tsdown": "^0.21.7",
     "typescript": "^5.6.2"
   },
   "madge": {

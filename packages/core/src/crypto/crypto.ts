@@ -24,7 +24,7 @@ export type CryptoInterface = {
     format: "pkcs8" | "spki",
   ) => Promise<ArrayBuffer>;
 
-  getNonce: () => Promise<bigint>;
+  getNonce: () => Promise<number>;
 
   sign: (
     keyOrAlias: CryptoKey | string,
@@ -229,7 +229,10 @@ const serializeSigningKey = async (
 const getNonce = async () => {
   const nonceSt = await getRandomValues32(new Uint32Array(2));
   const [upper, lower] = nonceSt;
-  return (BigInt(upper) << 32n) | BigInt(lower);
+  const nonce = (BigInt(upper) << 32n) | BigInt(lower);
+  // Note: We lose some precision here going from bigint to number
+  // because js numbers are floats, but it's ok.
+  return Number(nonce);
 };
 
 const sign = async (

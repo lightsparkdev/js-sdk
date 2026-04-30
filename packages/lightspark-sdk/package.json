@@ -48,10 +48,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "yarn tsc && tsup",
-    "build:watch": "yarn build --watch --clean=false",
+    "build": "yarn tsc && tsdown",
+    "build:watch": "tsdown --watch --no-clean",
     "clean": "rm -rf dist",
-    "dev": "yarn build -- --watch",
+    "dev": "yarn build:watch",
     "docs": "typedoc src",
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
@@ -97,7 +97,7 @@
     "publint": "^0.3.9",
     "ts-jest": "^29.1.1",
     "tsc-absolute": "^1.0.1",
-    "tsup": "^8.2.4",
+    "tsdown": "^0.21.7",
     "typedoc": "^0.24.7",
     "typescript": "^5.6.2"
   },

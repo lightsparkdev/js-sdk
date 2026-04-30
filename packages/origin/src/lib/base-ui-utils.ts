@@ -105,7 +105,7 @@ export interface ChangeEventDetails<E = Event> {
   allowPropagation: () => void;
   isCanceled: boolean;
   isPropagationAllowed: boolean;
-  trigger?: HTMLElement;
+  trigger?: HTMLElement | undefined;
 }
 
 export function createChangeEventDetails<E = Event>(

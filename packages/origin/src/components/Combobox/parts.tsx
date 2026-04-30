@@ -470,10 +470,24 @@ export interface ValueProps
  * ```
  *
  * @example Multi-select with chips
+ *
+ * Render `Combobox.Input` inside this render function (not as a sibling of
+ * `Combobox.Chips`); see `Combobox.Chips` for the full pattern.
+ *
  * ```tsx
  * <Combobox.Chips>
  *   <Combobox.Value>
- *     {(values) => values?.map((v) => <Combobox.Chip key={v}>...</Combobox.Chip>)}
+ *     {(values) => (
+ *       <>
+ *         {values?.map((v) => (
+ *           <Combobox.Chip key={v} aria-label={v}>
+ *             {v}
+ *             <Combobox.ChipRemove />
+ *           </Combobox.Chip>
+ *         ))}
+ *         <Combobox.Input placeholder="Add fruits" />
+ *       </>
+ *     )}
  *   </Combobox.Value>
  * </Combobox.Chips>
  * ```
@@ -503,28 +517,35 @@ export interface ChipsProps extends BaseCombobox.Chips.Props {}
 /**
  * Combobox.Chips - Container for selected value chips in multi-select.
  *
- * Place inside InputWrapper, before the Input element.
- * Use with Combobox.Value to access selected values.
+ * Place inside `Combobox.InputWrapper`. Render `Combobox.Input` inside
+ * `Combobox.Value`'s render function (not as a sibling of `Combobox.Chips`),
+ * so chips and input share one wrapping flex row.
  *
- * Note: Chips is a container only — it does NOT accept a render function.
- * Use Combobox.Value inside to iterate over selected values.
+ * Multi-select has no chevron / `ActionButtons`, so use a persistent
+ * action-oriented placeholder ("Add fruits") -- it's the only affordance
+ * for adding more values.
+ *
+ * Note: Chips is a container only — use `Combobox.Value` inside to render
+ * chips.
  *
  * @example
  * ```tsx
  * <Combobox.InputWrapper>
  *   <Combobox.Chips>
  *     <Combobox.Value>
- *       {(values) =>
- *         values?.map((value) => (
- *           <Combobox.Chip key={value} aria-label={value}>
- *             {value}
- *             <Combobox.ChipRemove />
- *           </Combobox.Chip>
- *         ))
- *       }
+ *       {(values) => (
+ *         <>
+ *           {values?.map((value) => (
+ *             <Combobox.Chip key={value} aria-label={value}>
+ *               {value}
+ *               <Combobox.ChipRemove />
+ *             </Combobox.Chip>
+ *           ))}
+ *           <Combobox.Input placeholder="Add fruits" />
+ *         </>
+ *       )}
  *     </Combobox.Value>
  *   </Combobox.Chips>
- *   <Combobox.Input placeholder="Select items..." />
  * </Combobox.InputWrapper>
  * ```
  */
@@ -572,7 +593,7 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(function Chip(
   return (
     <BaseCombobox.Chip
       ref={ref}
-      className={clsx(chipStyles.root, chipStyles.sm, className)}
+      className={clsx(styles.chip, className)}
       {...props}
     >
       <span className={chipStyles.label}>{labelContent}</span>

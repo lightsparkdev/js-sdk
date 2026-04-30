@@ -9,6 +9,7 @@
   height: 36px;
   padding-inline-start: var(--spacing-sm);
   padding-inline-end: var(--spacing-xs);
+  background: transparent;
   border: var(--stroke-sm) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);

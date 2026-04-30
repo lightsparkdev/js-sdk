@@ -243,8 +243,8 @@ interface DatePickerContextValue {
   setDate: (which: "start" | "end", date: Date) => void;
   setTime: (which: "start" | "end", hours: number, minutes: number) => void;
   isDateDisabled: (date: Date) => boolean;
-  min?: Date;
-  max?: Date;
+  min?: Date | undefined;
+  max?: Date | undefined;
 
   locale: string;
   weekStartsOn: 0 | 1;

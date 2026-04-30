@@ -8,7 +8,7 @@
     "target": "ES2017",
     "isolatedModules": true,
     "incremental": true,
-    "exactOptionalPropertyTypes": false,
+    "exactOptionalPropertyTypes": true,
     "paths": {
       "@/*": ["./src/*"],
       "@test-utils": ["./test-utils"],

@@ -26,7 +26,7 @@ export interface CommandGroup {
 
 interface CommandContextValue {
   onSelect: (item: CommandItem) => void;
-  renderItem?: (item: CommandItem) => React.ReactNode;
+  renderItem?: ((item: CommandItem) => React.ReactNode) | undefined;
 }
 
 const CommandContext = React.createContext<CommandContextValue | null>(null);
