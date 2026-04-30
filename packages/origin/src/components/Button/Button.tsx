@@ -7,8 +7,7 @@ import { Loader } from "../Loader";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import styles from "./Button.module.scss";
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends BaseButton.Props {
   variant?: "filled" | "secondary" | "outline" | "ghost" | "critical" | "link";
   size?: "default" | "compact" | "dense";
   loading?: boolean;
