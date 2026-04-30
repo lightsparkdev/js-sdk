@@ -68,7 +68,7 @@ type TriggerRenderState = {
 type TriggerRenderProp = useRender.RenderProp<TriggerRenderState>;
 
 export interface LoadMoreTriggerProps
-  extends Omit<ButtonProps, "onClick" | "disabled" | "loading"> {
+  extends Omit<ButtonProps, "onClick" | "disabled" | "loading" | "render"> {
   /**
    * Override the auto-derived disabled state (`!hasMore || loading`). Pass
    * `false` to force-enable; pass `true` to force-disable.
