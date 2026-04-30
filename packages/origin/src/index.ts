@@ -77,7 +77,16 @@ export { Menu } from "./components/Menu";
 export { Menubar } from "./components/Menubar";
 export { Meter } from "./components/Meter";
 export { NavigationMenu } from "./components/NavigationMenu";
-export { Pagination } from "./components/Pagination";
+export { Pagination, usePaginationContext } from "./components/Pagination";
+export type {
+  PaginationContextValue,
+  PaginationRootProps,
+  PaginationLabelProps,
+  PaginationRangeProps,
+  PaginationNavigationProps,
+  PaginationPreviousProps,
+  PaginationNextProps,
+} from "./components/Pagination";
 export { PhoneInput } from "./components/PhoneInput";
 export { Progress } from "./components/Progress";
 export { Radio } from "./components/Radio";

@@ -57,12 +57,12 @@
   }
 
   @media (hover: hover) {
-    &:hover:not(:disabled) {
+    &:hover:not(:disabled):not([data-disabled]) {
       background-color: var(--surface-hover);
     }
   }
 
-  &:active:not(:disabled) {
+  &:active:not(:disabled):not([data-disabled]) {
     background-color: var(--surface-secondary);
   }
 
@@ -75,7 +75,8 @@
     z-index: 1;
   }
 
-  &:disabled {
+  &:disabled,
+  &[data-disabled] {
     opacity: 0.5;
     box-shadow: none;
     cursor: not-allowed;
