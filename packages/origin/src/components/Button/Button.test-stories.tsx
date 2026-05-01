@@ -67,6 +67,16 @@ export function SecondaryButton() {
   return <Button variant="secondary">Click me</Button>;
 }
 
+export function FullWidthButton() {
+  return (
+    <div style={{ width: "320px" }}>
+      <Button variant="outline" fullWidth>
+        Full width
+      </Button>
+    </div>
+  );
+}
+
 export function DisabledSecondaryButton() {
   return (
     <Button variant="secondary" disabled>

@@ -15,6 +15,7 @@ export interface ButtonProps extends BaseButton.Props {
   leadingIcon?: React.ReactNode;
   trailingIcon?: React.ReactNode;
   iconOnly?: boolean;
+  fullWidth?: boolean;
   analyticsName?: string;
   children?: React.ReactNode;
 }
@@ -32,6 +33,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       leadingIcon,
       trailingIcon,
       iconOnly = false,
+      fullWidth = false,
       analyticsName,
       onClick,
       children,
@@ -57,6 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           styles[variant],
           styles[size],
           iconOnly && styles.iconOnly,
+          fullWidth && styles.fullWidth,
           loading && styles.loading,
           className,
         )}

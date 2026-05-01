@@ -17,6 +17,7 @@ import {
   ButtonWithTrailingIcon,
   LinkButton,
   DisabledLinkButton,
+  FullWidthButton,
 } from "./Button.test-stories";
 
 const axeConfig = {
@@ -172,6 +173,14 @@ test.describe("Button", () => {
     const defaultButton = page.getByRole("button", { name: "Default" });
     const box = await defaultButton.boundingBox();
     expect(box?.height).toBe(36);
+  });
+
+  test("fullWidth fills its parent width", async ({ mount, page }) => {
+    await mount(<FullWidthButton />);
+
+    const button = page.getByRole("button", { name: "Full width" });
+    const box = await button.boundingBox();
+    expect(box?.width).toBe(320);
   });
 
   test("icon-only button has accessible name", async ({ mount, page }) => {
