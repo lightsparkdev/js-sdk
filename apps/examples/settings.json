@@ -13,5 +13,8 @@
   },
   "uiTestApp": {
     "port": 3105
+  },
+  "gridGlobalAccountsExampleApp": {
+    "port": 3106
   }
 }
