@@ -5,12 +5,26 @@
  * - Regular (400) - body text
  * - Book (450) - component labels
  * - Medium (500) - headings, labels, buttons
+ * - Semibold (600) - legacy UI typography aliases
+ * - Bold (700) - legacy UI typography aliases
  * - Mono Regular - code blocks
  */
 
 // Suisse Intl - Regular (400)
 @font-face {
   font-family: "Suisse Intl";
+  src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
   src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
@@ -32,6 +46,18 @@
   line-gap-override: 0%;
 }
 
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
 // Suisse Intl - Medium (500)
 @font-face {
   font-family: "Suisse Intl";
@@ -44,10 +70,79 @@
   line-gap-override: 0%;
 }
 
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
+// Suisse Intl - Semibold (600)
+@font-face {
+  font-family: "Suisse Intl";
+  src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
+// Suisse Intl - Bold (700)
+@font-face {
+  font-family: "Suisse Intl";
+  src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  ascent-override: 81%;
+  descent-override: 19%;
+  line-gap-override: 0%;
+}
+
 // Suisse Intl Mono - Regular
 // Note: Font family matches token --font-family-mono value
 @font-face {
   font-family: "Suisse Int'l Mono";
+  src: url("/fonts/SuisseIntlMono-Regular-WebXL.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl-Mono;
   src: url("/fonts/SuisseIntlMono-Regular-WebXL.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;

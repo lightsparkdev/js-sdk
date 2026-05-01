@@ -16,13 +16,16 @@
   "exports": {
     ".": "./src/index.ts",
     "./styles.css": "./dist/styles.css",
+    "./styles.scss": "./src/styles/public.scss",
+    "./scope.scss": "./src/styles/scope.scss",
     "./tokens/*": "./src/tokens/*"
   },
   "files": [
     "dist/",
-    "src/components/",
-    "src/tokens/",
-    "src/lib/",
+    "src/components/**/*",
+    "src/styles/*.scss",
+    "src/tokens/*",
+    "src/lib/**/*",
     "src/index.ts",
     "public/fonts/",
     "skills/",
@@ -40,7 +43,7 @@
     "lint:fix": "eslint --fix src/ && stylelint --fix 'src/**/*.scss'",
     "lint:styles": "stylelint 'src/**/*.scss'",
     "lint:watch": "esw src/ -w --ext .ts,.tsx --color",
-    "package:checks": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm internal-resolution-error --exclude-entrypoints ./styles.css",
+    "package:checks": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm internal-resolution-error --exclude-entrypoints ./styles.css ./styles.scss ./scope.scss",
     "storybook": "storybook dev -p 6006",
     "build-sb": "echo 'Origin storybook requires @storybook/nextjs — run locally with: yarn storybook'",
     "test": "vitest run",

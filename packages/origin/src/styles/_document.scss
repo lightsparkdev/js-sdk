@@ -1,0 +1,14 @@
+@mixin html-globals($selector: ":where(html)") {
+  #{$selector} {
+    height: 100%;
+    background: var(--surface-primary, #ffffff);
+    font-feature-settings:
+      "salt" 1,
+      "kern" 1;
+
+    /* required for iOS https://bit.ly/3Q8syG8 */
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    scroll-behavior: smooth;
+  }
+}

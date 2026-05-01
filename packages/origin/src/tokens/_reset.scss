@@ -14,52 +14,44 @@
   }
 }
 
-body {
+:where(body) {
   margin: 0;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+:where(h1, h2, h3, h4, h5, h6) {
   margin: 0;
   font: inherit;
 }
 
-p {
+:where(p) {
   margin: 0;
 }
 
-a {
+:where(a) {
   color: inherit;
   text-decoration: none;
 }
 
-ul,
-ol {
+:where(ul, ol) {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-img {
+:where(img) {
   max-width: 100%;
   display: block;
 }
 
-table {
+:where(table) {
   border-collapse: collapse;
 }
 
-input,
-textarea,
-select {
+:where(input, textarea, select) {
   background: transparent;
 }
 
-button {
+:where(button) {
   background: transparent;
   cursor: pointer;
 }

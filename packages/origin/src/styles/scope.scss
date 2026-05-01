@@ -1,0 +1,14 @@
+/**
+ * Scoped stylesheet entrypoint for mixed applications.
+ * Import from `@lightsparkdev/origin/scope.scss`.
+ */
+
+@use "sass:meta";
+@use "root";
+@use "document";
+
+@include document.html-globals("html.origin");
+
+html.origin {
+  @include meta.load-css("scopable");
+}
