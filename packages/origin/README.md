@@ -75,7 +75,8 @@ Color and spacing tokens are built from exported Figma variables (`npm run token
 | `npm run storybook` | Start Storybook |
 | `npm run tokens:build` | Build tokens from Figma exports |
 | `npm run icons:extract` | Vendor icons and regenerate registry |
-| `npm run test` | Playwright component tests |
+| `npm run test` | Vitest unit tests |
+| `npm run test:ct` | Playwright component tests |
 | `npm run test:unit` | Vitest unit tests |
 | `npm run test:all` | Run both test suites |
 | `npm run lint` | Run ESLint |

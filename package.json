@@ -11,6 +11,7 @@
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
     "checks": "yarn deps:check && turbo run gql-codegen lint format circular-deps package:checks",
+    "checks-tests": "yarn deps:check && turbo run test gql-codegen lint format circular-deps package:checks",
     "test-cmd": "turbo run test",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",

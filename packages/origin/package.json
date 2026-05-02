@@ -32,7 +32,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "yarn build:styles",
+    "build": "yarn types && yarn build:styles",
     "build:styles": "sass src/styles/public.scss dist/styles.css --no-source-map",
     "build:watch": "sass --watch src/styles/public.scss dist/styles.css --no-source-map",
     "clean": "rm -rf dist",
@@ -46,7 +46,8 @@
     "package:checks": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm internal-resolution-error --exclude-entrypoints ./styles.css ./styles.scss ./scope.scss",
     "storybook": "storybook dev -p 6006",
     "build-sb": "echo 'Origin storybook requires @storybook/nextjs — run locally with: yarn storybook'",
-    "test": "vitest run",
+    "test": "yarn test:unit",
+    "test:all": "yarn test:unit && yarn test:ct",
     "test:ct": "playwright test -c playwright-ct.config.ts",
     "test:ct:ui": "playwright test -c playwright-ct.config.ts --ui",
     "test:unit": "vitest run",
