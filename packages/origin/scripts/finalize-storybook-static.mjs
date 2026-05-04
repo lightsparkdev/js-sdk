@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const staticDir = path.resolve("storybook-static");
+// PR previews override this to /app/origin-storybook-pr-<number>/.
 const basePath = normalizeBasePath(
   process.env.ORIGIN_STORYBOOK_BASE_PATH ?? "/app/origin-storybook/",
 );
