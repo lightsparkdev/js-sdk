@@ -350,8 +350,8 @@
 }
 
 .chip {
-  composes: root from "../Chip/Chip.module.scss";
-  composes: sm from "../Chip/Chip.module.scss";
+  // Anchor for spacing selectors. Structural chip styles live in
+  // Chip.module.scss and are applied directly in parts.tsx.
 }
 
 .chip + .input {

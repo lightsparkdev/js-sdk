@@ -45,7 +45,7 @@
     "lint:watch": "esw src/ -w --ext .ts,.tsx --color",
     "package:checks": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm internal-resolution-error --exclude-entrypoints ./styles.css ./styles.scss ./scope.scss",
     "storybook": "storybook dev -p 6006",
-    "build-sb": "echo 'Origin storybook requires @storybook/nextjs — run locally with: yarn storybook'",
+    "build-sb": "storybook build && node scripts/finalize-storybook-static.mjs",
     "test": "yarn test:unit",
     "test:all": "yarn test:unit && yarn test:ct",
     "test:ct": "playwright test -c playwright-ct.config.ts",
@@ -85,8 +85,8 @@
     "@lightsparkdev/eslint-config": "*",
     "@lightsparkdev/tsconfig": "0.0.1",
     "@playwright/experimental-ct-react": "^1.57.0",
-    "@storybook/nextjs": "^10.1.10",
     "@storybook/react": "^10.1.10",
+    "@storybook/react-vite": "^10.1.10",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/jest-dom": "^6.1.2",
     "@testing-library/react": "^14.0.0",
@@ -109,6 +109,7 @@
     "stylelint": "^17.1.1",
     "stylelint-config-standard-scss": "^17.0.0",
     "typescript": "^5.6.2",
+    "vite": "^8.0.3",
     "vitest": "^3.1.4"
   },
   "engines": {

@@ -593,7 +593,7 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(function Chip(
   return (
     <BaseCombobox.Chip
       ref={ref}
-      className={clsx(styles.chip, className)}
+      className={clsx(chipStyles.root, chipStyles.sm, styles.chip, className)}
       {...props}
     >
       <span className={chipStyles.label}>{labelContent}</span>
