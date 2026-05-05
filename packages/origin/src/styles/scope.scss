@@ -7,8 +7,8 @@
 @use "root";
 @use "document";
 
-@include document.html-globals("html.origin");
+@include document.html-globals(":where(html.origin)");
 
-html.origin {
+:where(html.origin) {
   @include meta.load-css("scopable");
 }
