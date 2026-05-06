@@ -3,6 +3,7 @@ import childProcess from "child_process";
 import fs from "fs";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
@@ -13,6 +14,12 @@ const currentCommit = childProcess
   .substr(0, 8);
 
 const basename = process.env.VITE_BASENAME || "/";
+const packageDir = path.dirname(fileURLToPath(import.meta.url));
+const jsRoot = path.resolve(packageDir, "../..");
+const devProxyCookiesScript = path.join(
+  jsRoot,
+  "apps/private/scripts/dev-proxy-cookies.mjs",
+);
 
 export const buildConfig = ({
   port = 3000,
@@ -31,6 +38,9 @@ export const buildConfig = ({
      The cookie file is re-read on each request so you can refresh cookies without restarting. */
   const proxyCookieFile = process.env.VITE_PROXY_COOKIE_FILE || "";
   const inlineProxyCookies = process.env.VITE_PROXY_COOKIES || "";
+  const shouldAutoRefreshProxyCookies =
+    process.env.VITE_PROXY_AUTO_REFRESH_COOKIES !== "0";
+  let refreshProxyCookiesPromise = null;
 
   function readProxyCookies() {
     if (proxyCookieFile) {
@@ -44,7 +54,9 @@ export const buildConfig = ({
           .join("; ");
       } catch (e) {
         if (!readProxyCookies._warned) {
-          console.warn(`[vite] Cannot read cookie file ${proxyCookieFile}: ${e.message}`);
+          console.warn(
+            `[vite] Cannot read cookie file ${proxyCookieFile}: ${e.message}`,
+          );
           readProxyCookies._warned = true;
         }
         return "";
@@ -67,21 +79,155 @@ export const buildConfig = ({
     const cookieSource = proxyCookieFile
       ? `cookies from ${proxyCookieFile}`
       : inlineProxyCookies
-        ? "cookies from VITE_PROXY_COOKIES env"
-        : "no cookies configured";
+      ? "cookies from VITE_PROXY_COOKIES env"
+      : "no cookies configured";
     console.log(`[vite] Remote proxy to ${proxyTarget} (${cookieSource})`);
+  }
+
+  function refreshProxyCookies(reason) {
+    if (!proxyCookieFile) {
+      console.warn(
+        `[vite] ${reason}. Cannot auto-refresh because VITE_PROXY_COOKIE_FILE is not set.`,
+      );
+      return false;
+    }
+    if (!shouldAutoRefreshProxyCookies) {
+      console.warn(
+        `[vite] ${reason}. Auto-refresh is disabled by VITE_PROXY_AUTO_REFRESH_COOKIES=0.`,
+      );
+      return false;
+    }
+    if (refreshProxyCookiesPromise) {
+      console.log("[vite] Dev proxy cookie refresh is already in progress.");
+      return true;
+    }
+    if (!fs.existsSync(devProxyCookiesScript)) {
+      console.warn(
+        `[vite] ${reason}. Cannot find cookie refresh script at ${devProxyCookiesScript}.`,
+      );
+      return false;
+    }
+
+    try {
+      fs.rmSync(proxyCookieFile, { force: true });
+    } catch (e) {
+      console.warn(`[vite] Could not clear ${proxyCookieFile}: ${e.message}`);
+    }
+
+    console.log(`[vite] ${reason}. Launching Cognito auth flow...`);
+
+    const child = childProcess.spawn(
+      process.execPath,
+      [devProxyCookiesScript, proxyTarget, proxyCookieFile],
+      {
+        cwd: jsRoot,
+        env: {
+          ...process.env,
+          VITE_PROXY_COOKIE_FILE: proxyCookieFile,
+        },
+        stdio: "inherit",
+      },
+    );
+
+    refreshProxyCookiesPromise = new Promise((resolve) => {
+      child.on("error", (err) => {
+        console.warn(
+          `[vite] Failed to launch Cognito auth flow: ${err.message}`,
+        );
+        refreshProxyCookiesPromise = null;
+        resolve(false);
+      });
+      child.on("close", (code) => {
+        if (code === 0) {
+          console.log("[vite] Dev proxy cookies refreshed.");
+        } else {
+          console.warn(`[vite] Cognito auth flow exited with code ${code}.`);
+        }
+        refreshProxyCookiesPromise = null;
+        resolve(code === 0);
+      });
+    });
+
+    return true;
+  }
+
+  function rewriteSetCookieHeaders(headers) {
+    const setCookie = headers["set-cookie"];
+    if (setCookie) {
+      const cookies = Array.isArray(setCookie) ? setCookie : [setCookie];
+      headers["set-cookie"] = cookies.map((cookie) =>
+        cookie
+          .replace(/;\s*Domain=[^;]*/gi, "")
+          .replace(/;\s*Secure/gi, "")
+          .replace(/;\s*SameSite=\w+/gi, "; SameSite=Lax"),
+      );
+    }
+  }
+
+  function sendJson(res, statusCode, body) {
+    const json = JSON.stringify(body);
+    res.writeHead(statusCode, {
+      "content-type": "application/json",
+      "content-length": Buffer.byteLength(json),
+    });
+    res.end(json);
+  }
+
+  function hasAlbGeneratedHtmlErrorHeaders(proxyRes) {
+    const server = proxyRes.headers.server || "";
+    const contentType = proxyRes.headers["content-type"] || "";
+    return (
+      proxyRes.statusCode === 500 &&
+      server.includes("awselb") &&
+      contentType.includes("text/html")
+    );
+  }
+
+  function isAlbGeneratedHtmlError(body) {
+    return (
+      body.includes("<title>500 Internal Server Error</title>") &&
+      body.includes("<center><h1>500 Internal Server Error</h1></center>") &&
+      body.includes("padding to disable MSIE and Chrome friendly error page")
+    );
+  }
+
+  function cookieNames(cookieHeader) {
+    return new Set(
+      cookieHeader
+        .split(";")
+        .map((cookie) => cookie.trim().split("=")[0])
+        .filter(Boolean),
+    );
+  }
+
+  function removeCookiesByName(cookieHeader, namesToRemove) {
+    return cookieHeader
+      .split(";")
+      .map((cookie) => cookie.trim())
+      .filter((cookie) => cookie && !namesToRemove.has(cookie.split("=")[0]))
+      .join("; ");
+  }
+
+  function devProxyAuthMessage(refreshStarted) {
+    return refreshStarted
+      ? "Your local dev proxy session expired. Complete the Cognito login window that just opened, then return here and try again."
+      : "Your local dev proxy session expired. Stop this dev server, run start:dev again, complete the Cognito login prompt, then try again.";
   }
 
   function configureProxy(proxy) {
     if (!isRemoteProxy) return;
     /* Merge ALB cookies with browser cookies on outgoing requests.
-       Proxy file cookies come first so refreshed ALB cookies take
-       precedence over stale browser copies of the same cookie name. */
+       Browser cookies with the same names as proxy file cookies are removed so
+       refreshed ALB cookies do not depend on duplicate-cookie precedence. */
     proxy.on("proxyReq", (proxyReq, req) => {
       const proxyCookies = readProxyCookies();
       if (proxyCookies) {
         const browserCookies = req.headers.cookie || "";
-        const merged = [proxyCookies, browserCookies]
+        const filteredBrowserCookies = removeCookiesByName(
+          browserCookies,
+          cookieNames(proxyCookies),
+        );
+        const merged = [filteredBrowserCookies, proxyCookies]
           .filter(Boolean)
           .join("; ");
         proxyReq.setHeader("cookie", merged);
@@ -91,36 +237,74 @@ export const buildConfig = ({
       /* Intercept ALB 302 redirects to Cognito — return 401 instead so the
          browser doesn't try to follow a cross-origin redirect (which causes CORS errors) */
       const location = proxyRes.headers.location || "";
-      if (proxyRes.statusCode === 302 && location.includes("amazoncognito.com")) {
-        console.log(
-          `[vite] ALB redirected to Cognito (cookies expired?) — returning 401 for ${req.url}`,
+      if (
+        proxyRes.statusCode === 302 &&
+        location.includes("amazoncognito.com")
+      ) {
+        const refreshStarted = refreshProxyCookies(
+          `ALB redirected ${req.url} to Cognito, so dev proxy cookies are stale`,
         );
         /* Consume the original response body so the socket isn't left hanging */
         proxyRes.resume();
-        res.writeHead(401, { "content-type": "application/json" });
-        res.end(
-          JSON.stringify({
-            errors: [
-              {
-                message:
-                  "ALB session expired. Refresh dev proxy cookies and restart.",
-              },
-            ],
-          }),
-        );
+        sendJson(res, 401, {
+          errors: [
+            {
+              message: devProxyAuthMessage(refreshStarted),
+            },
+          ],
+        });
         return;
       }
-      /* Rewrite Set-Cookie headers on responses so the browser stores them for localhost */
-      const setCookie = proxyRes.headers["set-cookie"];
-      if (setCookie) {
-        proxyRes.headers["set-cookie"] = setCookie.map((cookie) =>
-          cookie
-            .replace(/;\s*Domain=[^;]*/gi, "")
-            .replace(/;\s*Secure/gi, "")
-            .replace(/;\s*SameSite=\w+/gi, "; SameSite=Lax"),
-        );
+
+      if (hasAlbGeneratedHtmlErrorHeaders(proxyRes)) {
+        const chunks = [];
+        proxyRes.on("data", (chunk) => chunks.push(chunk));
+        proxyRes.on("end", () => {
+          const body = Buffer.concat(chunks);
+          if (isAlbGeneratedHtmlError(body.toString("utf8"))) {
+            const refreshStarted = refreshProxyCookies(
+              `ALB returned an HTML 500 for ${req.url}, so dev proxy cookies may be stale`,
+            );
+            sendJson(res, 401, {
+              errors: [
+                {
+                  message: devProxyAuthMessage(refreshStarted),
+                },
+              ],
+            });
+            return;
+          }
+
+          rewriteSetCookieHeaders(proxyRes.headers);
+          res.writeHead(
+            proxyRes.statusCode || 500,
+            proxyRes.statusMessage,
+            proxyRes.headers,
+          );
+          res.end(body);
+        });
+        return;
       }
+
+      /* Rewrite Set-Cookie headers on responses so the browser stores them for localhost */
+      rewriteSetCookieHeaders(proxyRes.headers);
+      res.writeHead(
+        proxyRes.statusCode || 500,
+        proxyRes.statusMessage,
+        proxyRes.headers,
+      );
+      proxyRes.pipe(res);
     });
+  }
+
+  function proxyOptions({ target = proxyTarget, ws = false } = {}) {
+    return {
+      target,
+      changeOrigin: true,
+      ...(ws ? { ws: true } : {}),
+      ...(isRemoteProxy ? { selfHandleResponse: true } : {}),
+      configure: configureProxy,
+    };
   }
 
   function manualChunks(id) {
@@ -183,64 +367,21 @@ export const buildConfig = ({
       open: false,
       host: "0.0.0.0",
       proxy: {
-        "/graphql/internal": {
-          target: proxyTarget,
-          changeOrigin: true,
-          ws: true,
-          configure: configureProxy,
-        },
-        "/graphql/custody": {
-          target: proxyTarget,
-          changeOrigin: true,
-          ws: true,
-          configure: configureProxy,
-        },
-        "/graphql/frontend": {
-          target: proxyTarget,
-          changeOrigin: true,
-          ws: true,
-          configure: configureProxy,
-        },
-        "/umame/graphql": {
-          target: proxyTarget,
-          changeOrigin: true,
-          ws: true,
-          configure: configureProxy,
-        },
-        "/graphql/bridge": {
-          target: proxyTarget,
-          changeOrigin: true,
-          ws: true,
-          configure: configureProxy,
-        },
-        "^/umaauth/.*": {
-          target: proxyTarget,
-          changeOrigin: true,
-          configure: configureProxy,
-        },
-        "/ui/logs": {
-          target: proxyTarget,
-          changeOrigin: true,
-          configure: configureProxy,
-        },
-        "/ui/event": {
-          target: proxyTarget,
-          changeOrigin: true,
-          configure: configureProxy,
-        },
-        "/grid-dashboard-api": {
-          target: proxyTarget,
-          changeOrigin: true,
-          configure: configureProxy,
-        },
-        "/graphql/paycore-internal": {
+        "/graphql/internal": proxyOptions({ ws: true }),
+        "/graphql/custody": proxyOptions({ ws: true }),
+        "/graphql/frontend": proxyOptions({ ws: true }),
+        "/umame/graphql": proxyOptions({ ws: true }),
+        "/graphql/bridge": proxyOptions({ ws: true }),
+        "^/umaauth/.*": proxyOptions(),
+        "/ui/logs": proxyOptions(),
+        "/ui/event": proxyOptions(),
+        "/grid-dashboard-api": proxyOptions(),
+        "/graphql/paycore-internal": proxyOptions({
           target:
             proxyTarget === "http://127.0.0.1:5000"
               ? "http://127.0.0.1:5001"
               : proxyTarget,
-          changeOrigin: true,
-          configure: configureProxy,
-        },
+        }),
       },
     },
     /* see https://bit.ly/3EOx5ZM - workspace deps that need to be commonjs like @lightsparkdev/crypto-wasm
