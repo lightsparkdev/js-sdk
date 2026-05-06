@@ -52,15 +52,6 @@ export function ConformanceItemText(
   );
 }
 
-/** Value conformance - forwards props, ref, className */
-export function ConformanceValue(props: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <Combobox.Root items={fruits} defaultValue="Apple">
-      <Combobox.Value data-testid="test-root" {...props} />
-    </Combobox.Root>
-  );
-}
-
 /** ActionButtons conformance - forwards props, ref, className */
 export function ConformanceActionButtons(
   props: React.HTMLAttributes<HTMLDivElement>,

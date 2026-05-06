@@ -234,9 +234,6 @@ test.describe("Combobox", () => {
     // ItemText tests skipped - requires popup to be visible in DOM
     // The component itself follows slot pattern, but testing requires complex setup
 
-    // Value tests skipped - Value is a context provider for accessing selected values,
-    // not a DOM wrapper. It doesn't render props to a DOM element.
-
     // ChipText tests skipped - requires multi-select chips to render
     // The component itself follows slot pattern, but testing requires complex setup
   });
