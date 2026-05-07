@@ -77,6 +77,18 @@ export { Menu } from "./components/Menu";
 export { Menubar } from "./components/Menubar";
 export { Meter } from "./components/Meter";
 export { NavigationMenu } from "./components/NavigationMenu";
+export { Pager, PagerContext, usePagerContext } from "./components/Pager";
+export type {
+  PagerRootProps,
+  PagerNavigationProps,
+  PagerPreviousProps,
+  PagerNextProps,
+  PagerStatusProps,
+  PagerContextValue,
+  PagerButtonState,
+  PagerNavigationState,
+  PagerRootState,
+} from "./components/Pager";
 export { Pagination, usePaginationContext } from "./components/Pagination";
 export type {
   PaginationContextValue,

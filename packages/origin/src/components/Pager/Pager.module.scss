@@ -1,0 +1,76 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.status {
+  @include body-sm;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.navigation {
+  display: flex;
+  @include smooth-corners(var(--corner-radius-sm));
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-primary);
+  color: var(--icon-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &:first-child {
+    border-radius: var(--corner-radius-sm) 0 0 var(--corner-radius-sm);
+    border-right: none;
+  }
+
+  &:last-child {
+    border-radius: 0 var(--corner-radius-sm) var(--corner-radius-sm) 0;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: var(--surface-hover);
+    }
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--surface-secondary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--border-secondary);
+    box-shadow: 0 0 0 3px var(--state-focus);
+    position: relative;
+    z-index: 1;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
