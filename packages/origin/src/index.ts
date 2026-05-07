@@ -190,8 +190,13 @@ export {
 
 export { Badge, type BadgeProps, type BadgeVariant } from "./components/Badge";
 
-export { Button } from "./components/Button";
-export type { ButtonProps } from "./components/Button";
+export { Button, ButtonLink } from "./components/Button";
+export type {
+  ButtonLinkProps,
+  ButtonProps,
+  ButtonSize,
+  ButtonVariant,
+} from "./components/Button";
 
 export { ButtonGroup } from "./components/ButtonGroup";
 export type { ButtonGroupProps } from "./components/ButtonGroup";

@@ -1,4 +1,4 @@
-import { Button } from "./Button";
+import { Button, ButtonLink } from "./Button";
 
 const ChevronLeft = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -53,6 +53,101 @@ export function CriticalButton() {
 
 export function LinkButton() {
   return <Button variant="link">Learn more</Button>;
+}
+
+export function AnchorButtonLink() {
+  return (
+    <ButtonLink href="/docs" variant="outline">
+      Read docs
+    </ButtonLink>
+  );
+}
+
+export function DisabledAnchorButtonLink() {
+  return (
+    <ButtonLink disabled href="/disabled" variant="outline">
+      Disabled docs
+    </ButtonLink>
+  );
+}
+
+export function RenderedButtonLink() {
+  return (
+    <ButtonLink render={<a href="/settings" />} variant="secondary">
+      Settings
+    </ButtonLink>
+  );
+}
+
+export function RenderedButtonLinkWithMergedProps() {
+  return (
+    <ButtonLink
+      data-button-link-source="button-link"
+      onClick={(event) => {
+        event.preventDefault();
+        document.body.dataset.buttonLinkClick = "true";
+      }}
+      render={
+        <a
+          href="/merged"
+          className="rendered-link-target"
+          data-render-source="render"
+          onClick={() => {
+            document.body.dataset.renderClick = "true";
+          }}
+        />
+      }
+      variant="outline"
+    >
+      Merged props
+    </ButtonLink>
+  );
+}
+
+export function RenderedButtonLinkWithMergedRefs() {
+  return (
+    <ButtonLink
+      ref={(node) => {
+        if (node) {
+          document.body.dataset.buttonLinkRef = node.getAttribute("href") ?? "";
+        }
+      }}
+      render={
+        <a
+          href="/refs"
+          ref={(node) => {
+            if (node) {
+              document.body.dataset.renderRef = node.getAttribute("href") ?? "";
+            }
+          }}
+        />
+      }
+      variant="outline"
+    >
+      Merged refs
+    </ButtonLink>
+  );
+}
+
+export function DisabledRenderedButtonLink() {
+  return (
+    <ButtonLink
+      disabled
+      onClick={() => {
+        document.body.dataset.disabledButtonLinkClick = "true";
+      }}
+      render={
+        <a
+          href="/disabled"
+          onClick={() => {
+            document.body.dataset.disabledRenderClick = "true";
+          }}
+        />
+      }
+    >
+      Disabled link
+    </ButtonLink>
+  );
 }
 
 export function DisabledLinkButton() {
