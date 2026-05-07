@@ -11,7 +11,7 @@ import {
 } from "../../lib/base-ui-utils";
 import styles from "./Chip.module.scss";
 
-export interface ChipProps {
+export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** The label text for default variant */
   children?: React.ReactNode;
   /** Size of the chip */
@@ -88,7 +88,7 @@ export const Chip = React.forwardRef<HTMLSpanElement, ChipProps>(
         data-disabled={disabled || undefined}
         {...elementProps}
       >
-        <span className={styles.label}>{children}</span>
+        {children}
         {onDismissProp && (
           <button
             type="button"

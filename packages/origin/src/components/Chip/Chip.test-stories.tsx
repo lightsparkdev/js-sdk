@@ -46,3 +46,11 @@ export function FilterChip() {
 export function ChipNoDismiss() {
   return <Chip>No dismiss button</Chip>;
 }
+
+export function ChipWithArbitraryChild() {
+  return (
+    <Chip>
+      <strong data-testid="chip-custom-child">Custom child</strong>
+    </Chip>
+  );
+}

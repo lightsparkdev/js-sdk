@@ -2,11 +2,13 @@
 @use "../../tokens/mixins" as *;
 
 .root {
+  @include body-sm;
   display: inline-flex;
   align-items: center;
   border: var(--stroke-xs) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
   background-color: var(--surface-secondary);
+  color: var(--text-primary);
 
   &.sm {
     height: 24px;
@@ -22,13 +24,13 @@
   }
 }
 
-.label {
-  @include body-sm;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.default {
   padding: 0 var(--spacing-xs);
-  color: var(--text-primary);
+
+  .dismiss {
+    margin-inline-start: var(--spacing-xs);
+    margin-inline-end: calc(-1 * var(--spacing-xs));
+  }
 }
 
 .dismiss {
@@ -95,6 +97,7 @@
   }
 
   .dismiss {
+    margin-inline: 0;
     padding: 0 var(--spacing-2xs);
     border-left: var(--stroke-xs) solid var(--border-primary);
   }

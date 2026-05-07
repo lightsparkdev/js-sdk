@@ -509,23 +509,18 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(function Chip(
   { className, children, ...props },
   ref,
 ) {
-  // Separate ChipRemove from label content
-  const childArray = React.Children.toArray(children);
-  const chipRemove = childArray.filter(
-    (child) => React.isValidElement(child) && child.type === ChipRemove,
-  );
-  const labelContent = childArray.filter(
-    (child) => !React.isValidElement(child) || child.type !== ChipRemove,
-  );
-
   return (
     <BaseCombobox.Chip
       ref={ref}
-      className={clsx(chipStyles.root, chipStyles.sm, className)}
+      className={clsx(
+        chipStyles.root,
+        chipStyles.sm,
+        chipStyles.default,
+        className,
+      )}
       {...props}
     >
-      <span className={chipStyles.label}>{labelContent}</span>
-      {chipRemove}
+      {children}
     </BaseCombobox.Chip>
   );
 });

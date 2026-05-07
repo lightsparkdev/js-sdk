@@ -7,6 +7,7 @@ import {
   TestComboboxControlled,
   TestComboboxWithGroups,
   TestComboboxWithClear,
+  TestComboboxChipPassThrough,
   ConformanceInputWrapper,
   ConformanceActionButtons,
 } from "./Combobox.test-stories";
@@ -134,6 +135,24 @@ test.describe("Combobox", () => {
       const banana = page.getByRole("option", { name: "Banana" });
       await expect(apple).toHaveAttribute("data-selected", "");
       await expect(banana).toHaveAttribute("data-selected", "");
+    });
+
+    test("renders chip children directly and removes through wrapped ChipRemove", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<TestComboboxChipPassThrough />);
+      const chip = page.getByTestId("combobox-chip");
+
+      await expect(
+        chip.locator("> [data-testid='chip-label-child']"),
+      ).toHaveText("Apple");
+      await expect(
+        chip.locator("> [data-testid='remove-wrapper']"),
+      ).toBeVisible();
+
+      await page.getByRole("button", { name: "Remove Apple" }).click();
+      await expect(chip).toBeHidden();
     });
   });
 

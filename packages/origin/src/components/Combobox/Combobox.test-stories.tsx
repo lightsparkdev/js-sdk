@@ -125,6 +125,30 @@ export const TestComboboxMultiple = () => (
   </Combobox.Root>
 );
 
+export const TestComboboxChipPassThrough = () => (
+  <Combobox.Root items={fruits} multiple defaultValue={["Apple"]}>
+    <Combobox.InputWrapper>
+      <Combobox.Chips>
+        <Combobox.Value>
+          {(selectedValue: string[]) => (
+            <>
+              {selectedValue.map((item) => (
+                <Combobox.Chip key={item} data-testid="combobox-chip">
+                  <strong data-testid="chip-label-child">{item}</strong>
+                  <span data-testid="remove-wrapper">
+                    <Combobox.ChipRemove aria-label={`Remove ${item}`} />
+                  </span>
+                </Combobox.Chip>
+              ))}
+              <Combobox.Input placeholder="Select fruits..." />
+            </>
+          )}
+        </Combobox.Value>
+      </Combobox.Chips>
+    </Combobox.InputWrapper>
+  </Combobox.Root>
+);
+
 export const TestComboboxDisabled = () => (
   <Combobox.Root items={fruits} disabled>
     <Combobox.InputWrapper>

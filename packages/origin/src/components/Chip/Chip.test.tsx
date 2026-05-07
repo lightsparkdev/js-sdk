@@ -4,6 +4,7 @@ import {
   DisabledChip,
   FilterChip,
   ChipNoDismiss,
+  ChipWithArbitraryChild,
 } from "./Chip.test-stories";
 
 test.describe("Chip", () => {
@@ -13,6 +14,15 @@ test.describe("Chip", () => {
       const chip = page.locator("span").first();
       await expect(chip).toBeVisible();
       await expect(chip).toContainText("Test Label");
+    });
+
+    test("renders arbitrary children directly", async ({ mount, page }) => {
+      await mount(<ChipWithArbitraryChild />);
+      const chip = page.locator("span").first();
+
+      await expect(
+        chip.locator("> [data-testid='chip-custom-child']"),
+      ).toHaveText("Custom child");
     });
 
     test("dismiss button has correct aria-label", async ({ mount, page }) => {
