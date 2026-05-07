@@ -201,13 +201,19 @@
 }
 
 .popup {
+  box-sizing: border-box;
+  max-height: min(23rem, var(--available-height));
+  max-width: var(--available-width);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: var(--spacing-3xs);
+  min-width: var(--select-popup-min-width, var(--anchor-width));
   background-color: var(--surface-primary);
   border: var(--stroke-xs) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
-  overflow: hidden;
-  min-width: var(--select-popup-min-width, var(--anchor-width));
   transform-origin: var(--transform-origin);
   transition:
     opacity 150ms ease,
@@ -225,12 +231,16 @@
 }
 
 .list {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4xs);
   padding: var(--spacing-3xs);
+  max-height: min(23rem, var(--available-height));
   outline: 0;
-  overflow: clip;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: var(--spacing-3xs);
 }
 
 .item {
