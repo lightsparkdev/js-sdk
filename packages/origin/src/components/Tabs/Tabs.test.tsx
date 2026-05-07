@@ -45,6 +45,16 @@ test.describe("Tabs", () => {
       await expect(secondPanel).toBeVisible();
       await expect(firstPanel).toBeHidden();
     });
+
+    test("panels do not apply presentation styles", async ({ mount }) => {
+      const component = await mount(<TestTabs />);
+      const firstPanel = component.getByText("First panel content");
+
+      await expect(firstPanel).toHaveCSS("display", "block");
+      await expect(firstPanel).toHaveCSS("padding-top", "0px");
+      await expect(firstPanel).toHaveCSS("border-top-width", "0px");
+      await expect(firstPanel).toHaveCSS("overflow", "visible");
+    });
   });
 
   test.describe("Keyboard", () => {
