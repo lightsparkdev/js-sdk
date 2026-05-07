@@ -21,6 +21,18 @@ export function DefaultField() {
   );
 }
 
+export function FieldWithLabelSuffix() {
+  return (
+    <Field.Root>
+      <Field.Label data-testid="field-label-with-suffix">
+        Display name
+        <span data-testid="field-label-suffix">(optional)</span>
+      </Field.Label>
+      <Input placeholder="Enter display name" />
+    </Field.Root>
+  );
+}
+
 export function FieldWithError() {
   return (
     <Field.Root invalid>

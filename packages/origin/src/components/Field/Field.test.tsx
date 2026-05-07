@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultField,
+  FieldWithLabelSuffix,
   FieldWithError,
   DisabledField,
   FieldWithoutLabel,
@@ -24,6 +25,22 @@ test.describe("Field", () => {
       await expect(label).toBeVisible();
       await expect(input).toBeVisible();
       await expect(description).toBeVisible();
+    });
+
+    test("spaces label suffix children with the spacing token", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithLabelSuffix />);
+
+      const label = page.getByTestId("field-label-with-suffix");
+      const suffix = page.getByTestId("field-label-suffix");
+
+      await expect(label).toBeVisible();
+      await expect(label).toHaveCSS("display", "flex");
+      await expect(label).toHaveCSS("gap", "4px");
+      await expect(label).toContainText("Display name");
+      await expect(suffix).toHaveText("(optional)");
     });
 
     test("label is associated with input via aria", async ({ mount, page }) => {
