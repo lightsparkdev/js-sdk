@@ -1425,6 +1425,15 @@ export function formatCurrencyStr(
     if (centCurrencies.includes(unit)) {
       num = num / 100;
     }
+    /* Stablecoins use 6 decimal places (micro units). Divide by 10^6 to get display value: */
+    const microCurrencies = [
+      CurrencyUnit.USDC,
+      CurrencyUnit.USDT,
+      CurrencyUnit.USDB,
+    ] as string[];
+    if (microCurrencies.includes(unit)) {
+      num = num / 1_000_000;
+    }
   }
 
   function getDefaultMaxFractionDigits(
@@ -1495,6 +1504,16 @@ export function formatCurrencyStr(
         notation: compact ? ("compact" as const) : undefined,
         maximumFractionDigits: getDefaultMaxFractionDigits(0, 0),
       })}`;
+      break;
+    case CurrencyUnit.USDC:
+    case CurrencyUnit.USDT:
+    case CurrencyUnit.USDB:
+      formattedStr = num.toLocaleString(currentLocale, {
+        notation: compact ? ("compact" as const) : undefined,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: getDefaultMaxFractionDigits(2, 6),
+      });
+      forceAppendUnits = true;
       break;
     default:
       if (isFormattableFiatCurrencyCode(unit)) {
