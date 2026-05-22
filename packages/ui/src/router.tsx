@@ -4,7 +4,7 @@ import type { Theme } from "@emotion/react";
 import type { Interpolation } from "@emotion/styled";
 import styled from "@emotion/styled";
 import { omit } from "lodash-es";
-import type { MouseEventHandler, ReactNode } from "react";
+import type { AnchorHTMLAttributes, MouseEventHandler, ReactNode } from "react";
 import { forwardRef, useCallback } from "react";
 import type { PathMatch } from "react-router-dom";
 import {
@@ -36,7 +36,19 @@ export type RouteHash = string | null;
 
 export type ExternalLink = string;
 
-export type LinkProps = {
+type LinkAnchorProps = Omit<
+  AnchorHTMLAttributes<HTMLAnchorElement>,
+  | "children"
+  | "className"
+  | "download"
+  | "href"
+  | "id"
+  | "onClick"
+  | "rel"
+  | "target"
+>;
+
+export type LinkProps = LinkAnchorProps & {
   to?: NewRoutesType | undefined;
   id?: string | undefined;
   externalLink?: ExternalLink | undefined;
@@ -111,6 +123,9 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
       blue = false,
       newTab: newTabProp,
       typography,
+      disabled: _disabled,
+      style,
+      ...anchorProps
     },
     ref,
   ) => {
@@ -154,13 +169,17 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
 
     return (
       <RLink
+        {...anchorProps}
         to={toStr}
         id={id}
         css={css}
         onClick={onClick}
         className={className}
         download={filename}
-        style={{ color: blue ? colors.blue43 : "inherit" }}
+        style={{
+          ...style,
+          color: blue ? colors.blue43 : "inherit",
+        }}
         target={newTab ? "_blank" : undefined}
         rel={newTab ? "noopener noreferrer" : undefined}
         ref={ref}
