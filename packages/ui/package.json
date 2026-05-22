@@ -23,9 +23,17 @@
       "import": "./dist/components/typography/index.js",
       "require": "./dist/components/typography/index.cjs"
     },
+    "./hooks": {
+      "import": "./dist/hooks/index.js",
+      "require": "./dist/hooks/index.cjs"
+    },
     "./hooks/*": {
       "import": "./dist/hooks/*.js",
       "require": "./dist/hooks/*.cjs"
+    },
+    "./icons": {
+      "import": "./dist/icons/index.js",
+      "require": "./dist/icons/index.cjs"
     },
     "./icons/*": {
       "import": "./dist/icons/*.js",
@@ -34,6 +42,10 @@
     "./styles/*": {
       "import": "./dist/styles/*.js",
       "require": "./dist/styles/*.cjs"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.cjs"
     },
     "./types/*": {
       "import": "./dist/types/*.js",
