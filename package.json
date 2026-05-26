@@ -67,7 +67,8 @@
     }
   },
   "resolutions": {
-    "axios": "1.7.7"
+    "axios": "1.7.7",
+    "form-data": "4.0.5"
   },
   "engines": {
     "node": ">=18"

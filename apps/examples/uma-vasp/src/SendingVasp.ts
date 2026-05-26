@@ -194,11 +194,11 @@ export default class SendingVasp {
     }
 
     if (
-      !(await this.complianceService.shouldAcceptTransactionToVasp(
+      !this.complianceService.shouldAcceptTransactionToVasp(
         receivingVaspDomain,
         user.umaUserName,
         receiverUmaAddress,
-      ))
+      )
     ) {
       throw new uma.UmaError(
         `Transaction not allowed to ${receiverUmaAddress}.`,
@@ -481,12 +481,12 @@ export default class SendingVasp {
       amountValueMillisats / sendingCurrency.multiplier;
 
     if (
-      !(await this.checkInternalLedgerBalance(
+      !this.checkInternalLedgerBalance(
         user.id,
         amountValueMillisats,
         sendingCurrencyAmount,
         sendingCurrencyCode,
-      ))
+      )
     ) {
       throw new uma.UmaError(
         "Insufficient balance.",
@@ -930,12 +930,12 @@ export default class SendingVasp {
     }
 
     if (
-      !(await this.checkInternalLedgerBalance(
+      !this.checkInternalLedgerBalance(
         user.id,
         amountMsats,
         sendingCurrencyAmount,
         sendingCurrencyCode,
-      ))
+      )
     ) {
       throw new uma.UmaError(
         "Insufficient balance.",
