@@ -6,7 +6,7 @@
   "type": "module",
   "dependencies": {
     "rollup-plugin-visualizer": "^7.0.1",
-    "vite": "^8.0.3",
+    "vite": "^8.0.14",
     "vite-plugin-svgr": "^4.5.0"
   },
   "devDependencies": {
