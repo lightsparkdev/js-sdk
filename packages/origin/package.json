@@ -63,7 +63,7 @@
     "@base-ui/react": "^1.1.0",
     "@base-ui/utils": "^0.2.3",
     "@tanstack/react-table": "^8.21.3",
-    "ajv": "^8.18.0",
+    "ajv": "^8.20.0",
     "clsx": "^2.1.1"
   },
   "peerDependencies": {
