@@ -16,5 +16,8 @@
   },
   "gridGlobalAccountsExampleApp": {
     "port": 3106
+  },
+  "gridKycDemo": {
+    "port": 3107
   }
 }
