@@ -24,6 +24,7 @@ import {
 } from "./api";
 
 type CustomerType = "INDIVIDUAL" | "BUSINESS";
+type FlowMode = "HOSTED" | "SDK";
 type Status = { kind: "ok" | "err"; message: string } | null;
 
 const ENV_STORAGE_KEY = "grid-kyc-demo:env";
@@ -244,7 +245,12 @@ export function App() {
   const [business, setBusiness] = useState<BusinessForm>(defaultBusiness);
   const [customerId, setCustomerId] = useState("");
   const [redirectUri, setRedirectUri] = useState("");
+  const [flowMode, setFlowMode] = useState<FlowMode>("HOSTED");
   const [kycLink, setKycLink] = useState<KycLinkResponse | null>(null);
+  // SdkLauncher owns its own launched-or-not state so it resets cleanly on
+  // remount (Hosted ⇄ SDK mode cycles, regenerating the link). Lifting it
+  // here would leave a stale `true` value that hides the Launch button and
+  // shows an empty iframe container.
 
   const [pingStatus, setPingStatus] = useState<Status>(null);
   const [createStatus, setCreateStatus] = useState<Status>(null);
@@ -365,13 +371,25 @@ export function App() {
     try {
       const id = customerId.trim();
       if (!id) throw new Error("Customer ID required.");
-      const body = redirectUri.trim() ? { redirectUri: redirectUri.trim() } : undefined;
+      // The hosted-link redirect URI is irrelevant for the embedded-SDK
+      // flow (the SDK runs inline; the page never navigates away), so
+      // omit it when the user is in SDK mode.
+      const body =
+        flowMode === "HOSTED" && redirectUri.trim()
+          ? { redirectUri: redirectUri.trim() }
+          : undefined;
       const data = await runCall<KycLinkResponse>(
         "POST",
         `/customers/${encodeURIComponent(id)}/kyc-link`,
         body,
       );
       if (data) {
+        if (flowMode === "SDK" && !data.token) {
+          throw new Error(
+            "Provider returned no SDK access token. " +
+              "Switch to Hosted mode or use a provider that supports embedded SDK.",
+          );
+        }
         setKycLink(data);
         setLinkStatus({
           kind: "ok",
@@ -381,7 +399,21 @@ export function App() {
     } catch (err) {
       setLinkStatus({ kind: "err", message: (err as Error).message });
     }
-  }, [customerId, redirectUri, runCall]);
+  }, [customerId, flowMode, redirectUri, runCall]);
+
+  // The Sumsub SDK calls our token-refresh callback when the current
+  // access token expires. We re-call the same endpoint to mint a fresh
+  // one for the same customer.
+  const refreshSdkToken = useCallback(async (): Promise<string> => {
+    const id = customerId.trim();
+    if (!id) throw new Error("Customer ID required.");
+    const data = await runCall<KycLinkResponse>(
+      "POST",
+      `/customers/${encodeURIComponent(id)}/kyc-link`,
+    );
+    if (!data?.token) throw new Error("Provider returned no SDK token on refresh");
+    return data.token;
+  }, [customerId, runCall]);
 
   const onFetchCustomer = useCallback(async () => {
     try {
@@ -555,19 +587,38 @@ export function App() {
               />
             </Field.Root>
             <Field.Root>
-              <Field.Label>Redirect URI (optional)</Field.Label>
-              <Input
-                value={redirectUri}
-                onChange={(e) => setRedirectUri(e.target.value)}
-                placeholder="https://app.example.com/onboarding/done"
+              <Field.Label>Verification mode</Field.Label>
+              <SelectControl
+                value={flowMode}
+                onValueChange={(v) => setFlowMode(v as FlowMode)}
+                items={[
+                  { value: "HOSTED", label: "Hosted link (open in new tab)" },
+                  { value: "SDK", label: "Embedded SDK (Sumsub WebSDK inline)" },
+                ]}
               />
               <Field.Description>
-                Where Sumsub sends the customer after the hosted flow. Must be
-                <code> https://</code>; Sumsub rejects <code>http://</code> and
-                localhost URLs. Leave blank to use Sumsub&apos;s default
-                post-flow page.
+                Both modes call the same <code>/kyc-link</code> endpoint —
+                hosted mode uses the returned <code>kycUrl</code>, embedded
+                mode uses the returned provider <code>token</code> via
+                Sumsub&apos;s WebSDK script.
               </Field.Description>
             </Field.Root>
+            {flowMode === "HOSTED" && (
+              <Field.Root>
+                <Field.Label>Redirect URI (optional)</Field.Label>
+                <Input
+                  value={redirectUri}
+                  onChange={(e) => setRedirectUri(e.target.value)}
+                  placeholder="https://app.example.com/onboarding/done"
+                />
+                <Field.Description>
+                  Where Sumsub sends the customer after the hosted flow. Must
+                  be <code>https://</code>; Sumsub rejects <code>http://</code>{" "}
+                  and localhost URLs. Leave blank to use Sumsub&apos;s default
+                  post-flow page.
+                </Field.Description>
+              </Field.Root>
+            )}
             <Button onClick={onGenerateLink}>2. Generate KYC link</Button>
             {linkStatus && (
               <Alert
@@ -578,7 +629,16 @@ export function App() {
                 description={linkStatus.message}
               />
             )}
-            {kycLink && <KycLinkResult result={kycLink} />}
+            {kycLink && flowMode === "HOSTED" && (
+              <KycLinkResult result={kycLink} />
+            )}
+            {kycLink && flowMode === "SDK" && (
+              <SdkLauncher
+                token={kycLink.token ?? ""}
+                provider={kycLink.provider}
+                onTokenRefresh={refreshSdkToken}
+              />
+            )}
 
             <Divider />
 
@@ -974,10 +1034,123 @@ function KycLinkResult({ result }: { result: KycLinkResponse }) {
       </ButtonRow>
       {result.token && (
         <TokenLine>
-          Provider token (for embedded SDK, follow-up):{" "}
+          Provider token (consumed by embedded SDK mode):{" "}
           <code>{result.token.slice(0, 32)}…</code>
         </TokenLine>
       )}
+    </ResultPanel>
+  );
+}
+
+function SdkLauncher({
+  token,
+  provider,
+  onTokenRefresh,
+}: {
+  token: string;
+  provider: string;
+  onTokenRefresh: () => Promise<string>;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [sdkError, setSdkError] = useState<string | null>(null);
+  // Owned here (not lifted) so the launched state resets every time the
+  // launcher remounts — toggling Hosted ⇄ SDK mode or regenerating the
+  // link always lands back at the Launch button, never a stale empty
+  // iframe container.
+  const [launched, setLaunched] = useState(false);
+
+  // Tear down the embedded SDK when the launcher unmounts (switching back
+  // to Hosted mode, regenerating the link, etc.). Sumsub's WebSDK builds
+  // its iframe + event listeners inside the container we hand it; without
+  // an explicit cleanup those would leak. The SDK doesn't expose a public
+  // destroy API, so we clear the container's children — which removes the
+  // iframe (and the listeners it owns) deterministically.
+  useEffect(() => {
+    const container = containerRef.current;
+    return () => {
+      if (container) container.replaceChildren();
+    };
+  }, []);
+
+  const launch = useCallback(() => {
+    const sdk = snsWebSdk;
+    if (sdk === undefined) {
+      setSdkError(
+        "Sumsub WebSDK script didn't load — check the <script> tag in index.html or your network.",
+      );
+      return;
+    }
+    if (!containerRef.current) {
+      setSdkError("Internal: SDK container ref missing");
+      return;
+    }
+    if (!containerRef.current.id) {
+      containerRef.current.id = "grid-kyc-demo-sumsub-container";
+    }
+    setSdkError(null);
+
+    // Surface token-refresh failures via the same Alert as SDK errors.
+    // Without this, a rejected refresh promise either silently kills the
+    // session (Sumsub's SDK behavior on refresh failure is undocumented
+    // and version-dependent) or surfaces only in the console, leaving
+    // the iframe stuck on a "loading" state with no signal to the user.
+    // We still re-throw so the SDK sees the rejection too.
+    const wrappedRefresh = async (): Promise<string> => {
+      try {
+        return await onTokenRefresh();
+      } catch (err) {
+        const msg =
+          err instanceof Error ? err.message : "Failed to refresh Sumsub token";
+        setSdkError(`Token refresh failed: ${msg}`);
+        throw err;
+      }
+    };
+
+    sdk
+      .init(token, wrappedRefresh)
+      .withConf({ lang: "en" })
+      .withOptions({ adaptIframeHeight: true })
+      .on("idCheck.onError", (payload) => {
+        // Surface SDK-side errors without breaking the iframe.
+        // Console for full payload; banner for headline.
+        // eslint-disable-next-line no-console
+        console.error("[sumsub] idCheck.onError", payload);
+        const msg =
+          (payload as { reason?: string })?.reason ?? "Sumsub SDK error";
+        setSdkError(msg);
+      })
+      .build()
+      .launch(`#${containerRef.current.id}`);
+    setLaunched(true);
+  }, [token, onTokenRefresh]);
+
+  return (
+    <ResultPanel>
+      <ResultMeta>
+        <Badge variant="green">{provider}</Badge>
+        <Badge variant="gray">embedded SDK</Badge>
+      </ResultMeta>
+      {!launched && (
+        <>
+          <TokenLine>
+            Sumsub WebSDK will mount inline below. Token preview:{" "}
+            <code>{token.slice(0, 32)}…</code>
+          </TokenLine>
+          <ButtonRow>
+            <Button onClick={launch} disabled={!token}>
+              Launch Sumsub SDK
+            </Button>
+          </ButtonRow>
+        </>
+      )}
+      {sdkError && (
+        <Alert
+          variant="critical"
+          title="SDK error"
+          description={sdkError}
+        />
+      )}
+      <SdkContainer ref={containerRef} $visible={launched} />
     </ResultPanel>
   );
 }
@@ -1140,6 +1313,15 @@ const ResultUrl = styled.div`
 const TokenLine = styled.div`
   font-size: var(--font-size-xs, 12px);
   color: var(--text-secondary, #555);
+`;
+
+const SdkContainer = styled.div<{ $visible: boolean }>`
+  display: ${(p) => (p.$visible ? "block" : "none")};
+  width: 100%;
+  min-height: 600px;
+  background: var(--background-primary, #fff);
+  border: var(--stroke-xs, 1px) solid var(--border-primary, #e0e0e0);
+  border-radius: var(--radius-md, 8px);
 `;
 
 const LogList = styled.div`
