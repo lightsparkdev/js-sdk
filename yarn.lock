@@ -2872,6 +2872,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lightsparkdev/grid-kyc-demo@workspace:apps/examples/grid-kyc-demo":
+  version: 0.0.0-use.local
+  resolution: "@lightsparkdev/grid-kyc-demo@workspace:apps/examples/grid-kyc-demo"
+  dependencies:
+    "@emotion/react": "npm:^11.11.0"
+    "@emotion/styled": "npm:^11.11.0"
+    "@lightsparkdev/origin": "npm:*"
+    "@types/react": "npm:^18.2.12"
+    "@types/react-dom": "npm:^18.0.0"
+    "@vitejs/plugin-react": "npm:^5.2.0"
+    react: "npm:^18.2.0"
+    react-dom: "npm:^18.1.0"
+    typescript: "npm:^5.6.2"
+    vite: "npm:^8.0.14"
+  languageName: unknown
+  linkType: soft
+
 "@lightsparkdev/lightspark-cli@workspace:packages/lightspark-cli":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/lightspark-cli@workspace:packages/lightspark-cli"
@@ -3021,7 +3038,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@lightsparkdev/origin@workspace:packages/origin":
+"@lightsparkdev/origin@npm:*, @lightsparkdev/origin@workspace:packages/origin":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/origin@workspace:packages/origin"
   dependencies:
