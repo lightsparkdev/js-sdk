@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import { Base } from "./Base.js";
 import { Ethereum } from "./Ethereum.js";
 import { Polygon } from "./Polygon.js";
@@ -8,7 +9,7 @@ export type Chain = "solana" | "ethereum" | "base" | "polygon" | "tron";
 
 const CHAIN_COMPONENTS: Record<
   Chain,
-  (props: { size?: number }) => JSX.Element
+  (props: { size?: number }) => ReactElement
 > = {
   solana: Solana,
   ethereum: Ethereum,

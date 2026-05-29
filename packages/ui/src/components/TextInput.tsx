@@ -121,7 +121,7 @@ export type TextInputProps = {
   ) => void;
   onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  inputRef?: RefObject<HTMLInputElement> | undefined;
+  inputRef?: RefObject<HTMLInputElement | null> | undefined;
   inputRefCb?: RefCallback<HTMLInputElement>;
   id?: string;
   type?: "text" | "password" | "hidden" | undefined;

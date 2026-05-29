@@ -1,6 +1,6 @@
-import type { CSSInterpolation } from "@emotion/css";
 import type { Theme } from "@emotion/react";
 import { css, useTheme } from "@emotion/react";
+import type { CSSInterpolation } from "@emotion/serialize";
 import merge from "deepmerge";
 import { Breakpoints, useBreakpoints } from "./breakpoints.js";
 import {

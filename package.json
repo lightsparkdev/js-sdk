@@ -70,7 +70,7 @@
     "form-data": "4.0.5"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.18.0"
   },
   "packageManager": "yarn@4.13.0"
 }

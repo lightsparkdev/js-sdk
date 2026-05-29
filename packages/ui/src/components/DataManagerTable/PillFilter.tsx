@@ -1,4 +1,4 @@
-import { type CSSInterpolation } from "@emotion/css";
+import { type CSSInterpolation } from "@emotion/serialize";
 import styled from "@emotion/styled";
 import { ensureArray } from "@lightsparkdev/core";
 import DateTimeRangePicker from "@wojtekmaj/react-datetimerange-picker";

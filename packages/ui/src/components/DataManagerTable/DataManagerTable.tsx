@@ -5,11 +5,12 @@ import {
   useState,
   type ComponentProps,
   type Dispatch,
+  type ReactElement,
   type SetStateAction,
 } from "react";
 
-import { type CSSInterpolation } from "@emotion/css";
 import { css } from "@emotion/react";
+import { type CSSInterpolation } from "@emotion/serialize";
 import { CurrencyUnit, ensureArray } from "@lightsparkdev/core";
 import { useSearchParams } from "react-router-dom";
 import { type useClipboard } from "../../hooks/useClipboard.js";
@@ -145,7 +146,7 @@ export type DataManagerTableProps<
     | FilterOptions<T, QueryVariablesType, QueryResultType>
     | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
-  header?: JSX.Element;
+  header?: ReactElement;
   cardPageFullWidth?: boolean | undefined;
   cardPageMt?: number;
   filterDropdownAlign?: "left" | "right" | "center";

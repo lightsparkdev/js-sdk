@@ -1,4 +1,4 @@
-import { Toasts } from "@lightsparkdev/ui/components";
+import { Toasts } from "@lightsparkdev/ui/components/Toasts";
 import { screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { render } from "./render";
