@@ -9,10 +9,6 @@ import clsx from "clsx";
 import styles from "./Combobox.module.scss";
 import chipStyles from "../Chip/Chip.module.scss";
 
-// Context to share InputWrapper ref with Positioner for proper anchor width
-const AnchorContext =
-  React.createContext<React.RefObject<HTMLDivElement | null> | null>(null);
-
 export interface RootProps<Value, Multiple extends boolean | undefined = false>
   extends BaseCombobox.Root.Props<Value, Multiple> {
   autoHighlight?: boolean;
@@ -32,10 +28,8 @@ export function Root<Value, Multiple extends boolean | undefined = false>({
   autoHighlight = true,
   analyticsName,
   onValueChange,
-  children,
   ...props
 }: RootProps<Value, Multiple>) {
-  const anchorRef = React.useRef<HTMLDivElement | null>(null);
   const trackedChange = useTrackedCallback(
     analyticsName,
     "Combobox",
@@ -45,26 +39,24 @@ export function Root<Value, Multiple extends boolean | undefined = false>({
   );
 
   return (
-    <AnchorContext.Provider value={anchorRef}>
-      <BaseCombobox.Root
-        autoHighlight={autoHighlight}
-        onValueChange={trackedChange}
-        {...props}
-      >
-        {children}
-      </BaseCombobox.Root>
-    </AnchorContext.Provider>
+    <BaseCombobox.Root
+      autoHighlight={autoHighlight}
+      onValueChange={trackedChange}
+      {...props}
+    />
   );
 }
 
-export interface InputWrapperProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface InputWrapperProps extends BaseCombobox.InputGroup.Props {}
 
 /**
  * Combobox.InputWrapper - Container for Input + ActionButtons.
  *
- * Uses position: relative to contain the absolutely positioned ActionButtons.
- * Also serves as the anchor element for Positioner (popup width matches this).
+ * Wraps `BaseCombobox.InputGroup`, which exposes `data-disabled`,
+ * `data-readonly`, `data-popup-open`, and (under `Field.Root`)
+ * `data-focused` / `data-invalid` for state-driven styling. The InputGroup
+ * also self-registers as the Positioner anchor, so popup width matches
+ * the wrapper without explicit wiring.
  *
  * ```tsx
  * <Combobox.InputWrapper>
@@ -77,30 +69,10 @@ export interface InputWrapperProps
  * ```
  */
 export const InputWrapper = React.forwardRef<HTMLDivElement, InputWrapperProps>(
-  function InputWrapper({ className, ...props }, forwardedRef) {
-    const anchorRef = React.useContext(AnchorContext);
-
-    // Combine forwarded ref with anchor ref
-    const combinedRef = React.useCallback(
-      (node: HTMLDivElement | null) => {
-        // Update anchor context ref
-        if (anchorRef) {
-          (anchorRef as React.MutableRefObject<HTMLDivElement | null>).current =
-            node;
-        }
-        // Update forwarded ref
-        if (typeof forwardedRef === "function") {
-          forwardedRef(node);
-        } else if (forwardedRef) {
-          forwardedRef.current = node;
-        }
-      },
-      [anchorRef, forwardedRef],
-    );
-
+  function InputWrapper({ className, ...props }, ref) {
     return (
-      <div
-        ref={combinedRef}
+      <BaseCombobox.InputGroup
+        ref={ref}
         className={clsx(styles.inputWrapper, className)}
         {...props}
       />
@@ -200,20 +172,17 @@ export interface PositionerProps extends BaseCombobox.Positioner.Props {}
 /**
  * Combobox.Positioner - Handles popup positioning.
  *
- * Base UI handles all positioning via CSS variables.
- * Anchors to InputWrapper (via context) so popup width matches the full trigger area.
+ * Base UI auto-resolves the anchor to `Combobox.InputWrapper`'s
+ * `BaseCombobox.InputGroup` element (via the combobox store), so popup
+ * width matches the wrapper without explicit `anchor` wiring.
  */
 export const Positioner = React.forwardRef<HTMLDivElement, PositionerProps>(
-  function Positioner({ className, sideOffset = 4, anchor, ...props }, ref) {
-    const anchorRef = React.useContext(AnchorContext);
-
+  function Positioner({ className, sideOffset = 4, ...props }, ref) {
     return (
       <BaseCombobox.Positioner
         ref={ref}
         className={clsx(styles.positioner, className)}
         sideOffset={sideOffset}
-        // Use InputWrapper as anchor for proper width, unless explicitly overridden
-        anchor={anchor ?? anchorRef}
         {...props}
       />
     );
@@ -368,19 +337,12 @@ export const ItemCheckbox = React.forwardRef<
       ref={ref}
       className={clsx(styles.itemCheckbox, className)}
       keepMounted
+      render={(renderProps, state) => (
+        <span {...renderProps}>
+          {children ?? <CheckboxIndicator checked={state.selected} />}
+        </span>
+      )}
       {...props}
-      render={(renderProps, state) => {
-        // If children provided, use them (slot pattern)
-        if (children) {
-          return <span {...renderProps}>{children}</span>;
-        }
-        // Otherwise use CheckboxIndicator from design system
-        return (
-          <span {...renderProps}>
-            <CheckboxIndicator checked={state.selected} />
-          </span>
-        );
-      }}
     />
   );
 });
@@ -413,15 +375,13 @@ export const GroupLabel = React.forwardRef<HTMLDivElement, GroupLabelProps>(
   },
 );
 
-// Separator - visual divider between groups/sections
-export interface SeparatorProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface SeparatorProps extends BaseCombobox.Separator.Props {}
 
 export const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
   function Separator({ className, ...props }, ref) {
     return (
-      <div
+      <BaseCombobox.Separator
         ref={ref}
-        role="separator"
         className={clsx(styles.separator, className)}
         {...props}
       />
@@ -445,44 +405,30 @@ export const Empty = React.forwardRef<HTMLDivElement, EmptyProps>(
   },
 );
 
-export interface ValueProps
-  extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
-  /**
-   * Render function that receives selected value(s) and returns React nodes.
-   * For multi-select, receives an array of values.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- render prop accepts any value type the consumer configures on Root
-  children?: React.ReactNode | ((selectedValue: any) => React.ReactNode);
-}
+export type ValueProps = BaseCombobox.Value.Props;
 
 /**
  * Combobox.Value - Displays or renders selected value(s).
  *
- * For single select: displays the selected value text automatically
- * For multi-select with chips: use children as a render function
+ * Pass a render function for multi-select chips. The render function's
+ * output becomes a direct child of the parent (typically `Combobox.Chips`),
+ * matching Base UI's documented pattern.
  *
- * Note: BaseCombobox.Value doesn't render its own element, so this wrapper
- * provides a span for styling and ref forwarding.
- *
- * @example Single select (displays value text)
+ * @example Single select
  * ```tsx
  * <Combobox.Value />
  * ```
  *
  * @example Multi-select with chips
- *
- * Render `Combobox.Input` inside this render function (not as a sibling of
- * `Combobox.Chips`); see `Combobox.Chips` for the full pattern.
- *
  * ```tsx
  * <Combobox.Chips>
  *   <Combobox.Value>
  *     {(values) => (
  *       <>
- *         {values?.map((v) => (
- *           <Combobox.Chip key={v} aria-label={v}>
+ *         {values.map((v) => (
+ *           <Combobox.Chip key={v}>
  *             {v}
- *             <Combobox.ChipRemove />
+ *             <Combobox.ChipRemove aria-label={v} />
  *           </Combobox.Chip>
  *         ))}
  *         <Combobox.Input placeholder="Add fruits" />
@@ -492,25 +438,7 @@ export interface ValueProps
  * </Combobox.Chips>
  * ```
  */
-export const Value = React.forwardRef<HTMLSpanElement, ValueProps>(
-  function Value({ className, children, ...props }, ref) {
-    // When children are provided (multi-select render function), use display:contents
-    // so chips become direct flex items of the parent InputWrapper
-    const hasChildren = Boolean(children);
-    return (
-      <span
-        ref={ref}
-        className={clsx(
-          hasChildren ? styles.valueWithChildren : styles.value,
-          className,
-        )}
-        {...props}
-      >
-        <BaseCombobox.Value>{children}</BaseCombobox.Value>
-      </span>
-    );
-  },
-);
+export const Value = BaseCombobox.Value;
 
 export interface ChipsProps extends BaseCombobox.Chips.Props {}
 
@@ -536,9 +464,9 @@ export interface ChipsProps extends BaseCombobox.Chips.Props {}
  *       {(values) => (
  *         <>
  *           {values?.map((value) => (
- *             <Combobox.Chip key={value} aria-label={value}>
+ *             <Combobox.Chip key={value}>
  *               {value}
- *               <Combobox.ChipRemove />
+ *               <Combobox.ChipRemove aria-label={value} />
  *             </Combobox.Chip>
  *           ))}
  *           <Combobox.Input placeholder="Add fruits" />
@@ -571,9 +499,9 @@ export interface ChipProps extends BaseCombobox.Chip.Props {}
  *
  * @example
  * ```tsx
- * <Combobox.Chip aria-label={value}>
+ * <Combobox.Chip>
  *   {value}
- *   <Combobox.ChipRemove />
+ *   <Combobox.ChipRemove aria-label={value} />
  * </Combobox.Chip>
  * ```
  */
@@ -581,23 +509,18 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(function Chip(
   { className, children, ...props },
   ref,
 ) {
-  // Separate ChipRemove from label content
-  const childArray = React.Children.toArray(children);
-  const chipRemove = childArray.filter(
-    (child) => React.isValidElement(child) && child.type === ChipRemove,
-  );
-  const labelContent = childArray.filter(
-    (child) => !React.isValidElement(child) || child.type !== ChipRemove,
-  );
-
   return (
     <BaseCombobox.Chip
       ref={ref}
-      className={clsx(styles.chip, className)}
+      className={clsx(
+        chipStyles.root,
+        chipStyles.sm,
+        chipStyles.default,
+        className,
+      )}
       {...props}
     >
-      <span className={chipStyles.label}>{labelContent}</span>
-      {chipRemove}
+      {children}
     </BaseCombobox.Chip>
   );
 });

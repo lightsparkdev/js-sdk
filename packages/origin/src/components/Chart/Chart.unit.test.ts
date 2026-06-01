@@ -910,13 +910,16 @@ describe("useResizeWidth", () => {
       disconnect: vi.fn(),
       unobserve: vi.fn(),
     };
-    vi.stubGlobal(
-      "ResizeObserver",
-      vi.fn((cb: ResizeObserverCallback) => {
+    class MockResizeObserver {
+      observe = mockObserver.observe;
+      disconnect = mockObserver.disconnect;
+      unobserve = mockObserver.unobserve;
+
+      constructor(cb: ResizeObserverCallback) {
         observerCallback = cb;
-        return mockObserver;
-      }),
-    );
+      }
+    }
+    vi.stubGlobal("ResizeObserver", MockResizeObserver);
 
     const { result } = renderHook(() => useResizeWidth(800));
     expect(result.current.width).toBe(800);

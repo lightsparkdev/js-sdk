@@ -87,35 +87,7 @@ export const WithClear: Story = {
   ),
 };
 
-export const Multiple: Story = {
-  render: () => (
-    <Combobox.Root items={fruits} multiple>
-      <Combobox.InputWrapper>
-        <Combobox.Input placeholder="Select fruits..." />
-        <Combobox.ActionButtons>
-          <Combobox.Trigger aria-label="Open popup" />
-        </Combobox.ActionButtons>
-      </Combobox.InputWrapper>
-      <Combobox.Portal>
-        <Combobox.Positioner sideOffset={4}>
-          <Combobox.Popup>
-            <Combobox.Empty />
-            <Combobox.List>
-              {(item: string) => (
-                <Combobox.Item key={item} value={item}>
-                  <Combobox.ItemIndicator />
-                  <Combobox.ItemText>{item}</Combobox.ItemText>
-                </Combobox.Item>
-              )}
-            </Combobox.List>
-          </Combobox.Popup>
-        </Combobox.Positioner>
-      </Combobox.Portal>
-    </Combobox.Root>
-  ),
-};
-
-function MultipleWithChipsField({
+function MultipleField({
   defaultValue,
   label,
 }: {
@@ -131,12 +103,12 @@ function MultipleWithChipsField({
         <Combobox.InputWrapper>
           <Combobox.Chips>
             <Combobox.Value>
-              {(values: string[]) => (
+              {(selectedValue: string[]) => (
                 <>
-                  {values.map((value) => (
-                    <Combobox.Chip key={value} aria-label={value}>
-                      {value}
-                      <Combobox.ChipRemove />
+                  {selectedValue.map((item) => (
+                    <Combobox.Chip key={item}>
+                      {item}
+                      <Combobox.ChipRemove aria-label={`Remove ${item}`} />
                     </Combobox.Chip>
                   ))}
                   <Combobox.Input placeholder="Add fruits" />
@@ -165,7 +137,7 @@ function MultipleWithChipsField({
   );
 }
 
-export const MultipleWithChips: Story = {
+export const Multiple: Story = {
   render: () => (
     <div
       style={{
@@ -175,9 +147,9 @@ export const MultipleWithChips: Story = {
         maxWidth: 480,
       }}
     >
-      <MultipleWithChipsField label="Empty" />
-      <MultipleWithChipsField label="One chip" defaultValue={["Apple"]} />
-      <MultipleWithChipsField
+      <MultipleField label="Empty" />
+      <MultipleField label="One chip" defaultValue={["Apple"]} />
+      <MultipleField
         label="Many chips (overflow / wrap)"
         defaultValue={[
           "Apple",

@@ -15,6 +15,7 @@
       "dependsOn": ["^build"]
     },
     "build-sb": {
+      "env": ["ORIGIN_STORYBOOK_BASE_PATH", "STORYBOOK_DISABLE_TELEMETRY"],
       "outputs": ["storybook-static/**"]
     },
     "circular-deps": {

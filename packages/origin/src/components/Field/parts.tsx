@@ -6,19 +6,20 @@ import clsx from "clsx";
 import styles from "./Field.module.scss";
 
 export interface FieldRootProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof BaseField.Root>,
-    "render"
-  > {}
+  extends React.ComponentPropsWithoutRef<typeof BaseField.Root> {}
 
-export const FieldRoot = React.forwardRef<HTMLDivElement, FieldRootProps>(
+export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
   function FieldRoot(props, ref) {
     const { className, children, ...other } = props;
+    const rootClassName: FieldRootProps["className"] =
+      typeof className === "function"
+        ? (state) => clsx(styles.root, className(state))
+        : clsx(styles.root, className);
 
     return (
       <BaseField.Root
-        ref={ref}
-        className={clsx(styles.root, className)}
+        ref={ref as React.Ref<HTMLDivElement>}
+        className={rootClassName}
         {...other}
       >
         {children}

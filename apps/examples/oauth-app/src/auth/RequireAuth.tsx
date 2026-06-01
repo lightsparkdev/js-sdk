@@ -1,9 +1,10 @@
 import { useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
 import { Navigate } from "@lightsparkdev/ui/router";
+import type { ReactElement } from "react";
 import { Routes } from "src/routes";
 
-function RequireAuth({ children }: { children: JSX.Element }) {
+function RequireAuth({ children }: { children: ReactElement }) {
   const auth = useAuth();
   const location = useLocation();
 

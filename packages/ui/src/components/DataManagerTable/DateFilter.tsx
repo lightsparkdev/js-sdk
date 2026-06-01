@@ -140,7 +140,7 @@ export const DateFilter = ({
               value: timeGranularity,
               label: timeGranularity,
             }))}
-            onChange={(option) => {
+            onChange={(option: { value: TimeGranularity } | null) => {
               if (option) {
                 updateStateWithCustomRange({
                   ...(customDateRangeData as IsInTheLastData),
@@ -316,11 +316,9 @@ export const DateFilter = ({
                 value: operation,
                 label: `${operation}`,
               }))}
-              onChange={(option) => {
+              onChange={(option: { value: DateRangeOperation } | null) => {
                 if (option) {
-                  handleSelectCustomRangeOption(
-                    option.value as DateRangeOperation,
-                  );
+                  handleSelectCustomRangeOption(option.value);
                 }
               }}
               zIndex={z.dropdown}

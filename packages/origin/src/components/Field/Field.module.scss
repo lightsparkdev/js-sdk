@@ -11,6 +11,7 @@
 
   display: flex;
   align-items: center;
+  gap: var(--spacing-3xs);
   padding-inline: var(--spacing-3xs);
   color: var(--text-primary);
 }

@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Global Accounts - Example App</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: #1a1a2e;
+        color: #e0e0e0;
+        font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+        font-size: 13px;
+        padding: 24px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #a0c4ff;
+        font-size: 18px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 8px;
+      }
+      h2 {
+        color: #bdb2ff;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      h3 {
+        color: #ffd6a5;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 14px;
+        margin-bottom: 6px;
+      }
+      .section {
+        background: #16213e;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+      .subsection {
+        border-top: 1px dashed #2e3a5f;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+      .subsection:first-of-type {
+        border-top: none;
+        padding-top: 0;
+        margin-top: 0;
+      }
+      .note {
+        color: #888;
+        font-size: 11px;
+        margin-top: 4px;
+        margin-bottom: 6px;
+      }
+      label {
+        display: block;
+        color: #888;
+        font-size: 11px;
+        margin-bottom: 3px;
+        margin-top: 8px;
+      }
+      label:first-of-type {
+        margin-top: 0;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        background: #0f3460;
+        border: 1px solid #444;
+        border-radius: 4px;
+        color: #e0e0e0;
+        font-family: inherit;
+        font-size: 12px;
+        padding: 6px 8px;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 50px;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #a0c4ff;
+      }
+      button {
+        background: #533483;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 6px 12px;
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        margin-top: 8px;
+        margin-right: 6px;
+      }
+      button:hover {
+        background: #6b44a0;
+      }
+      button:disabled {
+        background: #333;
+        color: #666;
+        cursor: not-allowed;
+      }
+      button.secondary {
+        background: #2a3d5f;
+      }
+      button.secondary:hover {
+        background: #3a4e74;
+      }
+      .status {
+        margin-top: 8px;
+        padding: 6px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .status.ok {
+        background: #1b4332;
+        border: 1px solid #2d6a4f;
+        color: #95d5b2;
+      }
+      .status.err {
+        background: #3d0000;
+        border: 1px solid #6b0000;
+        color: #ff6b6b;
+      }
+      #log {
+        background: #0d1117;
+        border: 1px solid #333;
+        border-radius: 6px;
+        padding: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+        font-size: 11px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .log-entry {
+        border-bottom: 1px solid #222;
+        padding: 6px 0;
+      }
+      .log-entry:last-child {
+        border-bottom: none;
+      }
+      .log-ts {
+        color: #666;
+      }
+      .log-label {
+        color: #a0c4ff;
+        font-weight: bold;
+      }
+      .log-target.dev {
+        color: #95d5b2;
+      }
+      .log-target.local {
+        color: #ffb3b3;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+      .row > div {
+        flex: 1;
+      }
+      .tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #333;
+      }
+      .tab {
+        background: transparent;
+        border: 1px solid transparent;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        padding: 8px 14px;
+        color: #888;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 0;
+      }
+      .tab.active {
+        background: #16213e;
+        border-color: #333;
+        color: #a0c4ff;
+        font-weight: bold;
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Grid Global Accounts - Example App</h1>
+    <p class="note" style="margin-bottom: 12px">
+      Signed-retry flows show the <code>requestId</code> /
+      <code>payloadToSign</code> from step 1 so you can inspect them before
+      step 2 forwards with
+      <code>Grid-Wallet-Signature: sandbox-valid-signature</code>.
+    </p>
+
+    <!-- ========== Shared Setup ========== -->
+
+    <div class="section">
+      <h2>Platform Auth</h2>
+      <div class="row">
+        <div>
+          <label for="auth-client-id">API Client ID</label>
+          <input type="text" id="auth-client-id" value="" />
+        </div>
+        <div>
+          <label for="auth-client-secret">API Client Secret</label>
+          <input type="password" id="auth-client-secret" value="" />
+        </div>
+      </div>
+      <label for="mode-select">Mode</label>
+      <select id="mode-select">
+        <option value="sandbox" selected>sandbox — magic values</option>
+        <option value="production">production — decrypt session + stamp</option>
+      </select>
+      <p class="note">
+        Sandbox uses server-side magic strings
+        (<code>sandbox-valid-signature</code>,
+        <code>000000</code>, <code>sandbox-valid-oidc-token</code>,
+        <code>sandbox-valid-passkey-signature</code>). Production persists the
+        client P-256 keypair + the encrypted session signing key from Verify,
+        then HPKE-decrypts via <code>@turnkey/crypto</code> and stamps real
+        <code>payloadToSign</code> values via
+        <code>@turnkey/api-key-stamper</code>.
+      </p>
+    </div>
+
+    <!-- ========== Platform config (OTP + branding) ========== -->
+
+    <div class="section">
+      <h2>Platform Config</h2>
+      <p class="note">
+        OTP + branding fields applied to outgoing OTP emails. Load pulls the
+        current platform config (<code>GET /config</code>); Save sends a PATCH
+        with whichever fields you filled in (empty fields are not sent).
+      </p>
+      <div class="row">
+        <div>
+          <label for="cfg-app-name">App Name</label>
+          <input type="text" id="cfg-app-name" placeholder="e.g. Acme Wallet" />
+        </div>
+        <div>
+          <label for="cfg-otp-length">OTP Length (4–8)</label>
+          <input type="number" id="cfg-otp-length" min="4" max="8" placeholder="6" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="cfg-expiration-seconds">Expiration (seconds)</label>
+          <input type="number" id="cfg-expiration-seconds" placeholder="300" />
+        </div>
+        <div>
+          <label for="cfg-alphanumeric" style="margin-top: 12px">
+            <input type="checkbox" id="cfg-alphanumeric" style="width:auto;margin-right:6px;vertical-align:middle" />
+            Alphanumeric codes (vs digits-only)
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="cfg-send-from-email">Send-from Email Address</label>
+          <input type="email" id="cfg-send-from-email" placeholder="noreply@acme.com" />
+        </div>
+        <div>
+          <label for="cfg-send-from-name">Send-from Display Name</label>
+          <input type="text" id="cfg-send-from-name" placeholder="Acme Wallet" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="cfg-reply-to-email">Reply-to Email Address</label>
+          <input type="email" id="cfg-reply-to-email" placeholder="support@acme.com" />
+        </div>
+        <div>
+          <label for="cfg-logo-url">Logo URL</label>
+          <input type="url" id="cfg-logo-url" placeholder="https://acme.com/logo.png" />
+        </div>
+      </div>
+      <button id="btn-cfg-load" class="secondary">Load Current</button>
+      <button id="btn-cfg-save">Save Config</button>
+      <div id="cfg-status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Customer Setup</h2>
+      <div class="row">
+        <div>
+          <label for="create-platform-customer-id">Platform Customer ID</label>
+          <input
+            type="text"
+            id="create-platform-customer-id"
+            placeholder="my-customer-123"
+          />
+        </div>
+        <div>
+          <label for="create-customer-name">Full Name</label>
+          <input type="text" id="create-customer-name" value="Test User" />
+        </div>
+      </div>
+      <label for="create-customer-email"
+        >Email (required for EMAIL_OTP flows)</label
+      >
+      <input
+        type="email"
+        id="create-customer-email"
+        placeholder="user@example.com"
+      />
+      <button id="btn-create-customer">Create Customer</button>
+      <div id="create-customer-status"></div>
+
+      <div class="subsection">
+        <label for="balance-customer-id">Customer ID</label>
+        <input type="text" id="balance-customer-id" placeholder="auto-filled" />
+        <button id="btn-fetch-balance" class="secondary">Fetch Balance</button>
+        <div id="balance-status"></div>
+      </div>
+    </div>
+
+    <!-- ========== Shared: Account IDs (propagated to all tabs) ========== -->
+
+    <div class="section">
+      <h2>Wallet Context</h2>
+      <p class="note">
+        Internal account id flows into every tab. Credential + session ids are
+        auto-filled as you run steps.
+      </p>
+      <label for="ctx-account-id">Internal Account ID</label>
+      <input
+        type="text"
+        id="ctx-account-id"
+        placeholder="auto-filled from Create Customer"
+      />
+      <div class="row">
+        <div>
+          <label for="ctx-credential-id">Credential ID (last-created)</label>
+          <input
+            type="text"
+            id="ctx-credential-id"
+            placeholder="auto-filled from any Create/Add"
+          />
+        </div>
+        <div>
+          <label for="ctx-session-id">Session ID (last-verified)</label>
+          <input
+            type="text"
+            id="ctx-session-id"
+            placeholder="auto-filled from any Verify"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== Tabs: per-type lifecycle ========== -->
+
+    <div class="tabs">
+      <button class="tab active" data-tab="email_otp">EMAIL_OTP</button>
+      <button class="tab" data-tab="oauth">OAUTH</button>
+      <button class="tab" data-tab="passkey">PASSKEY</button>
+    </div>
+
+    <!-- ---------- EMAIL_OTP tab ---------- -->
+
+    <div class="tab-panel active" data-panel="email_otp">
+      <div class="section">
+        <h2>EMAIL_OTP lifecycle</h2>
+
+        <div class="subsection">
+          <h3>Create credential</h3>
+          <p class="note">
+            Creates an EMAIL_OTP auth credential. The embedded wallet itself is
+            pre-created at customer-create time, so this only attaches a new
+            authenticator — it does not create a wallet.
+          </p>
+          <button id="btn-email_otp-create">Create (init OTP)</button>
+          <div id="email_otp-create-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>Verify → session</h3>
+          <label for="email_otp-verify-code">OTP Code</label>
+          <input type="text" id="email_otp-verify-code" value="000000" />
+          <label for="email_otp-verify-pubkey">Client Public Key (hex)</label>
+          <input
+            type="text"
+            id="email_otp-verify-pubkey"
+            placeholder="click Generate"
+            readonly
+          />
+          <button id="btn-email_otp-verify-genkey" class="secondary">
+            Generate P-256 Key
+          </button>
+          <button id="btn-email_otp-verify">Verify</button>
+          <div id="email_otp-verify-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Rechallenge (re-issue OTP)
+          </h3>
+          <p class="note">Uses Credential ID from Wallet Context.</p>
+          <button id="btn-email_otp-rechallenge">Rechallenge</button>
+          <div id="email_otp-rechallenge-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Add second EMAIL_OTP via signed retry
+          </h3>
+          <p class="note">
+            Rejects because one EMAIL_OTP already attached — step 1 exercises
+            the reject path. Remove the first EMAIL_OTP to test the full add
+            flow.
+          </p>
+          <button id="btn-email_otp-add-issue">1. Issue add challenge</button>
+          <div id="email_otp-add-issue-status"></div>
+          <label for="email_otp-add-request-id">Request-Id (auto-filled)</label>
+          <input
+            type="text"
+            id="email_otp-add-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-email_otp-add-retry">2. Retry with signature</button>
+          <div id="email_otp-add-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete credential via signed retry
+          </h3>
+          <p class="note">
+            No sandbox gate yet; step 1 succeeds, step 2 may fail against real
+            Turnkey.
+          </p>
+          <button id="btn-email_otp-del-cred-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="email_otp-del-cred-issue-status"></div>
+          <label for="email_otp-del-cred-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="email_otp-del-cred-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-email_otp-del-cred-retry">
+            2. Retry with signature
+          </button>
+          <div id="email_otp-del-cred-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete session via signed retry
+          </h3>
+          <button id="btn-email_otp-del-session-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="email_otp-del-session-issue-status"></div>
+          <label for="email_otp-del-session-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="email_otp-del-session-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-email_otp-del-session-retry">
+            2. Retry with signature
+          </button>
+          <div id="email_otp-del-session-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Wallet export via signed retry
+          </h3>
+          <button id="btn-email_otp-export-issue">
+            1. Issue export challenge
+          </button>
+          <div id="email_otp-export-issue-status"></div>
+          <label for="email_otp-export-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="email_otp-export-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-email_otp-export-retry">
+            2. Retry with signature
+          </button>
+          <div id="email_otp-export-retry-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- OAUTH tab ---------- -->
+
+    <div class="tab-panel" data-panel="oauth">
+      <div class="section">
+        <h2>OAUTH lifecycle</h2>
+
+        <div class="subsection">
+          <h3>Create credential</h3>
+          <label for="oauth-create-oidc">OIDC Token (JWT-shaped)</label>
+          <textarea id="oauth-create-oidc" rows="2">
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiJzYW5kYm94LXVzZXItMSJ9.sig</textarea
+          >
+          <button id="btn-oauth-create">Create</button>
+          <div id="oauth-create-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>Verify → session</h3>
+          <label for="oauth-verify-oidc">OIDC Token (sandbox magic)</label>
+          <input
+            type="text"
+            id="oauth-verify-oidc"
+            value="sandbox-valid-oidc-token"
+          />
+          <label for="oauth-verify-pubkey">Client Public Key (hex)</label>
+          <input
+            type="text"
+            id="oauth-verify-pubkey"
+            placeholder="click Generate"
+            readonly
+          />
+          <button id="btn-oauth-verify-genkey" class="secondary">
+            Generate P-256 Key
+          </button>
+          <button id="btn-oauth-verify">Verify</button>
+          <div id="oauth-verify-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>Rechallenge</h3>
+          <p class="note">
+            OAUTH rechallenge is a no-op — just returns AuthMethod.
+          </p>
+          <button id="btn-oauth-rechallenge">Rechallenge</button>
+          <div id="oauth-rechallenge-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Add additional OAUTH via signed retry
+          </h3>
+          <label for="oauth-add-oidc">OIDC Token (different identity)</label>
+          <textarea id="oauth-add-oidc" rows="2">
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwic3ViIjoic2FuZGJveC11c2VyLTIifQ.sig</textarea
+          >
+          <button id="btn-oauth-add-issue">1. Issue add challenge</button>
+          <div id="oauth-add-issue-status"></div>
+          <label for="oauth-add-request-id">Request-Id (auto-filled)</label>
+          <input
+            type="text"
+            id="oauth-add-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-oauth-add-retry">2. Retry with signature</button>
+          <div id="oauth-add-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete credential via signed retry
+          </h3>
+          <button id="btn-oauth-del-cred-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="oauth-del-cred-issue-status"></div>
+          <label for="oauth-del-cred-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="oauth-del-cred-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-oauth-del-cred-retry">2. Retry with signature</button>
+          <div id="oauth-del-cred-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete session via signed retry
+          </h3>
+          <button id="btn-oauth-del-session-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="oauth-del-session-issue-status"></div>
+          <label for="oauth-del-session-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="oauth-del-session-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-oauth-del-session-retry">
+            2. Retry with signature
+          </button>
+          <div id="oauth-del-session-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Wallet export via signed retry
+          </h3>
+          <button id="btn-oauth-export-issue">1. Issue export challenge</button>
+          <div id="oauth-export-issue-status"></div>
+          <label for="oauth-export-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="oauth-export-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-oauth-export-retry">2. Retry with signature</button>
+          <div id="oauth-export-retry-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- PASSKEY tab ---------- -->
+
+    <div class="tab-panel" data-panel="passkey">
+      <div class="section">
+        <h2>PASSKEY lifecycle</h2>
+
+        <div class="subsection">
+          <h3>Create credential</h3>
+          <label for="passkey-create-nickname">Nickname</label>
+          <input
+            type="text"
+            id="passkey-create-nickname"
+            value="Sandbox Passkey"
+          />
+          <label for="passkey-create-challenge">WebAuthn Challenge</label>
+          <input
+            type="text"
+            id="passkey-create-challenge"
+            value="c2FuZGJveC1jaGFsbGVuZ2U"
+          />
+          <label for="passkey-create-cred-id-raw"
+            >Attestation credentialId</label
+          >
+          <input
+            type="text"
+            id="passkey-create-cred-id-raw"
+            value="c2FuZGJveC1jcmVkLWlk"
+          />
+          <label for="passkey-create-client-data-json"
+            >Attestation clientDataJSON</label
+          >
+          <input
+            type="text"
+            id="passkey-create-client-data-json"
+            value="c2FuZGJveC1jbGllbnREYXRhSlNPTg"
+          />
+          <label for="passkey-create-attestation-object"
+            >Attestation attestationObject</label
+          >
+          <input
+            type="text"
+            id="passkey-create-attestation-object"
+            value="c2FuZGJveC1hdHRlc3RhdGlvbk9iamVjdA"
+          />
+          <button id="btn-passkey-create">Create</button>
+          <div id="passkey-create-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>Session challenge</h3>
+          <p class="note">
+            PR 4 flow: <code>/challenge</code> returns
+            <code>challenge = sha256(CREATE_READ_WRITE_SESSION body)</code> +
+            <code>requestId</code>. Client signs the challenge via WebAuthn.
+          </p>
+          <label for="passkey-challenge-pubkey">Client Public Key (hex)</label>
+          <input
+            type="text"
+            id="passkey-challenge-pubkey"
+            placeholder="click Generate"
+            readonly
+          />
+          <button id="btn-passkey-challenge-genkey" class="secondary">
+            Generate P-256 Key
+          </button>
+          <button id="btn-passkey-challenge">Issue session challenge</button>
+          <div id="passkey-challenge-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>Verify → session</h3>
+          <label for="passkey-verify-request-id"
+            >Request-Id (from challenge)</label
+          >
+          <input
+            type="text"
+            id="passkey-verify-request-id"
+            placeholder="auto-filled from challenge"
+          />
+          <label for="passkey-verify-signature"
+            >Assertion signature (sandbox magic)</label
+          >
+          <input
+            type="text"
+            id="passkey-verify-signature"
+            value="sandbox-valid-passkey-signature"
+          />
+          <label for="passkey-verify-auth-data"
+            >Assertion authenticatorData</label
+          >
+          <input
+            type="text"
+            id="passkey-verify-auth-data"
+            value="c2FuZGJveC1hdXRoLWRhdGE"
+          />
+          <label for="passkey-verify-client-data-json"
+            >Assertion clientDataJSON</label
+          >
+          <input
+            type="text"
+            id="passkey-verify-client-data-json"
+            value="c2FuZGJveC1jbGllbnQtZGF0YQ"
+          />
+          <button id="btn-passkey-verify">Verify</button>
+          <div id="passkey-verify-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Add additional PASSKEY via signed retry
+          </h3>
+          <label for="passkey-add-nickname">Nickname</label>
+          <input type="text" id="passkey-add-nickname" value="Second Passkey" />
+          <button id="btn-passkey-add-issue">1. Issue add challenge</button>
+          <div id="passkey-add-issue-status"></div>
+          <label for="passkey-add-request-id">Request-Id (auto-filled)</label>
+          <input
+            type="text"
+            id="passkey-add-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-passkey-add-retry">2. Retry with signature</button>
+          <div id="passkey-add-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete credential via signed retry
+          </h3>
+          <button id="btn-passkey-del-cred-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="passkey-del-cred-issue-status"></div>
+          <label for="passkey-del-cred-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="passkey-del-cred-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-passkey-del-cred-retry">
+            2. Retry with signature
+          </button>
+          <div id="passkey-del-cred-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Delete session via signed retry
+          </h3>
+          <button id="btn-passkey-del-session-issue">
+            1. Issue delete challenge
+          </button>
+          <div id="passkey-del-session-issue-status"></div>
+          <label for="passkey-del-session-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="passkey-del-session-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-passkey-del-session-retry">
+            2. Retry with signature
+          </button>
+          <div id="passkey-del-session-retry-status"></div>
+        </div>
+
+        <div class="subsection">
+          <h3>
+            Wallet export via signed retry
+          </h3>
+          <button id="btn-passkey-export-issue">
+            1. Issue export challenge
+          </button>
+          <div id="passkey-export-issue-status"></div>
+          <label for="passkey-export-request-id">Request-Id</label>
+          <input
+            type="text"
+            id="passkey-export-request-id"
+            placeholder="auto-filled from step 1"
+          />
+          <button id="btn-passkey-export-retry">2. Retry with signature</button>
+          <div id="passkey-export-retry-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== List credentials / sessions ========== -->
+
+    <div class="section">
+      <h2>List credentials / sessions</h2>
+      <button id="btn-list-credentials">List Credentials</button>
+      <button id="btn-list-sessions" class="secondary">List Sessions</button>
+      <div id="list-status"></div>
+    </div>
+
+    <!-- ========== External account + Quote + Execute ========== -->
+
+    <div class="section">
+      <h2>External Account</h2>
+      <label for="ext-account-type">Type</label>
+      <select id="ext-account-type">
+        <option value="SPARK_WALLET">SPARK_WALLET (happy path)</option>
+        <option value="USD_ACCOUNT">
+          USD_ACCOUNT (success/fail via suffix)
+        </option>
+      </select>
+      <div id="ext-spark-fields">
+        <label for="ext-spark-address">Spark regtest address</label>
+        <input type="text" id="ext-spark-address" placeholder="sparkrt1pgss…" />
+      </div>
+      <div id="ext-bank-fields" style="display: none">
+        <div class="row">
+          <div>
+            <label for="ext-bank-account-number"
+              >Account Number (last 3 → sandbox case)</label
+            >
+            <input
+              type="text"
+              id="ext-bank-account-number"
+              value="1234567001"
+            />
+          </div>
+          <div>
+            <label for="ext-bank-routing-number">Routing Number</label>
+            <input type="text" id="ext-bank-routing-number" value="021000021" />
+          </div>
+        </div>
+        <label for="ext-bank-beneficiary-name">Beneficiary Full Name</label>
+        <input
+          type="text"
+          id="ext-bank-beneficiary-name"
+          value="Sandbox Test User"
+        />
+      </div>
+      <button id="btn-create-external-account">Create External Account</button>
+      <div id="ext-account-status"></div>
+    </div>
+
+    <div class="section">
+      <h2>Quote + Execute</h2>
+      <label for="quote-destination-account-id"
+        >Destination External Account ID</label
+      >
+      <input
+        type="text"
+        id="quote-destination-account-id"
+        placeholder="auto-filled from Create External Account"
+      />
+      <div class="row">
+        <div>
+          <label for="quote-locked-side">Locked Side</label>
+          <select id="quote-locked-side">
+            <option value="SENDING">SENDING</option>
+            <option value="RECEIVING">RECEIVING</option>
+          </select>
+        </div>
+        <div>
+          <label for="quote-locked-amount">Locked Amount (smallest unit)</label>
+          <input type="number" id="quote-locked-amount" value="1000000" />
+        </div>
+      </div>
+      <button id="btn-create-quote">Create Quote</button>
+      <div id="quote-status"></div>
+
+      <div class="subsection">
+        <label for="execute-quote-id">Quote ID</label>
+        <input
+          type="text"
+          id="execute-quote-id"
+          placeholder="auto-filled from Create Quote"
+        />
+        <label for="execute-payload-to-sign"
+          >payloadToSign (auto-filled from Create Quote)</label
+        >
+        <textarea
+          id="execute-payload-to-sign"
+          rows="3"
+          placeholder="Turnkey SIGN_RAW_PAYLOAD body — only used in production mode"
+        ></textarea>
+        <label for="execute-signature">Grid-Wallet-Signature</label>
+        <input type="text" id="execute-signature" />
+        <button id="btn-sign-payload" class="secondary">Sign payload</button>
+        <button id="btn-execute-quote">Execute Quote</button>
+        <div id="execute-status"></div>
+      </div>
+    </div>
+
+    <!-- ========== Log ========== -->
+
+    <div class="section">
+      <h2>Response Log</h2>
+      <div id="log"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

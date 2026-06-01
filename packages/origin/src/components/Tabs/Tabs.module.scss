@@ -96,15 +96,6 @@
 }
 
 .panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: var(--spacing-4xl) 0;
-  overflow: clip;
-  border: var(--stroke-xs) solid var(--border-primary);
-  @include smooth-corners(var(--corner-radius-sm));
-
   &[data-hidden] {
     display: none;
   }

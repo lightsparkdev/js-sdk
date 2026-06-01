@@ -16,12 +16,26 @@ expect.addSnapshotSerializer(
   }),
 );
 
+function getStableFragment(asFragment: () => DocumentFragment) {
+  const fragment = asFragment();
+  fragment.querySelectorAll("[class]").forEach((element) => {
+    const className = element.getAttribute("class");
+    if (className) {
+      element.setAttribute(
+        "class",
+        className.replace(/\bcss-\S+\b/g, "css-test"),
+      );
+    }
+  });
+  return fragment;
+}
+
 describe("toReactNodes", () => {
   it("renders the expected output for a single string", () => {
     const result = toReactNodes("test1\ntest2");
     const { asFragment } = render(result);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -43,7 +57,7 @@ describe("toReactNodes", () => {
     });
     const { asFragment } = render(<BrowserRouter>{result}</BrowserRouter>);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <a
           class="css-test"
@@ -59,7 +73,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes(["test1\ntest2\ntest3"]);
     const { asFragment } = render(result);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -80,7 +94,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes(["test1\n\ntest2\ntest3"]);
     const { asFragment } = render(result);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -104,7 +118,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes(["test1", "test2", "test3"]);
     const { asFragment } = render(result);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -123,7 +137,7 @@ describe("toReactNodes", () => {
     const result = toReactNodes(["test1\n", "test2\n", "test3"]);
     const { asFragment } = render(result);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -150,7 +164,7 @@ describe("toReactNodes", () => {
     ]);
     const { asFragment } = render(<BrowserRouter>{result}</BrowserRouter>);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1
@@ -187,7 +201,7 @@ describe("toReactNodes", () => {
     ]);
     const { asFragment } = render(<BrowserRouter>{result}</BrowserRouter>);
 
-    expect(asFragment()).toMatchInlineSnapshot(`
+    expect(getStableFragment(asFragment)).toMatchInlineSnapshot(`
       <DocumentFragment>
         <span>
           test1

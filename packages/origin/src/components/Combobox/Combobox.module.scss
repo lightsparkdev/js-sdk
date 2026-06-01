@@ -21,9 +21,6 @@
 
   &:has(.chips) {
     padding-right: var(--spacing-2xs);
-  }
-
-  &:has(.chip) {
     padding-left: var(--spacing-2xs);
   }
 
@@ -31,7 +28,10 @@
     padding-right: calc(var(--spacing-xs) + 42px);
   }
 
-  &:focus-within {
+  // `data-focused` only fires under `Field.Root`; keep `:focus-within`
+  // so consumers without `Field.Root` still get a focus ring.
+  &:focus-within,
+  &[data-focused] {
     @include input-focus;
   }
 
@@ -40,7 +40,7 @@
     @include input-critical;
   }
 
-  &:has(.input:disabled) {
+  &[data-disabled] {
     opacity: calc(var(--opacity-50) / 100);
     cursor: not-allowed;
   }
@@ -326,20 +326,6 @@
   color: var(--text-secondary);
 }
 
-.value {
-  @include input;
-  color: var(--text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.valueWithChildren {
-  display: contents;
-}
-
-// `flex: 1` keeps chips + input on one wrapping row. `Combobox.Value` uses
-// `display: contents`, so both become flex children of `.chips`.
 .chips {
   display: flex;
   flex: 1;
@@ -349,11 +335,6 @@
   row-gap: var(--spacing-2xs);
 }
 
-.chip {
-  composes: root from "../Chip/Chip.module.scss";
-  composes: sm from "../Chip/Chip.module.scss";
-}
-
-.chip + .input {
-  margin-inline-start: var(--spacing-2xs);
+.chips .input {
+  padding-inline-start: var(--spacing-2xs);
 }

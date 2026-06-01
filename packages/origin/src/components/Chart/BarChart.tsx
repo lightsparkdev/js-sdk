@@ -819,12 +819,22 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                         const barFill = getBarColor?.(d, di, s.key) ?? s.color;
                         const barOffset =
                           slotStart + si * (barThickness + BAR_ITEM_GAP);
+                        const anchor = Math.min(yMax, Math.max(yMin, 0));
                         if (isHorizontal) {
-                          const barW = ((v - yMin) / (yMax - yMin)) * plotWidth;
+                          const xAnchor = linearScale(
+                            anchor,
+                            yMin,
+                            yMax,
+                            0,
+                            plotWidth,
+                          );
+                          const xVal = linearScale(v, yMin, yMax, 0, plotWidth);
+                          const barX = Math.min(xAnchor, xVal);
+                          const barW = Math.abs(xVal - xAnchor);
                           return (
                             <rect
                               key={s.key}
-                              x={0}
+                              x={barX}
                               y={barOffset}
                               width={Math.max(0, barW)}
                               height={barThickness}
@@ -841,8 +851,16 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                             />
                           );
                         }
-                        const barH = ((v - yMin) / (yMax - yMin)) * plotHeight;
-                        const barY = plotHeight - barH;
+                        const yAnchor = linearScale(
+                          anchor,
+                          yMin,
+                          yMax,
+                          plotHeight,
+                          0,
+                        );
+                        const yVal = linearScale(v, yMin, yMax, plotHeight, 0);
+                        const barY = Math.min(yAnchor, yVal);
+                        const barH = Math.abs(yVal - yAnchor);
                         return (
                           <rect
                             key={s.key}

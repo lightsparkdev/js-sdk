@@ -1,0 +1,15 @@
+// Import fonts (must come first)
+@use "../tokens/fonts";
+
+// Import design tokens (CSS custom properties)
+@use "../tokens/variables";
+
+// Import effect tokens (shadows, focus rings)
+@use "../tokens/effects";
+
+:root {
+  --doc-height: 100vh;
+  --rt-opacity: 1;
+  --rt-transition-show-delay: 0.15s;
+  --rt-transition-closing-delay: 0.2s;
+}

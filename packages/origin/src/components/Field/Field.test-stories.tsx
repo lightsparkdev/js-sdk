@@ -4,12 +4,31 @@ import * as React from "react";
 import { Field } from "./";
 import { Input } from "@/components/Input";
 
+const RenderedRoot = React.forwardRef<
+  HTMLElement,
+  React.ComponentPropsWithoutRef<"section">
+>(function RenderedRoot(props, ref) {
+  return <section ref={ref} data-custom-root="" {...props} />;
+});
+
 export function DefaultField() {
   return (
     <Field.Root>
       <Field.Label>Email</Field.Label>
       <Input placeholder="Enter your email" />
       <Field.Description>We'll never share your email.</Field.Description>
+    </Field.Root>
+  );
+}
+
+export function FieldWithLabelSuffix() {
+  return (
+    <Field.Root>
+      <Field.Label data-testid="field-label-with-suffix">
+        Display name
+        <span data-testid="field-label-suffix">(optional)</span>
+      </Field.Label>
+      <Input placeholder="Enter display name" />
     </Field.Root>
   );
 }
@@ -101,6 +120,48 @@ export function FieldWithName() {
     <Field.Root name="user-email">
       <Field.Label>Email</Field.Label>
       <Input placeholder="Enter your email" />
+    </Field.Root>
+  );
+}
+
+export function FieldWithRenderedRoot() {
+  return (
+    <Field.Root
+      invalid
+      className="consumer-field-root"
+      render={
+        <RenderedRoot
+          className="rendered-field-root"
+          data-testid="rendered-field-root"
+        />
+      }
+    >
+      <Field.Label>Email</Field.Label>
+      <Input placeholder="Rendered root email" />
+      <Field.Error>Enter a valid email address.</Field.Error>
+    </Field.Root>
+  );
+}
+
+export function FieldWithStatefulRootClassName() {
+  return (
+    <Field.Root
+      invalid
+      className={(state) =>
+        state.valid === false
+          ? "consumer-field-root-invalid"
+          : "consumer-field-root-valid"
+      }
+      render={
+        <RenderedRoot
+          className="rendered-stateful-field-root"
+          data-testid="stateful-class-field-root"
+        />
+      }
+    >
+      <Field.Label>Email</Field.Label>
+      <Input placeholder="Stateful root email" />
+      <Field.Error>Enter a valid email address.</Field.Error>
     </Field.Root>
   );
 }

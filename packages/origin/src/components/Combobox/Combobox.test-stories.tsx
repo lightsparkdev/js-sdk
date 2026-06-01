@@ -52,15 +52,6 @@ export function ConformanceItemText(
   );
 }
 
-/** Value conformance - forwards props, ref, className */
-export function ConformanceValue(props: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <Combobox.Root items={fruits} defaultValue="Apple">
-      <Combobox.Value data-testid="test-root" {...props} />
-    </Combobox.Root>
-  );
-}
-
 /** ActionButtons conformance - forwards props, ref, className */
 export function ConformanceActionButtons(
   props: React.HTMLAttributes<HTMLDivElement>,
@@ -131,6 +122,30 @@ export const TestComboboxMultiple = () => (
         </Combobox.Popup>
       </Combobox.Positioner>
     </Combobox.Portal>
+  </Combobox.Root>
+);
+
+export const TestComboboxChipPassThrough = () => (
+  <Combobox.Root items={fruits} multiple defaultValue={["Apple"]}>
+    <Combobox.InputWrapper>
+      <Combobox.Chips>
+        <Combobox.Value>
+          {(selectedValue: string[]) => (
+            <>
+              {selectedValue.map((item) => (
+                <Combobox.Chip key={item} data-testid="combobox-chip">
+                  <strong data-testid="chip-label-child">{item}</strong>
+                  <span data-testid="remove-wrapper">
+                    <Combobox.ChipRemove aria-label={`Remove ${item}`} />
+                  </span>
+                </Combobox.Chip>
+              ))}
+              <Combobox.Input placeholder="Select fruits..." />
+            </>
+          )}
+        </Combobox.Value>
+      </Combobox.Chips>
+    </Combobox.InputWrapper>
   </Combobox.Root>
 );
 

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid KYC/KYB Demo</title>
+    <!-- Sumsub WebSDK loader. Pulled from sumsub's CDN per their docs; the
+         actual SDK iframe is only mounted when the user chooses "Embedded
+         SDK" mode and clicks Launch.
+
+         Pinned with SRI so the browser refuses to execute a different
+         payload than the one we audited. If Sumsub updates the script,
+         the demo's Launch button will surface "WebSDK script didn't
+         load" rather than silently running new code — the integrity
+         hash below will need to be regenerated:
+
+           curl -fsSL https://static.sumsub.com/idensic/static/sns-websdk-builder.js |
+             openssl dgst -sha384 -binary | openssl base64 -A
+    -->
+    <script
+      src="https://static.sumsub.com/idensic/static/sns-websdk-builder.js"
+      integrity="sha384-Q4BMpZ9i8XuJ2R3fxtmmoKxvCUL2CSCtpXTREfEMWwUWEOEzq4Tw0h6KrIcHAbHf"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

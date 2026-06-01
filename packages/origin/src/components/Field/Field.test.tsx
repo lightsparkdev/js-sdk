@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultField,
+  FieldWithLabelSuffix,
   FieldWithError,
   DisabledField,
   FieldWithoutLabel,
@@ -8,6 +9,8 @@ import {
   ControlledField,
   FieldWithValidation,
   FieldWithName,
+  FieldWithRenderedRoot,
+  FieldWithStatefulRootClassName,
 } from "./Field.test-stories";
 
 test.describe("Field", () => {
@@ -22,6 +25,22 @@ test.describe("Field", () => {
       await expect(label).toBeVisible();
       await expect(input).toBeVisible();
       await expect(description).toBeVisible();
+    });
+
+    test("spaces label suffix children with the spacing token", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithLabelSuffix />);
+
+      const label = page.getByTestId("field-label-with-suffix");
+      const suffix = page.getByTestId("field-label-suffix");
+
+      await expect(label).toBeVisible();
+      await expect(label).toHaveCSS("display", "flex");
+      await expect(label).toHaveCSS("gap", "4px");
+      await expect(label).toContainText("Display name");
+      await expect(suffix).toHaveText("(optional)");
     });
 
     test("label is associated with input via aria", async ({ mount, page }) => {
@@ -193,6 +212,43 @@ test.describe("Field", () => {
 
       const input = page.getByPlaceholder("Enter your email");
       await expect(input).toBeVisible();
+    });
+  });
+
+  test.describe("render prop", () => {
+    test("renders a custom root while preserving Origin and consumer classes", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithRenderedRoot />);
+
+      const root = page.getByTestId("rendered-field-root");
+      await expect(root).toBeVisible();
+      await expect(root).toHaveJSProperty("tagName", "SECTION");
+      await expect(root).toHaveAttribute("data-custom-root", "");
+      await expect(root).toHaveAttribute("data-invalid", "");
+      await expect(root).toHaveCSS("display", "flex");
+      await expect(root).toHaveCSS("flex-direction", "column");
+      await expect(root).toHaveClass(/consumer-field-root/);
+      await expect(root).toHaveClass(/rendered-field-root/);
+    });
+
+    test("supports stateful root class names with a rendered root class", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithStatefulRootClassName />);
+
+      const root = page.getByTestId("stateful-class-field-root");
+      await expect(root).toBeVisible();
+      await expect(root).toHaveJSProperty("tagName", "SECTION");
+      await expect(root).toHaveAttribute("data-custom-root", "");
+      await expect(root).toHaveAttribute("data-invalid", "");
+      await expect(root).toHaveCSS("display", "flex");
+      await expect(root).toHaveCSS("flex-direction", "column");
+      await expect(root).toHaveClass(/consumer-field-root-invalid/);
+      await expect(root).toHaveClass(/rendered-stateful-field-root/);
+      await expect(root).not.toHaveClass(/consumer-field-root-valid/);
     });
   });
 });

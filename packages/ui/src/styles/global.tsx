@@ -166,25 +166,6 @@ export const globalComponentStyles = ({ theme }: ThemeProp) => css`
     text-decoration: none;
   }
 
-  .pretty-scrollbar {
-    scrollbar-width: auto;
-    scrollbar-color: #333333 #000000;
-  }
-
-  .pretty-scrollbar::-webkit-scrollbar {
-    width: 16px;
-  }
-
-  .pretty-scrollbar::-webkit-scrollbar-track {
-    background: #000000;
-  }
-
-  .pretty-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #333333;
-    border-radius: 10px;
-    border: 3px solid #000000;
-  }
-
   *:focus-visible {
     outline: ${theme.hcNeutral} dashed 1px;
   }
@@ -204,10 +185,10 @@ export function GlobalStyles() {
   const bg = useThemeBg();
 
   useEffect(() => {
-    /* 
+    /*
      * iOS has no way to actually get the viewport size correctly.
-     * There are many ways purporting to solve
-         it but the only one that seems to work consistently everywhere requires js https://bit.ly/3LRfsNn
+     * There are many ways purporting to solve it but the only one that seems
+     * to work consistently everywhere requires JS: https://bit.ly/3LRfsNn
      * We need it to properly take up the whole viewport when the content is
      * smaller.
      */

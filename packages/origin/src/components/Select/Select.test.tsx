@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultSelect,
+  LongGroupedSelect,
+  LongListSelect,
   DisabledSelect,
   WithDefaultValue,
   WithGroups,
@@ -32,6 +34,100 @@ test.describe("Select", () => {
 
     const listbox = page.getByRole("listbox");
     await expect(listbox).toBeVisible();
+  });
+
+  test("bounds long lists to available space and lets them scroll", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<LongListSelect />);
+
+    const trigger = page.getByRole("combobox");
+    await trigger.click();
+
+    const listbox = page.getByRole("listbox");
+    await expect(listbox).toBeVisible();
+
+    const popupState = await listbox.evaluate((list) => {
+      const popup = list.parentElement;
+
+      if (!popup) {
+        throw new Error("Select list is missing its popup parent");
+      }
+
+      const listStyles = window.getComputedStyle(list);
+      const popupStyles = window.getComputedStyle(popup);
+
+      return {
+        listMaxHeight: listStyles.maxHeight,
+        listOverflowY: listStyles.overflowY,
+        listOverscrollBehaviorY: listStyles.overscrollBehaviorY,
+        listScrollPaddingBlockEnd: listStyles.scrollPaddingBlockEnd,
+        listScrollPaddingBlockStart: listStyles.scrollPaddingBlockStart,
+        popupMaxHeight: popupStyles.maxHeight,
+        popupMaxWidth: popupStyles.maxWidth,
+        popupOverflowX: popupStyles.overflowX,
+        popupOverflowY: popupStyles.overflowY,
+        popupOverscrollBehaviorY: popupStyles.overscrollBehaviorY,
+        popupScrollPaddingBlockEnd: popupStyles.scrollPaddingBlockEnd,
+        popupScrollPaddingBlockStart: popupStyles.scrollPaddingBlockStart,
+        hasScrollableOverflow: list.scrollHeight > list.clientHeight,
+      };
+    });
+
+    expect(popupState.popupMaxHeight).not.toBe("none");
+    expect(popupState.popupMaxWidth).not.toBe("none");
+    expect(popupState.popupOverflowX).toBe("hidden");
+    expect(popupState.popupOverflowY).toBe("auto");
+    expect(popupState.popupOverscrollBehaviorY).toBe("contain");
+    expect(
+      Number.parseFloat(popupState.popupScrollPaddingBlockStart),
+    ).toBeGreaterThan(0);
+    expect(
+      Number.parseFloat(popupState.popupScrollPaddingBlockEnd),
+    ).toBeGreaterThan(0);
+    expect(popupState.listMaxHeight).not.toBe("none");
+    expect(popupState.listOverflowY).toBe("auto");
+    expect(popupState.listOverscrollBehaviorY).toBe("contain");
+    expect(
+      Number.parseFloat(popupState.listScrollPaddingBlockStart),
+    ).toBeGreaterThan(0);
+    expect(
+      Number.parseFloat(popupState.listScrollPaddingBlockEnd),
+    ).toBeGreaterThan(0);
+    expect(popupState.hasScrollableOverflow).toBe(true);
+  });
+
+  test("keeps grouped long content scrollable in the popup", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<LongGroupedSelect />);
+
+    const trigger = page.getByRole("combobox");
+    await trigger.click();
+
+    const popup = page.getByTestId("long-grouped-select-popup");
+    await expect(popup).toBeVisible();
+
+    const popupState = await popup.evaluate((element) => {
+      const popupStyles = window.getComputedStyle(element);
+      const lists = Array.from(element.querySelectorAll('[role="listbox"]'));
+
+      return {
+        popupMaxHeight: popupStyles.maxHeight,
+        popupOverflowY: popupStyles.overflowY,
+        hasScrollableOverflow: element.scrollHeight > element.clientHeight,
+        scrollableLists: lists.filter(
+          (list) => list.scrollHeight > list.clientHeight,
+        ).length,
+      };
+    });
+
+    expect(popupState.popupMaxHeight).not.toBe("none");
+    expect(popupState.popupOverflowY).toBe("auto");
+    expect(popupState.hasScrollableOverflow).toBe(true);
+    expect(popupState.scrollableLists).toBe(0);
   });
 
   test("selects an option", async ({ mount, page }) => {

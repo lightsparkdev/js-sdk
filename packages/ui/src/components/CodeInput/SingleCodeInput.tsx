@@ -5,6 +5,7 @@ import type {
   ClipboardEvent,
   HTMLInputTypeAttribute,
   KeyboardEvent,
+  ReactElement,
   Ref,
 } from "react";
 import { textInputStyle } from "../../styles/fields.js";
@@ -58,7 +59,7 @@ export function SingleCodeInput({
   onBlur,
   width = defaultWidth,
   variant = "default",
-}: CounterProps): JSX.Element {
+}: CounterProps): ReactElement {
   const theme = useTheme();
 
   const commonCSS = css`

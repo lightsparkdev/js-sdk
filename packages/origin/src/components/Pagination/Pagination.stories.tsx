@@ -112,3 +112,72 @@ export const WithoutSelect: Story = {
     />
   ),
 };
+
+/**
+ * Canonical anchor-render pattern: the consumer `onClick` only suppresses the
+ * browser's default navigation. Page state transitions go through
+ * `onPageChange` on `Pagination.Root`, which the component skips at boundaries.
+ */
+function URLBasedDemo() {
+  const [page, setPage] = React.useState(3);
+
+  return (
+    <Pagination.Root
+      page={page}
+      totalItems={250}
+      pageSize={25}
+      onPageChange={setPage}
+    >
+      <Pagination.Range />
+      <Pagination.Navigation>
+        <Pagination.Previous
+          render={
+            <a
+              href={`?page=${page - 1}`}
+              onClick={(event) => {
+                event.preventDefault();
+              }}
+            />
+          }
+        />
+        <Pagination.Next
+          render={
+            <a
+              href={`?page=${page + 1}`}
+              onClick={(event) => {
+                event.preventDefault();
+              }}
+            />
+          }
+        />
+      </Pagination.Navigation>
+    </Pagination.Root>
+  );
+}
+
+export const URLBased: Story = {
+  render: () => <URLBasedDemo />,
+};
+
+function WithoutTotalsDemo() {
+  const [page, setPage] = React.useState(1);
+  const lastKnownPage = 5;
+
+  return (
+    <Pagination.Root page={page} pageSize={25} onPageChange={setPage}>
+      <Pagination.Range>
+        {({ totalItems }) =>
+          totalItems === undefined ? `Page ${page}` : `${totalItems} total`
+        }
+      </Pagination.Range>
+      <Pagination.Navigation>
+        <Pagination.Previous />
+        <Pagination.Next disabled={page >= lastKnownPage} />
+      </Pagination.Navigation>
+    </Pagination.Root>
+  );
+}
+
+export const WithoutTotals: Story = {
+  render: () => <WithoutTotalsDemo />,
+};

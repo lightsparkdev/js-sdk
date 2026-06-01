@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
   type CellContext,
+  type ColumnDef,
   type ColumnSort,
   type HeaderContext,
   type Row,
@@ -31,6 +32,7 @@ import {
 import { type NewRoutesType } from "../../types/index.js";
 import { type ElideObjArgs } from "../../utils/strings.js";
 import { type ToReactNodesArgs } from "../../utils/toReactNodes/toReactNodes.js";
+import { Checkbox } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
@@ -127,6 +129,11 @@ export type TableProps<T extends Record<string, unknown>> = {
     text: ToReactNodesArgs;
     onClick: (row: T) => void;
   }[];
+  rowSelection?: {
+    selectedRowIds: string[];
+    onSelectedRowIdsChange: (selectedRowIds: string[]) => void;
+    getRowId: (row: T) => string;
+  };
   loadingStyle?:
     | {
         style: "spinner";
@@ -150,6 +157,7 @@ export function Table<T extends Record<string, unknown>>({
   clipboardCallbacks,
   customComponents,
   tripleDotsMenuItems,
+  rowSelection,
   rowHoverEffect = "border",
   minHeight = 300,
   loadingStyle = { style: "spinner" },
@@ -167,10 +175,55 @@ export function Table<T extends Record<string, unknown>>({
     },
     [writeTextToClipboard],
   );
-
-  const mappedColumns = useMemo(
+  const selectedRowIdsSet = useMemo(
+    () => new Set(rowSelection?.selectedRowIds ?? []),
+    [rowSelection?.selectedRowIds],
+  );
+  const visibleRowIds = useMemo(
     () =>
-      columns.map((column) => ({
+      data
+        .map((row) => rowSelection?.getRowId(row))
+        .filter((rowId): rowId is string => Boolean(rowId)),
+    [data, rowSelection],
+  );
+  const allVisibleRowsSelected =
+    visibleRowIds.length > 0 &&
+    visibleRowIds.every((rowId) => selectedRowIdsSet.has(rowId));
+
+  const toggleRowSelection = useCallback(
+    (rowId: string) => {
+      if (!rowSelection) {
+        return;
+      }
+
+      const nextSelection = new Set(rowSelection.selectedRowIds);
+      if (nextSelection.has(rowId)) {
+        nextSelection.delete(rowId);
+      } else {
+        nextSelection.add(rowId);
+      }
+      rowSelection.onSelectedRowIdsChange([...nextSelection]);
+    },
+    [rowSelection],
+  );
+
+  const toggleAllVisibleRowsSelection = useCallback(() => {
+    if (!rowSelection) {
+      return;
+    }
+
+    const nextSelection = new Set(rowSelection.selectedRowIds);
+    if (allVisibleRowsSelected) {
+      visibleRowIds.forEach((rowId) => nextSelection.delete(rowId));
+    } else {
+      visibleRowIds.forEach((rowId) => nextSelection.add(rowId));
+    }
+    rowSelection.onSelectedRowIdsChange([...nextSelection]);
+  }, [allVisibleRowsSelected, rowSelection, visibleRowIds]);
+
+  const mappedColumns = useMemo(() => {
+    const columnsToRender: ColumnDef<T, TableCell>[] = columns.map(
+      (column) => ({
         ...column,
         header: (context: HeaderContext<T, TableCell>) =>
           typeof column.header === "string" ? (
@@ -331,41 +384,80 @@ export function Table<T extends Record<string, unknown>>({
           }
           return <span>{content}</span>;
         },
-      })),
-    [
-      columns,
-      canWriteToClipboard,
-      onClickCopy,
-      clipboardCallbacks,
-      customComponents,
-    ],
-  );
+      }),
+    );
 
-  if (tripleDotsMenuItems) {
-    const DropdownComponent = customComponents?.dropdownComponent || Dropdown;
+    if (rowSelection) {
+      columnsToRender.unshift({
+        id: "rowSelection",
+        header: () => (
+          <SelectionCheckboxContainer
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
+            <Checkbox
+              checked={allVisibleRowsSelected}
+              onChange={toggleAllVisibleRowsSelection}
+            />
+          </SelectionCheckboxContainer>
+        ),
+        cell: (context) => {
+          const rowId = rowSelection.getRowId(context.row.original);
+          return (
+            <SelectionCheckboxContainer
+              onClick={(event) => event.stopPropagation()}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              <Checkbox
+                checked={selectedRowIdsSet.has(rowId)}
+                onChange={() => toggleRowSelection(rowId)}
+              />
+            </SelectionCheckboxContainer>
+          );
+        },
+      });
+    }
 
-    mappedColumns.push({
-      header: (context: HeaderContext<T, TableCell>) => "",
-      accessorKey: "tripleDots",
-      cell: (context) => (
-        <DropdownComponent
-          button={{
-            icon: {
-              name: "CentralDotGrid1x3Vertical",
-            },
-            kind: "ghost",
-          }}
-          align="right"
-          dropdownItems={
-            tripleDotsMenuItems?.map((item) => ({
-              label: item.text,
-              onClick: () => item.onClick(context.row.original),
-            })) || []
-          }
-        />
-      ),
-    });
-  }
+    if (tripleDotsMenuItems) {
+      const DropdownComponent = customComponents?.dropdownComponent || Dropdown;
+
+      columnsToRender.push({
+        id: "tripleDots",
+        header: () => "",
+        cell: (context) => (
+          <DropdownComponent
+            button={{
+              icon: {
+                name: "CentralDotGrid1x3Vertical",
+              },
+              kind: "ghost",
+            }}
+            align="right"
+            dropdownItems={
+              tripleDotsMenuItems?.map((item) => ({
+                label: item.text,
+                onClick: () => item.onClick(context.row.original),
+              })) || []
+            }
+          />
+        ),
+      });
+    }
+
+    return columnsToRender;
+  }, [
+    columns,
+    canWriteToClipboard,
+    onClickCopy,
+    clipboardCallbacks,
+    customComponents,
+    rowSelection,
+    allVisibleRowsSelected,
+    toggleAllVisibleRowsSelection,
+    selectedRowIdsSet,
+    toggleRowSelection,
+    tripleDotsMenuItems,
+  ]);
 
   const tableInstance = useReactTable({
     columns: mappedColumns,
@@ -585,6 +677,11 @@ const Base64Icon = styled.img`
   object-fit: contain;
   border-radius: 4px;
   margin-right: 12px;
+`;
+
+const SelectionCheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const cellPaddingPx = 15;

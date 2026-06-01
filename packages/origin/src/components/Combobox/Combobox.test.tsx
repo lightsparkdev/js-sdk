@@ -7,6 +7,7 @@ import {
   TestComboboxControlled,
   TestComboboxWithGroups,
   TestComboboxWithClear,
+  TestComboboxChipPassThrough,
   ConformanceInputWrapper,
   ConformanceActionButtons,
 } from "./Combobox.test-stories";
@@ -135,6 +136,24 @@ test.describe("Combobox", () => {
       await expect(apple).toHaveAttribute("data-selected", "");
       await expect(banana).toHaveAttribute("data-selected", "");
     });
+
+    test("renders chip children directly and removes through wrapped ChipRemove", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<TestComboboxChipPassThrough />);
+      const chip = page.getByTestId("combobox-chip");
+
+      await expect(
+        chip.locator("> [data-testid='chip-label-child']"),
+      ).toHaveText("Apple");
+      await expect(
+        chip.locator("> [data-testid='remove-wrapper']"),
+      ).toBeVisible();
+
+      await page.getByRole("button", { name: "Remove Apple" }).click();
+      await expect(chip).toBeHidden();
+    });
   });
 
   test.describe("disabled prop", () => {
@@ -233,9 +252,6 @@ test.describe("Combobox", () => {
 
     // ItemText tests skipped - requires popup to be visible in DOM
     // The component itself follows slot pattern, but testing requires complex setup
-
-    // Value tests skipped - Value is a context provider for accessing selected values,
-    // not a DOM wrapper. It doesn't render props to a DOM element.
 
     // ChipText tests skipped - requires multi-select chips to render
     // The component itself follows slot pattern, but testing requires complex setup
