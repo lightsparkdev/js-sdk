@@ -173,6 +173,26 @@ async function apiDelete(
   return { status: res.status, data };
 }
 
+async function apiPatch(
+  path: string,
+  body: Record<string, unknown>,
+  extraHeaders: Record<string, string> = {},
+): Promise<{ status: number; data: unknown }> {
+  const res = await fetch(API_BASE + path, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: getAuthHeader(),
+      ...extraHeaders,
+    },
+    body: JSON.stringify(body),
+  });
+  const raw = await res.text();
+  const data = raw ? JSON.parse(raw) : null;
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${raw}`);
+  return { status: res.status, data };
+}
+
 async function apiGet(path: string): Promise<unknown> {
   const res = await fetch(API_BASE + path, {
     headers: { Authorization: getAuthHeader() },
@@ -322,7 +342,11 @@ bindClick(
       platformCustomerId,
       region: "US",
       currencies: ["USDB"],
-      businessInfo: { legalName: fullName },
+      businessInfo: {
+        legalName: fullName,
+        taxId: "12-3456789",
+        incorporatedOn: "2020-01-01",
+      },
     };
     if (email) body.email = email;
     const { data: customer } = await apiPost("/customers", body);
@@ -335,11 +359,77 @@ bindClick(
     addLog("Internal Accounts", accounts);
     if (accounts.data && accounts.data.length > 0) {
       setCtxAccount(accounts.data[0].id);
-      return `Customer: ${customerId}\nAccount: ${accounts.data[0].id}`;
+      return `Customer: ${customerId}\nAccount: ${accounts.data[0].id}\nEmbedded wallet pre-created at customer-create time.`;
     }
-    return `Customer: ${customerId}\nNo USDB account found`;
+    return `Customer: ${customerId}\nNo USDB account found yet — wallet provisioning may be in progress.`;
   },
 );
+
+// ==========================================================
+// Platform config (OTP + branding) — GET to populate, PATCH to save
+// ==========================================================
+
+const cfgAppName = maybeEl<HTMLInputElement>("cfg-app-name");
+const cfgOtpLength = maybeEl<HTMLInputElement>("cfg-otp-length");
+const cfgAlphanumeric = maybeEl<HTMLInputElement>("cfg-alphanumeric");
+const cfgExpirationSeconds = maybeEl<HTMLInputElement>("cfg-expiration-seconds");
+const cfgSendFromEmail = maybeEl<HTMLInputElement>("cfg-send-from-email");
+const cfgSendFromName = maybeEl<HTMLInputElement>("cfg-send-from-name");
+const cfgReplyToEmail = maybeEl<HTMLInputElement>("cfg-reply-to-email");
+const cfgLogoUrl = maybeEl<HTMLInputElement>("cfg-logo-url");
+
+function readConfigForm(): Record<string, unknown> {
+  // Only include fields the user touched (non-empty) so we PATCH a real partial.
+  const ewc: Record<string, unknown> = {};
+  if (cfgAppName?.value.trim()) ewc.appName = cfgAppName.value.trim();
+  if (cfgOtpLength?.value.trim())
+    ewc.otpLength = parseInt(cfgOtpLength.value, 10);
+  if (cfgAlphanumeric) ewc.alphanumeric = cfgAlphanumeric.checked;
+  if (cfgExpirationSeconds?.value.trim())
+    ewc.expirationSeconds = parseInt(cfgExpirationSeconds.value, 10);
+  if (cfgSendFromEmail?.value.trim())
+    ewc.sendFromEmailAddress = cfgSendFromEmail.value.trim();
+  if (cfgSendFromName?.value.trim())
+    ewc.sendFromEmailSenderName = cfgSendFromName.value.trim();
+  if (cfgReplyToEmail?.value.trim())
+    ewc.replyToEmailAddress = cfgReplyToEmail.value.trim();
+  if (cfgLogoUrl?.value.trim()) ewc.logoUrl = cfgLogoUrl.value.trim();
+  return { embeddedWalletConfig: ewc };
+}
+
+function applyConfigToForm(cfg: unknown): void {
+  const ewc = (cfg as { embeddedWalletConfig?: Record<string, unknown> })
+    ?.embeddedWalletConfig;
+  if (!ewc) return;
+  if (cfgAppName && typeof ewc.appName === "string") cfgAppName.value = ewc.appName;
+  if (cfgOtpLength && typeof ewc.otpLength === "number")
+    cfgOtpLength.value = String(ewc.otpLength);
+  if (cfgAlphanumeric && typeof ewc.alphanumeric === "boolean")
+    cfgAlphanumeric.checked = ewc.alphanumeric;
+  if (cfgExpirationSeconds && typeof ewc.expirationSeconds === "number")
+    cfgExpirationSeconds.value = String(ewc.expirationSeconds);
+  if (cfgSendFromEmail && typeof ewc.sendFromEmailAddress === "string")
+    cfgSendFromEmail.value = ewc.sendFromEmailAddress;
+  if (cfgSendFromName && typeof ewc.sendFromEmailSenderName === "string")
+    cfgSendFromName.value = ewc.sendFromEmailSenderName;
+  if (cfgReplyToEmail && typeof ewc.replyToEmailAddress === "string")
+    cfgReplyToEmail.value = ewc.replyToEmailAddress;
+  if (cfgLogoUrl && typeof ewc.logoUrl === "string") cfgLogoUrl.value = ewc.logoUrl;
+}
+
+bindClick("btn-cfg-load", "cfg-status", "Load Config", "Loading…", async () => {
+  const cfg = await apiGet("/config");
+  addLog("GET /config", cfg);
+  applyConfigToForm(cfg);
+  return "Config loaded into form.";
+});
+
+bindClick("btn-cfg-save", "cfg-status", "Save Config", "Saving…", async () => {
+  const body = readConfigForm();
+  const { data } = await apiPatch("/config", body);
+  addLog("PATCH /config", data);
+  return "Config saved.";
+});
 
 bindClick(
   "btn-fetch-balance",
