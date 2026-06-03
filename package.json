@@ -67,7 +67,6 @@
     }
   },
   "resolutions": {
-    "form-data": "4.0.5",
     "js-cookie": "3.0.7"
   },
   "engines": {
