@@ -27,7 +27,9 @@ export { CalendarClock } from "./CalendarClock.js";
 export { CameraCapture } from "./CameraCapture.js";
 export { CaretRight } from "./CaretRight.js";
 export { CashAppBadge } from "./CashAppBadge.js";
+export * from "./central/index.js";
 export { CentralArrowShareRight } from "./CentralArrowShareRight.js";
+export * from "./chains/index.js";
 export { Checkmark } from "./Checkmark.js";
 export { CheckmarkCircle } from "./CheckmarkCircle.js";
 export { CheckmarkCircleTier1 } from "./CheckmarkCircleTier1.js";
@@ -150,6 +152,12 @@ export { TapSingle } from "./TapSingle.js";
 export { Team } from "./Team.js";
 export { Terminal } from "./Terminal.js";
 export { Trash } from "./Trash.js";
+export type {
+  PathLinecap,
+  PathLinejoin,
+  PathProps,
+  PathStrokeWidth,
+} from "./types.js";
 export { Uma } from "./Uma.js";
 export { UmaBridgeLoading } from "./UmaBridgeLoading.js";
 export { UmaBridgeLoadingTransparent } from "./UmaBridgeLoadingTransparent.js";

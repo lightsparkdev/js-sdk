@@ -6,7 +6,7 @@ export default defineConfig({
     "src/index.ts",
     "src/components/**/!(*.test).ts(x)?",
     "src/hooks/**/!(*.test).ts(x)?",
-    "src/icons/**/*.ts(x)?",
+    "src/icons/index.tsx",
     "src/styles/**/*.ts(x)?",
     "src/types/**/*.ts(x)?",
     "src/utils/**/!(*.test).ts?(x)",

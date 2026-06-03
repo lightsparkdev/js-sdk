@@ -35,10 +35,6 @@
       "import": "./dist/icons/index.js",
       "require": "./dist/icons/index.cjs"
     },
-    "./icons/*": {
-      "import": "./dist/icons/*.js",
-      "require": "./dist/icons/*.cjs"
-    },
     "./styles/*": {
       "import": "./dist/styles/*.js",
       "require": "./dist/styles/*.cjs"
