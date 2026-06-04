@@ -46,6 +46,7 @@ export const CurrencyUnit = {
   ZMW: "ZMW",
   AED: "AED",
   BDT: "BDT",
+  CNY: "CNY",
   COP: "COP",
   EGP: "EGP",
   GHS: "GHS",
@@ -72,6 +73,7 @@ export const CurrencyUnit = {
   Brl: "BRL",
   Aed: "AED",
   Bdt: "BDT",
+  Cny: "CNY",
   Cop: "COP",
   Egp: "EGP",
   Ghs: "GHS",
@@ -136,6 +138,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.ZMW]: (v: number) => v,
   [CurrencyUnit.AED]: (v: number) => v,
   [CurrencyUnit.BDT]: (v: number) => v,
+  [CurrencyUnit.CNY]: (v: number) => v,
   [CurrencyUnit.COP]: (v: number) => v,
   [CurrencyUnit.EGP]: (v: number) => v,
   [CurrencyUnit.GHS]: (v: number) => v,
@@ -199,6 +202,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toBitcoinConversion,
     [CurrencyUnit.AED]: toBitcoinConversion,
     [CurrencyUnit.BDT]: toBitcoinConversion,
+    [CurrencyUnit.CNY]: toBitcoinConversion,
     [CurrencyUnit.COP]: toBitcoinConversion,
     [CurrencyUnit.EGP]: toBitcoinConversion,
     [CurrencyUnit.GHS]: toBitcoinConversion,
@@ -246,6 +250,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toMicrobitcoinConversion,
     [CurrencyUnit.AED]: toMicrobitcoinConversion,
     [CurrencyUnit.BDT]: toMicrobitcoinConversion,
+    [CurrencyUnit.CNY]: toMicrobitcoinConversion,
     [CurrencyUnit.COP]: toMicrobitcoinConversion,
     [CurrencyUnit.EGP]: toMicrobitcoinConversion,
     [CurrencyUnit.GHS]: toMicrobitcoinConversion,
@@ -293,6 +298,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toMillibitcoinConversion,
     [CurrencyUnit.AED]: toMillibitcoinConversion,
     [CurrencyUnit.BDT]: toMillibitcoinConversion,
+    [CurrencyUnit.CNY]: toMillibitcoinConversion,
     [CurrencyUnit.COP]: toMillibitcoinConversion,
     [CurrencyUnit.EGP]: toMillibitcoinConversion,
     [CurrencyUnit.GHS]: toMillibitcoinConversion,
@@ -340,6 +346,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toMillisatoshiConversion,
     [CurrencyUnit.AED]: toMillisatoshiConversion,
     [CurrencyUnit.BDT]: toMillisatoshiConversion,
+    [CurrencyUnit.CNY]: toMillisatoshiConversion,
     [CurrencyUnit.COP]: toMillisatoshiConversion,
     [CurrencyUnit.EGP]: toMillisatoshiConversion,
     [CurrencyUnit.GHS]: toMillisatoshiConversion,
@@ -387,6 +394,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toNanobitcoinConversion,
     [CurrencyUnit.AED]: toNanobitcoinConversion,
     [CurrencyUnit.BDT]: toNanobitcoinConversion,
+    [CurrencyUnit.CNY]: toNanobitcoinConversion,
     [CurrencyUnit.COP]: toNanobitcoinConversion,
     [CurrencyUnit.EGP]: toNanobitcoinConversion,
     [CurrencyUnit.GHS]: toNanobitcoinConversion,
@@ -434,6 +442,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ZMW]: toSatoshiConversion,
     [CurrencyUnit.AED]: toSatoshiConversion,
     [CurrencyUnit.BDT]: toSatoshiConversion,
+    [CurrencyUnit.CNY]: toSatoshiConversion,
     [CurrencyUnit.COP]: toSatoshiConversion,
     [CurrencyUnit.EGP]: toSatoshiConversion,
     [CurrencyUnit.GHS]: toSatoshiConversion,
@@ -474,6 +483,7 @@ const CONVERSION_MAP = {
   [CurrencyUnit.ZMW]: standardUnitConversionObj,
   [CurrencyUnit.AED]: standardUnitConversionObj,
   [CurrencyUnit.BDT]: standardUnitConversionObj,
+  [CurrencyUnit.CNY]: standardUnitConversionObj,
   [CurrencyUnit.COP]: standardUnitConversionObj,
   [CurrencyUnit.EGP]: standardUnitConversionObj,
   [CurrencyUnit.GHS]: standardUnitConversionObj,
@@ -574,6 +584,7 @@ export type CurrencyMap = {
   [CurrencyUnit.ZMW]: number;
   [CurrencyUnit.AED]: number;
   [CurrencyUnit.BDT]: number;
+  [CurrencyUnit.CNY]: number;
   [CurrencyUnit.COP]: number;
   [CurrencyUnit.EGP]: number;
   [CurrencyUnit.GHS]: number;
@@ -624,6 +635,7 @@ export type CurrencyMap = {
     [CurrencyUnit.ZMW]: string;
     [CurrencyUnit.AED]: string;
     [CurrencyUnit.BDT]: string;
+    [CurrencyUnit.CNY]: string;
     [CurrencyUnit.COP]: string;
     [CurrencyUnit.EGP]: string;
     [CurrencyUnit.GHS]: string;
@@ -855,6 +867,7 @@ function convertCurrencyAmountValues(
     zmw: CurrencyUnit.ZMW,
     aed: CurrencyUnit.AED,
     bdt: CurrencyUnit.BDT,
+    cny: CurrencyUnit.CNY,
     cop: CurrencyUnit.COP,
     egp: CurrencyUnit.EGP,
     ghs: CurrencyUnit.GHS,
@@ -950,6 +963,7 @@ export function mapCurrencyAmount(
     zmw,
     aed,
     bdt,
+    cny,
     cop,
     egp,
     ghs,
@@ -995,6 +1009,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.ZMW]: zmw,
     [CurrencyUnit.AED]: aed,
     [CurrencyUnit.BDT]: bdt,
+    [CurrencyUnit.CNY]: cny,
     [CurrencyUnit.COP]: cop,
     [CurrencyUnit.EGP]: egp,
     [CurrencyUnit.GHS]: ghs,
@@ -1146,6 +1161,10 @@ export function mapCurrencyAmount(
       [CurrencyUnit.BDT]: formatCurrencyStr({
         value: bdt,
         unit: CurrencyUnit.BDT,
+      }),
+      [CurrencyUnit.CNY]: formatCurrencyStr({
+        value: cny,
+        unit: CurrencyUnit.CNY,
       }),
       [CurrencyUnit.COP]: formatCurrencyStr({
         value: cop,
@@ -1321,6 +1340,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "AED";
     case CurrencyUnit.BDT:
       return "BDT";
+    case CurrencyUnit.CNY:
+      return "CNY";
     case CurrencyUnit.COP:
       return "COP";
     case CurrencyUnit.EGP:
@@ -1409,6 +1430,7 @@ export function formatCurrencyStr(
       CurrencyUnit.DKK,
       CurrencyUnit.AED,
       CurrencyUnit.BDT,
+      CurrencyUnit.CNY,
       CurrencyUnit.COP,
       CurrencyUnit.EGP,
       CurrencyUnit.GHS,
