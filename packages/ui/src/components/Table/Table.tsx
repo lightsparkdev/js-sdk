@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 
 import {
@@ -14,7 +14,14 @@ import {
 } from "@tanstack/react-table";
 import { isObject } from "lodash-es";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useClipboard } from "../../hooks/useClipboard.js";
 import {
   Link,
@@ -134,6 +141,28 @@ export type TableProps<T extends Record<string, unknown>> = {
     onSelectedRowIdsChange: (selectedRowIds: string[]) => void;
     getRowId: (row: T) => string;
   };
+  /**
+   * Opt-in keyboard row navigation: highlights an "active" row, moves it with
+   * ArrowUp/ArrowDown, and activates it on Enter. Off by default so existing
+   * tables are unaffected. Optionally control the active index from the caller
+   * (e.g. to drive it from a search box); falls back to internal state.
+   */
+  keyboardRowNavigation?: boolean | undefined;
+  activeRowIndex?: number | undefined;
+  onActiveRowIndexChange?: ((activeRowIndex: number) => void) | undefined;
+  /**
+   * Fires with the active row's underlying data (in the table's displayed
+   * order) whenever the highlight moves. Use this — not the caller's own array
+   * + index — to act on the highlighted row, so sorting can't desync them.
+   */
+  onActiveRowChange?: ((row: T | undefined) => void) | undefined;
+  /**
+   * Stable id for a row's data. Defaults to the row index, which means the
+   * change-detection key stays constant across result sets of the same size —
+   * pass this (e.g. `(row) => row.id`) so keyboard-nav state resets correctly
+   * when the data changes.
+   */
+  getRowId?: ((originalRow: T) => string) | undefined;
   loadingStyle?:
     | {
         style: "spinner";
@@ -162,9 +191,24 @@ export function Table<T extends Record<string, unknown>>({
   minHeight = 300,
   loadingStyle = { style: "spinner" },
   fullHeight = false,
+  keyboardRowNavigation = false,
+  activeRowIndex,
+  onActiveRowIndexChange,
+  onActiveRowChange,
+  getRowId,
 }: TableProps<T>) {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
+  const [internalActiveRowIndex, setInternalActiveRowIndex] = useState(0);
+  const activeRow = activeRowIndex ?? internalActiveRowIndex;
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
+  // Refs so effects can notify a controlled parent without taking the
+  // (potentially unmemoized) callbacks as dependencies.
+  const onActiveRowIndexChangeRef = useRef(onActiveRowIndexChange);
+  onActiveRowIndexChangeRef.current = onActiveRowIndexChange;
+  const onActiveRowChangeRef = useRef(onActiveRowChange);
+  onActiveRowChangeRef.current = onActiveRowChange;
 
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
@@ -462,6 +506,7 @@ export function Table<T extends Record<string, unknown>>({
   const tableInstance = useReactTable({
     columns: mappedColumns,
     data,
+    ...(getRowId ? { getRowId } : {}),
     state: {
       sorting,
     },
@@ -470,6 +515,61 @@ export function Table<T extends Record<string, unknown>>({
     getSortedRowModel: getSortedRowModel(),
     // debugTable: true
   });
+
+  const visibleRows = tableInstance.getRowModel().rows;
+  const visibleRowsRef = useRef(visibleRows);
+  visibleRowsRef.current = visibleRows;
+  const visibleRowIdsKey = visibleRows.map((row) => row.id).join(",");
+  // Reset the highlight to the top row whenever the result set changes (-1 when
+  // empty), so a fresh search auto-highlights the first result, and report that
+  // top row. Reporting here (rather than relying on the activeRow effect below)
+  // avoids a same-flush race: on a data change the activeRow state reset hasn't
+  // committed yet, so reading `activeRow` could be a stale, out-of-range index.
+  useEffect(() => {
+    const next = visibleRowIdsKey === "" ? -1 : 0;
+    setInternalActiveRowIndex(next);
+    onActiveRowIndexChangeRef.current?.(next);
+    if (keyboardRowNavigation) {
+      onActiveRowChangeRef.current?.(visibleRowsRef.current[next]?.original);
+    }
+  }, [visibleRowIdsKey, keyboardRowNavigation]);
+
+  // Report the active row's data (in displayed order) as the highlight moves
+  // (arrows). Not keyed on the data — data changes are handled above with the
+  // correct reset index, so this never reads a stale activeRow. Also scroll the
+  // active row into view (without stealing focus) so a highlight driven by an
+  // external control (e.g. a search box) can't move off-screen.
+  useEffect(() => {
+    if (!keyboardRowNavigation) {
+      return;
+    }
+    onActiveRowChangeRef.current?.(visibleRowsRef.current[activeRow]?.original);
+    rowRefs.current[activeRow]?.scrollIntoView({ block: "nearest" });
+  }, [activeRow, keyboardRowNavigation]);
+
+  function moveActiveRow(delta: number) {
+    const next = Math.min(
+      Math.max(activeRow + delta, 0),
+      visibleRows.length - 1,
+    );
+    setInternalActiveRowIndex(next);
+    onActiveRowIndexChange?.(next);
+    rowRefs.current[next]?.focus();
+    rowRefs.current[next]?.scrollIntoView({ block: "nearest" });
+  }
+
+  function onTableKeyDown(event: KeyboardEvent<HTMLTableElement>) {
+    if (!keyboardRowNavigation) {
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveActiveRow(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveActiveRow(-1);
+    }
+  }
 
   function onClickDataRow(
     event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
@@ -519,20 +619,47 @@ export function Table<T extends Record<string, unknown>>({
     <tbody>
       {(!loading || ["none", "spinner"].includes(loadingStyle.style)) &&
         // Loop over the table rows
-        tableInstance.getRowModel().rows.map((row) => {
+        tableInstance.getRowModel().rows.map((row, rowIndex) => {
+          const isActiveRow = keyboardRowNavigation && rowIndex === activeRow;
           return (
             <tr
               key={row.id}
+              ref={(el) => {
+                rowRefs.current[rowIndex] = el;
+              }}
               onClick={(event) => onClickDataRow(event, row)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   onClickDataRow(event, row);
                 }
               }}
-              tabIndex={0}
+              // Roving tabindex in keyboard-nav mode: only the active row is in
+              // the tab order; otherwise keep every row focusable as before.
+              tabIndex={
+                keyboardRowNavigation ? (rowIndex === activeRow ? 0 : -1) : 0
+              }
+              aria-selected={
+                keyboardRowNavigation ? rowIndex === activeRow : undefined
+              }
             >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+              {row.getVisibleCells().map((cell, cellIndex) => (
+                <td
+                  key={cell.id}
+                  // Highlight the active row inline (not via styled CSS) so it
+                  // works regardless of the custom `table` component a caller
+                  // supplies. Left accent on the first cell marks the selection.
+                  style={
+                    isActiveRow
+                      ? {
+                          background: theme.c1Neutral,
+                          boxShadow:
+                            cellIndex === 0
+                              ? `inset 3px 0 0 ${theme.c4Neutral}`
+                              : undefined,
+                        }
+                      : undefined
+                  }
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -549,6 +676,10 @@ export function Table<T extends Record<string, unknown>>({
       <TableComponent
         clickable={Boolean(onClickRow)}
         rowHoverEffect={rowHoverEffect}
+        // role="grid" makes aria-selected on rows valid (a plain table's rows
+        // don't support it). Only applied in keyboard-nav mode.
+        role={keyboardRowNavigation ? "grid" : undefined}
+        onKeyDown={keyboardRowNavigation ? onTableKeyDown : undefined}
       >
         {thead}
         {tbody}
