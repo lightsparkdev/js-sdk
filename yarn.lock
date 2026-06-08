@@ -3530,7 +3530,7 @@ __metadata:
     graphql: "npm:^16.6.0"
     jest: "npm:^29.6.2"
     jest-environment-jsdom: "npm:^29.6.4"
-    libphonenumber-js: "npm:^1.12.37"
+    libphonenumber-js: "npm:^1.13.5"
     lodash-es: "npm:^4.17.21"
     madge: "npm:^6.1.0"
     nanoid: "npm:^4.0.0"
@@ -13416,10 +13416,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libphonenumber-js@npm:^1.12.37":
-  version: 1.12.37
-  resolution: "libphonenumber-js@npm:1.12.37"
-  checksum: 10/f1276453e12724bf5fdff85e4ce762524a3cb8ce2bc732412b68f540bca40b37ca3595d13e54afc016adc142754157c385298cf928df063035466e0c7cbdaadd
+"libphonenumber-js@npm:^1.13.5":
+  version: 1.13.5
+  resolution: "libphonenumber-js@npm:1.13.5"
+  checksum: 10/3f598fb50f419510cafdc6f093ebd9c457df826e37de42b8be4ba25251472b58debaca3ddaa152e82c1bf23a986edaae5985d2fe6319131da09ac623bdc88baa
   languageName: node
   linkType: hard
 
