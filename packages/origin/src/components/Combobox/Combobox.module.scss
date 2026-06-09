@@ -170,7 +170,6 @@
 .popup {
   box-sizing: border-box;
   width: var(--anchor-width);
-  max-height: min(23rem, var(--available-height));
   max-width: var(--available-width);
   overflow: hidden;
   background: var(--surface-primary);
@@ -216,6 +215,7 @@
   display: flex;
   gap: var(--spacing-2xs);
   align-items: center;
+  flex-shrink: 0;
   height: 36px;
   padding: var(--spacing-xs);
   @include smooth-corners(var(--corner-radius-xs));

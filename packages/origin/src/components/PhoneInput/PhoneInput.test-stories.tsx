@@ -3,8 +3,14 @@
 import * as React from "react";
 import { PhoneInput } from "./";
 
+interface Country {
+  code: string;
+  name: string;
+  dialCode: string;
+}
+
 // Mock country data for tests
-const mockCountries = [
+const mockCountries: Country[] = [
   { code: "US", name: "United States", dialCode: "+1" },
   { code: "GB", name: "United Kingdom", dialCode: "+44" },
   { code: "DE", name: "Germany", dialCode: "+49" },
@@ -12,7 +18,48 @@ const mockCountries = [
   { code: "JP", name: "Japan", dialCode: "+81" },
 ];
 
-type Country = (typeof mockCountries)[number];
+const longCountries: Country[] = [
+  { code: "US", name: "United States", dialCode: "+1" },
+  { code: "CA", name: "Canada", dialCode: "+1" },
+  { code: "MX", name: "Mexico", dialCode: "+52" },
+  { code: "BR", name: "Brazil", dialCode: "+55" },
+  { code: "AR", name: "Argentina", dialCode: "+54" },
+  { code: "GB", name: "United Kingdom", dialCode: "+44" },
+  { code: "IE", name: "Ireland", dialCode: "+353" },
+  { code: "FR", name: "France", dialCode: "+33" },
+  { code: "DE", name: "Germany", dialCode: "+49" },
+  { code: "NL", name: "Netherlands", dialCode: "+31" },
+  { code: "BE", name: "Belgium", dialCode: "+32" },
+  { code: "ES", name: "Spain", dialCode: "+34" },
+  { code: "PT", name: "Portugal", dialCode: "+351" },
+  { code: "IT", name: "Italy", dialCode: "+39" },
+  { code: "CH", name: "Switzerland", dialCode: "+41" },
+  { code: "AT", name: "Austria", dialCode: "+43" },
+  { code: "SE", name: "Sweden", dialCode: "+46" },
+  { code: "NO", name: "Norway", dialCode: "+47" },
+  { code: "DK", name: "Denmark", dialCode: "+45" },
+  { code: "FI", name: "Finland", dialCode: "+358" },
+  { code: "PL", name: "Poland", dialCode: "+48" },
+  { code: "CZ", name: "Czechia", dialCode: "+420" },
+  { code: "GR", name: "Greece", dialCode: "+30" },
+  { code: "TR", name: "Turkey", dialCode: "+90" },
+  { code: "IL", name: "Israel", dialCode: "+972" },
+  { code: "AE", name: "United Arab Emirates", dialCode: "+971" },
+  { code: "IN", name: "India", dialCode: "+91" },
+  { code: "SG", name: "Singapore", dialCode: "+65" },
+  { code: "JP", name: "Japan", dialCode: "+81" },
+  { code: "KR", name: "South Korea", dialCode: "+82" },
+  { code: "CN", name: "China", dialCode: "+86" },
+  { code: "HK", name: "Hong Kong", dialCode: "+852" },
+  { code: "TW", name: "Taiwan", dialCode: "+886" },
+  { code: "AU", name: "Australia", dialCode: "+61" },
+  { code: "NZ", name: "New Zealand", dialCode: "+64" },
+  { code: "ZA", name: "South Africa", dialCode: "+27" },
+  { code: "EG", name: "Egypt", dialCode: "+20" },
+  { code: "NG", name: "Nigeria", dialCode: "+234" },
+  { code: "KE", name: "Kenya", dialCode: "+254" },
+  { code: "ZW", name: "Zimbabwe", dialCode: "+263" },
+];
 
 // Circle-flags CDN URL helper
 function getFlagUrl(code: string) {
@@ -24,6 +71,7 @@ interface PhoneInputStoryProps {
   disabled?: boolean;
   invalid?: boolean;
   placeholder?: string;
+  countries?: Country[];
 }
 
 function PhoneInputStory({
@@ -31,6 +79,7 @@ function PhoneInputStory({
   disabled = false,
   invalid = false,
   placeholder = "Enter phone",
+  countries = mockCountries,
 }: PhoneInputStoryProps) {
   const [selectedCountry, setSelectedCountry] =
     React.useState<Country>(defaultCountry);
@@ -57,7 +106,7 @@ function PhoneInputStory({
         </PhoneInput.CountryTrigger>
 
         <PhoneInput.CountryListbox>
-          {mockCountries.map((country) => (
+          {countries.map((country) => (
             <PhoneInput.CountryItem key={country.code} value={country}>
               <PhoneInput.CountryFlag>
                 <img src={getFlagUrl(country.code)} alt="" />
@@ -103,6 +152,16 @@ export function Invalid() {
 // With custom placeholder
 export function CustomPlaceholder() {
   return <PhoneInputStory placeholder="(555) 123-4567" />;
+}
+
+// Long list matching real country selector density
+export function LongCountryList() {
+  return (
+    <PhoneInputStory
+      countries={longCountries}
+      defaultCountry={longCountries[0]}
+    />
+  );
 }
 
 // Controlled with phone number pre-filled

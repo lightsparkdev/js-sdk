@@ -12,6 +12,11 @@ const fruits = [
   "Grape",
 ];
 
+const longFruits = Array.from(
+  { length: 40 },
+  (_, index) => `Fruit ${index + 1}`,
+);
+
 /** InputWrapper conformance - forwards props, ref, className */
 export function ConformanceInputWrapper(
   props: React.HTMLAttributes<HTMLDivElement>,
@@ -86,6 +91,32 @@ export const TestCombobox = () => (
         <Combobox.Popup>
           <Combobox.Empty />
           <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                <Combobox.ItemIndicator />
+                <Combobox.ItemText>{item}</Combobox.ItemText>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Popup>
+      </Combobox.Positioner>
+    </Combobox.Portal>
+  </Combobox.Root>
+);
+
+export const TestComboboxLongList = () => (
+  <Combobox.Root items={longFruits}>
+    <Combobox.InputWrapper>
+      <Combobox.Input placeholder="Select a fruit..." />
+      <Combobox.ActionButtons>
+        <Combobox.Trigger aria-label="Open popup" />
+      </Combobox.ActionButtons>
+    </Combobox.InputWrapper>
+    <Combobox.Portal>
+      <Combobox.Positioner sideOffset={4}>
+        <Combobox.Popup data-testid="combobox-long-list-popup">
+          <Combobox.Empty />
+          <Combobox.List data-testid="combobox-long-list">
             {(item: string) => (
               <Combobox.Item key={item} value={item}>
                 <Combobox.ItemIndicator />
