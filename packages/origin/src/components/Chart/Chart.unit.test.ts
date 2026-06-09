@@ -21,6 +21,9 @@ import {
   thinIndices,
   measureLabelWidth,
   dynamicTickTarget,
+  xAxisTickTarget,
+  omitEdgeLabels,
+  applyEdgeLabels,
   axisPadForLabels,
   formatChartDatumValue,
   type Point,
@@ -733,6 +736,60 @@ describe("dynamicTickTarget", () => {
 
   it("falls back to 60px spacing when no samples given", () => {
     expect(dynamicTickTarget(300, [])).toBe(5);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// xAxisTickTarget
+// ---------------------------------------------------------------------------
+
+describe("xAxisTickTarget", () => {
+  it("uses fixed 60px spacing in 'fixed' mode, ignoring label width", () => {
+    expect(xAxisTickTarget("fixed", 300, () => ["$1,234,567.00"])).toBe(5);
+    expect(xAxisTickTarget("fixed", 600, () => ["0"])).toBe(10);
+  });
+
+  it("does not evaluate the sample texts in 'fixed' mode", () => {
+    let called = false;
+    xAxisTickTarget("fixed", 400, () => {
+      called = true;
+      return ["whatever"];
+    });
+    expect(called).toBe(false);
+  });
+
+  it("measures the sample texts in 'measured' mode", () => {
+    const shortLabels = xAxisTickTarget("measured", 400, () => ["0", "100"]);
+    const longLabels = xAxisTickTarget("measured", 400, () => [
+      "$1,234,567.00",
+    ]);
+    expect(shortLabels).toBeGreaterThan(longLabels);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// omitEdgeLabels / applyEdgeLabels
+// ---------------------------------------------------------------------------
+
+describe("omitEdgeLabels", () => {
+  it("drops the first and last entry when there are more than two", () => {
+    expect(omitEdgeLabels([0, 1, 2, 3])).toEqual([1, 2]);
+  });
+
+  it("keeps the list unchanged at two or fewer entries", () => {
+    expect(omitEdgeLabels([0, 1])).toEqual([0, 1]);
+    expect(omitEdgeLabels([0])).toEqual([0]);
+    expect(omitEdgeLabels([])).toEqual([]);
+  });
+});
+
+describe("applyEdgeLabels", () => {
+  it("drops the edge entries in 'hide' mode", () => {
+    expect(applyEdgeLabels("hide", [0, 1, 2, 3])).toEqual([1, 2]);
+  });
+
+  it("returns the list unchanged in 'show' mode", () => {
+    expect(applyEdgeLabels("show", [0, 1, 2, 3])).toEqual([0, 1, 2, 3]);
   });
 });
 

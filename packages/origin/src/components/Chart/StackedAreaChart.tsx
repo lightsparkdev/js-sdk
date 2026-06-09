@@ -11,6 +11,8 @@ import {
   linearInterpolator,
   stackData,
   thinIndices,
+  xAxisTickTarget,
+  applyEdgeLabels,
   axisPadForLabels,
   formatChartDatumValue,
   type Point,
@@ -32,6 +34,7 @@ import {
   resolveTooltipMode,
   resolveSeries,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import styles from "./Chart.module.scss";
@@ -39,7 +42,8 @@ import styles from "./Chart.module.scss";
 const clickIndexMeta = (index: number) => ({ index });
 
 export interface StackedAreaChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   data: ChartDatum[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -107,6 +111,8 @@ export const StackedArea = React.forwardRef<
     formatValue,
     formatXLabel,
     formatYLabel,
+    xAxisLabels = "fixed",
+    xAxisEdgeLabels = "show",
     initialWidth,
     className,
     ...props
@@ -264,18 +270,20 @@ export const StackedArea = React.forwardRef<
   // X axis labels
   const xLabels = React.useMemo(() => {
     if (!xKey || data.length === 0 || plotWidth <= 0) return [];
-    const maxLabels = Math.max(2, Math.floor(plotWidth / 60));
+    const labels = data.map((d) => {
+      const raw = d[xKey];
+      return formatXLabel ? formatXLabel(raw) : formatChartDatumValue(raw);
+    });
+    const maxLabels = xAxisTickTarget(xAxisLabels, plotWidth, () => labels);
     const indices = thinIndices(data.length, maxLabels);
-    return indices.map((i) => {
+    const xLabels = indices.map((i) => {
       const x =
         data.length === 1 ? plotWidth / 2 : (i / (data.length - 1)) * plotWidth;
-      const raw = data[i][xKey];
-      const text = formatXLabel
-        ? formatXLabel(raw)
-        : formatChartDatumValue(raw);
+      const text = labels[i];
       return { x, text, index: i };
     });
-  }, [xKey, data, plotWidth, formatXLabel]);
+    return applyEdgeLabels(xAxisEdgeLabels, xLabels);
+  }, [xKey, data, plotWidth, formatXLabel, xAxisLabels, xAxisEdgeLabels]);
 
   // Y axis labels
   const yLabels = React.useMemo(() => {
@@ -558,9 +566,9 @@ export const StackedArea = React.forwardRef<
                     y={plotHeight + 20}
                     className={styles.axisLabel}
                     textAnchor={
-                      i === 0
+                      labelIndex === 0
                         ? "start"
-                        : i === xLabels.length - 1
+                        : labelIndex === data.length - 1
                         ? "end"
                         : "middle"
                     }

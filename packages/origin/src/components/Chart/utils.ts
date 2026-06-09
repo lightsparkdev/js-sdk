@@ -1,4 +1,9 @@
-import type { ChartDatum } from "./types";
+import {
+  axisTickTarget,
+  type ChartDatum,
+  type XAxisLabelsMode,
+  type XAxisEdgeLabelsMode,
+} from "./types";
 
 export const CHART_LABEL_FONT =
   '11px "Suisse Intl Mono", "SF Mono", Menlo, monospace';
@@ -29,9 +34,37 @@ export function dynamicTickTarget(
   axisLength: number,
   sampleTexts: string[],
 ): number {
-  if (sampleTexts.length === 0) return Math.max(2, Math.floor(axisLength / 60));
+  if (sampleTexts.length === 0) return axisTickTarget(axisLength, true);
   const maxWidth = Math.max(...sampleTexts.map(measureLabelWidth));
   return Math.max(2, Math.floor(axisLength / (maxWidth + LABEL_PADDING)));
+}
+
+/**
+ * Pick the x-axis tick target for the given labels-thinning mode. `sampleTexts`
+ * is only evaluated in `"measured"` mode, so the default `"fixed"` path never
+ * builds or measures the label strings.
+ */
+export function xAxisTickTarget(
+  mode: XAxisLabelsMode,
+  axisLength: number,
+  sampleTexts: () => string[],
+): number {
+  return mode === "measured"
+    ? dynamicTickTarget(axisLength, sampleTexts())
+    : axisTickTarget(axisLength, true);
+}
+
+/** Drop the first and last entry of an already-thinned label list (>2 items). */
+export function omitEdgeLabels<T>(labels: T[]): T[] {
+  return labels.length > 2 ? labels.slice(1, -1) : labels;
+}
+
+/** Apply the edge-labels mode to an already-thinned label list. */
+export function applyEdgeLabels<T>(
+  mode: XAxisEdgeLabelsMode,
+  labels: T[],
+): T[] {
+  return mode === "hide" ? omitEdgeLabels(labels) : labels;
 }
 
 /** Minimum left padding so very short labels (e.g. "0") don't crowd the axis. */
