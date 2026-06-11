@@ -19,6 +19,10 @@
       "import": "./dist/components/*.js",
       "require": "./dist/components/*.cjs"
     },
+    "./components/CountryFlag": {
+      "import": "./dist/components/CountryFlag/index.js",
+      "require": "./dist/components/CountryFlag/index.cjs"
+    },
     "./components/typography": {
       "import": "./dist/components/typography/index.js",
       "require": "./dist/components/typography/index.cjs"
