@@ -1,6 +1,11 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 
+import { useId } from "react";
+
 export function PolygonNetwork() {
+  const uid = useId();
+  const gradientId = `polygon-network__a-${uid}`;
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,9 +15,23 @@ export function PolygonNetwork() {
       viewBox="0 0 24 24"
     >
       <path
-        fill="#8247E5"
-        d="M16.8 8.72c-.42-.25-.96-.25-1.43 0l-3.27 1.93-2.22-1.3a1.45 1.45 0 0 0-1.43 0l-3.44 2.02c-.46.26-.72.73-.72 1.26v4.02c0 .49.26.96.72 1.22l3.44 2.02c.42.25.96.25 1.43 0l3.27-1.93 2.22 1.3c.42.25.96.25 1.43 0l3.44-2.02c.46-.26.72-.73.72-1.26v-4.02c0-.49-.26-.96-.72-1.22zm-7.62 9.55-3.15-1.85v-3.69l3.15-1.85 3.15 1.85v3.69zm10.08-2.56-3.15 1.85-2.23-1.31v-2.93l2.23-1.31 3.15 1.85z"
+        fill={`url(#${gradientId})`}
+        d="m16.364 15.217 4.27-2.435a.73.73 0 0 0 .366-.627V7.284a.72.72 0 0 0-.366-.627l-4.27-2.435a.74.74 0 0 0-.732 0l-4.27 2.435a.72.72 0 0 0-.366.627v8.704l-2.994 1.707-2.994-1.707v-3.415l2.994-1.707 1.974 1.127V9.702l-1.608-.918a.75.75 0 0 0-.732 0l-4.27 2.435a.72.72 0 0 0-.366.627v4.87c0 .258.14.498.366.627l4.27 2.436a.75.75 0 0 0 .732 0l4.27-2.436a.72.72 0 0 0 .366-.626V8.012l.053-.03 2.94-1.677 2.994 1.707v3.415l-2.994 1.707-1.972-1.124v2.291l1.606.916a.75.75 0 0 0 .732 0z"
       />
+      <defs>
+        <linearGradient
+          id={gradientId}
+          x1="2.942"
+          x2="20.119"
+          y1="17.194"
+          y2="7.101"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#A726C1" />
+          <stop offset=".88" stopColor="#803BDF" />
+          <stop offset="1" stopColor="#7B3FE4" />
+        </linearGradient>
+      </defs>
     </svg>
   );
 }
