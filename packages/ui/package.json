@@ -83,9 +83,9 @@
     "./src/router": "./src/router.js"
   },
   "scripts": {
-    "build:bundle": "tsdown",
+    "build:bundle": "tsdown --config-loader unrun",
     "build": "yarn tsc && yarn build:bundle",
-    "build:watch": "tsdown --watch --no-clean",
+    "build:watch": "tsdown --config-loader unrun --watch --no-clean",
     "circular-deps": "madge --circular --extensions ts,tsx .",
     "clean": "rm -rf .turbo",
     "format:fix": "prettier . --write",
