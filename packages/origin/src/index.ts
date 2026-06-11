@@ -37,6 +37,10 @@ export type {
 export { Checkbox } from "./components/Checkbox";
 export { Command } from "./components/Command";
 export { Combobox } from "./components/Combobox";
+export type {
+  ComboboxClearProps,
+  ComboboxClearVisibility,
+} from "./components/Combobox";
 export { ContextMenu } from "./components/ContextMenu";
 export { Dialog } from "./components/Dialog";
 export { Drawer, createHandle } from "./components/Drawer";

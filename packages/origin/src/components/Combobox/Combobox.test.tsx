@@ -8,6 +8,7 @@ import {
   TestComboboxControlled,
   TestComboboxWithGroups,
   TestComboboxWithClear,
+  TestComboboxWithClearClassNameCallback,
   TestComboboxChipPassThrough,
   ConformanceInputWrapper,
   ConformanceActionButtons,
@@ -270,14 +271,103 @@ test.describe("Combobox", () => {
   });
 
   test.describe("clear button", () => {
-    test("clears selection on click", async ({ mount }) => {
+    test("defaults to active visibility and clears selection on click", async ({
+      mount,
+      page,
+    }) => {
       const component = await mount(<TestComboboxWithClear />);
       const input = component.getByPlaceholder("Select a fruit...");
-      const clear = component.locator('button[class*="clear"]');
+      const clear = component.getByRole("button", {
+        name: "Clear selection",
+        includeHidden: true,
+      });
 
       await expect(input).toHaveValue("Apple");
+      await expect(clear).toHaveCSS("display", "none");
+
+      await input.click();
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(clear).toBeVisible();
       await clear.click();
       await expect(input).toHaveValue("");
+    });
+
+    test("always clear remains visible while clearable", async ({ mount }) => {
+      const component = await mount(
+        <TestComboboxWithClear visibility="always" />,
+      );
+      const input = component.getByPlaceholder("Select a fruit...");
+      const clear = component.getByRole("button", { name: "Clear selection" });
+
+      await expect(input).toHaveValue("Apple");
+      await expect(clear).toBeVisible();
+      await expect(clear).not.toHaveAttribute("visibility", "always");
+      await expect(clear).not.toHaveAttribute(
+        "data-clear-visibility",
+        "always",
+      );
+      await clear.click();
+      await expect(input).toHaveValue("");
+      await expect(clear).toBeHidden();
+    });
+
+    test("preserves Base UI stateful clear className callback", async ({
+      mount,
+    }) => {
+      const component = await mount(<TestComboboxWithClearClassNameCallback />);
+      const clear = component.getByRole("button", { name: "Clear selection" });
+
+      await expect(clear).toHaveClass(/clear-closed/);
+    });
+
+    test("active clear is hidden at rest and appears while focused or open", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <TestComboboxWithClear visibility="active" />,
+      );
+      const input = component.getByPlaceholder("Select a fruit...");
+      const wrapper = page.getByTestId("combobox-clear-wrapper");
+      const clear = component.getByRole("button", {
+        name: "Clear selection",
+        includeHidden: true,
+      });
+
+      const restingPadding = await wrapper.evaluate((element) =>
+        Number.parseFloat(window.getComputedStyle(element).paddingRight),
+      );
+
+      await expect(input).toHaveValue("Apple");
+      await expect(clear).toHaveCSS("display", "none");
+      await expect(
+        component.getByRole("button", { name: "Clear selection" }),
+      ).toBeHidden();
+
+      await input.click();
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(clear).toBeVisible();
+
+      const activePadding = await wrapper.evaluate((element) =>
+        Number.parseFloat(window.getComputedStyle(element).paddingRight),
+      );
+      expect(activePadding).toBeGreaterThan(restingPadding);
+
+      await clear.click();
+      await expect(input).toHaveValue("");
+    });
+
+    test("omitting Clear does not render the clear affordance", async ({
+      mount,
+    }) => {
+      const component = await mount(<TestCombobox />);
+
+      await expect(
+        component.getByRole("button", {
+          name: "Clear selection",
+          includeHidden: true,
+        }),
+      ).toHaveCount(0);
     });
   });
 

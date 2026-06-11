@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Combobox } from "./index";
+import { Combobox, type ComboboxClearProps } from "./index";
 import { Field } from "@/components/Field";
 
 const meta: Meta<typeof Combobox.Root> = {
@@ -35,6 +35,14 @@ const longFruits = Array.from(
 export const Default: Story = {
   args: {
     disabled: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "No-clear reference. Omit Combobox.Clear when a flow should not expose a clear affordance.",
+      },
+    },
   },
   render: (args) => (
     <Combobox.Root items={fruits} {...args}>
@@ -91,13 +99,22 @@ export const LongList: Story = {
   ),
 };
 
-export const WithClear: Story = {
-  render: () => (
+function ClearStory({
+  visibility,
+  label,
+}: {
+  visibility?: ComboboxClearProps["visibility"];
+  label: string;
+}) {
+  return (
     <Combobox.Root items={fruits} defaultValue="Apple">
       <Combobox.InputWrapper>
-        <Combobox.Input placeholder="Select a fruit..." />
+        <Combobox.Input placeholder={label} />
         <Combobox.ActionButtons>
-          <Combobox.Clear aria-label="Clear selection" />
+          <Combobox.Clear
+            aria-label="Clear selection"
+            visibility={visibility}
+          />
           <Combobox.Trigger aria-label="Open popup" />
         </Combobox.ActionButtons>
       </Combobox.InputWrapper>
@@ -117,7 +134,32 @@ export const WithClear: Story = {
         </Combobox.Positioner>
       </Combobox.Portal>
     </Combobox.Root>
-  ),
+  );
+}
+
+export const WithClear: Story = {
+  name: "Default Active Clear",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Default edit-existing flow. The clear affordance is hidden at rest, appears while the field is focused or open, and is removed by Base UI once the value is cleared.",
+      },
+    },
+  },
+  render: () => <ClearStory label="Edit saved fruit..." />,
+};
+
+export const AlwaysClear: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Opt in when a clear affordance should remain visible while the value is clearable. Base UI still removes it once the value is cleared.",
+      },
+    },
+  },
+  render: () => <ClearStory label="Select a fruit..." visibility="always" />,
 };
 
 function MultipleField({

@@ -141,22 +141,53 @@ export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
   },
 );
 
-export interface ClearProps extends BaseCombobox.Clear.Props {}
+export type ClearVisibility = "always" | "active";
+
+export interface ClearProps
+  extends Omit<BaseCombobox.Clear.Props, "keepMounted"> {
+  /**
+   * Controls when Origin shows the clear affordance. Base UI still owns the
+   * clear behavior and whether a value is currently clearable. Defaults to
+   * "active", which shows the affordance while the field is focused or open.
+   */
+  visibility?: ClearVisibility;
+  /**
+   * Unsupported in Origin. Clear visibility relies on Base UI unmounting or
+   * hiding the button when the value is not clearable.
+   */
+  keepMounted?: never;
+}
 
 /**
  * Combobox.Clear - Button to clear the selection.
  *
  * Renders as a small icon button with the X icon.
- * Uses Base UI's default behavior - only visible when there's a value to clear.
+ * Uses Base UI's default behavior - only rendered when there's a value to clear.
  */
 export const Clear = React.forwardRef<HTMLButtonElement, ClearProps>(
-  function Clear({ className, children, ...props }, ref) {
+  function Clear(
+    {
+      className,
+      children,
+      keepMounted: _keepMounted,
+      visibility = "active",
+      ...props
+    },
+    ref,
+  ) {
+    const originClassName = [
+      styles.clear,
+      visibility === "active" && styles.clearActive,
+      visibility === "always" && styles.clearAlways,
+    ];
+    const clearClassName =
+      typeof className === "function"
+        ? (state: BaseCombobox.Clear.State) =>
+            clsx(originClassName, className(state))
+        : clsx(originClassName, className);
+
     return (
-      <BaseCombobox.Clear
-        ref={ref}
-        className={clsx(styles.clear, className)}
-        {...props}
-      >
+      <BaseCombobox.Clear ref={ref} className={clearClassName} {...props}>
         {children ?? <CentralIcon name="IconCircleX" size={17} />}
       </BaseCombobox.Clear>
     );

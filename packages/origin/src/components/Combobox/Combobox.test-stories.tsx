@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Combobox } from "./index";
+import { Combobox, type ComboboxClearProps } from "./index";
 
 const fruits = [
   "Apple",
@@ -307,12 +307,22 @@ export const TestComboboxWithGroups = () => (
   </Combobox.Root>
 );
 
-export const TestComboboxWithClear = () => (
+export const TestComboboxWithClear = ({
+  clearClassName,
+  visibility,
+}: {
+  clearClassName?: ComboboxClearProps["className"];
+  visibility?: ComboboxClearProps["visibility"];
+} = {}) => (
   <Combobox.Root items={fruits} defaultValue="Apple">
-    <Combobox.InputWrapper>
+    <Combobox.InputWrapper data-testid="combobox-clear-wrapper">
       <Combobox.Input placeholder="Select a fruit..." />
       <Combobox.ActionButtons>
-        <Combobox.Clear aria-label="Clear selection" />
+        <Combobox.Clear
+          aria-label="Clear selection"
+          className={clearClassName}
+          visibility={visibility}
+        />
         <Combobox.Trigger aria-label="Open popup" />
       </Combobox.ActionButtons>
     </Combobox.InputWrapper>
@@ -332,4 +342,11 @@ export const TestComboboxWithClear = () => (
       </Combobox.Positioner>
     </Combobox.Portal>
   </Combobox.Root>
+);
+
+export const TestComboboxWithClearClassNameCallback = () => (
+  <TestComboboxWithClear
+    clearClassName={(state) => (state.open ? "clear-open" : "clear-closed")}
+    visibility="always"
+  />
 );

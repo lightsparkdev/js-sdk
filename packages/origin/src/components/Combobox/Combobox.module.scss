@@ -24,7 +24,10 @@
     padding-left: var(--spacing-2xs);
   }
 
-  &:has(.clear:not([hidden])) {
+  &:has(.clearAlways:not([hidden])),
+  &:focus-within:has(.clearActive:not([hidden])),
+  &[data-focused]:has(.clearActive:not([hidden])),
+  &[data-popup-open]:has(.clearActive:not([hidden])) {
     padding-right: calc(var(--spacing-xs) + 42px);
   }
 
@@ -129,7 +132,6 @@
 
 .clear {
   box-sizing: border-box;
-  display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
@@ -155,6 +157,20 @@
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
+}
+
+.clearActive {
+  display: none;
+}
+
+.inputWrapper:focus-within .clearActive:not([hidden]),
+.inputWrapper[data-focused] .clearActive:not([hidden]),
+.inputWrapper[data-popup-open] .clearActive:not([hidden]) {
+  display: flex;
+}
+
+.clearAlways:not([hidden]) {
+  display: flex;
 }
 
 .clear svg {
