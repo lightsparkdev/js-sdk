@@ -1,0 +1,67 @@
+/*
+ * App-level dark-mode contrast overrides.
+ *
+ * Origin's dark-mode palette sets several "soft surface + soft text" color
+ * pairs to two near-identical dark tones, which fails WCAG AA (>=4.5:1) for
+ * normal-weight body text. Most visibly, the critical Alert renders dark-red
+ * text (--text-critical #ef0d0d) on a dark-red surface (--surface-red #cc0909)
+ * — a 1.31:1 ratio, i.e. effectively invisible.
+ *
+ * We fix this at the APP level only (never in @lightsparkdev/origin, which is
+ * shared by every other app) by re-defining the offending design tokens, and
+ * we do it ONLY in dark mode, mirroring the exact selectors Origin uses so we
+ * don't touch light mode at all:
+ *   - [data-theme="dark"], .dark               (explicit dark theme)
+ *   - @media (prefers-color-scheme: dark) :root:not([data-theme="light"])
+ *
+ * This must be imported in src/main.tsx AFTER "@lightsparkdev/origin/styles.css"
+ * so these declarations win by source order at equal specificity.
+ *
+ * Overriding the tokens (rather than the hashed CSS-module classnames) keeps
+ * the fix robust against Origin's build-time class hashing and automatically
+ * covers every consumer of the token (critical Alert title/description, the
+ * red Badge, etc.).
+ */
+
+/* The token values applied in dark mode. Kept in one place and referenced from
+ * both selector blocks below so the two stay in sync. */
+
+/* Explicit dark theme (data-theme="dark" or a .dark container). */
+[data-theme="dark"],
+.dark {
+  /* Critical Alert: dark red-tinted surface + light red text.
+   * surface #4c0303 (red-950) vs text #ffc4c4 (red-200) = 10.55:1 (AA/AAA).
+   * Keeps the red-on-dark aesthetic; just makes the text legible. */
+  --surface-red: #4c0303;
+  --text-critical: #ffc4c4;
+  /* The critical icon shares the surface; lift it to match the text so the
+   * leading "!" icon is visible too (was #ef0d0d on #4c0303 = 2.6:1). */
+  --icon-critical: #ffc4c4;
+  /* Border on the same dark surface (was #ef0d0d, barely visible). */
+  --border-critical: #ff6161;
+
+  /* Badge "red" reads text-red (#ff9a9a) on --surface-red. With the darker
+   * surface above this is now #ff9a9a on #4c0303 = 7.82:1 (was 2.86:1). */
+
+  /* Badge "sky" (used live in the Login mode badge): text #00b3e0 on
+   * surface #067198 was 2.23:1. Darken the soft surface to restore contrast.
+   * surface #022f3f vs text #00b3e0 = 5.0:1. */
+  --surface-sky: #022f3f;
+
+  /* Badge "pink": text #ff99e5 on surface #cf00a7 was 2.6:1. Darken surface.
+   * surface #3d0031 vs text #ff99e5 = 7.4:1. */
+  --surface-pink: #3d0031;
+}
+
+/* System dark mode, when the app hasn't pinned an explicit theme. Mirrors the
+ * exact selector Origin uses for its system-dark token block. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-red: #4c0303;
+    --text-critical: #ffc4c4;
+    --icon-critical: #ffc4c4;
+    --border-critical: #ff6161;
+    --surface-sky: #022f3f;
+    --surface-pink: #3d0031;
+  }
+}

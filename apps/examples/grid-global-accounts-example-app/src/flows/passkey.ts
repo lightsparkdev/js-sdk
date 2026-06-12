@@ -1,63 +1,151 @@
 // PASSKEY lifecycle: create (real registration), challenge, verify (assertion),
 // add (signed retry, session-stamped in production).
+//
+// DOM-free operation functions. Attestation / assertion material is passed in
+// as plain values (the React layer captures it from the real WebAuthn ceremony
+// in production, or the seeded magic values in sandbox); this module talks to
+// Grid + Turnkey and emits log events through the injected `Reporter`.
 
-import { SANDBOX_SIG } from "../config";
-import { apiPost, getMode } from "../api-client";
+import { SANDBOX_SIG, type Mode } from "../config";
+import { apiPost, type ApiAuth } from "../api-client";
+import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
+import { rememberEncryptedSessionSigningKey } from "../session";
+import { rememberRawCredentialId } from "../passkey-store";
 import {
-  hasSessionSigningKey,
-  onSessionChange,
-  rememberEncryptedSessionSigningKey,
-} from "../session";
-import { createRealPasskey, signWithPasskey } from "../webauthn";
-import {
-  addLog,
-  bindClick,
-  el,
-  maybeEl,
-  wireGatedButton,
-  wireGenKeyButton,
-} from "../ui";
-import {
-  requireAccountId,
-  requireCredentialId,
-  setCtxCredential,
-  setCtxSession,
-} from "./context";
+  createRealPasskey,
+  signWithPasskey,
+  type RealAssertion,
+} from "../webauthn";
+import { setCtxCredential, setCtxSession } from "./context";
 
-// Run /verify with the assertion currently in the DOM fields (populated by the
-// real ceremony in production or the seeded magic fields in sandbox), caching
-// the session bundle on success. Shared by guided login + the manual button.
-async function runPasskeyVerify(
+export interface PasskeyAttestation {
+  challenge: string;
+  credentialId: string;
+  clientDataJson: string;
+  attestationObject: string;
+}
+
+export interface PasskeyAssertion {
+  credentialId: string;
+  clientDataJson: string;
+  authenticatorData: string;
+  signature: string;
+}
+
+// ----- Create / Add a credential (attestation) -----
+
+function buildCredentialBody(
+  accountId: string,
+  nickname: string,
+  attestation: PasskeyAttestation,
+): Record<string, unknown> {
+  return {
+    type: "PASSKEY",
+    accountId,
+    nickname,
+    challenge: attestation.challenge,
+    attestation: {
+      credentialId: attestation.credentialId,
+      clientDataJson: attestation.clientDataJson,
+      attestationObject: attestation.attestationObject,
+    },
+  };
+}
+
+export async function createPasskeyCredential(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  nickname: string,
+  attestation: PasskeyAttestation,
+): Promise<unknown> {
+  const body = buildCredentialBody(accountId, nickname, attestation);
+  const { data } = await apiPost(auth, "/auth/credentials", body);
+  reporter.log({ level: "response", label: "PASSKEY Create", detail: data });
+  const d = data as Record<string, unknown>;
+  if (d.id) {
+    setCtxCredential(d.id as string);
+    // Map the new Grid credential id → the raw WebAuthn credential id so a later
+    // sign-in can target this security key via allowCredentials.
+    rememberRawCredentialId(d.id as string, attestation.credentialId);
+  }
+  return data;
+}
+
+// Drive a real WebAuthn registration on a roaming security key (YubiKey) and
+// return the attestation the Create / Add flows send.
+export async function registerRealPasskey(
+  reporter: Reporter,
+  nickname: string,
+  rpId?: string,
+): Promise<PasskeyAttestation> {
+  const att = await createRealPasskey(nickname, rpId);
+  reporter.log({
+    level: "info",
+    label: "Passkey Registered (real)",
+    detail: att,
+  });
+  return att;
+}
+
+// ----- Session challenge + verify -----
+
+export interface PasskeyChallengeResult {
+  data: unknown;
+  requestId: string | undefined;
+  challenge: string;
+}
+
+export async function requestPasskeyChallenge(
+  reporter: Reporter,
+  auth: ApiAuth,
   credId: string,
+  clientPublicKey: string,
+): Promise<PasskeyChallengeResult> {
+  if (!clientPublicKey.trim())
+    throw new Error("Client public key is required — generate one first.");
+  const { data } = await apiPost(
+    auth,
+    `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
+    { clientPublicKey: clientPublicKey.trim() },
+  );
+  reporter.log({ level: "response", label: "PASSKEY Challenge", detail: data });
+  const d = data as Record<string, unknown>;
+  const requestId = typeof d.requestId === "string" ? d.requestId : undefined;
+  const challenge = typeof d.challenge === "string" ? d.challenge : "";
+  return { data, requestId, challenge };
+}
+
+// Run /verify with the supplied assertion, caching the session bundle on
+// success. Shared by guided login + the manual verify path.
+export async function runPasskeyVerify(
+  reporter: Reporter,
+  auth: ApiAuth,
+  credId: string,
+  clientPublicKey: string,
+  assertion: PasskeyAssertion,
   requestId: string | undefined,
-): Promise<string> {
+): Promise<unknown> {
   const body = {
     type: "PASSKEY",
-    clientPublicKey: el<HTMLInputElement>(
-      "passkey-challenge-pubkey",
-    ).value.trim(),
+    clientPublicKey: clientPublicKey.trim(),
     assertion: {
-      credentialId: el<HTMLInputElement>(
-        "passkey-create-cred-id-raw",
-      ).value.trim(),
-      clientDataJson: el<HTMLInputElement>(
-        "passkey-verify-client-data-json",
-      ).value.trim(),
-      authenticatorData: el<HTMLInputElement>(
-        "passkey-verify-auth-data",
-      ).value.trim(),
-      signature: el<HTMLInputElement>("passkey-verify-signature").value.trim(),
+      credentialId: assertion.credentialId.trim(),
+      clientDataJson: assertion.clientDataJson.trim(),
+      authenticatorData: assertion.authenticatorData.trim(),
+      signature: assertion.signature.trim(),
     },
   };
   const headers: Record<string, string> = {};
   if (requestId) headers["Request-Id"] = requestId;
   const { data } = await apiPost(
+    auth,
     `/auth/credentials/${encodeURIComponent(credId)}/verify`,
     body,
     headers,
   );
-  addLog("PASSKEY Verify", data);
+  reporter.log({ level: "response", label: "PASSKEY Verify", detail: data });
   const d = data as Record<string, unknown>;
   if (d.id) setCtxSession(d.id as string);
   // MIGRATION (P6): PASSKEY login moves to STAMP_LOGIN; the knob-ON response
@@ -66,274 +154,217 @@ async function runPasskeyVerify(
   // `rememberEncryptedSessionSigningKey` already no-ops when the field is
   // absent — flip this one call once the P2 wire shape settles.
   rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
-  return JSON.stringify(data, null, 2);
+  return data;
 }
 
-export function wirePasskeyFlows(): void {
-  bindClick(
-    "btn-passkey-create",
-    "passkey-create-status",
-    "PASSKEY Create",
-    "Creating PASSKEY wallet...",
-    async () => {
-      const body = {
-        type: "PASSKEY",
-        accountId: requireAccountId(),
-        nickname: el<HTMLInputElement>("passkey-create-nickname").value.trim(),
-        challenge: el<HTMLInputElement>(
-          "passkey-create-challenge",
-        ).value.trim(),
-        attestation: {
-          credentialId: el<HTMLInputElement>(
-            "passkey-create-cred-id-raw",
-          ).value.trim(),
-          clientDataJson: el<HTMLInputElement>(
-            "passkey-create-client-data-json",
-          ).value.trim(),
-          attestationObject: el<HTMLInputElement>(
-            "passkey-create-attestation-object",
-          ).value.trim(),
-        },
-      };
-      const { data } = await apiPost("/auth/credentials", body);
-      addLog("PASSKEY Create", data);
-      const d = data as Record<string, unknown>;
-      if (d.id) setCtxCredential(d.id as string);
-      return JSON.stringify(data, null, 2);
-    },
-  );
+export interface PasskeyLoginParams {
+  credId: string;
+  mode: Mode;
+  /**
+   * Raw WebAuthn credential id(s) for the assertion's allowCredentials
+   * (production). Pass every registered passkey's raw id so the security key
+   * can satisfy the assertion; empty/omitted falls back to a discoverable
+   * credential on the key.
+   */
+  credentialIds?: string[];
+  rpId?: string;
+  /** Sandbox-seeded assertion fields, used when not running a real ceremony. */
+  sandboxAssertion?: PasskeyAssertion;
+}
 
-  // Drive a real WebAuthn registration (Touch ID) and fill the attestation
-  // fields above — used by both the "Create" and "Add additional" flows.
-  bindClick(
-    "btn-passkey-webauthn-create",
-    "passkey-webauthn-create-status",
-    "Passkey Register",
-    "Waiting for authenticator (Touch ID)...",
-    async () => {
-      const nickname = el<HTMLInputElement>(
-        "passkey-create-nickname",
-      ).value.trim();
-      const att = await createRealPasskey(nickname);
-      el<HTMLInputElement>("passkey-create-challenge").value = att.challenge;
-      el<HTMLInputElement>("passkey-create-cred-id-raw").value =
-        att.credentialId;
-      el<HTMLInputElement>("passkey-create-client-data-json").value =
-        att.clientDataJson;
-      el<HTMLInputElement>("passkey-create-attestation-object").value =
-        att.attestationObject;
-      addLog("Passkey Registered (real)", att);
-      return "Real passkey created — attestation fields filled. Now run Create or Add.";
-    },
-  );
+export interface PasskeyLoginResult {
+  data: unknown;
+  clientPublicKey: string;
+  assertion: PasskeyAssertion;
+}
 
-  wireGenKeyButton("btn-passkey-challenge-genkey", "passkey-challenge-pubkey");
-  const passkeyVerifyRequestId = el<HTMLInputElement>(
-    "passkey-verify-request-id",
-  );
-  // Captured from the session-challenge response so the real assertion ceremony
-  // can sign the exact sha256-hex challenge Turnkey expects.
-  let passkeySessionChallenge = "";
-  bindClick(
-    "btn-passkey-challenge",
-    "passkey-challenge-status",
-    "PASSKEY Challenge",
-    "Issuing session challenge...",
-    async () => {
-      const credId = requireCredentialId();
-      const pubkey = el<HTMLInputElement>(
-        "passkey-challenge-pubkey",
-      ).value.trim();
-      if (!pubkey)
-        throw new Error("Client public key is required — generate one first.");
-      const { data } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
-        { clientPublicKey: pubkey },
-      );
-      addLog("PASSKEY Challenge", data);
-      const d = data as Record<string, unknown>;
-      if (d.requestId) passkeyVerifyRequestId.value = d.requestId as string;
-      if (typeof d.challenge === "string")
-        passkeySessionChallenge = d.challenge;
-      return JSON.stringify(data, null, 2);
-    },
-  );
-
-  bindClick(
-    "btn-passkey-verify",
-    "passkey-verify-status",
-    "PASSKEY Verify",
-    "Verifying assertion...",
-    async () => {
-      const credId = requireCredentialId();
-      const requestId = passkeyVerifyRequestId.value.trim() || undefined;
-      return runPasskeyVerify(credId, requestId);
-    },
-  );
-
-  // ----- Guided: Log in (Passkey) -----
-  //
-  // One click owns the chain: gen client key → /challenge → assertion (a real
-  // Touch ID ceremony in production, the seeded magic fields in sandbox) →
-  // /verify → remember session bundle. Folds the manual genkey + challenge +
-  // sign + verify buttons below.
-  bindClick(
-    "btn-passkey-login",
-    "passkey-login-status",
-    "Passkey Login",
-    "Logging in with passkey...",
-    async () => {
-      const credId = requireCredentialId();
-      const kp = generateClientKeyPair();
-      el<HTMLInputElement>("passkey-challenge-pubkey").value =
-        kp.publicKeyUncompressed;
-
-      // Issue the session challenge bound to the fresh client key.
-      const { data: challengeData } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
-        { clientPublicKey: kp.publicKeyUncompressed },
-      );
-      addLog("PASSKEY Challenge", challengeData);
-      const cd = challengeData as Record<string, unknown>;
-      const requestId =
-        typeof cd.requestId === "string" ? cd.requestId : undefined;
-      const challenge = typeof cd.challenge === "string" ? cd.challenge : "";
-      if (requestId) passkeyVerifyRequestId.value = requestId;
-      passkeySessionChallenge = challenge;
-
-      // Produce the assertion. Production runs a real Touch ID ceremony and
-      // fills the fields; sandbox uses the seeded magic assertion fields.
-      if (getMode() === "production") {
-        const credentialId = el<HTMLInputElement>(
-          "passkey-create-cred-id-raw",
-        ).value.trim();
-        const assertion = await signWithPasskey(challenge, credentialId);
-        el<HTMLInputElement>("passkey-create-cred-id-raw").value =
-          assertion.credentialId;
-        el<HTMLInputElement>("passkey-verify-client-data-json").value =
-          assertion.clientDataJson;
-        el<HTMLInputElement>("passkey-verify-auth-data").value =
-          assertion.authenticatorData;
-        el<HTMLInputElement>("passkey-verify-signature").value =
-          assertion.signature;
-        addLog("Passkey Signed (real)", assertion);
-      }
-
-      return runPasskeyVerify(credId, requestId);
-    },
-  );
-
-  // Drive a real WebAuthn assertion (Touch ID) against the issued challenge and
-  // fill the assertion fields above for Verify.
-  bindClick(
-    "btn-passkey-webauthn-get",
-    "passkey-webauthn-get-status",
-    "Passkey Sign",
-    "Waiting for authenticator (Touch ID)...",
-    async () => {
-      const credId = el<HTMLInputElement>(
-        "passkey-create-cred-id-raw",
-      ).value.trim();
-      const assertion = await signWithPasskey(passkeySessionChallenge, credId);
-      el<HTMLInputElement>("passkey-create-cred-id-raw").value =
-        assertion.credentialId;
-      el<HTMLInputElement>("passkey-verify-client-data-json").value =
-        assertion.clientDataJson;
-      el<HTMLInputElement>("passkey-verify-auth-data").value =
-        assertion.authenticatorData;
-      el<HTMLInputElement>("passkey-verify-signature").value =
-        assertion.signature;
-      addLog("Passkey Signed (real)", assertion);
-      return "Real assertion produced — verify fields filled. Now click Verify.";
-    },
-  );
-
-  const passkeyAddRequestId = el<HTMLInputElement>("passkey-add-request-id");
-  // Captured from the add-issue 202 so the retry can stamp the exact payload.
-  let passkeyAddPayloadToSign = "";
-  function buildPasskeyAddBody(): Record<string, unknown> {
-    return {
-      type: "PASSKEY",
-      accountId: requireAccountId(),
-      nickname: el<HTMLInputElement>("passkey-add-nickname").value.trim(),
-      challenge: el<HTMLInputElement>("passkey-create-challenge").value.trim(),
-      attestation: {
-        credentialId: el<HTMLInputElement>(
-          "passkey-create-cred-id-raw",
-        ).value.trim(),
-        clientDataJson: el<HTMLInputElement>(
-          "passkey-create-client-data-json",
-        ).value.trim(),
-        attestationObject: el<HTMLInputElement>(
-          "passkey-create-attestation-object",
-        ).value.trim(),
-      },
-    };
-  }
-  bindClick(
-    "btn-passkey-add-issue",
-    "passkey-add-issue-status",
-    "PASSKEY Add (issue)",
-    "Issuing add challenge...",
-    async () => {
-      const { data } = await apiPost(
-        "/auth/credentials",
-        buildPasskeyAddBody(),
-      );
-      addLog("PASSKEY Add (issue)", data);
-      const d = data as Record<string, unknown>;
-      if (d.requestId) passkeyAddRequestId.value = d.requestId as string;
-      if (typeof d.payloadToSign === "string")
-        passkeyAddPayloadToSign = d.payloadToSign;
-      return JSON.stringify(data, null, 2);
-    },
-  );
-  bindClick(
-    "btn-passkey-add-retry",
-    "passkey-add-retry-status",
-    "PASSKEY Add (retry)",
-    "Forwarding signed retry...",
-    async () => {
-      const requestId = passkeyAddRequestId.value.trim();
-      if (!requestId)
-        throw new Error("Request-Id is required — run step 1 first.");
-      // Sandbox accepts the magic value, but real Turnkey requires the
-      // CREATE_AUTHENTICATORS payload to be stamped by an authorized credential —
-      // the active session's signing key. Establish a session (e.g. OTP login or
-      // passkey verify) first so the session signing key is available.
-      let signature = SANDBOX_SIG;
-      if (getMode() === "production") {
-        if (!passkeyAddPayloadToSign) {
-          throw new Error("Missing payloadToSign — run step 1 first.");
-        }
-        signature = await turnkeyStamp(passkeyAddPayloadToSign);
-      }
-      const { data } = await apiPost(
-        "/auth/credentials",
-        buildPasskeyAddBody(),
-        {
-          "Grid-Wallet-Signature": signature,
-          "Request-Id": requestId,
-        },
-      );
-      addLog("PASSKEY Add (retry)", data);
-      return JSON.stringify(data, null, 2);
-    },
-  );
-
-  // The add-retry stamps CREATE_AUTHENTICATORS with the live session's signing
-  // key in production. Surface that requirement as a disabled-with-tooltip
-  // button (re-evaluated on session + mode change) instead of throwing on
-  // click — fixes the old "No client keypair" trap.
-  const refreshAddRetryGate = wireGatedButton("btn-passkey-add-retry", () => {
-    if (getMode() !== "production") return null; // sandbox uses the magic value
-    if (!hasSessionSigningKey())
-      return "Log in first — adding a passkey needs a live session to stamp the request.";
-    return null;
+// Drive a real WebAuthn assertion against the issued challenge, targeting the
+// security key via the supplied raw credential id(s).
+export async function signRealPasskey(
+  reporter: Reporter,
+  challenge: string,
+  credentialIds: string[],
+  rpId?: string,
+): Promise<RealAssertion> {
+  const assertion = await signWithPasskey(challenge, credentialIds, rpId);
+  reporter.log({
+    level: "info",
+    label: "Passkey Signed (real)",
+    detail: assertion,
   });
-  onSessionChange(refreshAddRetryGate);
-  maybeEl<HTMLSelectElement>("mode-select")?.addEventListener(
-    "change",
-    refreshAddRetryGate,
+  return assertion;
+}
+
+// Guided log in: gen client key → /challenge → assertion (a real security-key
+// ceremony in production, the seeded sandbox assertion otherwise) → /verify.
+export async function loginPasskey(
+  reporter: Reporter,
+  auth: ApiAuth,
+  params: PasskeyLoginParams,
+): Promise<PasskeyLoginResult> {
+  const kp = generateClientKeyPair();
+  const { requestId, challenge } = await requestPasskeyChallenge(
+    reporter,
+    auth,
+    params.credId,
+    kp.publicKeyUncompressed,
   );
+
+  let assertion: PasskeyAssertion;
+  if (params.mode === "production") {
+    const real = await signRealPasskey(
+      reporter,
+      challenge,
+      params.credentialIds ?? [],
+      params.rpId,
+    );
+    assertion = {
+      credentialId: real.credentialId,
+      clientDataJson: real.clientDataJson,
+      authenticatorData: real.authenticatorData,
+      signature: real.signature,
+    };
+  } else {
+    if (!params.sandboxAssertion)
+      throw new Error("Sandbox assertion fields are required.");
+    assertion = params.sandboxAssertion;
+  }
+
+  const data = await runPasskeyVerify(
+    reporter,
+    auth,
+    params.credId,
+    kp.publicKeyUncompressed,
+    assertion,
+    requestId,
+  );
+  return { data, clientPublicKey: kp.publicKeyUncompressed, assertion };
+}
+
+// ----- Sign-in entry point (create-vs-authenticate) -----
+//
+// Mirror of EMAIL_OTP's signIn: only register (create) a PASSKEY credential when
+// the wallet doesn't already have one. When `existingCredId` is provided we run
+// the challenge → assertion → verify ceremony directly against it (no create);
+// otherwise we register a new passkey first, then verify it into a session.
+//
+// `register` produces the attestation for the create leg (a real Touch ID
+// ceremony in production, the seeded magic attestation in sandbox). It is only
+// invoked when there is no existing credential, so callers don't pay for a
+// registration prompt on an authenticate-with-existing sign-in.
+export interface PasskeySignInParams {
+  accountId: string;
+  nickname: string;
+  existingCredId: string | null;
+  /** Login params reused for the verify ceremony (mode, rpId, sandbox seed, and
+   *  the raw `credentialIds` for the assertion). `credId` is filled in by
+   *  signInPasskey once the credential to use is known. */
+  loginParams: Omit<PasskeyLoginParams, "credId">;
+  /** Produce the attestation for the create leg. Only called when registering a
+   *  new credential (no existing one). */
+  register: () => Promise<PasskeyAttestation>;
+}
+
+export async function signInPasskey(
+  reporter: Reporter,
+  auth: ApiAuth,
+  params: PasskeySignInParams,
+): Promise<unknown> {
+  let credId = params.existingCredId;
+  // When we register a fresh passkey, its raw WebAuthn credential id is only
+  // known here — feed it into the assertion's allowCredentials so the verify
+  // leg targets the security key we just created on.
+  let freshRawId: string | undefined;
+  if (!credId) {
+    const attestation = await params.register();
+    freshRawId = attestation.credentialId;
+    const cred = await createPasskeyCredential(
+      reporter,
+      auth,
+      params.accountId,
+      params.nickname,
+      attestation,
+    );
+    credId = (cred as { id?: string }).id ?? null;
+    if (!credId) throw new Error("Create credential returned no id.");
+  }
+  const credentialIds = [
+    ...(params.loginParams.credentialIds ?? []),
+    ...(freshRawId ? [freshRawId] : []),
+  ];
+  const { data } = await loginPasskey(reporter, auth, {
+    ...params.loginParams,
+    credentialIds,
+    credId,
+  });
+  return data;
+}
+
+// ----- Add an additional passkey (issue → signed retry) -----
+
+export interface PasskeyAddIssueResult {
+  data: unknown;
+  requestId: string | undefined;
+  payloadToSign: string | undefined;
+}
+
+export async function addPasskeyIssue(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  nickname: string,
+  attestation: PasskeyAttestation,
+): Promise<PasskeyAddIssueResult> {
+  const body = buildCredentialBody(accountId, nickname, attestation);
+  const { data } = await apiPost(auth, "/auth/credentials", body);
+  reporter.log({
+    level: "response",
+    label: "PASSKEY Add (issue)",
+    detail: data,
+  });
+  const d = data as Record<string, unknown>;
+  const requestId = typeof d.requestId === "string" ? d.requestId : undefined;
+  const payloadToSign =
+    typeof d.payloadToSign === "string" ? d.payloadToSign : undefined;
+  return { data, requestId, payloadToSign };
+}
+
+export async function addPasskeyRetry(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  nickname: string,
+  attestation: PasskeyAttestation,
+  requestId: string,
+  payloadToSign: string | undefined,
+): Promise<unknown> {
+  if (!requestId.trim())
+    throw new Error("Request-Id is required — run the issue step first.");
+  // Sandbox accepts the magic value, but real Turnkey requires the
+  // CREATE_AUTHENTICATORS payload to be stamped by an authorized credential —
+  // the active session's signing key. Establish a session (e.g. OTP login or
+  // passkey verify) first so the session signing key is available.
+  let signature = SANDBOX_SIG;
+  if (auth.mode === "production") {
+    if (!payloadToSign)
+      throw new Error("Missing payloadToSign — run the issue step first.");
+    signature = await turnkeyStamp(payloadToSign);
+  }
+  const { data } = await apiPost(
+    auth,
+    "/auth/credentials",
+    buildCredentialBody(accountId, nickname, attestation),
+    { "Grid-Wallet-Signature": signature, "Request-Id": requestId.trim() },
+  );
+  reporter.log({
+    level: "response",
+    label: "PASSKEY Add (retry)",
+    detail: data,
+  });
+  // Map the added Grid credential id → its raw WebAuthn credential id so a later
+  // sign-in can target this additional security key via allowCredentials.
+  const addedId = (data as Record<string, unknown>)?.id;
+  if (typeof addedId === "string" && addedId)
+    rememberRawCredentialId(addedId, attestation.credentialId);
+  return data;
 }

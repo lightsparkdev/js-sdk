@@ -1,3 +1,4 @@
+import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import settings from "../settings.json";
 
@@ -9,6 +10,7 @@ import settings from "../settings.json";
 const PROD_GRID_URL = process.env.GRID_URL ?? "https://api.lightspark.com";
 
 export default defineConfig({
+  plugins: [react()],
   server: {
     port: settings.gridGlobalAccountsExampleApp.port,
     proxy: {

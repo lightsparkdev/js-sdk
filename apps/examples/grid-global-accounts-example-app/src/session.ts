@@ -1,18 +1,23 @@
 // Session state — the ONE place that holds the client keypair / encrypted
 // session-signing-key bundle / TEK, plus the account / credential / session
-// ids. Renders the session status chip so the two session models are visible
-// (and the "No client keypair" trap is surfaced as disabled-with-tooltip
-// instead of a runtime throw).
-//
-// Two session models funnel through here:
+// ids. DOM-free: it holds this state in module variables and notifies
+// subscribers on change (the React layer reads it via the getters and renders
+// the session chip; gated flows re-evaluate their disabled state). The two
+// session models still funnel through here:
 //   - "Verify-bundle": a client keypair + an `encryptedSessionSigningKey`
 //     bundle Grid returns on passkey/oauth Verify, HPKE-decrypted on demand.
 //   - "OTP-TEK": the TEK private key *is* the session key (OTP login, and —
 //     post-migration — passkey/oauth too); cached directly, no bundle.
+//
+// Sessions are PER-CUSTOMER, keyed by the customer's wallet account id (the
+// natural session domain). A `Map<accountId, SessionContext>` holds one context
+// per customer and `activeKey` points at the active customer's context, so
+// acting as customer A then B never lets B inherit A's keys. All exported
+// getters/setters operate on the *active* context; `setActiveSessionAccount`
+// switches which context is active (creating an empty one for a new key, or
+// `null` for logged-out / no active customer).
 
 import { decryptCredentialBundle, getPublicKey } from "@turnkey/crypto";
-
-import { el, maybeEl } from "./ui";
 
 export interface ClientKeyPair {
   privateKey: string; // hex
@@ -28,24 +33,88 @@ export interface SessionKeys {
 // Which model established the current signing key, for the chip badge.
 export type SessionModel = "none" | "otp-tek" | "verify-bundle";
 
-let clientKeyPair: ClientKeyPair | null = null;
-let lastEncryptedSessionSigningKey: string | null = null;
-let cachedSessionKeys: SessionKeys | null = null;
-let model: SessionModel = "none";
+// All the per-customer session material, grouped so each account key owns an
+// independent copy.
+interface SessionContext {
+  clientKeyPair: ClientKeyPair | null;
+  lastEncryptedSessionSigningKey: string | null;
+  cachedSessionKeys: SessionKeys | null;
+  model: SessionModel;
+  accountId: string;
+  credentialId: string;
+  sessionId: string;
+}
+
+function emptyContext(): SessionContext {
+  return {
+    clientKeyPair: null,
+    lastEncryptedSessionSigningKey: null,
+    cachedSessionKeys: null,
+    model: "none",
+    accountId: "",
+    credentialId: "",
+    sessionId: "",
+  };
+}
+
+const contexts = new Map<string, SessionContext>();
+let activeKey: string | null = null;
+
+// The active context, or null when no customer is active (logged-out). Getters
+// fall back to an empty context's defaults; mutators no-op when null.
+function active(): SessionContext | null {
+  if (activeKey === null) return null;
+  return contexts.get(activeKey) ?? null;
+}
+
+// ----- Active-context switching -----
+//
+// Point the session at a customer's account. A new key gets a fresh empty
+// context (logged-out); `null` means no active customer (logged-out, no
+// context). Notifies subscribers since the visible session changes.
+export function setActiveSessionAccount(accountId: string | null): void {
+  if (accountId === null) {
+    activeKey = null;
+    notify();
+    return;
+  }
+  if (!contexts.has(accountId)) contexts.set(accountId, emptyContext());
+  activeKey = accountId;
+  notify();
+}
+
+// Wipe the active context's signing material (keys / model / ids) so
+// `hasSessionSigningKey()` is false and `getSessionModel()` is "none", while
+// keeping the account id so the slot still belongs to this customer. Used when
+// the session this client holds is revoked: the customer stays selected but is
+// logged out locally and can re-authenticate. No-op when logged out.
+export function clearActiveSession(): void {
+  const ctx = active();
+  if (!ctx) return;
+  ctx.clientKeyPair = null;
+  ctx.lastEncryptedSessionSigningKey = null;
+  ctx.cachedSessionKeys = null;
+  ctx.model = "none";
+  ctx.credentialId = "";
+  ctx.sessionId = "";
+  notify();
+}
 
 // ----- Client keypair (Verify-bundle model) -----
 
 export function setClientKeyPair(kp: ClientKeyPair): void {
-  clientKeyPair = kp;
+  const ctx = active();
+  if (!ctx) return;
+  ctx.clientKeyPair = kp;
   // A fresh client key invalidates any session decrypted under the old one.
-  cachedSessionKeys = null;
-  lastEncryptedSessionSigningKey = null;
-  model = "none";
-  renderChip();
+  ctx.cachedSessionKeys = null;
+  ctx.lastEncryptedSessionSigningKey = null;
+  ctx.model = "none";
+  notify();
 }
 
 export function getClientKeyPair(): ClientKeyPair | null {
-  return clientKeyPair;
+  return active()?.clientKeyPair ?? null;
 }
 
 export function rememberEncryptedSessionSigningKey(value: unknown): void {
@@ -53,11 +122,13 @@ export function rememberEncryptedSessionSigningKey(value: unknown): void {
   // `encryptedSessionSigningKey` and behave like OTP (the client key is the
   // session key). Shape-detection on field-presence already no-ops here when
   // the field is absent, so both knob states work unchanged.
+  const ctx = active();
+  if (!ctx) return;
   if (typeof value === "string" && value) {
-    lastEncryptedSessionSigningKey = value;
-    cachedSessionKeys = null;
-    model = "verify-bundle";
-    renderChip();
+    ctx.lastEncryptedSessionSigningKey = value;
+    ctx.cachedSessionKeys = null;
+    ctx.model = "verify-bundle";
+    notify();
   }
 }
 
@@ -71,12 +142,14 @@ export function setSessionKeysFromTek(tek: {
   publicKey: string;
   privateKey: string;
 }): void {
-  cachedSessionKeys = {
+  const ctx = active();
+  if (!ctx) return;
+  ctx.cachedSessionKeys = {
     apiPublicKey: tek.publicKey,
     apiPrivateKey: tek.privateKey,
   };
-  model = "otp-tek";
-  renderChip();
+  ctx.model = "otp-tek";
+  notify();
 }
 
 // Resolve the session signing keys, decrypting the Verify bundle on demand.
@@ -84,144 +157,87 @@ export function setSessionKeysFromTek(tek: {
 // caller decides how to surface that. Crypto callers use this; UI gates use
 // `hasSessionSigningKey()`.
 export function resolveSessionKeys(): SessionKeys | null {
-  if (cachedSessionKeys) return cachedSessionKeys;
-  if (!clientKeyPair || !lastEncryptedSessionSigningKey) return null;
+  const ctx = active();
+  if (!ctx) return null;
+  if (ctx.cachedSessionKeys) return ctx.cachedSessionKeys;
+  if (!ctx.clientKeyPair || !ctx.lastEncryptedSessionSigningKey) return null;
   const apiPrivateKey = decryptCredentialBundle(
-    lastEncryptedSessionSigningKey,
-    clientKeyPair.privateKey,
+    ctx.lastEncryptedSessionSigningKey,
+    ctx.clientKeyPair.privateKey,
   );
   const apiPublicKeyBytes = getPublicKey(apiPrivateKey, /*isCompressed*/ true);
   const apiPublicKey = Array.from(apiPublicKeyBytes)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  cachedSessionKeys = { apiPublicKey, apiPrivateKey };
-  return cachedSessionKeys;
+  ctx.cachedSessionKeys = { apiPublicKey, apiPrivateKey };
+  return ctx.cachedSessionKeys;
 }
 
 // True once a signing key is available *or* derivable (cached TEK, or a client
 // keypair + bundle). This is the gate the UI uses to enable/disable buttons.
 export function hasSessionSigningKey(): boolean {
-  if (cachedSessionKeys) return true;
-  return Boolean(clientKeyPair && lastEncryptedSessionSigningKey);
+  const ctx = active();
+  if (!ctx) return false;
+  if (ctx.cachedSessionKeys) return true;
+  return Boolean(ctx.clientKeyPair && ctx.lastEncryptedSessionSigningKey);
 }
 
 export function getSessionModel(): SessionModel {
-  return model;
+  return active()?.model ?? "none";
 }
 
 // ----- Change subscribers -----
 //
-// Buttons that need a live session (e.g. "Add passkey" retry in production)
-// subscribe here so they can re-evaluate their disabled-with-tooltip state
-// whenever the session changes — surfacing the requirement instead of throwing
-// on click.
+// Buttons / views that need a live session (e.g. "Add passkey" retry in
+// production) subscribe here so they can re-evaluate their disabled-with-tooltip
+// state whenever the session changes — surfacing the requirement instead of
+// throwing on click. Subscribers are notified on any active-context change AND
+// on an active-key switch.
 
 type SessionListener = () => void;
 const listeners: SessionListener[] = [];
 
-// Subscribe to *signing-key readiness* changes only. Listeners are notified
-// when `hasSessionSigningKey()` transitions, not on every account/credential/
-// session id update — so a gated button can't be re-enabled mid-flight by an
-// unrelated id write (e.g. `setSessionId`) while its handler is running.
 export function onSessionChange(listener: SessionListener): void {
   listeners.push(listener);
   listener(); // run once so the initial state is applied
 }
 
-let lastSigningKeyReady = false;
-
-// Repaint the chip on any state change, but only fire listeners when
-// signing-key readiness actually flips (the single thing they depend on).
-function notifyIfSigningKeyChanged(): void {
-  const ready = hasSessionSigningKey();
-  if (ready === lastSigningKeyReady) return;
-  lastSigningKeyReady = ready;
+function notify(): void {
   for (const listener of listeners) listener();
 }
 
 // ----- Cross-flow ids (account / credential / session) -----
 //
-// Backed by the existing hidden-ish context inputs so manual paste still works;
-// reading them here keeps the chip in sync with whatever the flows last set.
+// Held per-context; the React layer reads them via the getters to render the
+// context chip and re-fires gates through `notify()` when they change.
 
-function accountIdEl(): HTMLInputElement {
-  return el<HTMLInputElement>("ctx-account-id");
-}
-function credentialIdEl(): HTMLInputElement {
-  return el<HTMLInputElement>("ctx-credential-id");
-}
-function sessionIdEl(): HTMLInputElement {
-  return el<HTMLInputElement>("ctx-session-id");
-}
-
-// First-call-wins by design: the account id is established once (Create
-// Customer) and shared across every credential-type tab, so a later per-type
-// flow can't clobber it. Credential/session ids below are per-type and do
-// overwrite. To switch accounts, clear the field in the UI.
 export function setAccountId(id: string): void {
-  if (!accountIdEl().value) accountIdEl().value = id;
-  renderChip();
+  const ctx = active();
+  if (!ctx) return;
+  // Match the original behaviour: only adopt the first account id seen, so a
+  // later flow doesn't clobber the customer's primary account.
+  if (!ctx.accountId) ctx.accountId = id;
+  notify();
 }
 export function setCredentialId(id: string): void {
-  credentialIdEl().value = id;
-  renderChip();
+  const ctx = active();
+  if (!ctx) return;
+  ctx.credentialId = id;
+  notify();
 }
 export function setSessionId(id: string): void {
-  sessionIdEl().value = id;
-  renderChip();
+  const ctx = active();
+  if (!ctx) return;
+  ctx.sessionId = id;
+  notify();
 }
 
 export function getAccountId(): string {
-  return accountIdEl().value.trim();
+  return (active()?.accountId ?? "").trim();
 }
 export function getCredentialId(): string {
-  return credentialIdEl().value.trim();
+  return (active()?.credentialId ?? "").trim();
 }
 export function getSessionId(): string {
-  return sessionIdEl().value.trim();
-}
-
-// ----- Status chip -----
-
-const MODEL_LABEL: Record<SessionModel, string> = {
-  none: "—",
-  "otp-tek": "OTP-TEK",
-  "verify-bundle": "Verify-bundle",
-};
-
-// Escape interpolated values: chip fields show server-sourced ids
-// (credential / session / account), so a hostile value like
-// `<img src=x onerror=...>` must not become live markup in innerHTML.
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function chipField(label: string, value: string, ok?: boolean): string {
-  const cls = ok === undefined ? "" : ok ? " chip-ok" : " chip-none";
-  const shown = escapeHtml(value || "—");
-  return `<span class="chip-field${cls}"><span class="chip-key">${escapeHtml(
-    label,
-  )}</span> ${shown}</span>`;
-}
-
-export function renderChip(): void {
-  const chip = maybeEl<HTMLDivElement>("session-chip");
-  if (chip) {
-    const ready = hasSessionSigningKey();
-    chip.innerHTML = [
-      chipField("account", getAccountId()),
-      chipField("credential", getCredentialId()),
-      chipField("session", getSessionId()),
-      chipField("signing key", ready ? "ready" : "none", ready),
-      chipField("model", MODEL_LABEL[model]),
-    ].join("");
-  }
-  // Repaint above happens on every state change; listeners only fire when the
-  // signing-key readiness flips.
-  notifyIfSigningKeyChanged();
+  return (active()?.sessionId ?? "").trim();
 }

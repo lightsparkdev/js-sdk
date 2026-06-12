@@ -54,6 +54,9 @@ test-config.yml
 dist/
 build/
 lib/
+# The GGA example app keeps decoupled source modules under src/lib/ (not a
+# compiled-output dir), so it must not be swept up by the `lib/` rule above.
+!apps/examples/grid-global-accounts-example-app/src/lib/
 
 # Vim swap files
 *.swp

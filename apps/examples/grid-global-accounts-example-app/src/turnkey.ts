@@ -10,7 +10,11 @@ import {
 import { signWithApiKey } from "@turnkey/api-key-stamper";
 
 import { TURNKEY_STAMP_SCHEME } from "./config";
-import { type ClientKeyPair, resolveSessionKeys, setClientKeyPair } from "./session";
+import {
+  type ClientKeyPair,
+  resolveSessionKeys,
+  setClientKeyPair,
+} from "./session";
 
 // Generate the client-side P-256 keypair (Verify-bundle model). The
 // uncompressed public key (130 hex chars, 0x04-prefixed) goes to Grid as

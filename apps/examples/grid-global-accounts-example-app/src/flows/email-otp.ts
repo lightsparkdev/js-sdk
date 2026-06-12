@@ -1,34 +1,59 @@
-// EMAIL_OTP lifecycle: create, secure-OTP challenge/verify, add.
+// EMAIL_OTP lifecycle: create, secure-OTP challenge/verify, rechallenge, add.
+//
+// DOM-free operation functions. The secure-OTP code never leaves the client in
+// plaintext; the TEK private key stays client-side (no encryptedSessionSigningKey
+// is returned). Each function takes the platform `auth`, the values it needs,
+// and a `Reporter`, and returns its result.
 
 import { generateP256KeyPair } from "@turnkey/crypto";
 
 import { SANDBOX_SIG } from "../config";
-import { apiPost } from "../api-client";
+import { apiPost, type ApiAuth } from "../api-client";
+import type { Reporter } from "../lib/reporter";
 import { buildWalletSignature, sealOtpBundle } from "../turnkey";
 import { setSessionKeysFromTek } from "../session";
-import { addLog, bindClick, el } from "../ui";
-import {
-  requireAccountId,
-  requireCredentialId,
-  setCtxCredential,
-  setCtxSession,
-} from "./context";
+import { setCtxCredential, setCtxSession } from "./context";
 
-// Secure OTP — works against real Turnkey, which emails a real OTP (sandbox
-// uses the fixed 000000). /challenge issues the INIT_OTP and returns the
-// enclave's target bundle; Verify HPKE-seals the entered code under it, runs
-// /verify first leg (202 + payloadToSign), signs the token with the TEK, and
-// runs /verify retry (200 session). The code never leaves the client in
-// plaintext; the TEK private key stays client-side (no encryptedSessionSigningKey
-// is returned).
+// ----- Create credential -----
+
+export async function createEmailOtpCredential(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+): Promise<unknown> {
+  const { data } = await apiPost(auth, "/auth/credentials", {
+    type: "EMAIL_OTP",
+    accountId,
+  });
+  reporter.log({ level: "response", label: "EMAIL_OTP Create", detail: data });
+  const d = data as Record<string, unknown>;
+  if (d.id) setCtxCredential(d.id as string);
+  return data;
+}
+
+// ----- Secure OTP -----
+//
+// /challenge issues the INIT_OTP and returns the enclave's target bundle; verify
+// HPKE-seals the entered code under it, runs /verify first leg (202 +
+// payloadToSign), signs the token with the TEK, then runs /verify retry (200
+// session).
 
 // Request a challenge for `credId` and return the enclave target bundle.
-async function requestV3Challenge(credId: string): Promise<string> {
+export async function requestV3Challenge(
+  reporter: Reporter,
+  auth: ApiAuth,
+  credId: string,
+): Promise<string> {
   const { data: challengeData } = await apiPost(
+    auth,
     `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
     {},
   );
-  addLog("V3 Challenge", challengeData);
+  reporter.log({
+    level: "response",
+    label: "V3 Challenge",
+    detail: challengeData,
+  });
   const targetBundle = (challengeData as Record<string, unknown>)
     .otpEncryptionTargetBundle as string | undefined;
   if (!targetBundle)
@@ -39,24 +64,36 @@ async function requestV3Challenge(credId: string): Promise<string> {
   return targetBundle;
 }
 
+export interface V3VerifyResult {
+  leg1: unknown;
+  session: unknown;
+}
+
 // Run the two verify legs against `targetBundle` with the entered `otp`, caching
-// the TEK as the session signing key on success. Returns a summary string.
-async function runV3Verify(
+// the TEK as the session signing key on success.
+export async function runV3Verify(
+  reporter: Reporter,
+  auth: ApiAuth,
   credId: string,
   targetBundle: string,
   otp: string,
-): Promise<string> {
+): Promise<V3VerifyResult> {
   // Generate a TEK and HPKE-seal the entered OTP under the challenge bundle.
   const tek = generateP256KeyPair();
   const encryptedOtpBundle = sealOtpBundle(targetBundle, tek.publicKey, otp);
 
   // First leg → expect 202 with payloadToSign (verificationToken) + requestId.
   const leg1 = await apiPost(
+    auth,
     `/auth/credentials/${encodeURIComponent(credId)}/verify`,
     { type: "EMAIL_OTP", encryptedOtpBundle },
   );
   const l1 = (leg1.data ?? {}) as Record<string, unknown>;
-  addLog("V3 Verify leg 1 (expect 202)", { status: leg1.status, ...l1 });
+  reporter.log({
+    level: "response",
+    label: "V3 Verify leg 1 (expect 202)",
+    detail: { status: leg1.status, ...l1 },
+  });
   const payloadToSign = l1.payloadToSign as string | undefined;
   const requestId = l1.requestId as string | undefined;
   if (leg1.status !== 202 || !payloadToSign || !requestId)
@@ -71,14 +108,16 @@ async function runV3Verify(
 
   // Retry with the signature → expect 200 AuthSession.
   const leg2 = await apiPost(
+    auth,
     `/auth/credentials/${encodeURIComponent(credId)}/verify`,
     { type: "EMAIL_OTP", encryptedOtpBundle },
     { "Grid-Wallet-Signature": signature, "Request-Id": requestId },
   );
   const session = (leg2.data ?? {}) as Record<string, unknown>;
-  addLog("V3 Verify leg 2 (expect 200 session)", {
-    status: leg2.status,
-    ...session,
+  reporter.log({
+    level: "response",
+    label: "V3 Verify leg 2 (expect 200 session)",
+    detail: { status: leg2.status, ...session },
   });
   if (session.id) setCtxSession(session.id as string);
   // The TEK is now the session's API key (OTP_LOGIN registered it). Cache it as
@@ -87,128 +126,98 @@ async function runV3Verify(
   // MIGRATION (P6): this OTP-TEK caching is the model passkey/oauth login
   // converge on once the login-family knob is ON — see oauth.ts/passkey.ts.
   if (leg2.status === 200) setSessionKeysFromTek(tek);
-  return JSON.stringify({ leg1: leg1.data, session: leg2.data }, null, 2);
+  return { leg1: leg1.data, session: leg2.data };
 }
 
-export function wireEmailOtpFlows(): void {
-  bindClick(
-    "btn-email_otp-create",
-    "email_otp-create-status",
-    "EMAIL_OTP Create",
-    "Registering EMAIL_OTP credential...",
-    async () => {
-      const { data } = await apiPost("/auth/credentials", {
-        type: "EMAIL_OTP",
-        accountId: requireAccountId(),
-      });
-      addLog("EMAIL_OTP Create", data);
-      const d = data as Record<string, unknown>;
-      if (d.id) setCtxCredential(d.id as string);
-      return JSON.stringify(data, null, 2);
-    },
-  );
+// Guided log in: /challenge → verify legs → cache TEK as session.
+export async function loginEmailOtp(
+  reporter: Reporter,
+  auth: ApiAuth,
+  credId: string,
+  otp: string,
+): Promise<V3VerifyResult> {
+  const targetBundle = await requestV3Challenge(reporter, auth, credId);
+  if (!otp.trim()) throw new Error("OTP code is required.");
+  return runV3Verify(reporter, auth, credId, targetBundle, otp.trim());
+}
 
-  // ----- Guided: Log in (Email OTP) -----
-  //
-  // One click owns the whole chain: /challenge → inline code prompt →
-  // verify legs → cache TEK as session. Folds the manual challenge + verify
-  // buttons below into a single opinionated flow.
-  bindClick(
-    "btn-email_otp-login",
-    "email_otp-login-status",
-    "Email OTP Login",
-    "Requesting OTP...",
-    async () => {
-      const credId = requireCredentialId();
-      const targetBundle = await requestV3Challenge(credId);
-      const codeInput = el<HTMLInputElement>("email_otp-v3-code").value.trim();
-      // In sandbox the code field is pre-seeded (000000); in production the
-      // user reads it from the email, so prompt for it inline if blank.
-      const otp =
-        codeInput ||
-        (
-          window.prompt("Enter the OTP code emailed to the customer:") ?? ""
-        ).trim();
-      if (!otp) throw new Error("OTP code is required.");
-      return runV3Verify(credId, targetBundle, otp);
-    },
-  );
+// ----- Sign-in entry point (create-vs-authenticate) -----
+//
+// The fix for EMAIL_OTP_CREDENTIAL_ALREADY_EXISTS: only create a credential when
+// the caller doesn't already have one. If `existingCredId` is provided, we
+// authenticate against it directly (challenge → verify) and never POST
+// /auth/credentials; otherwise we run the original create + verify ceremony.
+//
+// The create/login functions are injected so the decision is unit-testable at
+// the flow boundary without exercising real Turnkey.
+export interface EmailOtpSignInDeps {
+  create: typeof createEmailOtpCredential;
+  login: typeof loginEmailOtp;
+}
 
-  // ----- Manual (advanced): challenge + verify as separate steps -----
+const defaultEmailOtpSignInDeps: EmailOtpSignInDeps = {
+  create: createEmailOtpCredential,
+  login: loginEmailOtp,
+};
 
-  // Target bundle from the most recent manual V3 challenge + the credential it
-  // was issued for, so Verify catches a stale/mismatched bundle.
-  let v3TargetBundle: string | null = null;
-  let v3TargetBundleCredId: string | null = null;
+export async function signInEmailOtp(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  otp: string,
+  existingCredId: string | null,
+  deps: EmailOtpSignInDeps = defaultEmailOtpSignInDeps,
+): Promise<unknown> {
+  let credId = existingCredId;
+  if (!credId) {
+    // No existing EMAIL_OTP credential — run the create leg first.
+    const cred = await deps.create(reporter, auth, accountId);
+    credId = (cred as { id?: string }).id ?? null;
+    if (!credId) throw new Error("Create credential returned no id.");
+  }
+  const result = await deps.login(reporter, auth, credId, otp);
+  return result.session;
+}
 
-  bindClick(
-    "btn-email_otp-v3-challenge",
-    "email_otp-v3-challenge-status",
-    "EMAIL_OTP Challenge (V3)",
-    "Requesting OTP...",
-    async () => {
-      const credId = requireCredentialId();
-      v3TargetBundle = await requestV3Challenge(credId);
-      v3TargetBundleCredId = credId;
-      return "OTP sent. Check the customer's email, enter the code below, then Verify.";
-    },
-  );
+// ----- Add an additional EMAIL_OTP credential (issue → signed retry) -----
 
-  bindClick(
-    "btn-email_otp-v3-verify",
-    "email_otp-v3-verify-status",
-    "EMAIL_OTP Verify (V3)",
-    "Verifying...",
-    async () => {
-      const credId = requireCredentialId();
-      const otp = el<HTMLInputElement>("email_otp-v3-code").value.trim();
-      if (!otp) throw new Error("OTP code is required.");
-      if (!v3TargetBundle || v3TargetBundleCredId !== credId)
-        throw new Error(
-          "Run Challenge (V3) first to request an OTP + target bundle for this " +
-            "credential.",
-        );
-      const summary = await runV3Verify(credId, v3TargetBundle, otp);
-      // One bundle per challenge — force a fresh Challenge for the next run.
-      v3TargetBundle = null;
-      v3TargetBundleCredId = null;
-      return summary;
-    },
-  );
+export async function addEmailOtpIssue(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+): Promise<{ data: unknown; requestId: string | undefined }> {
+  const { data } = await apiPost(auth, "/auth/credentials", {
+    type: "EMAIL_OTP",
+    accountId,
+  });
+  reporter.log({
+    level: "response",
+    label: "EMAIL_OTP Add (issue)",
+    detail: data,
+  });
+  const d = data as Record<string, unknown>;
+  const requestId = typeof d.requestId === "string" ? d.requestId : undefined;
+  return { data, requestId };
+}
 
-  const emailOtpAddRequestId = el<HTMLInputElement>("email_otp-add-request-id");
-  bindClick(
-    "btn-email_otp-add-issue",
-    "email_otp-add-issue-status",
-    "EMAIL_OTP Add (issue)",
-    "Issuing add challenge...",
-    async () => {
-      const { data } = await apiPost("/auth/credentials", {
-        type: "EMAIL_OTP",
-        accountId: requireAccountId(),
-      });
-      addLog("EMAIL_OTP Add (issue)", data);
-      const d = data as Record<string, unknown>;
-      if (d.requestId) emailOtpAddRequestId.value = d.requestId as string;
-      return JSON.stringify(data, null, 2);
-    },
+export async function addEmailOtpRetry(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  requestId: string,
+): Promise<unknown> {
+  if (!requestId.trim())
+    throw new Error("Request-Id is required — run the issue step first.");
+  const { data } = await apiPost(
+    auth,
+    "/auth/credentials",
+    { type: "EMAIL_OTP", accountId },
+    { "Grid-Wallet-Signature": SANDBOX_SIG, "Request-Id": requestId.trim() },
   );
-  bindClick(
-    "btn-email_otp-add-retry",
-    "email_otp-add-retry-status",
-    "EMAIL_OTP Add (retry)",
-    "Forwarding signed retry...",
-    async () => {
-      const requestId = emailOtpAddRequestId.value.trim();
-      if (!requestId)
-        throw new Error("Request-Id is required — run step 1 first.");
-      const { data } = await apiPost(
-        "/auth/credentials",
-        { type: "EMAIL_OTP", accountId: requireAccountId() },
-        { "Grid-Wallet-Signature": SANDBOX_SIG, "Request-Id": requestId },
-      );
-      addLog("EMAIL_OTP Add (retry)", data);
-      return JSON.stringify(data, null, 2);
-    },
-  );
+  reporter.log({
+    level: "response",
+    label: "EMAIL_OTP Add (retry)",
+    detail: data,
+  });
+  return data;
 }
