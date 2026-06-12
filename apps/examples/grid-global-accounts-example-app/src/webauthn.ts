@@ -92,8 +92,8 @@ export async function signWithPasskey(
       "No challenge — issue a session challenge (step above) first.",
     );
   }
-  // PR #28427: Turnkey's WebAuthn challenge is the UTF-8 bytes of the
-  // sha256-hex challenge string returned by /challenge — NOT base64url-decoded.
+  // Turnkey's WebAuthn challenge is the UTF-8 bytes of the sha256-hex challenge
+  // string returned by /challenge — NOT base64url-decoded.
   const challenge = new TextEncoder().encode(challengeValue);
   const allowCredentials: PublicKeyCredentialDescriptor[] = credentialId
     ? [{ type: "public-key", id: b64UrlToBytes(credentialId) as BufferSource }]

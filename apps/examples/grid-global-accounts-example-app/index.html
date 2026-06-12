@@ -235,10 +235,10 @@
   <body>
     <h1>Grid Global Accounts - Example App</h1>
     <p class="note" style="margin-bottom: 12px">
-      Signed-retry flows show the <code>requestId</code> /
-      <code>payloadToSign</code> from step 1 so you can inspect them before
-      step 2 forwards with
-      <code>Grid-Wallet-Signature: sandbox-valid-signature</code>.
+      Pick a mode at the top. Signed-retry flows are two-step — step 1 issues a
+      202 challenge (<code>requestId</code> / <code>payloadToSign</code> you can
+      inspect), step 2 forwards a <code>Grid-Wallet-Signature</code>: a magic
+      value in sandbox, a real session stamp in production.
     </p>
 
     <!-- ========== Shared Setup ========== -->
@@ -446,21 +446,12 @@
 
         <div class="subsection">
           <h3>
-            Rechallenge (re-issue OTP)
-          </h3>
-          <p class="note">Uses Credential ID from Wallet Context.</p>
-          <button id="btn-email_otp-rechallenge">Rechallenge</button>
-          <div id="email_otp-rechallenge-status"></div>
-        </div>
-
-        <div class="subsection">
-          <h3>
-            Add second EMAIL_OTP via signed retry
+            Add second EMAIL_OTP (expected-reject demo)
           </h3>
           <p class="note">
-            Rejects because one EMAIL_OTP already attached — step 1 exercises
-            the reject path. Remove the first EMAIL_OTP to test the full add
-            flow.
+            Not a happy path. Rejects because one EMAIL_OTP is already attached
+            — step 1 exercises the reject path. Remove the first EMAIL_OTP to
+            test the full add flow.
           </p>
           <button id="btn-email_otp-add-issue">1. Issue add challenge</button>
           <div id="email_otp-add-issue-status"></div>
@@ -576,15 +567,6 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5
           </button>
           <button id="btn-oauth-verify">Verify</button>
           <div id="oauth-verify-status"></div>
-        </div>
-
-        <div class="subsection">
-          <h3>Rechallenge</h3>
-          <p class="note">
-            OAUTH rechallenge is a no-op — just returns AuthMethod.
-          </p>
-          <button id="btn-oauth-rechallenge">Rechallenge</button>
-          <div id="oauth-rechallenge-status"></div>
         </div>
 
         <div class="subsection">
@@ -732,9 +714,9 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
         <div class="subsection">
           <h3>Session challenge</h3>
           <p class="note">
-            PR 4 flow: <code>/challenge</code> returns
+            <code>/challenge</code> returns
             <code>challenge = sha256(CREATE_READ_WRITE_SESSION body)</code> +
-            <code>requestId</code>. Client signs the challenge via WebAuthn.
+            <code>requestId</code>. The client signs the challenge via WebAuthn.
           </p>
           <label for="passkey-challenge-pubkey">Client Public Key (hex)</label>
           <input

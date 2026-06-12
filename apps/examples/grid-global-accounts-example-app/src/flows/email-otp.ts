@@ -1,4 +1,4 @@
-// EMAIL_OTP lifecycle: create, secure-OTP challenge/verify, rechallenge, add.
+// EMAIL_OTP lifecycle: create, secure-OTP challenge/verify, add.
 
 import { generateP256KeyPair } from "@turnkey/crypto";
 
@@ -131,22 +131,6 @@ export function wireEmailOtpFlows(): void {
       v3TargetBundle = null;
       v3TargetBundleCredId = null;
       return JSON.stringify({ leg1: leg1.data, session: leg2.data }, null, 2);
-    },
-  );
-
-  bindClick(
-    "btn-email_otp-rechallenge",
-    "email_otp-rechallenge-status",
-    "EMAIL_OTP Rechallenge",
-    "Re-issuing OTP...",
-    async () => {
-      const credId = requireCredentialId();
-      const { data } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
-        {},
-      );
-      addLog("EMAIL_OTP Rechallenge", data);
-      return JSON.stringify(data, null, 2);
     },
   );
 

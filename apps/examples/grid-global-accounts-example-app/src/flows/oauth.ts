@@ -1,4 +1,4 @@
-// OAUTH lifecycle: create, verify (→ session), rechallenge (no-op), add.
+// OAUTH lifecycle: create, verify (→ session), add.
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost } from "../api-client";
@@ -57,22 +57,6 @@ export function wireOauthFlows(): void {
       // `rememberEncryptedSessionSigningKey` already no-ops when the field is
       // absent — flip this one call once the P3 wire shape settles.
       rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
-      return JSON.stringify(data, null, 2);
-    },
-  );
-
-  bindClick(
-    "btn-oauth-rechallenge",
-    "oauth-rechallenge-status",
-    "OAUTH Rechallenge",
-    "Running no-op rechallenge...",
-    async () => {
-      const credId = requireCredentialId();
-      const { data } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
-        {},
-      );
-      addLog("OAUTH Rechallenge", data);
       return JSON.stringify(data, null, 2);
     },
   );
