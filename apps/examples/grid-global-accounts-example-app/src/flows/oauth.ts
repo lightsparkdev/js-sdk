@@ -2,7 +2,7 @@
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost } from "../api-client";
-import { rememberEncryptedSessionSigningKey } from "../turnkey";
+import { rememberEncryptedSessionSigningKey } from "../session";
 import { addLog, bindClick, el, wireGenKeyButton } from "../ui";
 import {
   requireAccountId,
@@ -51,6 +51,11 @@ export function wireOauthFlows(): void {
       addLog("OAUTH Verify", data);
       const d = data as Record<string, unknown>;
       if (d.id) setCtxSession(d.id as string);
+      // MIGRATION (P6): OAUTH login moves to OAUTH_LOGIN; the knob-ON response
+      // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
+      // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
+      // `rememberEncryptedSessionSigningKey` already no-ops when the field is
+      // absent — flip this one call once the P3 wire shape settles.
       rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
       return JSON.stringify(data, null, 2);
     },

@@ -3,12 +3,21 @@
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost, getMode } from "../api-client";
+import { turnkeyStamp } from "../turnkey";
 import {
+  hasSessionSigningKey,
+  onSessionChange,
   rememberEncryptedSessionSigningKey,
-  turnkeyStamp,
-} from "../turnkey";
+} from "../session";
 import { createRealPasskey, signWithPasskey } from "../webauthn";
-import { addLog, bindClick, el, wireGenKeyButton } from "../ui";
+import {
+  addLog,
+  bindClick,
+  el,
+  maybeEl,
+  wireGatedButton,
+  wireGenKeyButton,
+} from "../ui";
 import {
   requireAccountId,
   requireCredentialId,
@@ -141,6 +150,11 @@ export function wirePasskeyFlows(): void {
       addLog("PASSKEY Verify", data);
       const d = data as Record<string, unknown>;
       if (d.id) setCtxSession(d.id as string);
+      // MIGRATION (P6): PASSKEY login moves to STAMP_LOGIN; the knob-ON response
+      // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
+      // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
+      // `rememberEncryptedSessionSigningKey` already no-ops when the field is
+      // absent — flip this one call once the P2 wire shape settles.
       rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
       return JSON.stringify(data, null, 2);
     },
@@ -234,5 +248,21 @@ export function wirePasskeyFlows(): void {
       addLog("PASSKEY Add (retry)", data);
       return JSON.stringify(data, null, 2);
     },
+  );
+
+  // The add-retry stamps CREATE_AUTHENTICATORS with the live session's signing
+  // key in production. Surface that requirement as a disabled-with-tooltip
+  // button (re-evaluated on session + mode change) instead of throwing on
+  // click — fixes the old "No client keypair" trap.
+  const refreshAddRetryGate = wireGatedButton("btn-passkey-add-retry", () => {
+    if (getMode() !== "production") return null; // sandbox uses the magic value
+    if (!hasSessionSigningKey())
+      return "Log in first — adding a passkey needs a live session to stamp the request.";
+    return null;
+  });
+  onSessionChange(refreshAddRetryGate);
+  maybeEl<HTMLSelectElement>("mode-select")?.addEventListener(
+    "change",
+    refreshAddRetryGate,
   );
 }

@@ -1,103 +1,40 @@
-// Turnkey crypto: P-256 keygen, HPKE seal, wallet signature, session-key state,
-// and the X-Stamp builder.
+// Turnkey crypto: P-256 keygen, HPKE seal, wallet signature, and the X-Stamp
+// builder. Session-key *state* lives in `session.ts`; this module only does the
+// crypto and reads/writes that state through it.
 
 import {
-  decryptCredentialBundle,
   formatHpkeBuf,
   generateP256KeyPair,
-  getPublicKey,
   hpkeEncrypt,
 } from "@turnkey/crypto";
 import { signWithApiKey } from "@turnkey/api-key-stamper";
 
 import { TURNKEY_STAMP_SCHEME } from "./config";
+import { type ClientKeyPair, resolveSessionKeys, setClientKeyPair } from "./session";
 
-// ----- Production-mode key state -----
-//
-// Generated client-side at the first call to `generateClientKeyPair`. The
+// Generate the client-side P-256 keypair (Verify-bundle model). The
 // uncompressed public key (130 hex chars, 0x04-prefixed) goes to Grid as
-// `clientPublicKey` on Verify; the private key is held here and used to
-// HPKE-decrypt the `encryptedSessionSigningKey` Grid hands back, yielding
-// the Turnkey API session keypair we then stamp `payloadToSign` with.
-//
-// In sandbox mode the bundle is shape-valid but undecryptable — sandbox
-// flows skip this entire path and use the magic signature constants.
-
-export interface ClientKeyPair {
-  privateKey: string; // hex
-  publicKey: string; // hex, compressed
-  publicKeyUncompressed: string; // hex, 130 chars (0x04 prefix)
-}
-
-export interface SessionKeys {
-  apiPublicKey: string; // hex, compressed P-256
-  apiPrivateKey: string; // hex
-}
-
-let clientKeyPair: ClientKeyPair | null = null;
-let lastEncryptedSessionSigningKey: string | null = null;
-let cachedSessionKeys: SessionKeys | null = null;
-
+// `clientPublicKey` on Verify; the private key stays client-side to
+// HPKE-decrypt the `encryptedSessionSigningKey` Grid hands back. Stored in
+// `session.ts` so a session decrypted under one keypair stays valid across tabs.
 export function generateClientKeyPair(): ClientKeyPair {
   const kp = generateP256KeyPair();
-  clientKeyPair = {
+  const clientKeyPair: ClientKeyPair = {
     privateKey: kp.privateKey,
     publicKey: kp.publicKey,
     publicKeyUncompressed: kp.publicKeyUncompressed,
   };
-  // Re-using the keypair across credential types means a Verify by any
-  // type cycles fresh session bundles bound to the same client key —
-  // simpler than tracking one keypair per type for the test app.
-  cachedSessionKeys = null;
-  lastEncryptedSessionSigningKey = null;
+  setClientKeyPair(clientKeyPair);
   return clientKeyPair;
 }
 
-export function rememberEncryptedSessionSigningKey(value: unknown): void {
-  if (typeof value === "string" && value) {
-    lastEncryptedSessionSigningKey = value;
-    cachedSessionKeys = null;
-  }
-}
-
-// OTP_LOGIN / STAMP_LOGIN model: there is no encryptedSessionSigningKey bundle
-// — the TEK private key *is* the session's API key once login registers it.
-// Cache it directly so turnkeyStamp() can authorize later signed retries
-// (e.g. adding a passkey) without the Verify-style clientKeyPair + bundle.
-export function setSessionKeysFromTek(tek: {
-  publicKey: string;
-  privateKey: string;
-}): void {
-  cachedSessionKeys = {
-    apiPublicKey: tek.publicKey,
-    apiPrivateKey: tek.privateKey,
-  };
-}
-
-function decryptSessionKeysOrThrow(): SessionKeys {
-  if (cachedSessionKeys) return cachedSessionKeys;
-  if (!clientKeyPair)
-    throw new Error(
-      "No client keypair — run a Verify in production mode first.",
-    );
-  if (!lastEncryptedSessionSigningKey)
-    throw new Error(
-      "No encryptedSessionSigningKey — run a Verify in production mode first.",
-    );
-  const apiPrivateKey = decryptCredentialBundle(
-    lastEncryptedSessionSigningKey,
-    clientKeyPair.privateKey,
-  );
-  const apiPublicKeyBytes = getPublicKey(apiPrivateKey, /*isCompressed*/ true);
-  const apiPublicKey = Array.from(apiPublicKeyBytes)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  cachedSessionKeys = { apiPublicKey, apiPrivateKey };
-  return cachedSessionKeys;
-}
-
 export async function turnkeyStamp(payload: string): Promise<string> {
-  const { apiPublicKey, apiPrivateKey } = decryptSessionKeysOrThrow();
+  const keys = resolveSessionKeys();
+  if (!keys)
+    throw new Error(
+      "No session signing key — log in (Verify) first to establish a session.",
+    );
+  const { apiPublicKey, apiPrivateKey } = keys;
   // `signWithApiKey` returns the hex DER signature; the X-Stamp header
   // value is base64url(JSON({publicKey, scheme, signature})) with that
   // hex signature embedded as-is. Mirrors what `@turnkey/api-key-stamper`

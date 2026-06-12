@@ -207,6 +207,29 @@
       .tab-panel.active {
         display: block;
       }
+      .session-chip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 10px;
+        margin-top: 8px;
+        padding: 8px 10px;
+        background: #0f3460;
+        border: 1px solid #2e3a5f;
+        border-radius: 4px;
+        font-size: 11px;
+      }
+      .chip-field {
+        white-space: nowrap;
+      }
+      .chip-key {
+        color: #888;
+      }
+      .chip-field.chip-ok {
+        color: #95d5b2;
+      }
+      .chip-field.chip-none {
+        color: #ff6b6b;
+      }
     </style>
   </head>
   <body>
@@ -346,8 +369,10 @@
       <h2>Wallet Context</h2>
       <p class="note">
         Internal account id flows into every tab. Credential + session ids are
-        auto-filled as you run steps.
+        auto-filled as you run steps. The chip shows whether a session signing
+        key is ready and which model established it (OTP-TEK vs Verify-bundle).
       </p>
+      <div id="session-chip" class="session-chip"></div>
       <label for="ctx-account-id">Internal Account ID</label>
       <input
         type="text"

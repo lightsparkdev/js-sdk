@@ -8,6 +8,7 @@
 // Thin bootstrap: wire tabs, then each flow module. Behavior lives in the
 // `flows/` tree + the `config / turnkey / webauthn / api-client / ui` modules.
 
+import { renderChip } from "./session";
 import { wireTabs } from "./ui";
 import { wireCustomerFlows } from "./flows/customer";
 import { wireEmailOtpFlows } from "./flows/email-otp";
@@ -23,5 +24,9 @@ wireOauthFlows();
 wirePasskeyFlows();
 wireManageFlows();
 wireMoneyFlows();
+
+// Paint the initial session chip (empty session) once the DOM + flow gates are
+// wired. Flows re-render it as ids / signing keys land.
+renderChip();
 
 console.log("Grid Global Accounts example app loaded.");

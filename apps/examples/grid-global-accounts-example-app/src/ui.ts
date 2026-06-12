@@ -108,6 +108,30 @@ export function wireGenKeyButton(btnId: string, targetInputId: string): void {
   });
 }
 
+// ----- Session-gated buttons -----
+//
+// Disable a button with an explanatory tooltip when it can't run yet (e.g. a
+// signed retry that needs a live session in production), instead of letting the
+// click throw a cryptic error. `evaluate()` returns null when enabled, or the
+// tooltip/disabled reason when it should be blocked.
+
+export function wireGatedButton(
+  btnId: string,
+  evaluate: () => string | null,
+): () => void {
+  const btn = maybeEl<HTMLButtonElement>(btnId);
+  if (!btn) return () => {};
+  return () => {
+    const reason = evaluate();
+    btn.disabled = reason !== null;
+    if (reason) {
+      btn.title = reason;
+    } else {
+      btn.removeAttribute("title");
+    }
+  };
+}
+
 // ----- Tab switching -----
 
 export function wireTabs(): void {

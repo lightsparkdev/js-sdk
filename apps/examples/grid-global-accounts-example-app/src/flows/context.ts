@@ -1,42 +1,28 @@
 // Cross-flow wallet context: account / credential / session ids shared between
 // the per-credential-type tabs and the money + manage flows.
+//
+// State + chip rendering live in `session.ts`; these are the require-or-throw
+// guards the flows use, plus thin re-exports of the setters so the chip stays
+// in sync.
 
-import { el } from "../ui";
+import {
+  getAccountId,
+  getCredentialId,
+  getSessionId,
+  setAccountId,
+  setCredentialId,
+  setSessionId,
+} from "../session";
 
-let ctxAccountId: HTMLInputElement | null = null;
-let ctxCredentialId: HTMLInputElement | null = null;
-let ctxSessionId: HTMLInputElement | null = null;
-
-function accountIdEl(): HTMLInputElement {
-  if (!ctxAccountId) ctxAccountId = el<HTMLInputElement>("ctx-account-id");
-  return ctxAccountId;
-}
-function credentialIdEl(): HTMLInputElement {
-  if (!ctxCredentialId)
-    ctxCredentialId = el<HTMLInputElement>("ctx-credential-id");
-  return ctxCredentialId;
-}
-function sessionIdEl(): HTMLInputElement {
-  if (!ctxSessionId) ctxSessionId = el<HTMLInputElement>("ctx-session-id");
-  return ctxSessionId;
-}
-
-// First-call-wins by design: the account id is established once (Create
-// Customer) and shared across every credential-type tab, so a later per-type
-// flow must not clobber it. Credential/session ids below are per-type and do
-// overwrite. To switch accounts, clear the field in the UI.
-export function setCtxAccount(id: string): void {
-  if (!accountIdEl().value) accountIdEl().value = id;
-}
-export function setCtxCredential(id: string): void {
-  credentialIdEl().value = id;
-}
-export function setCtxSession(id: string): void {
-  sessionIdEl().value = id;
-}
+// Thin re-exports of the session setters so flows keep their familiar names.
+// Note: `setCtxAccount`/`setAccountId` is first-call-wins by design (see
+// session.ts) — the account id is established once and shared across tabs.
+export const setCtxAccount = setAccountId;
+export const setCtxCredential = setCredentialId;
+export const setCtxSession = setSessionId;
 
 export function requireAccountId(): string {
-  const id = accountIdEl().value.trim();
+  const id = getAccountId();
   if (!id)
     throw new Error(
       "Internal Account ID is required — run Create Customer first.",
@@ -45,7 +31,7 @@ export function requireAccountId(): string {
 }
 
 export function requireCredentialId(): string {
-  const id = credentialIdEl().value.trim();
+  const id = getCredentialId();
   if (!id)
     throw new Error(
       "Credential ID is required — run Create for this type first.",
@@ -54,7 +40,7 @@ export function requireCredentialId(): string {
 }
 
 export function requireSessionId(): string {
-  const id = sessionIdEl().value.trim();
+  const id = getSessionId();
   if (!id)
     throw new Error("Session ID is required — run Verify for this type first.");
   return id;

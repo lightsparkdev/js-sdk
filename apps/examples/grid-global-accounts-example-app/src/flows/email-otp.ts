@@ -4,11 +4,8 @@ import { generateP256KeyPair } from "@turnkey/crypto";
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost } from "../api-client";
-import {
-  buildWalletSignature,
-  sealOtpBundle,
-  setSessionKeysFromTek,
-} from "../turnkey";
+import { buildWalletSignature, sealOtpBundle } from "../turnkey";
+import { setSessionKeysFromTek } from "../session";
 import { addLog, bindClick, el } from "../ui";
 import {
   requireAccountId,
@@ -127,6 +124,8 @@ export function wireEmailOtpFlows(): void {
       // The TEK is now the session's API key (OTP_LOGIN registered it). Cache it
       // as the active session signing key so later signed retries (add passkey,
       // quote execute, etc.) can stamp with this session via turnkeyStamp().
+      // MIGRATION (P6): this OTP-TEK caching is the model passkey/oauth login
+      // converge on once the login-family knob is ON — see oauth.ts/passkey.ts.
       if (leg2.status === 200) setSessionKeysFromTek(tek);
       // One bundle per challenge — force a fresh Challenge for the next run.
       v3TargetBundle = null;
