@@ -1,10 +1,12 @@
 import { defineConfig } from "vite";
 import settings from "../settings.json";
 
-// Production grid URL. The proxy strips the `/api` prefix and rewrites the
-// path to the versioned API channel. Credentials are entered manually in the
-// UI — never embedded here.
-const PROD_GRID_URL = "https://api.lightspark.com";
+// Grid API base for the dev proxy (strips the `/api` prefix and rewrites the
+// path to the versioned API channel). Defaults to production; override locally
+// for a dev backend via the GRID_URL env var, e.g.
+//   GRID_URL=https://api.dev.dev.sparkinfra.net yarn dev
+// Credentials are entered manually in the UI — never embedded here.
+const PROD_GRID_URL = process.env.GRID_URL ?? "https://api.lightspark.com";
 
 export default defineConfig({
   server: {

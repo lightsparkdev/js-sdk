@@ -652,6 +652,24 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
             id="passkey-create-nickname"
             value="Sandbox Passkey"
           />
+          <label for="passkey-rp-id"
+            >RP ID (blank = this page's hostname; must match the sub-org's)</label
+          >
+          <input
+            type="text"
+            id="passkey-rp-id"
+            placeholder="defaults to current hostname (e.g. localhost)"
+          />
+          <p class="note">
+            Click below to register a <strong>real</strong> passkey on this
+            device (Touch ID) — it fills the attestation fields. Use it for both
+            "Create" and "Add additional" against real Turnkey. The sub-org's RP
+            ID must match this page's origin.
+          </p>
+          <button id="btn-passkey-webauthn-create" class="secondary">
+            📱 Create real passkey (Touch ID)
+          </button>
+          <div id="passkey-webauthn-create-status"></div>
           <label for="passkey-create-challenge">WebAuthn Challenge</label>
           <input
             type="text"
@@ -741,6 +759,14 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
             id="passkey-verify-client-data-json"
             value="c2FuZGJveC1jbGllbnQtZGF0YQ"
           />
+          <p class="note">
+            Click below to sign the issued challenge with your real passkey
+            (Touch ID) — it fills the assertion fields above.
+          </p>
+          <button id="btn-passkey-webauthn-get" class="secondary">
+            📱 Sign with passkey (Touch ID)
+          </button>
+          <div id="passkey-webauthn-get-status"></div>
           <button id="btn-passkey-verify">Verify</button>
           <div id="passkey-verify-status"></div>
         </div>
@@ -749,6 +775,11 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
           <h3>
             Add additional PASSKEY via signed retry
           </h3>
+          <p class="note">
+            First click "📱 Create real passkey" in the
+            <em>Create credential</em> section above — that registers the new
+            passkey whose attestation is added here. Then run steps 1 and 2.
+          </p>
           <label for="passkey-add-nickname">Nickname</label>
           <input type="text" id="passkey-add-nickname" value="Second Passkey" />
           <button id="btn-passkey-add-issue">1. Issue add challenge</button>

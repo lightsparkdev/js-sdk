@@ -73,6 +73,20 @@ function rememberEncryptedSessionSigningKey(value: unknown): void {
   }
 }
 
+// OTP_LOGIN / STAMP_LOGIN model: there is no encryptedSessionSigningKey bundle
+// — the TEK private key *is* the session's API key once login registers it.
+// Cache it directly so turnkeyStamp() can authorize later signed retries
+// (e.g. adding a passkey) without the Verify-style clientKeyPair + bundle.
+function setSessionKeysFromTek(tek: {
+  publicKey: string;
+  privateKey: string;
+}): void {
+  cachedSessionKeys = {
+    apiPublicKey: tek.publicKey,
+    apiPrivateKey: tek.privateKey,
+  };
+}
+
 function decryptSessionKeysOrThrow(): SessionKeys {
   if (cachedSessionKeys) return cachedSessionKeys;
   if (!clientKeyPair)
@@ -653,6 +667,10 @@ bindClick(
       ...session,
     });
     if (session.id) setCtxSession(session.id as string);
+    // The TEK is now the session's API key (OTP_LOGIN registered it). Cache it
+    // as the active session signing key so later signed retries (add passkey,
+    // quote execute, etc.) can stamp with this session via turnkeyStamp().
+    if (leg2.status === 200) setSessionKeysFromTek(tek);
     // One bundle per challenge — force a fresh Challenge for the next run.
     v3TargetBundle = null;
     v3TargetBundleCredId = null;
@@ -811,6 +829,119 @@ bindClick(
   },
 );
 
+// ----- WebAuthn ceremony helpers (real passkeys) -----
+//
+// The sandbox flows accept magic placeholder strings, but a real Turnkey
+// sub-org needs a genuine WebAuthn credential. These helpers drive the
+// browser's authenticator (Touch ID, etc.) and base64url-encode the results
+// into the same fields the sandbox flow uses, so Create / Add / Verify work
+// unchanged against production Turnkey.
+//
+// NOTE: WebAuthn binds a credential to an RP ID that must be a suffix of the
+// page origin — on localhost that means rpId="localhost". The Turnkey sub-org
+// must have been created with the SAME RP ID or verification will fail.
+
+function bytesToB64Url(bytes: Uint8Array): string {
+  let bin = "";
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function b64UrlToBytes(value: string): Uint8Array {
+  const b64 = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+  const bin = atob(padded);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function passkeyRpId(): string {
+  return el<HTMLInputElement>("passkey-rp-id").value.trim() || location.hostname;
+}
+
+interface RealAttestation {
+  challenge: string;
+  credentialId: string;
+  clientDataJson: string;
+  attestationObject: string;
+}
+
+// Real registration ceremony — produces the attestation that Create/Add send.
+async function createRealPasskey(nickname: string): Promise<RealAttestation> {
+  const challenge = crypto.getRandomValues(new Uint8Array(32));
+  const userId = crypto.getRandomValues(new Uint8Array(16));
+  const credential = (await navigator.credentials.create({
+    publicKey: {
+      rp: { id: passkeyRpId(), name: "Grid Example App" },
+      user: {
+        id: userId,
+        name: nickname || "grid-example-user",
+        displayName: nickname || "Grid Example User",
+      },
+      challenge,
+      pubKeyCredParams: [
+        { type: "public-key", alg: -7 },
+        { type: "public-key", alg: -257 },
+      ],
+      authenticatorSelection: {
+        residentKey: "preferred",
+        userVerification: "preferred",
+      },
+      attestation: "none",
+      timeout: 60000,
+    },
+  })) as PublicKeyCredential | null;
+  if (!credential) throw new Error("Passkey creation returned no credential");
+  const response = credential.response as AuthenticatorAttestationResponse;
+  return {
+    challenge: bytesToB64Url(challenge),
+    credentialId: bytesToB64Url(new Uint8Array(credential.rawId)),
+    clientDataJson: bytesToB64Url(new Uint8Array(response.clientDataJSON)),
+    attestationObject: bytesToB64Url(new Uint8Array(response.attestationObject)),
+  };
+}
+
+interface RealAssertion {
+  credentialId: string;
+  authenticatorData: string;
+  clientDataJson: string;
+  signature: string;
+}
+
+// Real assertion ceremony — signs the issued session challenge.
+async function signWithPasskey(
+  challengeValue: string,
+  credentialId: string,
+): Promise<RealAssertion> {
+  if (!challengeValue) {
+    throw new Error("No challenge — issue a session challenge (step above) first.");
+  }
+  // PR #28427: Turnkey's WebAuthn challenge is the UTF-8 bytes of the
+  // sha256-hex challenge string returned by /challenge — NOT base64url-decoded.
+  const challenge = new TextEncoder().encode(challengeValue);
+  const allowCredentials: PublicKeyCredentialDescriptor[] = credentialId
+    ? [{ type: "public-key", id: b64UrlToBytes(credentialId) as BufferSource }]
+    : [];
+  const credential = (await navigator.credentials.get({
+    publicKey: {
+      rpId: passkeyRpId(),
+      challenge,
+      allowCredentials,
+      userVerification: "preferred",
+      timeout: 60000,
+    },
+  })) as PublicKeyCredential | null;
+  if (!credential) throw new Error("Passkey assertion returned no credential");
+  const response = credential.response as AuthenticatorAssertionResponse;
+  return {
+    credentialId: bytesToB64Url(new Uint8Array(credential.rawId)),
+    authenticatorData: bytesToB64Url(new Uint8Array(response.authenticatorData)),
+    clientDataJson: bytesToB64Url(new Uint8Array(response.clientDataJSON)),
+    signature: bytesToB64Url(new Uint8Array(response.signature)),
+  };
+}
+
 // ----- PASSKEY -----
 
 bindClick(
@@ -838,8 +969,31 @@ bindClick(
   },
 );
 
+// Drive a real WebAuthn registration (Touch ID) and fill the attestation
+// fields above — used by both the "Create" and "Add additional" flows.
+bindClick(
+  "btn-passkey-webauthn-create",
+  "passkey-webauthn-create-status",
+  "Passkey Register",
+  "Waiting for authenticator (Touch ID)...",
+  async () => {
+    const nickname = el<HTMLInputElement>("passkey-create-nickname").value.trim();
+    const att = await createRealPasskey(nickname);
+    el<HTMLInputElement>("passkey-create-challenge").value = att.challenge;
+    el<HTMLInputElement>("passkey-create-cred-id-raw").value = att.credentialId;
+    el<HTMLInputElement>("passkey-create-client-data-json").value = att.clientDataJson;
+    el<HTMLInputElement>("passkey-create-attestation-object").value =
+      att.attestationObject;
+    addLog("Passkey Registered (real)", att);
+    return "Real passkey created — attestation fields filled. Now run Create or Add.";
+  },
+);
+
 wireGenKeyButton("btn-passkey-challenge-genkey", "passkey-challenge-pubkey");
 const passkeyVerifyRequestId = el<HTMLInputElement>("passkey-verify-request-id");
+// Captured from the session-challenge response so the real assertion ceremony
+// can sign the exact sha256-hex challenge Turnkey expects.
+let passkeySessionChallenge = "";
 bindClick(
   "btn-passkey-challenge",
   "passkey-challenge-status",
@@ -856,6 +1010,7 @@ bindClick(
     addLog("PASSKEY Challenge", data);
     const d = data as Record<string, unknown>;
     if (d.requestId) passkeyVerifyRequestId.value = d.requestId as string;
+    if (typeof d.challenge === "string") passkeySessionChallenge = d.challenge;
     return JSON.stringify(data, null, 2);
   },
 );
@@ -893,7 +1048,30 @@ bindClick(
   },
 );
 
+// Drive a real WebAuthn assertion (Touch ID) against the issued challenge and
+// fill the assertion fields above for Verify.
+bindClick(
+  "btn-passkey-webauthn-get",
+  "passkey-webauthn-get-status",
+  "Passkey Sign",
+  "Waiting for authenticator (Touch ID)...",
+  async () => {
+    const credId = el<HTMLInputElement>("passkey-create-cred-id-raw").value.trim();
+    const assertion = await signWithPasskey(passkeySessionChallenge, credId);
+    el<HTMLInputElement>("passkey-create-cred-id-raw").value = assertion.credentialId;
+    el<HTMLInputElement>("passkey-verify-client-data-json").value =
+      assertion.clientDataJson;
+    el<HTMLInputElement>("passkey-verify-auth-data").value =
+      assertion.authenticatorData;
+    el<HTMLInputElement>("passkey-verify-signature").value = assertion.signature;
+    addLog("Passkey Signed (real)", assertion);
+    return "Real assertion produced — verify fields filled. Now click Verify.";
+  },
+);
+
 const passkeyAddRequestId = el<HTMLInputElement>("passkey-add-request-id");
+// Captured from the add-issue 202 so the retry can stamp the exact payload.
+let passkeyAddPayloadToSign = "";
 function buildPasskeyAddBody(): Record<string, unknown> {
   return {
     type: "PASSKEY",
@@ -917,6 +1095,7 @@ bindClick(
     addLog("PASSKEY Add (issue)", data);
     const d = data as Record<string, unknown>;
     if (d.requestId) passkeyAddRequestId.value = d.requestId as string;
+    if (typeof d.payloadToSign === "string") passkeyAddPayloadToSign = d.payloadToSign;
     return JSON.stringify(data, null, 2);
   },
 );
@@ -928,10 +1107,21 @@ bindClick(
   async () => {
     const requestId = passkeyAddRequestId.value.trim();
     if (!requestId) throw new Error("Request-Id is required — run step 1 first.");
+    // Sandbox accepts the magic value, but real Turnkey requires the
+    // CREATE_AUTHENTICATORS payload to be stamped by an authorized credential —
+    // the active session's signing key. Establish a session (e.g. OTP login or
+    // passkey verify) first so the session signing key is available.
+    let signature = SANDBOX_SIG;
+    if (getMode() === "production") {
+      if (!passkeyAddPayloadToSign) {
+        throw new Error("Missing payloadToSign — run step 1 first.");
+      }
+      signature = await turnkeyStamp(passkeyAddPayloadToSign);
+    }
     const { data } = await apiPost(
       "/auth/credentials",
       buildPasskeyAddBody(),
-      { "Grid-Wallet-Signature": SANDBOX_SIG, "Request-Id": requestId },
+      { "Grid-Wallet-Signature": signature, "Request-Id": requestId },
     );
     addLog("PASSKEY Add (retry)", data);
     return JSON.stringify(data, null, 2);
