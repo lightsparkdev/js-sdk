@@ -8,6 +8,7 @@
 // Thin bootstrap: wire tabs, then each flow module. Behavior lives in the
 // `flows/` tree + the `config / turnkey / webauthn / api-client / ui` modules.
 
+import { initMode } from "./mode";
 import { renderChip } from "./session";
 import { wireTabs } from "./ui";
 import { wireCustomerFlows } from "./flows/customer";
@@ -16,6 +17,10 @@ import { wireOauthFlows } from "./flows/oauth";
 import { wirePasskeyFlows } from "./flows/passkey";
 import { wireManageFlows } from "./flows/manage";
 import { wireMoneyFlows } from "./flows/money";
+
+// Resolve mode (persisted) + apply field visibility / magic seeding first, so
+// flows wire against the correct initial state.
+initMode();
 
 wireTabs();
 wireCustomerFlows();

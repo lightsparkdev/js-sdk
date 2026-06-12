@@ -230,6 +230,27 @@
       .chip-field.chip-none {
         color: #ff6b6b;
       }
+      .magic-pill {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 0 5px;
+        border-radius: 3px;
+        background: #4a3a00;
+        border: 1px solid #7a5c00;
+        color: #ffd166;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        vertical-align: middle;
+      }
+      #sandbox-legend {
+        color: #888;
+        font-size: 11px;
+        margin-top: 6px;
+      }
+      #sandbox-legend code {
+        color: #ffd166;
+      }
     </style>
   </head>
   <body>
@@ -261,14 +282,21 @@
         <option value="production">production — decrypt session + stamp</option>
       </select>
       <p class="note">
-        Sandbox uses server-side magic strings
-        (<code>sandbox-valid-signature</code>,
-        <code>000000</code>, <code>sandbox-valid-oidc-token</code>,
-        <code>sandbox-valid-passkey-signature</code>). Production persists the
-        client P-256 keypair + the encrypted session signing key from Verify,
-        then HPKE-decrypts via <code>@turnkey/crypto</code> and stamps real
+        Chosen once and remembered across reloads. Production hides every
+        magic-value field (nothing fake on screen) and shows the real-ceremony
+        (Touch ID) buttons; it persists the client P-256 keypair + the encrypted
+        session signing key from Verify, HPKE-decrypts via
+        <code>@turnkey/crypto</code>, and stamps real
         <code>payloadToSign</code> values via
-        <code>@turnkey/api-key-stamper</code>.
+        <code>@turnkey/api-key-stamper</code>. Sandbox hides the ceremony
+        buttons and seeds the magic values below (each flagged
+        <span class="magic-pill">magic</span>).
+      </p>
+      <p id="sandbox-legend">
+        Sandbox magic strings: <code>sandbox-valid-signature</code>,
+        <code>000000</code>, <code>sandbox-valid-oidc-token</code>,
+        <code>sandbox-valid-passkey-signature</code> — accepted by the sandbox
+        backend in place of real ceremony output.
       </p>
     </div>
 
@@ -438,8 +466,10 @@
           </p>
           <button id="btn-email_otp-v3-challenge">1. Challenge (send OTP)</button>
           <div id="email_otp-v3-challenge-status"></div>
-          <label for="email_otp-v3-code">OTP Code (sandbox: 000000)</label>
-          <input type="text" id="email_otp-v3-code" value="000000" />
+          <div class="magic-field" data-magic-for="email_otp-v3-code">
+            <label for="email_otp-v3-code">OTP Code</label>
+            <input type="text" id="email_otp-v3-code" />
+          </div>
           <button id="btn-email_otp-v3-verify">2. Verify</button>
           <div id="email_otp-v3-verify-status"></div>
         </div>
@@ -539,22 +569,20 @@
 
         <div class="subsection">
           <h3>Create credential</h3>
-          <label for="oauth-create-oidc">OIDC Token (JWT-shaped)</label>
-          <textarea id="oauth-create-oidc" rows="2">
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiJzYW5kYm94LXVzZXItMSJ9.sig</textarea
-          >
+          <div class="magic-field" data-magic-for="oauth-create-oidc">
+            <label for="oauth-create-oidc">OIDC Token (JWT-shaped)</label>
+            <textarea id="oauth-create-oidc" rows="2"></textarea>
+          </div>
           <button id="btn-oauth-create">Create</button>
           <div id="oauth-create-status"></div>
         </div>
 
         <div class="subsection">
           <h3>Verify → session</h3>
-          <label for="oauth-verify-oidc">OIDC Token (sandbox magic)</label>
-          <input
-            type="text"
-            id="oauth-verify-oidc"
-            value="sandbox-valid-oidc-token"
-          />
+          <div class="magic-field" data-magic-for="oauth-verify-oidc">
+            <label for="oauth-verify-oidc">OIDC Token</label>
+            <input type="text" id="oauth-verify-oidc" />
+          </div>
           <label for="oauth-verify-pubkey">Client Public Key (hex)</label>
           <input
             type="text"
@@ -573,10 +601,10 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5
           <h3>
             Add additional OAUTH via signed retry
           </h3>
-          <label for="oauth-add-oidc">OIDC Token (different identity)</label>
-          <textarea id="oauth-add-oidc" rows="2">
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwic3ViIjoic2FuZGJveC11c2VyLTIifQ.sig</textarea
-          >
+          <div class="magic-field" data-magic-for="oauth-add-oidc">
+            <label for="oauth-add-oidc">OIDC Token (different identity)</label>
+            <textarea id="oauth-add-oidc" rows="2"></textarea>
+          </div>
           <button id="btn-oauth-add-issue">1. Issue add challenge</button>
           <div id="oauth-add-issue-status"></div>
           <label for="oauth-add-request-id">Request-Id (auto-filled)</label>
@@ -673,40 +701,42 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
             "Create" and "Add additional" against real Turnkey. The sub-org's RP
             ID must match this page's origin.
           </p>
-          <button id="btn-passkey-webauthn-create" class="secondary">
+          <button
+            id="btn-passkey-webauthn-create"
+            class="secondary"
+            data-ceremony
+          >
             📱 Create real passkey (Touch ID)
           </button>
           <div id="passkey-webauthn-create-status"></div>
-          <label for="passkey-create-challenge">WebAuthn Challenge</label>
-          <input
-            type="text"
-            id="passkey-create-challenge"
-            value="c2FuZGJveC1jaGFsbGVuZ2U"
-          />
-          <label for="passkey-create-cred-id-raw"
-            >Attestation credentialId</label
+          <div class="magic-field" data-magic-for="passkey-create-challenge">
+            <label for="passkey-create-challenge">WebAuthn Challenge</label>
+            <input type="text" id="passkey-create-challenge" />
+          </div>
+          <div class="magic-field" data-magic-for="passkey-create-cred-id-raw">
+            <label for="passkey-create-cred-id-raw"
+              >Attestation credentialId</label
+            >
+            <input type="text" id="passkey-create-cred-id-raw" />
+          </div>
+          <div
+            class="magic-field"
+            data-magic-for="passkey-create-client-data-json"
           >
-          <input
-            type="text"
-            id="passkey-create-cred-id-raw"
-            value="c2FuZGJveC1jcmVkLWlk"
-          />
-          <label for="passkey-create-client-data-json"
-            >Attestation clientDataJSON</label
+            <label for="passkey-create-client-data-json"
+              >Attestation clientDataJSON</label
+            >
+            <input type="text" id="passkey-create-client-data-json" />
+          </div>
+          <div
+            class="magic-field"
+            data-magic-for="passkey-create-attestation-object"
           >
-          <input
-            type="text"
-            id="passkey-create-client-data-json"
-            value="c2FuZGJveC1jbGllbnREYXRhSlNPTg"
-          />
-          <label for="passkey-create-attestation-object"
-            >Attestation attestationObject</label
-          >
-          <input
-            type="text"
-            id="passkey-create-attestation-object"
-            value="c2FuZGJveC1hdHRlc3RhdGlvbk9iamVjdA"
-          />
+            <label for="passkey-create-attestation-object"
+              >Attestation attestationObject</label
+            >
+            <input type="text" id="passkey-create-attestation-object" />
+          </div>
           <button id="btn-passkey-create">Create</button>
           <div id="passkey-create-status"></div>
         </div>
@@ -742,35 +772,30 @@ eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29
             id="passkey-verify-request-id"
             placeholder="auto-filled from challenge"
           />
-          <label for="passkey-verify-signature"
-            >Assertion signature (sandbox magic)</label
+          <div class="magic-field" data-magic-for="passkey-verify-signature">
+            <label for="passkey-verify-signature">Assertion signature</label>
+            <input type="text" id="passkey-verify-signature" />
+          </div>
+          <div class="magic-field" data-magic-for="passkey-verify-auth-data">
+            <label for="passkey-verify-auth-data"
+              >Assertion authenticatorData</label
+            >
+            <input type="text" id="passkey-verify-auth-data" />
+          </div>
+          <div
+            class="magic-field"
+            data-magic-for="passkey-verify-client-data-json"
           >
-          <input
-            type="text"
-            id="passkey-verify-signature"
-            value="sandbox-valid-passkey-signature"
-          />
-          <label for="passkey-verify-auth-data"
-            >Assertion authenticatorData</label
-          >
-          <input
-            type="text"
-            id="passkey-verify-auth-data"
-            value="c2FuZGJveC1hdXRoLWRhdGE"
-          />
-          <label for="passkey-verify-client-data-json"
-            >Assertion clientDataJSON</label
-          >
-          <input
-            type="text"
-            id="passkey-verify-client-data-json"
-            value="c2FuZGJveC1jbGllbnQtZGF0YQ"
-          />
+            <label for="passkey-verify-client-data-json"
+              >Assertion clientDataJSON</label
+            >
+            <input type="text" id="passkey-verify-client-data-json" />
+          </div>
           <p class="note">
             Click below to sign the issued challenge with your real passkey
             (Touch ID) — it fills the assertion fields above.
           </p>
-          <button id="btn-passkey-webauthn-get" class="secondary">
+          <button id="btn-passkey-webauthn-get" class="secondary" data-ceremony>
             📱 Sign with passkey (Touch ID)
           </button>
           <div id="passkey-webauthn-get-status"></div>
