@@ -3181,11 +3181,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/grid-global-accounts-example-app@workspace:apps/examples/grid-global-accounts-example-app"
   dependencies:
+    "@emotion/react": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.1"
+    "@lightsparkdev/origin": "npm:*"
     "@turnkey/api-key-stamper": "npm:^0.6.5"
     "@turnkey/crypto": "npm:^2.8.14"
     "@turnkey/encoding": "npm:^0.6.0"
+    "@types/react": "npm:^19.2.15"
+    "@types/react-dom": "npm:^19.2.3"
+    "@vitejs/plugin-react": "npm:^5.2.0"
+    react: "npm:^19.2.6"
+    react-dom: "npm:^19.2.6"
     typescript: "npm:^5.6.2"
     vite: "npm:^8.0.14"
+    vitest: "npm:^4.1.7"
   languageName: unknown
   linkType: soft
 
