@@ -5,7 +5,13 @@
 // Signed-retry flows are two-step: issue (returns 202 challenge) then retry
 // (forwards with `Grid-Wallet-Signature: sandbox-valid-signature`).
 
-import { decryptCredentialBundle, generateP256KeyPair, getPublicKey } from "@turnkey/crypto";
+import {
+  decryptCredentialBundle,
+  formatHpkeBuf,
+  generateP256KeyPair,
+  getPublicKey,
+  hpkeEncrypt,
+} from "@turnkey/crypto";
 import { signWithApiKey } from "@turnkey/api-key-stamper";
 
 type Mode = "sandbox" | "production";
@@ -108,6 +114,70 @@ async function turnkeyStamp(payload: string): Promise<string> {
   const json = JSON.stringify(stamp);
   // base64url(json) — no padding.
   return btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// ----- V3 secure OTP client crypto -----
+//
+// HPKE-seal {clientPublicKey, otpCodeAttempt} under the enclave's
+// `otpEncryptionTargetBundle`. That bundle is a signed enclave envelope —
+// {version, data, dataSignature, enclaveQuorumPublic} — where `data` is a
+// hex-encoded JSON blob carrying the enclave's uncompressed HPKE target key as
+// `targetPublic`. We pull `targetPublic` out, HPKE-encrypt under it, and emit
+// Turnkey's `formatHpkeBuf` wire shape {"encappedPublic","ciphertext"} — exactly
+// what `@turnkey/crypto`'s `encryptPrivateKeyToBundle` produces for the
+// analogous key-import flow. (A production client would also verify
+// `dataSignature` against `enclaveQuorumPublic`; skipped here because the bundle
+// originates from our own backend in this test app.)
+function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return bytes;
+}
+
+function sealOtpBundle(
+  targetBundle: string,
+  clientPublicKeyHex: string,
+  otpCode: string,
+): string {
+  const parsed = JSON.parse(targetBundle) as { data: string };
+  const signedData = JSON.parse(
+    new TextDecoder().decode(hexToBytes(parsed.data)),
+  ) as { targetPublic: string };
+  const targetKeyBuf = hexToBytes(signedData.targetPublic); // 65-byte uncompressed
+  const plainTextBuf = new TextEncoder().encode(
+    // The enclave expects snake_case {otp_code, public_key} — NOT the
+    // {clientPublicKey, otpCodeAttempt} shown in Turnkey's docs sequence
+    // diagram. Matches @turnkey/crypto's encryptOtpCodeToBundle.
+    JSON.stringify({ otp_code: otpCode, public_key: clientPublicKeyHex }),
+  );
+  const encryptedBuf = hpkeEncrypt({ plainTextBuf, targetKeyBuf }); // compressed_enc[33] || ciphertext
+  return formatHpkeBuf(encryptedBuf); // {"encappedPublic","ciphertext"}
+}
+
+// Build the `Grid-Wallet-Signature` stamp over the verificationToken using a
+// specific keypair (the V3 TEK), not the session key — base64url(JSON({
+// publicKey, scheme, signature})), the shape `parse_api_key_stamp` expects.
+async function buildWalletSignature(
+  publicKeyHex: string,
+  privateKeyHex: string,
+  payload: string,
+): Promise<string> {
+  const signature = await signWithApiKey({
+    content: payload,
+    publicKey: publicKeyHex,
+    privateKey: privateKeyHex,
+  });
+  const stamp = {
+    publicKey: publicKeyHex,
+    scheme: TURNKEY_STAMP_SCHEME,
+    signature,
+  };
+  return btoa(JSON.stringify(stamp))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 }
 
 // ----- DOM helpers -----
@@ -494,26 +564,99 @@ bindClick(
   },
 );
 
-wireGenKeyButton("btn-email_otp-verify-genkey", "email_otp-verify-pubkey");
+// Secure OTP — two steps so it works against real Turnkey, which emails a
+// real OTP (sandbox uses the fixed 000000). Step 1 (/challenge) issues the
+// INIT_OTP and returns the enclave's target bundle, held below until Verify
+// consumes it. Step 2
+// HPKE-seals the entered code under that bundle, runs /verify first leg
+// (202 + payloadToSign), signs the token with the TEK, and runs /verify retry
+// (200 session). The code never leaves the client in plaintext; the TEK private
+// key stays client-side (no encryptedSessionSigningKey is returned).
+
+// Target bundle from the most recent V3 challenge + the credential it was
+// issued for, so Verify catches a stale/mismatched bundle.
+let v3TargetBundle: string | null = null;
+let v3TargetBundleCredId: string | null = null;
+
 bindClick(
-  "btn-email_otp-verify",
-  "email_otp-verify-status",
-  "EMAIL_OTP Verify",
+  "btn-email_otp-v3-challenge",
+  "email_otp-v3-challenge-status",
+  "EMAIL_OTP Challenge (V3)",
+  "Requesting OTP...",
+  async () => {
+    const credId = requireCredentialId();
+    const { data: challengeData } = await apiPost(
+      `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
+      {},
+    );
+    addLog("V3 Challenge", challengeData);
+    const targetBundle = (challengeData as Record<string, unknown>)
+      .otpEncryptionTargetBundle as string | undefined;
+    if (!targetBundle)
+      throw new Error(
+        "Challenge response missing otpEncryptionTargetBundle — is the local " +
+          "backend running the secure-OTP branch?",
+      );
+    v3TargetBundle = targetBundle;
+    v3TargetBundleCredId = credId;
+    return "OTP sent. Check the customer's email, enter the code below, then Verify.";
+  },
+);
+
+bindClick(
+  "btn-email_otp-v3-verify",
+  "email_otp-v3-verify-status",
+  "EMAIL_OTP Verify (V3)",
   "Verifying...",
   async () => {
     const credId = requireCredentialId();
-    const otp = el<HTMLInputElement>("email_otp-verify-code").value.trim();
-    const pubkey = el<HTMLInputElement>("email_otp-verify-pubkey").value.trim();
-    if (!otp || !pubkey) throw new Error("OTP code and public key are required.");
-    const { data } = await apiPost(
+    const otp = el<HTMLInputElement>("email_otp-v3-code").value.trim();
+    if (!otp) throw new Error("OTP code is required.");
+    if (!v3TargetBundle || v3TargetBundleCredId !== credId)
+      throw new Error(
+        "Run Challenge (V3) first to request an OTP + target bundle for this " +
+          "credential.",
+      );
+
+    // Generate a TEK and HPKE-seal the entered OTP under the challenge bundle.
+    const tek = generateP256KeyPair();
+    const encryptedOtpBundle = sealOtpBundle(v3TargetBundle, tek.publicKey, otp);
+
+    // First leg → expect 202 with payloadToSign (verificationToken) + requestId.
+    const leg1 = await apiPost(
       `/auth/credentials/${encodeURIComponent(credId)}/verify`,
-      { type: "EMAIL_OTP", otp, clientPublicKey: pubkey },
+      { type: "EMAIL_OTP", encryptedOtpBundle },
     );
-    addLog("EMAIL_OTP Verify", data);
-    const d = data as Record<string, unknown>;
-    if (d.id) setCtxSession(d.id as string);
-    rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
-    return JSON.stringify(data, null, 2);
+    const l1 = (leg1.data ?? {}) as Record<string, unknown>;
+    addLog("V3 Verify leg 1 (expect 202)", { status: leg1.status, ...l1 });
+    const payloadToSign = l1.payloadToSign as string | undefined;
+    const requestId = l1.requestId as string | undefined;
+    if (leg1.status !== 202 || !payloadToSign || !requestId)
+      throw new Error(`Unexpected first-leg response: ${JSON.stringify(leg1)}`);
+
+    // Sign the verificationToken with the TEK private key.
+    const signature = await buildWalletSignature(
+      tek.publicKey,
+      tek.privateKey,
+      payloadToSign,
+    );
+
+    // Retry with the signature → expect 200 AuthSession.
+    const leg2 = await apiPost(
+      `/auth/credentials/${encodeURIComponent(credId)}/verify`,
+      { type: "EMAIL_OTP", encryptedOtpBundle },
+      { "Grid-Wallet-Signature": signature, "Request-Id": requestId },
+    );
+    const session = (leg2.data ?? {}) as Record<string, unknown>;
+    addLog("V3 Verify leg 2 (expect 200 session)", {
+      status: leg2.status,
+      ...session,
+    });
+    if (session.id) setCtxSession(session.id as string);
+    // One bundle per challenge — force a fresh Challenge for the next run.
+    v3TargetBundle = null;
+    v3TargetBundleCredId = null;
+    return JSON.stringify({ leg1: leg1.data, session: leg2.data }, null, 2);
   },
 );
 

@@ -400,21 +400,23 @@
         </div>
 
         <div class="subsection">
-          <h3>Verify → session</h3>
-          <label for="email_otp-verify-code">OTP Code</label>
-          <input type="text" id="email_otp-verify-code" value="000000" />
-          <label for="email_otp-verify-pubkey">Client Public Key (hex)</label>
-          <input
-            type="text"
-            id="email_otp-verify-pubkey"
-            placeholder="click Generate"
-            readonly
-          />
-          <button id="btn-email_otp-verify-genkey" class="secondary">
-            Generate P-256 Key
-          </button>
-          <button id="btn-email_otp-verify">Verify</button>
-          <div id="email_otp-verify-status"></div>
+          <h3>Verify → session (secure OTP)</h3>
+          <p class="note">
+            Two steps. <b>1. Challenge</b> issues INIT_OTP and returns the
+            enclave target bundle — against real Turnkey the OTP is emailed to
+            the customer; in sandbox it's <code>000000</code>. <b>2. Verify</b>
+            HPKE-seals the entered code with <code>@turnkey/crypto</code> →
+            /verify first leg (202 + verificationToken) → ECDSA-sign the token
+            with the TEK → /verify retry (200 session). The code is never sent
+            in plaintext and the TEK private key never leaves the client. Uses
+            the Credential ID from Wallet Context.
+          </p>
+          <button id="btn-email_otp-v3-challenge">1. Challenge (send OTP)</button>
+          <div id="email_otp-v3-challenge-status"></div>
+          <label for="email_otp-v3-code">OTP Code (sandbox: 000000)</label>
+          <input type="text" id="email_otp-v3-code" value="000000" />
+          <button id="btn-email_otp-v3-verify">2. Verify</button>
+          <div id="email_otp-v3-verify-status"></div>
         </div>
 
         <div class="subsection">

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@turnkey/api-key-stamper": "^0.6.5",
-    "@turnkey/crypto": "^2.8.14"
+    "@turnkey/crypto": "^2.8.14",
+    "@turnkey/encoding": "^0.6.0"
   }
 }
