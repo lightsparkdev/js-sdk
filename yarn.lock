@@ -3183,6 +3183,7 @@ __metadata:
   dependencies:
     "@turnkey/api-key-stamper": "npm:^0.6.5"
     "@turnkey/crypto": "npm:^2.8.14"
+    "@turnkey/encoding": "npm:^0.6.0"
     typescript: "npm:^5.6.2"
     vite: "npm:^8.0.14"
   languageName: unknown
@@ -5743,7 +5744,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turnkey/encoding@npm:0.6.0":
+"@turnkey/encoding@npm:0.6.0, @turnkey/encoding@npm:^0.6.0":
   version: 0.6.0
   resolution: "@turnkey/encoding@npm:0.6.0"
   dependencies:
