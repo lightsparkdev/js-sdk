@@ -1,7 +1,8 @@
-// OAUTH lifecycle: create, verify (→ session), add.
+// OAUTH lifecycle: guided login, create, verify (→ session), add.
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost } from "../api-client";
+import { generateClientKeyPair } from "../turnkey";
 import { rememberEncryptedSessionSigningKey } from "../session";
 import { addLog, bindClick, el, wireGenKeyButton } from "../ui";
 import {
@@ -11,7 +12,52 @@ import {
   setCtxSession,
 } from "./context";
 
+// Run /verify with the OIDC token + client public key, caching the session
+// bundle on success. Shared by the guided login and the manual Verify button.
+async function runOauthVerify(
+  credId: string,
+  oidc: string,
+  pubkey: string,
+): Promise<string> {
+  const { data } = await apiPost(
+    `/auth/credentials/${encodeURIComponent(credId)}/verify`,
+    { type: "OAUTH", oidcToken: oidc, clientPublicKey: pubkey },
+  );
+  addLog("OAUTH Verify", data);
+  const d = data as Record<string, unknown>;
+  if (d.id) setCtxSession(d.id as string);
+  // MIGRATION (P6): OAUTH login moves to OAUTH_LOGIN; the knob-ON response
+  // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
+  // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
+  // `rememberEncryptedSessionSigningKey` already no-ops when the field is
+  // absent — flip this one call once the P3 wire shape settles.
+  rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
+  return JSON.stringify(data, null, 2);
+}
+
 export function wireOauthFlows(): void {
+  // ----- Guided: Log in (OAuth) -----
+  //
+  // One click owns the chain: gen client key → /verify with OIDC token +
+  // clientPublicKey → remember the session bundle. Folds the manual genkey +
+  // verify buttons below.
+  bindClick(
+    "btn-oauth-login",
+    "oauth-login-status",
+    "OAuth Login",
+    "Verifying...",
+    async () => {
+      const credId = requireCredentialId();
+      const oidc = el<HTMLInputElement>("oauth-verify-oidc").value.trim();
+      if (!oidc) throw new Error("OIDC token is required.");
+      const kp = generateClientKeyPair();
+      // Mirror the manual genkey button so the field reflects what was sent.
+      el<HTMLInputElement>("oauth-verify-pubkey").value =
+        kp.publicKeyUncompressed;
+      return runOauthVerify(credId, oidc, kp.publicKeyUncompressed);
+    },
+  );
+
   bindClick(
     "btn-oauth-create",
     "oauth-create-status",
@@ -44,20 +90,7 @@ export function wireOauthFlows(): void {
       const pubkey = el<HTMLInputElement>("oauth-verify-pubkey").value.trim();
       if (!oidc || !pubkey)
         throw new Error("OIDC token and public key are required.");
-      const { data } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/verify`,
-        { type: "OAUTH", oidcToken: oidc, clientPublicKey: pubkey },
-      );
-      addLog("OAUTH Verify", data);
-      const d = data as Record<string, unknown>;
-      if (d.id) setCtxSession(d.id as string);
-      // MIGRATION (P6): OAUTH login moves to OAUTH_LOGIN; the knob-ON response
-      // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
-      // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
-      // `rememberEncryptedSessionSigningKey` already no-ops when the field is
-      // absent — flip this one call once the P3 wire shape settles.
-      rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
-      return JSON.stringify(data, null, 2);
+      return runOauthVerify(credId, oidc, pubkey);
     },
   );
 
@@ -88,7 +121,8 @@ export function wireOauthFlows(): void {
     "Forwarding signed retry...",
     async () => {
       const requestId = oauthAddRequestId.value.trim();
-      if (!requestId) throw new Error("Request-Id is required — run step 1 first.");
+      if (!requestId)
+        throw new Error("Request-Id is required — run step 1 first.");
       const oidc = el<HTMLTextAreaElement>("oauth-add-oidc").value.trim();
       const { data } = await apiPost(
         "/auth/credentials",

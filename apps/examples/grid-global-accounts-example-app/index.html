@@ -251,15 +251,40 @@
       #sandbox-legend code {
         color: #ffd166;
       }
+      details.advanced {
+        margin-top: 10px;
+        border-top: 1px dashed #2e3a5f;
+        padding-top: 8px;
+      }
+      details.advanced > summary {
+        color: #888;
+        font-size: 11px;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+      }
+      details.advanced > summary::before {
+        content: "▸ ";
+        color: #666;
+      }
+      details.advanced[open] > summary::before {
+        content: "▾ ";
+      }
+      details.advanced > summary:hover {
+        color: #a0c4ff;
+      }
     </style>
   </head>
   <body>
     <h1>Grid Global Accounts - Example App</h1>
     <p class="note" style="margin-bottom: 12px">
-      Pick a mode at the top. Signed-retry flows are two-step — step 1 issues a
-      202 challenge (<code>requestId</code> / <code>payloadToSign</code> you can
-      inspect), step 2 forwards a <code>Grid-Wallet-Signature</code>: a magic
-      value in sandbox, a real session stamp in production.
+      Pick a mode at the top, then use the guided buttons — each owns its whole
+      chain (log in, manage, move money) and updates the session chip. The
+      <code>Grid-Wallet-Signature</code> on signed retries is a magic value in
+      sandbox and a real session stamp in production. Every guided flow has an
+      <em>Advanced (manual steps)</em> toggle that exposes the raw issue/retry
+      legs so you can inspect the 202 <code>requestId</code> /
+      <code>payloadToSign</code> between steps.
     </p>
 
     <!-- ========== Shared Setup ========== -->
@@ -316,7 +341,13 @@
         </div>
         <div>
           <label for="cfg-otp-length">OTP Length (4–8)</label>
-          <input type="number" id="cfg-otp-length" min="4" max="8" placeholder="6" />
+          <input
+            type="number"
+            id="cfg-otp-length"
+            min="4"
+            max="8"
+            placeholder="6"
+          />
         </div>
       </div>
       <div class="row">
@@ -326,7 +357,11 @@
         </div>
         <div>
           <label for="cfg-alphanumeric" style="margin-top: 12px">
-            <input type="checkbox" id="cfg-alphanumeric" style="width:auto;margin-right:6px;vertical-align:middle" />
+            <input
+              type="checkbox"
+              id="cfg-alphanumeric"
+              style="width: auto; margin-right: 6px; vertical-align: middle"
+            />
             Alphanumeric codes (vs digits-only)
           </label>
         </div>
@@ -334,21 +369,37 @@
       <div class="row">
         <div>
           <label for="cfg-send-from-email">Send-from Email Address</label>
-          <input type="email" id="cfg-send-from-email" placeholder="noreply@acme.com" />
+          <input
+            type="email"
+            id="cfg-send-from-email"
+            placeholder="noreply@acme.com"
+          />
         </div>
         <div>
           <label for="cfg-send-from-name">Send-from Display Name</label>
-          <input type="text" id="cfg-send-from-name" placeholder="Acme Wallet" />
+          <input
+            type="text"
+            id="cfg-send-from-name"
+            placeholder="Acme Wallet"
+          />
         </div>
       </div>
       <div class="row">
         <div>
           <label for="cfg-reply-to-email">Reply-to Email Address</label>
-          <input type="email" id="cfg-reply-to-email" placeholder="support@acme.com" />
+          <input
+            type="email"
+            id="cfg-reply-to-email"
+            placeholder="support@acme.com"
+          />
         </div>
         <div>
           <label for="cfg-logo-url">Logo URL</label>
-          <input type="url" id="cfg-logo-url" placeholder="https://acme.com/logo.png" />
+          <input
+            type="url"
+            id="cfg-logo-url"
+            placeholder="https://acme.com/logo.png"
+          />
         </div>
       </div>
       <button id="btn-cfg-load" class="secondary">Load Current</button>
@@ -453,110 +504,130 @@
         </div>
 
         <div class="subsection">
-          <h3>Verify → session (secure OTP)</h3>
+          <h3>Log in → session (secure OTP)</h3>
           <p class="note">
-            Two steps. <b>1. Challenge</b> issues INIT_OTP and returns the
-            enclave target bundle — against real Turnkey the OTP is emailed to
-            the customer; in sandbox it's <code>000000</code>. <b>2. Verify</b>
-            HPKE-seals the entered code with <code>@turnkey/crypto</code> →
-            /verify first leg (202 + verificationToken) → ECDSA-sign the token
-            with the TEK → /verify retry (200 session). The code is never sent
-            in plaintext and the TEK private key never leaves the client. Uses
-            the Credential ID from Wallet Context.
+            Guided: one click runs <code>/challenge</code> (sends the OTP —
+            emailed against real Turnkey, <code>000000</code> in sandbox) →
+            prompts for the code (pre-seeded in sandbox) → HPKE-seals it →
+            <code>/verify</code> first leg (202 + verificationToken) →
+            ECDSA-signs the token with the TEK → <code>/verify</code> retry (200
+            session), then caches the TEK as the session signing key. The code
+            is never sent in plaintext and the TEK private key never leaves the
+            client. Uses the Credential ID from Wallet Context.
           </p>
-          <button id="btn-email_otp-v3-challenge">1. Challenge (send OTP)</button>
-          <div id="email_otp-v3-challenge-status"></div>
+          <button id="btn-email_otp-login">Log in (Email OTP)</button>
+          <div id="email_otp-login-status"></div>
           <div class="magic-field" data-magic-for="email_otp-v3-code">
             <label for="email_otp-v3-code">OTP Code</label>
             <input type="text" id="email_otp-v3-code" />
           </div>
-          <button id="btn-email_otp-v3-verify">2. Verify</button>
-          <div id="email_otp-v3-verify-status"></div>
+
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
+            <p class="note">
+              Run challenge + verify separately to inspect the target bundle and
+              verificationToken between legs.
+            </p>
+            <button id="btn-email_otp-v3-challenge">
+              1. Challenge (send OTP)
+            </button>
+            <div id="email_otp-v3-challenge-status"></div>
+            <button id="btn-email_otp-v3-verify">2. Verify</button>
+            <div id="email_otp-v3-verify-status"></div>
+          </details>
         </div>
 
         <div class="subsection">
-          <h3>
-            Add second EMAIL_OTP (expected-reject demo)
-          </h3>
+          <h3>Manage credential / session</h3>
           <p class="note">
-            Not a happy path. Rejects because one EMAIL_OTP is already attached
-            — step 1 exercises the reject path. Remove the first EMAIL_OTP to
-            test the full add flow.
+            Each guided button runs the whole issue → sign → retry chain in one
+            click — the signature is a magic value in sandbox and a live-session
+            stamp in production (the button is disabled with a tooltip until you
+            log in).
           </p>
-          <button id="btn-email_otp-add-issue">1. Issue add challenge</button>
-          <div id="email_otp-add-issue-status"></div>
-          <label for="email_otp-add-request-id">Request-Id (auto-filled)</label>
-          <input
-            type="text"
-            id="email_otp-add-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-email_otp-add-retry">2. Retry with signature</button>
-          <div id="email_otp-add-retry-status"></div>
-        </div>
+          <button id="btn-email_otp-del-cred-guided">Delete credential</button>
+          <div id="email_otp-del-cred-guided-status"></div>
+          <button id="btn-email_otp-del-session-guided" class="secondary">
+            Delete session
+          </button>
+          <div id="email_otp-del-session-guided-status"></div>
+          <button id="btn-email_otp-export-guided" class="secondary">
+            Export wallet
+          </button>
+          <div id="email_otp-export-guided-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Delete credential via signed retry
-          </h3>
-          <p class="note">
-            No sandbox gate yet; step 1 succeeds, step 2 may fail against real
-            Turnkey.
-          </p>
-          <button id="btn-email_otp-del-cred-issue">
-            1. Issue delete challenge
-          </button>
-          <div id="email_otp-del-cred-issue-status"></div>
-          <label for="email_otp-del-cred-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="email_otp-del-cred-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-email_otp-del-cred-retry">
-            2. Retry with signature
-          </button>
-          <div id="email_otp-del-cred-retry-status"></div>
-        </div>
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
 
-        <div class="subsection">
-          <h3>
-            Delete session via signed retry
-          </h3>
-          <button id="btn-email_otp-del-session-issue">
-            1. Issue delete challenge
-          </button>
-          <div id="email_otp-del-session-issue-status"></div>
-          <label for="email_otp-del-session-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="email_otp-del-session-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-email_otp-del-session-retry">
-            2. Retry with signature
-          </button>
-          <div id="email_otp-del-session-retry-status"></div>
-        </div>
+            <h3>Add second EMAIL_OTP (expected-reject demo)</h3>
+            <p class="note">
+              Not a happy path. Rejects because one EMAIL_OTP is already
+              attached — step 1 exercises the reject path. Remove the first
+              EMAIL_OTP to test the full add flow.
+            </p>
+            <button id="btn-email_otp-add-issue">1. Issue add challenge</button>
+            <div id="email_otp-add-issue-status"></div>
+            <label for="email_otp-add-request-id"
+              >Request-Id (auto-filled)</label
+            >
+            <input
+              type="text"
+              id="email_otp-add-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-email_otp-add-retry">
+              2. Retry with signature
+            </button>
+            <div id="email_otp-add-retry-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Wallet export via signed retry
-          </h3>
-          <button id="btn-email_otp-export-issue">
-            1. Issue export challenge
-          </button>
-          <div id="email_otp-export-issue-status"></div>
-          <label for="email_otp-export-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="email_otp-export-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-email_otp-export-retry">
-            2. Retry with signature
-          </button>
-          <div id="email_otp-export-retry-status"></div>
+            <h3>Delete credential via signed retry</h3>
+            <button id="btn-email_otp-del-cred-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="email_otp-del-cred-issue-status"></div>
+            <label for="email_otp-del-cred-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="email_otp-del-cred-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-email_otp-del-cred-retry">
+              2. Retry with signature
+            </button>
+            <div id="email_otp-del-cred-retry-status"></div>
+
+            <h3>Delete session via signed retry</h3>
+            <button id="btn-email_otp-del-session-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="email_otp-del-session-issue-status"></div>
+            <label for="email_otp-del-session-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="email_otp-del-session-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-email_otp-del-session-retry">
+              2. Retry with signature
+            </button>
+            <div id="email_otp-del-session-retry-status"></div>
+
+            <h3>Wallet export via signed retry</h3>
+            <button id="btn-email_otp-export-issue">
+              1. Issue export challenge
+            </button>
+            <div id="email_otp-export-issue-status"></div>
+            <label for="email_otp-export-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="email_otp-export-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-email_otp-export-retry">
+              2. Retry with signature
+            </button>
+            <div id="email_otp-export-retry-status"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -578,97 +649,123 @@
         </div>
 
         <div class="subsection">
-          <h3>Verify → session</h3>
+          <h3>Log in → session</h3>
+          <p class="note">
+            Guided: one click generates the client P-256 key →
+            <code>/verify</code> with the OIDC token + client public key →
+            remembers the returned session bundle. Uses the Credential ID from
+            Wallet Context.
+          </p>
           <div class="magic-field" data-magic-for="oauth-verify-oidc">
             <label for="oauth-verify-oidc">OIDC Token</label>
             <input type="text" id="oauth-verify-oidc" />
           </div>
-          <label for="oauth-verify-pubkey">Client Public Key (hex)</label>
-          <input
-            type="text"
-            id="oauth-verify-pubkey"
-            placeholder="click Generate"
-            readonly
-          />
-          <button id="btn-oauth-verify-genkey" class="secondary">
-            Generate P-256 Key
-          </button>
-          <button id="btn-oauth-verify">Verify</button>
-          <div id="oauth-verify-status"></div>
+          <button id="btn-oauth-login">Log in (OAuth)</button>
+          <div id="oauth-login-status"></div>
+
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
+            <label for="oauth-verify-pubkey">Client Public Key (hex)</label>
+            <input
+              type="text"
+              id="oauth-verify-pubkey"
+              placeholder="click Generate"
+              readonly
+            />
+            <button id="btn-oauth-verify-genkey" class="secondary">
+              Generate P-256 Key
+            </button>
+            <button id="btn-oauth-verify">Verify</button>
+            <div id="oauth-verify-status"></div>
+          </details>
         </div>
 
         <div class="subsection">
-          <h3>
-            Add additional OAUTH via signed retry
-          </h3>
-          <div class="magic-field" data-magic-for="oauth-add-oidc">
-            <label for="oauth-add-oidc">OIDC Token (different identity)</label>
-            <textarea id="oauth-add-oidc" rows="2"></textarea>
-          </div>
-          <button id="btn-oauth-add-issue">1. Issue add challenge</button>
-          <div id="oauth-add-issue-status"></div>
-          <label for="oauth-add-request-id">Request-Id (auto-filled)</label>
-          <input
-            type="text"
-            id="oauth-add-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-oauth-add-retry">2. Retry with signature</button>
-          <div id="oauth-add-retry-status"></div>
-        </div>
-
-        <div class="subsection">
-          <h3>
-            Delete credential via signed retry
-          </h3>
-          <button id="btn-oauth-del-cred-issue">
-            1. Issue delete challenge
+          <h3>Manage credential / session</h3>
+          <p class="note">
+            Each guided button runs the whole issue → sign → retry chain in one
+            click — the signature is a magic value in sandbox and a live-session
+            stamp in production (the button is disabled with a tooltip until you
+            log in).
+          </p>
+          <button id="btn-oauth-del-cred-guided">Delete credential</button>
+          <div id="oauth-del-cred-guided-status"></div>
+          <button id="btn-oauth-del-session-guided" class="secondary">
+            Delete session
           </button>
-          <div id="oauth-del-cred-issue-status"></div>
-          <label for="oauth-del-cred-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="oauth-del-cred-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-oauth-del-cred-retry">2. Retry with signature</button>
-          <div id="oauth-del-cred-retry-status"></div>
-        </div>
-
-        <div class="subsection">
-          <h3>
-            Delete session via signed retry
-          </h3>
-          <button id="btn-oauth-del-session-issue">
-            1. Issue delete challenge
+          <div id="oauth-del-session-guided-status"></div>
+          <button id="btn-oauth-export-guided" class="secondary">
+            Export wallet
           </button>
-          <div id="oauth-del-session-issue-status"></div>
-          <label for="oauth-del-session-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="oauth-del-session-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-oauth-del-session-retry">
-            2. Retry with signature
-          </button>
-          <div id="oauth-del-session-retry-status"></div>
-        </div>
+          <div id="oauth-export-guided-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Wallet export via signed retry
-          </h3>
-          <button id="btn-oauth-export-issue">1. Issue export challenge</button>
-          <div id="oauth-export-issue-status"></div>
-          <label for="oauth-export-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="oauth-export-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-oauth-export-retry">2. Retry with signature</button>
-          <div id="oauth-export-retry-status"></div>
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
+
+            <h3>Add additional OAUTH via signed retry</h3>
+            <div class="magic-field" data-magic-for="oauth-add-oidc">
+              <label for="oauth-add-oidc"
+                >OIDC Token (different identity)</label
+              >
+              <textarea id="oauth-add-oidc" rows="2"></textarea>
+            </div>
+            <button id="btn-oauth-add-issue">1. Issue add challenge</button>
+            <div id="oauth-add-issue-status"></div>
+            <label for="oauth-add-request-id">Request-Id (auto-filled)</label>
+            <input
+              type="text"
+              id="oauth-add-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-oauth-add-retry">2. Retry with signature</button>
+            <div id="oauth-add-retry-status"></div>
+
+            <h3>Delete credential via signed retry</h3>
+            <button id="btn-oauth-del-cred-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="oauth-del-cred-issue-status"></div>
+            <label for="oauth-del-cred-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="oauth-del-cred-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-oauth-del-cred-retry">
+              2. Retry with signature
+            </button>
+            <div id="oauth-del-cred-retry-status"></div>
+
+            <h3>Delete session via signed retry</h3>
+            <button id="btn-oauth-del-session-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="oauth-del-session-issue-status"></div>
+            <label for="oauth-del-session-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="oauth-del-session-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-oauth-del-session-retry">
+              2. Retry with signature
+            </button>
+            <div id="oauth-del-session-retry-status"></div>
+
+            <h3>Wallet export via signed retry</h3>
+            <button id="btn-oauth-export-issue">
+              1. Issue export challenge
+            </button>
+            <div id="oauth-export-issue-status"></div>
+            <label for="oauth-export-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="oauth-export-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-oauth-export-retry">2. Retry with signature</button>
+            <div id="oauth-export-retry-status"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -688,7 +785,8 @@
             value="Sandbox Passkey"
           />
           <label for="passkey-rp-id"
-            >RP ID (blank = this page's hostname; must match the sub-org's)</label
+            >RP ID (blank = this page's hostname; must match the
+            sub-org's)</label
           >
           <input
             type="text"
@@ -742,146 +840,176 @@
         </div>
 
         <div class="subsection">
-          <h3>Session challenge</h3>
+          <h3>Log in → session</h3>
           <p class="note">
-            <code>/challenge</code> returns
-            <code>challenge = sha256(CREATE_READ_WRITE_SESSION body)</code> +
-            <code>requestId</code>. The client signs the challenge via WebAuthn.
+            Guided: one click generates the client P-256 key →
+            <code>/challenge</code> (returns
+            <code>sha256(CREATE_READ_WRITE_SESSION body)</code> +
+            <code>requestId</code>) → produces the assertion (a real Touch ID
+            ceremony in production, the seeded magic fields in sandbox) →
+            <code>/verify</code> → remembers the session bundle. Uses the
+            Credential ID from Wallet Context.
           </p>
-          <label for="passkey-challenge-pubkey">Client Public Key (hex)</label>
-          <input
-            type="text"
-            id="passkey-challenge-pubkey"
-            placeholder="click Generate"
-            readonly
-          />
-          <button id="btn-passkey-challenge-genkey" class="secondary">
-            Generate P-256 Key
-          </button>
-          <button id="btn-passkey-challenge">Issue session challenge</button>
-          <div id="passkey-challenge-status"></div>
-        </div>
+          <button id="btn-passkey-login">Log in (Passkey)</button>
+          <div id="passkey-login-status"></div>
 
-        <div class="subsection">
-          <h3>Verify → session</h3>
-          <label for="passkey-verify-request-id"
-            >Request-Id (from challenge)</label
-          >
-          <input
-            type="text"
-            id="passkey-verify-request-id"
-            placeholder="auto-filled from challenge"
-          />
-          <div class="magic-field" data-magic-for="passkey-verify-signature">
-            <label for="passkey-verify-signature">Assertion signature</label>
-            <input type="text" id="passkey-verify-signature" />
-          </div>
-          <div class="magic-field" data-magic-for="passkey-verify-auth-data">
-            <label for="passkey-verify-auth-data"
-              >Assertion authenticatorData</label
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
+
+            <h3>Session challenge</h3>
+            <label for="passkey-challenge-pubkey"
+              >Client Public Key (hex)</label
             >
-            <input type="text" id="passkey-verify-auth-data" />
-          </div>
-          <div
-            class="magic-field"
-            data-magic-for="passkey-verify-client-data-json"
-          >
-            <label for="passkey-verify-client-data-json"
-              >Assertion clientDataJSON</label
+            <input
+              type="text"
+              id="passkey-challenge-pubkey"
+              placeholder="click Generate"
+              readonly
+            />
+            <button id="btn-passkey-challenge-genkey" class="secondary">
+              Generate P-256 Key
+            </button>
+            <button id="btn-passkey-challenge">Issue session challenge</button>
+            <div id="passkey-challenge-status"></div>
+
+            <h3>Verify → session</h3>
+            <label for="passkey-verify-request-id"
+              >Request-Id (from challenge)</label
             >
-            <input type="text" id="passkey-verify-client-data-json" />
-          </div>
+            <input
+              type="text"
+              id="passkey-verify-request-id"
+              placeholder="auto-filled from challenge"
+            />
+            <div class="magic-field" data-magic-for="passkey-verify-signature">
+              <label for="passkey-verify-signature">Assertion signature</label>
+              <input type="text" id="passkey-verify-signature" />
+            </div>
+            <div class="magic-field" data-magic-for="passkey-verify-auth-data">
+              <label for="passkey-verify-auth-data"
+                >Assertion authenticatorData</label
+              >
+              <input type="text" id="passkey-verify-auth-data" />
+            </div>
+            <div
+              class="magic-field"
+              data-magic-for="passkey-verify-client-data-json"
+            >
+              <label for="passkey-verify-client-data-json"
+                >Assertion clientDataJSON</label
+              >
+              <input type="text" id="passkey-verify-client-data-json" />
+            </div>
+            <p class="note">
+              Click below to sign the issued challenge with your real passkey
+              (Touch ID) — it fills the assertion fields above.
+            </p>
+            <button
+              id="btn-passkey-webauthn-get"
+              class="secondary"
+              data-ceremony
+            >
+              📱 Sign with passkey (Touch ID)
+            </button>
+            <div id="passkey-webauthn-get-status"></div>
+            <button id="btn-passkey-verify">Verify</button>
+            <div id="passkey-verify-status"></div>
+          </details>
+        </div>
+
+        <div class="subsection">
+          <h3>Manage credential / session</h3>
           <p class="note">
-            Click below to sign the issued challenge with your real passkey
-            (Touch ID) — it fills the assertion fields above.
+            Each guided button runs the whole issue → sign → retry chain in one
+            click — the signature is a magic value in sandbox and a live-session
+            stamp in production (the button is disabled with a tooltip until you
+            log in).
           </p>
-          <button id="btn-passkey-webauthn-get" class="secondary" data-ceremony>
-            📱 Sign with passkey (Touch ID)
+          <button id="btn-passkey-del-cred-guided">Delete credential</button>
+          <div id="passkey-del-cred-guided-status"></div>
+          <button id="btn-passkey-del-session-guided" class="secondary">
+            Delete session
           </button>
-          <div id="passkey-webauthn-get-status"></div>
-          <button id="btn-passkey-verify">Verify</button>
-          <div id="passkey-verify-status"></div>
-        </div>
+          <div id="passkey-del-session-guided-status"></div>
+          <button id="btn-passkey-export-guided" class="secondary">
+            Export wallet
+          </button>
+          <div id="passkey-export-guided-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Add additional PASSKEY via signed retry
-          </h3>
-          <p class="note">
-            First click "📱 Create real passkey" in the
-            <em>Create credential</em> section above — that registers the new
-            passkey whose attestation is added here. Then run steps 1 and 2.
-          </p>
-          <label for="passkey-add-nickname">Nickname</label>
-          <input type="text" id="passkey-add-nickname" value="Second Passkey" />
-          <button id="btn-passkey-add-issue">1. Issue add challenge</button>
-          <div id="passkey-add-issue-status"></div>
-          <label for="passkey-add-request-id">Request-Id (auto-filled)</label>
-          <input
-            type="text"
-            id="passkey-add-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-passkey-add-retry">2. Retry with signature</button>
-          <div id="passkey-add-retry-status"></div>
-        </div>
+          <details class="advanced">
+            <summary>Advanced (manual steps)</summary>
 
-        <div class="subsection">
-          <h3>
-            Delete credential via signed retry
-          </h3>
-          <button id="btn-passkey-del-cred-issue">
-            1. Issue delete challenge
-          </button>
-          <div id="passkey-del-cred-issue-status"></div>
-          <label for="passkey-del-cred-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="passkey-del-cred-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-passkey-del-cred-retry">
-            2. Retry with signature
-          </button>
-          <div id="passkey-del-cred-retry-status"></div>
-        </div>
+            <h3>Add additional PASSKEY via signed retry</h3>
+            <p class="note">
+              First click "📱 Create real passkey" in the
+              <em>Create credential</em> section above — that registers the new
+              passkey whose attestation is added here. Then run steps 1 and 2.
+            </p>
+            <label for="passkey-add-nickname">Nickname</label>
+            <input
+              type="text"
+              id="passkey-add-nickname"
+              value="Second Passkey"
+            />
+            <button id="btn-passkey-add-issue">1. Issue add challenge</button>
+            <div id="passkey-add-issue-status"></div>
+            <label for="passkey-add-request-id">Request-Id (auto-filled)</label>
+            <input
+              type="text"
+              id="passkey-add-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-passkey-add-retry">2. Retry with signature</button>
+            <div id="passkey-add-retry-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Delete session via signed retry
-          </h3>
-          <button id="btn-passkey-del-session-issue">
-            1. Issue delete challenge
-          </button>
-          <div id="passkey-del-session-issue-status"></div>
-          <label for="passkey-del-session-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="passkey-del-session-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-passkey-del-session-retry">
-            2. Retry with signature
-          </button>
-          <div id="passkey-del-session-retry-status"></div>
-        </div>
+            <h3>Delete credential via signed retry</h3>
+            <button id="btn-passkey-del-cred-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="passkey-del-cred-issue-status"></div>
+            <label for="passkey-del-cred-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="passkey-del-cred-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-passkey-del-cred-retry">
+              2. Retry with signature
+            </button>
+            <div id="passkey-del-cred-retry-status"></div>
 
-        <div class="subsection">
-          <h3>
-            Wallet export via signed retry
-          </h3>
-          <button id="btn-passkey-export-issue">
-            1. Issue export challenge
-          </button>
-          <div id="passkey-export-issue-status"></div>
-          <label for="passkey-export-request-id">Request-Id</label>
-          <input
-            type="text"
-            id="passkey-export-request-id"
-            placeholder="auto-filled from step 1"
-          />
-          <button id="btn-passkey-export-retry">2. Retry with signature</button>
-          <div id="passkey-export-retry-status"></div>
+            <h3>Delete session via signed retry</h3>
+            <button id="btn-passkey-del-session-issue">
+              1. Issue delete challenge
+            </button>
+            <div id="passkey-del-session-issue-status"></div>
+            <label for="passkey-del-session-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="passkey-del-session-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-passkey-del-session-retry">
+              2. Retry with signature
+            </button>
+            <div id="passkey-del-session-retry-status"></div>
+
+            <h3>Wallet export via signed retry</h3>
+            <button id="btn-passkey-export-issue">
+              1. Issue export challenge
+            </button>
+            <div id="passkey-export-issue-status"></div>
+            <label for="passkey-export-request-id">Request-Id</label>
+            <input
+              type="text"
+              id="passkey-export-request-id"
+              placeholder="auto-filled from step 1"
+            />
+            <button id="btn-passkey-export-retry">
+              2. Retry with signature
+            </button>
+            <div id="passkey-export-retry-status"></div>
+          </details>
         </div>
       </div>
     </div>

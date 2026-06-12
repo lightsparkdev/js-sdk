@@ -3,7 +3,7 @@
 
 import { SANDBOX_SIG } from "../config";
 import { apiPost, getMode } from "../api-client";
-import { turnkeyStamp } from "../turnkey";
+import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
 import {
   hasSessionSigningKey,
   onSessionChange,
@@ -25,6 +25,50 @@ import {
   setCtxSession,
 } from "./context";
 
+// Run /verify with the assertion currently in the DOM fields (populated by the
+// real ceremony in production or the seeded magic fields in sandbox), caching
+// the session bundle on success. Shared by guided login + the manual button.
+async function runPasskeyVerify(
+  credId: string,
+  requestId: string | undefined,
+): Promise<string> {
+  const body = {
+    type: "PASSKEY",
+    clientPublicKey: el<HTMLInputElement>(
+      "passkey-challenge-pubkey",
+    ).value.trim(),
+    assertion: {
+      credentialId: el<HTMLInputElement>(
+        "passkey-create-cred-id-raw",
+      ).value.trim(),
+      clientDataJson: el<HTMLInputElement>(
+        "passkey-verify-client-data-json",
+      ).value.trim(),
+      authenticatorData: el<HTMLInputElement>(
+        "passkey-verify-auth-data",
+      ).value.trim(),
+      signature: el<HTMLInputElement>("passkey-verify-signature").value.trim(),
+    },
+  };
+  const headers: Record<string, string> = {};
+  if (requestId) headers["Request-Id"] = requestId;
+  const { data } = await apiPost(
+    `/auth/credentials/${encodeURIComponent(credId)}/verify`,
+    body,
+    headers,
+  );
+  addLog("PASSKEY Verify", data);
+  const d = data as Record<string, unknown>;
+  if (d.id) setCtxSession(d.id as string);
+  // MIGRATION (P6): PASSKEY login moves to STAMP_LOGIN; the knob-ON response
+  // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
+  // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
+  // `rememberEncryptedSessionSigningKey` already no-ops when the field is
+  // absent — flip this one call once the P2 wire shape settles.
+  rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
+  return JSON.stringify(data, null, 2);
+}
+
 export function wirePasskeyFlows(): void {
   bindClick(
     "btn-passkey-create",
@@ -36,7 +80,9 @@ export function wirePasskeyFlows(): void {
         type: "PASSKEY",
         accountId: requireAccountId(),
         nickname: el<HTMLInputElement>("passkey-create-nickname").value.trim(),
-        challenge: el<HTMLInputElement>("passkey-create-challenge").value.trim(),
+        challenge: el<HTMLInputElement>(
+          "passkey-create-challenge",
+        ).value.trim(),
         attestation: {
           credentialId: el<HTMLInputElement>(
             "passkey-create-cred-id-raw",
@@ -107,7 +153,8 @@ export function wirePasskeyFlows(): void {
       addLog("PASSKEY Challenge", data);
       const d = data as Record<string, unknown>;
       if (d.requestId) passkeyVerifyRequestId.value = d.requestId as string;
-      if (typeof d.challenge === "string") passkeySessionChallenge = d.challenge;
+      if (typeof d.challenge === "string")
+        passkeySessionChallenge = d.challenge;
       return JSON.stringify(data, null, 2);
     },
   );
@@ -119,44 +166,60 @@ export function wirePasskeyFlows(): void {
     "Verifying assertion...",
     async () => {
       const credId = requireCredentialId();
-      const requestId = passkeyVerifyRequestId.value.trim();
-      const body = {
-        type: "PASSKEY",
-        clientPublicKey: el<HTMLInputElement>(
-          "passkey-challenge-pubkey",
-        ).value.trim(),
-        assertion: {
-          credentialId: el<HTMLInputElement>(
-            "passkey-create-cred-id-raw",
-          ).value.trim(),
-          clientDataJson: el<HTMLInputElement>(
-            "passkey-verify-client-data-json",
-          ).value.trim(),
-          authenticatorData: el<HTMLInputElement>(
-            "passkey-verify-auth-data",
-          ).value.trim(),
-          signature: el<HTMLInputElement>(
-            "passkey-verify-signature",
-          ).value.trim(),
-        },
-      };
-      const headers: Record<string, string> = {};
-      if (requestId) headers["Request-Id"] = requestId;
-      const { data } = await apiPost(
-        `/auth/credentials/${encodeURIComponent(credId)}/verify`,
-        body,
-        headers,
+      const requestId = passkeyVerifyRequestId.value.trim() || undefined;
+      return runPasskeyVerify(credId, requestId);
+    },
+  );
+
+  // ----- Guided: Log in (Passkey) -----
+  //
+  // One click owns the chain: gen client key → /challenge → assertion (a real
+  // Touch ID ceremony in production, the seeded magic fields in sandbox) →
+  // /verify → remember session bundle. Folds the manual genkey + challenge +
+  // sign + verify buttons below.
+  bindClick(
+    "btn-passkey-login",
+    "passkey-login-status",
+    "Passkey Login",
+    "Logging in with passkey...",
+    async () => {
+      const credId = requireCredentialId();
+      const kp = generateClientKeyPair();
+      el<HTMLInputElement>("passkey-challenge-pubkey").value =
+        kp.publicKeyUncompressed;
+
+      // Issue the session challenge bound to the fresh client key.
+      const { data: challengeData } = await apiPost(
+        `/auth/credentials/${encodeURIComponent(credId)}/challenge`,
+        { clientPublicKey: kp.publicKeyUncompressed },
       );
-      addLog("PASSKEY Verify", data);
-      const d = data as Record<string, unknown>;
-      if (d.id) setCtxSession(d.id as string);
-      // MIGRATION (P6): PASSKEY login moves to STAMP_LOGIN; the knob-ON response
-      // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
-      // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
-      // `rememberEncryptedSessionSigningKey` already no-ops when the field is
-      // absent — flip this one call once the P2 wire shape settles.
-      rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
-      return JSON.stringify(data, null, 2);
+      addLog("PASSKEY Challenge", challengeData);
+      const cd = challengeData as Record<string, unknown>;
+      const requestId =
+        typeof cd.requestId === "string" ? cd.requestId : undefined;
+      const challenge = typeof cd.challenge === "string" ? cd.challenge : "";
+      if (requestId) passkeyVerifyRequestId.value = requestId;
+      passkeySessionChallenge = challenge;
+
+      // Produce the assertion. Production runs a real Touch ID ceremony and
+      // fills the fields; sandbox uses the seeded magic assertion fields.
+      if (getMode() === "production") {
+        const credentialId = el<HTMLInputElement>(
+          "passkey-create-cred-id-raw",
+        ).value.trim();
+        const assertion = await signWithPasskey(challenge, credentialId);
+        el<HTMLInputElement>("passkey-create-cred-id-raw").value =
+          assertion.credentialId;
+        el<HTMLInputElement>("passkey-verify-client-data-json").value =
+          assertion.clientDataJson;
+        el<HTMLInputElement>("passkey-verify-auth-data").value =
+          assertion.authenticatorData;
+        el<HTMLInputElement>("passkey-verify-signature").value =
+          assertion.signature;
+        addLog("Passkey Signed (real)", assertion);
+      }
+
+      return runPasskeyVerify(credId, requestId);
     },
   );
 
@@ -213,7 +276,10 @@ export function wirePasskeyFlows(): void {
     "PASSKEY Add (issue)",
     "Issuing add challenge...",
     async () => {
-      const { data } = await apiPost("/auth/credentials", buildPasskeyAddBody());
+      const { data } = await apiPost(
+        "/auth/credentials",
+        buildPasskeyAddBody(),
+      );
       addLog("PASSKEY Add (issue)", data);
       const d = data as Record<string, unknown>;
       if (d.requestId) passkeyAddRequestId.value = d.requestId as string;
@@ -229,7 +295,8 @@ export function wirePasskeyFlows(): void {
     "Forwarding signed retry...",
     async () => {
       const requestId = passkeyAddRequestId.value.trim();
-      if (!requestId) throw new Error("Request-Id is required — run step 1 first.");
+      if (!requestId)
+        throw new Error("Request-Id is required — run step 1 first.");
       // Sandbox accepts the magic value, but real Turnkey requires the
       // CREATE_AUTHENTICATORS payload to be stamped by an authorized credential —
       // the active session's signing key. Establish a session (e.g. OTP login or
@@ -241,10 +308,14 @@ export function wirePasskeyFlows(): void {
         }
         signature = await turnkeyStamp(passkeyAddPayloadToSign);
       }
-      const { data } = await apiPost("/auth/credentials", buildPasskeyAddBody(), {
-        "Grid-Wallet-Signature": signature,
-        "Request-Id": requestId,
-      });
+      const { data } = await apiPost(
+        "/auth/credentials",
+        buildPasskeyAddBody(),
+        {
+          "Grid-Wallet-Signature": signature,
+          "Request-Id": requestId,
+        },
+      );
       addLog("PASSKEY Add (retry)", data);
       return JSON.stringify(data, null, 2);
     },
