@@ -53,7 +53,7 @@
     "octokit": "^4.0.2",
     "prismjs": "^1.29.0",
     "ts-prune": "^0.10.3",
-    "turbo": "^2.5.4"
+    "turbo": "^2.9.17"
   },
   "dependenciesMeta": {
     "@central-icons-react/round-filled-radius-3-stroke-1.5": {
