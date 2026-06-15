@@ -45,6 +45,8 @@ type Story = StoryObj<typeof Sidebar.Root>;
 
 /**
  * Default expanded sidebar with groups and items.
+ * Sidebar.Menu is a roleless navigation grouping primitive. If consumers opt
+ * into role="menu", they own valid menuitem semantics and menu keyboard behavior.
  */
 export const Default: Story = {
   args: { collapsed: false },
@@ -667,14 +669,15 @@ export const WithDrilldownItems: Story = {
 };
 
 /**
- * TreeItem variant - expandable items with horizontal chevron that rotates 90° when expanded.
+ * TreeItem visual variant - expandable rows with a horizontal chevron. For
+ * true ARIA tree semantics, wrap items in Sidebar.Tree.
  */
 export const WithTreeItems: Story = {
   render: () => (
     <Sidebar.Root>
       <Sidebar.Content>
         <Sidebar.Group>
-          <Sidebar.GroupLabel>Tree Navigation</Sidebar.GroupLabel>
+          <Sidebar.GroupLabel>Nested Navigation</Sidebar.GroupLabel>
           <Sidebar.Menu>
             <Sidebar.Item
               icon={<CentralIcon name="IconHome" size={20} />}
@@ -845,7 +848,9 @@ export const AllItemVariants: Story = {
         <Sidebar.Separator />
 
         <Sidebar.Group>
-          <Sidebar.GroupLabel>Tree (Horizontal Chevron)</Sidebar.GroupLabel>
+          <Sidebar.GroupLabel>
+            Tree-Style Row (Horizontal Chevron)
+          </Sidebar.GroupLabel>
           <Sidebar.Menu>
             <Sidebar.TreeItem
               icon={<CentralIcon name="IconSquareBehindSquare1" size={20} />}
