@@ -10,14 +10,22 @@ import { Activity } from "./Activity";
 import { Fund } from "./Fund";
 import { Pay } from "./Pay";
 import { Settings } from "./Settings";
+import { Transactions } from "./Transactions";
 
-type Section = "wallet" | "fund" | "pay" | "activity" | "settings";
+type Section =
+  | "wallet"
+  | "fund"
+  | "pay"
+  | "activity"
+  | "transactions"
+  | "settings";
 
 const SECTIONS: { value: Section; label: string }[] = [
   { value: "wallet", label: "Wallet" },
   { value: "fund", label: "Fund" },
   { value: "pay", label: "Pay" },
   { value: "activity", label: "Activity" },
+  { value: "transactions", label: "Transactions" },
   { value: "settings", label: "Settings" },
 ];
 
@@ -169,6 +177,7 @@ export function WalletHome() {
         <Pay accounts={accounts} onDone={() => void refresh()} />
       )}
       {section === "activity" && <Activity />}
+      {section === "transactions" && <Transactions />}
       {section === "settings" && <Settings accounts={accounts} />}
     </Stack>
   );
