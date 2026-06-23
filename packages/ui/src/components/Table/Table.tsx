@@ -11,6 +11,7 @@ import {
   type ColumnSort,
   type HeaderContext,
   type Row,
+  type SortingFnOption,
 } from "@tanstack/react-table";
 import { isObject } from "lodash-es";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
@@ -107,6 +108,9 @@ interface Column<T extends Record<string, unknown>> {
   header: TableColumnHeaderInfo;
   accessorKey: keyof T;
   function?: (context: CellContext<T, TableCell>) => ReactNode;
+  enableSorting?: boolean;
+  sortDescFirst?: boolean;
+  sortingFn?: SortingFnOption<T>;
 }
 
 export type CustomTableComponents = {
@@ -283,6 +287,8 @@ export function Table<T extends Record<string, unknown>>({
             </div>
           ),
         accessorKey: column.accessorKey.toString(),
+        enableSorting: column.enableSorting ?? false,
+        sortDescFirst: column.sortDescFirst ?? false,
         cell: (context: CellContext<T, TableCell>) => {
           if (column.function && typeof column.function === "function") {
             return column.function(context);
@@ -434,6 +440,7 @@ export function Table<T extends Record<string, unknown>>({
     if (rowSelection) {
       columnsToRender.unshift({
         id: "rowSelection",
+        enableSorting: false,
         header: () => (
           <SelectionCheckboxContainer
             onClick={(event) => event.stopPropagation()}
@@ -467,6 +474,7 @@ export function Table<T extends Record<string, unknown>>({
 
       columnsToRender.push({
         id: "tripleDots",
+        enableSorting: false,
         header: () => "",
         cell: (context) => (
           <DropdownComponent
@@ -598,16 +606,71 @@ export function Table<T extends Record<string, unknown>>({
         tableInstance.getHeaderGroups().map((headerGroup) => {
           return (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </th>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const canSort = header.column.getCanSort();
+                const sortDirection = header.column.getIsSorted();
+                const onSort = header.column.getToggleSortingHandler();
+                return (
+                  <th
+                    key={header.id}
+                    aria-sort={
+                      sortDirection === "asc"
+                        ? "ascending"
+                        : sortDirection === "desc"
+                        ? "descending"
+                        : canSort
+                        ? "none"
+                        : undefined
+                    }
+                    data-sortable={canSort ? "true" : undefined}
+                    data-sorted={sortDirection || undefined}
+                    onClick={canSort ? onSort : undefined}
+                    onKeyDown={
+                      canSort
+                        ? (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              onSort?.(event);
+                            }
+                          }
+                        : undefined
+                    }
+                    style={
+                      canSort
+                        ? { cursor: "pointer", userSelect: "none" }
+                        : undefined
+                    }
+                    tabIndex={canSort ? 0 : undefined}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <HeaderContent>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                        {canSort ? (
+                          <SortIcon
+                            aria-hidden="true"
+                            data-sort-icon
+                            $active={Boolean(sortDirection)}
+                          >
+                            <Icon
+                              name={
+                                sortDirection === "asc"
+                                  ? "ChevronUp"
+                                  : sortDirection === "desc"
+                                  ? "ChevronDown"
+                                  : "Sort"
+                              }
+                              width={12}
+                            />
+                          </SortIcon>
+                        ) : null}
+                      </HeaderContent>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           );
         })
@@ -813,6 +876,30 @@ const Base64Icon = styled.img`
 const SelectionCheckboxContainer = styled.div`
   display: flex;
   align-items: center;
+`;
+
+const HeaderContent = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+`;
+
+const SortIcon = styled.span<{ $active: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: ${({ $active }) => ($active ? 1 : 0)};
+  transition: opacity 150ms ease;
+
+  th:hover &,
+  th:focus-visible & {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
 
 const cellPaddingPx = 15;
