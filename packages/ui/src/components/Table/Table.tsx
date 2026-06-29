@@ -128,9 +128,14 @@ export type TableProps<T extends Record<string, unknown>> = {
   columns: Column<T>[];
   data: T[];
   loading?: boolean;
-  onClickRow?: (
-    row: Row<T>,
-  ) => { link?: string; to?: NewRoutesType; params?: RouteParams } | void;
+  onClickRow?: (row: Row<T>) => {
+    link?: string;
+    to?: NewRoutesType;
+    params?: RouteParams;
+    // Passed to the router as navigation state (in-memory, never in the
+    // URL), for payloads that shouldn't appear in history or logs.
+    state?: unknown;
+  } | void;
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   rowHoverEffect?: "border" | "background" | "none" | undefined;
@@ -594,7 +599,13 @@ export function Table<T extends Record<string, unknown>>({
         const target = newTabKey ? "_blank" : undefined;
         window.open(link, target);
       } else if (onClickRowResult?.to) {
-        navigate(onClickRowResult.to, onClickRowResult.params);
+        navigate(
+          onClickRowResult.to,
+          onClickRowResult.params,
+          onClickRowResult.state !== undefined
+            ? { state: onClickRowResult.state }
+            : undefined,
+        );
       }
     }
   }
