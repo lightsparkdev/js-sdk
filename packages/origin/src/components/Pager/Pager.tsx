@@ -1,14 +1,15 @@
 "use client";
 
 import * as React from "react";
+import { useRender } from "@base-ui/react/use-render";
 import clsx from "clsx";
 import { CentralIcon } from "../Icon";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
-import {
-  useRender,
-  type StateAttributesMapping,
-} from "../../lib/base-ui-utils";
 import styles from "./Pager.module.scss";
+
+type StateAttributesMapping<S = Record<string, unknown>> = {
+  [K in keyof S]?: (value: S[K]) => Record<string, string> | null;
+};
 
 export interface PagerContextValue {
   hasPrevious: boolean;

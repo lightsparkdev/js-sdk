@@ -1,15 +1,44 @@
 "use client";
 
 import * as React from "react";
-import { useStableCallback } from "@base-ui/utils/useStableCallback";
-import { useMergedRefs } from "@base-ui/utils/useMergedRefs";
 import clsx from "clsx";
 import { CentralIcon } from "../Icon";
-import {
-  createChangeEventDetails,
-  type ChangeEventDetails,
-} from "../../lib/base-ui-utils";
 import styles from "./Chip.module.scss";
+
+export interface ChangeEventDetails<E = Event> {
+  reason: string;
+  event: E;
+  cancel: () => void;
+  allowPropagation: () => void;
+  isCanceled: boolean;
+  isPropagationAllowed: boolean;
+  trigger?: HTMLElement | undefined;
+}
+
+function createChangeEventDetails<E = Event>(
+  reason: string,
+  event: E,
+): ChangeEventDetails<E> {
+  let canceled = false;
+  let allowPropagation = false;
+
+  return {
+    reason,
+    event,
+    cancel() {
+      canceled = true;
+    },
+    allowPropagation() {
+      allowPropagation = true;
+    },
+    get isCanceled() {
+      return canceled;
+    },
+    get isPropagationAllowed() {
+      return allowPropagation;
+    },
+  };
+}
 
 export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** The label text for default variant */
@@ -57,15 +86,11 @@ export const Chip = React.forwardRef<HTMLSpanElement, ChipProps>(
       ...elementProps
     } = props;
 
-    const onDismiss = useStableCallback(onDismissProp);
-    const internalRef = React.useRef<HTMLSpanElement>(null);
-    const handleRef = useMergedRefs(internalRef, forwardedRef);
-
     const handleDismiss = (event: React.MouseEvent | React.KeyboardEvent) => {
       if (disabled) return;
 
       const details = createChangeEventDetails("dismiss", event);
-      onDismiss?.(details);
+      onDismissProp?.(details);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -83,7 +108,7 @@ export const Chip = React.forwardRef<HTMLSpanElement, ChipProps>(
 
     return (
       <span
-        ref={handleRef}
+        ref={forwardedRef}
         className={clsx(styles.root, styles[size], styles[variant], className)}
         data-disabled={disabled || undefined}
         {...elementProps}
@@ -124,15 +149,11 @@ export const ChipFilter = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
       ...elementProps
     } = props;
 
-    const onDismiss = useStableCallback(onDismissProp);
-    const internalRef = React.useRef<HTMLSpanElement>(null);
-    const handleRef = useMergedRefs(internalRef, forwardedRef);
-
     const handleDismiss = (event: React.MouseEvent | React.KeyboardEvent) => {
       if (disabled) return;
 
       const details = createChangeEventDetails("dismiss", event);
-      onDismiss?.(details);
+      onDismissProp?.(details);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -150,7 +171,7 @@ export const ChipFilter = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
 
     return (
       <span
-        ref={handleRef}
+        ref={forwardedRef}
         className={clsx(styles.root, styles[size], styles.filter, className)}
         data-disabled={disabled || undefined}
         {...elementProps}

@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
 import { Button, type ButtonProps } from "../Button";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
-import { useRender, mergeProps } from "../../lib/base-ui-utils";
 import styles from "./LoadMore.module.scss";
 
 export interface LoadMoreContextValue {

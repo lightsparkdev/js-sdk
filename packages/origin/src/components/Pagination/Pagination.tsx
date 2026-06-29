@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { useRender } from "@base-ui/react/use-render";
 import clsx from "clsx";
 import { CentralIcon } from "../Icon";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
-import { useRender } from "../../lib/base-ui-utils";
 import { devWarn } from "../../lib/dev-warn";
 import styles from "./Pagination.module.scss";
 
