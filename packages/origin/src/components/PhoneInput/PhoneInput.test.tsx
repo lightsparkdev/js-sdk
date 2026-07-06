@@ -218,8 +218,13 @@ test.describe("PhoneInput", () => {
     await input.focus();
 
     // The root container should have data-invalid attribute
-    const root = page.locator("[data-invalid]");
+    const root = page.locator("[data-phone-input-root][data-invalid]");
     await expect(root).toBeVisible();
+
+    // The invalid state re-threads through the country Select's field
+    // boundary, marking the trigger as well.
+    const trigger = page.locator("[data-phone-input-trigger][data-invalid]");
+    await expect(trigger).toBeVisible();
   });
 
   test("has correct height", async ({ mount, page }) => {

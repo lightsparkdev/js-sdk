@@ -5,6 +5,7 @@ import {
   Select as BaseSelect,
   type SelectRootProps,
 } from "@base-ui/react/select";
+import { Field as BaseField } from "@base-ui/react/field";
 import { Input as BaseInput } from "@base-ui/react/input";
 import { CentralIcon } from "../Icon";
 import clsx from "clsx";
@@ -91,13 +92,30 @@ export function CountrySelect<Value>({
   disabled: selectDisabled,
   ...props
 }: CountrySelectProps<Value>) {
-  const { disabled: rootDisabled } = usePhoneInputContext();
+  const { disabled: rootDisabled, invalid } = usePhoneInputContext();
   const isDisabled = selectDisabled ?? rootDisabled;
 
+  /* The nested Field.Root is a field boundary, not a visual element
+     (display: contents). Base UI allows one control per Field: without the
+     boundary, a Field.Root wrapped around the whole phone input adopts the
+     phone <Input>'s name and the Select's hidden serialization input
+     inherits it, submitting a second (earlier-in-DOM) entry under the phone
+     field's name. Inside the boundary the hidden input only gets a name
+     when the consumer passes `name` to CountrySelect.
+
+     The boundary also blocks the outer field's disabled/invalid context, so
+     PhoneInput's own state is re-threaded into the nested field to keep the
+     trigger's disabled behavior and aria-invalid intact. */
   return (
-    <BaseSelect.Root disabled={isDisabled} {...props}>
-      {children}
-    </BaseSelect.Root>
+    <BaseField.Root
+      className={styles.countryField}
+      disabled={isDisabled}
+      invalid={invalid}
+    >
+      <BaseSelect.Root disabled={isDisabled} {...props}>
+        {children}
+      </BaseSelect.Root>
+    </BaseField.Root>
   );
 }
 

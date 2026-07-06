@@ -36,6 +36,12 @@
   }
 }
 
+// Field boundary around the country Select. Renders no box of its own so
+// the trigger stays a direct flex child of .root.
+.countryField {
+  display: contents;
+}
+
 .trigger {
   @include button-reset;
   display: flex;
