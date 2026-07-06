@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultField,
   FieldWithLabelSuffix,
+  FieldWithInlineDescriptionLink,
   FieldWithError,
   DisabledField,
   FieldWithoutLabel,
@@ -27,7 +28,7 @@ test.describe("Field", () => {
       await expect(description).toBeVisible();
     });
 
-    test("spaces label suffix children with the spacing token", async ({
+    test("spaces the label suffix slot with the spacing token", async ({
       mount,
       page,
     }) => {
@@ -37,10 +38,43 @@ test.describe("Field", () => {
       const suffix = page.getByTestId("field-label-suffix");
 
       await expect(label).toBeVisible();
-      await expect(label).toHaveCSS("display", "flex");
-      await expect(label).toHaveCSS("gap", "4px");
       await expect(label).toContainText("Display name");
       await expect(suffix).toHaveText("(optional)");
+      // Spacing lives on the suffix slot, not on a label flex gap.
+      await expect(suffix).toHaveCSS("margin-left", "4px");
+    });
+
+    test("label lays out mixed text and a suffix as one inline run", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithLabelSuffix />);
+
+      const label = page.getByTestId("field-label-with-suffix");
+      const suffix = page.getByTestId("field-label-suffix");
+
+      // Block (not flex) layout keeps the label text and suffix in the same
+      // wrapping text run instead of splitting them into flex items.
+      await expect(label).toHaveCSS("display", "block");
+      await expect(suffix).toHaveCSS("display", "inline");
+    });
+
+    test("description lays out mixed text and elements as one inline run", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithInlineDescriptionLink />);
+
+      const description = page.getByTestId("description-with-link");
+      const link = page.getByTestId("description-link");
+
+      // Block (not flex) layout keeps a text node + inline element in the
+      // same wrapping text run instead of splitting them into flex items.
+      await expect(description).toHaveCSS("display", "block");
+      await expect(link).toHaveCSS("display", "inline");
+      await expect(description).toContainText(
+        "We'll never share your email. Learn more",
+      );
     });
 
     test("label is associated with input via aria", async ({ mount, page }) => {

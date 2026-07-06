@@ -19,6 +19,7 @@ import {
   TestNested,
   TestIndent,
 } from "./Drawer.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 function getScaleXFromTransform(transform: string): number | null {
   const match = transform.match(/matrix\(([^)]+)\)/);
@@ -29,28 +30,6 @@ function getScaleXFromTransform(transform: string): number | null {
 
   const [scaleX] = match[1].split(",").map((value) => Number(value.trim()));
   return Number.isNaN(scaleX) ? null : scaleX;
-}
-
-async function getResolvedColor(
-  page: import("@playwright/experimental-ct-react").Page,
-  cssProperty: "backgroundColor" | "outlineColor",
-  token: string,
-) {
-  return page.evaluate(
-    ({ cssProperty, token }) => {
-      const probe = document.createElement("div");
-      if (cssProperty === "backgroundColor") {
-        probe.style.backgroundColor = `var(${token})`;
-      } else {
-        probe.style.outline = `1px solid var(${token})`;
-      }
-      document.body.appendChild(probe);
-      const resolved = getComputedStyle(probe)[cssProperty];
-      probe.remove();
-      return resolved;
-    },
-    { cssProperty, token },
-  );
 }
 
 test.describe("Drawer", () => {
@@ -94,15 +73,15 @@ test.describe("Drawer", () => {
       const popup = page.getByTestId("popup");
       await expect(popup).toBeVisible();
 
-      const expectedBackgroundColor = await getResolvedColor(
+      const expectedBackgroundColor = await resolveTokenColor(
         page,
-        "backgroundColor",
         "--surface-primary",
+        "backgroundColor",
       );
-      const expectedOutlineColor = await getResolvedColor(
+      const expectedOutlineColor = await resolveTokenColor(
         page,
-        "outlineColor",
         "--border-primary",
+        "outlineColor",
       );
 
       const popupStyles = await popup.evaluate((element) => {

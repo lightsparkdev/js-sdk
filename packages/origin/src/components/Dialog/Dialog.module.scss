@@ -132,7 +132,7 @@
   border: none;
   @include smooth-corners(var(--corner-radius-sm));
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--icon-secondary);
   cursor: pointer;
   transition:
     background-color 120ms ease,
@@ -140,7 +140,7 @@
 
   &:hover {
     background-color: var(--surface-hover);
-    color: var(--text-primary);
+    color: var(--icon-primary);
   }
 
   &:focus-visible {

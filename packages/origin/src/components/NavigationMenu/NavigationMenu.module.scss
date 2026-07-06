@@ -125,7 +125,7 @@
   border: var(--stroke-xs) solid transparent;
   @include smooth-corners(var(--corner-radius-sm));
   background-color: transparent;
-  color: var(--text-primary);
+  color: var(--icon-primary);
   cursor: pointer;
   user-select: none;
   outline: none;

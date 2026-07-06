@@ -37,7 +37,7 @@ export const WithLabelSuffix: Story = {
       <Field.Root>
         <Field.Label>
           Display name
-          <span>(optional)</span>
+          <Field.LabelSuffix>(optional)</Field.LabelSuffix>
         </Field.Label>
         <Input placeholder="Enter display name" />
       </Field.Root>

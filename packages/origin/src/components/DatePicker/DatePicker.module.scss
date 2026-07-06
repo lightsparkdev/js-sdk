@@ -48,11 +48,13 @@
   width: 24px;
   height: 24px;
   @include smooth-corners(var(--corner-radius-sm));
-  color: var(--icon-primary);
+  color: var(--icon-secondary);
+  transition: color 150ms ease;
 
+  // Guarded so the hover state can't stick after taps on touch devices.
   @media (hover: hover) {
     &:hover {
-      background: var(--surface-hover);
+      color: var(--icon-primary);
     }
   }
 
@@ -65,6 +67,10 @@
     opacity: calc(var(--opacity-50) / 100);
     cursor: default;
     pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 

@@ -11,6 +11,7 @@ import {
   MenuWithSubmenu,
   ControlledMenu,
 } from "./Menu.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 test.describe("Menu", () => {
   test("opens on trigger click", async ({ mount, page }) => {
@@ -217,6 +218,26 @@ test.describe("Menu", () => {
     await expect(page.getByRole("menuitem", { name: "Email" })).toBeVisible({
       timeout: 2000,
     });
+  });
+
+  test("submenu trigger chevron renders icon-secondary", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<MenuWithSubmenu />);
+
+    await page.getByRole("button", { name: "File" }).click();
+    await expect(page.getByRole("menu")).toBeVisible();
+
+    const iconSecondary = await resolveTokenColor(page, "--icon-secondary");
+
+    // Guards against the CentralIcon inline `color: currentColor` style
+    // regressing and masking the stylesheet rule on the chevron svg.
+    const chevron = page
+      .getByRole("menuitem", { name: "Share" })
+      .locator("svg")
+      .last();
+    await expect(chevron).toHaveCSS("color", iconSecondary);
   });
 
   test("controlled mode works", async ({ mount, page }) => {

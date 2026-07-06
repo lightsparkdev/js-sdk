@@ -26,9 +26,26 @@ export function FieldWithLabelSuffix() {
     <Field.Root>
       <Field.Label data-testid="field-label-with-suffix">
         Display name
-        <span data-testid="field-label-suffix">(optional)</span>
+        <Field.LabelSuffix data-testid="field-label-suffix">
+          (optional)
+        </Field.LabelSuffix>
       </Field.Label>
       <Input placeholder="Enter display name" />
+    </Field.Root>
+  );
+}
+
+export function FieldWithInlineDescriptionLink() {
+  return (
+    <Field.Root>
+      <Field.Label>Email</Field.Label>
+      <Input placeholder="Enter your email" />
+      <Field.Description data-testid="description-with-link">
+        We'll never share your email.{" "}
+        <a data-testid="description-link" href="https://example.com">
+          Learn more
+        </a>
+      </Field.Description>
     </Field.Root>
   );
 }

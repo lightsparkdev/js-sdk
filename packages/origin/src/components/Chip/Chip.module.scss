@@ -9,6 +9,10 @@
   @include smooth-corners(var(--corner-radius-sm));
   background-color: var(--surface-secondary);
   color: var(--text-primary);
+  // Clip interactive-segment hover backgrounds (dismiss, value triggers)
+  // to the rounded corners. Focus rings inside use negative outline-offset
+  // so they stay visible.
+  overflow: hidden;
 
   &.sm {
     height: 24px;
@@ -42,15 +46,15 @@
   border: none;
   border-left: var(--stroke-xs) solid var(--border-primary);
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--icon-secondary);
   cursor: pointer;
   transition:
     color 150ms ease,
     background-color 150ms ease;
 
   &:hover:not(:disabled) {
-    color: var(--text-primary);
-    background-color: var(--surface-tertiary);
+    color: var(--icon-primary);
+    background-color: var(--surface-hover);
   }
 
   &:focus-visible {
@@ -94,6 +98,51 @@
   .value {
     @include label-sm;
     color: var(--text-primary);
+
+    // Interactive value triggers opt in with `data-chip-trigger` — rendered
+    // by `ChipFilter.Trigger`, or set directly by legacy consumers. They
+    // fill the segment and take over its padding so the whole segment is a
+    // hit target, with the same hover/focus affordances as the dismiss
+    // button. The attribute contract keeps this styling away from arbitrary
+    // consumer content — a styled Button nested in `value` is untouched
+    // unless it explicitly opts in.
+    [data-chip-trigger] {
+      @include button-reset;
+      @include label-sm;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 var(--spacing-xs);
+      color: var(--text-primary);
+      transition:
+        color 150ms ease,
+        background-color 150ms ease;
+
+      &:hover:not(:disabled) {
+        background-color: var(--surface-hover);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--border-focus);
+        outline-offset: -2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+  }
+
+  // When the value hosts an interactive trigger, the segment cedes its
+  // padding to the trigger; the divider anatomy stays on the segment.
+  .segment:has(.value [data-chip-trigger]) {
+    padding: 0;
+
+    .value {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+    }
   }
 
   .dismiss {

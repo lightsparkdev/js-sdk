@@ -11,6 +11,7 @@ import {
   LinkPropForwarding,
   PagePropForwarding,
 } from "./Breadcrumb.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 test.describe("Breadcrumb", () => {
   // Structure
@@ -93,6 +94,40 @@ test.describe("Breadcrumb", () => {
     const component = await mount(<CurrentPageBreadcrumb />);
     const currentItem = component.locator("[data-current]");
     await expect(currentItem).toBeVisible();
+  });
+
+  // Separator active-layer promotion (Figma: Separator state=Current)
+  test("separator before the current crumb renders icon-primary", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<WithLinksBreadcrumb />);
+
+    const iconPrimary = await resolveTokenColor(page, "--icon-primary");
+    const iconSecondary = await resolveTokenColor(page, "--icon-secondary");
+
+    // Home > Products > [Current Page]: the chevron after Products promotes,
+    // the chevron after Home stays secondary.
+    const chevrons = component.locator('li > span[aria-hidden="true"] svg');
+    await expect(chevrons.first()).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(1)).toHaveCSS("color", iconPrimary);
+  });
+
+  test("collapsed breadcrumb promotes only the separator before current", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<CollapsedBreadcrumb />);
+
+    const iconPrimary = await resolveTokenColor(page, "--icon-primary");
+    const iconSecondary = await resolveTokenColor(page, "--icon-secondary");
+
+    // Home > [ellipsis] > Shoes > [Current: Running]: only the chevron
+    // after Shoes (index 2) promotes.
+    const chevrons = component.locator('li > span[aria-hidden="true"] svg');
+    await expect(chevrons.first()).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(1)).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(2)).toHaveCSS("color", iconPrimary);
   });
 
   // Ref forwarding

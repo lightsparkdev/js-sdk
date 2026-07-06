@@ -50,7 +50,7 @@
   border: var(--stroke-xs) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-sm);
-  color: var(--text-primary);
+  color: var(--icon-primary);
   cursor: pointer;
   transition: background-color 150ms ease;
 

@@ -16,7 +16,7 @@
   height: 20px;
   padding-inline: var(--spacing-3xs);
   @include smooth-corners(var(--corner-radius-2xs));
-  background-color: var(--surface-secondary);
+  background-color: var(--surface-alpha-primary);
   color: var(--text-secondary);
   font-feature-settings: "salt" 1;
 }

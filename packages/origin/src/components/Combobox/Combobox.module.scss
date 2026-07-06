@@ -141,12 +141,12 @@
   background: transparent;
   border: none;
   @include smooth-corners(var(--corner-radius-xs));
-  color: var(--text-primary);
+  color: var(--icon-secondary);
   cursor: pointer;
-  transition: opacity 150ms ease;
+  transition: color 150ms ease;
 
   &:hover {
-    opacity: 0.7;
+    color: var(--icon-primary);
   }
 
   &:focus-visible {

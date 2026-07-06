@@ -45,6 +45,29 @@ export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
   },
 );
 
+export interface FieldLabelSuffixProps
+  extends React.ComponentPropsWithoutRef<"span"> {}
+
+/**
+ * Trailing content for Field.Label, such as "(optional)". Carries the
+ * tokenized spacing from the label text so the label itself can stay
+ * normal inline text flow and wrap as one run.
+ */
+export const FieldLabelSuffix = React.forwardRef<
+  HTMLSpanElement,
+  FieldLabelSuffixProps
+>(function FieldLabelSuffix(props, ref) {
+  const { className, ...other } = props;
+
+  return (
+    <span
+      ref={ref}
+      className={clsx(styles.labelSuffix, className)}
+      {...other}
+    />
+  );
+});
+
 export interface FieldDescriptionProps
   extends React.ComponentPropsWithoutRef<typeof BaseField.Description> {}
 
@@ -91,6 +114,7 @@ export const FieldError = React.forwardRef<HTMLDivElement, FieldErrorProps>(
 if (process.env.NODE_ENV !== "production") {
   FieldRoot.displayName = "FieldRoot";
   FieldLabel.displayName = "FieldLabel";
+  FieldLabelSuffix.displayName = "FieldLabelSuffix";
   FieldDescription.displayName = "FieldDescription";
   FieldError.displayName = "FieldError";
 }
@@ -98,6 +122,7 @@ if (process.env.NODE_ENV !== "production") {
 export const Field = {
   Root: FieldRoot,
   Label: FieldLabel,
+  LabelSuffix: FieldLabelSuffix,
   Description: FieldDescription,
   Error: FieldError,
 };

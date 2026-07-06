@@ -217,8 +217,12 @@ export type {
 export { ButtonGroup } from "./components/ButtonGroup";
 export type { ButtonGroupProps } from "./components/ButtonGroup";
 
-export { Chip, ChipFilter } from "./components/Chip";
-export type { ChipProps, ChipFilterProps } from "./components/Chip";
+export { Chip, ChipFilter, ChipFilterTrigger } from "./components/Chip";
+export type {
+  ChipProps,
+  ChipFilterProps,
+  ChipFilterTriggerProps,
+} from "./components/Chip";
 
 export { Form } from "./components/Form";
 export type { FormProps } from "./components/Form";
