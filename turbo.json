@@ -1,8 +1,25 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".yarn/releases/**",
+    ".yarnrc.yml",
+    ".prettierignore",
+    "apps/examples/settings.json",
+    "apps/private/settings.json"
+  ],
+  "globalEnv": ["TURBO_EXTERNAL_INPUTS_HASH"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "env": [
+        "BACKEND_DOMAIN",
+        "SIFT_PROD_BEACON_KEY",
+        "LIGHTSPARK_FRONTEND_COMMIT_PLACEHOLDER",
+        "VITE_BASENAME",
+        "VITE_CLIENT_ID",
+        "VITE_CLIENT_SECRET",
+        "VITE_PUBLIC_IP"
+      ],
       "outputs": ["dist/**", "build/**"]
     },
     "build:watch": {
@@ -15,6 +32,7 @@
       "dependsOn": ["^build"]
     },
     "build-sb": {
+      "dependsOn": ["^build"],
       "env": ["ORIGIN_STORYBOOK_BASE_PATH", "STORYBOOK_DISABLE_TELEMETRY"],
       "outputs": ["storybook-static/**"]
     },
@@ -65,12 +83,36 @@
       "persistent": true
     },
     "test": {
+      "env": [
+        "BITCOIN_NETWORK",
+        "LIGHTSPARK_API_TOKEN_CLIENT_ID",
+        "LIGHTSPARK_API_TOKEN_CLIENT_SECRET",
+        "LIGHTSPARK_BASE_URL",
+        "LIGHTSPARK_EXAMPLE_BASE_URL",
+        "LIGHTSPARK_LNURL_NODE_UUID",
+        "LIGHTSPARK_LNURL_USERNAME",
+        "LIGHTSPARK_SDK_ENDPOINT",
+        "LIGHTSPARK_TEST_NODE_PASSWORD",
+        "LIGHTSPARK_UMA_COMPLIANCE_PROVIDER",
+        "LIGHTSPARK_UMA_NODE_ID",
+        "LIGHTSPARK_UMA_OSK_NODE_SIGNING_KEY_PASSWORD",
+        "LIGHTSPARK_UMA_RECEIVER_USER_EMAIL",
+        "LIGHTSPARK_UMA_RECEIVER_USER_NAME",
+        "LIGHTSPARK_UMA_RECEIVER_USER_PASSWORD",
+        "LIGHTSPARK_UMA_REMOTE_SIGNING_NODE_MASTER_SEED",
+        "LIGHTSPARK_UMA_VASP_DOMAIN",
+        "RK_MASTER_SEED_HEX",
+        "RK_WEBHOOK_SECRET",
+        "UMA_VASP_ENDPOINT"
+      ],
       "dependsOn": ["^build", "gql-codegen"]
     },
     "test:ui": {
+      "cache": false,
       "dependsOn": ["^build"]
     },
     "test:integration": {
+      "cache": false,
       "dependsOn": ["^build"]
     },
     "types": {

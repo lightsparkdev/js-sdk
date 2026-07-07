@@ -7,11 +7,27 @@ import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
-const currentCommit = childProcess
-  .execSync("git rev-parse HEAD")
-  .toString()
-  .trim()
-  .substr(0, 8);
+const currentCommitPlaceholder = "__LSCM__";
+const currentCommitRuntimeKey = "__LIGHTSPARK_CURRENT_COMMIT__";
+
+function getCurrentCommit() {
+  if (process.env.LIGHTSPARK_FRONTEND_COMMIT_PLACEHOLDER === "1") {
+    return currentCommitPlaceholder;
+  }
+
+  try {
+    return childProcess.execSync("git rev-parse HEAD", {
+      encoding: "utf8",
+    });
+  } catch {
+    return currentCommitPlaceholder;
+  }
+}
+
+const currentCommit = getCurrentCommit().trim().substr(0, 8);
+const currentCommitExpression = `(globalThis.${currentCommitRuntimeKey} || ${JSON.stringify(
+  currentCommit,
+)})`;
 
 const basename = process.env.VITE_BASENAME || "/";
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
@@ -318,14 +334,29 @@ export const buildConfig = ({
   return defineConfig({
     base,
     define: {
-      __CURRENT_COMMIT__: `"${currentCommit}"`,
+      __CURRENT_COMMIT__: currentCommitExpression,
       __BASENAME__: `"${basename}"`,
     },
     plugins: [
       {
         name: "html-transform",
         transformIndexHtml(html) {
-          return html.replace(/__CURRENT_COMMIT__/g, currentCommit);
+          const htmlWithCommit = html.replace(
+            /__CURRENT_COMMIT__/g,
+            currentCommit,
+          );
+          const commitRuntimeScript = `<script>globalThis.${currentCommitRuntimeKey}=${JSON.stringify(
+            currentCommit,
+          )}</script>`;
+
+          if (htmlWithCommit.includes(commitRuntimeScript)) {
+            return htmlWithCommit;
+          }
+
+          return htmlWithCommit.replace(
+            "</head>",
+            `${commitRuntimeScript}\n  </head>`,
+          );
         },
       },
       {

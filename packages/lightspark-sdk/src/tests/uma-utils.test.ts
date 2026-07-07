@@ -1,18 +1,17 @@
 import { beforeEach, describe, expect, jest, test } from "@jest/globals";
 import LightsparkClient from "../client.js";
-import { getCredentialsFromEnvOrThrow } from "../env.js";
 import { AccountTokenAuthProvider } from "../index.js";
 import { TESTS_TIMEOUT } from "./integration/constants.js";
 
-const { apiTokenClientId, apiTokenClientSecret, baseUrl } =
-  getCredentialsFromEnvOrThrow();
-
 const accountAuthProvider = new AccountTokenAuthProvider(
-  apiTokenClientId,
-  apiTokenClientSecret,
+  "test-client-id",
+  "test-client-secret",
 );
 
-const lightsparkClient = new LightsparkClient(accountAuthProvider, baseUrl);
+const lightsparkClient = new LightsparkClient(
+  accountAuthProvider,
+  "api.example.invalid",
+);
 
 describe("UmaUtils", () => {
   beforeEach(() => {
