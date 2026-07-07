@@ -12,7 +12,7 @@ export type NewRoutesType = NewRoutes[keyof NewRoutes];
 
 /* window props that may be considered common to any Lightspark web app: */
 export interface LightsparkWindow extends Window {
-  Cypress?: unknown;
+  lightsparkTestAutomation?: boolean;
   lightsparkRouter?: unknown;
   dev?: {
     [key: string]: unknown;
