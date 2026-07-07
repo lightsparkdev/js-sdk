@@ -1,0 +1,67 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  align-items: center;
+
+  // 8px minimum: the input-critical halo bleeds past the border, and
+  // adjacent invalid cells overlap at anything tighter.
+  gap: var(--spacing-xs);
+
+  &[data-disabled] {
+    cursor: not-allowed;
+  }
+}
+
+.input {
+  @include input;
+
+  box-sizing: border-box;
+  width: 32px;
+  height: 36px;
+  padding: var(--spacing-none);
+  text-align: center;
+  background: transparent;
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+  color: var(--text-primary);
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--text-secondary);
+  }
+
+  &:focus {
+    @include input-focus;
+
+    // Placeholder hints stay visible until the active slot receives focus.
+    &::placeholder {
+      color: transparent;
+    }
+  }
+
+  &[data-disabled] {
+    opacity: calc(var(--opacity-50) / 100);
+    cursor: not-allowed;
+  }
+
+  &[data-invalid] {
+    @include input-critical;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.separator {
+  flex-shrink: 0;
+  width: var(--spacing-xs);
+  height: var(--stroke-sm);
+  background-color: var(--border-primary);
+  border: 0;
+}

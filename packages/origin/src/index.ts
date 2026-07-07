@@ -81,6 +81,12 @@ export { Menu } from "./components/Menu";
 export { Menubar } from "./components/Menubar";
 export { Meter } from "./components/Meter";
 export { NavigationMenu } from "./components/NavigationMenu";
+export { OTPField } from "./components/OTPField";
+export type {
+  OTPFieldRootProps,
+  OTPFieldInputProps,
+  OTPFieldSeparatorProps,
+} from "./components/OTPField";
 export { Pager, PagerContext, usePagerContext } from "./components/Pager";
 export type {
   PagerRootProps,
