@@ -244,7 +244,7 @@ export { Logo } from "./components/Logo";
 export type { LogoProps } from "./components/Logo";
 
 export { Loader } from "./components/Loader";
-export type { LoaderProps } from "./components/Loader";
+export type { LoaderProps, LoaderVariant } from "./components/Loader";
 
 export {
   LoadMore,
