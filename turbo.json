@@ -7,7 +7,12 @@
     "apps/examples/settings.json",
     "apps/private/settings.json"
   ],
-  "globalEnv": ["TURBO_EXTERNAL_INPUTS_HASH"],
+  "globalEnv": [
+    /* CI sets this to a hash of workflow/action files that affect Turbo
+       execution. It is an extra global cache-key input, not a replacement for
+       task-specific file inputs such as schemas, scripts, or config files. */
+    "TURBO_EXTERNAL_INPUTS_HASH"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -57,7 +62,10 @@
       "dependsOn": ["gql-codegen"]
     },
     "gql-codegen": {
-      /* Always run codegen since it depends on files external to the workspace: */
+      /* Keep the default uncached because codegen tasks vary by workspace and
+         often read files outside the workspace. Audited workspaces can opt back
+         into caching with `extends: false`, explicit external inputs, and exact
+         generated outputs. */
       "cache": false
     },
     "lint": {
