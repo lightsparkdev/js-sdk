@@ -1,6 +1,7 @@
-# Copybara is run by CI automatically. To run manually locally download and install copybara, then run:
+# Copybara is run by CI automatically. To validate manually, download the pinned
+# Copybara release from .github/workflows/js.yaml, then run:
 # $ cd <webdev repo>
-# $ ../copybara/bazel-bin/java/com/google/copybara/copybara copy.bara.sky js-sdk-push
+# $ java -jar /path/to/copybara.jar validate js/copy.bara.sky
 
 core.workflow(
     name="webdev-push-to-js-sdk",
