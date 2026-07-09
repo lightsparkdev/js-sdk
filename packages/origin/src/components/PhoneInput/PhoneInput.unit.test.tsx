@@ -146,6 +146,66 @@ describe("PhoneInput state propagation", () => {
   });
 });
 
+describe("PhoneInput locked country", () => {
+  function renderLocked() {
+    const utils = render(
+      <PhoneInput.Root>
+        <PhoneInput.LockedCountry>
+          <PhoneInput.CountryFlag />
+          <span>+1</span>
+        </PhoneInput.LockedCountry>
+        <PhoneInput.Input placeholder="Enter phone" />
+      </PhoneInput.Root>,
+    );
+
+    const locked = utils.container.querySelector<HTMLElement>(
+      "[data-phone-input-locked]",
+    );
+    if (!locked) {
+      throw new Error("Locked country cap is missing");
+    }
+
+    return { ...utils, locked };
+  }
+
+  it("renders a static element with no select semantics", () => {
+    const { locked, queryByRole } = renderLocked();
+
+    expect(queryByRole("combobox")).toBeNull();
+    expect(locked.tagName).toBe("DIV");
+    expect(locked.getAttribute("aria-haspopup")).toBeNull();
+    expect(locked.tabIndex).toBe(-1);
+  });
+
+  it("keeps the dial code as real, non-hidden content", () => {
+    const { locked, getByText } = renderLocked();
+
+    expect(locked.getAttribute("aria-hidden")).toBeNull();
+    expect(getByText("+1")).toBeTruthy();
+  });
+
+  it("does not render the country Select's hidden serialization input", () => {
+    const { container } = renderLocked();
+
+    expect(container.querySelector('input[aria-hidden="true"]')).toBeNull();
+  });
+
+  it("forwards native div props and refs", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    render(
+      <PhoneInput.Root>
+        <PhoneInput.LockedCountry ref={ref} data-testid="locked-cap">
+          <span>+44</span>
+        </PhoneInput.LockedCountry>
+        <PhoneInput.Input placeholder="Enter phone" />
+      </PhoneInput.Root>,
+    );
+
+    expect(ref.current).not.toBeNull();
+    expect(ref.current?.getAttribute("data-testid")).toBe("locked-cap");
+  });
+});
+
 describe("PhoneInput form serialization", () => {
   it("does not leak the phone input's field name onto the country Select's hidden input", () => {
     const { form, container, entries } = renderPhoneForm();

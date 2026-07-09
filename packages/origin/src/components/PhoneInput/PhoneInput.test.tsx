@@ -8,6 +8,7 @@ import {
   CustomPlaceholder,
   LongCountryList,
   WithPhoneNumber,
+  Locked,
 } from "./PhoneInput.test-stories";
 
 const axeConfig = {
@@ -271,5 +272,69 @@ test.describe("PhoneInput", () => {
     );
 
     expect(borderRight).toBe("1px");
+  });
+
+  test("locked country has no accessibility violations", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+    const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("locked country renders a static cap with no select semantics", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+
+    // No combobox anywhere in the DOM
+    await expect(page.getByRole("combobox")).toHaveCount(0);
+
+    const locked = page.locator("[data-phone-input-locked]");
+    await expect(locked).toBeVisible();
+
+    // Dial code is real, visible content
+    await expect(locked.getByText("+1")).toBeVisible();
+
+    // Tab from the page moves focus straight to the phone input, skipping
+    // the locked cap
+    await page.keyboard.press("Tab");
+    const focused = await page.evaluate(
+      () => document.activeElement?.getAttribute("placeholder") ?? null,
+    );
+    expect(focused).toBe("Enter phone");
+  });
+
+  test("locked country has the locked padding and border separator", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+
+    const locked = page.locator("[data-phone-input-locked]");
+    const box = await locked.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        paddingLeft: s.paddingLeft,
+        paddingRight: s.paddingRight,
+        borderRightWidth: s.borderRightWidth,
+        gap: s.gap,
+      };
+    });
+
+    expect(box.paddingLeft).toBe("8px");
+    expect(box.paddingRight).toBe("12px");
+    expect(box.borderRightWidth).toBe("1px");
+    expect(box.gap).toBe("6px");
+  });
+
+  test("locked phone input keeps 36px height", async ({ mount, page }) => {
+    await mount(<Locked />);
+
+    const root = page.locator("[data-phone-input-root]");
+    const box = await root.boundingBox();
+    expect(box?.height).toBe(36);
   });
 });

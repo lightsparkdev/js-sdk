@@ -219,3 +219,26 @@ export function WithPhoneNumber() {
 export function InvalidFocused() {
   return <PhoneInputStory invalid />;
 }
+
+// Locked country: static leading cap in place of the country select
+export function Locked() {
+  const country = mockCountries[0];
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+
+  return (
+    <PhoneInput.Root>
+      <PhoneInput.LockedCountry>
+        <PhoneInput.CountryFlag>
+          <img src={getFlagUrl(country.code)} alt="" />
+        </PhoneInput.CountryFlag>
+        <span>{country.dialCode}</span>
+      </PhoneInput.LockedCountry>
+
+      <PhoneInput.Input
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+        placeholder="Enter phone"
+      />
+    </PhoneInput.Root>
+  );
+}

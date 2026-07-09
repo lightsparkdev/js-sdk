@@ -166,6 +166,35 @@ export const LongCountryList: StoryObj = {
   ),
 };
 
+// Locked country: static leading cap, no select, no chevron
+function LockedExample() {
+  const country = exampleCountries[0];
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+
+  return (
+    <div style={{ width: 300 }}>
+      <PhoneInput.Root>
+        <PhoneInput.LockedCountry>
+          <PhoneInput.CountryFlag>
+            <img src={getFlagUrl(country.code)} alt="" />
+          </PhoneInput.CountryFlag>
+          <span>{country.dialCode}</span>
+        </PhoneInput.LockedCountry>
+
+        <PhoneInput.Input
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          placeholder="Enter phone"
+        />
+      </PhoneInput.Root>
+    </div>
+  );
+}
+
+export const Locked: StoryObj = {
+  render: () => <LockedExample />,
+};
+
 // Controlled example with form
 function ControlledExample() {
   const [selectedCountry, setSelectedCountry] = React.useState<Country>(

@@ -309,6 +309,30 @@ export const CountryItemIndicator = React.forwardRef<
   );
 });
 
+// LockedCountry - static leading cap rendered in place of CountrySelect when
+// the country cannot be changed. Not a select: no combobox in the DOM, not
+// focusable, no popup. The flag/dial-code content is real text content and
+// stays visible to assistive technology.
+// Unlike CountrySelect, this part serializes nothing into form data; consumers
+// that need the locked country in native form submissions should add their own
+// hidden input.
+export interface LockedCountryProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export const LockedCountry = React.forwardRef<
+  HTMLDivElement,
+  LockedCountryProps
+>(function LockedCountry({ className, ...props }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={clsx(styles.locked, className)}
+      data-phone-input-locked=""
+      {...props}
+    />
+  );
+});
+
 // Input - the phone number input (uses BaseInput for Field integration)
 export interface InputProps extends Omit<BaseInput.Props, "type"> {}
 

@@ -42,20 +42,39 @@
   display: contents;
 }
 
-.trigger {
-  @include button-reset;
+// Shared layout for the leading country cap (interactive trigger and locked
+// static variant). Right padding differs: the trigger reserves a tighter
+// 4px next to its 20px chevron slot; the locked cap has no chevron and
+// closes at 12px.
+@mixin country-cap {
   display: flex;
   align-items: center;
-  gap: 0;
   height: 100%;
   padding-left: var(--spacing-xs);
-  padding-right: var(--spacing-3xs);
   border-right: var(--stroke-sm) solid var(--border-primary);
   flex-shrink: 0;
+}
+
+.trigger {
+  @include button-reset;
+  @include country-cap;
+  gap: 0;
+  padding-right: var(--spacing-3xs);
 
   &[data-disabled] {
     cursor: not-allowed;
   }
+}
+
+// LockedCountry - static cap, no chevron, no interaction states. Carries the
+// value typography itself since there is no CountryValue wrapper inside.
+.locked {
+  @include country-cap;
+  gap: var(--spacing-2xs);
+  padding-right: var(--spacing-sm);
+  @include input;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .value {
