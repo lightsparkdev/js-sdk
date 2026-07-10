@@ -8,6 +8,7 @@ core.workflow(
     origin=git.github_origin(
         url="https://github.com/lightsparkdev/webdev.git",
         ref="main",
+        partial_fetch=True,
     ),
     destination=git.github_destination(
         url="https://github.com/lightsparkdev/js-sdk.git",
