@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Item } from "./Item";
+import { Badge } from "@/components/Badge";
 import { CentralIcon } from "@/components/Icon";
 
 // Basic rendering
@@ -11,6 +12,16 @@ export function BasicItem() {
 
 export function ItemWithDescription() {
   return <Item title="Dark mode" description="Use system setting" />;
+}
+
+export function ItemWithLabel() {
+  return (
+    <Item
+      title="Jane Doe"
+      description="jane@example.com"
+      label={<Badge>Admin</Badge>}
+    />
+  );
 }
 
 // Slots

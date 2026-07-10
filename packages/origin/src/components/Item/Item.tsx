@@ -7,6 +7,7 @@ import styles from "./Item.module.scss";
 export interface ItemProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
   title: string;
+  label?: React.ReactNode;
   description?: string;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
@@ -21,6 +22,7 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
   function Item(props, forwardedRef) {
     const {
       title,
+      label,
       description,
       leading,
       trailing,
@@ -66,7 +68,10 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         <div className={styles.container}>
           {leading && <div className={styles.leading}>{leading}</div>}
           <div className={styles.content}>
-            <span className={styles.title}>{title}</span>
+            <div className={styles.titleRow}>
+              <span className={styles.title}>{title}</span>
+              {label && <span className={styles.label}>{label}</span>}
+            </div>
             {description && (
               <span className={styles.description}>{description}</span>
             )}

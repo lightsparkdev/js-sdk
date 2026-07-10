@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicItem,
   ItemWithDescription,
+  ItemWithLabel,
   ItemWithLeading,
   ItemWithTrailing,
   ItemWithBothSlots,
@@ -25,6 +26,20 @@ test.describe("Item", () => {
       await mount(<ItemWithDescription />);
       await expect(page.getByText("Dark mode")).toBeVisible();
       await expect(page.getByText("Use system setting")).toBeVisible();
+    });
+
+    test("renders label inline with the title", async ({ mount, page }) => {
+      await mount(<ItemWithLabel />);
+      await expect(page.getByText("Jane Doe")).toBeVisible();
+      await expect(page.getByText("Admin")).toBeVisible();
+
+      const title = page.getByText("Jane Doe");
+      const label = page.getByText("Admin");
+      const titleBox = await title.boundingBox();
+      const labelBox = await label.boundingBox();
+      // Label sits on the same row, after the title.
+      expect(labelBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+      expect(labelBox!.y).toBeLessThan(titleBox!.y + titleBox!.height);
     });
   });
 

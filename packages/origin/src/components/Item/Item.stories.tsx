@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import * as React from "react";
 import { Item } from "./Item";
+import { Badge } from "@/components/Badge";
 import { CentralIcon } from "@/components/Icon";
 import { Switch } from "@/components/Switch";
 
@@ -26,6 +27,14 @@ export const Default: Story = {
   args: {
     title: "Settings",
     description: "Manage your preferences",
+  },
+};
+
+export const WithLabel: Story = {
+  args: {
+    title: "Jane Doe",
+    description: "jane@example.com",
+    label: <Badge>Admin</Badge>,
   },
 };
 
