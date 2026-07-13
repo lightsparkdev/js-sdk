@@ -143,11 +143,12 @@ const PaginationRoot = React.forwardRef<HTMLElement, PaginationRootProps>(
         lastPage: (v) => (v === true ? { "data-last-page": "" } : null),
         page: (v) => ({ "data-page": String(v) }),
       },
-      props: [
-        { "aria-label": "Pagination" },
-        elementProps,
-        { className: clsx(styles.root, className), children },
-      ] as unknown as Record<string, unknown>,
+      props: {
+        "aria-label": "Pagination",
+        ...elementProps,
+        className: clsx(styles.root, className),
+        children,
+      },
     });
 
     return (
@@ -176,10 +177,11 @@ const PaginationLabel = React.forwardRef<HTMLSpanElement, PaginationLabelProps>(
       defaultTagName: "span",
       render,
       ref: forwardedRef,
-      props: [
-        elementProps,
-        { className: clsx(styles.label, className), children },
-      ] as unknown as Record<string, unknown>,
+      props: {
+        ...elementProps,
+        className: clsx(styles.label, className),
+        children,
+      },
     });
   },
 );
@@ -244,10 +246,11 @@ const PaginationRange = React.forwardRef<HTMLSpanElement, PaginationRangeProps>(
       render,
       ref: forwardedRef,
       enabled: canRender,
-      props: [
-        elementProps,
-        { className: clsx(styles.range, className), children: content },
-      ] as unknown as Record<string, unknown>,
+      props: {
+        ...elementProps,
+        className: clsx(styles.range, className),
+        children: content,
+      },
     });
 
     if (!canRender) {
@@ -276,11 +279,13 @@ const PaginationNavigation = React.forwardRef<
     defaultTagName: "div",
     render,
     ref: forwardedRef,
-    props: [
-      { role: "group", "aria-label": "Page navigation" },
-      elementProps,
-      { className: clsx(styles.navigation, className), children },
-    ] as unknown as Record<string, unknown>,
+    props: {
+      role: "group",
+      "aria-label": "Page navigation",
+      ...elementProps,
+      className: clsx(styles.navigation, className),
+      children,
+    },
   });
 });
 
@@ -318,22 +323,18 @@ const PaginationPrevious = React.forwardRef<
     render,
     ref: forwardedRef,
     state: { disabled: isDisabled },
-    props: [
-      {
-        type: "button",
-        "aria-label": "Previous page",
-        "aria-disabled": isDisabled || undefined,
-        disabled: isDisabled,
-        onClick: handleClick,
-      },
-      elementProps,
-      {
-        className: clsx(styles.button, className),
-        children: children ?? (
-          <CentralIcon name="IconChevronLeftSmall" size={16} />
-        ),
-      },
-    ] as unknown as Record<string, unknown>,
+    props: {
+      type: "button",
+      "aria-label": "Previous page",
+      "aria-disabled": isDisabled || undefined,
+      disabled: isDisabled,
+      onClick: handleClick,
+      ...elementProps,
+      className: clsx(styles.button, className),
+      children: children ?? (
+        <CentralIcon name="IconChevronLeftSmall" size={16} />
+      ),
+    },
   });
 });
 
@@ -368,22 +369,18 @@ const PaginationNext = React.forwardRef<HTMLButtonElement, PaginationNextProps>(
       render,
       ref: forwardedRef,
       state: { disabled: isDisabled },
-      props: [
-        {
-          type: "button",
-          "aria-label": "Next page",
-          "aria-disabled": isDisabled || undefined,
-          disabled: isDisabled,
-          onClick: handleClick,
-        },
-        elementProps,
-        {
-          className: clsx(styles.button, className),
-          children: children ?? (
-            <CentralIcon name="IconChevronRightSmall" size={16} />
-          ),
-        },
-      ] as unknown as Record<string, unknown>,
+      props: {
+        type: "button",
+        "aria-label": "Next page",
+        "aria-disabled": isDisabled || undefined,
+        disabled: isDisabled,
+        onClick: handleClick,
+        ...elementProps,
+        className: clsx(styles.button, className),
+        children: children ?? (
+          <CentralIcon name="IconChevronRightSmall" size={16} />
+        ),
+      },
     });
   },
 );
