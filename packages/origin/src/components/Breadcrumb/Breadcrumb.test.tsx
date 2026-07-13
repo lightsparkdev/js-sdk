@@ -9,6 +9,7 @@ import {
   StyleForwardingBreadcrumb,
   ClassNameBreadcrumb,
   LinkPropForwarding,
+  LinkRenderProp,
   PagePropForwarding,
 } from "./Breadcrumb.test-stories";
 import { resolveTokenColor } from "@test-utils/resolveTokenColor";
@@ -175,6 +176,20 @@ test.describe("Breadcrumb.Link conformance", () => {
     await mount(<LinkPropForwarding />);
     const link = page.locator('[data-testid="test-link"]');
     await expect(link).toHaveAttribute("lang", "de");
+  });
+
+  test("render prop replaces the default anchor with merged props", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<LinkRenderProp />);
+    const link = page.locator('[data-testid="test-render-link"]');
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/custom");
+    await expect(link).toHaveAttribute("data-router-link", "");
+    await expect(link).toHaveText("Custom Link");
+    // Breadcrumb link styling class remains applied
+    await expect(link).toHaveClass(/link/);
   });
 });
 
