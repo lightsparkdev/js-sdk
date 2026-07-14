@@ -16,15 +16,6 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": [
-        "BACKEND_DOMAIN",
-        "SIFT_PROD_BEACON_KEY",
-        "LIGHTSPARK_FRONTEND_COMMIT_PLACEHOLDER",
-        "VITE_BASENAME",
-        "VITE_CLIENT_ID",
-        "VITE_CLIENT_SECRET",
-        "VITE_PUBLIC_IP"
-      ],
       "outputs": ["dist/**", "build/**"]
     },
     "build:watch": {
