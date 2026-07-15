@@ -4,6 +4,9 @@
   "private": true,
   "main": "./index.js",
   "type": "module",
+  "scripts": {
+    "test": "node --test index.test.js"
+  },
   "dependencies": {
     "rollup-plugin-visualizer": "^7.0.1",
     "vite": "^8.0.14",

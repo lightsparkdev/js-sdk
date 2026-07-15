@@ -79,7 +79,8 @@
     },
     "start": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["BOLT_ZEUS_BASE_URL"]
     },
     "test": {
       "env": [

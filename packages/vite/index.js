@@ -10,6 +10,49 @@ import svgr from "vite-plugin-svgr";
 const currentCommitPlaceholder = "__LSCM__";
 const currentCommitRuntimeKey = "__LIGHTSPARK_CURRENT_COMMIT__";
 
+function boltClientRoutingScript(prefix) {
+  return `(() => {
+  const prefix = ${JSON.stringify(prefix)};
+  const rewrite = (value) => {
+    const url = new URL(value instanceof Request ? value.url : value, window.location.href);
+    const isAlreadyPrefixed =
+      url.pathname === prefix || url.pathname.startsWith(prefix + "/");
+    const isSameHostTransport =
+      url.host === window.location.host &&
+      ["http:", "https:", "ws:", "wss:"].includes(url.protocol);
+    if (isSameHostTransport && !isAlreadyPrefixed) {
+      url.pathname = prefix + url.pathname;
+    }
+    return url;
+  };
+
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = (input, init) => {
+    if (input instanceof Request) {
+      return nativeFetch(new Request(rewrite(input), input), init);
+    }
+    return nativeFetch(rewrite(input), init);
+  };
+
+  const nativeOpen = XMLHttpRequest.prototype.open;
+  XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+    return nativeOpen.call(this, method, rewrite(url), ...rest);
+  };
+
+  const NativeWebSocket = window.WebSocket;
+  window.WebSocket = class extends NativeWebSocket {
+    constructor(url, protocols) {
+      const rewritten = rewrite(url);
+      if (protocols === undefined) {
+        super(rewritten);
+      } else {
+        super(rewritten, protocols);
+      }
+    }
+  };
+})();`;
+}
+
 function getCurrentCommit() {
   if (process.env.LIGHTSPARK_FRONTEND_COMMIT_PLACEHOLDER === "1") {
     return currentCommitPlaceholder;
@@ -323,6 +366,42 @@ export const buildConfig = ({
     };
   }
 
+  const proxyConfig = {
+    "/graphql/internal": proxyOptions({ ws: true }),
+    "/graphql/custody": proxyOptions({ ws: true }),
+    "/graphql/frontend": proxyOptions({ ws: true }),
+    "/umame/graphql": proxyOptions({ ws: true }),
+    "/graphql/bridge": proxyOptions({ ws: true }),
+    "^/umaauth/.*": proxyOptions(),
+    "/ui/logs": proxyOptions(),
+    "/ui/event": proxyOptions(),
+    "/grid-dashboard-api": proxyOptions(),
+    "/graphql/paycore-internal": proxyOptions({
+      target:
+        proxyTarget === "http://127.0.0.1:5000"
+          ? "http://127.0.0.1:5001"
+          : proxyTarget,
+    }),
+  };
+
+  /* Bolt injects its public Zeus URL into every agent pod. Trust only that
+     exact hostname so Vite's DNS-rebinding protection remains enabled for all
+     other hosts and non-Bolt development keeps Vite's defaults. */
+  let boltZeusHost;
+  if (process.env.BOLT_ZEUS_BASE_URL) {
+    try {
+      boltZeusHost = new URL(process.env.BOLT_ZEUS_BASE_URL).hostname;
+    } catch {
+      console.warn("[vite] Ignoring invalid BOLT_ZEUS_BASE_URL");
+    }
+  }
+  const boltBase =
+    boltZeusHost && typeof base === "string" && base !== "/"
+      ? base.endsWith("/")
+        ? base.slice(0, -1)
+        : base
+      : undefined;
+
   function manualChunks(id) {
     for (const [path, name] of Object.entries(chunks)) {
       if (id.includes(path)) {
@@ -338,6 +417,67 @@ export const buildConfig = ({
       __BASENAME__: `"${basename}"`,
     },
     plugins: [
+      /* Zeus strips /agent/<job-id>[:<port>] before forwarding and preserves
+         it in X-Forwarded-Prefix. When a Bolt starts Vite with that value as
+         its base, restore the prefix before Vite's base middleware runs.
+         Requests covered by server.proxy stay bare so the proxy can match. */
+      ...(boltBase
+        ? [
+            {
+              name: "re-apply-x-forwarded-prefix",
+              transformIndexHtml() {
+                return [
+                  {
+                    tag: "script",
+                    children: boltClientRoutingScript(boltBase),
+                    injectTo: "head-prepend",
+                  },
+                ];
+              },
+              configureServer(server) {
+                /* Use Vite's final merged proxy table so app-specific routes
+                   added on top of buildConfig are also left bare. These match
+                   server.proxy semantics: "^" keys are RegExp, while the rest
+                   are prefix matches. */
+                const proxyMatchers = Object.keys(
+                  server.config.server.proxy ?? {},
+                ).map((key) => (key.startsWith("^") ? new RegExp(key) : key));
+                const isProxiedPath = (url) =>
+                  proxyMatchers.some((matcher) =>
+                    typeof matcher === "string"
+                      ? url.startsWith(matcher)
+                      : matcher.test(url),
+                  );
+                const reapplyForwardedPrefix = (req, skipProxiedPaths) => {
+                  const prefix = req.headers["x-forwarded-prefix"];
+                  if (
+                    typeof req.url === "string" &&
+                    typeof prefix === "string" &&
+                    prefix === boltBase &&
+                    !req.url.startsWith(prefix) &&
+                    (!skipProxiedPaths || !isProxiedPath(req.url))
+                  ) {
+                    req.url = prefix + req.url;
+                  }
+                };
+
+                /* Connect middleware does not see WebSocket upgrades. Run
+                   before Vite's upgrade listener so Zeus-stripped HMR paths
+                   match config.base; other WebSocket protocols are untouched. */
+                server.httpServer?.prependListener("upgrade", (req) => {
+                  const protocol = req.headers["sec-websocket-protocol"];
+                  if (protocol === "vite-hmr" || protocol === "vite-ping") {
+                    reapplyForwardedPrefix(req, false);
+                  }
+                });
+                server.middlewares.use((req, _res, next) => {
+                  reapplyForwardedPrefix(req, true);
+                  next();
+                });
+              },
+            },
+          ]
+        : []),
       {
         name: "html-transform",
         transformIndexHtml(html) {
@@ -397,23 +537,8 @@ export const buildConfig = ({
       port,
       open: false,
       host: "0.0.0.0",
-      proxy: {
-        "/graphql/internal": proxyOptions({ ws: true }),
-        "/graphql/custody": proxyOptions({ ws: true }),
-        "/graphql/frontend": proxyOptions({ ws: true }),
-        "/umame/graphql": proxyOptions({ ws: true }),
-        "/graphql/bridge": proxyOptions({ ws: true }),
-        "^/umaauth/.*": proxyOptions(),
-        "/ui/logs": proxyOptions(),
-        "/ui/event": proxyOptions(),
-        "/grid-dashboard-api": proxyOptions(),
-        "/graphql/paycore-internal": proxyOptions({
-          target:
-            proxyTarget === "http://127.0.0.1:5000"
-              ? "http://127.0.0.1:5001"
-              : proxyTarget,
-        }),
-      },
+      ...(boltZeusHost ? { allowedHosts: [boltZeusHost] } : {}),
+      proxy: proxyConfig,
     },
     /* see https://bit.ly/3EOx5ZM - workspace deps that need to be commonjs like @lightsparkdev/crypto-wasm
        are not prebundled so imports don't work without additional overrides: */
