@@ -19,5 +19,8 @@
   },
   "gridKycDemo": {
     "port": 3107
+  },
+  "strigaGridHarness": {
+    "port": 3108
   }
 }
