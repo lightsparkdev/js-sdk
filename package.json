@@ -42,6 +42,7 @@
     "packages/private/*",
     "apps/*",
     "apps/private/*",
+    "!apps/private/AGENTS.md",
     "apps/examples/*"
   ],
   "devDependencies": {
