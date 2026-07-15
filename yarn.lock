@@ -3505,6 +3505,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@lightsparkdev/striga-grid-harness@workspace:apps/examples/striga-grid-harness":
+  version: 0.0.0-use.local
+  resolution: "@lightsparkdev/striga-grid-harness@workspace:apps/examples/striga-grid-harness"
+  dependencies:
+    "@emotion/react": "npm:^11.14.0"
+    "@emotion/styled": "npm:^11.14.1"
+    "@lightsparkdev/origin": "npm:*"
+    "@types/react": "npm:^19.2.15"
+    "@types/react-dom": "npm:^19.2.3"
+    "@vitejs/plugin-react": "npm:^5.2.0"
+    react: "npm:^19.2.6"
+    react-dom: "npm:^19.2.6"
+    typescript: "npm:^5.6.2"
+    vite: "npm:^8.0.14"
+  languageName: unknown
+  linkType: soft
+
 "@lightsparkdev/tsconfig@npm:0.0.1, @lightsparkdev/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "@lightsparkdev/tsconfig@workspace:packages/tsconfig"
