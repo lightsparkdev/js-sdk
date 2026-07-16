@@ -3,6 +3,7 @@
   "globalDependencies": [
     ".yarn/releases/**",
     ".yarnrc.yml",
+    ".mise.toml",
     ".prettierignore",
     "apps/examples/settings.json",
     "apps/private/settings.json"
@@ -11,7 +12,10 @@
     /* CI sets this to a hash of workflow/action files that affect Turbo
        execution. It is an extra global cache-key input, not a replacement for
        task-specific file inputs such as schemas, scripts, or config files. */
-    "TURBO_EXTERNAL_INPUTS_HASH"
+    "TURBO_EXTERNAL_INPUTS_HASH",
+    /* Prevent artifacts produced under different Node runtimes from sharing a
+       hash. Webdev intentionally has both Node 20 and Node 24 CI callers. */
+    "TURBO_RUNTIME_NODE_VERSION"
   ],
   "tasks": {
     "build": {
