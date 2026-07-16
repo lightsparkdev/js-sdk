@@ -55,6 +55,14 @@ export const CurrencyUnit = {
   JMD: "JMD",
   PKR: "PKR",
   ARS: "ARS",
+  BGN: "BGN",
+  CZK: "CZK",
+  HUF: "HUF",
+  NOK: "NOK",
+  PLN: "PLN",
+  RON: "RON",
+  SEK: "SEK",
+  CHF: "CHF",
   USDT: "USDT",
   USDC: "USDC",
   USDB: "USDB",
@@ -82,6 +90,14 @@ export const CurrencyUnit = {
   Jmd: "JMD",
   Pkr: "PKR",
   Ars: "ARS",
+  Bgn: "BGN",
+  Czk: "CZK",
+  Huf: "HUF",
+  Nok: "NOK",
+  Pln: "PLN",
+  Ron: "RON",
+  Sek: "SEK",
+  Chf: "CHF",
   Usdt: "USDT",
   Usdc: "USDC",
   Usdb: "USDB",
@@ -147,6 +163,14 @@ const standardUnitConversionObj = {
   [CurrencyUnit.JMD]: (v: number) => v,
   [CurrencyUnit.PKR]: (v: number) => v,
   [CurrencyUnit.ARS]: (v: number) => v,
+  [CurrencyUnit.BGN]: (v: number) => v,
+  [CurrencyUnit.CZK]: (v: number) => v,
+  [CurrencyUnit.HUF]: (v: number) => v,
+  [CurrencyUnit.NOK]: (v: number) => v,
+  [CurrencyUnit.PLN]: (v: number) => v,
+  [CurrencyUnit.RON]: (v: number) => v,
+  [CurrencyUnit.SEK]: (v: number) => v,
+  [CurrencyUnit.CHF]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
   [CurrencyUnit.USDB]: (v: number) => v,
@@ -211,6 +235,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toBitcoinConversion,
     [CurrencyUnit.PKR]: toBitcoinConversion,
     [CurrencyUnit.ARS]: toBitcoinConversion,
+    [CurrencyUnit.BGN]: toBitcoinConversion,
+    [CurrencyUnit.CZK]: toBitcoinConversion,
+    [CurrencyUnit.HUF]: toBitcoinConversion,
+    [CurrencyUnit.NOK]: toBitcoinConversion,
+    [CurrencyUnit.PLN]: toBitcoinConversion,
+    [CurrencyUnit.RON]: toBitcoinConversion,
+    [CurrencyUnit.SEK]: toBitcoinConversion,
+    [CurrencyUnit.CHF]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
     [CurrencyUnit.USDB]: toBitcoinConversion,
@@ -259,6 +291,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toMicrobitcoinConversion,
     [CurrencyUnit.PKR]: toMicrobitcoinConversion,
     [CurrencyUnit.ARS]: toMicrobitcoinConversion,
+    [CurrencyUnit.BGN]: toMicrobitcoinConversion,
+    [CurrencyUnit.CZK]: toMicrobitcoinConversion,
+    [CurrencyUnit.HUF]: toMicrobitcoinConversion,
+    [CurrencyUnit.NOK]: toMicrobitcoinConversion,
+    [CurrencyUnit.PLN]: toMicrobitcoinConversion,
+    [CurrencyUnit.RON]: toMicrobitcoinConversion,
+    [CurrencyUnit.SEK]: toMicrobitcoinConversion,
+    [CurrencyUnit.CHF]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
     [CurrencyUnit.USDB]: toMicrobitcoinConversion,
@@ -307,6 +347,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toMillibitcoinConversion,
     [CurrencyUnit.PKR]: toMillibitcoinConversion,
     [CurrencyUnit.ARS]: toMillibitcoinConversion,
+    [CurrencyUnit.BGN]: toMillibitcoinConversion,
+    [CurrencyUnit.CZK]: toMillibitcoinConversion,
+    [CurrencyUnit.HUF]: toMillibitcoinConversion,
+    [CurrencyUnit.NOK]: toMillibitcoinConversion,
+    [CurrencyUnit.PLN]: toMillibitcoinConversion,
+    [CurrencyUnit.RON]: toMillibitcoinConversion,
+    [CurrencyUnit.SEK]: toMillibitcoinConversion,
+    [CurrencyUnit.CHF]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
     [CurrencyUnit.USDB]: toMillibitcoinConversion,
@@ -355,6 +403,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toMillisatoshiConversion,
     [CurrencyUnit.PKR]: toMillisatoshiConversion,
     [CurrencyUnit.ARS]: toMillisatoshiConversion,
+    [CurrencyUnit.BGN]: toMillisatoshiConversion,
+    [CurrencyUnit.CZK]: toMillisatoshiConversion,
+    [CurrencyUnit.HUF]: toMillisatoshiConversion,
+    [CurrencyUnit.NOK]: toMillisatoshiConversion,
+    [CurrencyUnit.PLN]: toMillisatoshiConversion,
+    [CurrencyUnit.RON]: toMillisatoshiConversion,
+    [CurrencyUnit.SEK]: toMillisatoshiConversion,
+    [CurrencyUnit.CHF]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
     [CurrencyUnit.USDB]: toMillisatoshiConversion,
@@ -403,6 +459,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toNanobitcoinConversion,
     [CurrencyUnit.PKR]: toNanobitcoinConversion,
     [CurrencyUnit.ARS]: toNanobitcoinConversion,
+    [CurrencyUnit.BGN]: toNanobitcoinConversion,
+    [CurrencyUnit.CZK]: toNanobitcoinConversion,
+    [CurrencyUnit.HUF]: toNanobitcoinConversion,
+    [CurrencyUnit.NOK]: toNanobitcoinConversion,
+    [CurrencyUnit.PLN]: toNanobitcoinConversion,
+    [CurrencyUnit.RON]: toNanobitcoinConversion,
+    [CurrencyUnit.SEK]: toNanobitcoinConversion,
+    [CurrencyUnit.CHF]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
     [CurrencyUnit.USDB]: toNanobitcoinConversion,
@@ -451,6 +515,14 @@ const CONVERSION_MAP = {
     [CurrencyUnit.JMD]: toSatoshiConversion,
     [CurrencyUnit.PKR]: toSatoshiConversion,
     [CurrencyUnit.ARS]: toSatoshiConversion,
+    [CurrencyUnit.BGN]: toSatoshiConversion,
+    [CurrencyUnit.CZK]: toSatoshiConversion,
+    [CurrencyUnit.HUF]: toSatoshiConversion,
+    [CurrencyUnit.NOK]: toSatoshiConversion,
+    [CurrencyUnit.PLN]: toSatoshiConversion,
+    [CurrencyUnit.RON]: toSatoshiConversion,
+    [CurrencyUnit.SEK]: toSatoshiConversion,
+    [CurrencyUnit.CHF]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
     [CurrencyUnit.USDB]: toSatoshiConversion,
@@ -492,6 +564,14 @@ const CONVERSION_MAP = {
   [CurrencyUnit.JMD]: standardUnitConversionObj,
   [CurrencyUnit.PKR]: standardUnitConversionObj,
   [CurrencyUnit.ARS]: standardUnitConversionObj,
+  [CurrencyUnit.BGN]: standardUnitConversionObj,
+  [CurrencyUnit.CZK]: standardUnitConversionObj,
+  [CurrencyUnit.HUF]: standardUnitConversionObj,
+  [CurrencyUnit.NOK]: standardUnitConversionObj,
+  [CurrencyUnit.PLN]: standardUnitConversionObj,
+  [CurrencyUnit.RON]: standardUnitConversionObj,
+  [CurrencyUnit.SEK]: standardUnitConversionObj,
+  [CurrencyUnit.CHF]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
   [CurrencyUnit.USDB]: standardUnitConversionObj,
@@ -593,6 +673,14 @@ export type CurrencyMap = {
   [CurrencyUnit.JMD]: number;
   [CurrencyUnit.PKR]: number;
   [CurrencyUnit.ARS]: number;
+  [CurrencyUnit.BGN]: number;
+  [CurrencyUnit.CZK]: number;
+  [CurrencyUnit.HUF]: number;
+  [CurrencyUnit.NOK]: number;
+  [CurrencyUnit.PLN]: number;
+  [CurrencyUnit.RON]: number;
+  [CurrencyUnit.SEK]: number;
+  [CurrencyUnit.CHF]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.USDB]: number;
@@ -644,6 +732,14 @@ export type CurrencyMap = {
     [CurrencyUnit.JMD]: string;
     [CurrencyUnit.PKR]: string;
     [CurrencyUnit.ARS]: string;
+    [CurrencyUnit.BGN]: string;
+    [CurrencyUnit.CZK]: string;
+    [CurrencyUnit.HUF]: string;
+    [CurrencyUnit.NOK]: string;
+    [CurrencyUnit.PLN]: string;
+    [CurrencyUnit.RON]: string;
+    [CurrencyUnit.SEK]: string;
+    [CurrencyUnit.CHF]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.USDB]: string;
@@ -876,6 +972,14 @@ function convertCurrencyAmountValues(
     jmd: CurrencyUnit.JMD,
     pkr: CurrencyUnit.PKR,
     ars: CurrencyUnit.ARS,
+    bgn: CurrencyUnit.BGN,
+    czk: CurrencyUnit.CZK,
+    huf: CurrencyUnit.HUF,
+    nok: CurrencyUnit.NOK,
+    pln: CurrencyUnit.PLN,
+    ron: CurrencyUnit.RON,
+    sek: CurrencyUnit.SEK,
+    chf: CurrencyUnit.CHF,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -972,6 +1076,14 @@ export function mapCurrencyAmount(
     jmd,
     pkr,
     ars,
+    bgn,
+    czk,
+    huf,
+    nok,
+    pln,
+    ron,
+    sek,
+    chf,
     usdt,
     usdc,
     usdb,
@@ -1018,6 +1130,14 @@ export function mapCurrencyAmount(
     [CurrencyUnit.JMD]: jmd,
     [CurrencyUnit.PKR]: pkr,
     [CurrencyUnit.ARS]: ars,
+    [CurrencyUnit.BGN]: bgn,
+    [CurrencyUnit.CZK]: czk,
+    [CurrencyUnit.HUF]: huf,
+    [CurrencyUnit.NOK]: nok,
+    [CurrencyUnit.PLN]: pln,
+    [CurrencyUnit.RON]: ron,
+    [CurrencyUnit.SEK]: sek,
+    [CurrencyUnit.CHF]: chf,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -1198,6 +1318,38 @@ export function mapCurrencyAmount(
         value: ars,
         unit: CurrencyUnit.ARS,
       }),
+      [CurrencyUnit.BGN]: formatCurrencyStr({
+        value: bgn,
+        unit: CurrencyUnit.BGN,
+      }),
+      [CurrencyUnit.CZK]: formatCurrencyStr({
+        value: czk,
+        unit: CurrencyUnit.CZK,
+      }),
+      [CurrencyUnit.HUF]: formatCurrencyStr({
+        value: huf,
+        unit: CurrencyUnit.HUF,
+      }),
+      [CurrencyUnit.NOK]: formatCurrencyStr({
+        value: nok,
+        unit: CurrencyUnit.NOK,
+      }),
+      [CurrencyUnit.PLN]: formatCurrencyStr({
+        value: pln,
+        unit: CurrencyUnit.PLN,
+      }),
+      [CurrencyUnit.RON]: formatCurrencyStr({
+        value: ron,
+        unit: CurrencyUnit.RON,
+      }),
+      [CurrencyUnit.SEK]: formatCurrencyStr({
+        value: sek,
+        unit: CurrencyUnit.SEK,
+      }),
+      [CurrencyUnit.CHF]: formatCurrencyStr({
+        value: chf,
+        unit: CurrencyUnit.CHF,
+      }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
         unit: CurrencyUnit.USDT,
@@ -1358,6 +1510,22 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "PKR";
     case CurrencyUnit.ARS:
       return "ARS";
+    case CurrencyUnit.BGN:
+      return "BGN";
+    case CurrencyUnit.CZK:
+      return "CZK";
+    case CurrencyUnit.HUF:
+      return "HUF";
+    case CurrencyUnit.NOK:
+      return "NOK";
+    case CurrencyUnit.PLN:
+      return "PLN";
+    case CurrencyUnit.RON:
+      return "RON";
+    case CurrencyUnit.SEK:
+      return "SEK";
+    case CurrencyUnit.CHF:
+      return "CHF";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -1439,6 +1607,14 @@ export function formatCurrencyStr(
       CurrencyUnit.JMD,
       CurrencyUnit.PKR,
       CurrencyUnit.ARS,
+      CurrencyUnit.BGN,
+      CurrencyUnit.CZK,
+      CurrencyUnit.HUF,
+      CurrencyUnit.NOK,
+      CurrencyUnit.PLN,
+      CurrencyUnit.RON,
+      CurrencyUnit.SEK,
+      CurrencyUnit.CHF,
       CurrencyUnit.HKD,
       CurrencyUnit.SGD,
     ] as string[];
