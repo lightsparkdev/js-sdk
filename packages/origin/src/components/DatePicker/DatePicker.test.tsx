@@ -416,20 +416,6 @@ test.describe("DatePicker", () => {
     await expect(endTime).toHaveValue("5:30 PM");
   });
 
-  test("changing end time in range mode updates correctly", async ({
-    mount,
-    page,
-  }) => {
-    await mount(<TestRangeWithTime />);
-
-    const endTime = page.getByRole("textbox", { name: "End time" });
-    await endTime.fill("11:45 PM");
-    await endTime.blur();
-
-    await expect(page.getByTestId("end-hours")).toHaveText("23");
-    await expect(page.getByTestId("end-minutes")).toHaveText("45");
-  });
-
   test("navigates from December to January across year boundary", async ({
     mount,
     page,

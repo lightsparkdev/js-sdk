@@ -1,6 +1,9 @@
 // Origin Design System - Barrel Export
 // This file exports all components for use as a package
 
+export { formatDateTime, humanizeIdentifier } from "./lib/formatters";
+export type { HumanizeIdentifierOptions } from "./lib/formatters";
+
 // Analytics
 export { AnalyticsProvider } from "./components/Analytics";
 export type {
@@ -24,7 +27,9 @@ export type {
   DatePickerControlsProps,
   DatePickerControlItemProps,
   DatePickerFooterProps,
+  DatePickerTimeZone,
   DateRange,
+  DateRangeDraft,
 } from "./components/DatePicker";
 
 export { Card } from "./components/Card";
@@ -42,6 +47,34 @@ export type {
   ComboboxClearVisibility,
 } from "./components/Combobox";
 export { ContextMenu } from "./components/ContextMenu";
+export {
+  DataTable,
+  createRowActivationHook,
+  useCursorTablePagination,
+} from "./components/DataTable";
+export type {
+  CreateRowActivationHookConfig,
+  DataTableLayout,
+  DataTableDensity,
+  DataTableAccessorColumn,
+  DataTableColumn,
+  DataTableDisplayColumn,
+  DataTableEmptyState,
+  DataTableErrorState,
+  DataTableCursorPagination,
+  DataTableRootProps,
+  DataTableToolbarProps,
+  DataTableContentProps,
+  DataTableFooterProps,
+  CursorTableController,
+  CursorTableCount,
+  CursorTablePage,
+  CursorTableRequest,
+  RowActivation,
+  RowActivationEvent,
+  RowActivationHook,
+  UseCursorTablePaginationOptions,
+} from "./components/DataTable";
 export { Dialog } from "./components/Dialog";
 export { Drawer, createHandle } from "./components/Drawer";
 export type {
@@ -67,6 +100,47 @@ export type {
   FieldsetLegendProps,
   FieldsetErrorProps,
 } from "./components/Fieldset";
+export {
+  FilterBar,
+  createRegistrationChannel,
+  createUrlBackedFiltersHook,
+  useFilters,
+} from "./components/FilterBar";
+export type {
+  CreateUrlBackedFiltersHookConfig,
+  FilterBarConfig,
+  FilterBarRootProps,
+  FilterBarPillProps,
+  FilterBarAddButtonProps,
+  FilterBarClearProps,
+  AddFilterOptions,
+  FiltersModel,
+  UpdateFilter,
+  UseFiltersOptions,
+  DateFilterDescriptor,
+  DateFilterRange,
+  DateFilterState,
+  EnumFilterDescriptor,
+  EnumFilterOption,
+  EnumFilterState,
+  FilterDescriptor,
+  FilterDescriptorForId,
+  FilterDescriptorTuple,
+  FilterActionRegistry,
+  FilterId,
+  FilterState,
+  FilterStateForDescriptor,
+  FilterStateForId,
+  FilterStates,
+  StringFilterDescriptor,
+  StringFilterState,
+  RegisteredFilterAction,
+  SearchParamHistoryMode,
+  SearchParamsAdapter,
+  UrlBackedFiltersHook,
+  UseSearchParamsAdapter,
+  UseUrlBackedFiltersOptions,
+} from "./components/FilterBar";
 export { InputGroup } from "./components/InputGroup";
 export type {
   InputGroupRootProps,

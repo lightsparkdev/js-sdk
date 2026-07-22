@@ -63,6 +63,20 @@ describe("Pagination.Root", () => {
   });
 });
 
+describe("Pagination.Label", () => {
+  it("preserves the standalone items-per-page default", () => {
+    render(<Pagination.Label />);
+
+    expect(screen.getByText("Items per page")).toBeTruthy();
+  });
+
+  it("keeps explicit consumer copy", () => {
+    render(<Pagination.Label>Results per page</Pagination.Label>);
+
+    expect(screen.getByText("Results per page")).toBeTruthy();
+  });
+});
+
 describe("Pagination.Range", () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 

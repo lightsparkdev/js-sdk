@@ -4,6 +4,14 @@ import type { DateRange, DayCellState } from "./index";
 import { Switch } from "../Switch";
 import { Button } from "../Button";
 
+function localDateKey(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-");
+}
+
 export function TestDefault() {
   const [value, setValue] = useState<Date | null>(null);
   return (
@@ -324,6 +332,193 @@ export function TestRangeWithTime() {
       <div data-testid="range-end">
         {value ? value.end.toISOString().split("T")[0] : "none"}
       </div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestEmptyRangeWithTime() {
+  const [value, setValue] = useState<DateRange | null>(null);
+  const [changeCount, setChangeCount] = useState(0);
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      includeTime
+      value={value}
+      onValueChange={(nextValue) => {
+        setValue(nextValue as DateRange);
+        setChangeCount((count) => count + 1);
+      }}
+      onRangeDraftChange={() => undefined}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="change-count">{changeCount}</div>
+      <div data-testid="range-start">
+        {value ? value.start.toISOString().split("T")[0] : "none"}
+      </div>
+      <div data-testid="range-end">
+        {value ? value.end.toISOString().split("T")[0] : "none"}
+      </div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestCallbackOnlyRangeDraft() {
+  const [value, setValue] = useState<DateRange | null>(null);
+  const [draftUpdates, setDraftUpdates] = useState<string[]>([]);
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      value={value}
+      onValueChange={(nextValue) => setValue(nextValue as DateRange)}
+      onRangeDraftChange={(draft) => {
+        setDraftUpdates((updates) => [
+          ...updates,
+          `${draft.start?.toISOString().split("T")[0] ?? "none"}|${
+            draft.end?.toISOString().split("T")[0] ?? "none"
+          }`,
+        ]);
+      }}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="draft-updates">{draftUpdates.join(",")}</div>
+      <div data-testid="completed-range">
+        {value
+          ? `${value.start.toISOString().split("T")[0]}|${
+              value.end.toISOString().split("T")[0]
+            }`
+          : "none"}
+      </div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestControlledRangeDraft() {
+  const [draftUpdate, setDraftUpdate] = useState("none");
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      includeTime
+      rangeDraft={{ start: new Date(2026, 1, 11), end: null }}
+      onRangeDraftChange={(draft) => {
+        setDraftUpdate(
+          `${draft.start?.toISOString().split("T")[0] ?? "none"}|${
+            draft.end?.toISOString().split("T")[0] ?? "none"
+          }`,
+        );
+      }}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="controlled-draft-update">{draftUpdate}</div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestRejectingControlledRange() {
+  const [value] = useState<DateRange>({
+    start: new Date(2026, 1, 11),
+    end: new Date(2026, 1, 15),
+  });
+  const [attemptedEnd, setAttemptedEnd] = useState("");
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      value={value}
+      onValueChange={(nextValue) => {
+        setAttemptedEnd(
+          (nextValue as DateRange).end.toISOString().split("T")[0],
+        );
+      }}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="attempted-end">{attemptedEnd}</div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestFixedControlledRange() {
+  const [value] = useState<DateRange>({
+    start: new Date(2026, 1, 11),
+    end: new Date(2026, 1, 15),
+  });
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      value={value}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+    </DatePicker.Root>
+  );
+}
+
+export function TestUncontrolledRangeWithTime() {
+  const [emittedRange, setEmittedRange] = useState<DateRange | null>(null);
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      includeTime
+      onValueChange={(nextValue) => setEmittedRange(nextValue as DateRange)}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="emitted-start">
+        {emittedRange ? emittedRange.start.toISOString().split("T")[0] : "none"}
+      </div>
+      <div data-testid="emitted-end">
+        {emittedRange ? emittedRange.end.toISOString().split("T")[0] : "none"}
+      </div>
+      <div data-testid="emitted-local-start">
+        {emittedRange ? localDateKey(emittedRange.start) : "none"}
+      </div>
+      <div data-testid="today-date">{localDateKey(new Date())}</div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestSameDayRangeWithTime() {
+  const [value, setValue] = useState<DateRange | null>({
+    start: new Date(2026, 1, 15, 9, 0),
+    end: new Date(2026, 1, 15, 17, 30),
+  });
+  return (
+    <DatePicker.Root
+      mode="range"
+      includeTime
+      value={value}
+      onValueChange={(v) => setValue(v as DateRange)}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <div data-testid="start-hours">{value ? value.start.getHours() : ""}</div>
+      <div data-testid="start-minutes">
+        {value ? value.start.getMinutes() : ""}
+      </div>
+      <div data-testid="end-hours">{value ? value.end.getHours() : ""}</div>
+      <div data-testid="end-minutes">{value ? value.end.getMinutes() : ""}</div>
     </DatePicker.Root>
   );
 }

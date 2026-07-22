@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, expectTypeOf, vi } from "vitest";
 import * as React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { Table } from "./index";
@@ -35,13 +35,92 @@ describe("Table.Root caption", () => {
   });
 });
 
-describe("Table.Row keyboard accessibility", () => {
-  it("fires onClick on Enter when row is focused", () => {
-    const onClick = vi.fn();
+describe("Table.Row activation", () => {
+  it("preserves the native onClick handler type", () => {
+    expectTypeOf<
+      React.ComponentProps<typeof Table.Row>["onClick"]
+    >().toEqualTypeOf<
+      React.MouseEventHandler<HTMLTableRowElement> | undefined
+    >();
+  });
+
+  it("passes a real mouse event to onClick", () => {
+    const onClick: React.MouseEventHandler<HTMLTableRowElement> = vi.fn(
+      (event) => {
+        event.currentTarget.dataset.clicked = "true";
+        event.preventDefault();
+      },
+    );
     const { container } = render(
       <table>
         <tbody>
           <Table.Row onClick={onClick}>
+            <Table.Cell>Content</Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+    const row = container.querySelector("tr")!;
+
+    fireEvent.click(row);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(row.dataset.clicked).toBe("true");
+  });
+
+  it("passes only activation modifiers to pointer and keyboard callbacks", () => {
+    const onActivate = vi.fn();
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
+            <Table.Cell>Content</Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+    const row = container.querySelector("tr")!;
+
+    fireEvent.click(row, { metaKey: true });
+    fireEvent.keyDown(row, { key: "Enter", ctrlKey: true });
+
+    expect(onActivate.mock.calls).toEqual([
+      [{ metaKey: true, ctrlKey: false }],
+      [{ metaKey: false, ctrlKey: true }],
+    ]);
+  });
+
+  it("keeps native clicks while suppressing nested activation", () => {
+    const onClick = vi.fn();
+    const onActivate = vi.fn();
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row
+            activationLabel="Activate row"
+            onClick={onClick}
+            onActivate={onActivate}
+          >
+            <Table.Cell>
+              <button type="button">Action</button>
+            </Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+
+    fireEvent.click(container.querySelector("button")!);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onActivate).not.toHaveBeenCalled();
+  });
+
+  it("fires onActivate on Enter when row is focused", () => {
+    const onActivate = vi.fn();
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
             <Table.Cell>Content</Table.Cell>
           </Table.Row>
         </tbody>
@@ -50,15 +129,15 @@ describe("Table.Row keyboard accessibility", () => {
 
     const row = container.querySelector("tr")!;
     fireEvent.keyDown(row, { key: "Enter" });
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledTimes(1);
   });
 
-  it("fires onClick on Space when row is focused", () => {
-    const onClick = vi.fn();
+  it("fires onActivate on Space when row is focused", () => {
+    const onActivate = vi.fn();
     const { container } = render(
       <table>
         <tbody>
-          <Table.Row onClick={onClick}>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
             <Table.Cell>Content</Table.Cell>
           </Table.Row>
         </tbody>
@@ -67,15 +146,41 @@ describe("Table.Row keyboard accessibility", () => {
 
     const row = container.querySelector("tr")!;
     fireEvent.keyDown(row, { key: " " });
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledTimes(1);
   });
 
-  it("does not fire onClick when keydown target is a child element", () => {
-    const onClick = vi.fn();
+  it.each(["Enter", " "])(
+    "preserves keyboard activation for an onClick-only row with %j",
+    (key) => {
+      const onClick = vi.fn((event: React.MouseEvent<HTMLTableRowElement>) => {
+        event.currentTarget.dataset.activated = "true";
+        event.preventDefault();
+      });
+      const { container } = render(
+        <table>
+          <tbody>
+            <Table.Row onClick={onClick}>
+              <Table.Cell>Content</Table.Cell>
+            </Table.Row>
+          </tbody>
+        </table>,
+      );
+      const row = container.querySelector("tr")!;
+
+      fireEvent.keyDown(row, { key });
+
+      expect(onClick).toHaveBeenCalledOnce();
+      expect(onClick.mock.calls[0]?.[0].nativeEvent).toBeInstanceOf(MouseEvent);
+      expect(row.dataset.activated).toBe("true");
+    },
+  );
+
+  it("does not activate when keydown target is a child element", () => {
+    const onActivate = vi.fn();
     const { container } = render(
       <table>
         <tbody>
-          <Table.Row onClick={onClick}>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
             <Table.Cell>
               <button data-testid="child-btn">Action</button>
             </Table.Cell>
@@ -86,11 +191,11 @@ describe("Table.Row keyboard accessibility", () => {
 
     const button = container.querySelector("button")!;
     fireEvent.keyDown(button, { key: "Enter", bubbles: true });
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onActivate).not.toHaveBeenCalled();
   });
 
   it("respects consumer onKeyDown that calls preventDefault", () => {
-    const onClick = vi.fn();
+    const onActivate = vi.fn();
     const onKeyDown = vi.fn((e: React.KeyboardEvent) => {
       if (e.key === " ") e.preventDefault();
     });
@@ -98,7 +203,11 @@ describe("Table.Row keyboard accessibility", () => {
     const { container } = render(
       <table>
         <tbody>
-          <Table.Row onClick={onClick} onKeyDown={onKeyDown}>
+          <Table.Row
+            activationLabel="Activate row"
+            onActivate={onActivate}
+            onKeyDown={onKeyDown}
+          >
             <Table.Cell>Content</Table.Cell>
           </Table.Row>
         </tbody>
@@ -107,18 +216,78 @@ describe("Table.Row keyboard accessibility", () => {
 
     const row = container.querySelector("tr")!;
 
-    // Space — consumer prevents default, row onClick should not fire
+    // Space — consumer prevents default, row activation should not fire
     fireEvent.keyDown(row, { key: " " });
     expect(onKeyDown).toHaveBeenCalledTimes(1);
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onActivate).not.toHaveBeenCalled();
 
-    // Enter — consumer does not prevent, row onClick should fire
+    // Enter — consumer does not prevent, row activation should fire
     fireEvent.keyDown(row, { key: "Enter" });
     expect(onKeyDown).toHaveBeenCalledTimes(2);
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onActivate).toHaveBeenCalledTimes(1);
   });
 
-  it("sets tabIndex={0} when onClick is present", () => {
+  it("calls onClick then onActivate once for pointer activation", () => {
+    const calls: string[] = [];
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row
+            activationLabel="Activate row"
+            onClick={() => calls.push("click")}
+            onActivate={() => calls.push("activate")}
+          >
+            <Table.Cell>Content</Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+
+    const row = container.querySelector("tr")!;
+    fireEvent.click(row);
+    expect(calls).toEqual(["click", "activate"]);
+
+    fireEvent.keyDown(row, { key: "Enter" });
+    expect(calls).toEqual(["click", "activate", "activate"]);
+  });
+
+  it("lets native onClick prevent normalized pointer activation", () => {
+    const onActivate = vi.fn();
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row
+            activationLabel="Activate row"
+            onClick={(event) => event.preventDefault()}
+            onActivate={onActivate}
+          >
+            <Table.Cell>Content</Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+
+    fireEvent.click(container.querySelector("tr")!);
+
+    expect(onActivate).not.toHaveBeenCalled();
+  });
+
+  it("sets tabIndex={0} when onActivate is present", () => {
+    const { container } = render(
+      <table>
+        <tbody>
+          <Table.Row activationLabel="Activate row" onActivate={() => {}}>
+            <Table.Cell>Content</Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+
+    const row = container.querySelector("tr")!;
+    expect(row.getAttribute("tabindex")).toBe("0");
+  });
+
+  it("sets tabIndex={0} for a native onClick alone", () => {
     const { container } = render(
       <table>
         <tbody>
@@ -133,27 +302,12 @@ describe("Table.Row keyboard accessibility", () => {
     expect(row.getAttribute("tabindex")).toBe("0");
   });
 
-  it("does not set tabIndex when onClick is absent", () => {
-    const { container } = render(
-      <table>
-        <tbody>
-          <Table.Row>
-            <Table.Cell>Content</Table.Cell>
-          </Table.Row>
-        </tbody>
-      </table>,
-    );
-
-    const row = container.querySelector("tr")!;
-    expect(row.hasAttribute("tabindex")).toBe(false);
-  });
-
   it("ignores non-activation keys", () => {
-    const onClick = vi.fn();
+    const onActivate = vi.fn();
     const { container } = render(
       <table>
         <tbody>
-          <Table.Row onClick={onClick}>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
             <Table.Cell>Content</Table.Cell>
           </Table.Row>
         </tbody>
@@ -164,6 +318,6 @@ describe("Table.Row keyboard accessibility", () => {
     fireEvent.keyDown(row, { key: "Tab" });
     fireEvent.keyDown(row, { key: "Escape" });
     fireEvent.keyDown(row, { key: "ArrowDown" });
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onActivate).not.toHaveBeenCalled();
   });
 });

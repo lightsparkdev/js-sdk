@@ -841,7 +841,8 @@ export function ClickableRowTable() {
           {table.getRowModel().rows.map((row) => (
             <Table.Row
               key={row.id}
-              onClick={() => setClickedRow(row.original.name)}
+              activationLabel={`Open ${row.original.name}`}
+              onActivate={() => setClickedRow(row.original.name)}
             >
               {row.getVisibleCells().map((cell) => (
                 <Table.Cell key={cell.id}>

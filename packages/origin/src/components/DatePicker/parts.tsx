@@ -7,59 +7,78 @@ import { Input } from "../Input";
 import { Fieldset } from "../Fieldset";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import styles from "./DatePicker.module.scss";
+import {
+  useDateRangeSelection,
+  type DateRange,
+  type DateRangeDraft,
+} from "./useDateRangeSelection";
+import {
+  addCalendarDays,
+  addCalendarMonths,
+  createCalendarDate,
+  getCalendarDate,
+  getCalendarDay,
+  getCalendarHours,
+  getCalendarMinutes,
+  getCalendarMonth,
+  getCalendarYear,
+  setCalendarTime,
+  startOfCalendarDay,
+  type DatePickerTimeZone,
+} from "./dateTimeZone";
 
-function startOfDay(date: Date): Date {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+export type { DateRange, DateRangeDraft } from "./useDateRangeSelection";
+export type { DatePickerTimeZone } from "./dateTimeZone";
 
-function isSameDay(a: Date, b: Date): boolean {
+function isSameDay(a: Date, b: Date, timeZone: DatePickerTimeZone): boolean {
   return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
+    getCalendarYear(a, timeZone) === getCalendarYear(b, timeZone) &&
+    getCalendarMonth(a, timeZone) === getCalendarMonth(b, timeZone) &&
+    getCalendarDate(a, timeZone) === getCalendarDate(b, timeZone)
   );
 }
 
-function isSameMonth(date: Date, year: number, month: number): boolean {
-  return date.getFullYear() === year && date.getMonth() === month;
+function isSameMonth(
+  date: Date,
+  year: number,
+  month: number,
+  timeZone: DatePickerTimeZone,
+): boolean {
+  return (
+    getCalendarYear(date, timeZone) === year &&
+    getCalendarMonth(date, timeZone) === month
+  );
 }
 
-function isDateInRange(date: Date, start: Date, end: Date): boolean {
-  const t = startOfDay(date).getTime();
-  return t > startOfDay(start).getTime() && t < startOfDay(end).getTime();
+function isDateInRange(
+  date: Date,
+  start: Date,
+  end: Date,
+  timeZone: DatePickerTimeZone,
+): boolean {
+  const t = startOfCalendarDay(date, timeZone).getTime();
+  return (
+    t > startOfCalendarDay(start, timeZone).getTime() &&
+    t < startOfCalendarDay(end, timeZone).getTime()
+  );
 }
 
-function isDateBefore(a: Date, b: Date): boolean {
-  return startOfDay(a).getTime() < startOfDay(b).getTime();
-}
-
-function addDays(date: Date, days: number): Date {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function addMonths(date: Date, months: number): Date {
-  const d = new Date(date);
-  const targetMonth = d.getMonth() + months;
-  d.setMonth(targetMonth);
-  // Clamp day if overflowed (e.g. Jan 31 + 1 month → Mar 3 → clamp to Feb 28)
-  if (d.getMonth() !== ((targetMonth % 12) + 12) % 12) {
-    d.setDate(0); // last day of previous month
-  }
-  return d;
+function isDateBefore(a: Date, b: Date, timeZone: DatePickerTimeZone): boolean {
+  return (
+    startOfCalendarDay(a, timeZone).getTime() <
+    startOfCalendarDay(b, timeZone).getTime()
+  );
 }
 
 function getMonthGrid(
   year: number,
   month: number,
   weekStartsOn: 0 | 1,
+  timeZone: DatePickerTimeZone,
 ): Date[][] {
-  const firstDay = new Date(year, month, 1);
-  const offset = (firstDay.getDay() - weekStartsOn + 7) % 7;
-  const gridStart = addDays(firstDay, -offset);
+  const firstDay = createCalendarDate(year, month, 1, timeZone);
+  const offset = (getCalendarDay(firstDay, timeZone) - weekStartsOn + 7) % 7;
+  const gridStart = addCalendarDays(firstDay, -offset, timeZone);
 
   const weeks: Date[][] = [];
   let current = new Date(gridStart);
@@ -67,7 +86,7 @@ function getMonthGrid(
     const week: Date[] = [];
     for (let d = 0; d < 7; d++) {
       week.push(new Date(current));
-      current = addDays(current, 1);
+      current = addCalendarDays(current, 1, timeZone);
     }
     weeks.push(week);
   }
@@ -144,11 +163,6 @@ function getTimePlaceholder(locale: string): string {
     : "00:00";
 }
 
-export interface DateRange {
-  start: Date;
-  end: Date;
-}
-
 export interface DatePickerLabels {
   previousMonth: string;
   nextMonth: string;
@@ -195,10 +209,38 @@ export interface DatePickerRootProps
   mode?: "single" | "range";
   /** Whether time inputs are shown in the header. */
   includeTime?: boolean;
-  /** Selected date (single) or range (range mode). */
+  /**
+   * Calendar field interpretation. `local` preserves the default behavior;
+   * `UTC` reads and edits Date fields with UTC accessors so UTC wall-clock
+   * values remain independent of the browser's daylight-saving transitions.
+   */
+  timeZone?: DatePickerTimeZone;
+  /**
+   * Selected date in single mode, or the committed complete range in range
+   * mode. In-progress partial range edits are owned independently by
+   * `rangeDraft` when the draft API is used.
+   */
   value?: Date | DateRange | null;
-  /** Called when selection changes. Receives Date in single mode, DateRange in range mode. */
+  /**
+   * Called for single-date changes and complete range commits. With either
+   * draft prop, partial edits emit only through `onRangeDraftChange`. Without
+   * the draft API, typing the first range bound commits a same-day range for
+   * compatibility with the original DatePicker contract.
+   */
   onValueChange?: (value: Date | DateRange) => void;
+  /**
+   * Independent controlled editor draft for range mode. Either bound may be
+   * absent; when provided, this channel remains authoritative even when
+   * `value` contains a committed range.
+   */
+  rangeDraft?: DateRangeDraft | null;
+  /**
+   * Called after every range-mode date or time edit. Complete drafts also
+   * commit through `onValueChange`. Opting into the draft API requires a
+   * bound's date before its time can be edited; legacy consumers without the
+   * draft API retain time-first today synthesis.
+   */
+  onRangeDraftChange?: (value: DateRangeDraft) => void;
   /** Controlled visible month. When provided, the consumer drives navigation. */
   month?: Date;
   /** Initial month to display (uncontrolled). Defaults to selected date or current month. */
@@ -229,8 +271,10 @@ interface DatePickerContextValue {
 
   mode: "single" | "range";
   includeTime: boolean;
+  timeZone: DatePickerTimeZone;
+  usesRangeDraftApi: boolean;
   singleValue: Date | null;
-  rangeValue: DateRange | null;
+  rangeValue: DateRangeDraft | null;
   pendingStart: Date | null;
   hoveredDate: Date | null;
 
@@ -272,8 +316,11 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       children,
       mode: modeProp,
       includeTime: includeTimeProp,
+      timeZone = "local",
       value: valueProp,
       onValueChange,
+      rangeDraft: rangeDraftProp,
+      onRangeDraftChange,
       month: monthProp,
       defaultMonth,
       onMonthChange,
@@ -305,31 +352,60 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
 
     const singleValue =
       mode === "single" && valueProp instanceof Date ? valueProp : null;
-    const rangeValue =
-      mode === "range" && valueProp && !(valueProp instanceof Date)
-        ? valueProp
-        : null;
+    const trackedSelect = useTrackedCallback(
+      analyticsName,
+      "DatePicker",
+      "change",
+      onValueChange,
+      (val: Date | DateRange) => ({
+        value: val instanceof Date ? val.toISOString() : undefined,
+        start: val instanceof Date ? undefined : val.start.toISOString(),
+        end: val instanceof Date ? undefined : val.end.toISOString(),
+        mode,
+      }),
+    );
+    const { rangeValue, emitRange, usesRangeDraftApi } = useDateRangeSelection({
+      mode,
+      value: valueProp,
+      rangeDraft: rangeDraftProp,
+      onRangeDraftChange,
+      onCommit: trackedSelect,
+      timeZone,
+    });
 
     // View state
     const initialMonth = React.useMemo(() => {
       if (monthProp) return monthProp;
       if (defaultMonth) return defaultMonth;
       if (singleValue) return singleValue;
-      if (rangeValue) return rangeValue.start;
+      if (rangeValue?.start) return rangeValue.start;
+      if (rangeValue?.end) return rangeValue.end;
       return new Date();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const [viewDate, setViewDate] = React.useState(
-      () => new Date(initialMonth.getFullYear(), initialMonth.getMonth(), 1),
+    const [viewDate, setViewDate] = React.useState(() =>
+      createCalendarDate(
+        getCalendarYear(initialMonth, timeZone),
+        getCalendarMonth(initialMonth, timeZone),
+        1,
+        timeZone,
+      ),
     );
 
     // Controlled month: sync external prop to internal state
     React.useEffect(() => {
       if (monthProp !== undefined) {
-        setViewDate(new Date(monthProp.getFullYear(), monthProp.getMonth(), 1));
+        setViewDate(
+          createCalendarDate(
+            getCalendarYear(monthProp, timeZone),
+            getCalendarMonth(monthProp, timeZone),
+            1,
+            timeZone,
+          ),
+        );
       }
-    }, [monthProp]);
+    }, [monthProp, timeZone]);
 
     // Fire onMonthChange when view changes
     const onMonthChangeRef = React.useRef(onMonthChange);
@@ -346,16 +422,25 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
 
     // Focus state
     const [focusedDate, setFocusedDateState] = React.useState<Date>(() => {
-      if (singleValue) return startOfDay(singleValue);
-      if (rangeValue) return startOfDay(rangeValue.start);
-      const today = startOfDay(new Date());
+      if (singleValue) return startOfCalendarDay(singleValue, timeZone);
+      if (rangeValue?.start)
+        return startOfCalendarDay(rangeValue.start, timeZone);
+      if (rangeValue?.end) return startOfCalendarDay(rangeValue.end, timeZone);
+      const today = startOfCalendarDay(new Date(), timeZone);
       if (
-        today.getFullYear() === initialMonth.getFullYear() &&
-        today.getMonth() === initialMonth.getMonth()
+        getCalendarYear(today, timeZone) ===
+          getCalendarYear(initialMonth, timeZone) &&
+        getCalendarMonth(today, timeZone) ===
+          getCalendarMonth(initialMonth, timeZone)
       ) {
         return today;
       }
-      return new Date(initialMonth.getFullYear(), initialMonth.getMonth(), 1);
+      return createCalendarDate(
+        getCalendarYear(initialMonth, timeZone),
+        getCalendarMonth(initialMonth, timeZone),
+        1,
+        timeZone,
+      );
     });
 
     // Range selection state
@@ -367,31 +452,46 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       setHoveredDate(null);
     }, [mode]);
 
-    const viewYear = viewDate.getFullYear();
-    const viewMonth = viewDate.getMonth();
+    const viewYear = getCalendarYear(viewDate, timeZone);
+    const viewMonth = getCalendarMonth(viewDate, timeZone);
 
-    const setFocusedDate = React.useCallback((date: Date) => {
-      const normalized = startOfDay(date);
-      setFocusedDateState(normalized);
-      setViewDate(new Date(normalized.getFullYear(), normalized.getMonth(), 1));
-    }, []);
-
-    const goToMonth = React.useCallback((offset: number) => {
-      setViewDate((prev) => addMonths(prev, offset));
-      setFocusedDateState((prev) => {
-        const target = addMonths(prev, offset);
-        const lastDay = new Date(
-          target.getFullYear(),
-          target.getMonth() + 1,
-          0,
-        ).getDate();
-        return new Date(
-          target.getFullYear(),
-          target.getMonth(),
-          Math.min(prev.getDate(), lastDay),
+    const setFocusedDate = React.useCallback(
+      (date: Date) => {
+        const normalized = startOfCalendarDay(date, timeZone);
+        setFocusedDateState(normalized);
+        setViewDate(
+          createCalendarDate(
+            getCalendarYear(normalized, timeZone),
+            getCalendarMonth(normalized, timeZone),
+            1,
+            timeZone,
+          ),
         );
-      });
-    }, []);
+      },
+      [timeZone],
+    );
+
+    const goToMonth = React.useCallback(
+      (offset: number) => {
+        setViewDate((prev) => addCalendarMonths(prev, offset, timeZone));
+        setFocusedDateState((prev) => {
+          const target = addCalendarMonths(prev, offset, timeZone);
+          const targetYear = getCalendarYear(target, timeZone);
+          const targetMonth = getCalendarMonth(target, timeZone);
+          const lastDay = getCalendarDate(
+            createCalendarDate(targetYear, targetMonth + 1, 0, timeZone),
+            timeZone,
+          );
+          return createCalendarDate(
+            targetYear,
+            targetMonth,
+            Math.min(getCalendarDate(prev, timeZone), lastDay),
+            timeZone,
+          );
+        });
+      },
+      [timeZone],
+    );
 
     const goToPreviousMonth = React.useCallback(
       () => goToMonth(-1),
@@ -402,24 +502,11 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     const isDateDisabled = React.useCallback(
       (date: Date): boolean => {
         if (disabled?.(date)) return true;
-        if (min && isDateBefore(date, min)) return true;
-        if (max && isDateBefore(max, date)) return true;
+        if (min && isDateBefore(date, min, timeZone)) return true;
+        if (max && isDateBefore(max, date, timeZone)) return true;
         return false;
       },
-      [disabled, min, max],
-    );
-
-    const trackedSelect = useTrackedCallback(
-      analyticsName,
-      "DatePicker",
-      "change",
-      onValueChange,
-      (val: Date | DateRange) => ({
-        value: val instanceof Date ? val.toISOString() : undefined,
-        start: val instanceof Date ? undefined : val.start.toISOString(),
-        end: val instanceof Date ? undefined : val.end.toISOString(),
-        mode,
-      }),
+      [disabled, min, max, timeZone],
     );
 
     const selectDate = React.useCallback(
@@ -427,12 +514,14 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         if (isDateDisabled(date)) return;
 
         function applyTime(target: Date, source: Date | null): Date {
-          if (!includeTime) return startOfDay(target);
-          const d = new Date(target);
-          d.setHours(0, 0, 0, 0);
+          if (!includeTime) return startOfCalendarDay(target, timeZone);
           const ref = source ?? new Date();
-          d.setHours(ref.getHours(), ref.getMinutes());
-          return d;
+          return setCalendarTime(
+            startOfCalendarDay(target, timeZone),
+            getCalendarHours(ref, timeZone),
+            getCalendarMinutes(ref, timeZone),
+            timeZone,
+          );
         }
 
         if (mode === "single") {
@@ -441,15 +530,37 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         }
 
         // Range mode
-        if (pendingStart === null) {
-          setPendingStart(startOfDay(date));
+        const draftStart =
+          usesRangeDraftApi && rangeValue?.start && !rangeValue.end
+            ? rangeValue.start
+            : pendingStart;
+        if (draftStart === null) {
+          if (usesRangeDraftApi) {
+            emitRange(
+              !rangeValue?.start && rangeValue?.end
+                ? {
+                    start: applyTime(date, null),
+                    end: new Date(rangeValue.end),
+                  }
+                : {
+                    start: applyTime(date, rangeValue?.start ?? null),
+                    end: null,
+                  },
+            );
+          } else {
+            setPendingStart(startOfCalendarDay(date, timeZone));
+          }
         } else {
-          const reversed = isDateBefore(date, pendingStart);
-          const startDate = reversed ? date : pendingStart;
-          const endDate = reversed ? pendingStart : date;
+          const reversed = isDateBefore(date, draftStart, timeZone);
+          const startDate = reversed ? date : draftStart;
+          const endDate = reversed ? draftStart : date;
           const start = applyTime(startDate, rangeValue?.start ?? null);
           const end = applyTime(endDate, rangeValue?.end ?? null);
-          trackedSelect({ start, end });
+          const preferredRoleTimes =
+            rangeValue?.start && rangeValue.end
+              ? { start: rangeValue.start, end: rangeValue.end }
+              : undefined;
+          emitRange({ start, end }, preferredRoleTimes);
           setPendingStart(null);
           setHoveredDate(null);
         }
@@ -457,61 +568,77 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       [
         mode,
         includeTime,
+        timeZone,
         pendingStart,
+        usesRangeDraftApi,
         singleValue,
         rangeValue,
         isDateDisabled,
+        emitRange,
         trackedSelect,
       ],
     );
 
     const setDate = React.useCallback(
       (which: "start" | "end", date: Date) => {
-        setViewDate(new Date(date.getFullYear(), date.getMonth(), 1));
+        setViewDate(
+          createCalendarDate(
+            getCalendarYear(date, timeZone),
+            getCalendarMonth(date, timeZone),
+            1,
+            timeZone,
+          ),
+        );
 
         if (mode === "single") {
-          const d = new Date(date);
-          if (includeTime && singleValue) {
-            d.setHours(singleValue.getHours(), singleValue.getMinutes(), 0, 0);
-          }
+          const d =
+            includeTime && singleValue
+              ? setCalendarTime(
+                  date,
+                  getCalendarHours(singleValue, timeZone),
+                  getCalendarMinutes(singleValue, timeZone),
+                  timeZone,
+                )
+              : new Date(date);
           trackedSelect(d);
         } else {
-          const current = rangeValue ?? { start: date, end: date };
-          const newRange = {
-            start: new Date(current.start),
-            end: new Date(current.end),
-          };
-          const d = new Date(date);
+          const current = rangeValue ?? { start: null, end: null };
           const existing = which === "start" ? current.start : current.end;
-          if (includeTime) {
-            d.setHours(existing.getHours(), existing.getMinutes(), 0, 0);
-          }
-          if (which === "start") newRange.start = d;
-          else newRange.end = d;
-          const swapped = isDateBefore(newRange.end, newRange.start);
-          if (swapped) {
-            const tmp = newRange.start;
-            newRange.start = newRange.end;
-            newRange.end = tmp;
-          }
-          if (swapped && includeTime) {
-            newRange.start.setHours(
-              current.start.getHours(),
-              current.start.getMinutes(),
-              0,
-              0,
-            );
-            newRange.end.setHours(
-              current.end.getHours(),
-              current.end.getMinutes(),
-              0,
-              0,
-            );
-          }
-          trackedSelect(newRange);
+          const d =
+            includeTime && existing
+              ? setCalendarTime(
+                  date,
+                  getCalendarHours(existing, timeZone),
+                  getCalendarMinutes(existing, timeZone),
+                  timeZone,
+                )
+              : new Date(date);
+          const newRange: DateRangeDraft = {
+            start:
+              which === "start"
+                ? d
+                : current.start
+                ? new Date(current.start)
+                : null,
+            end:
+              which === "end" ? d : current.end ? new Date(current.end) : null,
+          };
+          const preferredRoleTimes =
+            current.start && current.end
+              ? { start: current.start, end: current.end }
+              : undefined;
+          emitRange(newRange, preferredRoleTimes);
         }
       },
-      [mode, includeTime, singleValue, rangeValue, trackedSelect],
+      [
+        mode,
+        includeTime,
+        singleValue,
+        rangeValue,
+        trackedSelect,
+        emitRange,
+        timeZone,
+      ],
     );
 
     const setTime = React.useCallback(
@@ -519,25 +646,28 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         if (mode === "single") {
           const base = singleValue
             ? new Date(singleValue)
-            : startOfDay(new Date());
-          base.setHours(hours, minutes, 0, 0);
-          trackedSelect(base);
+            : startOfCalendarDay(new Date(), timeZone);
+          trackedSelect(setCalendarTime(base, hours, minutes, timeZone));
         } else {
-          const today = startOfDay(new Date());
-          const current = rangeValue ?? {
-            start: new Date(today),
-            end: new Date(today),
-          };
+          const today = startOfCalendarDay(new Date(), timeZone);
+          const current = rangeValue ?? { start: null, end: null };
           const newRange = {
-            start: new Date(current.start),
-            end: new Date(current.end),
+            start: current.start ? new Date(current.start) : null,
+            end: current.end ? new Date(current.end) : null,
           };
-          const target = which === "start" ? newRange.start : newRange.end;
-          target.setHours(hours, minutes, 0, 0);
-          trackedSelect(newRange);
+          const target =
+            (which === "start" ? newRange.start : newRange.end) ??
+            new Date(today);
+          const timedTarget = setCalendarTime(target, hours, minutes, timeZone);
+          if (which === "start") {
+            newRange.start = timedTarget;
+          } else {
+            newRange.end = timedTarget;
+          }
+          emitRange(newRange);
         }
       },
-      [mode, singleValue, rangeValue, trackedSelect],
+      [mode, singleValue, rangeValue, trackedSelect, emitRange, timeZone],
     );
 
     const contextValue = React.useMemo<DatePickerContextValue>(
@@ -548,6 +678,8 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         goToNextMonth,
         mode,
         includeTime,
+        timeZone,
+        usesRangeDraftApi,
         singleValue,
         rangeValue,
         pendingStart,
@@ -572,6 +704,8 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         goToNextMonth,
         mode,
         includeTime,
+        timeZone,
+        usesRangeDraftApi,
         singleValue,
         rangeValue,
         pendingStart,
@@ -609,16 +743,27 @@ const FIELDSET_GAP = {
   "--fieldset-gap": "var(--spacing-2xs)",
 } as React.CSSProperties;
 
-function formatDateValue(date: Date | null, locale: string): string {
-  const d = date ?? new Date();
-  return d.toLocaleDateString(locale, {
+function formatDateValue(
+  date: Date | null,
+  locale: string,
+  timeZone: DatePickerTimeZone,
+): string {
+  if (!date) {
+    return "";
+  }
+  return date.toLocaleDateString(locale, {
     month: "2-digit",
     day: "2-digit",
     year: "numeric",
+    timeZone: timeZone === "UTC" ? "UTC" : undefined,
   });
 }
 
-function parseDateString(input: string, locale: string): Date | null {
+function parseDateString(
+  input: string,
+  locale: string,
+  timeZone: DatePickerTimeZone,
+): Date | null {
   const s = input.trim().replace(/\.$/, "");
   if (!s) return null;
 
@@ -645,11 +790,11 @@ function parseDateString(input: string, locale: string): Date | null {
     return null;
   }
 
-  const date = new Date(year, month - 1, day);
+  const date = createCalendarDate(year, month - 1, day, timeZone);
   if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
+    getCalendarYear(date, timeZone) !== year ||
+    getCalendarMonth(date, timeZone) !== month - 1 ||
+    getCalendarDate(date, timeZone) !== day
   ) {
     return null;
   }
@@ -667,7 +812,7 @@ function DateInput({
   which: "start" | "end";
 }) {
   const ctx = useDatePickerContext();
-  const formatted = formatDateValue(date, ctx.locale);
+  const formatted = formatDateValue(date, ctx.locale, ctx.timeZone);
   const [draft, setDraft] = React.useState(formatted);
   const [hasFocus, setHasFocus] = React.useState(false);
 
@@ -679,7 +824,7 @@ function DateInput({
 
   function commit() {
     if (draft === formatted) return;
-    const parsed = parseDateString(draft, ctx.locale);
+    const parsed = parseDateString(draft, ctx.locale, ctx.timeZone);
     if (parsed && !ctx.isDateDisabled(parsed)) {
       ctx.setDate(which, parsed);
     } else {
@@ -709,11 +854,16 @@ function DateInput({
   );
 }
 
-function formatTimeValue(date: Date | null, locale: string): string {
+function formatTimeValue(
+  date: Date | null,
+  locale: string,
+  timeZone: DatePickerTimeZone,
+): string {
   const d = date ?? new Date();
   return d.toLocaleTimeString(locale, {
     hour: "numeric",
     minute: "2-digit",
+    timeZone: timeZone === "UTC" ? "UTC" : undefined,
   });
 }
 
@@ -747,14 +897,19 @@ function TimeInput({
   date,
   label,
   locale,
+  timeZone,
+  disabled,
   onTimeChange,
 }: {
   date: Date | null;
   label: string;
   locale: string;
+  timeZone: DatePickerTimeZone;
+  disabled: boolean;
   onTimeChange: (hours: number, minutes: number) => void;
 }) {
-  const formatted = formatTimeValue(date, locale);
+  const formatted =
+    disabled && !date ? "" : formatTimeValue(date, locale, timeZone);
   const [draft, setDraft] = React.useState(formatted);
   const [hasFocus, setHasFocus] = React.useState(false);
 
@@ -779,6 +934,7 @@ function TimeInput({
       aria-label={label}
       value={draft}
       placeholder={placeholder}
+      disabled={disabled}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
         setDraft(e.target.value);
       }}
@@ -800,6 +956,8 @@ function DateTimeRow({
   date,
   which,
   locale,
+  timeZone,
+  timeDisabled,
   onTimeChange,
   dateLabel,
   timeLabel,
@@ -808,6 +966,8 @@ function DateTimeRow({
   date: Date | null;
   which: "start" | "end";
   locale: string;
+  timeZone: DatePickerTimeZone;
+  timeDisabled: boolean;
   onTimeChange: (hours: number, minutes: number) => void;
   dateLabel: string;
   timeLabel: string;
@@ -821,6 +981,8 @@ function DateTimeRow({
         date={date}
         label={timeLabel}
         locale={locale}
+        timeZone={timeZone}
+        disabled={timeDisabled}
         onTimeChange={onTimeChange}
       />
     </Fieldset.Root>
@@ -859,6 +1021,8 @@ function HeaderAutoLayout() {
         date={ctx.singleValue}
         which="start"
         locale={ctx.locale}
+        timeZone={ctx.timeZone}
+        timeDisabled={false}
         onTimeChange={(h, m) => ctx.setTime("start", h, m)}
         dateLabel={l.date}
         timeLabel={l.time}
@@ -874,6 +1038,8 @@ function HeaderAutoLayout() {
         date={ctx.rangeValue?.start ?? null}
         which="start"
         locale={ctx.locale}
+        timeZone={ctx.timeZone}
+        timeDisabled={ctx.usesRangeDraftApi && !ctx.rangeValue?.start}
         onTimeChange={(h, m) => ctx.setTime("start", h, m)}
         dateLabel={l.startDate}
         timeLabel={l.startTime}
@@ -883,6 +1049,8 @@ function HeaderAutoLayout() {
         date={ctx.rangeValue?.end ?? null}
         which="end"
         locale={ctx.locale}
+        timeZone={ctx.timeZone}
+        timeDisabled={ctx.usesRangeDraftApi && !ctx.rangeValue?.end}
         onTimeChange={(h, m) => ctx.setTime("end", h, m)}
         dateLabel={l.endDate}
         timeLabel={l.endTime}
@@ -927,16 +1095,30 @@ export const Navigation = React.forwardRef<
     labels,
   } = ctx;
 
-  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString(
-    locale,
-    { month: "long", year: "numeric" },
-  );
+  const monthLabel = createCalendarDate(
+    viewYear,
+    viewMonth,
+    1,
+    ctx.timeZone,
+  ).toLocaleDateString(locale, {
+    month: "long",
+    year: "numeric",
+    timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
+  });
 
   const isPrevDisabled = ctx.min
-    ? isDateBefore(new Date(viewYear, viewMonth, 0), ctx.min)
+    ? isDateBefore(
+        createCalendarDate(viewYear, viewMonth, 0, ctx.timeZone),
+        ctx.min,
+        ctx.timeZone,
+      )
     : false;
   const isNextDisabled = ctx.max
-    ? isDateBefore(ctx.max, new Date(viewYear, viewMonth + 1, 1))
+    ? isDateBefore(
+        ctx.max,
+        createCalendarDate(viewYear, viewMonth + 1, 1, ctx.timeZone),
+        ctx.timeZone,
+      )
     : false;
 
   return (
@@ -1055,11 +1237,20 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
     );
 
     const weeks = React.useMemo(
-      () => getMonthGrid(ctx.viewYear, ctx.viewMonth, ctx.weekStartsOn),
-      [ctx.viewYear, ctx.viewMonth, ctx.weekStartsOn],
+      () =>
+        getMonthGrid(
+          ctx.viewYear,
+          ctx.viewMonth,
+          ctx.weekStartsOn,
+          ctx.timeZone,
+        ),
+      [ctx.viewYear, ctx.viewMonth, ctx.weekStartsOn, ctx.timeZone],
     );
 
-    const today = React.useMemo(() => startOfDay(new Date()), []);
+    const today = React.useMemo(
+      () => startOfCalendarDay(new Date(), ctx.timeZone),
+      [ctx.timeZone],
+    );
 
     const allWeekdays = React.useMemo(
       () => getWeekdayLabels(ctx.locale),
@@ -1075,8 +1266,13 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
     }, [allWeekdays, ctx.weekStartsOn]);
 
     function getCellState(date: Date): DayCellState {
-      const isToday = isSameDay(date, today);
-      const isOutsideMonth = !isSameMonth(date, ctx.viewYear, ctx.viewMonth);
+      const isToday = isSameDay(date, today, ctx.timeZone);
+      const isOutsideMonth = !isSameMonth(
+        date,
+        ctx.viewYear,
+        ctx.viewMonth,
+        ctx.timeZone,
+      );
       const isDisabled = ctx.isDateDisabled(date);
 
       let isSelected = false;
@@ -1085,31 +1281,46 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
       let isInRange = false;
 
       if (ctx.mode === "single" && ctx.singleValue) {
-        isSelected = isSameDay(date, ctx.singleValue);
+        isSelected = isSameDay(date, ctx.singleValue, ctx.timeZone);
       }
 
       if (ctx.mode === "range") {
         if (ctx.pendingStart) {
           if (ctx.hoveredDate) {
-            const pStart = isDateBefore(ctx.hoveredDate, ctx.pendingStart)
+            const pStart = isDateBefore(
+              ctx.hoveredDate,
+              ctx.pendingStart,
+              ctx.timeZone,
+            )
               ? ctx.hoveredDate
               : ctx.pendingStart;
-            const pEnd = isDateBefore(ctx.hoveredDate, ctx.pendingStart)
+            const pEnd = isDateBefore(
+              ctx.hoveredDate,
+              ctx.pendingStart,
+              ctx.timeZone,
+            )
               ? ctx.pendingStart
               : ctx.hoveredDate;
-            isRangeStart = isSameDay(date, pStart);
-            isRangeEnd = isSameDay(date, pEnd);
-            isInRange = isDateInRange(date, pStart, pEnd);
+            isRangeStart = isSameDay(date, pStart, ctx.timeZone);
+            isRangeEnd = isSameDay(date, pEnd, ctx.timeZone);
+            isInRange = isDateInRange(date, pStart, pEnd, ctx.timeZone);
           } else {
-            isSelected = isSameDay(date, ctx.pendingStart);
+            isSelected = isSameDay(date, ctx.pendingStart, ctx.timeZone);
           }
-        } else if (ctx.rangeValue) {
-          isRangeStart = isSameDay(date, ctx.rangeValue.start);
-          isRangeEnd = isSameDay(date, ctx.rangeValue.end);
+        } else if (ctx.rangeValue?.start && ctx.rangeValue.end) {
+          isRangeStart = isSameDay(date, ctx.rangeValue.start, ctx.timeZone);
+          isRangeEnd = isSameDay(date, ctx.rangeValue.end, ctx.timeZone);
           isInRange = isDateInRange(
             date,
             ctx.rangeValue.start,
             ctx.rangeValue.end,
+            ctx.timeZone,
+          );
+        } else if (ctx.rangeValue?.start || ctx.rangeValue?.end) {
+          isSelected = isSameDay(
+            date,
+            ctx.rangeValue.start ?? ctx.rangeValue.end!,
+            ctx.timeZone,
           );
         }
       }
@@ -1130,37 +1341,37 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
 
       switch (event.key) {
         case "ArrowRight":
-          nextDate = addDays(ctx.focusedDate, 1);
+          nextDate = addCalendarDays(ctx.focusedDate, 1, ctx.timeZone);
           break;
         case "ArrowLeft":
-          nextDate = addDays(ctx.focusedDate, -1);
+          nextDate = addCalendarDays(ctx.focusedDate, -1, ctx.timeZone);
           break;
         case "ArrowDown":
-          nextDate = addDays(ctx.focusedDate, 7);
+          nextDate = addCalendarDays(ctx.focusedDate, 7, ctx.timeZone);
           break;
         case "ArrowUp":
-          nextDate = addDays(ctx.focusedDate, -7);
+          nextDate = addCalendarDays(ctx.focusedDate, -7, ctx.timeZone);
           break;
         case "PageDown":
           nextDate = event.shiftKey
-            ? addMonths(ctx.focusedDate, 12)
-            : addMonths(ctx.focusedDate, 1);
+            ? addCalendarMonths(ctx.focusedDate, 12, ctx.timeZone)
+            : addCalendarMonths(ctx.focusedDate, 1, ctx.timeZone);
           break;
         case "PageUp":
           nextDate = event.shiftKey
-            ? addMonths(ctx.focusedDate, -12)
-            : addMonths(ctx.focusedDate, -1);
+            ? addCalendarMonths(ctx.focusedDate, -12, ctx.timeZone)
+            : addCalendarMonths(ctx.focusedDate, -1, ctx.timeZone);
           break;
         case "Home": {
-          const dayOfWeek = ctx.focusedDate.getDay();
+          const dayOfWeek = getCalendarDay(ctx.focusedDate, ctx.timeZone);
           const diff = (dayOfWeek - ctx.weekStartsOn + 7) % 7;
-          nextDate = addDays(ctx.focusedDate, -diff);
+          nextDate = addCalendarDays(ctx.focusedDate, -diff, ctx.timeZone);
           break;
         }
         case "End": {
-          const dayOfWeek = ctx.focusedDate.getDay();
+          const dayOfWeek = getCalendarDay(ctx.focusedDate, ctx.timeZone);
           const diff = (6 - dayOfWeek + ctx.weekStartsOn + 7) % 7;
-          nextDate = addDays(ctx.focusedDate, diff);
+          nextDate = addCalendarDays(ctx.focusedDate, diff, ctx.timeZone);
           break;
         }
         case "Enter":
@@ -1191,11 +1402,16 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
       focusTarget?.focus();
     }, [ctx.focusedDate]);
 
-    const gridLabel = new Date(
+    const gridLabel = createCalendarDate(
       ctx.viewYear,
       ctx.viewMonth,
       1,
-    ).toLocaleDateString(ctx.locale, { month: "long", year: "numeric" });
+      ctx.timeZone,
+    ).toLocaleDateString(ctx.locale, {
+      month: "long",
+      year: "numeric",
+      timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
+    });
 
     return (
       <table
@@ -1231,7 +1447,11 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
             <tr key={wi} className={styles.weekRow}>
               {week.map((date) => {
                 const s = getCellState(date);
-                const isFocused = isSameDay(date, ctx.focusedDate);
+                const isFocused = isSameDay(
+                  date,
+                  ctx.focusedDate,
+                  ctx.timeZone,
+                );
                 return (
                   <td key={date.getTime()} className={styles.dayCell}>
                     <button
@@ -1258,6 +1478,7 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
                         month: "long",
                         day: "numeric",
                         year: "numeric",
+                        timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
                       })}
                       onClick={() => {
                         if (!s.isDisabled) {
@@ -1271,7 +1492,9 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
                         }
                       }}
                     >
-                      {renderDay ? renderDay(date, s) : date.getDate()}
+                      {renderDay
+                        ? renderDay(date, s)
+                        : getCalendarDate(date, ctx.timeZone)}
                     </button>
                   </td>
                 );
