@@ -19,6 +19,9 @@ type Props = {
   place?: "top" | "bottom" | "left" | "right";
   icon?: IconName;
   id?: string;
+  /* Prevent the click from reaching clickable ancestors, e.g. rows or fields
+     with their own onClick: */
+  stopPropagation?: boolean;
 };
 
 // This is a button that copies the specified value to the clipboard.
@@ -33,7 +36,10 @@ const CopyToClipboardButton = (props: Props) => {
     <>
       <Button
         type="button"
-        onClick={() => {
+        onClick={(event) => {
+          if (props.stopPropagation) {
+            event.stopPropagation();
+          }
           void (async () => {
             try {
               await navigator.clipboard.writeText(props.value);
