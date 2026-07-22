@@ -68,7 +68,8 @@
     }
   },
   "resolutions": {
-    "js-cookie": "3.0.7"
+    "js-cookie": "3.0.7",
+    "tar": "7.5.20"
   },
   "engines": {
     "node": ">=18.18.0"
