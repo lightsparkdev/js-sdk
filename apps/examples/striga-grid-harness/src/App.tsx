@@ -29,6 +29,7 @@ import {
   type HttpMethod,
   type LogEntry,
 } from "./api";
+import { ScaSection } from "./sca/ScaSection";
 
 interface AccountRow {
   currency: string;
@@ -405,6 +406,8 @@ export function App() {
               />
             </Field.Root>
           </Panel>
+
+          <ScaSection call={call} customerId={activeCustomer} />
         </Col>
 
         {/* RIGHT: state + log */}
