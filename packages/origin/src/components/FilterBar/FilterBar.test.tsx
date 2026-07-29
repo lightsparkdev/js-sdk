@@ -61,7 +61,7 @@ test.describe("FilterBar", () => {
     await expect(page.getByTestId("applied-count")).toHaveText("2");
   });
 
-  test("applies an enum option from the add menu submenu", async ({
+  test("closes the add menu after applying a multi-select enum option", async ({
     mount,
     page,
   }) => {
@@ -73,6 +73,22 @@ test.describe("FilterBar", () => {
 
     await expect(page.getByTestId("applied-count")).toHaveText("1");
     await expect(page.getByTestId("signature")).toHaveText("status=ACTIVE");
+    await expect(page.getByRole("menuitem", { name: "Status" })).toHaveCount(0);
+  });
+
+  test("closes the add menu after applying an exclusive enum option", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Default />);
+
+    await page.getByRole("button", { name: "Filter" }).click();
+    await page.getByRole("menuitem", { name: "Type" }).hover();
+    await page.getByRole("menuitemradio", { name: "Outgoing" }).click();
+
+    await expect(page.getByTestId("applied-count")).toHaveText("1");
+    await expect(page.getByTestId("signature")).toHaveText("type=OUTGOING");
+    await expect(page.getByRole("menuitem", { name: "Status" })).toHaveCount(0);
   });
 
   test("adds a string filter empty and applies a value through its editor", async ({
@@ -164,7 +180,7 @@ test.describe("FilterBar", () => {
     await expect(trigger).not.toHaveText("Filter");
   });
 
-  test("toggles multi-select options without closing the menu", async ({
+  test("keeps an applied multi-select pill editor open across toggles", async ({
     mount,
     page,
   }) => {

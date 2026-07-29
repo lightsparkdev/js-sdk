@@ -308,7 +308,10 @@ function AddButton({ label }: AddButtonProps) {
                   <Menu.Portal>
                     <Menu.Positioner align="start">
                       <Menu.Popup>
-                        <AddMenuEnumOptions descriptor={descriptor} />
+                        <AddMenuEnumOptions
+                          descriptor={descriptor}
+                          closeOnSelection
+                        />
                       </Menu.Popup>
                     </Menu.Positioner>
                   </Menu.Portal>
@@ -333,8 +336,10 @@ function AddButton({ label }: AddButtonProps) {
 
 function AddMenuEnumOptions({
   descriptor,
+  closeOnSelection = false,
 }: {
   descriptor: EnumFilterDescriptor<string>;
+  closeOnSelection?: boolean;
 }) {
   const { model } = useFilterBarContext();
   const state = model.states[descriptor.id];
@@ -346,7 +351,7 @@ function AddMenuEnumOptions({
           <Menu.CheckboxItem
             key={option.label}
             checked={isEnumFilterOptionApplied(state, option)}
-            closeOnClick={false}
+            closeOnClick={closeOnSelection}
             onCheckedChange={() =>
               model.addFilter(descriptor, { enumValue: option })
             }
@@ -377,7 +382,11 @@ function AddMenuEnumOptions({
       }}
     >
       {descriptor.options.map((option) => (
-        <Menu.RadioItem key={option.label} value={option.label}>
+        <Menu.RadioItem
+          key={option.label}
+          value={option.label}
+          closeOnClick={closeOnSelection}
+        >
           <Menu.RadioItemIndicator />
           {option.label}
         </Menu.RadioItem>
