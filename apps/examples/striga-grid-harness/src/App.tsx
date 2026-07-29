@@ -22,6 +22,7 @@ import {
 
 import {
   callGrid,
+  gridPath,
   loadCreds,
   nowTs,
   parseJsonField,
@@ -30,6 +31,7 @@ import {
   type LogEntry,
 } from "./api";
 import { ScaSection } from "./sca/ScaSection";
+import { SettingsPanel } from "./SettingsPanel";
 
 interface AccountRow {
   currency: string;
@@ -93,7 +95,7 @@ export function App() {
       }
       const r = await call(
         "GET",
-        "/grid/rc/customers/internal-accounts?customerId=" +
+        gridPath("/customers/internal-accounts?customerId=") +
           encodeURIComponent(cid),
       );
       setAccounts(parseAccounts(r.json));
@@ -140,7 +142,7 @@ export function App() {
 
   /* ---- Actions ---- */
   const listCustomers = useCallback(async () => {
-    const r = await call("GET", "/grid/rc/customers");
+    const r = await call("GET", gridPath("/customers"));
     if (r.json) {
       for (const id of extractCustomerIds(r.json)) addCustomerId(id);
       // Restore selection to the creds customer if present.
@@ -151,7 +153,7 @@ export function App() {
   const createCustomer = useCallback(async () => {
     const r = await call<Record<string, string>>(
       "POST",
-      "/grid/rc/customers",
+      gridPath("/customers"),
       parseJsonField(createBody),
     );
     const j = r.json;
@@ -163,7 +165,7 @@ export function App() {
   const createQuote = useCallback(async () => {
     const r = await call<Record<string, string>>(
       "POST",
-      "/grid/rc/quotes",
+      gridPath("/quotes"),
       parseJsonField(quoteBody),
     );
     const j = r.json;
@@ -175,7 +177,7 @@ export function App() {
     if (!quoteId) return;
     await call(
       "POST",
-      `/grid/rc/quotes/${encodeURIComponent(quoteId)}/execute`,
+      gridPath(`/quotes/${encodeURIComponent(quoteId)}/execute`),
     );
     void refreshState();
   }, [call, quoteId, refreshState]);
@@ -185,20 +187,20 @@ export function App() {
     if (!acct) return;
     await call(
       "POST",
-      `/grid/rc/sandbox/internal-accounts/${encodeURIComponent(acct)}/fund`,
+      gridPath(`/sandbox/internal-accounts/${encodeURIComponent(acct)}/fund`),
       parseJsonField(fundBody),
     );
     void refreshState();
   }, [call, fundAccount, fundBody, refreshState]);
 
   const transferOut = useCallback(async () => {
-    await call("POST", "/grid/rc/transfer-out", parseJsonField(transferBody));
+    await call("POST", gridPath("/transfer-out"), parseJsonField(transferBody));
     void refreshState();
   }, [call, transferBody, refreshState]);
 
   const custPath = useCallback(
     (suffix: string) =>
-      `/grid/rc/customers/${encodeURIComponent(activeCustomer)}${suffix}`,
+      gridPath(`/customers/${encodeURIComponent(activeCustomer)}${suffix}`),
     [activeCustomer],
   );
 
@@ -243,6 +245,37 @@ export function App() {
         {/* LEFT: flows */}
         <Col>
           <Panel
+            title="0 · Connection"
+            subtitle="Point the harness at an environment. Local runs are prefilled by seed.py; dev/prod need an existing platform's API token."
+          >
+            <SettingsPanel
+              creds={creds}
+              call={call}
+              onCredsChange={(next) => {
+                setCreds(next);
+                setCredsError(null);
+                if (next.customer_id) {
+                  addCustomerId(next.customer_id);
+                  return;
+                }
+                // The server drops environment-scoped ids when the connection
+                // changes, so a missing customer here means "switched target".
+                // Clear the in-memory selection in the same update rather than
+                // waiting for discovery to return: the poll timer and every other
+                // panel read activeCustomer, and until it is cleared they would
+                // send the previous environment's customer id to the new target.
+                setCustomerIds([]);
+                setActiveCustomer("");
+                setAccounts(null);
+                setStateNote("no active customer");
+              }}
+              onCustomerDiscovered={(ids) => {
+                for (const id of ids) addCustomerId(id);
+              }}
+            />
+          </Panel>
+
+          <Panel
             title="1 · Customers"
             subtitle="List existing customers or create a new individual."
           >
@@ -261,7 +294,7 @@ export function App() {
             </Field.Root>
             <Field.Root>
               <Field.Label>
-                Create individual customer — POST /grid/rc/customers
+                Create individual customer — POST {gridPath("/customers")}
               </Field.Label>
               <Textarea
                 rows={11}
@@ -289,7 +322,7 @@ export function App() {
             </Field.Root>
             <Field.Root>
               <Field.Label>
-                Quote request body — POST /grid/rc/quotes
+                Quote request body — POST {gridPath("/quotes")}
               </Field.Label>
               <Textarea
                 rows={11}
@@ -349,7 +382,7 @@ export function App() {
           >
             <Field.Root>
               <Field.Label>
-                Transfer-out body — POST /grid/rc/transfer-out
+                Transfer-out body — POST {gridPath("/transfer-out")}
               </Field.Label>
               <Textarea
                 rows={11}

@@ -12,5 +12,5 @@
     "forceConsistentCasingInFileNames": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["src"]
+  "include": ["src", "harnessCreds.ts", "harnessCreds.test.ts"]
 }

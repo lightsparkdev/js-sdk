@@ -3,7 +3,9 @@
 // keys off quoteId; beneficiary trust keys off externalAccountId. Neither of the
 // latter two accepts customerId. All calls go through the existing /grid/* proxy.
 
-import type { CallResult, HttpMethod } from "../api";
+// apiPrefixValue is read per call, not captured: environments do not all serve the
+// same Grid API version prefix, and the settings panel can change it at runtime.
+import { apiPrefixValue, type CallResult, type HttpMethod } from "../api";
 
 export type CallFn = <T,>(
   method: HttpMethod,
@@ -17,23 +19,21 @@ export interface ScaPanelProps {
   code: string;
 }
 
-const RC = "/grid/rc";
-
-// /grid/rc/sca<suffix>?customerId=<id>. `suffix` starts with "/".
+// <prefix>/sca<suffix>?customerId=<id>. `suffix` starts with "/".
 export function scaPath(suffix: string, customerId: string): string {
   const sep = suffix.includes("?") ? "&" : "?";
-  return `${RC}/sca${suffix}${sep}customerId=${encodeURIComponent(customerId)}`;
+  return `${apiPrefixValue()}/sca${suffix}${sep}customerId=${encodeURIComponent(customerId)}`;
 }
 
 export function quotePath(quoteId: string, suffix = ""): string {
-  return `${RC}/quotes/${encodeURIComponent(quoteId)}${suffix}`;
+  return `${apiPrefixValue()}/quotes/${encodeURIComponent(quoteId)}${suffix}`;
 }
 
 export function externalAccountPath(
   externalAccountId: string,
   suffix: string,
 ): string {
-  return `${RC}/customers/external-accounts/${encodeURIComponent(
+  return `${apiPrefixValue()}/customers/external-accounts/${encodeURIComponent(
     externalAccountId,
   )}${suffix}`;
 }

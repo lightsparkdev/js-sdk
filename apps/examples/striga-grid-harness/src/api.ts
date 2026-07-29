@@ -10,7 +10,48 @@ export interface HarnessCreds {
   base_url?: string;
   basic_auth?: string;
   accounts?: Record<string, string>;
+  // Set by the dev server so the UI can show whether a token is configured
+  // without the secret itself ever reaching the browser.
+  has_credentials?: boolean;
   error?: string;
+}
+
+// What the settings panel sends. Secrets travel one way: they are POSTed to the
+// dev server, which stores them and injects the auth header itself.
+export interface HarnessCredsPatch {
+  base_url?: string;
+  client_id?: string;
+  client_secret?: string;
+  customer_id?: string;
+  platform_id?: string;
+}
+
+// The Grid API version prefix. Environments do not all serve the same one —
+// there is a `/grid/rc` blueprint and a dated `/grid/2025-10-13` — so it is taken
+// from the configured base_url's path rather than hardcoded at each call site.
+const DEFAULT_API_PREFIX = "/grid/rc";
+let apiPrefix = DEFAULT_API_PREFIX;
+
+export function setApiPrefixFromBaseUrl(baseUrl: string | undefined): string {
+  apiPrefix = DEFAULT_API_PREFIX;
+  if (baseUrl) {
+    try {
+      const trimmed = new URL(baseUrl).pathname.replace(/\/+$/, "");
+      if (trimmed) apiPrefix = trimmed;
+    } catch {
+      // Not a parseable URL — keep the default rather than build broken paths.
+    }
+  }
+  return apiPrefix;
+}
+
+export function apiPrefixValue(): string {
+  return apiPrefix;
+}
+
+/** Build a Grid API path. `suffix` starts with "/" (e.g. "/customers"). */
+export function gridPath(suffix: string): string {
+  return `${apiPrefix}${suffix}`;
 }
 
 export type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
@@ -44,6 +85,26 @@ export async function loadCreds(): Promise<HarnessCreds> {
   const res = await fetch("/harness/creds");
   const creds = (await res.json()) as HarnessCreds;
   if (creds && creds.error) throw new Error(creds.error);
+  setApiPrefixFromBaseUrl(creds.base_url);
+  return creds;
+}
+
+/**
+ * Persist a connection or customer selection. The dev server verifies the
+ * credentials against the target before writing, so a rejected token throws here
+ * instead of failing later on every panel action.
+ */
+export async function saveCreds(patch: HarnessCredsPatch): Promise<HarnessCreds> {
+  const res = await fetch("/harness/creds", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  const creds = (await res.json()) as HarnessCreds;
+  if (!res.ok || creds.error) {
+    throw new Error(creds.error ?? `Save failed with ${res.status}`);
+  }
+  setApiPrefixFromBaseUrl(creds.base_url);
   return creds;
 }
 
