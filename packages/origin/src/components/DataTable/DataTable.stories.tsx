@@ -6,6 +6,9 @@ import { DataTable } from "./";
 import type { DataTableColumn } from "./";
 import { useCursorTablePagination, type CursorTablePage } from "./";
 import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
+import { CentralIcon } from "@/components/Icon";
+import { VisuallyHidden } from "@/components/VisuallyHidden";
 
 const meta: Meta = {
   title: "Components/DataTable",
@@ -35,11 +38,10 @@ const amountFormat = new Intl.NumberFormat("en-US", {
 });
 
 const COLUMNS: readonly DataTableColumn<PaymentRow>[] = [
-  { accessorKey: "reference", header: "Reference", size: 180 },
+  { accessorKey: "reference", header: "Reference" },
   {
     accessorKey: "status",
     header: "Status",
-    size: 140,
     cell: (row) => (
       <Badge
         variant={
@@ -54,13 +56,28 @@ const COLUMNS: readonly DataTableColumn<PaymentRow>[] = [
       </Badge>
     ),
   },
-  { accessorKey: "createdAt", header: "Date created", size: 180 },
+  { accessorKey: "createdAt", header: "Date created" },
   {
     accessorKey: "amount",
     header: "Amount",
-    size: 140,
     align: "right",
     cell: (row) => amountFormat.format(row.amount),
+  },
+  {
+    id: "actions",
+    header: <VisuallyHidden>Actions</VisuallyHidden>,
+    size: 64,
+    align: "right",
+    cell: (row) => (
+      <Button
+        variant="ghost"
+        size="compact"
+        iconOnly
+        aria-label={`${row.reference} actions`}
+      >
+        <CentralIcon name="IconDotGrid1x3HorizontalTight" size={16} />
+      </Button>
+    ),
   },
 ];
 

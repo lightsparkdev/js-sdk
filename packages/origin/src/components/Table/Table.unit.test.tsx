@@ -35,6 +35,100 @@ describe("Table.Root caption", () => {
   });
 });
 
+describe("Table.HeaderCell loading", () => {
+  it("preserves an explicit accessible name over textual children", () => {
+    const { container } = render(
+      <table>
+        <thead>
+          <tr>
+            <Table.HeaderCell loading aria-label="Account actions">
+              Actions
+            </Table.HeaderCell>
+          </tr>
+        </thead>
+      </table>,
+    );
+
+    expect(container.querySelector("th")).toHaveAccessibleName(
+      "Account actions",
+    );
+  });
+
+  it.each(["Enter", " "])(
+    "suppresses sortable interaction and semantics for %j",
+    (key) => {
+      const onSort = vi.fn();
+      const { container } = render(
+        <table>
+          <thead>
+            <tr>
+              <Table.HeaderCell
+                loading
+                sortable
+                sortDirection="asc"
+                onSort={onSort}
+              >
+                Name
+              </Table.HeaderCell>
+            </tr>
+          </thead>
+        </table>,
+      );
+      const header = container.querySelector("th")!;
+
+      expect(header).not.toHaveAttribute("tabindex");
+      expect(header).not.toHaveAttribute("aria-sort");
+      expect(header).not.toHaveAttribute("data-sortable");
+      expect(header).not.toHaveAttribute("data-sorted");
+
+      fireEvent.click(header);
+      fireEvent.keyDown(header, { key });
+
+      expect(onSort).not.toHaveBeenCalled();
+    },
+  );
+
+  it("cannot be made interactive or sortable by conflicting native props", () => {
+    const onClick = vi.fn();
+    const onKeyDown = vi.fn();
+    const { container } = render(
+      <table>
+        <thead>
+          <tr>
+            <Table.HeaderCell
+              loading
+              sortable
+              sortDirection="desc"
+              onClick={onClick}
+              onKeyDown={onKeyDown}
+              tabIndex={0}
+              aria-sort="ascending"
+              {...{
+                "data-sortable": "true",
+                "data-sorted": "asc",
+              }}
+            >
+              Name
+            </Table.HeaderCell>
+          </tr>
+        </thead>
+      </table>,
+    );
+    const header = container.querySelector("th")!;
+
+    expect(header).not.toHaveAttribute("tabindex");
+    expect(header).not.toHaveAttribute("aria-sort");
+    expect(header).not.toHaveAttribute("data-sortable");
+    expect(header).not.toHaveAttribute("data-sorted");
+
+    fireEvent.click(header);
+    fireEvent.keyDown(header, { key: "Enter" });
+
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onKeyDown).not.toHaveBeenCalled();
+  });
+});
+
 describe("Table.Row activation", () => {
   it("preserves the native onClick handler type", () => {
     expectTypeOf<

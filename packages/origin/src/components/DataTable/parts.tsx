@@ -14,6 +14,7 @@ import { Pager as OriginPager } from "../Pager";
 import { Select } from "../Select";
 import { Table, type RowActivationEvent, type RowProps } from "../Table";
 import styles from "./DataTable.module.scss";
+import { useColdReveal } from "./useColdReveal";
 import {
   getCursorTableControllerSnapshot,
   type CursorTableController,
@@ -363,7 +364,12 @@ function ErrorCard({ error }: { error: DataTableErrorState }) {
 
 interface DataTableColumnBase<TRow> {
   header: React.ReactNode;
-  /** Column width in px (the table uses fixed layout). */
+  /** Accessible header name used when loading replaces non-text content. */
+  headerAriaLabel?: string;
+  /**
+   * Optional width hint in px for fixed-footprint structural/control columns.
+   * Omit for native content sizing.
+   */
   size?: number;
   align?: "left" | "right";
   /** Formatter slot; receives the typed row object. */
@@ -412,6 +418,12 @@ interface ContentBaseProps<TRow> {
   columns: readonly DataTableColumn<TRow>[];
   data: readonly TRow[];
   loading?: boolean;
+  /**
+   * Keep provided rows mounted while loading. By default, loading replaces
+   * rows with skeletons for backward compatibility.
+   * @default false
+   */
+  showRowsWhileLoading?: boolean;
   /**
    * Rows of skeleton cells to render while loading. Typically wired from
    * `pagination.skeletonRowCount`; capped at 10 by the pagination model.
@@ -479,6 +491,7 @@ export function Content<TRow>({
   loading = false,
   onRowActivate,
   scrollX = true,
+  showRowsWhileLoading = false,
   skeletonRowCount,
 }: ContentProps<TRow>) {
   const { density, label, paginationSkeletonRowCount } =
@@ -500,9 +513,6 @@ export function Content<TRow>({
             id: accessorColumn.accessorKey,
             accessorFn: (row: TRow) => row[accessorColumn.accessorKey],
             header: () => accessorColumn.header,
-            ...(accessorColumn.size !== undefined
-              ? { size: accessorColumn.size }
-              : {}),
             cell: (info) => {
               const rendered = accessorColumn.cell
                 ? accessorColumn.cell(info.row.original)
@@ -514,7 +524,6 @@ export function Content<TRow>({
         return {
           id: column.id,
           header: () => column.header,
-          ...(column.size !== undefined ? { size: column.size } : {}),
           cell: (info) => column.cell(info.row.original) ?? "-",
         };
       }),
@@ -529,18 +538,37 @@ export function Content<TRow>({
   });
 
   const tableRows = table.getRowModel().rows;
+  const coldLoading =
+    loading && (!showRowsWhileLoading || tableRows.length === 0);
+  const { coldReveal, tableRef } = useColdReveal({
+    coldLoading,
+    loading,
+    hasRows: tableRows.length > 0,
+  });
   const showErrorState = !loading && Boolean(error) && tableRows.length === 0;
   const showEmptyState = !loading && !error && tableRows.length === 0;
 
-  const alignById = React.useMemo(() => {
-    const map = new Map<string, "left" | "right">();
+  const { columnPresentations, presentationById } = React.useMemo(() => {
+    const list: {
+      id: string;
+      align: "left" | "right";
+      size: number | undefined;
+      loadingLabel: string | undefined;
+    }[] = [];
+    const byId = new Map<string, (typeof list)[number]>();
     for (const column of columns) {
-      map.set(
-        "accessorKey" in column ? column.accessorKey : column.id,
-        column.align ?? "left",
-      );
+      const presentation = {
+        id: "accessorKey" in column ? column.accessorKey : column.id,
+        align: column.align ?? "left",
+        size: column.size,
+        loadingLabel:
+          column.headerAriaLabel ??
+          (typeof column.header === "string" ? column.header : undefined),
+      };
+      list.push(presentation);
+      byId.set(presentation.id, presentation);
     }
-    return map;
+    return { columnPresentations: list, presentationById: byId };
   }, [columns]);
 
   return (
@@ -550,41 +578,66 @@ export function Content<TRow>({
       {...(className !== undefined ? { className } : {})}
     >
       <Table.Root
+        ref={tableRef}
+        className={clsx(styles.autoLayoutTable, {
+          [styles.coldLoadingTable]: coldLoading,
+        })}
         caption={label}
         size={density === "compact" ? "compact" : "default"}
         clickable={onRowActivate !== undefined}
+        aria-busy={loading || undefined}
+        data-cold-reveal={coldReveal || undefined}
       >
+        <colgroup>
+          {columnPresentations.map((column) => (
+            <col
+              key={column.id}
+              className={clsx({
+                [styles.loadingColumn]:
+                  coldLoading && column.size === undefined,
+              })}
+              {...(column.size !== undefined
+                ? {
+                    style: { width: "1%", minWidth: column.size },
+                  }
+                : {})}
+            />
+          ))}
+        </colgroup>
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.HeaderRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <Table.HeaderCell
-                  key={header.id}
-                  align={alignById.get(header.column.id) ?? "left"}
-                  style={{ width: header.getSize() }}
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </Table.HeaderCell>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const presentation = presentationById.get(header.column.id);
+                return (
+                  <Table.HeaderCell
+                    key={header.id}
+                    align={presentation?.align ?? "left"}
+                    loading={coldLoading}
+                    aria-label={
+                      coldLoading ? presentation?.loadingLabel : undefined
+                    }
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </Table.HeaderCell>
+                );
+              })}
             </Table.HeaderRow>
           ))}
         </Table.Header>
-        <Table.Body>
-          {loading
+        <Table.Body aria-hidden={coldLoading || undefined}>
+          {coldLoading
             ? Array.from(
                 { length: resolvedSkeletonRowCount },
                 (_, rowIndex) => (
                   <Table.Row key={rowIndex}>
-                    {columns.map((column) => (
+                    {columnPresentations.map((column) => (
                       <Table.Cell
-                        key={
-                          "accessorKey" in column
-                            ? column.accessorKey
-                            : column.id
-                        }
+                        key={column.id}
+                        align={column.align}
                         loading
                       />
                     ))}
@@ -609,7 +662,9 @@ export function Content<TRow>({
                     {row.getVisibleCells().map((cell) => (
                       <Table.Cell
                         key={cell.id}
-                        align={alignById.get(cell.column.id) ?? "left"}
+                        align={
+                          presentationById.get(cell.column.id)?.align ?? "left"
+                        }
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

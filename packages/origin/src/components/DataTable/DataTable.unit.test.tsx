@@ -15,6 +15,7 @@ import {
   type DataTableContentProps,
   type DataTableRootProps,
 } from "./";
+import { Table } from "../Table";
 
 beforeAll(() => {
   // The shared setup's ResizeObserver mock is not constructible; the
@@ -40,6 +41,27 @@ const COLUMNS: readonly DataTableColumn<Row>[] = [
 
 const EMPTY = { title: "No rows" };
 
+describe("Table.CellContent", () => {
+  it.each(["", "   "])(
+    "does not disclose bounded text without a name",
+    (label) => {
+      render(<Table.CellContent bounded label={label} />);
+
+      expect(screen.queryByRole("button")).toBeNull();
+    },
+  );
+
+  it("discloses the non-empty textual parts", () => {
+    render(
+      <Table.CellContent bounded label=" " description="Account description" />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Account description" }),
+    ).toBeTruthy();
+  });
+});
+
 function renderContent(props: { className?: string } = {}) {
   const { container } = render(
     <DataTable.Root label="Items" layout="inline">
@@ -54,8 +76,12 @@ function renderContent(props: { className?: string } = {}) {
       />
     </DataTable.Root>,
   );
-  const scroller = screen.getByText("Row").closest("table")
-    ?.parentElement as HTMLElement;
+  const scroller = container.querySelector<HTMLElement>(
+    '[data-scroll-x="true"]',
+  );
+  if (!scroller || !(scroller.parentElement instanceof HTMLElement)) {
+    throw new Error("Expected DataTable viewport");
+  }
   const shell = scroller.parentElement;
   return { container, scroller, shell };
 }
@@ -102,6 +128,189 @@ function scrollFlags(shell: Element | null) {
 }
 
 describe("DataTable.Content", () => {
+  it("renders a busy cold shell with accessible textual header names", () => {
+    const { container } = render(
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={[
+            { accessorKey: "name", header: "Name" },
+            {
+              id: "actions",
+              header: <span aria-hidden="true">•••</span>,
+              headerAriaLabel: "Actions",
+              cell: () => "Edit",
+            },
+          ]}
+          data={[]}
+          loading
+          skeletonRowCount={3}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>,
+    );
+
+    const table = screen.getByRole("table", { name: "Items" });
+    expect(table).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("columnheader", { name: "Name" })).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "Actions" })).toBeTruthy();
+    expect(container.querySelectorAll("th[data-loading]")).toHaveLength(2);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(3);
+    expect(container.querySelectorAll("td[data-loading]")).toHaveLength(6);
+    expect(screen.queryByText("No rows")).toBeNull();
+  });
+
+  it("uses one colgroup path for cold and settled column widths", () => {
+    const columns: readonly DataTableColumn<Row>[] = [
+      { accessorKey: "name", header: "Name" },
+      { id: "actions", header: null, size: 64, cell: () => null },
+    ];
+    const renderContent = (loading: boolean, data: readonly Row[]) => (
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={columns}
+          data={data}
+          loading={loading}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>
+    );
+    const { container, rerender } = render(renderContent(true, []));
+    const table = screen.getByRole("table", { name: "Items" });
+    const loadingColumns = table.querySelectorAll("colgroup col");
+
+    expect(loadingColumns).toHaveLength(2);
+    expect(loadingColumns[0]).not.toHaveAttribute("style");
+    expect(loadingColumns[1]).toHaveStyle({
+      width: "1%",
+      minWidth: "64px",
+    });
+    rerender(renderContent(false, [{ name: "Settled row" }]));
+    const settledColumns = table.querySelectorAll("colgroup col");
+    expect(settledColumns).toHaveLength(2);
+    expect(settledColumns[0]).not.toHaveAttribute("style");
+    expect(settledColumns[1]).toHaveStyle({
+      width: "1%",
+      minWidth: "64px",
+    });
+    expect(container.querySelector("th[style]")).toBeNull();
+  });
+
+  it("replaces populated rows with skeletons during loading by default", () => {
+    const { container } = render(
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={[{ name: "Retained row" }]}
+          loading
+          skeletonRowCount={2}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>,
+    );
+
+    expect(screen.getByRole("table", { name: "Items" })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    expect(screen.getByRole("columnheader", { name: "Name" })).toBeTruthy();
+    expect(screen.queryByRole("cell", { name: "Retained row" })).toBeNull();
+    expect(container.querySelectorAll("th[data-loading]")).toHaveLength(1);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(2);
+    expect(container.querySelectorAll("td[data-loading]")).toHaveLength(2);
+  });
+
+  it("keeps provided rows mounted during loading when opted in", () => {
+    const { container } = render(
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={[{ name: "Retained row" }]}
+          loading
+          showRowsWhileLoading
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>,
+    );
+
+    expect(screen.getByRole("table", { name: "Items" })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    expect(screen.getByRole("columnheader", { name: "Name" })).toBeTruthy();
+    expect(screen.getByRole("cell", { name: "Retained row" })).toBeTruthy();
+    expect(container.querySelector("th[data-loading]")).toBeNull();
+    expect(container.querySelector("td[data-loading]")).toBeNull();
+  });
+
+  it("keeps the full cold shell when opted in without rows", () => {
+    const { container } = render(
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={[]}
+          loading
+          showRowsWhileLoading
+          skeletonRowCount={0}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>,
+    );
+
+    expect(screen.getByRole("table", { name: "Items" })).toHaveAttribute(
+      "aria-busy",
+      "true",
+    );
+    expect(screen.getByRole("columnheader", { name: "Name" })).toBeTruthy();
+    expect(container.querySelectorAll("th[data-loading]")).toHaveLength(1);
+    expect(container.querySelectorAll("tbody tr")).toHaveLength(0);
+    expect(screen.queryByText("No rows")).toBeNull();
+  });
+
+  it.each(["animationend", "animationcancel"] as const)(
+    "wires the cold reveal marker through its own %s",
+    (animationEventName) => {
+      const { rerender } = render(
+        <DataTable.Root label="Items" layout="inline">
+          <DataTable.Content
+            columns={COLUMNS}
+            data={[]}
+            loading
+            error={undefined}
+            empty={EMPTY}
+          />
+        </DataTable.Root>,
+      );
+      const table = screen.getByRole("table", { name: "Items" });
+
+      rerender(
+        <DataTable.Root label="Items" layout="inline">
+          <DataTable.Content
+            columns={COLUMNS}
+            data={[{ name: "Settled row" }]}
+            error={undefined}
+            empty={EMPTY}
+          />
+        </DataTable.Root>,
+      );
+      expect(table).toHaveAttribute("data-cold-reveal", "true");
+
+      fireEvent.animationEnd(screen.getByRole("cell", { name: "Settled row" }));
+      expect(table).toHaveAttribute("data-cold-reveal", "true");
+
+      if (animationEventName === "animationend") {
+        fireEvent.animationEnd(table);
+      } else {
+        fireEvent(table, new Event("animationcancel", { bubbles: true }));
+      }
+      expect(table).not.toHaveAttribute("data-cold-reveal");
+    },
+  );
+
   it("falls back only for nullish cell results", () => {
     interface ValueRow {
       nullValue: null;
@@ -332,7 +541,7 @@ describe("DataTable.Content", () => {
     expect(screen.getByRole("button", { name: "Load again" })).toBeTruthy();
   });
 
-  it("renders accessor, formatted object, and display columns with default sizing", () => {
+  it("emits widths only for explicitly sized accessor and display columns", () => {
     interface RichRow {
       name: string;
       metadata: { tier: string };
@@ -342,11 +551,18 @@ describe("DataTable.Content", () => {
       {
         accessorKey: "metadata",
         header: "Tier",
+        size: 200,
         cell: (row) => row.metadata.tier,
+      },
+      {
+        id: "summary",
+        header: "Summary",
+        cell: (row) => `${row.name}: ${row.metadata.tier}`,
       },
       {
         id: "actions",
         header: "Actions",
+        size: 64,
         cell: (row) => `Edit ${row.name}`,
       },
     ];
@@ -364,10 +580,23 @@ describe("DataTable.Content", () => {
 
     expect(screen.getByText("Ada")).toBeTruthy();
     expect(screen.getByText("Gold")).toBeTruthy();
+    expect(screen.getByText("Ada: Gold")).toBeTruthy();
     expect(screen.getByText("Edit Ada")).toBeTruthy();
-    expect(screen.getByRole("columnheader", { name: "Name" }).style.width).toBe(
-      "150px",
+    const tableColumns = screen
+      .getByRole("table", { name: "People" })
+      .querySelectorAll<HTMLTableColElement>("colgroup col");
+    expect(Array.from(tableColumns, (column) => column.style.width)).toEqual([
+      "",
+      "1%",
+      "",
+      "1%",
+    ]);
+    expect(Array.from(tableColumns, (column) => column.style.minWidth)).toEqual(
+      ["", "200px", "", "64px"],
     );
+    expect(
+      screen.getAllByRole("columnheader").map((header) => header.style.width),
+    ).toEqual(["", "", "", ""]);
   });
 
   it.each([

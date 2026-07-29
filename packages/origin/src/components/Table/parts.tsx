@@ -4,6 +4,7 @@ import * as React from "react";
 import clsx from "clsx";
 import styles from "./Table.module.scss";
 import { CentralIcon } from "../Icon";
+import { Popover } from "../Popover";
 import { Skeleton } from "../Skeleton";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import type { RowActivationEvent } from "./rowActivation";
@@ -98,6 +99,8 @@ export interface HeaderCellProps
   resizable?: boolean;
   /** Leading slot content (e.g. checkbox) */
   leading?: React.ReactNode;
+  /** Whether cell is in loading state */
+  loading?: boolean;
   analyticsName?: string;
 }
 
@@ -114,8 +117,14 @@ export const HeaderCell = React.forwardRef<
     onSort,
     resizable: _resizable = false,
     leading,
+    loading = false,
     analyticsName,
     children,
+    onClick: nativeOnClick,
+    onKeyDown: nativeOnKeyDown,
+    tabIndex: nativeTabIndex,
+    "aria-label": nativeAriaLabel,
+    "aria-sort": nativeAriaSort,
     ...props
   },
   ref,
@@ -127,10 +136,11 @@ export const HeaderCell = React.forwardRef<
     onSort,
     () => ({ column: analyticsName, from_direction: sortDirection }),
   );
+  const sortableEnabled = sortable && !loading;
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (
-      sortable &&
+      sortableEnabled &&
       trackedSort &&
       (event.key === "Enter" || event.key === " ")
     ) {
@@ -139,7 +149,7 @@ export const HeaderCell = React.forwardRef<
     }
   };
 
-  const sortIcon = sortable ? (
+  const sortIcon = sortableEnabled ? (
     <span className={styles.sortIcon} aria-hidden="true">
       {sortDirection === "asc" ? (
         <CentralIcon name="IconChevronTopSmall" size={12} />
@@ -153,37 +163,63 @@ export const HeaderCell = React.forwardRef<
 
   return (
     <th
+      {...props}
       ref={ref}
       className={clsx(
         styles.headerCell,
         variant !== "default" && styles[`headerCell--${variant}`],
         align !== "left" && styles[`headerCell--${align}`],
-        sortable && styles["headerCell--sortable"],
+        sortableEnabled && styles["headerCell--sortable"],
         className,
       )}
       data-align={align}
-      data-sortable={sortable || undefined}
-      data-sorted={sortDirection || undefined}
-      tabIndex={sortable ? 0 : undefined}
-      onClick={sortable ? trackedSort : undefined}
-      onKeyDown={sortable ? handleKeyDown : undefined}
-      aria-sort={
-        sortDirection === "asc"
-          ? "ascending"
-          : sortDirection === "desc"
-          ? "descending"
-          : sortable
-          ? "none"
-          : undefined
+      data-sortable={sortableEnabled || undefined}
+      data-sorted={sortableEnabled ? sortDirection || undefined : undefined}
+      data-loading={loading || undefined}
+      tabIndex={
+        loading
+          ? undefined
+          : nativeTabIndex ?? (sortableEnabled ? 0 : undefined)
       }
-      {...props}
+      onClick={
+        loading
+          ? undefined
+          : nativeOnClick ?? (sortableEnabled ? trackedSort : undefined)
+      }
+      onKeyDown={
+        loading
+          ? undefined
+          : nativeOnKeyDown ?? (sortableEnabled ? handleKeyDown : undefined)
+      }
+      aria-label={
+        nativeAriaLabel ??
+        (loading && typeof children === "string" ? children : undefined)
+      }
+      aria-sort={
+        loading
+          ? undefined
+          : nativeAriaSort ??
+            (!sortableEnabled
+              ? undefined
+              : sortDirection === "asc"
+              ? "ascending"
+              : sortDirection === "desc"
+              ? "descending"
+              : "none")
+      }
     >
-      <span className={styles.headerCellContent}>
-        {leading && <span className={styles.headerCellLeading}>{leading}</span>}
-        {align === "right" && sortIcon}
-        <span className={styles.headerCellLabel}>{children}</span>
-        {align !== "right" && sortIcon}
-      </span>
+      {loading ? (
+        <Skeleton className={styles.loadingBar} />
+      ) : (
+        <span className={styles.headerCellContent}>
+          {leading && (
+            <span className={styles.headerCellLeading}>{leading}</span>
+          )}
+          {align === "right" && sortIcon}
+          <span className={styles.headerCellLabel}>{children}</span>
+          {align !== "right" && sortIcon}
+        </span>
+      )}
     </th>
   );
 });
@@ -415,7 +451,7 @@ export const Cell = React.forwardRef<HTMLTableCellElement, CellProps>(
         {...props}
       >
         {loading ? (
-          <Skeleton style={{ width: "100%", height: 16 }} />
+          <Skeleton className={styles.loadingBar} />
         ) : hasSlots ? (
           <span className={styles.cellLayout}>
             {leading && <span className={styles.cellSlot}>{leading}</span>}
@@ -435,35 +471,113 @@ export const Cell = React.forwardRef<HTMLTableCellElement, CellProps>(
 // ============================================================================
 
 export interface CellContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Primary label text */
+  /** Primary label content */
   label: React.ReactNode;
-  /** Secondary description text */
+  /** Secondary description content */
   description?: React.ReactNode;
   /** Optional indicator dot */
   indicator?: boolean;
   /** Optional badge content */
   badge?: React.ReactNode;
+  /** Bounds intrinsic width for deliberately open-ended table text */
+  bounded?: boolean;
 }
 
 export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
   function CellContent(
-    { className, label, description, indicator = false, badge, ...props },
+    {
+      className,
+      label,
+      description,
+      bounded = false,
+      indicator = false,
+      badge,
+      ...props
+    },
     ref,
   ) {
+    let disclosure: string | undefined;
+    if (
+      bounded &&
+      typeof label === "string" &&
+      (description == null || typeof description === "string") &&
+      badge == null
+    ) {
+      const disclosureParts = [label, description].filter(
+        (part): part is string =>
+          typeof part === "string" && part.trim().length > 0,
+      );
+      disclosure =
+        disclosureParts.length > 0 ? disclosureParts.join("\n") : undefined;
+    }
+
     return (
-      <div ref={ref} className={clsx(styles.cellContent, className)} {...props}>
-        <span className={styles.cellLabel}>
-          <span className={styles.cellLabelText}>{label}</span>
-          {indicator && <span className={styles.cellIndicator} />}
-          {badge}
-        </span>
-        {description && (
-          <span className={styles.cellDescription}>{description}</span>
+      <div
+        ref={ref}
+        className={clsx(styles.cellContent, className)}
+        data-bounded={bounded || undefined}
+        {...props}
+      >
+        {disclosure !== undefined ? (
+          <Popover.Root>
+            <Popover.Trigger
+              render={
+                <button
+                  type="button"
+                  className={styles.cellDisclosureTrigger}
+                />
+              }
+            >
+              <CellContentText
+                label={label}
+                description={description}
+                indicator={indicator}
+                badge={badge}
+              />
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Positioner sideOffset={4}>
+                <Popover.Popup
+                  aria-label="Full cell value"
+                  className={styles.cellDisclosurePopup}
+                >
+                  {disclosure}
+                </Popover.Popup>
+              </Popover.Positioner>
+            </Popover.Portal>
+          </Popover.Root>
+        ) : (
+          <CellContentText
+            label={label}
+            description={description}
+            indicator={indicator}
+            badge={badge}
+          />
         )}
       </div>
     );
   },
 );
+
+function CellContentText({
+  badge,
+  description,
+  indicator,
+  label,
+}: Pick<CellContentProps, "badge" | "description" | "indicator" | "label">) {
+  return (
+    <>
+      <span className={styles.cellLabel}>
+        <span className={styles.cellLabelText}>{label}</span>
+        {indicator && <span className={styles.cellIndicator} />}
+        {badge}
+      </span>
+      {description && (
+        <span className={styles.cellDescription}>{description}</span>
+      )}
+    </>
+  );
+}
 
 // ============================================================================
 // Footer

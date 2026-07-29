@@ -5,6 +5,7 @@ import {
   AlignedTable,
   SortableAlignedTable,
   LoadingTable,
+  LoadingSortableHeaderTable,
   DescriptionTable,
   FooterTable,
   CompactFooterTable,
@@ -19,6 +20,15 @@ test.describe("Table", () => {
       // Check data is visible
       await expect(component.locator("text=Alice Johnson")).toBeVisible();
       await expect(component.locator("text=bob@example.com")).toBeVisible();
+    });
+
+    test("retains fixed layout for direct Table consumers", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<BasicTable />);
+
+      await expect(page.locator("table")).toHaveCSS("table-layout", "fixed");
     });
   });
 
@@ -171,6 +181,28 @@ test.describe("Table", () => {
       // Find cells with loading state
       const loadingCells = component.locator('[data-loading="true"]');
       await expect(loadingCells.first()).toBeVisible();
+    });
+
+    test("loading sortable header is non-interactive", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<LoadingSortableHeaderTable />);
+      const header = component.locator("th").first();
+
+      await expect(header).not.toHaveAttribute("tabindex");
+      await expect(header).not.toHaveAttribute("aria-sort");
+      await expect(header).not.toHaveAttribute("data-sortable");
+      await expect(header).not.toHaveAttribute("data-sorted");
+      await expect(header).toHaveCSS("pointer-events", "none");
+
+      await header.click({ force: true });
+      await header.press("Enter");
+      await header.press("Space");
+
+      await expect(component.getByTestId("sort-count")).toHaveText("0");
+      await page.keyboard.press("Tab");
+      await expect(header).not.toBeFocused();
     });
   });
 

@@ -49,6 +49,10 @@
   vertical-align: middle;
   position: relative;
 
+  &[data-loading] {
+    pointer-events: none;
+  }
+
   // Checkbox column - narrower padding
   &--checkbox {
     width: 40px;
@@ -96,6 +100,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+}
+
+.loadingBar {
+  width: 100%;
+  max-width: var(--spacing-16xl);
+  height: 16px;
+
+  .headerCell--right > &,
+  .cell--right > & {
+    margin-left: auto;
+  }
 }
 
 .sortIcon {
@@ -200,6 +215,47 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
+
+  &[data-bounded] {
+    max-width: var(--spacing-18xl);
+    overflow: hidden;
+
+    .cell--right > & {
+      margin-left: auto;
+    }
+  }
+}
+
+.cellDisclosureTrigger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--state-focus);
+    @include smooth-corners(var(--corner-radius-xs));
+  }
+}
+
+.cellDisclosurePopup {
+  @include body;
+
+  max-width: var(--spacing-18xl);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .cellLabel {

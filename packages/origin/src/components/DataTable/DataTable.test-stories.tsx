@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Table } from "../Table";
 import { DataTable } from "./parts";
 import {
   useCursorTablePagination,
@@ -15,11 +16,10 @@ interface Row {
 }
 
 const COLUMNS: readonly DataTableColumn<Row>[] = [
-  { accessorKey: "name", header: "Name", size: 200 },
+  { accessorKey: "name", header: "Name" },
   {
     accessorKey: "amount",
     header: "Amount",
-    size: 120,
     align: "right",
     cell: (row) => `$${row.amount.toFixed(2)}`,
   },
@@ -36,6 +36,43 @@ const EMPTY = {
   description: "Adjust the filters to widen the search",
 };
 
+interface AutoSizingRow {
+  id: string;
+  reference: string;
+  amount: string;
+}
+
+export const LONG_AUTO_SIZE_REFERENCE = `PAY-${"A".repeat(160)}`;
+export const LONG_BOUNDED_REFERENCE = `REF-${"B".repeat(160)}`;
+
+const AUTO_SIZE_COLUMNS: readonly DataTableColumn<AutoSizingRow>[] = [
+  { accessorKey: "reference", header: "Reference" },
+  { accessorKey: "amount", header: "Amount", align: "right" },
+  {
+    id: "actions",
+    header: null,
+    size: 64,
+    cell: (row) => (
+      <button
+        type="button"
+        aria-label={`${row.reference} actions`}
+        style={{ width: 32, height: 32 }}
+      >
+        <span aria-hidden="true">⋯</span>
+      </button>
+    ),
+  },
+];
+
+const AUTO_SIZE_ROWS: readonly AutoSizingRow[] = Array.from(
+  { length: 20 },
+  (_, index) => ({
+    id: `auto-${index + 1}`,
+    reference: index === 0 ? LONG_AUTO_SIZE_REFERENCE : `PAY-${index + 1}`,
+    amount: index === 0 ? "MX$2,300.00 MXN" : `$${index + 1}.00 USD`,
+  }),
+);
+
 export function Default() {
   return (
     <DataTable.Root label="Items" layout="inline">
@@ -47,6 +84,81 @@ export function Default() {
         getRowId={(row) => row.id}
       />
     </DataTable.Root>
+  );
+}
+
+export function AutoSizing({ scrollX = true }: { scrollX?: boolean } = {}) {
+  return (
+    <DataTable.Root
+      label="Auto-sized payments"
+      layout="page"
+      style={{ width: 420, height: 220 }}
+    >
+      <DataTable.Content
+        columns={AUTO_SIZE_COLUMNS}
+        data={AUTO_SIZE_ROWS}
+        error={undefined}
+        empty={EMPTY}
+        getRowId={(row) => row.id}
+        scrollX={scrollX}
+      />
+    </DataTable.Root>
+  );
+}
+
+export function BoundedContent({
+  align = "left",
+}: {
+  align?: "left" | "right";
+} = {}) {
+  const [activated, setActivated] = React.useState("");
+  const rows = [
+    {
+      id: "bounded-1",
+      reference: LONG_BOUNDED_REFERENCE,
+      amount: "MX$2,300.00 MXN",
+    },
+  ];
+  const columns: readonly DataTableColumn<(typeof rows)[number]>[] = [
+    {
+      accessorKey: "reference",
+      header: "Reference",
+      align,
+      size: align === "right" ? 320 : undefined,
+      cell: (row) => <Table.CellContent bounded label={row.reference} />,
+    },
+    { accessorKey: "amount", header: "Amount", align: "right" },
+  ];
+
+  return (
+    <div>
+      <DataTable.Root
+        label="Bounded payments"
+        layout="inline"
+        style={{ width: 420 }}
+      >
+        <DataTable.Content
+          columns={columns}
+          data={rows}
+          error={undefined}
+          empty={EMPTY}
+          getRowId={(row) => row.id}
+          getRowActivationLabel={(row) => `View ${row.reference}`}
+          onRowActivate={(row) => setActivated(row.id)}
+        />
+      </DataTable.Root>
+      <span data-testid="activated">{activated}</span>
+    </div>
+  );
+}
+
+export function EmptyBoundedContent() {
+  return (
+    <section aria-label="Bounded text accessibility cases">
+      <Table.CellContent bounded label="" />
+      <Table.CellContent bounded label="   " description=" " />
+      <Table.CellContent bounded label="Account description" />
+    </section>
   );
 }
 
@@ -62,6 +174,120 @@ export function Loading() {
         empty={EMPTY}
       />
     </DataTable.Root>
+  );
+}
+
+export function LoadingWithRows() {
+  return (
+    <div>
+      <DataTable.Root label="Default loading" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={ROWS.slice(0, 2)}
+          loading
+          skeletonRowCount={2}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>
+      <DataTable.Root label="Warm loading" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={ROWS.slice(0, 2)}
+          loading
+          showRowsWhileLoading
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>
+    </div>
+  );
+}
+
+export function LoadingSizing() {
+  return (
+    <DataTable.Root
+      label="Loading sizing"
+      layout="inline"
+      style={{ width: 640 }}
+    >
+      <DataTable.Content
+        columns={COLUMNS}
+        data={[]}
+        loading
+        skeletonRowCount={1}
+        error={undefined}
+        empty={EMPTY}
+      />
+    </DataTable.Root>
+  );
+}
+
+interface DenseLoadingRow {
+  one: string;
+  two: string;
+  three: string;
+  four: string;
+  five: string;
+  six: string;
+}
+
+const DENSE_LOADING_STRUCTURAL_WIDTH = 64;
+
+const DENSE_LOADING_COLUMNS: readonly DataTableColumn<DenseLoadingRow>[] = [
+  { accessorKey: "one", header: "One" },
+  { accessorKey: "two", header: "Two" },
+  { accessorKey: "three", header: "Three" },
+  { accessorKey: "four", header: "Four" },
+  { accessorKey: "five", header: "Five" },
+  { accessorKey: "six", header: "Six" },
+  {
+    id: "actions",
+    header: null,
+    size: DENSE_LOADING_STRUCTURAL_WIDTH,
+    cell: () => null,
+  },
+];
+
+export function DenseLoading() {
+  return (
+    <DataTable.Root
+      label="Dense loading"
+      layout="inline"
+      style={{ width: 480 }}
+    >
+      <DataTable.Content
+        columns={DENSE_LOADING_COLUMNS}
+        data={[]}
+        loading
+        skeletonRowCount={2}
+        error={undefined}
+        empty={EMPTY}
+      />
+    </DataTable.Root>
+  );
+}
+
+export function LoadingTransition() {
+  const [loaded, setLoaded] = React.useState(false);
+
+  return (
+    <div>
+      <button type="button" onClick={() => setLoaded(true)}>
+        Resolve loading
+      </button>
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={COLUMNS}
+          data={loaded ? ROWS.slice(0, 3) : []}
+          loading={!loaded}
+          skeletonRowCount={3}
+          error={undefined}
+          empty={EMPTY}
+          getRowId={(row) => row.id}
+        />
+      </DataTable.Root>
+    </div>
   );
 }
 

@@ -410,6 +410,30 @@ export function LoadingTable() {
   );
 }
 
+export function LoadingSortableHeaderTable() {
+  const [sortCount, setSortCount] = React.useState(0);
+
+  return (
+    <>
+      <Table.Root>
+        <Table.Header>
+          <Table.HeaderRow>
+            <Table.HeaderCell
+              loading
+              sortable
+              sortDirection="asc"
+              onSort={() => setSortCount((count) => count + 1)}
+            >
+              Name
+            </Table.HeaderCell>
+          </Table.HeaderRow>
+        </Table.Header>
+      </Table.Root>
+      <output data-testid="sort-count">{sortCount}</output>
+    </>
+  );
+}
+
 /**
  * Table with column resizing
  */

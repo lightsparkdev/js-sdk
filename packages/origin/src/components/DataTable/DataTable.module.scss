@@ -1,5 +1,15 @@
 @use "../../tokens/text-styles" as *;
 
+@keyframes data-table-cold-reveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .root {
   display: flex;
   flex-direction: column;
@@ -98,6 +108,29 @@
 // Kept position: static (no stacking context) so the sticky header's
 // z-index resolves against the shell's overlays — see the z-index story on
 // .viewportShell.
+table.autoLayoutTable {
+  table-layout: auto;
+
+  &.coldLoadingTable {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .loadingColumn {
+    width: var(--spacing-16xl);
+  }
+
+  &[data-cold-reveal] {
+    animation: data-table-cold-reveal 120ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-cold-reveal] {
+      animation: none;
+    }
+  }
+}
+
 .viewport {
   display: flex;
   flex-direction: column;
@@ -106,10 +139,9 @@
   min-width: 0;
   overflow-y: auto;
 
-  // overflow-x must be set explicitly: once overflow-y is a scroll value,
-  // a "visible" overflow-x would compute to auto anyway, making scrollX
-  // silently meaningless. Hidden lets scrollX={false} tables squish
-  // (fixed-layout columns truncate) instead of scrolling.
+  // overflow-x must be explicit: once overflow-y is a scroll value,
+  // visible would compute to auto. Hidden preserves scrollX={false} by
+  // clipping horizontal overflow instead of making this element a scroll owner.
   overflow-x: hidden;
 
   &[data-scroll-x="true"] {
