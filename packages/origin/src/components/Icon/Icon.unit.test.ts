@@ -7,7 +7,7 @@ import { ICON_REGISTRY, type CentralIconName } from "./icon-registry";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ICONS_DIR = join(__dirname, "icons");
 
-const EXPECTED_ICON_COUNT = 227;
+const EXPECTED_ICON_COUNT = 229;
 
 const registryKeys = Object.keys(ICON_REGISTRY) as CentralIconName[];
 

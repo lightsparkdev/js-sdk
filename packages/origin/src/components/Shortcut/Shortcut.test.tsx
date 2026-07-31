@@ -4,6 +4,7 @@ import {
   MultipleKeys,
   TwoKeys,
   CustomClassName,
+  IconKey,
 } from "./Shortcut.test-stories";
 import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
@@ -25,6 +26,17 @@ test.describe("Shortcut", () => {
       await expect(page.getByText("⌘")).toBeVisible();
       await expect(page.getByText("⇧")).toBeVisible();
       await expect(page.getByText("K")).toBeVisible();
+    });
+
+    test("renders a node key inside a kbd with an accessible name", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<IconKey />);
+      const kbd = page.locator("kbd");
+      await expect(kbd).toHaveCount(1);
+      await expect(page.getByRole("img", { name: "Arrow up" })).toBeVisible();
+      await expect(kbd.locator("svg")).toBeVisible();
     });
   });
 

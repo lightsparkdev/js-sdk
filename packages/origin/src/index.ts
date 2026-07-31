@@ -41,6 +41,11 @@ export type {
 } from "./components/Collapsible";
 export { Checkbox } from "./components/Checkbox";
 export { Command } from "./components/Command";
+export type {
+  CommandChangeEventDetails,
+  CommandGroup,
+  CommandItem,
+} from "./components/Command";
 export { Combobox } from "./components/Combobox";
 export type {
   ComboboxClearProps,

@@ -1,6 +1,7 @@
 "use client";
 
 import { Shortcut } from "./Shortcut";
+import { CentralIcon } from "../Icon";
 
 export function SingleKey() {
   return <Shortcut keys={["⌘"]} />;
@@ -16,6 +17,18 @@ export function TwoKeys() {
 
 export function CustomClassName() {
   return <Shortcut keys={["⌘"]} className="custom-class" />;
+}
+
+export function IconKey() {
+  return (
+    <Shortcut
+      keys={[
+        <span key="up" role="img" aria-label="Arrow up">
+          <CentralIcon name="IconArrowUp" size={12} />
+        </span>,
+      ]}
+    />
+  );
 }
 
 export function CommonShortcuts() {
