@@ -481,6 +481,11 @@ export interface CellContentProps extends React.HTMLAttributes<HTMLDivElement> {
   badge?: React.ReactNode;
   /** Bounds intrinsic width for deliberately open-ended table text */
   bounded?: boolean;
+  /**
+   * Whether bounded plain text opens a full-value popover.
+   * @default true
+   */
+  disclosure?: boolean;
 }
 
 export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
@@ -490,15 +495,17 @@ export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
       label,
       description,
       bounded = false,
+      disclosure: disclosureEnabled = true,
       indicator = false,
       badge,
       ...props
     },
     ref,
   ) {
-    let disclosure: string | undefined;
+    let disclosureText: string | undefined;
     if (
       bounded &&
+      disclosureEnabled &&
       typeof label === "string" &&
       (description == null || typeof description === "string") &&
       badge == null
@@ -507,7 +514,7 @@ export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
         (part): part is string =>
           typeof part === "string" && part.trim().length > 0,
       );
-      disclosure =
+      disclosureText =
         disclosureParts.length > 0 ? disclosureParts.join("\n") : undefined;
     }
 
@@ -518,7 +525,7 @@ export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
         data-bounded={bounded || undefined}
         {...props}
       >
-        {disclosure !== undefined ? (
+        {disclosureText !== undefined ? (
           <Popover.Root>
             <Popover.Trigger
               render={
@@ -541,7 +548,7 @@ export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
                   aria-label="Full cell value"
                   className={styles.cellDisclosurePopup}
                 >
-                  {disclosure}
+                  {disclosureText}
                 </Popover.Popup>
               </Popover.Positioner>
             </Popover.Portal>

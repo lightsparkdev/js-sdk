@@ -152,6 +152,46 @@ export function BoundedContent({
   );
 }
 
+export function TruncatedContent() {
+  const [activated, setActivated] = React.useState("");
+  const rows = [
+    {
+      id: "truncated-1",
+      reference: LONG_BOUNDED_REFERENCE,
+      amount: "MX$2,300.00 MXN",
+    },
+  ];
+  const columns: readonly DataTableColumn<(typeof rows)[number]>[] = [
+    {
+      accessorKey: "reference",
+      header: "Reference",
+      cellOverflow: "truncate",
+    },
+    { accessorKey: "amount", header: "Amount", align: "right" },
+  ];
+
+  return (
+    <div>
+      <DataTable.Root
+        label="Truncated payments"
+        layout="inline"
+        style={{ width: 420 }}
+      >
+        <DataTable.Content
+          columns={columns}
+          data={rows}
+          error={undefined}
+          empty={EMPTY}
+          getRowId={(row) => row.id}
+          getRowActivationLabel={(row) => `View ${row.reference}`}
+          onRowActivate={(row) => setActivated(row.id)}
+        />
+      </DataTable.Root>
+      <span data-testid="activated">{activated}</span>
+    </div>
+  );
+}
+
 export function EmptyBoundedContent() {
   return (
     <section aria-label="Bounded text accessibility cases">

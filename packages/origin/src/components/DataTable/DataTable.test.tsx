@@ -29,6 +29,7 @@ import {
   RowActivate,
   RowActivateWithControls,
   SinglePage,
+  TruncatedContent,
   WithPagination,
 } from "./DataTable.test-stories";
 
@@ -187,6 +188,32 @@ test.describe("DataTable", () => {
     await expect(disclosurePopup).toBeVisible();
     await expect(page.getByTestId("activated")).toBeEmpty();
     await page.keyboard.press("Escape");
+  });
+
+  test("constrains truncated column text without adding an interactive disclosure", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TruncatedContent />);
+
+    const referenceCell = page.getByRole("cell", {
+      name: /^REF-B+$/,
+    });
+    const truncatedContent = referenceCell.locator(":scope > [data-bounded]");
+    const truncatedText = truncatedContent.getByText(/^REF-B+$/);
+
+    await expect(referenceCell.getByRole("button")).toHaveCount(0);
+    await expect(truncatedText).toHaveCSS("text-overflow", "ellipsis");
+    await expect(truncatedContent).toHaveCSS("max-width", "240px");
+
+    const textGeometry = await truncatedText.evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    }));
+    expect(textGeometry.scrollWidth).toBeGreaterThan(textGeometry.clientWidth);
+
+    await truncatedText.click();
+    await expect(page.getByTestId("activated")).toHaveText("truncated-1");
   });
 
   test("anchors bounded content to the right-aligned cell edge", async ({

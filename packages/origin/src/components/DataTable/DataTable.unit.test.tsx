@@ -128,6 +128,28 @@ function scrollFlags(shell: Element | null) {
 }
 
 describe("DataTable.Content", () => {
+  it("renders truncated column content without a disclosure control", () => {
+    const { container } = render(
+      <DataTable.Root label="Items" layout="inline">
+        <DataTable.Content
+          columns={[
+            {
+              accessorKey: "name",
+              header: "Name",
+              cellOverflow: "truncate",
+            },
+          ]}
+          data={[{ name: "A deliberately long value" }]}
+          error={undefined}
+          empty={EMPTY}
+        />
+      </DataTable.Root>,
+    );
+
+    expect(container.querySelector("[data-bounded]")).toBeTruthy();
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
   it("renders a busy cold shell with accessible textual header names", () => {
     const { container } = render(
       <DataTable.Root label="Items" layout="inline">

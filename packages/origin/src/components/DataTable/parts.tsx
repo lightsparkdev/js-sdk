@@ -372,6 +372,11 @@ interface DataTableColumnBase<TRow> {
    */
   size?: number;
   align?: "left" | "right";
+  /**
+   * Bounds cell content to the shared intrinsic-width cap and truncates it
+   * without adding an interactive disclosure control.
+   */
+  cellOverflow?: "truncate";
   /** Formatter slot; receives the typed row object. */
   cell?: (row: TRow) => React.ReactNode;
 }
@@ -553,6 +558,7 @@ export function Content<TRow>({
       id: string;
       align: "left" | "right";
       size: number | undefined;
+      cellOverflow: "truncate" | undefined;
       loadingLabel: string | undefined;
     }[] = [];
     const byId = new Map<string, (typeof list)[number]>();
@@ -561,6 +567,7 @@ export function Content<TRow>({
         id: "accessorKey" in column ? column.accessorKey : column.id,
         align: column.align ?? "left",
         size: column.size,
+        cellOverflow: column.cellOverflow,
         loadingLabel:
           column.headerAriaLabel ??
           (typeof column.header === "string" ? column.header : undefined),
@@ -666,9 +673,21 @@ export function Content<TRow>({
                           presentationById.get(cell.column.id)?.align ?? "left"
                         }
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
+                        {presentationById.get(cell.column.id)?.cellOverflow ===
+                        "truncate" ? (
+                          <Table.CellContent
+                            bounded
+                            disclosure={false}
+                            label={flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )
                         )}
                       </Table.Cell>
                     ))}
