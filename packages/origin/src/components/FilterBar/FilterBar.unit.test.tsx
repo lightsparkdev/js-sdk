@@ -6,7 +6,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { FilterBar, type FilterBarConfig } from "./";
+import { FilterBar, type FilterBarConfig, type FiltersModel } from "./";
 import { type FilterDescriptor, type FilterStates } from "./filter-model";
 import { useFilters } from "./useFilters";
 
@@ -53,6 +53,27 @@ const NORMALIZED_STRING_DESCRIPTORS = [
     errorMessage: "Enter a valid code",
   },
 ] as const satisfies readonly FilterDescriptor<"code">[];
+
+const ORDER_DESCRIPTORS = [
+  { type: "string", label: "Alpha", id: "alpha" },
+  { type: "string", label: "Beta", id: "beta" },
+] as const satisfies readonly FilterDescriptor<"alpha" | "beta">[];
+
+const LEGACY_STRUCTURAL_MODEL = {
+  descriptors: ORDER_DESCRIPTORS,
+  states: {
+    alpha: { type: "string", isApplied: true, value: "one" },
+    beta: { type: "string", isApplied: true, value: "two" },
+  },
+  appliedCount: 2,
+  signature: "",
+  addFilter: () => undefined,
+  updateFilter: () => undefined,
+  removeFilter: () => undefined,
+  clearFilters: () => undefined,
+  openEditorId: null,
+  setEditorOpen: () => undefined,
+} satisfies FiltersModel<typeof ORDER_DESCRIPTORS>;
 
 function Harness({
   config,
@@ -134,7 +155,65 @@ function NormalizedStringEditorHarness({
   );
 }
 
+function OrderedPillsHarness({ orderPolicy }: { orderPolicy?: "application" }) {
+  const model = useFilters({
+    descriptors: ORDER_DESCRIPTORS,
+    states: {
+      alpha: { type: "string", isApplied: true, value: "one" },
+      beta: { type: "string", isApplied: true, value: "two" },
+    },
+    ...(orderPolicy
+      ? {
+          orderPolicy,
+          appliedFilterIds: ["beta", "alpha"] as const,
+        }
+      : {}),
+    onStatesChange: () => undefined,
+  });
+  return (
+    <FilterBar.Root model={model}>
+      <FilterBar.Pills />
+    </FilterBar.Root>
+  );
+}
+
 describe("FilterBar pill labels", () => {
+  it("renders pills in descriptor order by default", () => {
+    const { container } = render(<OrderedPillsHarness />);
+
+    expect(
+      Array.from(container.querySelectorAll("[data-filter-id]")).map((pill) =>
+        pill.getAttribute("data-filter-id"),
+      ),
+    ).toEqual(["alpha", "beta"]);
+  });
+
+  it("renders pills in application order when requested", () => {
+    const { container } = render(
+      <OrderedPillsHarness orderPolicy="application" />,
+    );
+
+    expect(
+      Array.from(container.querySelectorAll("[data-filter-id]")).map((pill) =>
+        pill.getAttribute("data-filter-id"),
+      ),
+    ).toEqual(["beta", "alpha"]);
+  });
+
+  it("renders legacy structural models in descriptor order", () => {
+    const { container } = render(
+      <FilterBar.Root model={LEGACY_STRUCTURAL_MODEL}>
+        <FilterBar.Pills />
+      </FilterBar.Root>,
+    );
+
+    expect(
+      Array.from(container.querySelectorAll("[data-filter-id]")).map((pill) =>
+        pill.getAttribute("data-filter-id"),
+      ),
+    ).toEqual(["alpha", "beta"]);
+  });
+
   it("renders the standard accessible composition when children are omitted", () => {
     render(<ChildlessHarness />);
 

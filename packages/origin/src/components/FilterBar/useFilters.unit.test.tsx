@@ -5,7 +5,7 @@ import {
   type FilterDescriptor,
   type FilterStates,
 } from "./filter-model";
-import { useFilters } from "./useFilters";
+import { useFilters, type UseFiltersOptions } from "./useFilters";
 
 type TestFilterKey = "status" | "reason" | "createdAt";
 
@@ -36,6 +36,114 @@ function getDescriptor<TId extends TestFilterKey>(
 }
 
 describe("useFilters (uncontrolled)", () => {
+  it("keeps descriptor order by default regardless of application order", () => {
+    const { result } = renderHook(() =>
+      useFilters({ descriptors: DESCRIPTORS }),
+    );
+
+    act(() => {
+      result.current.addFilter(getDescriptor("createdAt"));
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("status"));
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["status", "createdAt"]);
+  });
+
+  it("keeps application order when explicitly requested", () => {
+    const { result } = renderHook(() =>
+      useFilters({
+        descriptors: DESCRIPTORS,
+        orderPolicy: "application",
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(getDescriptor("createdAt"));
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("status"));
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt", "status"]);
+  });
+
+  it("preserves application history across descriptor-policy transitions", () => {
+    const { result, rerender } = renderHook(
+      ({ orderPolicy }: { orderPolicy: "application" | "descriptor" }) => {
+        const options: UseFiltersOptions<typeof DESCRIPTORS> =
+          orderPolicy === "application"
+            ? { descriptors: DESCRIPTORS, orderPolicy }
+            : { descriptors: DESCRIPTORS, orderPolicy };
+        return useFilters(options);
+      },
+      { initialProps: { orderPolicy: "application" as const } },
+    );
+
+    act(() => {
+      result.current.addFilter(getDescriptor("createdAt"));
+    });
+    rerender({ orderPolicy: "descriptor" });
+    act(() => {
+      result.current.addFilter(getDescriptor("status"));
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["status", "createdAt"]);
+
+    rerender({ orderPolicy: "application" });
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt", "status"]);
+  });
+
+  it("appends an application-ordered filter after removal and re-addition", () => {
+    const { result } = renderHook(() =>
+      useFilters({
+        descriptors: DESCRIPTORS,
+        orderPolicy: "application",
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(getDescriptor("status"));
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("createdAt"));
+    });
+    act(() => {
+      result.current.removeFilter("status");
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("status"));
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt", "status"]);
+  });
+
+  it("removes conflicts and appends the newly applied filter deterministically", () => {
+    const { result } = renderHook(() =>
+      useFilters({
+        descriptors: DESCRIPTORS,
+        orderPolicy: "application",
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(getDescriptor("reason"));
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("createdAt"));
+    });
+    act(() => {
+      result.current.addFilter(getDescriptor("status"), {
+        enumValue: { label: "Active", value: "ACTIVE" },
+      });
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt", "status"]);
+    expect(result.current.states.reason.isApplied).toBe(false);
+  });
+
   it("starts at defaults with nothing applied", () => {
     const { result } = renderHook(() =>
       useFilters({ descriptors: DESCRIPTORS }),
@@ -221,6 +329,39 @@ describe("useFilters (uncontrolled)", () => {
 });
 
 describe("useFilters (controlled)", () => {
+  it("accepts and reports application order through the controlled seam", () => {
+    const onStatesChange = vi.fn();
+    const states = getDefaultFilterStates(DESCRIPTORS);
+    states.status = {
+      type: "enum",
+      isApplied: true,
+      appliedValues: ["ACTIVE"],
+    };
+    states.createdAt = {
+      type: "date",
+      isApplied: true,
+      start: null,
+      end: null,
+    };
+    const { result } = renderHook(() =>
+      useFilters({
+        descriptors: DESCRIPTORS,
+        states,
+        appliedFilterIds: ["createdAt", "status"],
+        orderPolicy: "application",
+        onStatesChange,
+      }),
+    );
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt", "status"]);
+
+    act(() => {
+      result.current.removeFilter("createdAt");
+    });
+
+    expect(onStatesChange).toHaveBeenCalledWith(expect.any(Object), ["status"]);
+  });
+
   it("reports transitions through onStatesChange without owning state", () => {
     const onStatesChange = vi.fn();
     const states = getDefaultFilterStates(DESCRIPTORS);

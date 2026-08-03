@@ -4,12 +4,19 @@ import * as React from "react";
 import {
   getDefaultFilterStates,
   loadFilterStatesFromUrl,
+  resolveAppliedFilterIds,
   saveFilterStatesToUrl,
   toEnumOptionValueArray,
   type FilterDescriptorTuple,
+  type FilterId,
   type FilterStates,
 } from "./filter-model";
-import { useFilters, type FiltersModel } from "./useFilters";
+import {
+  useFilters,
+  type FiltersModel,
+  type UseFiltersResult,
+  type UseFiltersOptions,
+} from "./useFilters";
 
 export type SearchParamHistoryMode = "push" | "replace";
 
@@ -47,6 +54,13 @@ export interface CreateUrlBackedFiltersHookConfig {
   useSearchParamsAdapter: UseSearchParamsAdapter;
   filterActionRegistry?: FilterActionRegistry;
   history: SearchParamHistoryMode;
+  /**
+   * Opt into application-ordered pills and persist their order in one
+   * consumer-named URL sidecar. Omit for backward-compatible descriptor order.
+   */
+  filterOrdering?: {
+    searchParam: string;
+  };
 }
 
 export interface UseUrlBackedFiltersOptions<
@@ -59,7 +73,7 @@ export interface UseUrlBackedFiltersOptions<
 export interface UrlBackedFiltersHook {
   <const TDescriptors extends FilterDescriptorTuple>(
     options: UseUrlBackedFiltersOptions<TDescriptors>,
-  ): FiltersModel<TDescriptors>;
+  ): UseFiltersResult<TDescriptors>;
 }
 
 const NOOP_REGISTRY: FilterActionRegistry = {
@@ -84,6 +98,39 @@ function getActionSemanticsKey(descriptors: FilterDescriptorTuple): string {
   );
 }
 
+function readFilterOrder(
+  searchParams: URLSearchParams,
+  searchParam: string,
+): readonly string[] {
+  const value = searchParams.get(searchParam);
+  if (value === null) {
+    return [];
+  }
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) &&
+      parsed.every((id): id is string => typeof id === "string")
+      ? parsed
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function validateFilterOrderSearchParam(
+  descriptors: FilterDescriptorTuple,
+  searchParam: string,
+) {
+  if (
+    searchParam.trim() === "" ||
+    descriptors.some((descriptor) => descriptor.id === searchParam)
+  ) {
+    throw new Error(
+      "Filter application-order metadata requires a non-empty search param that does not match a filter id.",
+    );
+  }
+}
+
 export function createUrlBackedFiltersHook(
   config: CreateUrlBackedFiltersHookConfig,
 ): UrlBackedFiltersHook {
@@ -94,7 +141,7 @@ export function createUrlBackedFiltersHook(
   >({
     descriptors,
     registerFilterActions = true,
-  }: UseUrlBackedFiltersOptions<TDescriptors>): FiltersModel<TDescriptors> {
+  }: UseUrlBackedFiltersOptions<TDescriptors>): UseFiltersResult<TDescriptors> {
     const filterActionRegistry = config.filterActionRegistry ?? NOOP_REGISTRY;
     const searchParams = useSearchParamsAdapter();
     const searchParamsRef = React.useRef(searchParams);
@@ -104,34 +151,86 @@ export function createUrlBackedFiltersHook(
     searchParamsRef.current = searchParams;
     descriptorsRef.current = descriptors;
 
-    const states = React.useMemo(
-      () =>
-        loadFilterStatesFromUrl(
+    const snapshot = React.useMemo(() => {
+      const current = new URLSearchParams(searchParams.search);
+      const filterOrderSearchParam = config.filterOrdering?.searchParam;
+      if (filterOrderSearchParam !== undefined) {
+        validateFilterOrderSearchParam(descriptors, filterOrderSearchParam);
+      }
+      const preferredFilterIds =
+        filterOrderSearchParam === undefined
+          ? []
+          : readFilterOrder(current, filterOrderSearchParam);
+      const states = loadFilterStatesFromUrl(
+        descriptors,
+        current,
+        getDefaultFilterStates(descriptors),
+        preferredFilterIds,
+      );
+      return {
+        states,
+        appliedFilterIds: resolveAppliedFilterIds(
           descriptors,
-          new URLSearchParams(searchParams.search),
-          getDefaultFilterStates(descriptors),
+          states,
+          preferredFilterIds,
         ),
-      [descriptors, searchParams.search],
-    );
+      };
+    }, [descriptors, searchParams.search]);
     const onStatesChange = React.useCallback(
-      (nextStates: FilterStates<TDescriptors>) => {
+      (
+        nextStates: FilterStates<TDescriptors>,
+        appliedFilterIds?: readonly FilterId<TDescriptors>[],
+      ) => {
         searchParamsRef.current.updateSearchParams(
-          (current) =>
-            saveFilterStatesToUrl(
+          (current) => {
+            const next = saveFilterStatesToUrl(
               descriptorsRef.current,
               new URLSearchParams(current),
               nextStates,
-            ),
+            );
+            const filterOrderSearchParam = config.filterOrdering?.searchParam;
+            if (filterOrderSearchParam !== undefined) {
+              const resolvedAppliedFilterIds =
+                appliedFilterIds ??
+                resolveAppliedFilterIds(descriptorsRef.current, nextStates);
+              if (resolvedAppliedFilterIds.length === 0) {
+                next.delete(filterOrderSearchParam);
+              } else {
+                next.set(
+                  filterOrderSearchParam,
+                  JSON.stringify(resolvedAppliedFilterIds),
+                );
+              }
+            }
+            return next;
+          },
           { history: config.history },
         );
       },
       [],
     );
-    const model = useFilters({
-      descriptors,
-      states,
-      onStatesChange,
-    });
+    const onApplicationStatesChange = React.useCallback(
+      (
+        nextStates: FilterStates<TDescriptors>,
+        appliedFilterIds: readonly FilterId<TDescriptors>[],
+      ) => onStatesChange(nextStates, appliedFilterIds),
+      [onStatesChange],
+    );
+    const filterOptions: UseFiltersOptions<TDescriptors> =
+      config.filterOrdering === undefined
+        ? {
+            descriptors,
+            states: snapshot.states,
+            onStatesChange,
+          }
+        : {
+            descriptors,
+            states: snapshot.states,
+            orderPolicy: "application",
+            appliedFilterIds: snapshot.appliedFilterIds,
+            onStatesChange: onApplicationStatesChange,
+          };
+    const model = useFilters(filterOptions);
 
     modelRef.current = model;
 

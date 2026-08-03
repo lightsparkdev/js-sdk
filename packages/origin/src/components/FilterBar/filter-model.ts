@@ -154,6 +154,9 @@ export type FilterStateForDescriptor<
 export type FilterId<TDescriptors extends FilterDescriptorTuple> =
   TDescriptors[number]["id"];
 
+/** How applied filters are ordered in the model and rendered by FilterBar. */
+export type FilterOrderPolicy = "descriptor" | "application";
+
 export type FilterDescriptorForId<
   TDescriptors extends FilterDescriptorTuple,
   TId extends FilterId<TDescriptors>,
@@ -171,6 +174,44 @@ export type FilterStateForId<
 export type FilterStates<TDescriptors extends FilterDescriptorTuple> = {
   [TDescriptor in TDescriptors[number] as TDescriptor["id"]]: FilterStateForDescriptor<TDescriptor>;
 };
+
+/**
+ * Resolve untrusted or partial application-order metadata against current
+ * applied state. Unknown, unapplied, and duplicate ids are dropped; applied
+ * ids missing from metadata are appended in descriptor order.
+ */
+export function resolveAppliedFilterIds<
+  const TDescriptors extends FilterDescriptorTuple,
+>(
+  descriptors: TDescriptors,
+  states: FilterStates<TDescriptors>,
+  preferredIds: readonly string[] = [],
+): FilterId<TDescriptors>[] {
+  const appliedIds = descriptors
+    .filter(
+      (descriptor) =>
+        (states as Record<string, FilterState>)[descriptor.id]?.isApplied,
+    )
+    .map((descriptor) => descriptor.id);
+  const appliedIdSet = new Set<string>(appliedIds);
+  const seen = new Set<string>();
+  const resolved: string[] = [];
+
+  for (const id of preferredIds) {
+    if (appliedIdSet.has(id) && !seen.has(id)) {
+      seen.add(id);
+      resolved.push(id);
+    }
+  }
+  for (const id of appliedIds) {
+    if (!seen.has(id)) {
+      seen.add(id);
+      resolved.push(id);
+    }
+  }
+
+  return resolved as FilterId<TDescriptors>[];
+}
 
 function getDefaultFilterStateValue(
   descriptor: FilterDescriptor<string>,
@@ -344,8 +385,9 @@ function parseUrlDate(value: string): Date | null {
  * state untouched; present-but-empty params hydrate as applied-but-empty,
  * matching both the `searchParams.has()` contract and what
  * `saveFilterStatesToUrl` writes for an applied-empty pill. Present params
- * apply conflict transitions in descriptor order, so later descriptors win
- * independently of query-string order.
+ * apply conflict transitions in the optional validated transition order,
+ * with missing descriptors appended in descriptor order. Without metadata,
+ * later descriptors win independently of query-string order.
  */
 export function loadFilterStatesFromUrl<
   const TDescriptors extends FilterDescriptorTuple,
@@ -353,6 +395,7 @@ export function loadFilterStatesFromUrl<
   descriptors: TDescriptors,
   searchParams: URLSearchParams,
   currentStates: FilterStates<TDescriptors>,
+  transitionOrder: readonly string[] = [],
 ): FilterStates<TDescriptors> {
   let nextStates: Record<string, FilterState> = {
     ...(currentStates as Record<string, FilterState>),
@@ -370,7 +413,25 @@ export function loadFilterStatesFromUrl<
     ) as Record<string, FilterState>;
   };
 
+  const descriptorById = new Map(
+    descriptors.map((descriptor) => [descriptor.id, descriptor]),
+  );
+  const seenDescriptorIds = new Set<string>();
+  const orderedDescriptors: TDescriptors[number][] = [];
+  for (const id of transitionOrder) {
+    const descriptor = descriptorById.get(id);
+    if (descriptor && !seenDescriptorIds.has(id)) {
+      seenDescriptorIds.add(id);
+      orderedDescriptors.push(descriptor);
+    }
+  }
   for (const descriptor of descriptors) {
+    if (!seenDescriptorIds.has(descriptor.id)) {
+      orderedDescriptors.push(descriptor);
+    }
+  }
+
+  for (const descriptor of orderedDescriptors) {
     const paramValues = searchParams.getAll(descriptor.id);
     if (paramValues.length === 0) {
       continue;

@@ -1,5 +1,6 @@
 import * as React from "react";
 import { act, renderHook } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import type { FilterDescriptor } from "./filter-model";
 import {
@@ -40,6 +41,13 @@ const MULTI_DESCRIPTORS = [
   },
 ] as const satisfies readonly FilterDescriptor<string>[];
 
+const ORDER_DESCRIPTORS = [
+  { id: "alpha", label: "Alpha", type: "string" },
+  { id: "beta", label: "Beta", type: "string" },
+] as const satisfies readonly FilterDescriptor<string>[];
+
+const FILTER_ORDER_SEARCH_PARAM = "_filterOrder";
+
 let currentSearch = "";
 let updateCalls: { search: string; history: SearchParamHistoryMode }[] = [];
 let registry: ReturnType<typeof createRegistry>;
@@ -70,6 +78,14 @@ const useTestFilters = createUrlBackedFiltersHook({
   history: "push",
 });
 
+const useApplicationOrderFilters = createUrlBackedFiltersHook({
+  useSearchParamsAdapter: useTestSearchParams,
+  history: "push",
+  filterOrdering: {
+    searchParam: FILTER_ORDER_SEARCH_PARAM,
+  },
+});
+
 function createRegistry() {
   const update = vi.fn();
   const release = vi.fn();
@@ -78,6 +94,191 @@ function createRegistry() {
 }
 
 describe("createUrlBackedFiltersHook", () => {
+  it("round-trips application order through refresh and Back/Forward", () => {
+    registry = createRegistry();
+    currentSearch = "";
+    updateCalls = [];
+    const { result, rerender } = renderHook(() =>
+      useApplicationOrderFilters({
+        descriptors: ORDER_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[1]);
+    });
+    rerender();
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[0]);
+    });
+    rerender();
+
+    expect(result.current.appliedFilterIds).toEqual(["beta", "alpha"]);
+    expect(
+      new URLSearchParams(currentSearch).get(FILTER_ORDER_SEARCH_PARAM),
+    ).toBe(JSON.stringify(["beta", "alpha"]));
+
+    const sharedSearch = currentSearch;
+    act(() => {
+      result.current.removeFilter("beta");
+    });
+    rerender();
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[1]);
+    });
+    rerender();
+    expect(result.current.appliedFilterIds).toEqual(["alpha", "beta"]);
+    expect(
+      new URLSearchParams(currentSearch).get(FILTER_ORDER_SEARCH_PARAM),
+    ).toBe(JSON.stringify(["alpha", "beta"]));
+
+    currentSearch =
+      "alpha=one&beta=two&_filterOrder=%5B%22alpha%22%2C%22beta%22%5D";
+    rerender();
+    expect(result.current.appliedFilterIds).toEqual(["alpha", "beta"]);
+
+    currentSearch = sharedSearch;
+    rerender();
+    expect(result.current.appliedFilterIds).toEqual(["beta", "alpha"]);
+    expect(updateCalls).toHaveLength(4);
+  });
+
+  it("falls back to descriptor order for legacy URLs without metadata", () => {
+    registry = createRegistry();
+    currentSearch = "beta=two&alpha=one";
+    updateCalls = [];
+    const { result } = renderHook(() =>
+      useApplicationOrderFilters({
+        descriptors: ORDER_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    expect(result.current.appliedFilterIds).toEqual(["alpha", "beta"]);
+    expect(updateCalls).toEqual([]);
+  });
+
+  it("produces the same application order during server rendering", () => {
+    const params = new URLSearchParams({
+      alpha: "one",
+      beta: "two",
+      [FILTER_ORDER_SEARCH_PARAM]: JSON.stringify(["beta", "alpha"]),
+    });
+    const useServerFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: () => ({
+        search: params.toString(),
+        updateSearchParams: () => undefined,
+      }),
+      history: "push",
+      filterOrdering: {
+        searchParam: FILTER_ORDER_SEARCH_PARAM,
+      },
+    });
+    function ServerSnapshot() {
+      const model = useServerFilters({
+        descriptors: ORDER_DESCRIPTORS,
+        registerFilterActions: false,
+      });
+      return <span>{model.appliedFilterIds.join(",")}</span>;
+    }
+
+    expect(renderToString(<ServerSnapshot />)).toBe(
+      renderToString(<ServerSnapshot />),
+    );
+    expect(renderToString(<ServerSnapshot />)).toContain("beta,alpha");
+  });
+
+  it.each([
+    {
+      label: "malformed",
+      metadata: "{",
+      expected: ["alpha", "beta"],
+    },
+    {
+      label: "non-array",
+      metadata: JSON.stringify({ order: ["beta", "alpha"] }),
+      expected: ["alpha", "beta"],
+    },
+    {
+      label: "unknown and duplicate",
+      metadata: JSON.stringify(["unknown", "beta", "beta"]),
+      expected: ["beta", "alpha"],
+    },
+    {
+      label: "missing applied ids",
+      metadata: JSON.stringify(["beta"]),
+      expected: ["beta", "alpha"],
+    },
+  ])(
+    "safely resolves $label application-order metadata",
+    ({ metadata, expected }) => {
+      registry = createRegistry();
+      const params = new URLSearchParams({ alpha: "one", beta: "two" });
+      params.set(FILTER_ORDER_SEARCH_PARAM, metadata);
+      currentSearch = params.toString();
+
+      const { result } = renderHook(() =>
+        useApplicationOrderFilters({
+          descriptors: ORDER_DESCRIPTORS,
+          registerFilterActions: false,
+        }),
+      );
+
+      expect(result.current.appliedFilterIds).toEqual(expected);
+    },
+  );
+
+  it("rejects a sidecar search param that collides with a filter id", () => {
+    const useCollidingOrderFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      history: "push",
+      filterOrdering: {
+        searchParam: "alpha",
+      },
+    });
+
+    expect(() =>
+      renderHook(() =>
+        useCollidingOrderFilters({
+          descriptors: ORDER_DESCRIPTORS,
+          registerFilterActions: false,
+        }),
+      ),
+    ).toThrow(/does not match a filter id/);
+  });
+
+  it.each([
+    {
+      metadata: JSON.stringify(["reason", "status"]),
+      winner: "status",
+    },
+    {
+      metadata: JSON.stringify(["status", "reason"]),
+      winner: "reason",
+    },
+  ])(
+    "uses application metadata for deterministic conflict resolution",
+    ({ metadata, winner }) => {
+      registry = createRegistry();
+      const params = new URLSearchParams({
+        status: "OPEN",
+        reason: "TIMEOUT",
+      });
+      params.set(FILTER_ORDER_SEARCH_PARAM, metadata);
+      currentSearch = params.toString();
+
+      const { result } = renderHook(() =>
+        useApplicationOrderFilters({
+          descriptors: DESCRIPTORS,
+          registerFilterActions: false,
+        }),
+      );
+
+      expect(result.current.appliedFilterIds).toEqual([winner]);
+    },
+  );
+
   it("decodes initial and applied-empty URL states", () => {
     registry = createRegistry();
     currentSearch = "status=";

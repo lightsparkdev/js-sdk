@@ -10,6 +10,7 @@ import {
   getDefaultFilterState,
   getDefaultFilterStates,
   getFilterSignature,
+  resolveAppliedFilterIds,
   type EnumFilterOption,
   type FilterDescriptorTuple,
   type FilterId,
@@ -18,9 +19,12 @@ import {
   type FilterStates,
 } from "./filter-model";
 
-export interface UseFiltersOptions<TDescriptors extends FilterDescriptorTuple> {
+interface UseFiltersOptionsBase<TDescriptors extends FilterDescriptorTuple> {
   /** Filter descriptors. Must be referentially stable (a module constant). */
   descriptors: TDescriptors;
+}
+
+interface DescriptorOrderOptions<TDescriptors extends FilterDescriptorTuple> {
   /**
    * Controlled mode: the current filter states. Provide together with
    * `onStatesChange` when the consumer owns persistence (e.g. a product
@@ -28,6 +32,9 @@ export interface UseFiltersOptions<TDescriptors extends FilterDescriptorTuple> {
    * uncontrolled mode, where the hook owns the states internally.
    */
   states?: FilterStates<TDescriptors>;
+  /** Descriptor order is the backward-compatible default. */
+  orderPolicy?: "descriptor";
+  appliedFilterIds?: never;
   /**
    * Controlled mode: called with the next states whenever a seam operation
    * (add/update/remove/clear) produces a transition. The consumer applies
@@ -35,6 +42,40 @@ export interface UseFiltersOptions<TDescriptors extends FilterDescriptorTuple> {
    */
   onStatesChange?: (states: FilterStates<TDescriptors>) => void;
 }
+
+type ApplicationOrderOptions<TDescriptors extends FilterDescriptorTuple> = {
+  /** Application order tracks when each currently applied filter entered the set. */
+  orderPolicy: "application";
+  /**
+   * Called with both the next states and their normalized application order.
+   */
+  onStatesChange?: (
+    states: FilterStates<TDescriptors>,
+    appliedFilterIds: readonly FilterId<TDescriptors>[],
+  ) => void;
+} & (
+  | {
+      /** Uncontrolled mode: the hook owns the coherent state/order snapshot. */
+      states?: never;
+      appliedFilterIds?: never;
+    }
+  | {
+      /** Controlled mode: current filter states and application order. */
+      states: FilterStates<TDescriptors>;
+      /**
+       * Invalid, duplicate, unapplied, and stale ids are normalized; applied
+       * ids missing here append in descriptor order.
+       */
+      appliedFilterIds: readonly FilterId<TDescriptors>[];
+    }
+);
+
+export type UseFiltersOptions<TDescriptors extends FilterDescriptorTuple> =
+  UseFiltersOptionsBase<TDescriptors> &
+    (
+      | DescriptorOrderOptions<TDescriptors>
+      | ApplicationOrderOptions<TDescriptors>
+    );
 
 export interface AddFilterOptions {
   /**
@@ -65,6 +106,12 @@ export interface FiltersModel<
 > {
   descriptors: TDescriptors;
   states: FilterStates<TDescriptors>;
+  /**
+   * Applied filter ids in the order FilterBar.Pills renders them. Legacy
+   * structural models may omit this, in which case FilterBar uses descriptor
+   * order.
+   */
+  appliedFilterIds?: readonly FilterId<TDescriptors>[];
   appliedCount: number;
   /** Stable applied-filter serialization for cursor pagination reset keys. */
   signature: string;
@@ -86,24 +133,76 @@ export interface FiltersModel<
   setEditorOpen: (id: FilterId<TDescriptors>, open: boolean) => void;
 }
 
+export interface UseFiltersResult<
+  TDescriptors extends FilterDescriptorTuple = FilterDescriptorTuple,
+> extends FiltersModel<TDescriptors> {
+  appliedFilterIds: readonly FilterId<TDescriptors>[];
+}
+
 /**
  * Descriptor-driven filter state with controlled and uncontrolled modes.
  * Query-variable derivation remains consumer-owned.
  */
-export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
-  descriptors,
-  states: controlledStates,
-  onStatesChange,
-}: UseFiltersOptions<TDescriptors>): FiltersModel<TDescriptors> {
+export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
+  options: UseFiltersOptions<TDescriptors>,
+): UseFiltersResult<TDescriptors> {
+  const {
+    descriptors,
+    states: controlledStates,
+    orderPolicy = "descriptor",
+    appliedFilterIds: controlledAppliedFilterIds,
+  } = options;
+  const onDescriptorStatesChange =
+    options.orderPolicy === "application" ? undefined : options.onStatesChange;
+  const onApplicationStatesChange =
+    options.orderPolicy === "application" ? options.onStatesChange : undefined;
   const isControlled = controlledStates !== undefined;
-  const [uncontrolledStates, setUncontrolledStates] = React.useState<
-    FilterStates<TDescriptors>
-  >(() => controlledStates ?? getDefaultFilterStates(descriptors));
-  const states = controlledStates ?? uncontrolledStates;
+  const [uncontrolledSnapshot, setUncontrolledSnapshot] = React.useState(() => {
+    const states = controlledStates ?? getDefaultFilterStates(descriptors);
+    return {
+      states,
+      applicationOrder: resolveAppliedFilterIds(
+        descriptors,
+        states,
+        controlledAppliedFilterIds,
+      ),
+    };
+  });
+  const states = controlledStates ?? uncontrolledSnapshot.states;
+  const applicationOrder = React.useMemo(
+    () =>
+      isControlled
+        ? resolveAppliedFilterIds(
+            descriptors,
+            states,
+            controlledAppliedFilterIds,
+          )
+        : resolveAppliedFilterIds(
+            descriptors,
+            states,
+            uncontrolledSnapshot.applicationOrder,
+          ),
+    [
+      controlledAppliedFilterIds,
+      descriptors,
+      isControlled,
+      states,
+      uncontrolledSnapshot.applicationOrder,
+    ],
+  );
+  const appliedFilterIds = React.useMemo(
+    () =>
+      resolveAppliedFilterIds(
+        descriptors,
+        states,
+        orderPolicy === "application" ? applicationOrder : [],
+      ),
+    [applicationOrder, descriptors, orderPolicy, states],
+  );
 
   const wasControlledRef = React.useRef(isControlled);
   if (process.env.NODE_ENV !== "production") {
-    if (isControlled && !onStatesChange) {
+    if (isControlled && !options.onStatesChange) {
       devWarnOnce(
         "useFilters received `states` without `onStatesChange`; the filter bar will be read-only.",
       );
@@ -120,13 +219,55 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
     React.useState<FilterId<TDescriptors> | null>(null);
 
   const applyStates = React.useCallback(
-    (nextStates: FilterStates<TDescriptors>) => {
+    (
+      nextStates: FilterStates<TDescriptors>,
+      preferredAppliedFilterIds: readonly FilterId<TDescriptors>[],
+    ) => {
+      const nextAppliedFilterIds = resolveAppliedFilterIds(
+        descriptors,
+        nextStates,
+        preferredAppliedFilterIds,
+      );
       if (!isControlled) {
-        setUncontrolledStates(nextStates);
+        setUncontrolledSnapshot({
+          states: nextStates,
+          applicationOrder: nextAppliedFilterIds,
+        });
       }
-      onStatesChange?.(nextStates);
+      if (orderPolicy === "application") {
+        onApplicationStatesChange?.(nextStates, nextAppliedFilterIds);
+      } else {
+        onDescriptorStatesChange?.(nextStates);
+      }
     },
-    [isControlled, onStatesChange],
+    [
+      descriptors,
+      isControlled,
+      onApplicationStatesChange,
+      onDescriptorStatesChange,
+      orderPolicy,
+    ],
+  );
+
+  const applyTransition = React.useCallback(
+    (
+      nextStates: FilterStates<TDescriptors>,
+      changedId?: FilterId<TDescriptors>,
+    ) => {
+      const preferredAppliedFilterIds = applicationOrder.filter(
+        (id) =>
+          (nextStates as Record<string, FilterState>)[id]?.isApplied ?? false,
+      );
+      if (
+        changedId !== undefined &&
+        !(states as Record<string, FilterState>)[changedId]?.isApplied &&
+        (nextStates as Record<string, FilterState>)[changedId]?.isApplied
+      ) {
+        preferredAppliedFilterIds.push(changedId);
+      }
+      applyStates(nextStates, preferredAppliedFilterIds);
+    },
+    [applicationOrder, applyStates, states],
   );
 
   const addFilter = React.useCallback(
@@ -146,17 +287,18 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
         descriptor.type === "enum" && options?.enumValue
           ? applyEnumFilterOption(descriptor, currentState, options.enumValue)
           : getAddedFilterState(descriptor);
-      applyStates(
+      applyTransition(
         applyFilterConflicts(descriptors, descriptor.id, addedState, {
           ...states,
           [descriptor.id]: addedState,
         }),
+        descriptor.id,
       );
       if (options?.openEditor) {
         setOpenEditorId(descriptor.id);
       }
     },
-    [applyStates, descriptors, states],
+    [applyTransition, descriptors, states],
   );
 
   const updateFilter = React.useCallback(
@@ -164,14 +306,15 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
       id: TId,
       newState: FilterStateForId<TDescriptors, TId>,
     ) {
-      applyStates(
+      applyTransition(
         applyFilterConflicts(descriptors, id, newState, {
           ...states,
           [id]: newState,
         }),
+        id,
       );
     },
-    [applyStates, descriptors, states],
+    [applyTransition, descriptors, states],
   );
 
   const removeFilter = React.useCallback(
@@ -180,14 +323,17 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
       if (!descriptor) {
         return;
       }
-      applyStates({ ...states, [id]: getDefaultFilterState(descriptor) });
+      applyTransition({
+        ...states,
+        [id]: getDefaultFilterState(descriptor),
+      });
       setOpenEditorId((current) => (current === id ? null : current));
     },
-    [applyStates, descriptors, states],
+    [applyTransition, descriptors, states],
   );
 
   const clearFilters = React.useCallback(() => {
-    applyStates(getDefaultFilterStates(descriptors));
+    applyStates(getDefaultFilterStates(descriptors), []);
     setOpenEditorId(null);
   }, [applyStates, descriptors]);
 
@@ -216,6 +362,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
     () => ({
       descriptors,
       states,
+      appliedFilterIds,
       appliedCount,
       signature,
       addFilter,
@@ -228,6 +375,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>({
     [
       descriptors,
       states,
+      appliedFilterIds,
       appliedCount,
       signature,
       addFilter,

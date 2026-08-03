@@ -7,6 +7,7 @@ import {
   formatDateTime,
   humanizeIdentifier,
   useCursorTablePagination,
+  useFilters,
 } from "../src";
 import type {
   CreateRowActivationHookConfig,
@@ -19,6 +20,7 @@ import type {
   FilterDescriptor,
   FilterActionRegistry,
   FilterBarConfig,
+  FilterOrderPolicy,
   FiltersModel,
   FilterStates,
   HumanizeIdentifierOptions,
@@ -30,6 +32,7 @@ import type {
   SearchParamsAdapter,
   UrlBackedFiltersHook,
   UseCursorTablePaginationOptions,
+  UseFiltersOptions,
   UseSearchParamsAdapter,
   UseUrlBackedFiltersOptions,
 } from "../src";
@@ -96,6 +99,13 @@ const useTypedFilters = createUrlBackedFiltersHook({
   useSearchParamsAdapter,
   filterActionRegistry: actionChannel.registry,
   history: "push",
+});
+const useApplicationOrderFilters = createUrlBackedFiltersHook({
+  useSearchParamsAdapter,
+  history: "push",
+  filterOrdering: {
+    searchParam: "_filterOrder",
+  },
 });
 const useRowActivation = createRowActivationHook<{ id: string }>({
   useNavigateTarget: () => () => undefined,
@@ -168,6 +178,15 @@ function TypedConsumer() {
 }
 void TypedConsumer;
 
+function ApplicationOrderConsumer() {
+  const model = useApplicationOrderFilters({ descriptors });
+  const appliedFilterIds: readonly (typeof descriptors)[number]["id"][] =
+    model.appliedFilterIds;
+  void appliedFilterIds;
+  return null;
+}
+void ApplicationOrderConsumer;
+
 // @ts-expect-error cursor controllers can only be created by Origin
 const structuralCursorController: CursorTableController = {
   request: { pageSize: 25, cursor: null },
@@ -190,6 +209,7 @@ type PublicFactoryTypes = [
   CursorTableRequest,
   FilterActionRegistry,
   FilterBarConfig,
+  FilterOrderPolicy,
   RegisteredFilterAction,
   RowActivation<string>,
   RowActivationEvent,
@@ -211,18 +231,76 @@ const states: FilterStates<Descriptors> = {
 };
 void states;
 
+const legacyStructuralModel: FiltersModel<Descriptors> = {
+  descriptors,
+  states,
+  appliedCount: 1,
+  signature: "",
+  addFilter: () => undefined,
+  updateFilter: () => undefined,
+  removeFilter: () => undefined,
+  clearFilters: () => undefined,
+  openEditorId: null,
+  setEditorOpen: () => undefined,
+};
+void legacyStructuralModel;
+
+// @ts-expect-error default descriptor ordering rejects application-order input
+useFilters({ descriptors, appliedFilterIds: ["status"] });
+useFilters({
+  descriptors,
+  orderPolicy: "descriptor",
+  // @ts-expect-error explicit descriptor ordering rejects application-order input
+  appliedFilterIds: ["status"],
+});
+useFilters({
+  descriptors,
+  orderPolicy: "application",
+  onStatesChange: (_nextStates, nextAppliedFilterIds) => {
+    const normalizedOrder: readonly Descriptors[number]["id"][] =
+      nextAppliedFilterIds;
+    void normalizedOrder;
+  },
+});
+const uncontrolledApplicationOrdering = {
+  descriptors,
+  orderPolicy: "application",
+} satisfies UseFiltersOptions<Descriptors>;
+void uncontrolledApplicationOrdering;
+
+function UseFiltersResultConsumer() {
+  const model = useFilters({ descriptors });
+  const appliedFilterIds: readonly Descriptors[number]["id"][] =
+    model.appliedFilterIds;
+  void appliedFilterIds;
+  return null;
+}
+void UseFiltersResultConsumer;
+
+// @ts-expect-error controlled application ordering requires caller-owned order
+useFilters({
+  descriptors,
+  states,
+  orderPolicy: "application",
+});
+
 declare const model: FiltersModel<Descriptors>;
 
 function FilterBarChromeConsumer() {
   return (
-    <FilterBar.Root
-      model={model}
-      config={{ addFilter: "Add condition", clearFilters: "Reset" }}
-    >
-      <FilterBar.Pills />
-      <FilterBar.AddButton />
-      <FilterBar.Clear />
-    </FilterBar.Root>
+    <>
+      <FilterBar.Root
+        model={model}
+        config={{ addFilter: "Add condition", clearFilters: "Reset" }}
+      >
+        <FilterBar.Pills />
+        <FilterBar.AddButton />
+        <FilterBar.Clear />
+      </FilterBar.Root>
+      <FilterBar.Root model={legacyStructuralModel}>
+        <FilterBar.Pills />
+      </FilterBar.Root>
+    </>
   );
 }
 void FilterBarChromeConsumer;

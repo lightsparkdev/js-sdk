@@ -15,6 +15,7 @@ export type {
   FiltersModel,
   UpdateFilter,
   UseFiltersOptions,
+  UseFiltersResult,
 } from "./useFilters";
 
 export type {
@@ -28,6 +29,7 @@ export type {
   FilterDescriptorForId,
   FilterDescriptorTuple,
   FilterId,
+  FilterOrderPolicy,
   FilterState,
   FilterStateForDescriptor,
   FilterStateForId,

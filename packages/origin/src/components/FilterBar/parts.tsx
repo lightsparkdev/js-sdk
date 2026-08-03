@@ -15,6 +15,7 @@ import styles from "./FilterBar.module.scss";
 import {
   getDateFilterDefaultRange,
   isEnumFilterOptionApplied,
+  resolveAppliedFilterIds,
   toEnumOptionValueArray,
   type DateFilterDescriptor,
   type DateFilterState,
@@ -59,6 +60,7 @@ const DEFAULT_CONFIG: FilterBarConfig = {
 interface ErasedFiltersModel {
   descriptors: FilterDescriptorTuple;
   states: Record<string, FilterState | undefined>;
+  appliedFilterIds: readonly string[];
   appliedCount: number;
   addFilter: (
     descriptor: FilterDescriptor<string>,
@@ -146,6 +148,9 @@ function Root<const TDescriptors extends FilterDescriptorTuple>({
       model: {
         descriptors: model.descriptors,
         states: model.states,
+        appliedFilterIds:
+          model.appliedFilterIds ??
+          resolveAppliedFilterIds(model.descriptors, model.states),
         appliedCount: model.appliedCount,
         addFilter: (descriptor, options) => {
           const ownedDescriptor = model.descriptors.find(
@@ -241,13 +246,13 @@ function Pill({ id }: PillProps) {
   );
 }
 
-/** All applied-filter pills, in descriptor order. */
+/** All applied-filter pills, in the model's resolved order. */
 function Pills() {
   const { model } = useFilterBarContext();
   return (
     <>
-      {model.descriptors.map((descriptor) => (
-        <Pill key={descriptor.id} id={descriptor.id} />
+      {model.appliedFilterIds.map((id) => (
+        <Pill key={id} id={id} />
       ))}
     </>
   );

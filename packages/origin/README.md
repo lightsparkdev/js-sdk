@@ -128,6 +128,29 @@ cp -r node_modules/@lightsparkdev/origin/public/fonts/ public/fonts/
 import { Button, Input, Field } from '@lightsparkdev/origin';
 ```
 
+### FilterBar Ordering
+
+FilterBar pills use descriptor order by default. Pass
+`orderPolicy: "application"` to `useFilters` for insertion order; controlled
+consumers pass `appliedFilterIds` and receive the normalized next order as the
+second `onStatesChange` argument.
+
+URL-backed integrations opt in once at their shared factory:
+
+```ts
+const useProductFilters = createUrlBackedFiltersHook({
+  useSearchParamsAdapter,
+  history: "push",
+  filterOrdering: {
+    searchParam: "_filterOrder",
+  },
+});
+```
+
+The consumer-named sidecar stores a JSON array of filter ids. Legacy URLs fall
+back to descriptor order; malformed, stale, unknown, and duplicate ids are
+ignored, and missing applied ids append in descriptor order.
+
 ### Advanced: SCSS Token Imports (Optional)
 
 If you need Origin mixins in your app SCSS files, configure Sass package imports:
