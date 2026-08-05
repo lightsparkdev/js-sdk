@@ -1,7 +1,3 @@
-export function lsidToUUID(lsid: string) {
-  return lsid.replace(/^[^:]+:(.*)$/, "$1");
-}
-
 // Unicode "other" characters (control, format, surrogate, private use,
 // unassigned), except the whitespace a text field can legitimately hold.
 const INVISIBLE_PATTERN = /[^\P{C}\n\r\t]/gu;
@@ -17,6 +13,9 @@ const EXOTIC_SPACE_PATTERN = /[^\P{Z} ]/gu;
  * form, in our logs, and in the database, and only fails much later when a
  * banking partner rejects the value. Exotic spaces become plain spaces so that
  * words stay separated.
+ *
+ * Duplicated from @lightsparkdev/core on purpose: Origin does not depend on
+ * other Lightspark packages.
  */
 export function stripNonPrintable(value: string) {
   return value
