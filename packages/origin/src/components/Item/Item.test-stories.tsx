@@ -54,6 +54,39 @@ export function ItemWithBothSlots() {
   );
 }
 
+// Sizes
+export function CompactItem() {
+  return (
+    <Item title="Payment received" description="2 minutes ago" size="compact" />
+  );
+}
+
+export function DefaultSizeItem() {
+  return <Item title="Payment received" description="2 minutes ago" />;
+}
+
+export function CompactItemWithLabel() {
+  return (
+    <Item
+      title="Jane Doe"
+      description="jane@example.com"
+      label={<Badge>Admin</Badge>}
+      size="compact"
+    />
+  );
+}
+
+export function CompactItemAsLink() {
+  return (
+    <Item
+      title="Payment received"
+      description="2 minutes ago"
+      size="compact"
+      render={<a href="#details" />}
+    />
+  );
+}
+
 // Clickable behavior
 export function ClickableItem() {
   const [clicked, setClicked] = React.useState(false);

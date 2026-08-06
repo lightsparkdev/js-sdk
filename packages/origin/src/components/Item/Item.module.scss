@@ -15,6 +15,23 @@
     opacity: calc(var(--opacity-50) / 100);
     pointer-events: none;
   }
+
+  &[data-size="compact"] {
+    padding-block: var(--spacing-xs);
+    padding-inline-start: var(--spacing-md);
+
+    .content {
+      gap: var(--spacing-px);
+    }
+
+    .title {
+      @include body;
+    }
+
+    .description {
+      @include body-sm;
+    }
+  }
 }
 
 .clickable {

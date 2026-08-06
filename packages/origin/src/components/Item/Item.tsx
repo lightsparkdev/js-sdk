@@ -4,6 +4,8 @@ import * as React from "react";
 import clsx from "clsx";
 import styles from "./Item.module.scss";
 
+export type ItemSize = "default" | "compact";
+
 export interface ItemProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
   title: string;
@@ -12,6 +14,8 @@ export interface ItemProps
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
   trailingPadding?: "sm" | "lg";
+  /** Item density — compact reduces padding and type scale for dense lists */
+  size?: ItemSize;
   clickable?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -27,6 +31,7 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
       leading,
       trailing,
       trailingPadding,
+      size = "default",
       clickable = true,
       selected,
       disabled,
@@ -54,6 +59,7 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     const itemProps = {
       ref: forwardedRef,
       className: clsx(styles.root, clickable && styles.clickable, className),
+      "data-size": size !== "default" ? size : undefined,
       "data-clickable": clickable ? undefined : "false",
       "data-selected": selected || undefined,
       "data-disabled": disabled || undefined,

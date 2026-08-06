@@ -319,7 +319,7 @@ export type { CentralIconName, CentralIconProps } from "./components/Icon";
 
 export { Input, type InputProps } from "./components/Input";
 
-export { Item, type ItemProps } from "./components/Item";
+export { Item, type ItemProps, type ItemSize } from "./components/Item";
 
 export { Logo } from "./components/Logo";
 export type { LogoProps } from "./components/Logo";
