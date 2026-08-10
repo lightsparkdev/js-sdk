@@ -116,6 +116,9 @@ export const RadioItem = React.forwardRef<HTMLSpanElement, RadioItemProps>(
     return (
       <BaseRadio.Root
         ref={ref}
+        // See the Checkbox.Item note: span-rooted controls must opt out of
+        // drawer/toast swipe gestures or they swallow the click.
+        data-base-ui-swipe-ignore=""
         value={value}
         disabled={disabled}
         className={clsx(

@@ -6,6 +6,7 @@ import {
   TestRadioDisabledItem,
   TestRadioCard,
   TestRadioCritical,
+  TestRadioInDrawer,
 } from "./Radio.test-stories";
 
 test.describe("Radio", () => {
@@ -147,5 +148,15 @@ test.describe("Radio", () => {
       // Field.Root sets aria-invalid when invalid prop is true
       await expect(field).toHaveAttribute("data-invalid", "");
     });
+  });
+
+  // A drawer's swipe-to-dismiss gesture captures the pointer, which drops the
+  // click before it reaches a span-rooted control (data-base-ui-swipe-ignore).
+  test("selects inside a drawer", async ({ mount, page }) => {
+    await mount(<TestRadioInDrawer />);
+
+    await page.getByRole("radio", { name: "Option 2" }).click();
+
+    await expect(page.getByTestId("selected-value")).toHaveText("opt2");
   });
 });

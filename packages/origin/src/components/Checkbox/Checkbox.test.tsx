@@ -10,6 +10,7 @@ import {
   TestCheckboxReadOnly,
   TestCheckboxRequired,
   TestCheckboxName,
+  TestCheckboxInDrawer,
 } from "./Checkbox.test-stories";
 
 test.describe("Checkbox", () => {
@@ -158,5 +159,17 @@ test.describe("Checkbox", () => {
 
     const checkbox = page.getByRole("checkbox", { name: "With Name" });
     await expect(checkbox).toBeChecked();
+  });
+
+  // A drawer's swipe-to-dismiss gesture captures the pointer, which drops the
+  // click before it reaches a span-rooted control (data-base-ui-swipe-ignore).
+  test("toggles inside a drawer", async ({ mount, page }) => {
+    await mount(<TestCheckboxInDrawer />);
+
+    const option = page.getByRole("checkbox", { name: "Option 2" });
+    await option.click();
+
+    await expect(option).toBeChecked();
+    await expect(page.getByTestId("selected-values")).toHaveText("option2");
   });
 });
