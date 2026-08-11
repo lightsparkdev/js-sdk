@@ -62,7 +62,7 @@ describe("passkey/oauth verify adapts to either login session model", () => {
       reporter,
       auth,
       "cred-1",
-      kp.publicKeyUncompressed,
+      kp.publicKey,
       assertion,
       "req-1",
     );
@@ -81,16 +81,16 @@ describe("passkey/oauth verify adapts to either login session model", () => {
       reporter,
       auth,
       "cred-1",
-      kp.publicKeyUncompressed,
+      kp.publicKey,
       assertion,
       "req-1",
     );
 
-    // Client-held key: the uncompressed key we sent is what Turnkey registered,
+    // Client-held key: the compressed key we sent is what Turnkey registered,
     // so that is what later stamps must present.
     expect(getSessionModel()).toBe("otp-tek");
     expect(resolveSessionKeys()).toEqual({
-      apiPublicKey: kp.publicKeyUncompressed,
+      apiPublicKey: kp.publicKey,
       apiPrivateKey: kp.privateKey,
     });
   });
@@ -100,13 +100,7 @@ describe("passkey/oauth verify adapts to either login session model", () => {
     const kp = generateClientKeyPair();
     mockPost.mockResolvedValue(verifyResponse("bundle-from-verify"));
 
-    await runOauthVerify(
-      reporter,
-      auth,
-      "cred-2",
-      "oidc-token",
-      kp.publicKeyUncompressed,
-    );
+    await runOauthVerify(reporter, auth, "cred-2", "oidc-token", kp.publicKey);
 
     expect(getSessionModel()).toBe("verify-bundle");
     expect(hasSessionSigningKey()).toBe(true);
@@ -117,17 +111,11 @@ describe("passkey/oauth verify adapts to either login session model", () => {
     const kp = generateClientKeyPair();
     mockPost.mockResolvedValue(verifyResponse());
 
-    await runOauthVerify(
-      reporter,
-      auth,
-      "cred-2",
-      "oidc-token",
-      kp.publicKeyUncompressed,
-    );
+    await runOauthVerify(reporter, auth, "cred-2", "oidc-token", kp.publicKey);
 
     expect(getSessionModel()).toBe("otp-tek");
     expect(resolveSessionKeys()).toEqual({
-      apiPublicKey: kp.publicKeyUncompressed,
+      apiPublicKey: kp.publicKey,
       apiPrivateKey: kp.privateKey,
     });
   });

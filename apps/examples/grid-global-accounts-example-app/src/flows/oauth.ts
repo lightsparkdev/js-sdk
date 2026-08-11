@@ -56,14 +56,11 @@ export async function loginOauth(
 ): Promise<OauthLoginResult> {
   if (!oidc.trim()) throw new Error("OIDC token is required.");
   const kp = generateClientKeyPair();
-  const data = await runOauthVerify(
-    reporter,
-    auth,
-    credId,
-    oidc,
-    kp.publicKeyUncompressed,
-  );
-  return { data, clientPublicKey: kp.publicKeyUncompressed };
+  // Send the compressed public key: under the login-family knob Grid registers
+  // this as the OAUTH_LOGIN session API key, and Turnkey stores/matches session
+  // API keys compressed — an uncompressed key 401s on the first session stamp.
+  const data = await runOauthVerify(reporter, auth, credId, oidc, kp.publicKey);
+  return { data, clientPublicKey: kp.publicKey };
 }
 
 // ----- Sign-in entry point (create-vs-authenticate) -----

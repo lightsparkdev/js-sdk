@@ -202,11 +202,14 @@ export async function loginPasskey(
   params: PasskeyLoginParams,
 ): Promise<PasskeyLoginResult> {
   const kp = generateClientKeyPair();
+  // Send the compressed public key: under the login-family knob Grid registers
+  // this as the STAMP_LOGIN session API key, and Turnkey stores/matches session
+  // API keys compressed — an uncompressed key 401s on the first session stamp.
   const { requestId, challenge } = await requestPasskeyChallenge(
     reporter,
     auth,
     params.credId,
-    kp.publicKeyUncompressed,
+    kp.publicKey,
   );
 
   let assertion: PasskeyAssertion;
@@ -233,11 +236,11 @@ export async function loginPasskey(
     reporter,
     auth,
     params.credId,
-    kp.publicKeyUncompressed,
+    kp.publicKey,
     assertion,
     requestId,
   );
-  return { data, clientPublicKey: kp.publicKeyUncompressed, assertion };
+  return { data, clientPublicKey: kp.publicKey, assertion };
 }
 
 // ----- Sign-in entry point (create-vs-authenticate) -----

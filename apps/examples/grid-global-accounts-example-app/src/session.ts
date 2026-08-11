@@ -165,7 +165,7 @@ export function setSessionKeysFromTek(tek: {
 // flow just sent as the session's own API key — so the keypair behind it *is*
 // the session key, exactly like the OTP TEK.
 //
-// The uncompressed public key is what gets cached, because that is the exact
+// The compressed public key is what gets cached, because that is the exact
 // string sent as `clientPublicKey` and therefore the encoding Grid registered
 // with Turnkey; later stamps are matched against the registered key. Requiring
 // it to match the held keypair keeps a keypair from an earlier login from being
@@ -182,9 +182,9 @@ export function setSessionKeysFromVerify(
     return;
   }
   const kp = active()?.clientKeyPair;
-  if (!kp || kp.publicKeyUncompressed !== clientPublicKey) return;
+  if (!kp || kp.publicKey !== clientPublicKey) return;
   setSessionKeysFromTek({
-    publicKey: kp.publicKeyUncompressed,
+    publicKey: kp.publicKey,
     privateKey: kp.privateKey,
   });
 }
