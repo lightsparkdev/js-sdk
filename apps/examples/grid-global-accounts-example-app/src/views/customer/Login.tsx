@@ -6,10 +6,16 @@ import {
   Card,
   Field,
   Input,
+  Tabs,
 } from "@lightsparkdev/origin";
 import { useCallback, useEffect, useState } from "react";
 
 import { sandboxMagicFor } from "../../mode";
+import {
+  persistLoginKeyEncoding,
+  readLoginKeyEncoding,
+} from "../../login-key-encoding";
+import type { LoginKeyEncoding } from "../../config";
 import { DismissibleAlert } from "../../components/DismissibleAlert";
 import { useAppState } from "../../state/store";
 import { addEmailOtpIssue, addEmailOtpRetry } from "../../flows/email-otp";
@@ -169,6 +175,8 @@ export function Login() {
           </Note>
         )}
 
+        <LoginKeyEncodingField />
+
         {/* 1. Existing credentials → per-credential sign-in. */}
         {!empty && (
           <Section>
@@ -222,6 +230,43 @@ export function Login() {
         />
       </Card.Body>
     </Card.Root>
+  );
+}
+
+/**
+ * Segmented control that flips which SEC1 encoding of the client session key the
+ * OAuth/passkey sign-in flows send. Seeded from and persisted to the same
+ * localStorage flag `flows/*` read at login call-time, so a flip takes effect on
+ * the next sign-in with no reload. Built on Origin's Tabs to match the Mode
+ * picker idiom.
+ */
+function LoginKeyEncodingField() {
+  const [encoding, setEncoding] = useState<LoginKeyEncoding>(
+    readLoginKeyEncoding(),
+  );
+
+  function select(value: string) {
+    const next: LoginKeyEncoding = value === "legacy" ? "legacy" : "modern";
+    setEncoding(next);
+    persistLoginKeyEncoding(next);
+  }
+
+  return (
+    <Section>
+      <Field.Root>
+        <Field.Label>Login session key</Field.Label>
+        <Tabs.Root value={encoding} onValueChange={select}>
+          <Tabs.List variant="default">
+            <Tabs.Tab value="modern">Modern</Tabs.Tab>
+            <Tabs.Tab value="legacy">Legacy</Tabs.Tab>
+          </Tabs.List>
+        </Tabs.Root>
+        <Field.Description>
+          Which client key OAuth/passkey sign-in registers: modern (compressed,
+          client-held session key) or legacy (uncompressed, server HPKE bundle).
+        </Field.Description>
+      </Field.Root>
+    </Section>
   );
 }
 

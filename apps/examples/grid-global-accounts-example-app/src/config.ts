@@ -3,6 +3,12 @@
 export type Mode = "sandbox" | "production";
 export type CredType = "email_otp" | "oauth" | "passkey";
 
+// Which SEC1 encoding of the client public key passkey/oauth login sends as
+// `clientPublicKey`. The Grid backend dispatches the login model off this
+// encoding: "modern" (compressed) registers a client-held session key, "legacy"
+// (uncompressed) routes to the server HPKE-bundle model. Defaults to "modern".
+export type LoginKeyEncoding = "modern" | "legacy";
+
 // Sandbox magic signature injected into signed-retry headers and the execute
 // signature. In production these are wrong — a real stamp must be supplied.
 export const SANDBOX_SIG = "sandbox-valid-signature";
@@ -17,6 +23,13 @@ export const TURNKEY_STAMP_SCHEME = "SIGNATURE_SCHEME_TK_API_P256";
 // `localStorage` key for the persisted mode so a reload keeps the chosen mode
 // instead of silently reverting to sandbox.
 export const MODE_STORAGE_KEY = "gga-example-app-mode";
+
+// `localStorage` key for the persisted login key encoding (legacy vs modern),
+// backing the "Login session key" toggle on the customer Login screen so a
+// tester can flip which login path the app exercises and have it survive a
+// reload. Defaults to "modern" when unset.
+export const LOGIN_KEY_ENCODING_STORAGE_KEY =
+  "gga-example-app-login-key-encoding";
 
 // ----- Sandbox magic values -----
 //

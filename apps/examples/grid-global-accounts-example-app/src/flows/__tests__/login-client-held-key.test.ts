@@ -120,6 +120,28 @@ describe("passkey/oauth verify adapts to either login session model", () => {
     });
   });
 
+  it("adopts the uncompressed (legacy) key when a bundle-less verify sent it", async () => {
+    const { reporter } = createCollectingReporter();
+    const kp = generateClientKeyPair();
+    mockPost.mockResolvedValue(verifyResponse());
+
+    // The legacy toggle sends the uncompressed key; a bundle-less verify still
+    // adopts it, cached in the exact encoding that was sent.
+    await runOauthVerify(
+      reporter,
+      auth,
+      "cred-2",
+      "oidc-token",
+      kp.publicKeyUncompressed,
+    );
+
+    expect(getSessionModel()).toBe("otp-tek");
+    expect(resolveSessionKeys()).toEqual({
+      apiPublicKey: kp.publicKeyUncompressed,
+      apiPrivateKey: kp.privateKey,
+    });
+  });
+
   it("leaves the session keyless when a bundle-less verify used a foreign client key", async () => {
     const { reporter } = createCollectingReporter();
     generateClientKeyPair();

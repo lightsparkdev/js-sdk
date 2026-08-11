@@ -9,6 +9,7 @@ import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair } from "../turnkey";
 import { setSessionKeysFromVerify } from "../session";
+import { loginClientPublicKey } from "../login-key-encoding";
 import { setCtxCredential, setCtxSession } from "./context";
 
 // Run /verify with the OIDC token + client public key, adopting whichever
@@ -56,11 +57,19 @@ export async function loginOauth(
 ): Promise<OauthLoginResult> {
   if (!oidc.trim()) throw new Error("OIDC token is required.");
   const kp = generateClientKeyPair();
-  // Send the compressed public key: under the login-family knob Grid registers
-  // this as the OAUTH_LOGIN session API key, and Turnkey stores/matches session
-  // API keys compressed — an uncompressed key 401s on the first session stamp.
-  const data = await runOauthVerify(reporter, auth, credId, oidc, kp.publicKey);
-  return { data, clientPublicKey: kp.publicKey };
+  // Encoding of the key Grid registers as the OAUTH_LOGIN session API key, per
+  // the legacy-vs-modern toggle. Modern (compressed) is the default: Turnkey
+  // stores/matches session API keys compressed, so the uncompressed legacy key
+  // takes the server HPKE-bundle path instead.
+  const clientPublicKey = loginClientPublicKey(kp);
+  const data = await runOauthVerify(
+    reporter,
+    auth,
+    credId,
+    oidc,
+    clientPublicKey,
+  );
+  return { data, clientPublicKey };
 }
 
 // ----- Sign-in entry point (create-vs-authenticate) -----

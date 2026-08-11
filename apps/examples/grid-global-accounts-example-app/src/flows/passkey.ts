@@ -11,6 +11,7 @@ import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
 import { setSessionKeysFromVerify } from "../session";
+import { loginClientPublicKey } from "../login-key-encoding";
 import { rememberRawCredentialId } from "../passkey-store";
 import {
   createRealPasskey,
@@ -202,14 +203,16 @@ export async function loginPasskey(
   params: PasskeyLoginParams,
 ): Promise<PasskeyLoginResult> {
   const kp = generateClientKeyPair();
-  // Send the compressed public key: under the login-family knob Grid registers
-  // this as the STAMP_LOGIN session API key, and Turnkey stores/matches session
-  // API keys compressed — an uncompressed key 401s on the first session stamp.
+  // Encoding of the key Grid registers as the STAMP_LOGIN session API key, per
+  // the legacy-vs-modern toggle. Modern (compressed) is the default: Turnkey
+  // stores/matches session API keys compressed, so the uncompressed legacy key
+  // takes the server HPKE-bundle path instead.
+  const clientPublicKey = loginClientPublicKey(kp);
   const { requestId, challenge } = await requestPasskeyChallenge(
     reporter,
     auth,
     params.credId,
-    kp.publicKey,
+    clientPublicKey,
   );
 
   let assertion: PasskeyAssertion;
@@ -236,11 +239,11 @@ export async function loginPasskey(
     reporter,
     auth,
     params.credId,
-    kp.publicKey,
+    clientPublicKey,
     assertion,
     requestId,
   );
-  return { data, clientPublicKey: kp.publicKey, assertion };
+  return { data, clientPublicKey, assertion };
 }
 
 // ----- Sign-in entry point (create-vs-authenticate) -----
