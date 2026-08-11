@@ -10,7 +10,7 @@ import { SANDBOX_SIG, type Mode } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
-import { rememberEncryptedSessionSigningKey } from "../session";
+import { setSessionKeysFromVerify } from "../session";
 import { rememberRawCredentialId } from "../passkey-store";
 import {
   createRealPasskey,
@@ -117,8 +117,8 @@ export async function requestPasskeyChallenge(
   return { data, requestId, challenge };
 }
 
-// Run /verify with the supplied assertion, caching the session bundle on
-// success. Shared by guided login + the manual verify path.
+// Run /verify with the supplied assertion, adopting whichever session signing
+// key the response carries. Shared by guided login + the manual verify path.
 export async function runPasskeyVerify(
   reporter: Reporter,
   auth: ApiAuth,
@@ -148,12 +148,11 @@ export async function runPasskeyVerify(
   reporter.log({ level: "response", label: "PASSKEY Verify", detail: data });
   const d = data as Record<string, unknown>;
   if (d.id) setCtxSession(d.id as string);
-  // MIGRATION (P6): PASSKEY login moves to STAMP_LOGIN; the knob-ON response
-  // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
-  // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
-  // `rememberEncryptedSessionSigningKey` already no-ops when the field is
-  // absent — flip this one call once the P2 wire shape settles.
-  rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
+  // Legacy CREATE_READ_WRITE_SESSION returns the bundle; STAMP_LOGIN (the
+  // login-family knob ON) returns a session JWT only and the client keypair
+  // behind `body.clientPublicKey` is the session key. Pass the key exactly as
+  // sent so the cached session key is the one Turnkey registered.
+  setSessionKeysFromVerify(d.encryptedSessionSigningKey, body.clientPublicKey);
   return data;
 }
 

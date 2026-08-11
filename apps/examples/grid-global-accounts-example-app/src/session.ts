@@ -6,8 +6,13 @@
 // session models still funnel through here:
 //   - "Verify-bundle": a client keypair + an `encryptedSessionSigningKey`
 //     bundle Grid returns on passkey/oauth Verify, HPKE-decrypted on demand.
-//   - "OTP-TEK": the TEK private key *is* the session key (OTP login, and —
-//     post-migration — passkey/oauth too); cached directly, no bundle.
+//   - "OTP-TEK" (client-held key): the TEK private key *is* the session key
+//     (OTP login always, and passkey/oauth once the login-family knob is ON);
+//     cached directly, no bundle.
+//
+// Which model a passkey/oauth login lands in is the server's choice, so
+// `setSessionKeysFromVerify` decides it from the response shape rather than the
+// flows knowing anything about the knob.
 //
 // Sessions are PER-CUSTOMER, keyed by the customer's wallet account id (the
 // natural session domain). A `Map<accountId, SessionContext>` holds one context
@@ -31,6 +36,8 @@ export interface SessionKeys {
 }
 
 // Which model established the current signing key, for the chip badge.
+// "otp-tek" is the client-held-key model: named for OTP, which established it
+// first, but shared by every login-family flow (OTP / passkey / oauth).
 export type SessionModel = "none" | "otp-tek" | "verify-bundle";
 
 // All the per-customer session material, grouped so each account key owns an
@@ -118,10 +125,6 @@ export function getClientKeyPair(): ClientKeyPair | null {
 }
 
 export function rememberEncryptedSessionSigningKey(value: unknown): void {
-  // MIGRATION (P6): once the login-family knob is ON, passkey/oauth Verify drop
-  // `encryptedSessionSigningKey` and behave like OTP (the client key is the
-  // session key). Shape-detection on field-presence already no-ops here when
-  // the field is absent, so both knob states work unchanged.
   const ctx = active();
   if (!ctx) return;
   if (typeof value === "string" && value) {
@@ -150,6 +153,40 @@ export function setSessionKeysFromTek(tek: {
   };
   ctx.model = "otp-tek";
   notify();
+}
+
+// Adopt the signing key from a passkey/oauth Verify response, whichever session
+// model the server used.
+//
+// The login-family knob picks the model per flow and the app has to work under
+// both, so branch on field presence: a returned `encryptedSessionSigningKey` is
+// the legacy bundle (decrypted on demand under the client keypair), and its
+// absence means STAMP_LOGIN / OAUTH_LOGIN registered the `clientPublicKey` the
+// flow just sent as the session's own API key — so the keypair behind it *is*
+// the session key, exactly like the OTP TEK.
+//
+// The uncompressed public key is what gets cached, because that is the exact
+// string sent as `clientPublicKey` and therefore the encoding Grid registered
+// with Turnkey; later stamps are matched against the registered key. Requiring
+// it to match the held keypair keeps a keypair from an earlier login from being
+// adopted as this session's key.
+export function setSessionKeysFromVerify(
+  encryptedSessionSigningKey: unknown,
+  clientPublicKey: string,
+): void {
+  if (
+    typeof encryptedSessionSigningKey === "string" &&
+    encryptedSessionSigningKey
+  ) {
+    rememberEncryptedSessionSigningKey(encryptedSessionSigningKey);
+    return;
+  }
+  const kp = active()?.clientKeyPair;
+  if (!kp || kp.publicKeyUncompressed !== clientPublicKey) return;
+  setSessionKeysFromTek({
+    publicKey: kp.publicKeyUncompressed,
+    privateKey: kp.privateKey,
+  });
 }
 
 // Resolve the session signing keys, decrypting the Verify bundle on demand.

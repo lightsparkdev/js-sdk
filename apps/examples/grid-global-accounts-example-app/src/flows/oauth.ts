@@ -8,11 +8,12 @@ import { SANDBOX_SIG } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair } from "../turnkey";
-import { rememberEncryptedSessionSigningKey } from "../session";
+import { setSessionKeysFromVerify } from "../session";
 import { setCtxCredential, setCtxSession } from "./context";
 
-// Run /verify with the OIDC token + client public key, caching the session
-// bundle on success. Shared by the guided login and the manual verify path.
+// Run /verify with the OIDC token + client public key, adopting whichever
+// session signing key the response carries. Shared by the guided login and the
+// manual verify path.
 export async function runOauthVerify(
   reporter: Reporter,
   auth: ApiAuth,
@@ -22,20 +23,20 @@ export async function runOauthVerify(
 ): Promise<unknown> {
   if (!oidc.trim()) throw new Error("OIDC token is required.");
   if (!pubkey.trim()) throw new Error("Client public key is required.");
+  const clientPublicKey = pubkey.trim();
   const { data } = await apiPost(
     auth,
     `/auth/credentials/${encodeURIComponent(credId)}/verify`,
-    { type: "OAUTH", oidcToken: oidc.trim(), clientPublicKey: pubkey.trim() },
+    { type: "OAUTH", oidcToken: oidc.trim(), clientPublicKey },
   );
   reporter.log({ level: "response", label: "OAUTH Verify", detail: data });
   const d = data as Record<string, unknown>;
   if (d.id) setCtxSession(d.id as string);
-  // MIGRATION (P6): OAUTH login moves to OAUTH_LOGIN; the knob-ON response
-  // drops `encryptedSessionSigningKey`, so this becomes the OTP-style
-  // `setSessionKeysFromTek(clientKeyPair)` path. The shape-detection in
-  // `rememberEncryptedSessionSigningKey` already no-ops when the field is
-  // absent — flip this one call once the P3 wire shape settles.
-  rememberEncryptedSessionSigningKey(d.encryptedSessionSigningKey);
+  // Legacy ACTIVITY_TYPE_OAUTH returns the bundle; OAUTH_LOGIN (the
+  // login-family knob ON) returns a session JWT only and the client keypair
+  // behind `clientPublicKey` is the session key. Pass the key exactly as sent
+  // so the cached session key is the one Turnkey registered.
+  setSessionKeysFromVerify(d.encryptedSessionSigningKey, clientPublicKey);
   return data;
 }
 
@@ -46,7 +47,7 @@ export interface OauthLoginResult {
 }
 
 // Guided log in: gen client key → /verify with OIDC token + clientPublicKey →
-// remember the session bundle.
+// adopt the session signing key.
 export async function loginOauth(
   reporter: Reporter,
   auth: ApiAuth,
