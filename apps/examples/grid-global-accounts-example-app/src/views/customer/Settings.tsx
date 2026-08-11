@@ -3,6 +3,8 @@ import { Alert, Badge, Button, Card } from "@lightsparkdev/origin";
 import { useCallback, useEffect, useState } from "react";
 
 import { sandboxMagicFor } from "../../mode";
+import { GOOGLE_OAUTH_CLIENT_ID } from "../../config";
+import { requestGoogleIdToken } from "../../google-identity";
 import { addOauthIssue, addOauthRetry } from "../../flows/oauth";
 import {
   addPasskeyIssue,
@@ -169,7 +171,7 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
       "add-oauth",
       async () => {
         const oidc = sandboxMagicFor("oauth-add-oidc") ?? "";
-        const { requestId } = await addOauthIssue(
+        const { requestId, payloadToSign } = await addOauthIssue(
           reporter,
           platformAuth!,
           accountId,
@@ -182,9 +184,37 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
           accountId,
           oidc,
           requestId,
+          payloadToSign,
         );
       },
       "OAuth credential added.",
+    );
+  }
+
+  async function addOauthGoogle() {
+    await run(
+      "add-oauth-google",
+      async () => {
+        // The 202 add registers the provider from the token's iss/aud; unlike
+        // login/verify it needs no session-key nonce, so request without one.
+        const oidc = await requestGoogleIdToken(GOOGLE_OAUTH_CLIENT_ID);
+        const { requestId, payloadToSign } = await addOauthIssue(
+          reporter,
+          platformAuth!,
+          accountId,
+          oidc,
+        );
+        if (!requestId) throw new Error("Add OAuth: no requestId in the 202.");
+        return addOauthRetry(
+          reporter,
+          platformAuth!,
+          accountId,
+          oidc,
+          requestId,
+          payloadToSign,
+        );
+      },
+      "OAuth credential added via Google.",
     );
   }
 
@@ -285,6 +315,16 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
               >
                 Add OAuth
               </Button>
+              {GOOGLE_OAUTH_CLIENT_ID && (
+                <Button
+                  variant="outline"
+                  size="compact"
+                  loading={busy === "add-oauth-google"}
+                  onClick={() => void addOauthGoogle()}
+                >
+                  Add OAuth with Google
+                </Button>
+              )}
             </Actions>
           </HeaderLayout>
         </Card.Header>

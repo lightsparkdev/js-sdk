@@ -20,6 +20,11 @@ export const API_BASE = "/api";
 // Turnkey API stamp scheme — must match what `@turnkey/api-key-stamper` emits.
 export const TURNKEY_STAMP_SCHEME = "SIGNATURE_SCHEME_TK_API_P256";
 
+// Google OAuth Web client ID for "Sign in with Google" (public — no secret).
+// Supply your own via VITE_GOOGLE_CLIENT_ID; empty hides the button.
+export const GOOGLE_OAUTH_CLIENT_ID: string =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+
 // `localStorage` key for the persisted mode so a reload keeps the chosen mode
 // instead of silently reverting to sandbox.
 export const MODE_STORAGE_KEY = "gga-example-app-mode";

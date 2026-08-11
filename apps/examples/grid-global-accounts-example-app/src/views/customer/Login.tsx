@@ -15,11 +15,21 @@ import {
   persistLoginKeyEncoding,
   readLoginKeyEncoding,
 } from "../../login-key-encoding";
-import type { LoginKeyEncoding } from "../../config";
+import { GOOGLE_OAUTH_CLIENT_ID, type LoginKeyEncoding } from "../../config";
 import { DismissibleAlert } from "../../components/DismissibleAlert";
 import { useAppState } from "../../state/store";
+import { generateClientKeyPair } from "../../turnkey";
+import {
+  oidcNonceForPublicKey,
+  requestGoogleIdToken,
+} from "../../google-identity";
 import { addEmailOtpIssue, addEmailOtpRetry } from "../../flows/email-otp";
-import { addOauthIssue, addOauthRetry, signInOauth } from "../../flows/oauth";
+import {
+  addOauthIssue,
+  addOauthRetry,
+  runOauthVerify,
+  signInOauth,
+} from "../../flows/oauth";
 import {
   addPasskeyIssue,
   addPasskeyRetry,
@@ -491,6 +501,72 @@ function EmailOtpSignIn({
   );
 }
 
+/** One-click Google LOGIN against an existing OAuth credential: bind the OIDC
+ *  nonce to the compressed session key, fetch a Google id_token, verify. */
+function GoogleSignIn({
+  credId,
+  onChanged,
+}: {
+  credId: string;
+  onChanged: () => Promise<void> | void;
+}) {
+  const { busy, error, setError, run, reporter, platformAuth } =
+    useLoginAction();
+
+  if (!GOOGLE_OAUTH_CLIENT_ID) {
+    return (
+      <MutedRow>
+        Set <Mono>VITE_GOOGLE_CLIENT_ID</Mono> to enable one-click Google
+        sign-in.
+      </MutedRow>
+    );
+  }
+
+  async function submit() {
+    await run(async () => {
+      // Google is modern-only: the enclave binds the nonce to the COMPRESSED
+      // session key, so send that regardless of the legacy/modern toggle.
+      const kp = generateClientKeyPair();
+      const clientPublicKey = kp.publicKey;
+      const nonce = await oidcNonceForPublicKey(clientPublicKey);
+      const oidcToken = await requestGoogleIdToken(
+        GOOGLE_OAUTH_CLIENT_ID,
+        nonce,
+      );
+      const data = await runOauthVerify(
+        reporter,
+        platformAuth!,
+        credId,
+        oidcToken,
+        clientPublicKey,
+      );
+      await onChanged();
+      return data;
+    });
+  }
+
+  return (
+    <GoogleBlock>
+      {error && (
+        <DismissibleAlert
+          variant="critical"
+          title="Couldn't sign in with Google"
+          description={error}
+          onClose={() => setError(null)}
+        />
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        loading={busy}
+        onClick={() => void submit()}
+      >
+        Sign in with Google
+      </Button>
+    </GoogleBlock>
+  );
+}
+
 function OauthSignIn({
   accountId,
   credential,
@@ -524,42 +600,45 @@ function OauthSignIn({
   }
 
   return (
-    <Form
-      onSubmit={(e) => {
-        e.preventDefault();
-        void submit();
-      }}
-    >
-      {error && (
-        <DismissibleAlert
-          variant="critical"
-          title="Couldn't sign in"
-          description={error}
-          onClose={() => setError(null)}
-        />
-      )}
-      <Lede>
-        Paste the provider's OpenID Connect ID token; Grid verifies it against
-        this credential and issues a session.
-      </Lede>
-      <Field.Root>
-        <Field.Label>OIDC ID token</Field.Label>
-        <Input
-          value={oidc}
-          placeholder="eyJhbGciOiJSUzI1Ni…"
-          autoComplete="off"
-          onChange={(e) => setOidc(e.target.value)}
-        />
-        {sandbox && (
-          <Field.Description>
-            Pre-filled with a sandbox magic token.
-          </Field.Description>
+    <OauthOptions>
+      <GoogleSignIn credId={credential.id} onChanged={onChanged} />
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit();
+        }}
+      >
+        {error && (
+          <DismissibleAlert
+            variant="critical"
+            title="Couldn't sign in"
+            description={error}
+            onClose={() => setError(null)}
+          />
         )}
-      </Field.Root>
-      <Button type="submit" variant="filled" loading={busy}>
-        Sign in with OAuth
-      </Button>
-    </Form>
+        <Lede>
+          Or paste the provider's OpenID Connect ID token; Grid verifies it
+          against this credential and issues a session.
+        </Lede>
+        <Field.Root>
+          <Field.Label>OIDC ID token</Field.Label>
+          <Input
+            value={oidc}
+            placeholder="eyJhbGciOiJSUzI1Ni…"
+            autoComplete="off"
+            onChange={(e) => setOidc(e.target.value)}
+          />
+          {sandbox && (
+            <Field.Description>
+              Pre-filled with a sandbox magic token.
+            </Field.Description>
+          )}
+        </Field.Root>
+        <Button type="submit" variant="filled" loading={busy}>
+          Sign in with OAuth
+        </Button>
+      </Form>
+    </OauthOptions>
   );
 }
 
@@ -769,7 +848,7 @@ function AddMethods({
       "add-oauth",
       async () => {
         const oidc = sandboxMagicFor("oauth-add-oidc") ?? "";
-        const { requestId } = await addOauthIssue(
+        const { requestId, payloadToSign } = await addOauthIssue(
           reporter,
           platformAuth!,
           accountId!,
@@ -782,6 +861,7 @@ function AddMethods({
           accountId!,
           oidc,
           requestId,
+          payloadToSign,
         );
       },
       "OAuth credential added.",
@@ -975,6 +1055,19 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md, 16px);
+`;
+
+const OauthOptions = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+`;
+
+const GoogleBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 12px);
 `;
 
 const Actions = styled.div`

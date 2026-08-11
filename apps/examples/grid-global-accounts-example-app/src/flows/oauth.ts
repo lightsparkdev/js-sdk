@@ -7,7 +7,7 @@
 import { SANDBOX_SIG } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
-import { generateClientKeyPair } from "../turnkey";
+import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
 import { setSessionKeysFromVerify } from "../session";
 import { loginClientPublicKey } from "../login-key-encoding";
 import { setCtxCredential, setCtxSession } from "./context";
@@ -118,7 +118,11 @@ export async function addOauthIssue(
   auth: ApiAuth,
   accountId: string,
   oidc: string,
-): Promise<{ data: unknown; requestId: string | undefined }> {
+): Promise<{
+  data: unknown;
+  requestId: string | undefined;
+  payloadToSign: string | undefined;
+}> {
   if (!oidc.trim()) throw new Error("OIDC token is required.");
   const { data } = await apiPost(auth, "/auth/credentials", {
     type: "OAUTH",
@@ -128,7 +132,9 @@ export async function addOauthIssue(
   reporter.log({ level: "response", label: "OAUTH Add (issue)", detail: data });
   const d = data as Record<string, unknown>;
   const requestId = typeof d.requestId === "string" ? d.requestId : undefined;
-  return { data, requestId };
+  const payloadToSign =
+    typeof d.payloadToSign === "string" ? d.payloadToSign : undefined;
+  return { data, requestId, payloadToSign };
 }
 
 export async function addOauthRetry(
@@ -137,14 +143,23 @@ export async function addOauthRetry(
   accountId: string,
   oidc: string,
   requestId: string,
+  payloadToSign: string | undefined,
 ): Promise<unknown> {
   if (!requestId.trim())
     throw new Error("Request-Id is required — run the issue step first.");
+  // Real Turnkey requires the CREATE_OAUTH_PROVIDERS payload to be stamped by
+  // the active session's signing key; sandbox accepts the magic value.
+  let signature = SANDBOX_SIG;
+  if (auth.mode === "production") {
+    if (!payloadToSign)
+      throw new Error("Missing payloadToSign — run the issue step first.");
+    signature = await turnkeyStamp(payloadToSign);
+  }
   const { data } = await apiPost(
     auth,
     "/auth/credentials",
     { type: "OAUTH", accountId, oidcToken: oidc.trim() },
-    { "Grid-Wallet-Signature": SANDBOX_SIG, "Request-Id": requestId.trim() },
+    { "Grid-Wallet-Signature": signature, "Request-Id": requestId.trim() },
   );
   reporter.log({ level: "response", label: "OAUTH Add (retry)", detail: data });
   return data;
