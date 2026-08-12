@@ -205,6 +205,20 @@ export { Skeleton } from "./components/Skeleton";
 export { Table } from "./components/Table";
 export { Tabs } from "./components/Tabs";
 export { Toast } from "./components/Toast";
+export type {
+  ToastActionProps,
+  ToastCloseProps,
+  ToastContentProps,
+  ToastDescriptionProps,
+  ToastIconProps,
+  ToastLayout,
+  ToastPortalProps,
+  ToastProviderProps,
+  ToastRootProps,
+  ToastTitleProps,
+  ToastVariant,
+  ToastViewportProps,
+} from "./components/Toast";
 export { Tooltip } from "./components/Tooltip";
 export { Popover } from "./components/Popover";
 export { PreviewCard } from "./components/PreviewCard";

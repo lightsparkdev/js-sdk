@@ -3,6 +3,7 @@ import * as Toast from "./parts";
 export { Toast };
 
 export type {
+  ToastLayout,
   ToastVariant,
   ProviderProps as ToastProviderProps,
   PortalProps as ToastPortalProps,
