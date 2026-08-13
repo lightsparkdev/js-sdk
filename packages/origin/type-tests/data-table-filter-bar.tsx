@@ -17,6 +17,8 @@ import type {
   CursorTableCount,
   CursorTablePage,
   CursorTableRequest,
+  DateFilterDatePickerConfig,
+  DateFilterState,
   FilterDescriptor,
   FilterActionRegistry,
   FilterBarConfig,
@@ -84,6 +86,66 @@ void plainStringDescriptor;
 void missingValidationCopy;
 
 type Descriptors = typeof descriptors;
+
+const datePickerConfig: DateFilterDatePickerConfig = {
+  mode: "range",
+  granularity: "date",
+};
+// @ts-expect-error FilterBar DatePicker variants require a fixed mode.
+const missingDatePickerMode: DateFilterDatePickerConfig = {
+  granularity: "date",
+};
+const legacyDefaultDatePickerConfig: DateFilterDatePickerConfig = {
+  // @ts-expect-error FilterBar DatePicker variants no longer accept defaults.
+  defaultMode: "range",
+  granularity: "date",
+};
+void datePickerConfig;
+void missingDatePickerMode;
+void legacyDefaultDatePickerConfig;
+
+const legacyDateState: DateFilterState = {
+  type: "date",
+  isApplied: true,
+  start: new Date(),
+  end: new Date(),
+};
+const presetDateState: DateFilterState = {
+  type: "date",
+  isApplied: true,
+  start: new Date(),
+  end: new Date(),
+  presetId: null,
+};
+const stateCannotOverrideDescriptorMode: DateFilterState = {
+  type: "date",
+  isApplied: true,
+  start: new Date(),
+  end: new Date(),
+  // @ts-expect-error Date filter state cannot override descriptor-owned mode.
+  mode: "single",
+};
+// @ts-expect-error FilterBar presets must resolve to the configured shape.
+const incompatiblePresetConfig: DateFilterDatePickerConfig = {
+  mode: "range",
+  granularity: "date-time",
+  presets: [
+    {
+      id: "today",
+      label: "Today",
+      textValue: "Today",
+      resolve: (now) => ({
+        mode: "single",
+        granularity: "date",
+        value: now,
+      }),
+    },
+  ],
+};
+void legacyDateState;
+void presetDateState;
+void stateCannotOverrideDescriptorMode;
+void incompatiblePresetConfig;
 
 declare const useSearchParamsAdapter: UseSearchParamsAdapter;
 

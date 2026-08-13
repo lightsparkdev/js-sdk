@@ -13,9 +13,9 @@ import { Menu } from "../Menu";
 import { Popover } from "../Popover";
 import styles from "./FilterBar.module.scss";
 import {
-  getDateFilterDefaultRange,
   isEnumFilterOptionApplied,
   resolveAppliedFilterIds,
+  resolveDateFilterPreset,
   toEnumOptionValueArray,
   type DateFilterDescriptor,
   type DateFilterState,
@@ -27,6 +27,7 @@ import {
   type StringFilterDescriptor,
   type StringFilterState,
 } from "./filter-model";
+import { useDateFilterDraft } from "./useDateFilterDraft";
 import { type FiltersModel, type UpdateFilter } from "./useFilters";
 
 /** Generic filter-bar chrome configured once on `FilterBar.Root`. */
@@ -622,30 +623,6 @@ function StringValueEditor({
   );
 }
 
-interface DateEditorDraft {
-  start: Date | null;
-  end: Date | null;
-}
-
-function getDateEditorSeed(
-  descriptor: DateFilterDescriptor<string>,
-  state: DateFilterState,
-): DateEditorDraft | null {
-  if (state.start || state.end) {
-    return {
-      start: state.start ? new Date(state.start) : null,
-      end: state.end ? new Date(state.end) : null,
-    };
-  }
-  const defaultRange = getDateFilterDefaultRange(descriptor);
-  return defaultRange
-    ? {
-        start: new Date(defaultRange.start),
-        end: new Date(defaultRange.end),
-      }
-    : null;
-}
-
 function DateValueEditorContent({
   descriptor,
   state,
@@ -656,68 +633,81 @@ function DateValueEditorContent({
   onClose: () => void;
 }) {
   const { model, config } = useFilterBarContext();
-  const [seed] = React.useState(() => getDateEditorSeed(descriptor, state));
-  const [draft, setDraft] = React.useState<DateEditorDraft | null>(seed);
-  const [maxDate] = React.useState<Date | undefined>(() =>
-    descriptor.allowFuture === false ? new Date() : undefined,
+  const {
+    draft,
+    initialMonth,
+    maxDate,
+    editPreset,
+    editValue,
+    editRange,
+    setValidity,
+    reset,
+    projectApply,
+  } = useDateFilterDraft(descriptor, state);
+  const datePickerConfig = descriptor.datePicker;
+  const datePickerMode = datePickerConfig?.mode ?? "range";
+  const datePickerPresets = React.useMemo(
+    () =>
+      datePickerConfig?.presets?.map((preset) => ({
+        ...preset,
+        resolve: (now: Date) =>
+          resolveDateFilterPreset(descriptor, preset, now) as ReturnType<
+            typeof preset.resolve
+          >,
+      })) ?? [],
+    [datePickerConfig, descriptor],
   );
-  const initialMonth = seed?.start ?? seed?.end;
-  const committedStart = state.start?.getTime() ?? null;
-  const committedEnd = state.end?.getTime() ?? null;
-  const previousCommittedRange = React.useRef({
-    start: committedStart,
-    end: committedEnd,
-  });
-
-  React.useEffect(() => {
-    if (
-      previousCommittedRange.current.start === committedStart &&
-      previousCommittedRange.current.end === committedEnd
-    ) {
-      return;
-    }
-    previousCommittedRange.current = {
-      start: committedStart,
-      end: committedEnd,
-    };
-    setDraft(
-      committedStart === null && committedEnd === null
-        ? null
-        : {
-            start: committedStart === null ? null : new Date(committedStart),
-            end: committedEnd === null ? null : new Date(committedEnd),
-          },
-    );
-  }, [committedStart, committedEnd]);
+  const datePickerActionsRef = React.useRef<DatePicker.DatePickerActions>(null);
 
   const applyDraft = () => {
-    if (!draft || (!draft.start && !draft.end)) {
+    const datePickerIsValid = datePickerActionsRef.current?.validate() ?? true;
+    const nextState = datePickerIsValid ? projectApply() : null;
+    if (!nextState) {
+      datePickerActionsRef.current?.focusFirstInvalidControl();
       return;
     }
-    model.updateFilter(descriptor.id, {
-      ...state,
-      start: draft.start ? new Date(draft.start) : null,
-      end: draft.end ? new Date(draft.end) : null,
-      isApplied: true,
-    });
+    model.updateFilter(descriptor.id, nextState);
+    reset();
     onClose();
   };
 
   return (
     <DatePicker.Root
-      mode="range"
-      includeTime
+      actionsRef={datePickerActionsRef}
+      required
+      {...(datePickerConfig
+        ? {
+            mode: datePickerConfig.mode,
+            granularity: datePickerConfig.granularity,
+            presets: datePickerPresets,
+            presetId: draft.presetId,
+            onPresetIdChange: editPreset,
+            value:
+              datePickerConfig.mode === "single"
+                ? draft.start ?? draft.end
+                : null,
+            onValueChange: editValue,
+          }
+        : {
+            mode: "range" as const,
+            includeTime: true,
+          })}
       timeZone="UTC"
-      rangeDraft={draft}
+      {...(datePickerMode === "range"
+        ? { rangeDraft: { start: draft.start, end: draft.end } }
+        : {})}
       {...(initialMonth ? { defaultMonth: initialMonth } : {})}
-      onRangeDraftChange={setDraft}
+      onRangeDraftChange={editRange}
+      onValidityChange={setValidity}
       {...(maxDate ? { max: maxDate } : {})}
     >
-      <DatePicker.Header />
       <DatePicker.Navigation />
       <DatePicker.Grid />
+      {datePickerConfig?.presets?.length ? <DatePicker.PresetSelect /> : null}
+      <DatePicker.Header />
       <DatePicker.Footer>
         <Button
+          type="button"
           variant="outline"
           size="compact"
           className={styles.dateApplyButton}
@@ -757,7 +747,7 @@ function DateValueEditor({
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner align="start" sideOffset={4}>
-          <Popover.Popup>
+          <Popover.Popup aria-label={`${descriptor.label} filter`}>
             {isOpen ? (
               <DateValueEditorContent
                 descriptor={descriptor}

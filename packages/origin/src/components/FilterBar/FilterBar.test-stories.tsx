@@ -167,6 +167,17 @@ export function WithDateApplied() {
   );
 }
 
+export function BlankDatePicker() {
+  return (
+    <HydratedBar
+      descriptors={withDateDescriptor({
+        datePicker: { mode: "range", granularity: "date-time" },
+      })}
+      params="createdAt="
+    />
+  );
+}
+
 /** A same-day date range whose time bounds can cross while editing. */
 export function WithSameDayDateApplied() {
   return (

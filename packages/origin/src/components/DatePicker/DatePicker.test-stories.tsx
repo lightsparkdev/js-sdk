@@ -1,8 +1,16 @@
 import { useState } from "react";
 import * as DatePicker from "./index";
-import type { DateRange, DayCellState } from "./index";
+import type {
+  DatePickerGranularity,
+  DatePickerMode,
+  DatePickerPreset,
+  DateRange,
+  DateRangeDraft,
+  DayCellState,
+} from "./index";
 import { Switch } from "../Switch";
 import { Button } from "../Button";
+import { Form } from "../Form";
 
 function localDateKey(date: Date): string {
   return [
@@ -181,6 +189,192 @@ export function TestFullFeatured() {
         {rangeValue ? rangeValue.end.toISOString().split("T")[0] : "none"}
       </div>
     </DatePicker.Root>
+  );
+}
+
+const TEST_PRESETS = [
+  {
+    id: "today",
+    label: "Today",
+    textValue: "Today",
+    resolve: (now) => ({
+      value: new Date(now),
+      mode: "single",
+      granularity: "date",
+    }),
+  },
+  {
+    id: "long-window",
+    label: "Previous 24 hours with a deliberately long label",
+    textValue: "Previous 24 hours with a deliberately long label",
+    resolve: (now) => ({
+      value: {
+        start: new Date(now.getTime() - 86_400_000),
+        end: new Date(now),
+      },
+      mode: "range",
+      granularity: "date-time",
+    }),
+  },
+  {
+    id: "unavailable",
+    label: "Unavailable period",
+    textValue: "Unavailable period",
+    disabled: true,
+    disabledReason: "Requires historical data access",
+    resolve: (now) => ({
+      value: new Date(now),
+      mode: "single",
+      granularity: "date",
+    }),
+  },
+  {
+    id: "upcoming",
+    label: "Upcoming period",
+    textValue: "Upcoming period",
+    resolve: (now) => ({
+      value: new Date(now.getTime() + 86_400_000),
+      mode: "single",
+      granularity: "date",
+    }),
+  },
+] as const satisfies readonly DatePickerPreset[];
+
+export function TestPresets() {
+  const [mode, setMode] = useState<DatePickerMode>("range");
+  const [granularity, setGranularity] =
+    useState<DatePickerGranularity>("date-time");
+  const [presetId, setPresetId] = useState<string | null>(null);
+  const [value, setValue] = useState<Date | DateRange | null>(null);
+  const [rangeDraft, setRangeDraft] = useState<DateRangeDraft>({
+    start: null,
+    end: null,
+  });
+
+  return (
+    <DatePicker.Root
+      mode={mode}
+      onModeChange={setMode}
+      granularity={granularity}
+      onGranularityChange={setGranularity}
+      presets={TEST_PRESETS}
+      presetId={presetId}
+      onPresetIdChange={setPresetId}
+      value={value}
+      onValueChange={(nextValue) => {
+        setValue(nextValue);
+        if (!(nextValue instanceof Date)) {
+          setRangeDraft(nextValue);
+        }
+      }}
+      {...(mode === "range"
+        ? { rangeDraft, onRangeDraftChange: setRangeDraft }
+        : {})}
+      defaultMonth={new Date(2026, 6, 1)}
+    >
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <DatePicker.PresetSelect />
+      <DatePicker.Header />
+      <div data-testid="preset-id">{presetId ?? "custom"}</div>
+      <div data-testid="mode">{mode}</div>
+      <div data-testid="granularity">{granularity}</div>
+    </DatePicker.Root>
+  );
+}
+
+export function TestRangeDateLayout() {
+  return (
+    <DatePicker.Root mode="range" granularity="date">
+      <DatePicker.Header />
+    </DatePicker.Root>
+  );
+}
+
+export function TestSingleDateLayout() {
+  return (
+    <DatePicker.Root mode="single" granularity="date">
+      <DatePicker.Header />
+    </DatePicker.Root>
+  );
+}
+
+const COMPACT_UTC_PRESETS = [
+  {
+    id: "previous-24-hours",
+    label: "Previous 24 hours",
+    textValue: "Previous 24 hours",
+    resolve: (now: Date) => ({
+      value: {
+        start: new Date(now.getTime() - 86_400_000),
+        end: new Date(now),
+      },
+      mode: "range" as const,
+      granularity: "date-time" as const,
+    }),
+  },
+];
+
+export function TestCompactUtcPresetLayout() {
+  const [presetId, setPresetId] = useState<string | null>(null);
+  const [rangeDraft, setRangeDraft] = useState<DateRangeDraft>({
+    start: new Date("2026-07-29T09:00:00.000Z"),
+    end: new Date("2026-07-30T17:00:00.000Z"),
+  });
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      granularity="date-time"
+      presets={COMPACT_UTC_PRESETS}
+      presetId={presetId}
+      onPresetIdChange={setPresetId}
+      rangeDraft={rangeDraft}
+      onRangeDraftChange={setRangeDraft}
+      defaultMonth={new Date("2026-07-01T00:00:00.000Z")}
+      timeZone="UTC"
+    >
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <DatePicker.PresetSelect />
+      <DatePicker.Header />
+      <DatePicker.Footer>
+        <Button variant="outline" size="compact" style={{ width: "100%" }}>
+          Apply
+        </Button>
+      </DatePicker.Footer>
+    </DatePicker.Root>
+  );
+}
+
+export function TestNativeFormValidation() {
+  const [submitCount, setSubmitCount] = useState(0);
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSubmitCount((count) => count + 1);
+      }}
+    >
+      <DatePicker.Root>
+        <DatePicker.Header />
+      </DatePicker.Root>
+      <Button type="submit">Submit</Button>
+      <div data-testid="submit-count">{submitCount}</div>
+    </form>
+  );
+}
+
+export function TestOriginFormValidation() {
+  const [submitCount, setSubmitCount] = useState(0);
+  return (
+    <Form onFormSubmit={() => setSubmitCount((count) => count + 1)}>
+      <DatePicker.Root mode="range">
+        <DatePicker.Header />
+      </DatePicker.Root>
+      <Button type="submit">Submit</Button>
+      <div data-testid="submit-count">{submitCount}</div>
+    </Form>
   );
 }
 

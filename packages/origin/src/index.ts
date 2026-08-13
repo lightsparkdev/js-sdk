@@ -20,13 +20,19 @@ export { Autocomplete } from "./components/Autocomplete";
 export { Breadcrumb } from "./components/Breadcrumb";
 export * as DatePicker from "./components/DatePicker";
 export type {
+  DatePickerActions,
   DatePickerRootProps,
   DatePickerHeaderProps,
+  DatePickerPresetSelectProps,
   DatePickerNavigationProps,
   DatePickerGridProps,
   DatePickerControlsProps,
   DatePickerControlItemProps,
   DatePickerFooterProps,
+  DatePickerMode,
+  DatePickerGranularity,
+  DatePickerPreset,
+  DatePickerPresetResult,
   DatePickerTimeZone,
   DateRange,
   DateRangeDraft,
@@ -123,6 +129,7 @@ export type {
   UpdateFilter,
   UseFiltersOptions,
   UseFiltersResult,
+  DateFilterDatePickerConfig,
   DateFilterDescriptor,
   DateFilterRange,
   DateFilterState,

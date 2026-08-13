@@ -61,6 +61,46 @@ test.describe("DatePicker", () => {
     ).toBeVisible();
   });
 
+  test("marks today with a ring distinct from the selected fill", async ({
+    mount,
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date(2026, 1, 11, 12, 0, 0));
+    await mount(<TestDefault />);
+
+    const today = page.getByRole("button", {
+      name: "Wednesday, February 11, 2026",
+    });
+    await expect(today).toHaveAttribute("aria-current", "date");
+
+    const todayStyle = await today.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        boxShadow: style.boxShadow,
+        backgroundColor: style.backgroundColor,
+      };
+    });
+    expect(todayStyle.boxShadow).not.toBe("none");
+    // Inset hairline ring at the --stroke-xs token width (0.5px).
+    expect(todayStyle.boxShadow).toContain("0.5px");
+    expect(todayStyle.boxShadow).toContain("inset");
+
+    const selected = page.getByRole("button", {
+      name: "Thursday, February 5, 2026",
+    });
+    await selected.click();
+    await expect(selected).toHaveAttribute("data-selected", "true");
+    const selectedStyle = await selected.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        boxShadow: style.boxShadow,
+        backgroundColor: style.backgroundColor,
+      };
+    });
+    expect(selectedStyle.backgroundColor).not.toBe(todayStyle.backgroundColor);
+    expect(selectedStyle.boxShadow).toBe("none");
+  });
+
   test("navigates months with previous/next buttons", async ({
     mount,
     page,
@@ -382,7 +422,7 @@ test.describe("DatePicker", () => {
     await expect(page.getByText("June 2026")).toBeVisible();
   });
 
-  test("invalid date input reverts to previous value", async ({
+  test("invalid date input preserves its draft and error", async ({
     mount,
     page,
   }) => {
@@ -394,8 +434,15 @@ test.describe("DatePicker", () => {
     await dateInput.fill("99/99/9999");
     await dateInput.blur();
 
-    // Should revert to the previous valid value
-    await expect(dateInput).toHaveValue("02/11/2026");
+    await expect(dateInput).toHaveValue("99/99/9999");
+    await expect(dateInput).toHaveAttribute("aria-invalid", "true");
+    const error = page.getByText("Enter a valid date");
+    const errorId = await error.getAttribute("id");
+    expect(errorId).toBeTruthy();
+    await expect(error).toHaveJSProperty("tagName", "DIV");
+    await expect(error).not.toHaveAttribute("role");
+    await expect(dateInput).toHaveAttribute("aria-describedby", errorId!);
+    await expect(page.getByText("Enter a valid date")).toHaveCount(1);
     await expect(page.getByTestId("selected")).toHaveText("2026-02-11");
   });
 
@@ -478,23 +525,24 @@ test.describe("DatePicker", () => {
     await expect(page.getByTestId("selected")).toHaveText("2026-02-15");
   });
 
-  test("Enter key does not select a disabled date", async ({ mount, page }) => {
+  test("Arrow keys skip disabled dates before selection", async ({
+    mount,
+    page,
+  }) => {
     await mount(<TestDisabled />);
 
-    // Focus a weekday first
-    await page
-      .getByRole("button", { name: /Monday, February 2, 2026/ })
-      .click();
-
-    // Arrow left to Sunday (disabled)
-    await page.keyboard.press("ArrowLeft");
-    const sunday = page.getByRole("button", {
-      name: /Sunday, February 1, 2026/,
+    const monday = page.getByRole("button", {
+      name: /Monday, February 2, 2026/,
     });
-    await expect(sunday).toBeFocused();
+    await monday.click();
+    await page.keyboard.press("ArrowLeft");
+    const friday = page.getByRole("button", {
+      name: /Friday, January 30, 2026/,
+    });
+    await expect(friday).toBeFocused();
 
     await page.keyboard.press("Enter");
-    await expect(page.getByTestId("selected")).toHaveText("2026-02-02");
+    await expect(page.getByTestId("selected")).toHaveText("2026-01-30");
   });
 
   test("time input parses 24-hour format", async ({ mount, page }) => {
@@ -578,7 +626,7 @@ test.describe("DatePicker", () => {
     await expect(page.getByTestId("end-minutes")).toHaveText("30");
   });
 
-  test("time input commits on Enter via blur", async ({ mount, page }) => {
+  test("time input commits synchronously on Enter", async ({ mount, page }) => {
     await mount(<TestWithTime />);
 
     const timeInput = page.getByRole("textbox", { name: "Time" });
@@ -702,7 +750,7 @@ test.describe("DatePicker", () => {
     expect(timeValue).toContain("14:30");
   });
 
-  test("date input rejects out-of-range dates and reverts", async ({
+  test("date input preserves out-of-range drafts and errors", async ({
     mount,
     page,
   }) => {
@@ -715,18 +763,20 @@ test.describe("DatePicker", () => {
     await dateInput.fill("02/01/2026");
     await dateInput.blur();
 
-    await expect(dateInput).toHaveValue("02/11/2026");
+    await expect(dateInput).toHaveValue("02/01/2026");
+    await expect(dateInput).toHaveAttribute("aria-invalid", "true");
     await expect(page.getByTestId("selected")).toHaveText("2026-02-11");
 
-    // Type a date after max (Feb 25)
+    // Correcting the draft clears the stale error while typing.
     await dateInput.fill("03/15/2026");
     await dateInput.blur();
 
-    await expect(dateInput).toHaveValue("02/11/2026");
+    await expect(dateInput).toHaveValue("03/15/2026");
+    await expect(dateInput).toHaveAttribute("aria-invalid", "true");
     await expect(page.getByTestId("selected")).toHaveText("2026-02-11");
   });
 
-  test("invalid time input reverts to previous value", async ({
+  test("invalid time input preserves its draft and error", async ({
     mount,
     page,
   }) => {
@@ -738,7 +788,15 @@ test.describe("DatePicker", () => {
     await timeInput.fill("abc");
     await timeInput.blur();
 
-    await expect(timeInput).toHaveValue("2:30 PM");
+    await expect(timeInput).toHaveValue("abc");
+    await expect(timeInput).toHaveAttribute("aria-invalid", "true");
+    const error = page.getByText("Enter a valid time");
+    const errorId = await error.getAttribute("id");
+    expect(errorId).toBeTruthy();
+    await expect(error).toHaveJSProperty("tagName", "DIV");
+    await expect(error).not.toHaveAttribute("role");
+    await expect(timeInput).toHaveAttribute("aria-describedby", errorId!);
+    await expect(page.getByText("Enter a valid time")).toHaveCount(1);
     await expect(page.getByTestId("selected-hours")).toHaveText("14");
     await expect(page.getByTestId("selected-minutes")).toHaveText("30");
   });

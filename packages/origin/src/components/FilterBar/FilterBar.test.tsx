@@ -14,6 +14,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import { type Page } from "playwright-core";
 import AxeBuilder from "@axe-core/playwright";
 import {
+  BlankDatePicker,
   ControlledDateFilter,
   DateDefaultRangeOverride,
   DateFutureEnabled,
@@ -49,6 +50,32 @@ test.describe("FilterBar", () => {
     await mount(<WithAppliedFilters />);
     const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
     expect(results.violations).toEqual([]);
+  });
+
+  test("validates blank Custom Apply from the keyboard", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<BlankDatePicker />);
+    await page.getByRole("button", { name: "Empty", exact: true }).click();
+    const apply = page.getByRole("button", { name: "Apply" });
+    await expect(apply).toBeEnabled();
+    await apply.focus();
+    await apply.press("Enter");
+
+    const startDate = page.getByRole("textbox", { name: "Start date" });
+    const error = page.getByText("Select a date range");
+    await expect(error).toBeVisible();
+    await expect(startDate).toBeFocused();
+    await expect(startDate).toHaveAttribute(
+      "aria-describedby",
+      await error.getAttribute("id"),
+    );
+    const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
+    expect(results.violations).toEqual([]);
+
+    await startDate.fill("06/01/2026");
+    await expect(error).toHaveCount(0);
   });
 
   test("renders hydrated filters as pills", async ({ mount, page }) => {
@@ -295,15 +322,15 @@ test.describe("FilterBar", () => {
     await expect(page.getByLabel("Start date", { exact: true })).toHaveValue(
       "06/01/2026",
     );
-    await expect(page.getByLabel("Start time", { exact: true })).toHaveValue(
-      "9:30 AM",
-    );
+    await expect(
+      page.getByLabel("Start time (UTC)", { exact: true }),
+    ).toHaveValue("9:30 AM");
     await expect(page.getByLabel("End date", { exact: true })).toHaveValue(
       "06/10/2026",
     );
-    await expect(page.getByLabel("End time", { exact: true })).toHaveValue(
-      "5:00 PM",
-    );
+    await expect(
+      page.getByLabel("End time (UTC)", { exact: true }),
+    ).toHaveValue("5:00 PM");
     await page.keyboard.press("Escape");
     await expect(page.getByTestId("signature")).toHaveText(expectedSignature);
   });
@@ -337,9 +364,9 @@ test.describe("FilterBar", () => {
         })
         .click();
 
-      await expect(page.getByLabel("Start time", { exact: true })).toHaveValue(
-        "2:30 AM",
-      );
+      await expect(
+        page.getByLabel("Start time (UTC)", { exact: true }),
+      ).toHaveValue("2:30 AM");
       await page.getByRole("button", { name: "Apply" }).click();
 
       await expect(page.getByTestId("signature")).toHaveText(
@@ -361,7 +388,7 @@ test.describe("FilterBar", () => {
         })
         .click();
 
-      const startTime = page.getByLabel("Start time", { exact: true });
+      const startTime = page.getByLabel("Start time (UTC)", { exact: true });
       await startTime.fill("2:45 AM");
       await startTime.blur();
       await page.getByRole("button", { name: "Apply" }).click();
@@ -478,15 +505,15 @@ test.describe("FilterBar", () => {
         />,
       );
       await expect(startDate).toHaveValue("06/03/2026");
-      await expect(page.getByLabel("Start time", { exact: true })).toHaveValue(
-        "10:00 AM",
-      );
+      await expect(
+        page.getByLabel("Start time (UTC)", { exact: true }),
+      ).toHaveValue("10:00 AM");
       await expect(page.getByLabel("End date", { exact: true })).toHaveValue(
         "06/12/2026",
       );
-      await expect(page.getByLabel("End time", { exact: true })).toHaveValue(
-        "6:00 PM",
-      );
+      await expect(
+        page.getByLabel("End time (UTC)", { exact: true }),
+      ).toHaveValue("6:00 PM");
     });
 
     test("keeps a same-day range ordered when start time crosses end", async ({
@@ -501,16 +528,16 @@ test.describe("FilterBar", () => {
         })
         .click();
 
-      const startTime = page.getByLabel("Start time", { exact: true });
+      const startTime = page.getByLabel("Start time (UTC)", { exact: true });
       await startTime.fill("8:00 PM");
       await startTime.blur();
 
-      await expect(page.getByLabel("Start time", { exact: true })).toHaveValue(
-        "5:30 PM",
-      );
-      await expect(page.getByLabel("End time", { exact: true })).toHaveValue(
-        "8:00 PM",
-      );
+      await expect(
+        page.getByLabel("Start time (UTC)", { exact: true }),
+      ).toHaveValue("5:30 PM");
+      await expect(
+        page.getByLabel("End time (UTC)", { exact: true }),
+      ).toHaveValue("8:00 PM");
       await page.getByRole("button", { name: "Apply" }).click();
       await expect(page.getByTestId("signature")).toHaveText(
         new URLSearchParams({
@@ -531,16 +558,16 @@ test.describe("FilterBar", () => {
         })
         .click();
 
-      const endTime = page.getByLabel("End time", { exact: true });
+      const endTime = page.getByLabel("End time (UTC)", { exact: true });
       await endTime.fill("8:00 AM");
       await endTime.blur();
 
-      await expect(page.getByLabel("Start time", { exact: true })).toHaveValue(
-        "8:00 AM",
-      );
-      await expect(page.getByLabel("End time", { exact: true })).toHaveValue(
-        "9:00 AM",
-      );
+      await expect(
+        page.getByLabel("Start time (UTC)", { exact: true }),
+      ).toHaveValue("8:00 AM");
+      await expect(
+        page.getByLabel("End time (UTC)", { exact: true }),
+      ).toHaveValue("9:00 AM");
       await page.getByRole("button", { name: "Apply" }).click();
       await expect(page.getByTestId("signature")).toHaveText(
         new URLSearchParams({
@@ -712,11 +739,18 @@ test.describe("FilterBar", () => {
         page.getByRole("button", { name: /June 10, 2026/ }),
       ).not.toHaveAttribute("aria-disabled");
 
-      // A typed future date is rejected by the input and reverts.
-      const endInput = page.getByLabel("End date", { exact: true });
+      // A typed future date remains visible with an actionable error.
+      const endInput = page.getByRole("textbox", { name: "End date" });
       await endInput.fill("07/01/2026");
       await page.keyboard.press("Tab");
-      await expect(endInput).toHaveValue("");
+      await expect(endInput).toHaveValue("07/01/2026");
+      await expect(endInput).toHaveAttribute("aria-invalid", "true");
+      const error = page.getByText("Enter a valid date");
+      const errorId = await error.getAttribute("id");
+      expect(errorId).toBeTruthy();
+      await expect(error).not.toHaveAttribute("role");
+      await expect(endInput).toHaveAttribute("aria-describedby", errorId!);
+      await expect(page.getByText("Enter a valid date")).toHaveCount(1);
     });
   });
 });

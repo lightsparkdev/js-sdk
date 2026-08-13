@@ -7,6 +7,7 @@ import {
   resolveAppliedFilterIds,
   saveFilterStatesToUrl,
   toEnumOptionValueArray,
+  validateFilterUrlKeyOwnership,
   type FilterDescriptorTuple,
   type FilterId,
   type FilterStates,
@@ -117,20 +118,6 @@ function readFilterOrder(
   }
 }
 
-function validateFilterOrderSearchParam(
-  descriptors: FilterDescriptorTuple,
-  searchParam: string,
-) {
-  if (
-    searchParam.trim() === "" ||
-    descriptors.some((descriptor) => descriptor.id === searchParam)
-  ) {
-    throw new Error(
-      "Filter application-order metadata requires a non-empty search param that does not match a filter id.",
-    );
-  }
-}
-
 export function createUrlBackedFiltersHook(
   config: CreateUrlBackedFiltersHookConfig,
 ): UrlBackedFiltersHook {
@@ -154,9 +141,7 @@ export function createUrlBackedFiltersHook(
     const snapshot = React.useMemo(() => {
       const current = new URLSearchParams(searchParams.search);
       const filterOrderSearchParam = config.filterOrdering?.searchParam;
-      if (filterOrderSearchParam !== undefined) {
-        validateFilterOrderSearchParam(descriptors, filterOrderSearchParam);
-      }
+      validateFilterUrlKeyOwnership(descriptors, filterOrderSearchParam);
       const preferredFilterIds =
         filterOrderSearchParam === undefined
           ? []

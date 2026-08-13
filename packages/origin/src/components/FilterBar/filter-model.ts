@@ -11,12 +11,23 @@
  * stale or hand-edited URL never reaches state.
  *
  * The URL format: params keyed by filter id, singular strings as one raw value,
- * enum values as repeated params, and dates as `"<startISO>,<endISO>"` with either side allowed
- * to be empty. Hydration merges: absent params leave the current state
+ * enum values as repeated params, and dates as `"<startISO>,<endISO>"` with
+ * either side allowed to be empty. Opted-in DatePicker URLs use an additive
+ * `"<filterId>.__origin"` scalar sidecar for named preset identity; legacy
+ * bound-only date URLs remain valid. Hydration merges: absent params leave
+ * the current state
  * untouched, while present-but-empty params hydrate as applied-but-empty
  * (`searchParams.has()` semantics), so an applied-but-empty pill
  * round-trips a save/reload.
  */
+
+import type {
+  DatePickerGranularity,
+  DatePickerMode,
+  DatePickerPreset,
+  DatePickerPresetResult,
+} from "../DatePicker";
+import { resolveDatePickerPreset } from "../DatePicker/resolvePreset";
 
 export interface EnumFilterOption {
   label: string;
@@ -50,6 +61,36 @@ export interface DateFilterRange {
   end: Date;
 }
 
+type DateFilterDatePickerPreset<
+  TMode extends DatePickerMode,
+  TGranularity extends DatePickerGranularity,
+> = Omit<DatePickerPreset, "resolve"> & {
+  resolve: (now: Date) => Extract<DatePickerPresetResult, { mode: TMode }> & {
+    granularity: TGranularity;
+  };
+};
+
+type DateFilterDatePickerConfigVariant<
+  TMode extends DatePickerMode,
+  TGranularity extends DatePickerGranularity,
+> = {
+  /** Consumer-defined options shown in the compact preset select. */
+  presets?: readonly DateFilterDatePickerPreset<TMode, TGranularity>[];
+  /** Fixed editor mode for this filter. */
+  mode: TMode;
+  /** Fixed editor granularity for this filter. */
+  granularity: TGranularity;
+};
+
+export type DateFilterDatePickerConfig = {
+  [TMode in DatePickerMode]: {
+    [TGranularity in DatePickerGranularity]: DateFilterDatePickerConfigVariant<
+      TMode,
+      TGranularity
+    >;
+  }[DatePickerGranularity];
+}[DatePickerMode];
+
 export interface DateFilterDescriptor<TId extends string>
   extends FilterDescriptorBase<TId> {
   type: "date";
@@ -70,6 +111,11 @@ export interface DateFilterDescriptor<TId extends string>
    * true leaves future dates unbounded.
    */
   allowFuture?: boolean;
+  /**
+   * Enables the preset-aware editor with a fixed mode and granularity.
+   * Omitted, date filters retain the legacy date-time range editor.
+   */
+  datePicker?: DateFilterDatePickerConfig;
 }
 
 /** Resolve a date descriptor's optional editor-seed range at editor-open time. */
@@ -119,11 +165,111 @@ export type FilterDescriptor<TId extends string = string> =
 
 export type FilterDescriptorTuple = readonly FilterDescriptor<string>[];
 
-export interface DateFilterState {
+interface DateFilterStateBase {
   type: "date";
   isApplied: boolean;
   start: Date | null;
   end: Date | null;
+}
+
+/**
+ * DatePicker-enhanced state additionally carries named preset identity;
+ * mode and granularity belong exclusively to the descriptor.
+ */
+export interface DateFilterState extends DateFilterStateBase {
+  /** Named preset identity; `null` means Custom. */
+  presetId?: string | null;
+}
+
+export function canonicalizeDateFilterBounds<
+  TBounds extends {
+    start: Date | null;
+    end: Date | null;
+    mode: DatePickerMode;
+  },
+>(bounds: TBounds): TBounds {
+  switch (bounds.mode) {
+    case "range":
+      return bounds;
+    case "single": {
+      const date = bounds.start ?? bounds.end;
+      return bounds.start === date && bounds.end === date
+        ? bounds
+        : { ...bounds, start: date, end: date };
+    }
+    default: {
+      const exhaustiveCheck: never = bounds.mode;
+      throw new Error(`Unhandled date filter mode: ${String(exhaustiveCheck)}`);
+    }
+  }
+}
+
+interface DateFilterPresetIdentity {
+  start: Date | null;
+  end: Date | null;
+  presetId: string | null;
+}
+
+function findEnabledDateFilterPreset(
+  descriptor: DateFilterDescriptor<string>,
+  presetId: string | null | undefined,
+): DatePickerPreset | null {
+  if (presetId === undefined || presetId === null) {
+    return null;
+  }
+  return (
+    descriptor.datePicker?.presets?.find(
+      (preset) => preset.id === presetId && !preset.disabled,
+    ) ?? null
+  );
+}
+
+export function resolveDateFilterPreset(
+  descriptor: DateFilterDescriptor<string>,
+  preset: Pick<DatePickerPreset, "resolve">,
+  now: Date,
+): DatePickerPresetResult | null {
+  const config = descriptor.datePicker;
+  return resolveDatePickerPreset(
+    preset,
+    now,
+    config
+      ? {
+          mode: config.mode,
+          granularity: config.granularity,
+        }
+      : undefined,
+  );
+}
+
+/**
+ * Preset identity is semantic metadata, while persisted bounds remain
+ * authoritative. Known, enabled presets retain their identity across
+ * time-relative resolution drift; unknown, disabled, or unresolvable
+ * presets become Custom without changing those bounds. Date rules such
+ * as `allowFuture` are deliberately not re-checked here — the apply
+ * boundaries already reject rule-violating presets before persistence.
+ */
+export function normalizeDateFilterPresetIdentity<
+  TState extends DateFilterPresetIdentity,
+>(
+  descriptor: DateFilterDescriptor<string>,
+  state: TState,
+  now = new Date(),
+): TState {
+  if (state.presetId === null) {
+    return state;
+  }
+  const preset = findEnabledDateFilterPreset(descriptor, state.presetId);
+  if (!preset) {
+    return { ...state, presetId: null };
+  }
+
+  const result = resolveDateFilterPreset(descriptor, preset, now);
+  if (result === null) {
+    return { ...state, presetId: null };
+  }
+  return state;
 }
 
 export interface EnumFilterState {
@@ -213,12 +359,30 @@ export function resolveAppliedFilterIds<
   return resolved as FilterId<TDescriptors>[];
 }
 
+function getDateFilterStateValue(
+  descriptor: DateFilterDescriptor<string>,
+  isApplied: boolean,
+): DateFilterState {
+  const state: DateFilterStateBase = {
+    type: "date",
+    isApplied,
+    start: null,
+    end: null,
+  };
+  return descriptor.datePicker
+    ? {
+        ...state,
+        presetId: null,
+      }
+    : state;
+}
+
 function getDefaultFilterStateValue(
   descriptor: FilterDescriptor<string>,
 ): FilterState {
   switch (descriptor.type) {
     case "date":
-      return { type: "date", isApplied: false, start: null, end: null };
+      return getDateFilterStateValue(descriptor, false);
     case "enum":
       return { type: "enum", isApplied: false, appliedValues: [] };
     case "string":
@@ -260,7 +424,7 @@ function getAddedFilterStateValue(
 ): FilterState {
   switch (descriptor.type) {
     case "date":
-      return { type: "date", isApplied: true, start: null, end: null };
+      return getDateFilterStateValue(descriptor, true);
     case "enum":
       return { type: "enum", isApplied: true, appliedValues: [] };
     case "string":
@@ -380,6 +544,66 @@ function parseUrlDate(value: string): Date | null {
   return date.toISOString() === value ? date : null;
 }
 
+const DATE_FILTER_METADATA_SUFFIX = ".__origin";
+
+function getDateFilterMetadataParam(id: string): string {
+  return `${id}${DATE_FILTER_METADATA_SUFFIX}`;
+}
+
+export function validateFilterUrlKeyOwnership(
+  descriptors: FilterDescriptorTuple,
+  applicationOrderSearchParam?: string,
+): void {
+  const keyOwners = new Map<string, string>();
+  const registerKey = (key: string, owner: string) => {
+    const existingOwner = keyOwners.get(key);
+    if (existingOwner) {
+      throw new Error(
+        `Filter URL key collision: "${key}" is both the ${existingOwner} and the ${owner}. Descriptor keys, generated DatePicker metadata keys, and application-order metadata keys must be unique.`,
+      );
+    }
+    keyOwners.set(key, owner);
+  };
+
+  for (const descriptor of descriptors) {
+    registerKey(descriptor.id, `descriptor key for filter "${descriptor.id}"`);
+    if (descriptor.type === "date" && descriptor.datePicker) {
+      registerKey(
+        getDateFilterMetadataParam(descriptor.id),
+        `metadata key for date filter "${descriptor.id}"`,
+      );
+    }
+  }
+
+  if (applicationOrderSearchParam !== undefined) {
+    if (applicationOrderSearchParam.trim() === "") {
+      throw new Error(
+        "Filter application-order metadata requires a non-empty search param.",
+      );
+    }
+    registerKey(applicationOrderSearchParam, "application-order metadata key");
+  }
+}
+
+function parseDateFilterPresetId(
+  descriptor: DateFilterDescriptor<string>,
+  searchParams: URLSearchParams,
+): string | null {
+  if (!descriptor.datePicker) {
+    return null;
+  }
+  const rawMetadata = searchParams.get(
+    getDateFilterMetadataParam(descriptor.id),
+  );
+  if (rawMetadata === null) {
+    return null;
+  }
+
+  return findEnabledDateFilterPreset(descriptor, rawMetadata)
+    ? rawMetadata
+    : null;
+}
+
 /**
  * URL hydration with merge semantics: absent params leave the current
  * state untouched; present-but-empty params hydrate as applied-but-empty,
@@ -397,6 +621,7 @@ export function loadFilterStatesFromUrl<
   currentStates: FilterStates<TDescriptors>,
   transitionOrder: readonly string[] = [],
 ): FilterStates<TDescriptors> {
+  validateFilterUrlKeyOwnership(descriptors);
   let nextStates: Record<string, FilterState> = {
     ...(currentStates as Record<string, FilterState>),
   };
@@ -516,12 +741,30 @@ export function loadFilterStatesFromUrl<
         if (start && end && start.getTime() > end.getTime()) {
           [start, end] = [end, start];
         }
-        applyHydratedState(descriptor, {
-          type: "date",
-          isApplied: true,
-          start,
-          end,
-        });
+        const fixedDraft = descriptor.datePicker
+          ? canonicalizeDateFilterBounds({
+              start,
+              end,
+              mode: descriptor.datePicker.mode,
+            })
+          : null;
+        applyHydratedState(
+          descriptor,
+          fixedDraft
+            ? normalizeDateFilterPresetIdentity(descriptor, {
+                type: "date" as const,
+                isApplied: true as const,
+                start: fixedDraft.start,
+                end: fixedDraft.end,
+                presetId: parseDateFilterPresetId(descriptor, searchParams),
+              })
+            : {
+                type: "date",
+                isApplied: true,
+                start,
+                end,
+              },
+        );
         break;
       }
       default: {
@@ -546,8 +789,12 @@ export function saveFilterStatesToUrl<
   searchParams: URLSearchParams,
   states: FilterStates<TDescriptors>,
 ): URLSearchParams {
+  validateFilterUrlKeyOwnership(descriptors);
   for (const descriptor of descriptors) {
     searchParams.delete(descriptor.id);
+    if (descriptor.type === "date" && descriptor.datePicker) {
+      searchParams.delete(getDateFilterMetadataParam(descriptor.id));
+    }
   }
 
   for (const descriptor of descriptors) {
@@ -561,6 +808,18 @@ export function saveFilterStatesToUrl<
         const startString = state.start ? state.start.toISOString() : "";
         const endString = state.end ? state.end.toISOString() : "";
         searchParams.set(descriptor.id, `${startString},${endString}`);
+        if (descriptor.type === "date" && descriptor.datePicker) {
+          const preset = findEnabledDateFilterPreset(
+            descriptor,
+            state.presetId,
+          );
+          if (preset) {
+            searchParams.set(
+              getDateFilterMetadataParam(descriptor.id),
+              preset.id,
+            );
+          }
+        }
         break;
       }
       case "enum":

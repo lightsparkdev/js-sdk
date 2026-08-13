@@ -19,6 +19,7 @@ export type {
 } from "./useFilters";
 
 export type {
+  DateFilterDatePickerConfig,
   DateFilterDescriptor,
   DateFilterRange,
   DateFilterState,

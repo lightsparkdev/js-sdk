@@ -48,6 +48,15 @@ const ORDER_DESCRIPTORS = [
 
 const FILTER_ORDER_SEARCH_PARAM = "_filterOrder";
 
+const DATE_DESCRIPTORS = [
+  {
+    id: "createdAt",
+    label: "Created",
+    type: "date",
+    datePicker: { mode: "single", granularity: "date" },
+  },
+] as const satisfies readonly FilterDescriptor<string>[];
+
 let currentSearch = "";
 let updateCalls: { search: string; history: SearchParamHistoryMode }[] = [];
 let registry: ReturnType<typeof createRegistry>;
@@ -245,7 +254,47 @@ describe("createUrlBackedFiltersHook", () => {
           registerFilterActions: false,
         }),
       ),
-    ).toThrow(/does not match a filter id/);
+    ).toThrow(/"alpha".*application-order metadata key/);
+  });
+
+  it("rejects an ordering key that collides with generated DatePicker metadata", () => {
+    const useCollidingOrderFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      history: "push",
+      filterOrdering: {
+        searchParam: "createdAt.__origin",
+      },
+    });
+
+    expect(() =>
+      renderHook(() =>
+        useCollidingOrderFilters({
+          descriptors: DATE_DESCRIPTORS,
+          registerFilterActions: false,
+        }),
+      ),
+    ).toThrow(/createdAt\.__origin/);
+  });
+
+  it("accepts an ordering key distinct from DatePicker-owned URL keys", () => {
+    currentSearch =
+      "createdAt=2026-06-01T00%3A00%3A00.000Z%2C2026-06-01T00%3A00%3A00.000Z";
+    const useDistinctOrderFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      history: "push",
+      filterOrdering: {
+        searchParam: "_dateFilterOrder",
+      },
+    });
+
+    const { result } = renderHook(() =>
+      useDistinctOrderFilters({
+        descriptors: DATE_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    expect(result.current.appliedFilterIds).toEqual(["createdAt"]);
   });
 
   it.each([
@@ -299,6 +348,30 @@ describe("createUrlBackedFiltersHook", () => {
       isApplied: false,
       value: null,
     });
+  });
+
+  it("never exposes divergent single-mode URL bounds to query consumers", () => {
+    registry = createRegistry();
+    currentSearch = new URLSearchParams({
+      createdAt: "2026-06-01T00:00:00.000Z,2026-06-30T00:00:00.000Z",
+    }).toString();
+
+    const { result } = renderHook(() =>
+      useTestFilters({
+        descriptors: DATE_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    expect(result.current.states.createdAt).toMatchObject({
+      start: new Date("2026-06-01T00:00:00.000Z"),
+      end: new Date("2026-06-01T00:00:00.000Z"),
+    });
+    expect(result.current.states.createdAt).not.toHaveProperty("mode");
+    expect(result.current.states.createdAt).not.toHaveProperty("granularity");
+    expect(result.current.signature).toContain(
+      "createdAt=2026-06-01T00%3A00%3A00.000Z%2C2026-06-01T00%3A00%3A00.000Z",
+    );
   });
 
   it("writes filter transitions with configured push history and preserves foreign parameters", () => {

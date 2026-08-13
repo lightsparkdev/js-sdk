@@ -17,27 +17,122 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2xs);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-xs) 0;
+}
+
+.presetSelect {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-xs) 0;
+
+  [role="combobox"] {
+    min-width: 0;
+  }
+}
+
+.presetValue {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.presetPopup {
+  width: var(--anchor-width);
+}
+
+.presetItemText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inputDraft {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+
+  > input {
+    width: 100%;
+  }
+}
+
+.inputGrid {
+  > [data-orientation] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-2xs);
+  }
+}
+
+.inputGrid[data-granularity="date-time"] > [data-orientation] {
+  grid-template-columns:
+    minmax(0, 1fr)
+    calc(var(--spacing-10xl) + var(--spacing-xs));
+}
+
+.inputSlotRoot {
+  display: contents;
+}
+
+.inputSlot {
+  min-width: 0;
+  transition: opacity 85ms cubic-bezier(0.2, 0, 0, 1);
+
+  &[data-starting-style] {
+    opacity: 0;
+  }
+
+  &[data-ending-style] {
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &[data-starting-style] {
+      opacity: 1;
+    }
+  }
+}
+
+.singleDateInput {
+  grid-column: 1 / -1;
+}
+
+.timeInputGroup {
+  width: 100%;
+}
+
+.timeZoneSuffix {
+  @include label-sm;
+  color: var(--text-secondary);
 }
 
 // Navigation: month/year title + prev/next buttons
 .nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(14, minmax(0, 1fr));
   align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-3xs) var(--spacing-xs) var(--spacing-xs)
-    var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-3xs) var(--spacing-3xs);
 }
 
 .navTitle {
+  // Start on the first day's centerline, then apply the intentional optical nudge.
+  grid-column: 2 / 11;
+  transform: translateX(calc(-1 * var(--spacing-3xs)));
   @include label;
   color: var(--text-primary);
 }
 
 .navButtons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-column: 11 / 15;
   align-items: center;
-  gap: var(--spacing-2xs);
 }
 
 .navButton {
@@ -45,6 +140,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  justify-self: center;
   width: 24px;
   height: 24px;
   @include smooth-corners(var(--corner-radius-sm));
@@ -130,10 +226,12 @@
     outline-offset: -2px;
   }
 
+  // Hairline ring instead of fill: today must read as an affordance,
+  // distinct from the filled selected/range states and the hover background.
   &[data-today]:not([data-selected]):not([data-range-start]):not(
       [data-range-end]
     ):not([data-in-range]) {
-    background: var(--surface-hover);
+    box-shadow: inset 0 0 0 var(--stroke-xs) var(--border-secondary);
   }
 
   &[data-selected] {
@@ -176,7 +274,7 @@
   }
 }
 
-// Controls: slot for toggle items
+// Controls: slot for composed items
 .controls {
   display: flex;
   flex-direction: column;
@@ -192,7 +290,7 @@
 }
 
 .controlLabel {
-  @include body;
+  @include body-sm;
   color: var(--text-secondary);
 }
 

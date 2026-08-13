@@ -2,22 +2,23 @@
 
 import * as React from "react";
 import clsx from "clsx";
-import { CentralIcon } from "../Icon";
-import { Input } from "../Input";
-import { Fieldset } from "../Fieldset";
-import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import styles from "./DatePicker.module.scss";
 import {
-  useDateRangeSelection,
-  type DateRange,
-  type DateRangeDraft,
-} from "./useDateRangeSelection";
+  DatePickerContext,
+  type DatePickerContextValue,
+  type DatePickerLabels,
+} from "./datePickerContext";
+import type { DateRange, DateRangeDraft } from "./useDateRangeSelection";
+import { useDatePickerController } from "./useDatePickerController";
+import type {
+  DatePickerGranularity,
+  DatePickerMode,
+  DatePickerPreset,
+} from "./types";
 import {
-  addCalendarDays,
   addCalendarMonths,
   createCalendarDate,
   getCalendarDate,
-  getCalendarDay,
   getCalendarHours,
   getCalendarMinutes,
   getCalendarMonth,
@@ -29,39 +30,24 @@ import {
 
 export type { DateRange, DateRangeDraft } from "./useDateRangeSelection";
 export type { DatePickerTimeZone } from "./dateTimeZone";
-
-function isSameDay(a: Date, b: Date, timeZone: DatePickerTimeZone): boolean {
-  return (
-    getCalendarYear(a, timeZone) === getCalendarYear(b, timeZone) &&
-    getCalendarMonth(a, timeZone) === getCalendarMonth(b, timeZone) &&
-    getCalendarDate(a, timeZone) === getCalendarDate(b, timeZone)
-  );
-}
-
-function isSameMonth(
-  date: Date,
-  year: number,
-  month: number,
-  timeZone: DatePickerTimeZone,
-): boolean {
-  return (
-    getCalendarYear(date, timeZone) === year &&
-    getCalendarMonth(date, timeZone) === month
-  );
-}
-
-function isDateInRange(
-  date: Date,
-  start: Date,
-  end: Date,
-  timeZone: DatePickerTimeZone,
-): boolean {
-  const t = startOfCalendarDay(date, timeZone).getTime();
-  return (
-    t > startOfCalendarDay(start, timeZone).getTime() &&
-    t < startOfCalendarDay(end, timeZone).getTime()
-  );
-}
+export {
+  useDatePickerContext,
+  type DatePickerLabels,
+  type DayCellState,
+} from "./datePickerContext";
+export { Header, type DatePickerHeaderProps } from "./headerParts";
+export {
+  Grid,
+  Navigation,
+  type DatePickerGridProps,
+  type DatePickerNavigationProps,
+} from "./calendarParts";
+export type {
+  DatePickerGranularity,
+  DatePickerMode,
+  DatePickerPreset,
+  DatePickerPresetResult,
+} from "./types";
 
 function isDateBefore(a: Date, b: Date, timeZone: DatePickerTimeZone): boolean {
   return (
@@ -70,115 +56,7 @@ function isDateBefore(a: Date, b: Date, timeZone: DatePickerTimeZone): boolean {
   );
 }
 
-function getMonthGrid(
-  year: number,
-  month: number,
-  weekStartsOn: 0 | 1,
-  timeZone: DatePickerTimeZone,
-): Date[][] {
-  const firstDay = createCalendarDate(year, month, 1, timeZone);
-  const offset = (getCalendarDay(firstDay, timeZone) - weekStartsOn + 7) % 7;
-  const gridStart = addCalendarDays(firstDay, -offset, timeZone);
-
-  const weeks: Date[][] = [];
-  let current = new Date(gridStart);
-  for (let w = 0; w < 6; w++) {
-    const week: Date[] = [];
-    for (let d = 0; d < 7; d++) {
-      week.push(new Date(current));
-      current = addCalendarDays(current, 1, timeZone);
-    }
-    weeks.push(week);
-  }
-  return weeks;
-}
-
-const KNOWN_SUNDAY = new Date(2024, 0, 7); // Jan 7 2024 is a Sunday
-const DAY_MS = 86_400_000;
-
-const weekdayCache = new Map<string, { narrow: string; long: string }[]>();
-
-function getWeekdayLabels(locale: string): { narrow: string; long: string }[] {
-  const cached = weekdayCache.get(locale);
-  if (cached) return cached;
-
-  const longFmt = new Intl.DateTimeFormat(locale, { weekday: "long" });
-  const narrowFmt = new Intl.DateTimeFormat(locale, { weekday: "narrow" });
-  const result = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(KNOWN_SUNDAY.getTime() + i * DAY_MS);
-    return { narrow: narrowFmt.format(d), long: longFmt.format(d) };
-  });
-  weekdayCache.set(locale, result);
-  return result;
-}
-
-interface DateFormatInfo {
-  order: ("day" | "month" | "year")[];
-  separator: string;
-  placeholder: string;
-}
-
-const dateFormatCache = new Map<string, DateFormatInfo>();
-
-function getDateFormat(locale: string): DateFormatInfo {
-  const cached = dateFormatCache.get(locale);
-  if (cached) return cached;
-
-  const parts = new Intl.DateTimeFormat(locale, {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).formatToParts(new Date(2024, 11, 25));
-
-  const order = parts
-    .filter(
-      (
-        p,
-      ): p is Intl.DateTimeFormatPart & {
-        type: "day" | "month" | "year";
-      } => p.type === "day" || p.type === "month" || p.type === "year",
-    )
-    .map((p) => p.type);
-
-  const literal = parts.find((p) => p.type === "literal");
-  const separator = literal?.value ?? "/";
-  const labels: Record<string, string> = {
-    day: "DD",
-    month: "MM",
-    year: "YYYY",
-  };
-  const placeholder = order.map((p) => labels[p]).join(separator);
-
-  const result: DateFormatInfo = { order, separator, placeholder };
-  dateFormatCache.set(locale, result);
-  return result;
-}
-
-function getTimePlaceholder(locale: string): string {
-  const resolved = new Intl.DateTimeFormat(locale, {
-    hour: "numeric",
-  }).resolvedOptions();
-  return resolved.hourCycle === "h12" || resolved.hourCycle === "h11"
-    ? "12:00 PM"
-    : "00:00";
-}
-
-export interface DatePickerLabels {
-  previousMonth: string;
-  nextMonth: string;
-  date: string;
-  startDate: string;
-  endDate: string;
-  time: string;
-  startTime: string;
-  endTime: string;
-  dateRange: string;
-  dateAndTime: string;
-  startDateAndTime: string;
-  endDateAndTime: string;
-}
-
-const DEFAULT_LABELS: DatePickerLabels = {
+const DEFAULT_LABELS: Required<DatePickerLabels> = {
   previousMonth: "Previous month",
   nextMonth: "Next month",
   date: "Date",
@@ -191,24 +69,48 @@ const DEFAULT_LABELS: DatePickerLabels = {
   dateAndTime: "Date and time",
   startDateAndTime: "Start date and time",
   endDateAndTime: "End date and time",
+  preset: "Date preset",
+  custom: "Custom",
+  unavailablePreset: "This preset contains unavailable dates",
+  invalidDate: "Enter a valid date",
+  invalidTime: "Enter a valid time",
+  requiredDate: "Select a date",
+  requiredDateRange: "Select a date range",
 };
-
-export interface DayCellState {
-  isToday: boolean;
-  isSelected: boolean;
-  isDisabled: boolean;
-  isOutsideMonth: boolean;
-  isRangeStart: boolean;
-  isRangeEnd: boolean;
-  isInRange: boolean;
-}
 
 export interface DatePickerRootProps
   extends React.ComponentPropsWithoutRef<"div"> {
-  /** Selection mode. */
-  mode?: "single" | "range";
-  /** Whether time inputs are shown in the header. */
+  /** Imperative validation actions for composed Apply boundaries. */
+  actionsRef?: React.RefObject<DatePickerActions | null>;
+  /** Controlled selection mode. */
+  mode?: DatePickerMode;
+  /** Initial selection mode for an uncontrolled Root. */
+  defaultMode?: DatePickerMode;
+  /** Called when the selection mode changes, including from a preset. */
+  onModeChange?: (mode: DatePickerMode) => void;
+  /**
+   * Compatibility alias for `granularity="date-time"`. When `granularity`
+   * is supplied it is authoritative.
+   */
   includeTime?: boolean;
+  /** Controlled editing granularity. */
+  granularity?: DatePickerGranularity;
+  /** Initial editing granularity for an uncontrolled Root. */
+  defaultGranularity?: DatePickerGranularity;
+  /** Called when editing granularity changes, including from a preset. */
+  onGranularityChange?: (granularity: DatePickerGranularity) => void;
+  /** Consumer-defined relative or absolute date presets. */
+  presets?: readonly DatePickerPreset[];
+  /** Controlled selected preset identity. `null` represents Custom. */
+  presetId?: string | null;
+  /** Initial selected preset identity for an uncontrolled Root. */
+  defaultPresetId?: string | null;
+  /** Called after named selection or when a manual edit becomes Custom. */
+  onPresetIdChange?: (presetId: string | null) => void;
+  /** Reports whether every visible draft and selected preset is valid. */
+  onValidityChange?: (isValid: boolean) => void;
+  /** Require at least one selected date when `actionsRef.validate()` runs. */
+  required?: boolean;
   /**
    * Calendar field interpretation. `local` preserves the default behavior;
    * `UTC` reads and edits Date fields with UTC accessors so UTC wall-clock
@@ -263,50 +165,11 @@ export interface DatePickerRootProps
   analyticsName?: string;
 }
 
-interface DatePickerContextValue {
-  viewYear: number;
-  viewMonth: number;
-  goToPreviousMonth: () => void;
-  goToNextMonth: () => void;
-
-  mode: "single" | "range";
-  includeTime: boolean;
-  timeZone: DatePickerTimeZone;
-  usesRangeDraftApi: boolean;
-  singleValue: Date | null;
-  rangeValue: DateRangeDraft | null;
-  pendingStart: Date | null;
-  hoveredDate: Date | null;
-
-  focusedDate: Date;
-  setFocusedDate: (date: Date) => void;
-
-  selectDate: (date: Date) => void;
-  setHoveredDate: (date: Date | null) => void;
-  // In single mode, `which` is always 'start'.
-  setDate: (which: "start" | "end", date: Date) => void;
-  setTime: (which: "start" | "end", hours: number, minutes: number) => void;
-  isDateDisabled: (date: Date) => boolean;
-  min?: Date | undefined;
-  max?: Date | undefined;
-
-  locale: string;
-  weekStartsOn: 0 | 1;
-  labels: DatePickerLabels;
-}
-
-const DatePickerContext = React.createContext<
-  DatePickerContextValue | undefined
->(undefined);
-
-function useDatePickerContext() {
-  const context = React.useContext(DatePickerContext);
-  if (context === undefined) {
-    throw new Error(
-      "DatePicker parts must be placed within <DatePicker.Root>.",
-    );
-  }
-  return context;
+export interface DatePickerActions {
+  /** Validates the current editor state and reveals deferred errors. */
+  validate: () => boolean;
+  /** Focuses the first invalid registered control in document order. */
+  focusFirstInvalidControl: () => boolean;
 }
 
 export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
@@ -315,7 +178,18 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       className,
       children,
       mode: modeProp,
+      defaultMode = "single",
+      onModeChange,
       includeTime: includeTimeProp,
+      granularity: granularityProp,
+      defaultGranularity,
+      onGranularityChange,
+      presets = [],
+      presetId: presetIdProp,
+      defaultPresetId = null,
+      onPresetIdChange,
+      onValidityChange,
+      required = false,
       timeZone = "local",
       value: valueProp,
       onValueChange,
@@ -331,6 +205,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       weekStartsOn = 0,
       labels: labelsProp,
       analyticsName,
+      actionsRef,
       ...elementProps
     } = props;
 
@@ -343,35 +218,74 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       }
     }
 
-    const mode = modeProp ?? "single";
-    const includeTime = includeTimeProp ?? false;
-    const labels = React.useMemo(
+    const labels = React.useMemo<Required<DatePickerLabels>>(
       () => ({ ...DEFAULT_LABELS, ...labelsProp }),
       [labelsProp],
     );
-
-    const singleValue =
-      mode === "single" && valueProp instanceof Date ? valueProp : null;
-    const trackedSelect = useTrackedCallback(
-      analyticsName,
-      "DatePicker",
-      "change",
-      onValueChange,
-      (val: Date | DateRange) => ({
-        value: val instanceof Date ? val.toISOString() : undefined,
-        start: val instanceof Date ? undefined : val.start.toISOString(),
-        end: val instanceof Date ? undefined : val.end.toISOString(),
-        mode,
-      }),
+    const usesLegacyIncludeTime =
+      includeTimeProp !== undefined &&
+      granularityProp === undefined &&
+      defaultGranularity === undefined;
+    const isDateDisabled = React.useCallback(
+      (date: Date): boolean => {
+        if (disabled?.(date)) return true;
+        if (min && isDateBefore(date, min, timeZone)) return true;
+        if (max && isDateBefore(max, date, timeZone)) return true;
+        return false;
+      },
+      [disabled, min, max, timeZone],
     );
-    const { rangeValue, emitRange, usesRangeDraftApi } = useDateRangeSelection({
-      mode,
+    const controller = useDatePickerController({
+      mode: modeProp,
+      defaultMode,
+      onModeChange,
+      includeTime: includeTimeProp,
+      granularity: granularityProp,
+      defaultGranularity,
+      onGranularityChange,
+      presets,
+      presetId: presetIdProp,
+      defaultPresetId,
+      onPresetIdChange,
+      onValidityChange,
       value: valueProp,
+      onValueChange,
       rangeDraft: rangeDraftProp,
       onRangeDraftChange,
-      onCommit: trackedSelect,
+      required,
       timeZone,
+      isDateDisabled,
+      unavailablePresetLabel: labels.unavailablePreset,
+      analyticsName,
     });
+    const {
+      mode,
+      updateMode,
+      granularity,
+      updateGranularity,
+      includeTime,
+      presetId,
+      presetError,
+      requiredError,
+      inputDraftResetRevision,
+      clearRequiredError,
+      setInputValidity,
+      registerInvalidControl,
+      registerPresetControl,
+      focusFirstInvalidControl,
+      validate,
+      selectPreset: selectPresetTransition,
+      clearPresetIdentity,
+      applyTransition,
+      singleValue,
+      rangeValue,
+      usesRangeDraftApi,
+    } = controller;
+    React.useImperativeHandle(
+      actionsRef,
+      () => ({ focusFirstInvalidControl, validate }),
+      [focusFirstInvalidControl, validate],
+    );
 
     // View state
     const initialMonth = React.useMemo(() => {
@@ -455,6 +369,59 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     const viewYear = getCalendarYear(viewDate, timeZone);
     const viewMonth = getCalendarMonth(viewDate, timeZone);
 
+    React.useEffect(() => {
+      const isVisible = (date: Date) =>
+        getCalendarYear(date, timeZone) === viewYear &&
+        getCalendarMonth(date, timeZone) === viewMonth;
+      if (isVisible(focusedDate) && !isDateDisabled(focusedDate)) {
+        return;
+      }
+
+      const selectedDate =
+        mode === "single"
+          ? singleValue
+          : rangeValue?.start ?? rangeValue?.end ?? null;
+      if (
+        selectedDate &&
+        isVisible(selectedDate) &&
+        !isDateDisabled(selectedDate)
+      ) {
+        setFocusedDateState(startOfCalendarDay(selectedDate, timeZone));
+        return;
+      }
+
+      const lastDay = getCalendarDate(
+        createCalendarDate(viewYear, viewMonth + 1, 0, timeZone),
+        timeZone,
+      );
+      for (let day = 1; day <= lastDay; day += 1) {
+        const candidate = createCalendarDate(
+          viewYear,
+          viewMonth,
+          day,
+          timeZone,
+        );
+        if (!isDateDisabled(candidate)) {
+          setFocusedDateState(candidate);
+          return;
+        }
+      }
+
+      const fallbackDate = createCalendarDate(viewYear, viewMonth, 1, timeZone);
+      if (focusedDate.getTime() !== fallbackDate.getTime()) {
+        setFocusedDateState(fallbackDate);
+      }
+    }, [
+      focusedDate,
+      isDateDisabled,
+      mode,
+      rangeValue,
+      singleValue,
+      timeZone,
+      viewMonth,
+      viewYear,
+    ]);
+
     const setFocusedDate = React.useCallback(
       (date: Date) => {
         const normalized = startOfCalendarDay(date, timeZone);
@@ -499,55 +466,61 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     );
     const goToNextMonth = React.useCallback(() => goToMonth(1), [goToMonth]);
 
-    const isDateDisabled = React.useCallback(
-      (date: Date): boolean => {
-        if (disabled?.(date)) return true;
-        if (min && isDateBefore(date, min, timeZone)) return true;
-        if (max && isDateBefore(max, date, timeZone)) return true;
-        return false;
-      },
-      [disabled, min, max, timeZone],
-    );
-
     const selectDate = React.useCallback(
       (date: Date) => {
         if (isDateDisabled(date)) return;
 
         function applyTime(target: Date, source: Date | null): Date {
-          if (!includeTime) return startOfCalendarDay(target, timeZone);
-          const ref = source ?? new Date();
+          if (!includeTime) {
+            return startOfCalendarDay(target, timeZone);
+          }
+          const reference =
+            source ?? (usesLegacyIncludeTime ? new Date() : null);
+          if (!reference) return startOfCalendarDay(target, timeZone);
           return setCalendarTime(
             startOfCalendarDay(target, timeZone),
-            getCalendarHours(ref, timeZone),
-            getCalendarMinutes(ref, timeZone),
+            getCalendarHours(reference, timeZone),
+            getCalendarMinutes(reference, timeZone),
             timeZone,
           );
         }
 
         if (mode === "single") {
-          trackedSelect(applyTime(date, singleValue));
+          applyTransition({
+            source: "manual",
+            mode,
+            value: applyTime(date, singleValue),
+            granularity,
+            presetId: null,
+          });
           return;
         }
 
-        // Range mode
         const draftStart =
           usesRangeDraftApi && rangeValue?.start && !rangeValue.end
             ? rangeValue.start
             : pendingStart;
         if (draftStart === null) {
           if (usesRangeDraftApi) {
-            emitRange(
-              !rangeValue?.start && rangeValue?.end
-                ? {
-                    start: applyTime(date, null),
-                    end: new Date(rangeValue.end),
-                  }
-                : {
-                    start: applyTime(date, rangeValue?.start ?? null),
-                    end: null,
-                  },
-            );
+            applyTransition({
+              source: "manual",
+              mode,
+              value:
+                !rangeValue?.start && rangeValue?.end
+                  ? {
+                      start: applyTime(date, null),
+                      end: new Date(rangeValue.end),
+                    }
+                  : {
+                      start: applyTime(date, rangeValue?.start ?? null),
+                      end: null,
+                    },
+              granularity,
+              presetId: null,
+            });
           } else {
+            clearPresetIdentity();
+            clearRequiredError();
             setPendingStart(startOfCalendarDay(date, timeZone));
           }
         } else {
@@ -560,22 +533,32 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
             rangeValue?.start && rangeValue.end
               ? { start: rangeValue.start, end: rangeValue.end }
               : undefined;
-          emitRange({ start, end }, preferredRoleTimes);
+          applyTransition({
+            source: "manual",
+            mode,
+            value: { start, end },
+            granularity,
+            presetId: null,
+            ...(preferredRoleTimes ? { preferredRoleTimes } : {}),
+          });
           setPendingStart(null);
           setHoveredDate(null);
         }
       },
       [
         mode,
+        granularity,
         includeTime,
+        usesLegacyIncludeTime,
         timeZone,
         pendingStart,
         usesRangeDraftApi,
         singleValue,
         rangeValue,
         isDateDisabled,
-        emitRange,
-        trackedSelect,
+        applyTransition,
+        clearPresetIdentity,
+        clearRequiredError,
       ],
     );
 
@@ -600,7 +583,13 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
                   timeZone,
                 )
               : new Date(date);
-          trackedSelect(d);
+          applyTransition({
+            source: "manual",
+            mode,
+            value: d,
+            granularity,
+            presetId: null,
+          });
         } else {
           const current = rangeValue ?? { start: null, end: null };
           const existing = which === "start" ? current.start : current.end;
@@ -627,16 +616,23 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
             current.start && current.end
               ? { start: current.start, end: current.end }
               : undefined;
-          emitRange(newRange, preferredRoleTimes);
+          applyTransition({
+            source: "manual",
+            mode,
+            value: newRange,
+            granularity,
+            presetId: null,
+            ...(preferredRoleTimes ? { preferredRoleTimes } : {}),
+          });
         }
       },
       [
         mode,
+        granularity,
         includeTime,
         singleValue,
         rangeValue,
-        trackedSelect,
-        emitRange,
+        applyTransition,
         timeZone,
       ],
     );
@@ -647,7 +643,13 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
           const base = singleValue
             ? new Date(singleValue)
             : startOfCalendarDay(new Date(), timeZone);
-          trackedSelect(setCalendarTime(base, hours, minutes, timeZone));
+          applyTransition({
+            source: "manual",
+            mode,
+            value: setCalendarTime(base, hours, minutes, timeZone),
+            granularity,
+            presetId: null,
+          });
         } else {
           const today = startOfCalendarDay(new Date(), timeZone);
           const current = rangeValue ?? { start: null, end: null };
@@ -664,11 +666,40 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
           } else {
             newRange.end = timedTarget;
           }
-          emitRange(newRange);
+          applyTransition({
+            source: "manual",
+            mode,
+            value: newRange,
+            granularity,
+            presetId: null,
+          });
         }
       },
-      [mode, singleValue, rangeValue, trackedSelect, emitRange, timeZone],
+      [mode, granularity, singleValue, rangeValue, applyTransition, timeZone],
     );
+
+    const selectPreset = React.useCallback(
+      (nextPresetId: string | null) => {
+        const selectedDate = selectPresetTransition(nextPresetId);
+        if (selectedDate) {
+          setViewDate(
+            createCalendarDate(
+              getCalendarYear(selectedDate, timeZone),
+              getCalendarMonth(selectedDate, timeZone),
+              1,
+              timeZone,
+            ),
+          );
+        }
+      },
+      [selectPresetTransition, timeZone],
+    );
+
+    const rangePreviewAnchor =
+      pendingStart ??
+      (usesRangeDraftApi && rangeValue && (!rangeValue.start || !rangeValue.end)
+        ? rangeValue.start ?? rangeValue.end
+        : null);
 
     const contextValue = React.useMemo<DatePickerContextValue>(
       () => ({
@@ -677,12 +708,27 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         goToPreviousMonth,
         goToNextMonth,
         mode,
+        setMode: updateMode,
+        granularity,
+        setGranularity: updateGranularity,
         includeTime,
+        presets,
+        presetId,
+        selectPreset,
+        presetError,
+        required,
+        requiredError,
+        inputDraftResetRevision,
+        clearRequiredError,
+        setInputValidity,
+        registerInvalidControl,
+        registerPresetControl,
         timeZone,
         usesRangeDraftApi,
         singleValue,
         rangeValue,
         pendingStart,
+        rangePreviewAnchor,
         hoveredDate,
         focusedDate,
         setFocusedDate,
@@ -703,12 +749,27 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         goToPreviousMonth,
         goToNextMonth,
         mode,
+        updateMode,
+        granularity,
+        updateGranularity,
         includeTime,
+        presets,
+        presetId,
+        selectPreset,
+        presetError,
+        required,
+        requiredError,
+        inputDraftResetRevision,
+        clearRequiredError,
+        setInputValidity,
+        registerInvalidControl,
+        registerPresetControl,
         timeZone,
         usesRangeDraftApi,
         singleValue,
         rangeValue,
         pendingStart,
+        rangePreviewAnchor,
         hoveredDate,
         focusedDate,
         setFocusedDate,
@@ -738,421 +799,6 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     );
   },
 );
-
-const FIELDSET_GAP = {
-  "--fieldset-gap": "var(--spacing-2xs)",
-} as React.CSSProperties;
-
-function formatDateValue(
-  date: Date | null,
-  locale: string,
-  timeZone: DatePickerTimeZone,
-): string {
-  if (!date) {
-    return "";
-  }
-  return date.toLocaleDateString(locale, {
-    month: "2-digit",
-    day: "2-digit",
-    year: "numeric",
-    timeZone: timeZone === "UTC" ? "UTC" : undefined,
-  });
-}
-
-function parseDateString(
-  input: string,
-  locale: string,
-  timeZone: DatePickerTimeZone,
-): Date | null {
-  const s = input.trim().replace(/\.$/, "");
-  if (!s) return null;
-
-  const match = s.match(/^(\d{1,4})[/\-.\s]+(\d{1,4})[/\-.\s]+(\d{1,4})$/);
-  if (!match) return null;
-
-  const { order } = getDateFormat(locale);
-  const raw = [
-    parseInt(match[1], 10),
-    parseInt(match[2], 10),
-    parseInt(match[3], 10),
-  ];
-
-  const values: Record<string, number> = {};
-  for (let i = 0; i < 3; i++) {
-    values[order[i]] = raw[i];
-  }
-
-  const month = values.month;
-  const day = values.day;
-  const year = values.year;
-
-  if (month < 1 || month > 12 || day < 1 || day > 31 || year < 100) {
-    return null;
-  }
-
-  const date = createCalendarDate(year, month - 1, day, timeZone);
-  if (
-    getCalendarYear(date, timeZone) !== year ||
-    getCalendarMonth(date, timeZone) !== month - 1 ||
-    getCalendarDate(date, timeZone) !== day
-  ) {
-    return null;
-  }
-
-  return date;
-}
-
-function DateInput({
-  date,
-  label,
-  which,
-}: {
-  date: Date | null;
-  label: string;
-  which: "start" | "end";
-}) {
-  const ctx = useDatePickerContext();
-  const formatted = formatDateValue(date, ctx.locale, ctx.timeZone);
-  const [draft, setDraft] = React.useState(formatted);
-  const [hasFocus, setHasFocus] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!hasFocus) setDraft(formatted);
-  }, [formatted, hasFocus]);
-
-  const { placeholder } = getDateFormat(ctx.locale);
-
-  function commit() {
-    if (draft === formatted) return;
-    const parsed = parseDateString(draft, ctx.locale, ctx.timeZone);
-    if (parsed && !ctx.isDateDisabled(parsed)) {
-      ctx.setDate(which, parsed);
-    } else {
-      setDraft(formatted);
-    }
-  }
-
-  return (
-    <Input
-      aria-label={label}
-      value={draft}
-      placeholder={placeholder}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        setDraft(e.target.value);
-      }}
-      onFocus={() => setHasFocus(true)}
-      onBlur={() => {
-        setHasFocus(false);
-        commit();
-      }}
-      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          (e.target as HTMLInputElement).blur();
-        }
-      }}
-    />
-  );
-}
-
-function formatTimeValue(
-  date: Date | null,
-  locale: string,
-  timeZone: DatePickerTimeZone,
-): string {
-  const d = date ?? new Date();
-  return d.toLocaleTimeString(locale, {
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: timeZone === "UTC" ? "UTC" : undefined,
-  });
-}
-
-function parseTimeString(
-  input: string,
-): { hours: number; minutes: number } | null {
-  const s = input.trim();
-  if (!s) return null;
-
-  const match = s.match(/^(\d{1,2})[:.](\d{2})\s*(am|pm|a|p)?$/i);
-  if (!match) return null;
-
-  let h = parseInt(match[1], 10);
-  const m = parseInt(match[2], 10);
-  const meridiem = match[3]?.toLowerCase();
-
-  if (m < 0 || m > 59) return null;
-
-  if (meridiem) {
-    if (h < 1 || h > 12) return null;
-    if (meridiem.startsWith("p") && h !== 12) h += 12;
-    if (meridiem.startsWith("a") && h === 12) h = 0;
-  } else {
-    if (h < 0 || h > 23) return null;
-  }
-
-  return { hours: h, minutes: m };
-}
-
-function TimeInput({
-  date,
-  label,
-  locale,
-  timeZone,
-  disabled,
-  onTimeChange,
-}: {
-  date: Date | null;
-  label: string;
-  locale: string;
-  timeZone: DatePickerTimeZone;
-  disabled: boolean;
-  onTimeChange: (hours: number, minutes: number) => void;
-}) {
-  const formatted =
-    disabled && !date ? "" : formatTimeValue(date, locale, timeZone);
-  const [draft, setDraft] = React.useState(formatted);
-  const [hasFocus, setHasFocus] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!hasFocus) setDraft(formatted);
-  }, [formatted, hasFocus]);
-
-  const placeholder = getTimePlaceholder(locale);
-
-  function commit() {
-    if (draft === formatted) return;
-    const parsed = parseTimeString(draft);
-    if (parsed) {
-      onTimeChange(parsed.hours, parsed.minutes);
-    } else {
-      setDraft(formatted);
-    }
-  }
-
-  return (
-    <Input
-      aria-label={label}
-      value={draft}
-      placeholder={placeholder}
-      disabled={disabled}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-        setDraft(e.target.value);
-      }}
-      onFocus={() => setHasFocus(true)}
-      onBlur={() => {
-        setHasFocus(false);
-        commit();
-      }}
-      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          (e.target as HTMLInputElement).blur();
-        }
-      }}
-    />
-  );
-}
-
-function DateTimeRow({
-  date,
-  which,
-  locale,
-  timeZone,
-  timeDisabled,
-  onTimeChange,
-  dateLabel,
-  timeLabel,
-  legendLabel,
-}: {
-  date: Date | null;
-  which: "start" | "end";
-  locale: string;
-  timeZone: DatePickerTimeZone;
-  timeDisabled: boolean;
-  onTimeChange: (hours: number, minutes: number) => void;
-  dateLabel: string;
-  timeLabel: string;
-  legendLabel: string;
-}) {
-  return (
-    <Fieldset.Root orientation="horizontal" style={FIELDSET_GAP}>
-      <Fieldset.Legend visuallyHidden>{legendLabel}</Fieldset.Legend>
-      <DateInput date={date} label={dateLabel} which={which} />
-      <TimeInput
-        date={date}
-        label={timeLabel}
-        locale={locale}
-        timeZone={timeZone}
-        disabled={timeDisabled}
-        onTimeChange={onTimeChange}
-      />
-    </Fieldset.Root>
-  );
-}
-
-function HeaderAutoLayout() {
-  const ctx = useDatePickerContext();
-  const l = ctx.labels;
-
-  if (ctx.mode === "single" && !ctx.includeTime) {
-    return <DateInput date={ctx.singleValue} label={l.date} which="start" />;
-  }
-
-  if (ctx.mode === "range" && !ctx.includeTime) {
-    return (
-      <Fieldset.Root orientation="horizontal" style={FIELDSET_GAP}>
-        <Fieldset.Legend visuallyHidden>{l.dateRange}</Fieldset.Legend>
-        <DateInput
-          date={ctx.rangeValue?.start ?? null}
-          label={l.startDate}
-          which="start"
-        />
-        <DateInput
-          date={ctx.rangeValue?.end ?? null}
-          label={l.endDate}
-          which="end"
-        />
-      </Fieldset.Root>
-    );
-  }
-
-  if (ctx.mode === "single" && ctx.includeTime) {
-    return (
-      <DateTimeRow
-        date={ctx.singleValue}
-        which="start"
-        locale={ctx.locale}
-        timeZone={ctx.timeZone}
-        timeDisabled={false}
-        onTimeChange={(h, m) => ctx.setTime("start", h, m)}
-        dateLabel={l.date}
-        timeLabel={l.time}
-        legendLabel={l.dateAndTime}
-      />
-    );
-  }
-
-  // range + includeTime
-  return (
-    <>
-      <DateTimeRow
-        date={ctx.rangeValue?.start ?? null}
-        which="start"
-        locale={ctx.locale}
-        timeZone={ctx.timeZone}
-        timeDisabled={ctx.usesRangeDraftApi && !ctx.rangeValue?.start}
-        onTimeChange={(h, m) => ctx.setTime("start", h, m)}
-        dateLabel={l.startDate}
-        timeLabel={l.startTime}
-        legendLabel={l.startDateAndTime}
-      />
-      <DateTimeRow
-        date={ctx.rangeValue?.end ?? null}
-        which="end"
-        locale={ctx.locale}
-        timeZone={ctx.timeZone}
-        timeDisabled={ctx.usesRangeDraftApi && !ctx.rangeValue?.end}
-        onTimeChange={(h, m) => ctx.setTime("end", h, m)}
-        dateLabel={l.endDate}
-        timeLabel={l.endTime}
-        legendLabel={l.endDateAndTime}
-      />
-    </>
-  );
-}
-
-export interface DatePickerHeaderProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
-
-export const Header = React.forwardRef<HTMLDivElement, DatePickerHeaderProps>(
-  function DatePickerHeader({ className, children, ...props }, forwardedRef) {
-    return (
-      <div
-        ref={forwardedRef}
-        className={clsx(styles.header, className)}
-        {...props}
-      >
-        {children ?? <HeaderAutoLayout />}
-      </div>
-    );
-  },
-);
-
-export interface DatePickerNavigationProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
-
-export const Navigation = React.forwardRef<
-  HTMLDivElement,
-  DatePickerNavigationProps
->(function DatePickerNavigation(props, forwardedRef) {
-  const { className, ...elementProps } = props;
-  const ctx = useDatePickerContext();
-  const {
-    viewYear,
-    viewMonth,
-    goToPreviousMonth,
-    goToNextMonth,
-    locale,
-    labels,
-  } = ctx;
-
-  const monthLabel = createCalendarDate(
-    viewYear,
-    viewMonth,
-    1,
-    ctx.timeZone,
-  ).toLocaleDateString(locale, {
-    month: "long",
-    year: "numeric",
-    timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
-  });
-
-  const isPrevDisabled = ctx.min
-    ? isDateBefore(
-        createCalendarDate(viewYear, viewMonth, 0, ctx.timeZone),
-        ctx.min,
-        ctx.timeZone,
-      )
-    : false;
-  const isNextDisabled = ctx.max
-    ? isDateBefore(
-        ctx.max,
-        createCalendarDate(viewYear, viewMonth + 1, 1, ctx.timeZone),
-        ctx.timeZone,
-      )
-    : false;
-
-  return (
-    <div
-      ref={forwardedRef}
-      className={clsx(styles.nav, className)}
-      {...elementProps}
-    >
-      <div className={styles.navTitle} aria-live="polite">
-        {monthLabel}
-      </div>
-      <div className={styles.navButtons}>
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={goToPreviousMonth}
-          aria-label={labels.previousMonth}
-          disabled={isPrevDisabled}
-        >
-          <CentralIcon name="IconChevronLeft" size={16} />
-        </button>
-        <button
-          type="button"
-          className={styles.navButton}
-          onClick={goToNextMonth}
-          aria-label={labels.nextMonth}
-          disabled={isNextDisabled}
-        >
-          <CentralIcon name="IconChevronRight" size={16} />
-        </button>
-      </div>
-    </div>
-  );
-});
 
 export interface DatePickerControlsProps
   extends React.ComponentPropsWithoutRef<"div"> {}
@@ -1214,304 +860,8 @@ export const Footer = React.forwardRef<HTMLDivElement, DatePickerFooterProps>(
   },
 );
 
-export interface DatePickerGridProps
-  extends React.ComponentPropsWithoutRef<"table"> {
-  /** Custom render function for day cell content. */
-  renderDay?: (date: Date, state: DayCellState) => React.ReactNode;
-}
-
-export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
-  function DatePickerGrid(props, forwardedRef) {
-    const { className, renderDay, ...elementProps } = props;
-    const ctx = useDatePickerContext();
-
-    const gridRef = React.useRef<HTMLTableElement>(null);
-    const mergedRef = React.useCallback(
-      (node: HTMLTableElement | null) => {
-        (gridRef as React.MutableRefObject<HTMLTableElement | null>).current =
-          node;
-        if (typeof forwardedRef === "function") forwardedRef(node);
-        else if (forwardedRef) forwardedRef.current = node;
-      },
-      [forwardedRef],
-    );
-
-    const weeks = React.useMemo(
-      () =>
-        getMonthGrid(
-          ctx.viewYear,
-          ctx.viewMonth,
-          ctx.weekStartsOn,
-          ctx.timeZone,
-        ),
-      [ctx.viewYear, ctx.viewMonth, ctx.weekStartsOn, ctx.timeZone],
-    );
-
-    const today = React.useMemo(
-      () => startOfCalendarDay(new Date(), ctx.timeZone),
-      [ctx.timeZone],
-    );
-
-    const allWeekdays = React.useMemo(
-      () => getWeekdayLabels(ctx.locale),
-      [ctx.locale],
-    );
-
-    const weekdays = React.useMemo(() => {
-      const days = [];
-      for (let i = 0; i < 7; i++) {
-        days.push(allWeekdays[(ctx.weekStartsOn + i) % 7]);
-      }
-      return days;
-    }, [allWeekdays, ctx.weekStartsOn]);
-
-    function getCellState(date: Date): DayCellState {
-      const isToday = isSameDay(date, today, ctx.timeZone);
-      const isOutsideMonth = !isSameMonth(
-        date,
-        ctx.viewYear,
-        ctx.viewMonth,
-        ctx.timeZone,
-      );
-      const isDisabled = ctx.isDateDisabled(date);
-
-      let isSelected = false;
-      let isRangeStart = false;
-      let isRangeEnd = false;
-      let isInRange = false;
-
-      if (ctx.mode === "single" && ctx.singleValue) {
-        isSelected = isSameDay(date, ctx.singleValue, ctx.timeZone);
-      }
-
-      if (ctx.mode === "range") {
-        if (ctx.pendingStart) {
-          if (ctx.hoveredDate) {
-            const pStart = isDateBefore(
-              ctx.hoveredDate,
-              ctx.pendingStart,
-              ctx.timeZone,
-            )
-              ? ctx.hoveredDate
-              : ctx.pendingStart;
-            const pEnd = isDateBefore(
-              ctx.hoveredDate,
-              ctx.pendingStart,
-              ctx.timeZone,
-            )
-              ? ctx.pendingStart
-              : ctx.hoveredDate;
-            isRangeStart = isSameDay(date, pStart, ctx.timeZone);
-            isRangeEnd = isSameDay(date, pEnd, ctx.timeZone);
-            isInRange = isDateInRange(date, pStart, pEnd, ctx.timeZone);
-          } else {
-            isSelected = isSameDay(date, ctx.pendingStart, ctx.timeZone);
-          }
-        } else if (ctx.rangeValue?.start && ctx.rangeValue.end) {
-          isRangeStart = isSameDay(date, ctx.rangeValue.start, ctx.timeZone);
-          isRangeEnd = isSameDay(date, ctx.rangeValue.end, ctx.timeZone);
-          isInRange = isDateInRange(
-            date,
-            ctx.rangeValue.start,
-            ctx.rangeValue.end,
-            ctx.timeZone,
-          );
-        } else if (ctx.rangeValue?.start || ctx.rangeValue?.end) {
-          isSelected = isSameDay(
-            date,
-            ctx.rangeValue.start ?? ctx.rangeValue.end!,
-            ctx.timeZone,
-          );
-        }
-      }
-
-      return {
-        isToday,
-        isOutsideMonth,
-        isDisabled,
-        isSelected,
-        isRangeStart,
-        isRangeEnd,
-        isInRange,
-      };
-    }
-
-    function handleKeyDown(event: React.KeyboardEvent) {
-      let nextDate: Date | null;
-
-      switch (event.key) {
-        case "ArrowRight":
-          nextDate = addCalendarDays(ctx.focusedDate, 1, ctx.timeZone);
-          break;
-        case "ArrowLeft":
-          nextDate = addCalendarDays(ctx.focusedDate, -1, ctx.timeZone);
-          break;
-        case "ArrowDown":
-          nextDate = addCalendarDays(ctx.focusedDate, 7, ctx.timeZone);
-          break;
-        case "ArrowUp":
-          nextDate = addCalendarDays(ctx.focusedDate, -7, ctx.timeZone);
-          break;
-        case "PageDown":
-          nextDate = event.shiftKey
-            ? addCalendarMonths(ctx.focusedDate, 12, ctx.timeZone)
-            : addCalendarMonths(ctx.focusedDate, 1, ctx.timeZone);
-          break;
-        case "PageUp":
-          nextDate = event.shiftKey
-            ? addCalendarMonths(ctx.focusedDate, -12, ctx.timeZone)
-            : addCalendarMonths(ctx.focusedDate, -1, ctx.timeZone);
-          break;
-        case "Home": {
-          const dayOfWeek = getCalendarDay(ctx.focusedDate, ctx.timeZone);
-          const diff = (dayOfWeek - ctx.weekStartsOn + 7) % 7;
-          nextDate = addCalendarDays(ctx.focusedDate, -diff, ctx.timeZone);
-          break;
-        }
-        case "End": {
-          const dayOfWeek = getCalendarDay(ctx.focusedDate, ctx.timeZone);
-          const diff = (6 - dayOfWeek + ctx.weekStartsOn + 7) % 7;
-          nextDate = addCalendarDays(ctx.focusedDate, diff, ctx.timeZone);
-          break;
-        }
-        case "Enter":
-        case " ":
-          event.preventDefault();
-          if (!ctx.isDateDisabled(ctx.focusedDate)) {
-            ctx.selectDate(ctx.focusedDate);
-          }
-          return;
-        default:
-          return;
-      }
-
-      if (nextDate) {
-        event.preventDefault();
-        ctx.setFocusedDate(nextDate);
-      }
-    }
-
-    // Keep DOM focus in sync with focusedDate when keyboard-navigating
-    React.useEffect(() => {
-      const grid = gridRef.current;
-      if (!grid || !grid.contains(document.activeElement)) return;
-
-      const focusTarget = grid.querySelector<HTMLButtonElement>(
-        'button[tabindex="0"]',
-      );
-      focusTarget?.focus();
-    }, [ctx.focusedDate]);
-
-    const gridLabel = createCalendarDate(
-      ctx.viewYear,
-      ctx.viewMonth,
-      1,
-      ctx.timeZone,
-    ).toLocaleDateString(ctx.locale, {
-      month: "long",
-      year: "numeric",
-      timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
-    });
-
-    return (
-      <table
-        ref={mergedRef}
-        className={clsx(styles.grid, className)}
-        role="grid"
-        aria-label={gridLabel}
-        onKeyDown={handleKeyDown}
-        onMouseLeave={() => {
-          if (ctx.mode === "range" && ctx.pendingStart) {
-            ctx.setHoveredDate(null);
-          }
-        }}
-        {...elementProps}
-      >
-        <thead>
-          <tr>
-            {weekdays.map((day, i) => (
-              <th
-                key={i}
-                className={styles.weekdayCell}
-                scope="col"
-                abbr={day.long}
-                aria-label={day.long}
-              >
-                {day.narrow}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {weeks.map((week, wi) => (
-            <tr key={wi} className={styles.weekRow}>
-              {week.map((date) => {
-                const s = getCellState(date);
-                const isFocused = isSameDay(
-                  date,
-                  ctx.focusedDate,
-                  ctx.timeZone,
-                );
-                return (
-                  <td key={date.getTime()} className={styles.dayCell}>
-                    <button
-                      type="button"
-                      className={styles.dayButton}
-                      tabIndex={isFocused ? 0 : -1}
-                      data-today={s.isToday || undefined}
-                      data-selected={s.isSelected || undefined}
-                      data-range-start={s.isRangeStart || undefined}
-                      data-range-end={s.isRangeEnd || undefined}
-                      data-in-range={s.isInRange || undefined}
-                      data-outside-month={s.isOutsideMonth || undefined}
-                      data-disabled={s.isDisabled || undefined}
-                      aria-selected={
-                        s.isSelected ||
-                        s.isRangeStart ||
-                        s.isRangeEnd ||
-                        s.isInRange ||
-                        undefined
-                      }
-                      aria-disabled={s.isDisabled || undefined}
-                      aria-label={date.toLocaleDateString(ctx.locale, {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                        timeZone: ctx.timeZone === "UTC" ? "UTC" : undefined,
-                      })}
-                      onClick={() => {
-                        if (!s.isDisabled) {
-                          ctx.setFocusedDate(date);
-                          ctx.selectDate(date);
-                        }
-                      }}
-                      onMouseEnter={() => {
-                        if (ctx.mode === "range" && ctx.pendingStart) {
-                          ctx.setHoveredDate(date);
-                        }
-                      }}
-                    >
-                      {renderDay
-                        ? renderDay(date, s)
-                        : getCalendarDate(date, ctx.timeZone)}
-                    </button>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  },
-);
-
 if (process.env.NODE_ENV !== "production") {
   Root.displayName = "DatePicker.Root";
-  Header.displayName = "DatePicker.Header";
-  Navigation.displayName = "DatePicker.Navigation";
-  Grid.displayName = "DatePicker.Grid";
   Controls.displayName = "DatePicker.Controls";
   ControlItem.displayName = "DatePicker.ControlItem";
   Footer.displayName = "DatePicker.Footer";

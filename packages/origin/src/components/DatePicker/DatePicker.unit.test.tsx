@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import * as DatePicker from "./";
@@ -266,11 +272,16 @@ describe("DatePicker range ownership", () => {
         </DatePicker.Root>,
       );
 
+      const suffix = timeZone === "UTC" ? " (UTC)" : "";
       expect(
-        screen.getByRole("textbox", { name: "Start time" }),
+        screen.getByRole("textbox", { name: `Start time${suffix}` }),
       ).not.toBeDisabled();
-      expect(screen.getByRole("textbox", { name: "End time" })).toBeDisabled();
-      expect(screen.getByRole("textbox", { name: "End time" })).toHaveValue("");
+      expect(
+        screen.getByRole("textbox", { name: `End time${suffix}` }),
+      ).toBeDisabled();
+      expect(
+        screen.getByRole("textbox", { name: `End time${suffix}` }),
+      ).toHaveValue("");
       expect(onRangeDraftChange).not.toHaveBeenCalled();
     },
   );
@@ -326,7 +337,9 @@ describe("DatePicker range ownership", () => {
     expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue(
       "03/08/2026",
     );
-    const startTime = screen.getByRole("textbox", { name: "Start time" });
+    const startTime = screen.getByRole("textbox", {
+      name: "Start time (UTC)",
+    });
     expect(startTime).toHaveValue("2:30 AM");
 
     fireEvent.focus(startTime);
@@ -387,5 +400,295 @@ describe("DatePicker range ownership", () => {
       expect(startInput).toHaveValue("02/12/2026");
       expect(endInput).toHaveValue("");
     });
+  });
+});
+
+describe("DatePicker grid focus and composition", () => {
+  function getRovingDays() {
+    return within(screen.getByRole("grid"))
+      .getAllByRole("button")
+      .filter((button) => button.tabIndex === 0);
+  }
+
+  it("creates one visible roving tab stop when value and month differ", async () => {
+    render(
+      <DatePicker.Root
+        value={new Date("2026-02-11T00:00:00.000Z")}
+        defaultMonth={new Date("2026-07-01T00:00:00.000Z")}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    expect(getRovingDays()[0]).toHaveAccessibleName("Wednesday, July 1, 2026");
+  });
+
+  it("reconciles the roving tab stop after an external month change", async () => {
+    function Harness() {
+      const [month, setMonth] = useState(new Date("2026-07-01T00:00:00.000Z"));
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => setMonth(new Date("2026-08-01T00:00:00.000Z"))}
+          >
+            Change month
+          </button>
+          <DatePicker.Root
+            month={month}
+            onMonthChange={setMonth}
+            value={new Date("2026-08-15T00:00:00.000Z")}
+            timeZone="UTC"
+          >
+            <DatePicker.Grid />
+          </DatePicker.Root>
+        </>
+      );
+    }
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Change month" }));
+
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Saturday, August 15, 2026",
+    );
+  });
+
+  it("keeps a disabled roving tab stop after an external month change", async () => {
+    const onValueChange = vi.fn();
+
+    function Harness() {
+      const [month, setMonth] = useState(new Date("2026-07-01T00:00:00.000Z"));
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => setMonth(new Date("2026-08-01T00:00:00.000Z"))}
+          >
+            Change month
+          </button>
+          <DatePicker.Root
+            month={month}
+            onMonthChange={setMonth}
+            onValueChange={onValueChange}
+            disabled={(date) => date.getUTCMonth() === 7}
+            timeZone="UTC"
+          >
+            <DatePicker.Grid />
+          </DatePicker.Root>
+        </>
+      );
+    }
+
+    render(<Harness />);
+    fireEvent.click(screen.getByRole("button", { name: "Change month" }));
+
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    const rovingDay = getRovingDays()[0];
+    expect(rovingDay).toHaveAccessibleName("Saturday, August 1, 2026");
+    expect(rovingDay).toHaveAttribute("aria-disabled", "true");
+
+    rovingDay.focus();
+    expect(rovingDay).toHaveFocus();
+
+    fireEvent.keyDown(rovingDay, { key: "Enter" });
+    fireEvent.keyDown(rovingDay, { key: " " });
+
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(rovingDay).not.toHaveAttribute("aria-selected");
+  });
+
+  it("skips disabled dates and stops at min/max keyboard boundaries", async () => {
+    render(
+      <DatePicker.Root
+        defaultMonth={new Date("2026-02-01T00:00:00.000Z")}
+        min={new Date("2026-02-10T00:00:00.000Z")}
+        max={new Date("2026-02-12T00:00:00.000Z")}
+        disabled={(date) => date.getUTCDate() === 11}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+    await waitFor(() =>
+      expect(getRovingDays()[0]).toHaveAccessibleName(
+        "Tuesday, February 10, 2026",
+      ),
+    );
+    const grid = screen.getByRole("grid");
+
+    fireEvent.keyDown(grid, { key: "ArrowRight" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "ArrowRight" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "ArrowDown" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "ArrowLeft" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Tuesday, February 10, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "ArrowUp" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Tuesday, February 10, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "End" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "Home" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Tuesday, February 10, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "End" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "PageDown" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+    fireEvent.keyDown(grid, { key: "PageUp" });
+    expect(getRovingDays()[0]).toHaveAccessibleName(
+      "Thursday, February 12, 2026",
+    );
+  });
+
+  it("composes consumer and internal grid handlers once", async () => {
+    const onKeyDown = vi.fn();
+    const onMouseLeave = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        defaultMonth={new Date("2026-02-01T00:00:00.000Z")}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid onKeyDown={onKeyDown} onMouseLeave={onMouseLeave} />
+      </DatePicker.Root>,
+    );
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    const grid = screen.getByRole("grid");
+    const initialLabel = getRovingDays()[0].getAttribute("aria-label");
+
+    fireEvent.keyDown(grid, { key: "ArrowRight" });
+    expect(onKeyDown).toHaveBeenCalledOnce();
+    expect(getRovingDays()[0]).not.toHaveAccessibleName(initialLabel!);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Wednesday, February 11, 2026",
+      }),
+    );
+    const rangeEnd = screen.getByRole("button", {
+      name: "Friday, February 13, 2026",
+    });
+    fireEvent.mouseEnter(rangeEnd);
+    expect(rangeEnd).toHaveAttribute("data-range-end");
+
+    fireEvent.mouseLeave(grid);
+    expect(onMouseLeave).toHaveBeenCalledOnce();
+    expect(rangeEnd).not.toHaveAttribute("data-range-end");
+  });
+
+  it("respects consumer prevention of internal grid handlers", async () => {
+    render(
+      <DatePicker.Root
+        mode="range"
+        defaultMonth={new Date("2026-02-01T00:00:00.000Z")}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid
+          onKeyDown={(event) => event.preventDefault()}
+          onMouseLeave={(event) => event.preventDefault()}
+        />
+      </DatePicker.Root>,
+    );
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    const grid = screen.getByRole("grid");
+    const initialLabel = getRovingDays()[0].getAttribute("aria-label");
+
+    fireEvent.keyDown(grid, { key: "ArrowRight" });
+
+    expect(getRovingDays()[0]).toHaveAccessibleName(initialLabel!);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Wednesday, February 11, 2026",
+      }),
+    );
+    const rangeEnd = screen.getByRole("button", {
+      name: "Friday, February 13, 2026",
+    });
+    fireEvent.mouseEnter(rangeEnd);
+    expect(rangeEnd).toHaveAttribute("data-range-end");
+
+    fireEvent.mouseLeave(grid);
+    expect(rangeEnd).toHaveAttribute("data-range-end");
+  });
+
+  it("supports Base UI handler cancellation from grid consumers", async () => {
+    render(
+      <DatePicker.Root
+        defaultMonth={new Date("2026-02-01T00:00:00.000Z")}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid onKeyDown={(event) => event.preventBaseUIHandler()} />
+      </DatePicker.Root>,
+    );
+    await waitFor(() => expect(getRovingDays()).toHaveLength(1));
+    const initialLabel = getRovingDays()[0].getAttribute("aria-label");
+
+    fireEvent.keyDown(screen.getByRole("grid"), { key: "ArrowRight" });
+
+    expect(getRovingDays()[0]).toHaveAccessibleName(initialLabel!);
+  });
+
+  it("marks today with aria-current", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-11T12:00:00.000Z"));
+    render(
+      <DatePicker.Root
+        defaultMonth={new Date("2026-02-01T00:00:00.000Z")}
+        timeZone="UTC"
+      >
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    expect(
+      screen.getByRole("button", {
+        name: "Wednesday, February 11, 2026",
+      }),
+    ).toHaveAttribute("aria-current", "date");
+  });
+
+  it("opens unseeded with empty inputs, the current month, and focus on today", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-02-11T12:00:00.000Z"));
+    render(
+      <DatePicker.Root mode="range" timeZone="UTC">
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    const grid = screen.getByRole("grid");
+    expect(grid).toHaveAccessibleName("February 2026");
+    expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue("");
+    expect(screen.getByRole("textbox", { name: "End date" })).toHaveValue("");
+    expect(grid.querySelector("[aria-selected]")).toBeNull();
+
+    const today = screen.getByRole("button", {
+      name: "Wednesday, February 11, 2026",
+    });
+    expect(today).toHaveAttribute("data-today", "true");
+    expect(today).toHaveAttribute("tabindex", "0");
   });
 });
