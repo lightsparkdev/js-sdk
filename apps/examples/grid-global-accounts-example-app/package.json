@@ -22,7 +22,7 @@
     "@emotion/styled": "^11.14.1",
     "@lightsparkdev/origin": "*",
     "@turnkey/api-key-stamper": "^0.6.5",
-    "@turnkey/crypto": "^2.8.14",
+    "@turnkey/crypto": "^2.11.0",
     "@turnkey/encoding": "^0.6.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
