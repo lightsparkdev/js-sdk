@@ -19,6 +19,7 @@ import {
   DateDefaultRangeOverride,
   DateFutureEnabled,
   DatePastOnly,
+  DatePresetShortcuts,
   Default,
   NoPlaceholderEditors,
   ProgrammaticEditorOpen,
@@ -116,6 +117,37 @@ test.describe("FilterBar", () => {
     await expect(page.getByTestId("applied-count")).toHaveText("1");
     await expect(page.getByTestId("signature")).toHaveText("type=OUTGOING");
     await expect(page.getByRole("menuitem", { name: "Status" })).toHaveCount(0);
+  });
+
+  test("uses preset textValue for typeahead and applies from the keyboard", async ({
+    mount,
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date("2026-07-31T17:30:45.000Z"));
+    await mount(<DatePresetShortcuts />);
+
+    await page.getByRole("button", { name: "Filter" }).click();
+    const created = page.getByRole("menuitem", { name: "Created" });
+    await created.focus();
+    await created.press("ArrowRight");
+
+    const currentPeriod = page.getByRole("menuitem", {
+      name: "Current period",
+    });
+    await expect(currentPeriod).toBeFocused();
+    await currentPeriod.press("ArrowDown");
+    const previousDay = page.getByRole("menuitem", { name: "Previous day" });
+    await expect(previousDay).toBeFocused();
+
+    await previousDay.press("t");
+
+    await expect(currentPeriod).toBeFocused();
+    await currentPeriod.press("Enter");
+
+    await expect(page.getByTestId("signature")).toHaveText(
+      "createdAt=2026-07-31T17%3A30%3A45.000Z%2C2026-07-31T17%3A30%3A45.000Z&createdAt.__origin=today",
+    );
+    await expect(currentPeriod).toHaveCount(0);
   });
 
   test("adds a string filter empty and applies a value through its editor", async ({

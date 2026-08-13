@@ -76,6 +76,11 @@ type DateFilterDatePickerConfigVariant<
 > = {
   /** Consumer-defined options shown in the compact preset select. */
   presets?: readonly DateFilterDatePickerPreset<TMode, TGranularity>[];
+  /**
+   * Show the configured presets as shortcuts in the add-filter menu.
+   * Omitted or false, selecting the descriptor opens the full DatePicker.
+   */
+  showPresetShortcutsInAddMenu?: boolean;
   /** Fixed editor mode for this filter. */
   mode: TMode;
   /** Fixed editor granularity for this filter. */
@@ -240,6 +245,45 @@ export function resolveDateFilterPreset(
         }
       : undefined,
   );
+}
+
+function isAfterUtcCalendarDay(date: Date, max: Date): boolean {
+  return (
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) >
+    Date.UTC(max.getUTCFullYear(), max.getUTCMonth(), max.getUTCDate())
+  );
+}
+
+export function resolveDateFilterPresetState(
+  descriptor: DateFilterDescriptor<string>,
+  preset: Pick<DatePickerPreset, "id" | "resolve" | "disabled">,
+  now = new Date(),
+): DateFilterState | null {
+  if (!descriptor.datePicker || preset.disabled) {
+    return null;
+  }
+
+  const result = resolveDateFilterPreset(descriptor, preset, now);
+  if (result === null) {
+    return null;
+  }
+  const bounds =
+    result.mode === "single"
+      ? { start: result.value, end: result.value }
+      : result.value;
+  if (
+    descriptor.allowFuture === false &&
+    [bounds.start, bounds.end].some((date) => isAfterUtcCalendarDay(date, now))
+  ) {
+    return null;
+  }
+  return {
+    type: "date",
+    isApplied: true,
+    start: new Date(bounds.start),
+    end: new Date(bounds.end),
+    presetId: preset.id,
+  };
 }
 
 /**

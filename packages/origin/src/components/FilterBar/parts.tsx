@@ -6,16 +6,18 @@ import { devWarnOnce } from "../../lib/dev-warn";
 import { humanizeIdentifier } from "../../lib/formatters";
 import { Button } from "../Button";
 import { ChipFilter } from "../Chip";
-import * as DatePicker from "../DatePicker";
 import { CentralIcon } from "../Icon";
 import { Input } from "../Input";
 import { Menu } from "../Menu";
 import { Popover } from "../Popover";
 import styles from "./FilterBar.module.scss";
 import {
+  DatePresetShortcutOptions,
+  DateValueEditorContent,
+} from "./datePresetParts";
+import {
   isEnumFilterOptionApplied,
   resolveAppliedFilterIds,
-  resolveDateFilterPreset,
   toEnumOptionValueArray,
   type DateFilterDescriptor,
   type DateFilterState,
@@ -27,7 +29,6 @@ import {
   type StringFilterDescriptor,
   type StringFilterState,
 } from "./filter-model";
-import { useDateFilterDraft } from "./useDateFilterDraft";
 import { type FiltersModel, type UpdateFilter } from "./useFilters";
 
 /** Generic filter-bar chrome configured once on `FilterBar.Root`. */
@@ -44,16 +45,21 @@ export interface FilterBarConfig {
   emptyValue: string;
   /** Commit button inside string and date value editors. */
   apply: string;
+  /** Custom date-preset action text inside an add-menu submenu. */
+  customDatePreset?: string;
   /** Add-filter trigger text and accessible name. */
   addFilter: string;
   /** Clear-all-filters action text. */
   clearFilters: string;
 }
 
-const DEFAULT_CONFIG: FilterBarConfig = {
+type ResolvedFilterBarConfig = Required<FilterBarConfig>;
+
+const DEFAULT_CONFIG: ResolvedFilterBarConfig = {
   operator: "is",
   emptyValue: "Empty",
   apply: "Apply",
+  customDatePreset: "Custom",
   addFilter: "Filter",
   clearFilters: "Clear",
 };
@@ -76,7 +82,7 @@ interface ErasedFiltersModel {
 
 interface FilterBarContextValue {
   model: ErasedFiltersModel;
-  config: FilterBarConfig;
+  config: ResolvedFilterBarConfig;
   formatDateValue: (start: Date, end: Date) => string;
 }
 
@@ -133,7 +139,7 @@ function Root<const TDescriptors extends FilterDescriptorTuple>({
   model,
   ...props
 }: RootProps<TDescriptors>) {
-  const resolvedConfig = React.useMemo<FilterBarConfig>(
+  const resolvedConfig = React.useMemo<ResolvedFilterBarConfig>(
     () => ({
       ...DEFAULT_CONFIG,
       ...config,
@@ -317,6 +323,33 @@ function AddButton({ label }: AddButtonProps) {
                         <AddMenuEnumOptions
                           descriptor={descriptor}
                           closeOnSelection
+                        />
+                      </Menu.Popup>
+                    </Menu.Positioner>
+                  </Menu.Portal>
+                </Menu.SubmenuRoot>
+              ) : descriptor.type === "date" &&
+                descriptor.datePicker?.showPresetShortcutsInAddMenu &&
+                descriptor.datePicker.presets?.length ? (
+                <Menu.SubmenuRoot key={descriptor.id}>
+                  <Menu.SubmenuTrigger>
+                    <span className={styles.submenuLabel}>
+                      {descriptor.label}
+                    </span>
+                    <CentralIcon name="IconChevronRightSmall" size={16} />
+                  </Menu.SubmenuTrigger>
+                  <Menu.Portal>
+                    <Menu.Positioner align="start">
+                      <Menu.Popup>
+                        <DatePresetShortcutOptions
+                          customLabel={config.customDatePreset}
+                          descriptor={descriptor}
+                          onApply={(state) =>
+                            model.updateFilter(descriptor.id, state)
+                          }
+                          onCustom={() =>
+                            model.addFilter(descriptor, { openEditor: true })
+                          }
                         />
                       </Menu.Popup>
                     </Menu.Positioner>
@@ -623,103 +656,6 @@ function StringValueEditor({
   );
 }
 
-function DateValueEditorContent({
-  descriptor,
-  state,
-  onClose,
-}: {
-  descriptor: DateFilterDescriptor<string>;
-  state: DateFilterState;
-  onClose: () => void;
-}) {
-  const { model, config } = useFilterBarContext();
-  const {
-    draft,
-    initialMonth,
-    maxDate,
-    editPreset,
-    editValue,
-    editRange,
-    setValidity,
-    reset,
-    projectApply,
-  } = useDateFilterDraft(descriptor, state);
-  const datePickerConfig = descriptor.datePicker;
-  const datePickerMode = datePickerConfig?.mode ?? "range";
-  const datePickerPresets = React.useMemo(
-    () =>
-      datePickerConfig?.presets?.map((preset) => ({
-        ...preset,
-        resolve: (now: Date) =>
-          resolveDateFilterPreset(descriptor, preset, now) as ReturnType<
-            typeof preset.resolve
-          >,
-      })) ?? [],
-    [datePickerConfig, descriptor],
-  );
-  const datePickerActionsRef = React.useRef<DatePicker.DatePickerActions>(null);
-
-  const applyDraft = () => {
-    const datePickerIsValid = datePickerActionsRef.current?.validate() ?? true;
-    const nextState = datePickerIsValid ? projectApply() : null;
-    if (!nextState) {
-      datePickerActionsRef.current?.focusFirstInvalidControl();
-      return;
-    }
-    model.updateFilter(descriptor.id, nextState);
-    reset();
-    onClose();
-  };
-
-  return (
-    <DatePicker.Root
-      actionsRef={datePickerActionsRef}
-      required
-      {...(datePickerConfig
-        ? {
-            mode: datePickerConfig.mode,
-            granularity: datePickerConfig.granularity,
-            presets: datePickerPresets,
-            presetId: draft.presetId,
-            onPresetIdChange: editPreset,
-            value:
-              datePickerConfig.mode === "single"
-                ? draft.start ?? draft.end
-                : null,
-            onValueChange: editValue,
-          }
-        : {
-            mode: "range" as const,
-            includeTime: true,
-          })}
-      timeZone="UTC"
-      {...(datePickerMode === "range"
-        ? { rangeDraft: { start: draft.start, end: draft.end } }
-        : {})}
-      {...(initialMonth ? { defaultMonth: initialMonth } : {})}
-      onRangeDraftChange={editRange}
-      onValidityChange={setValidity}
-      {...(maxDate ? { max: maxDate } : {})}
-    >
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
-      {datePickerConfig?.presets?.length ? <DatePicker.PresetSelect /> : null}
-      <DatePicker.Header />
-      <DatePicker.Footer>
-        <Button
-          type="button"
-          variant="outline"
-          size="compact"
-          className={styles.dateApplyButton}
-          onClick={applyDraft}
-        >
-          {config.apply}
-        </Button>
-      </DatePicker.Footer>
-    </DatePicker.Root>
-  );
-}
-
 function DateValueEditor({
   descriptor,
   state,
@@ -727,7 +663,7 @@ function DateValueEditor({
   descriptor: DateFilterDescriptor<string>;
   state: DateFilterState;
 }) {
-  const { config, formatDateValue } = useFilterBarContext();
+  const { config, formatDateValue, model } = useFilterBarContext();
   const { isOpen, setIsOpen } = useEditorOpenState(descriptor.id);
   const valueLabel = getFilterValueLabel(descriptor, state, {
     emptyValue: config.emptyValue,
@@ -750,8 +686,12 @@ function DateValueEditor({
           <Popover.Popup aria-label={`${descriptor.label} filter`}>
             {isOpen ? (
               <DateValueEditorContent
+                applyLabel={config.apply}
                 descriptor={descriptor}
                 state={state}
+                onApply={(nextState) =>
+                  model.updateFilter(descriptor.id, nextState)
+                }
                 onClose={() => setIsOpen(false)}
               />
             ) : null}

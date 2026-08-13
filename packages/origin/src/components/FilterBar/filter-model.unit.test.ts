@@ -9,6 +9,7 @@ import {
   getFilterSignature,
   isEnumFilterOptionApplied,
   loadFilterStatesFromUrl,
+  resolveDateFilterPresetState,
   saveFilterStatesToUrl,
   type DateFilterState,
   type EnumFilterState,
@@ -725,6 +726,66 @@ describe("getDateFilterDefaultRange", () => {
     });
 
     expect(range).toEqual({ start, end });
+  });
+});
+
+describe("resolveDateFilterPresetState", () => {
+  const boundedDescriptor = {
+    type: "date",
+    label: "Date",
+    id: "createdAt",
+    allowFuture: false,
+    datePicker: { mode: "range", granularity: "date-time" },
+  } as const satisfies FilterDescriptor<"createdAt">;
+
+  it("rejects a future preset whose resolver mutates the provided now", () => {
+    const now = new Date("2026-07-31T10:00:00.000Z");
+    const state = resolveDateFilterPresetState(
+      boundedDescriptor,
+      {
+        id: "mutating",
+        resolve: (resolverNow: Date) => {
+          resolverNow.setUTCDate(resolverNow.getUTCDate() + 1);
+          return {
+            mode: "range" as const,
+            granularity: "date-time" as const,
+            value: {
+              start: new Date(resolverNow),
+              end: new Date(resolverNow),
+            },
+          };
+        },
+      },
+      now,
+    );
+
+    expect(state).toBeNull();
+    expect(now.toISOString()).toBe("2026-07-31T10:00:00.000Z");
+  });
+
+  it("admits a later-same-day preset under the calendar-day allowFuture contract", () => {
+    const now = new Date("2026-07-31T10:00:00.000Z");
+    const inTwoHours = new Date("2026-07-31T12:00:00.000Z");
+    const state = resolveDateFilterPresetState(
+      boundedDescriptor,
+      {
+        id: "later-today",
+        resolve: () => ({
+          mode: "range" as const,
+          granularity: "date-time" as const,
+          value: { start: now, end: inTwoHours },
+        }),
+      },
+      now,
+    );
+
+    expect(state).toEqual({
+      type: "date",
+      isApplied: true,
+      start: now,
+      end: inTwoHours,
+      presetId: "later-today",
+    });
   });
 });
 

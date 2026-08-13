@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   getDefaultFilterStates,
+  getFilterSignature,
   loadFilterStatesFromUrl,
   normalizeDateFilterPresetIdentity,
   saveFilterStatesToUrl,
@@ -137,6 +138,61 @@ describe("filter descriptor URL keys", () => {
 });
 
 describe("DatePicker URL metadata hydration", () => {
+  it.each([
+    ["omitted", {}],
+    ["explicit false", { showPresetShortcutsInAddMenu: false }],
+    ["explicit true", { showPresetShortcutsInAddMenu: true }],
+  ] as const)(
+    "hydrates and signs the same future preset identity when shortcuts are %s",
+    (_, shortcutConfig) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-06-15T12:00:00.000Z"));
+      const descriptors = [
+        {
+          type: "date",
+          label: "Date",
+          id: "createdAt",
+          allowFuture: false,
+          datePicker: {
+            mode: "single",
+            granularity: "date",
+            presets: [
+              {
+                id: "tomorrow",
+                label: "Tomorrow",
+                textValue: "Tomorrow",
+                resolve: (now: Date) => ({
+                  mode: "single" as const,
+                  granularity: "date" as const,
+                  value: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+                }),
+              },
+            ],
+            ...shortcutConfig,
+          },
+        },
+      ] as const satisfies readonly FilterDescriptor<"createdAt">[];
+      const params = new URLSearchParams();
+      params.set("createdAt", "2026-06-16T12:00:00.000Z");
+      params.set("createdAt.__origin", "tomorrow");
+
+      const states = loadFilterStatesFromUrl(
+        descriptors,
+        params,
+        getDefaultFilterStates(descriptors),
+      );
+
+      expect(states.createdAt.presetId).toBe("tomorrow");
+      const saved = saveFilterStatesToUrl(
+        descriptors,
+        new URLSearchParams(),
+        states,
+      );
+      expect(saved.get("createdAt.__origin")).toBe("tomorrow");
+      expect(getFilterSignature(descriptors, states)).toBe(saved.toString());
+    },
+  );
+
   it("hydrates an applied-empty URL with the fixed descriptor metadata", () => {
     const states = loadFilterStatesFromUrl(
       DATE_PICKER_DESCRIPTORS,

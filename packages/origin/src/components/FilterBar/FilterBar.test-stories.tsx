@@ -71,6 +71,7 @@ const CONFIG: FilterBarConfig = {
   operator: "is",
   emptyValue: "Empty",
   apply: "Apply",
+  customDatePreset: "Custom",
   addFilter: "Filter",
   clearFilters: "Clear",
 };
@@ -174,6 +175,49 @@ export function BlankDatePicker() {
         datePicker: { mode: "range", granularity: "date-time" },
       })}
       params="createdAt="
+    />
+  );
+}
+
+export function DatePresetShortcuts() {
+  return (
+    <Bar
+      descriptors={withDateDescriptor({
+        datePicker: {
+          mode: "range",
+          granularity: "date-time",
+          showPresetShortcutsInAddMenu: true,
+          presets: [
+            {
+              id: "today",
+              label: (
+                <span>
+                  Current <strong>period</strong>
+                </span>
+              ),
+              textValue: "Today",
+              resolve: (now) => ({
+                mode: "range",
+                granularity: "date-time",
+                value: { start: new Date(now), end: new Date(now) },
+              }),
+            },
+            {
+              id: "previous-day",
+              label: "Previous day",
+              textValue: "Previous day",
+              resolve: (now) => ({
+                mode: "range",
+                granularity: "date-time",
+                value: {
+                  start: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+                  end: new Date(now),
+                },
+              }),
+            },
+          ],
+        },
+      })}
     />
   );
 }

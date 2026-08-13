@@ -91,6 +91,23 @@ const datePickerConfig: DateFilterDatePickerConfig = {
   mode: "range",
   granularity: "date",
 };
+const datePickerShortcutConfig: DateFilterDatePickerConfig = {
+  mode: "range",
+  granularity: "date",
+  showPresetShortcutsInAddMenu: true,
+  presets: [
+    {
+      id: "today",
+      label: "Today",
+      textValue: "Today",
+      resolve: (now) => ({
+        mode: "range",
+        granularity: "date",
+        value: { start: now, end: now },
+      }),
+    },
+  ],
+};
 // @ts-expect-error FilterBar DatePicker variants require a fixed mode.
 const missingDatePickerMode: DateFilterDatePickerConfig = {
   granularity: "date",
@@ -101,6 +118,7 @@ const legacyDefaultDatePickerConfig: DateFilterDatePickerConfig = {
   granularity: "date",
 };
 void datePickerConfig;
+void datePickerShortcutConfig;
 void missingDatePickerMode;
 void legacyDefaultDatePickerConfig;
 

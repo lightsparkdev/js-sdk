@@ -3,6 +3,7 @@ import { useState } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { DatePickerPreset } from "../DatePicker";
 import { FilterBar } from "./";
+import { DATE_PICKER_PRESETS } from "./FilterBar.date-picker.test-fixtures";
 import { createUrlBackedFiltersHook } from "./createUrlBackedFiltersHook";
 import {
   getDefaultFilterStates,
@@ -28,48 +29,6 @@ beforeEach(() => {
   latestUrlSearch = DEFAULT_URL_SEARCH;
 });
 
-const PRESETS = [
-  {
-    id: "today",
-    label: "Today",
-    textValue: "Today",
-    resolve: (now) => ({
-      value: {
-        start: new Date(now),
-        end: new Date(now),
-      },
-      mode: "range",
-      granularity: "date-time",
-    }),
-  },
-  {
-    id: "window",
-    label: "Previous 24 hours with a deliberately long label",
-    textValue: "Previous 24 hours with a deliberately long label",
-    resolve: (now) => ({
-      value: {
-        start: new Date(now.getTime() - 60 * 60 * 1000),
-        end: new Date(now),
-      },
-      mode: "range",
-      granularity: "date-time",
-    }),
-  },
-  {
-    id: "invalid",
-    label: "Invalid window",
-    textValue: "Invalid window",
-    resolve: () => ({
-      value: {
-        start: new Date(Number.NaN),
-        end: new Date(Number.NaN),
-      },
-      mode: "range",
-      granularity: "date-time",
-    }),
-  },
-] as const;
-
 const DESCRIPTORS = [
   {
     type: "date",
@@ -78,7 +37,7 @@ const DESCRIPTORS = [
     datePicker: {
       mode: "range",
       granularity: "date-time",
-      presets: PRESETS,
+      presets: DATE_PICKER_PRESETS,
     },
   },
 ] as const satisfies readonly FilterDescriptor<"createdAt">[];

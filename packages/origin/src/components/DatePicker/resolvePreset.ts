@@ -24,7 +24,9 @@ export function resolveDatePickerPreset(
   expectedShape?: DatePickerPresetShape,
 ): DatePickerPresetResult | null {
   try {
-    const result: unknown = preset.resolve(now);
+    // Resolvers get a private copy so one that mutates its argument cannot
+    // move the caller's `now` (used as the validation ceiling downstream).
+    const result: unknown = preset.resolve(new Date(now.getTime()));
     if (!isRecord(result)) {
       return null;
     }
