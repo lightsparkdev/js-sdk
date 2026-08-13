@@ -3252,7 +3252,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@lightsparkdev/origin": "npm:*"
     "@turnkey/api-key-stamper": "npm:^0.6.5"
-    "@turnkey/crypto": "npm:^2.8.14"
+    "@turnkey/crypto": "npm:^2.11.0"
     "@turnkey/encoding": "npm:^0.6.0"
     "@types/react": "npm:^19.2.15"
     "@types/react-dom": "npm:^19.2.3"
@@ -5863,7 +5863,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@turnkey/crypto@npm:2.8.14, @turnkey/crypto@npm:^2.8.14":
+"@turnkey/crypto@npm:2.8.14":
   version: 2.8.14
   resolution: "@turnkey/crypto@npm:2.8.14"
   dependencies:
@@ -5876,6 +5876,22 @@ __metadata:
     borsh: "npm:2.0.0"
     cbor-js: "npm:0.1.0"
   checksum: 10/7a1f0d8800e8f3d0f9d38a9c0f59e793db32e93c1a1aae2ddebcbe0a5822b39f502df3613db41dbfbfb479b2f102534919f7c4a75ca6c150f838195d45867d5c
+  languageName: node
+  linkType: hard
+
+"@turnkey/crypto@npm:^2.11.0":
+  version: 2.11.1
+  resolution: "@turnkey/crypto@npm:2.11.1"
+  dependencies:
+    "@noble/ciphers": "npm:1.3.0"
+    "@noble/curves": "npm:1.9.0"
+    "@noble/hashes": "npm:1.8.0"
+    "@peculiar/x509": "npm:1.12.3"
+    "@turnkey/encoding": "npm:0.6.0"
+    "@turnkey/sdk-types": "npm:1.4.0"
+    borsh: "npm:2.0.0"
+    cbor-js: "npm:0.1.0"
+  checksum: 10/f59976ccd35e62fec498829983441fb7e9b19273f8b1346ca2db926a894c7274b14284aba01278b3a056aed28e2619d30680c421bfb26ccac886cef598dd6af9
   languageName: node
   linkType: hard
 
@@ -5893,6 +5909,13 @@ __metadata:
   version: 0.14.0
   resolution: "@turnkey/sdk-types@npm:0.14.0"
   checksum: 10/9a7e490d696bf0ca4193670618175c302dd6afcdc1fa74d4d329137ac4d2a25d27914df6c0570a615d05bacd544f043784c48b15049db718932494cf522881ac
+  languageName: node
+  linkType: hard
+
+"@turnkey/sdk-types@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@turnkey/sdk-types@npm:1.4.0"
+  checksum: 10/aef616ce11a4fb809dc826fd189b837ab37441dedaefdca28b5172012fa91dc35cdf5471459abe8811ad8a6e96996217274ae12ff3fd4f14cc67a3c035bf1710
   languageName: node
   linkType: hard
 
