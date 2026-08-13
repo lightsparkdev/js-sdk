@@ -68,11 +68,13 @@ export const getDefaultDateFilterState = () => ({
 export const DateFilter = ({
   updateFilterState,
   state,
+  label = "date",
   isDateOnly = false,
   presets = SIMPLE_PRESETS,
 }: {
   updateFilterState: (state: DateFilterState) => void;
   state: DateFilterState;
+  label?: string;
   isDateOnly?: boolean;
   presets?: DatePreset[];
 }) => {
@@ -286,7 +288,7 @@ export const DateFilter = ({
   };
 
   return (
-    <Filter label="date">
+    <Filter label={label}>
       <Container>
         <ButtonsContainer>
           {presets.map((preset) => (

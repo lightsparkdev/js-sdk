@@ -26,6 +26,40 @@ export const subtractTime = (
   return new Date(date.getTime() - value * GRANULARITY_TO_MILLIS[granularity]);
 };
 
+export const toLocalDateTimeFromUTC = (date: Date) => {
+  return new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+    date.getUTCMilliseconds(),
+  );
+};
+
+export const toUTCDateTimeFromLocal = (date: Date, unchangedUTCDate?: Date) => {
+  // A local Date cannot represent a wall-clock time inside a DST gap.
+  if (
+    unchangedUTCDate &&
+    date.getTime() === toLocalDateTimeFromUTC(unchangedUTCDate).getTime()
+  ) {
+    return new Date(unchangedUTCDate);
+  }
+
+  return new Date(
+    Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds(),
+    ),
+  );
+};
+
 export const startOfDay = (date: Date) => {
   const start = new Date(date);
   start.setHours(0, 0, 0, 0);
