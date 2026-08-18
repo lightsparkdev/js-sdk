@@ -108,6 +108,10 @@ interface FilterOptions<
   ) => QueryVariablesType;
   refetch: (fetchVariables: QueryVariablesType) => Promise<QueryResultType>;
   initialQueryVariables: QueryVariablesType;
+  initialFilterStates?: DataManagerTableState<T> | undefined;
+  onAppliedFilterStatesChange?:
+    | ((filterStates: DataManagerTableState<T>) => void)
+    | undefined;
   /**
    * Called when a filter state changes.
    * Use setFilterStates to modify other filters (e.g., for mutual exclusivity).
@@ -149,6 +153,8 @@ export type DataManagerTableProps<
   QueryResultType,
 > = TableProps<T> & {
   pageSizes: number[];
+  initialPageSize?: number | undefined;
+  onPageSizeChange?: ((pageSize: number) => void) | undefined;
   nextPageCursor?: string | null | undefined;
   resultCount?: number | undefined;
   isFullCount?: boolean | undefined;
@@ -248,6 +254,12 @@ type PageCursorState = {
     };
   };
 };
+
+function getAfterCursor(queryVariables: unknown) {
+  return queryVariables && typeof queryVariables === "object"
+    ? (queryVariables as { after?: unknown }).after
+    : undefined;
+}
 
 // Utility functions for URL state management
 function saveFiltersToURL<T extends Record<string, unknown>>(
@@ -532,6 +544,27 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
   return newFilterStates;
 }
 
+export function serializeDataManagerTableFilterStates<
+  T extends Record<string, unknown>,
+>(filters: Filter<T>[], filterStates: DataManagerTableState<T>) {
+  return saveFiltersToURL(
+    new URLSearchParams(),
+    filters,
+    filterStates,
+    1,
+  ).toString();
+}
+
+export function deserializeDataManagerTableFilterStates<
+  T extends Record<string, unknown>,
+>(filters: Filter<T>[], serializedState: string, namespace?: string) {
+  return loadFiltersFromURL(
+    new URLSearchParams(serializedState),
+    filters,
+    namespace,
+  );
+}
+
 function getURLFilterKey<T extends Record<string, unknown>>(
   filter: Filter<T>,
   namespace?: string,
@@ -610,21 +643,37 @@ export function DataManagerTable<
   const showFooter =
     typeof props.showFooter === "boolean" ? props.showFooter : true;
   const breakPoint = useBreakpoints();
-  const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
+  const [pageSize, setPageSize] = useState<number>(() => {
+    const defaultPageSize = props.pageSizes?.[0] || 20;
+    return props.initialPageSize !== undefined &&
+      props.pageSizes.includes(props.initialPageSize)
+      ? props.initialPageSize
+      : defaultPageSize;
+  });
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
     startResult: undefined,
     nextPageCursor: props.nextPageCursor,
     cursorCache: {},
   });
-  const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [awaitingPaginationResetResult, setAwaitingPaginationResetResult] =
+    useState(false);
+  const latestRefetchGeneration = useRef(0);
+  const isLoading = Boolean(props.loading) || isRefetching;
   const [hasLoadedFiltersFromURL, setHasLoadedFiltersFromURL] =
     useState<boolean>(false);
-  const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
   const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
     props.filterOptions
-      ? initialFilterState(props.filterOptions.filters)
+      ? props.filterOptions.initialFilterStates ??
+          initialFilterState(props.filterOptions.filters)
       : ({} as DataManagerTableState<T>),
+  );
+  const [numFiltersApplied, setNumFiltersApplied] = useState<number>(() =>
+    Object.values(filterStates).reduce(
+      (count, state) => count + (state.isApplied ? 1 : 0),
+      0,
+    ),
   );
   const filterStatesRef = useRef(filterStates);
   filterStatesRef.current = filterStates;
@@ -642,15 +691,53 @@ export function DataManagerTable<
   const [fetchVariables, setFetchVariables] = useState<QueryVariablesType>(
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
+  const [successfulAfterCursor, setSuccessfulAfterCursor] = useState(() =>
+    getAfterCursor(
+      props.filterOptions?.initialQueryVariables ??
+        props.showMoreOptions?.initialQueryVariables,
+    ),
+  );
+
+  function resetPagination() {
+    setAwaitingPaginationResetResult(true);
+    setPageCursorState({
+      startResult: undefined,
+      nextPageCursor: undefined,
+      cursorCache: {},
+    });
+  }
+
+  async function refetchLatest(
+    refetch: (fetchVariables: QueryVariablesType) => Promise<QueryResultType>,
+    newFetchVariables: QueryVariablesType,
+  ) {
+    const generation = latestRefetchGeneration.current + 1;
+    latestRefetchGeneration.current = generation;
+    setIsRefetching(true);
+    try {
+      const result = await refetch(newFetchVariables);
+      if (latestRefetchGeneration.current === generation) {
+        setSuccessfulAfterCursor(getAfterCursor(newFetchVariables));
+        setAwaitingPaginationResetResult(false);
+        setIsRefetching(false);
+      }
+      return result;
+    } catch (error) {
+      if (latestRefetchGeneration.current === generation) {
+        setIsRefetching(false);
+      }
+      throw error;
+    }
+  }
+
+  function runAsyncAction(action: Promise<unknown>) {
+    void action.catch(() => undefined);
+  }
 
   const DropdownComponent =
     props.customComponents?.dropdownComponent || Dropdown;
 
   const isSm = breakPoint.isSm();
-
-  useEffect(() => {
-    setIsLoading(Boolean(props.loading));
-  }, [props.loading]);
 
   // Sync filter states with URL query parameters
   useEffect(() => {
@@ -664,12 +751,15 @@ export function DataManagerTable<
 
     const { filters, getFilterQueryVariables } = props.filterOptions;
 
-    // Load filter states from URL query parameters
-    const newFilterStates = loadFiltersFromURL(
-      searchParams,
-      filters,
-      props.urlFilterNamespace,
+    const hasURLFilterState = filters.some((filter) =>
+      searchParams.has(getURLFilterKey(filter, props.urlFilterNamespace)),
     );
+    const newFilterStates =
+      !hasLoadedFiltersFromURL &&
+      !hasURLFilterState &&
+      props.filterOptions.initialFilterStates
+        ? props.filterOptions.initialFilterStates
+        : loadFiltersFromURL(searchParams, filters, props.urlFilterNamespace);
     updateFilterStates(newFilterStates);
 
     const newFetchVariables = getFilterQueryVariables(
@@ -687,30 +777,22 @@ export function DataManagerTable<
       0,
     );
     setNumFiltersApplied(numFiltersApplied);
+    if (hasLoadedFiltersFromURL || hasURLFilterState) {
+      props.filterOptions.onAppliedFilterStatesChange?.(newFilterStates);
+    }
 
     // Refetch data if filters changed and we have filter options
     if (
       hasLoadedFiltersFromURL ||
-      Object.values(newFilterStates).some((state) => state.isApplied)
+      (!props.filterOptions.initialFilterStates &&
+        Object.values(newFilterStates).some((state) => state.isApplied))
     ) {
-      setIsLoading(true);
-
-      // Clear start result number when filters change
-      setPageCursorState((prevState) => ({
-        ...prevState,
-        startResult: undefined,
-      }));
+      resetPagination();
 
       // Refetch with new filter variables
-      props.filterOptions
-        .refetch(newFetchVariables)
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch((e) => {
-          setIsLoading(false);
-          throw e;
-        });
+      runAsyncAction(
+        refetchLatest(props.filterOptions.refetch, newFetchVariables),
+      );
     }
 
     setHasLoadedFiltersFromURL(true);
@@ -723,7 +805,9 @@ export function DataManagerTable<
       props.filterOptions &&
       hasLoadedFiltersFromURL
     ) {
-      void handleApplyFilters(filterStates, props.filterOptions, pageSize);
+      runAsyncAction(
+        handleApplyFilters(filterStates, props.filterOptions, pageSize),
+      );
     }
   }, [...(props.refetchOnPropsChange || []), hasLoadedFiltersFromURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -732,53 +816,50 @@ export function DataManagerTable<
   // The cursor cache remembers previously seen cursors for paginating to the previous page.
   // New cursors are added to the cache.
   useEffect(() => {
-    if (!props.nextPageCursor) {
+    if (isLoading || awaitingPaginationResetResult || !props.nextPageCursor) {
       return;
     }
+    const nextPageCursor = props.nextPageCursor;
 
-    // Find the result number that the cursor is associated with
-    const cursorCacheResult = Object.entries(
-      pageCursorState.cursorCache[pageSize] || {},
-    ).find(([_, cursor]) => cursor === props.nextPageCursor);
+    const afterCursor = successfulAfterCursor;
+    const previousPage =
+      typeof afterCursor === "string" && afterCursor
+        ? Object.entries(pageCursorState.cursorCache[pageSize] || {}).find(
+            ([_, cursor]) => cursor === afterCursor,
+          )
+        : undefined;
+    if (afterCursor && !previousPage) return;
 
-    // If the cursor exists already, update the start result to the result number
-    if (cursorCacheResult) {
-      setPageCursorState((prevState) => ({
+    const startResult = previousPage ? parseInt(previousPage[0]) + pageSize : 1;
+    setPageCursorState((prevState) => {
+      if (
+        prevState.startResult === startResult &&
+        prevState.nextPageCursor === nextPageCursor &&
+        prevState.cursorCache[pageSize]?.[startResult] === nextPageCursor
+      ) {
+        return prevState;
+      }
+      return {
         ...prevState,
-        startResult: parseInt(cursorCacheResult[0]),
-        nextPageCursor: cursorCacheResult[1],
-      }));
-    } else {
-      // Otherwise, update the result number and cursor cache with the new cursor
-      setPageCursorState((prevState) => {
-        // Only update if the cursor has changed
-        if (
-          prevState.nextPageCursor === props.nextPageCursor &&
-          prevState.startResult !== undefined
-        )
-          return prevState;
-
-        // Either start at 1 or add the page size to the result number
-        const startResult =
-          prevState.startResult === undefined
-            ? 1
-            : prevState.startResult + pageSize;
-
-        return {
-          ...prevState,
-          startResult,
-          nextPageCursor: props.nextPageCursor,
-          cursorCache: {
-            ...prevState.cursorCache,
-            [pageSize]: {
-              ...prevState.cursorCache[pageSize],
-              [startResult]: props.nextPageCursor!,
-            },
+        startResult,
+        nextPageCursor,
+        cursorCache: {
+          ...prevState.cursorCache,
+          [pageSize]: {
+            ...prevState.cursorCache[pageSize],
+            [startResult]: nextPageCursor,
           },
-        };
-      });
-    }
-  }, [props.nextPageCursor, pageSize, pageCursorState.cursorCache]);
+        },
+      };
+    });
+  }, [
+    props.nextPageCursor,
+    pageSize,
+    pageCursorState.cursorCache,
+    isLoading,
+    awaitingPaginationResetResult,
+    successfulAfterCursor,
+  ]);
 
   function updateFilterState(filter: Filter<T>) {
     return (state: FilterState) => {
@@ -894,14 +975,13 @@ export function DataManagerTable<
 
     // Note: we only want to apply the filter states updated with validation results.
     setShowFilterEditor(false);
-    setIsLoading(true);
-
     const newFetchVariables = getFilterQueryVariables(
       filters,
       appliedFilterStates,
       pageSize,
     );
     setFetchVariables(newFetchVariables);
+    filterOptions.onAppliedFilterStatesChange?.(appliedFilterStates);
 
     if (props.enableURLFilters) {
       // Update url query params with the applied filters using utility function
@@ -923,19 +1003,9 @@ export function DataManagerTable<
       setSearchParams(newSearchParams);
     }
 
-    // Clear start result number when filters are applied
-    setPageCursorState((prevState) => ({
-      ...prevState,
-      startResult: undefined,
-    }));
+    resetPagination();
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handleClearFilters = () => {
@@ -943,7 +1013,9 @@ export function DataManagerTable<
       const { filters } = props.filterOptions;
       const newFilterStates = initialFilterState(filters);
       updateFilterStates(newFilterStates);
-      void handleApplyFilters(newFilterStates, props.filterOptions, pageSize);
+      runAsyncAction(
+        handleApplyFilters(newFilterStates, props.filterOptions, pageSize),
+      );
     }
   };
 
@@ -973,7 +1045,9 @@ export function DataManagerTable<
       );
       return nextStates;
     });
-    void handleApplyFilters(newStates, props.filterOptions!, pageSize);
+    runAsyncAction(
+      handleApplyFilters(newStates, props.filterOptions!, pageSize),
+    );
   };
 
   const handleRemovePillFilter = (filter: Filter<T>) => {
@@ -981,45 +1055,34 @@ export function DataManagerTable<
       ...currentStates,
       [filter.accessorKey]: getDefaultFilterState<T>(filter),
     }));
-    void handleApplyFilters(newStates, props.filterOptions!, pageSize);
+    runAsyncAction(
+      handleApplyFilters(newStates, props.filterOptions!, pageSize),
+    );
   };
 
   const handleNext = async () => {
-    if (!props.filterOptions) {
+    if (isLoading || !props.filterOptions || !pageCursorState.nextPageCursor) {
       return;
     }
 
     const { refetch } = props.filterOptions;
-
-    setIsLoading(true);
 
     // Update the page cursor query param but keep the filters intact
     const newFetchVariables: QueryVariablesType = {
       ...fetchVariables,
-      after:
-        pageCursorState === undefined
-          ? undefined
-          : pageCursorState.nextPageCursor,
+      after: pageCursorState.nextPageCursor,
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handlePrev = async () => {
-    if (!props.filterOptions) {
+    if (isLoading || !props.filterOptions) {
       return;
     }
 
     const { refetch } = props.filterOptions;
-
-    setIsLoading(true);
 
     // Update the page cursor query param but keep the filters intact
     const newFetchVariables: QueryVariablesType = {
@@ -1032,13 +1095,7 @@ export function DataManagerTable<
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const currentPage =
@@ -1047,11 +1104,12 @@ export function DataManagerTable<
   const handleChangePage = async (page: number) => {
     const pageCursorIndex = (page - 1) * pageSize + 1 - pageSize;
     const cachedCursorState =
-      pageCursorState.cursorCache[pageSize][pageCursorIndex];
+      pageCursorState.cursorCache[pageSize]?.[pageCursorIndex];
 
     // If the page is not yet queried, don't allow jumping ahead.
     // Also don't requery for the current page.
     if (
+      isLoading ||
       !props.filterOptions ||
       (pageCursorIndex > 0 && !cachedCursorState) ||
       page === currentPage
@@ -1061,29 +1119,27 @@ export function DataManagerTable<
 
     const { refetch } = props.filterOptions;
 
-    setIsLoading(true);
     const newFetchVariables: QueryVariablesType = {
       ...fetchVariables,
       after: cachedCursorState,
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handleChangePageSize = async (size: number) => {
+    if (isLoading || (size === pageSize && !awaitingPaginationResetResult)) {
+      return;
+    }
+
     setPageSize(size);
+    props.onPageSizeChange?.(size);
 
     if (props.showMoreOptions) {
       const { refetch, initialQueryVariables } = props.showMoreOptions;
+      resetPagination();
 
-      setIsLoading(true);
       let pageSizeQueryVariables: Record<string, number>;
       if (props.showMoreOptions.pageSizeVariables) {
         pageSizeQueryVariables = {};
@@ -1099,15 +1155,15 @@ export function DataManagerTable<
       };
       setFetchVariables(newFetchVariables);
 
-      try {
-        await refetch(newFetchVariables);
-      } catch (e) {
-        setIsLoading(false);
-        throw e;
-      }
-      setIsLoading(false);
+      await refetchLatest(refetch, newFetchVariables);
     } else if (props.filterOptions) {
-      void handleApplyFilters(filterStates, props.filterOptions, size);
+      await handleApplyFilters(filterStates, props.filterOptions, size);
+    } else {
+      setPageCursorState({
+        startResult: undefined,
+        nextPageCursor: undefined,
+        cursorCache: {},
+      });
     }
   };
 
@@ -1226,7 +1282,9 @@ export function DataManagerTable<
   const isFilterButtonSmall = isSm && props.header;
 
   function onApply() {
-    void handleApplyFilters(filterStates, props.filterOptions!, pageSize);
+    runAsyncAction(
+      handleApplyFilters(filterStates, props.filterOptions!, pageSize),
+    );
   }
 
   const filterContent = (
@@ -1344,10 +1402,12 @@ export function DataManagerTable<
                       ...currentStates,
                       [filter.accessorKey]: getDefaultFilterState<T>(filter),
                     }));
-                    void handleApplyFilters(
-                      newStates,
-                      props.filterOptions!,
-                      pageSize,
+                    runAsyncAction(
+                      handleApplyFilters(
+                        newStates,
+                        props.filterOptions!,
+                        pageSize,
+                      ),
                     );
                   }}
                   customComponents={{
@@ -1374,10 +1434,12 @@ export function DataManagerTable<
                       );
                       return nextStates;
                     });
-                    void handleApplyFilters(
-                      newStates,
-                      props.filterOptions!,
-                      pageSize,
+                    runAsyncAction(
+                      handleApplyFilters(
+                        newStates,
+                        props.filterOptions!,
+                        pageSize,
+                      ),
                     );
                     setShowFilterEditor(false);
                   }}
@@ -1488,7 +1550,7 @@ export function DataManagerTable<
         dropdownItems={props.pageSizes.map((size) => ({
           label: `${size}`,
           onClick: () => {
-            void handleChangePageSize(size);
+            runAsyncAction(handleChangePageSize(size));
           },
         }))}
       />
@@ -1505,7 +1567,9 @@ export function DataManagerTable<
             text="Show more"
             paddingY="short"
             onClick={() =>
-              void handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20))
+              runAsyncAction(
+                handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20)),
+              )
             }
           />
           {showMoreDropdown}
@@ -1542,6 +1606,13 @@ export function DataManagerTable<
         { length: Math.ceil(props.resultCount / pageSize) },
         (_, i) => i,
       );
+      const isPageNumberUnavailable = (page: number) => {
+        const pageCursorIndex = (page - 1) * pageSize + 1 - pageSize;
+        return (
+          pageCursorIndex > 0 &&
+          !pageCursorState.cursorCache[pageSize]?.[pageCursorIndex]
+        );
+      };
 
       const pageNumberButtons = props.paginationDisplayOptions
         ?.showPageNumberButtons ? (
@@ -1554,15 +1625,17 @@ export function DataManagerTable<
             }}
             kind="ghost"
             paddingY="short"
-            onClick={() => void handlePrev()}
-            disabled={!hasPrev}
+            onClick={() => runAsyncAction(handlePrev())}
+            disabled={isLoading || !hasPrev}
           />
           {/* Get first two page numbers based on page size and current page */}
           {pageNumbers.slice(0, 2).map((pageNumber) => (
             <PageNumberButton
               key={pageNumber}
-              onClick={() => void handleChangePage(pageNumber + 1)}
+              onClick={() => runAsyncAction(handleChangePage(pageNumber + 1))}
               isCurrentPage={currentPage === pageNumber + 1}
+              aria-current={currentPage === pageNumber + 1 ? "page" : undefined}
+              disabled={isLoading || isPageNumberUnavailable(pageNumber + 1)}
             >
               <Body content={`${pageNumber + 1}`} />
             </PageNumberButton>
@@ -1582,7 +1655,9 @@ export function DataManagerTable<
             <PageNumberButton
               key={currentPage}
               isCurrentPage
-              onClick={() => void handleChangePage(currentPage)}
+              aria-current="page"
+              onClick={() => runAsyncAction(handleChangePage(currentPage))}
+              disabled={isLoading || isPageNumberUnavailable(currentPage)}
             >
               <Body content={`${currentPage}`} />
             </PageNumberButton>
@@ -1602,7 +1677,15 @@ export function DataManagerTable<
             <PageNumberButton
               key={pageNumbers.length}
               isCurrentPage={currentPage === pageNumbers.length}
-              onClick={() => void handleChangePage(pageNumbers.length)}
+              aria-current={
+                currentPage === pageNumbers.length ? "page" : undefined
+              }
+              onClick={() =>
+                runAsyncAction(handleChangePage(pageNumbers.length))
+              }
+              disabled={
+                isLoading || isPageNumberUnavailable(pageNumbers.length)
+              }
             >
               <Body content={`${pageNumbers.length}`} />
             </PageNumberButton>
@@ -1615,8 +1698,8 @@ export function DataManagerTable<
             }}
             kind="ghost"
             paddingY="short"
-            onClick={() => void handleNext()}
-            disabled={!hasNext}
+            onClick={() => runAsyncAction(handleNext())}
+            disabled={isLoading || !hasNext}
           />
         </PageNumberPaginationButtonsContainer>
       ) : (
@@ -1635,17 +1718,17 @@ export function DataManagerTable<
                   text="Previous"
                   paddingY="short"
                   onClick={() => {
-                    void handlePrev();
+                    runAsyncAction(handlePrev());
                   }}
-                  disabled={!hasPrev}
+                  disabled={isLoading || !hasPrev}
                 />
                 <Button
                   text="Next"
                   paddingY="short"
                   onClick={() => {
-                    void handleNext();
+                    runAsyncAction(handleNext());
                   }}
-                  disabled={!hasNext}
+                  disabled={isLoading || !hasNext}
                 />
               </PaginationButtonsContainer>
             )}
@@ -1733,7 +1816,9 @@ function getPillDropdownItems<
       });
       return nextStates;
     });
-    void handleApplyFilters(newStates, filterOptions, pageSize);
+    void handleApplyFilters(newStates, filterOptions, pageSize).catch(
+      () => undefined,
+    );
     setShowFilterEditor(false);
   };
 
