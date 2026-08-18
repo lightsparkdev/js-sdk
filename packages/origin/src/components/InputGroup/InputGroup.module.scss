@@ -110,6 +110,11 @@
     border: none;
     box-shadow: none;
     @include btn;
+
+    &.buttonIconOnly {
+      height: var(--spacing-xl);
+      padding: var(--spacing-none);
+    }
   }
 
   &:has(> .button:only-child) {
@@ -168,6 +173,11 @@
   background: var(--surface-primary);
   border: var(--stroke-xs) solid var(--border-primary);
   box-shadow: var(--shadow-sm);
+}
+
+.buttonIconOnly {
+  width: var(--spacing-xl);
+  padding: var(--spacing-none);
 }
 
 .selectTrigger {
