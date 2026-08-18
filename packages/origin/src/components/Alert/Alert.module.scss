@@ -2,6 +2,8 @@
 @use "../../tokens/mixins" as *;
 
 .root {
+  --alert-text-max-inline-size: 30rem;
+
   display: flex;
   flex-direction: column;
   @include smooth-corners(var(--corner-radius-md));
@@ -12,6 +14,17 @@
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-sm);
+  min-width: 0;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .iconWrapper {
@@ -23,28 +36,38 @@
 .text {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 var(--alert-text-max-inline-size);
   min-width: 0;
+  max-inline-size: var(--alert-text-max-inline-size);
+}
+
+.trailing {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  max-inline-size: 100%;
 }
 
 .title {
   @include label;
   margin: 0;
+  text-wrap: pretty;
 }
 
 .description {
   @include body;
   margin: 0;
+  text-wrap: pretty;
 }
 
-.default {
+.default,
+.warning,
+.critical {
   background-color: var(--surface-primary);
   border: var(--stroke-xs) solid var(--border-primary);
   padding: var(--spacing-sm) var(--spacing-md);
-
-  .iconWrapper {
-    color: var(--icon-primary);
-  }
 
   .title {
     color: var(--text-primary);
@@ -55,39 +78,28 @@
   }
 }
 
-.warning {
-  background-color: var(--surface-yellow);
-  border: var(--stroke-xs) solid var(--border-primary);
-  padding: var(--spacing-sm) var(--spacing-md);
+.default {
+  .iconWrapper {
+    color: var(--icon-primary);
+  }
+}
 
+.warning {
   .iconWrapper {
     color: var(--icon-warning);
   }
 
-  .title {
-    color: var(--text-yellow);
-  }
-
-  .description {
-    color: var(--text-yellow);
+  &.noIcon {
+    border-inline-start: var(--stroke-lg) solid var(--text-yellow);
   }
 }
 
 .critical {
-  background-color: var(--surface-red);
-  border: var(--stroke-xs) solid var(--border-primary);
-  padding: var(--spacing-sm) var(--spacing-3xl) var(--spacing-sm)
-    var(--spacing-md);
-
   .iconWrapper {
     color: var(--icon-critical);
   }
 
-  .title {
-    color: var(--text-critical);
-  }
-
-  .description {
-    color: var(--text-critical);
+  &.noIcon {
+    border-inline-start: var(--stroke-lg) solid var(--border-critical);
   }
 }
