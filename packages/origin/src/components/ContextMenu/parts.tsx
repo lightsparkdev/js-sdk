@@ -5,6 +5,7 @@ import { ContextMenu as BaseContextMenu } from "@base-ui/react/context-menu";
 import clsx from "clsx";
 // Reuse Menu styles - visually identical
 import styles from "../Menu/Menu.module.scss";
+import { wrapTextChildren } from "../Menu/wrapTextChildren";
 import { CentralIcon } from "../Icon";
 import { useTrackedOpenChange } from "../Analytics/useTrackedOpenChange";
 
@@ -92,7 +93,7 @@ export const Popup = React.forwardRef<HTMLDivElement, PopupProps>(
 export interface ItemProps extends BaseContextMenu.Item.Props {}
 
 export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
-  { className, ...props },
+  { className, children, ...props },
   ref,
 ) {
   return (
@@ -100,7 +101,9 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
       ref={ref}
       className={clsx(styles.item, className)}
       {...props}
-    />
+    >
+      {wrapTextChildren(children, styles.itemText)}
+    </BaseContextMenu.Item>
   );
 });
 
@@ -111,13 +114,15 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
 export interface CheckboxItemProps extends BaseContextMenu.CheckboxItem.Props {}
 
 export const CheckboxItem = React.forwardRef<HTMLDivElement, CheckboxItemProps>(
-  function CheckboxItem({ className, ...props }, ref) {
+  function CheckboxItem({ className, children, ...props }, ref) {
     return (
       <BaseContextMenu.CheckboxItem
         ref={ref}
         className={clsx(styles.checkboxItem, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseContextMenu.CheckboxItem>
     );
   },
 );
@@ -174,13 +179,15 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
 export interface RadioItemProps extends BaseContextMenu.RadioItem.Props {}
 
 export const RadioItem = React.forwardRef<HTMLDivElement, RadioItemProps>(
-  function RadioItem({ className, ...props }, ref) {
+  function RadioItem({ className, children, ...props }, ref) {
     return (
       <BaseContextMenu.RadioItem
         ref={ref}
         className={clsx(styles.radioItem, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseContextMenu.RadioItem>
     );
   },
 );
@@ -255,13 +262,15 @@ export const Group = React.forwardRef<HTMLDivElement, GroupProps>(
 export interface GroupLabelProps extends BaseContextMenu.GroupLabel.Props {}
 
 export const GroupLabel = React.forwardRef<HTMLDivElement, GroupLabelProps>(
-  function GroupLabel({ className, ...props }, ref) {
+  function GroupLabel({ className, children, ...props }, ref) {
     return (
       <BaseContextMenu.GroupLabel
         ref={ref}
         className={clsx(styles.groupLabel, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseContextMenu.GroupLabel>
     );
   },
 );
@@ -286,13 +295,15 @@ export interface SubmenuTriggerProps
 export const SubmenuTrigger = React.forwardRef<
   HTMLDivElement,
   SubmenuTriggerProps
->(function SubmenuTrigger({ className, ...props }, ref) {
+>(function SubmenuTrigger({ className, children, ...props }, ref) {
   return (
     <BaseContextMenu.SubmenuTrigger
       ref={ref}
       className={clsx(styles.submenuTrigger, className)}
       {...props}
-    />
+    >
+      {wrapTextChildren(children, styles.itemText)}
+    </BaseContextMenu.SubmenuTrigger>
   );
 });
 

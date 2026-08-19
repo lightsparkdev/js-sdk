@@ -6,6 +6,11 @@ import { Button } from "@/components/Button";
 import { CentralIcon } from "@/components/Icon";
 import { Shortcut } from "@/components/Shortcut";
 
+const longMenuItems = [
+  "Item-1-with-a-label-wider-than-the-narrow-viewport",
+  ...Array.from({ length: 39 }, (_, index) => `Item ${index + 2}`),
+];
+
 export function BasicMenu() {
   return (
     <Menu.Root>
@@ -18,10 +23,40 @@ export function BasicMenu() {
             <Menu.Item>Cut</Menu.Item>
             <Menu.Item>Copy</Menu.Item>
             <Menu.Item>Paste</Menu.Item>
+            <Menu.Item>
+              Delete {2}{" "}
+              <strong data-testid="composite-menu-emphasis">accounts</strong>
+            </Menu.Item>
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
     </Menu.Root>
+  );
+}
+
+export function LongListMenu() {
+  const [selectedItem, setSelectedItem] = React.useState("");
+
+  return (
+    <>
+      <span data-testid="selected-menu-item">{selectedItem}</span>
+      <Menu.Root>
+        <Menu.Trigger render={<Button variant="outline" />}>
+          Open Long Menu
+        </Menu.Trigger>
+        <Menu.Portal>
+          <Menu.Positioner>
+            <Menu.Popup data-testid="long-menu-popup">
+              {longMenuItems.map((item) => (
+                <Menu.Item key={item} onClick={() => setSelectedItem(item)}>
+                  {item}
+                </Menu.Item>
+              ))}
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </Menu.Root>
+    </>
   );
 }
 
