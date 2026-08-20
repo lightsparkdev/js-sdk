@@ -26,6 +26,7 @@ import type {
   DatePickerMode,
   DatePickerPreset,
   DatePickerPresetResult,
+  DateRangeDraft,
 } from "../DatePicker";
 import { resolveDatePickerPreset } from "../DatePicker/resolvePreset";
 
@@ -85,7 +86,16 @@ type DateFilterDatePickerConfigVariant<
   mode: TMode;
   /** Fixed editor granularity for this filter. */
   granularity: TGranularity;
-};
+} & (TMode extends "range"
+  ? {
+      /**
+       * Normalize Custom range edits before the draft renders or applies.
+       * This callback must be pure, deterministic, and must not mutate its
+       * input because React can replay reducer transitions in development.
+       */
+      normalizeCustomRangeDraft?: (range: DateRangeDraft) => DateRangeDraft;
+    }
+  : { normalizeCustomRangeDraft?: never });
 
 export type DateFilterDatePickerConfig = {
   [TMode in DatePickerMode]: {

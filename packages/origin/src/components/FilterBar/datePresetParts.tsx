@@ -133,7 +133,9 @@ export function DateValueEditorContent({
               datePickerConfig.mode === "single"
                 ? draft.start ?? draft.end
                 : null,
-            onValueChange: editValue,
+            ...(datePickerConfig.mode === "single"
+              ? { onValueChange: editValue }
+              : {}),
           }
         : {
             mode: "range" as const,

@@ -19,12 +19,18 @@ interface DateFilterDraftState {
   isValid: boolean;
 }
 
+type NormalizeCustomRangeDraft = (range: DateRangeDraft) => DateRangeDraft;
+
 type DateFilterDraftAction =
   | { type: "external-resync"; draft: DateFilterDraft }
   | { type: "reset"; draft: DateFilterDraft }
   | { type: "edit-preset"; presetId: string | null }
   | { type: "edit-value"; value: Date | DateRange }
-  | { type: "edit-range"; range: DateRangeDraft }
+  | {
+      type: "edit-range";
+      range: DateRangeDraft;
+      normalizeCustomRangeDraft: NormalizeCustomRangeDraft | undefined;
+    }
   | { type: "set-validity"; isValid: boolean };
 
 interface CommittedDateFilterDraft {
@@ -76,6 +82,14 @@ function getCommittedDraft(
   };
 }
 
+function normalizeCustomRange(
+  current: DateFilterDraft,
+  range: DateRangeDraft,
+  normalizer: NormalizeCustomRangeDraft | undefined,
+): DateRangeDraft {
+  return current.presetId === null && normalizer ? normalizer(range) : range;
+}
+
 function dateFilterDraftReducer(
   current: DateFilterDraftState,
   action: DateFilterDraftAction,
@@ -108,15 +122,21 @@ function dateFilterDraftReducer(
                 end: new Date(action.value.end),
               },
       };
-    case "edit-range":
+    case "edit-range": {
+      const range = normalizeCustomRange(
+        current.draft,
+        action.range,
+        action.normalizeCustomRangeDraft,
+      );
       return {
         ...current,
         draft: {
           ...current.draft,
-          start: action.range.start ? new Date(action.range.start) : null,
-          end: action.range.end ? new Date(action.range.end) : null,
+          start: range.start ? new Date(range.start) : null,
+          end: range.end ? new Date(range.end) : null,
         },
       };
+    }
     case "set-validity":
       return current.isValid === action.isValid
         ? current
@@ -181,6 +201,10 @@ export function useDateFilterDraft(
       draft: getDateFilterDraft(descriptor, state, false),
     });
   }, [descriptor, state]);
+  const normalizeCustomRangeDraft =
+    descriptor.datePicker?.mode === "range"
+      ? descriptor.datePicker.normalizeCustomRangeDraft
+      : undefined;
 
   const projectApply = React.useCallback((): DateFilterState | null => {
     const { isValid } = draftState;
@@ -213,8 +237,13 @@ export function useDateFilterDraft(
     [],
   );
   const editRange = React.useCallback(
-    (range: DateRangeDraft) => dispatch({ type: "edit-range", range }),
-    [],
+    (range: DateRangeDraft) =>
+      dispatch({
+        type: "edit-range",
+        range,
+        normalizeCustomRangeDraft,
+      }),
+    [normalizeCustomRangeDraft],
   );
   const setValidity = React.useCallback(
     (isValid: boolean) => dispatch({ type: "set-validity", isValid }),

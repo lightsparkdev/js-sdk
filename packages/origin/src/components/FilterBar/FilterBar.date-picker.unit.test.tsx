@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import type { DatePickerPreset } from "../DatePicker";
+import type { DatePickerPreset, DateRangeDraft } from "../DatePicker";
 import { FilterBar } from "./";
 import { DATE_PICKER_PRESETS } from "./FilterBar.date-picker.test-fixtures";
 import { createUrlBackedFiltersHook } from "./createUrlBackedFiltersHook";
@@ -27,6 +27,7 @@ beforeEach(() => {
   vi.useRealTimers();
   initialUrlSearch = DEFAULT_URL_SEARCH;
   latestUrlSearch = DEFAULT_URL_SEARCH;
+  normalizeCustomRangeDraft.mockClear();
 });
 
 const DESCRIPTORS = [
@@ -62,6 +63,48 @@ const SINGLE_DEFAULT_DESCRIPTORS = [
     datePicker: {
       mode: "single",
       granularity: "date",
+    },
+  },
+] as const satisfies readonly FilterDescriptor<"createdAt">[];
+
+const normalizeCustomRangeDraft = vi.fn((range: DateRangeDraft) => {
+  if (
+    !range.start ||
+    !range.end ||
+    range.start.getTime() !== range.end.getTime()
+  ) {
+    return range;
+  }
+  return {
+    start: range.start,
+    end: new Date(range.end.getTime() + 24 * 60 * 60 * 1000 - 1),
+  };
+});
+
+const NORMALIZED_DRAFT_DESCRIPTORS = [
+  {
+    type: "date",
+    id: "createdAt",
+    label: "Created",
+    datePicker: {
+      mode: "range",
+      granularity: "date-time",
+      presets: [
+        {
+          id: "same-instant",
+          label: "Same instant",
+          textValue: "Same instant",
+          resolve: () => ({
+            mode: "range",
+            granularity: "date-time",
+            value: {
+              start: new Date("2026-07-29T00:00:00.000Z"),
+              end: new Date("2026-07-29T00:00:00.000Z"),
+            },
+          }),
+        },
+      ],
+      normalizeCustomRangeDraft,
     },
   },
 ] as const satisfies readonly FilterDescriptor<"createdAt">[];
@@ -137,6 +180,24 @@ function SingleDefaultHarness({
   );
 }
 
+function NormalizedDraftHarness() {
+  const [states, setStates] = useState(() => {
+    const initialStates = getDefaultFilterStates(NORMALIZED_DRAFT_DESCRIPTORS);
+    initialStates.createdAt.isApplied = true;
+    return initialStates;
+  });
+  const model = useFilters({
+    descriptors: NORMALIZED_DRAFT_DESCRIPTORS,
+    states,
+    onStatesChange: setStates,
+  });
+  return (
+    <FilterBar.Root model={model}>
+      <FilterBar.Pills />
+    </FilterBar.Root>
+  );
+}
+
 const DEFAULT_URL_SEARCH =
   "createdAt=2026-07-29T09%3A00%3A00.000Z%2C2026-07-30T17%3A00%3A00.000Z";
 let initialUrlSearch = DEFAULT_URL_SEARCH;
@@ -197,6 +258,63 @@ function choosePreset(label: string) {
 }
 
 describe("FilterBar DatePicker draft boundary", () => {
+  it("applies an opted-in Custom range draft normalizer before Apply", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-31T17:30:45.000Z"));
+    render(<NormalizedDraftHarness />);
+
+    openEditor();
+    const selectedDay = screen.getByRole("button", {
+      name: "Wednesday, July 29, 2026",
+    });
+    fireEvent.click(selectedDay);
+    normalizeCustomRangeDraft.mockClear();
+    fireEvent.click(selectedDay);
+
+    expect(screen.getByRole("textbox", { name: "End time (UTC)" })).toHaveValue(
+      "11:59 PM",
+    );
+    expect(normalizeCustomRangeDraft).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Jul 29/ }));
+
+    expect(screen.getByRole("textbox", { name: "End time (UTC)" })).toHaveValue(
+      "11:59 PM",
+    );
+    expect(normalizeCustomRangeDraft).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not normalize a named preset draft", () => {
+    render(<NormalizedDraftHarness />);
+
+    openEditor();
+    choosePreset("Same instant");
+
+    expect(screen.getByRole("textbox", { name: "End time (UTC)" })).toHaveValue(
+      "12:00 AM",
+    );
+  });
+
+  it("keeps equal Custom range times unchanged without an opt-in normalizer", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-31T17:30:45.000Z"));
+    const initialStates = getDefaultFilterStates(DESCRIPTORS);
+    initialStates.createdAt.isApplied = true;
+    render(<Harness initialStates={initialStates} />);
+
+    openEditor();
+    const selectedDay = screen.getByRole("button", {
+      name: "Wednesday, July 29, 2026",
+    });
+    fireEvent.click(selectedDay);
+    fireEvent.click(selectedDay);
+
+    expect(screen.getByRole("textbox", { name: "End time (UTC)" })).toHaveValue(
+      "12:00 AM",
+    );
+  });
+
   it("canonicalizes a configured two-date default in single mode", () => {
     const onStatesChange = vi.fn();
     render(<SingleDefaultHarness onStatesChange={onStatesChange} />);
