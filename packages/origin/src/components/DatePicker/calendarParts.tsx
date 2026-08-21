@@ -569,6 +569,7 @@ export const Grid = React.forwardRef<HTMLTableElement, DatePickerGridProps>(
                       type="button"
                       className={styles.dayButton}
                       tabIndex={isFocused ? 0 : -1}
+                      data-date-picker-day=""
                       data-today={state.isToday || undefined}
                       data-selected={state.isSelected || undefined}
                       data-range-start={state.isRangeStart || undefined}

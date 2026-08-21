@@ -8,7 +8,11 @@ import { Fieldset } from "../Fieldset";
 import { Input } from "../Input";
 import { InputGroup } from "../InputGroup";
 import styles from "./DatePicker.module.scss";
-import { useDatePickerContext } from "./datePickerContext";
+import {
+  useDatePickerContext,
+  useDatePickerInteractionContext,
+  type DateRangeEndpoint,
+} from "./datePickerContext";
 import {
   createCalendarDate,
   getCalendarDate,
@@ -173,6 +177,8 @@ interface EditableInputOptions<ParsedValue> {
   invalidMessage: string;
   parseDraft: (draft: string) => ParsedValue | null;
   onCommit: (value: ParsedValue) => void;
+  deferInvalidCommit?: (commit: () => void) => boolean;
+  onInteract?: () => void;
 }
 
 function useEditableInput<ParsedValue>({
@@ -182,6 +188,8 @@ function useEditableInput<ParsedValue>({
   invalidMessage,
   parseDraft,
   onCommit,
+  deferInvalidCommit,
+  onInteract,
 }: EditableInputOptions<ParsedValue>) {
   const {
     clearRequiredError,
@@ -196,6 +204,7 @@ function useEditableInput<ParsedValue>({
   const previousValueIdentity = React.useRef(valueIdentity);
   const previousInputDraftResetRevision = React.useRef(inputDraftResetRevision);
   const enterCommitDraft = React.useRef<string | null>(null);
+  const hasDeferredInvalidCommit = React.useRef(false);
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const setInputRef = React.useCallback(
     (element: HTMLInputElement | null) => {
@@ -212,11 +221,12 @@ function useEditableInput<ParsedValue>({
     previousValueIdentity.current = valueIdentity;
     previousInputDraftResetRevision.current = inputDraftResetRevision;
     if (valueChanged || selectionChanged) {
+      hasDeferredInvalidCommit.current = false;
       setDraft(formattedValue);
       enterCommitDraft.current = null;
       setShowError(false);
       setInputValidity(inputId, true);
-    } else if (!hasFocus && !showError) {
+    } else if (!hasFocus && !showError && !hasDeferredInvalidCommit.current) {
       setDraft(formattedValue);
     }
   }, [
@@ -254,6 +264,7 @@ function useEditableInput<ParsedValue>({
 
   function commit() {
     if (draft === formattedValue) {
+      hasDeferredInvalidCommit.current = false;
       setShowError(false);
       setInputValidity(inputId, true);
       return;
@@ -261,12 +272,21 @@ function useEditableInput<ParsedValue>({
 
     const parsed = parseDraft(draft);
     if (parsed !== null) {
+      hasDeferredInvalidCommit.current = false;
       setShowError(false);
       setInputValidity(inputId, true);
       onCommit(parsed);
     } else {
-      setShowError(true);
-      setInputValidity(inputId, false);
+      const commitInvalid = () => {
+        hasDeferredInvalidCommit.current = false;
+        setShowError(true);
+        setInputValidity(inputId, false);
+      };
+      if (deferInvalidCommit?.(commitInvalid)) {
+        hasDeferredInvalidCommit.current = true;
+      } else {
+        commitInvalid();
+      }
     }
   }
 
@@ -277,6 +297,7 @@ function useEditableInput<ParsedValue>({
     inputProps: {
       value: draft,
       onChange(event: React.ChangeEvent<HTMLInputElement>) {
+        onInteract?.();
         clearRequiredError();
         setDraft(event.target.value);
         enterCommitDraft.current = null;
@@ -286,6 +307,7 @@ function useEditableInput<ParsedValue>({
       onFocus() {
         enterCommitDraft.current = null;
         setHasFocus(true);
+        onInteract?.();
       },
       onBlur() {
         setHasFocus(false);
@@ -320,6 +342,7 @@ function DateInput({
   which: "start" | "end";
 }) {
   const context = useDatePickerContext();
+  const interaction = useDatePickerInteractionContext();
   const formattedValue = formatDateValue(
     date,
     context.locale,
@@ -335,6 +358,9 @@ function DateInput({
       return parsed && !context.isDateDisabled(parsed) ? parsed : null;
     },
     onCommit: (parsed) => context.setDate(which, parsed),
+    deferInvalidCommit: (commit) =>
+      interaction.deferRangeEndpointInvalidCommit(which, commit),
+    onInteract: () => interaction.setRangeEndpointIntent(which),
   });
   const { placeholder } = getDateFormat(context.locale);
   const showRequiredError = context.requiredError && which === "start";
@@ -374,6 +400,7 @@ function TimeInput({
   disabled,
   invalidMessage,
   onTimeChange,
+  which,
 }: {
   active?: boolean;
   date: Date | null;
@@ -383,7 +410,9 @@ function TimeInput({
   disabled: boolean;
   invalidMessage: string;
   onTimeChange: (hours: number, minutes: number) => void;
+  which: DateRangeEndpoint;
 }) {
+  const interaction = useDatePickerInteractionContext();
   const formattedValue = date ? formatTimeValue(date, locale, timeZone) : "";
   const showsUtc = timeZone === "UTC";
   const editableInput = useEditableInput({
@@ -393,6 +422,9 @@ function TimeInput({
     invalidMessage,
     parseDraft: parseTimeString,
     onCommit: (parsed) => onTimeChange(parsed.hours, parsed.minutes),
+    deferInvalidCommit: (commit) =>
+      interaction.deferRangeEndpointInvalidCommit(which, commit),
+    onInteract: () => interaction.setRangeEndpointIntent(which),
   });
 
   return (
@@ -490,6 +522,7 @@ function HeaderAutoLayout() {
             isRange && context.usesRangeDraftApi && !context.rangeValue?.start
           }
           invalidMessage={labels.invalidTime}
+          which="start"
           onTimeChange={(hours, minutes) =>
             context.setTime("start", hours, minutes)
           }
@@ -512,6 +545,7 @@ function HeaderAutoLayout() {
           timeZone={context.timeZone}
           disabled={context.usesRangeDraftApi && !context.rangeValue?.end}
           invalidMessage={labels.invalidTime}
+          which="end"
           onTimeChange={(hours, minutes) =>
             context.setTime("end", hours, minutes)
           }

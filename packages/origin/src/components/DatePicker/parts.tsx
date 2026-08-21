@@ -5,11 +5,14 @@ import clsx from "clsx";
 import styles from "./DatePicker.module.scss";
 import {
   DatePickerContext,
+  DatePickerInteractionContext,
   type DatePickerContextValue,
   type DatePickerLabels,
 } from "./datePickerContext";
+import { replaceRangeEndpoint } from "./rangeEndpointIntent";
 import type { DateRange, DateRangeDraft } from "./useDateRangeSelection";
 import { useDatePickerController } from "./useDatePickerController";
+import { useRangeEndpointIntent } from "./useRangeEndpointIntent";
 import type {
   DatePickerGranularity,
   DatePickerMode,
@@ -177,6 +180,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     const {
       className,
       children,
+      onBlur: onRootBlur,
       mode: modeProp,
       defaultMode = "single",
       onModeChange,
@@ -360,11 +364,25 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     // Range selection state
     const [pendingStart, setPendingStart] = React.useState<Date | null>(null);
     const [hoveredDate, setHoveredDate] = React.useState<Date | null>(null);
+    const {
+      clearRangeEndpointIntent,
+      consumeRangeEndpointIntent,
+      deferRangeEndpointInvalidCommit,
+      handleRootBlur,
+      setRangeEndpointIntent,
+      setRootRef,
+    } = useRangeEndpointIntent(forwardedRef, onRootBlur);
+    const previousModeRef = React.useRef(mode);
 
     React.useEffect(() => {
+      if (previousModeRef.current === mode) {
+        return;
+      }
+      previousModeRef.current = mode;
       setPendingStart(null);
       setHoveredDate(null);
-    }, [mode]);
+      clearRangeEndpointIntent();
+    }, [clearRangeEndpointIntent, mode]);
 
     const viewYear = getCalendarYear(viewDate, timeZone);
     const viewMonth = getCalendarMonth(viewDate, timeZone);
@@ -486,6 +504,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         }
 
         if (mode === "single") {
+          clearRangeEndpointIntent();
           applyTransition({
             source: "manual",
             mode,
@@ -493,6 +512,38 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
             granularity,
             presetId: null,
           });
+          return;
+        }
+
+        const rangeEndpointIntent = consumeRangeEndpointIntent();
+        if (rangeEndpointIntent !== null) {
+          const current = {
+            start:
+              rangeEndpointIntent === "end" && pendingStart
+                ? applyTime(pendingStart, rangeValue?.start ?? null)
+                : rangeValue?.start ?? null,
+            end: rangeValue?.end ?? null,
+          };
+          const update = replaceRangeEndpoint({
+            current,
+            date: startOfCalendarDay(date, timeZone),
+            defaultTime: usesLegacyIncludeTime ? new Date() : null,
+            endpoint: rangeEndpointIntent,
+            includeTime,
+            timeZone,
+          });
+          applyTransition({
+            source: "manual",
+            mode,
+            value: update.value,
+            granularity,
+            presetId: null,
+            ...(update.preferredRoleTimes
+              ? { preferredRoleTimes: update.preferredRoleTimes }
+              : {}),
+          });
+          setPendingStart(null);
+          setHoveredDate(null);
           return;
         }
 
@@ -557,6 +608,8 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         rangeValue,
         isDateDisabled,
         applyTransition,
+        clearRangeEndpointIntent,
+        consumeRangeEndpointIntent,
         clearPresetIdentity,
         clearRequiredError,
       ],
@@ -592,37 +645,22 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
           });
         } else {
           const current = rangeValue ?? { start: null, end: null };
-          const existing = which === "start" ? current.start : current.end;
-          const d =
-            includeTime && existing
-              ? setCalendarTime(
-                  date,
-                  getCalendarHours(existing, timeZone),
-                  getCalendarMinutes(existing, timeZone),
-                  timeZone,
-                )
-              : new Date(date);
-          const newRange: DateRangeDraft = {
-            start:
-              which === "start"
-                ? d
-                : current.start
-                ? new Date(current.start)
-                : null,
-            end:
-              which === "end" ? d : current.end ? new Date(current.end) : null,
-          };
-          const preferredRoleTimes =
-            current.start && current.end
-              ? { start: current.start, end: current.end }
-              : undefined;
+          const update = replaceRangeEndpoint({
+            current,
+            date,
+            endpoint: which,
+            includeTime,
+            timeZone,
+          });
           applyTransition({
             source: "manual",
             mode,
-            value: newRange,
+            value: update.value,
             granularity,
             presetId: null,
-            ...(preferredRoleTimes ? { preferredRoleTimes } : {}),
+            ...(update.preferredRoleTimes
+              ? { preferredRoleTimes: update.preferredRoleTimes }
+              : {}),
           });
         }
       },
@@ -680,6 +718,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
 
     const selectPreset = React.useCallback(
       (nextPresetId: string | null) => {
+        clearRangeEndpointIntent();
         const selectedDate = selectPresetTransition(nextPresetId);
         if (selectedDate) {
           setViewDate(
@@ -692,7 +731,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
           );
         }
       },
-      [selectPresetTransition, timeZone],
+      [clearRangeEndpointIntent, selectPresetTransition, timeZone],
     );
 
     const rangePreviewAnchor =
@@ -785,17 +824,27 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
         labels,
       ],
     );
+    const interactionContextValue = React.useMemo(
+      () => ({
+        deferRangeEndpointInvalidCommit,
+        setRangeEndpointIntent,
+      }),
+      [deferRangeEndpointInvalidCommit, setRangeEndpointIntent],
+    );
 
     return (
-      <DatePickerContext.Provider value={contextValue}>
-        <div
-          ref={forwardedRef}
-          className={clsx(styles.root, className)}
-          {...elementProps}
-        >
-          {children}
-        </div>
-      </DatePickerContext.Provider>
+      <DatePickerInteractionContext.Provider value={interactionContextValue}>
+        <DatePickerContext.Provider value={contextValue}>
+          <div
+            ref={setRootRef}
+            className={clsx(styles.root, className)}
+            {...elementProps}
+            onBlur={handleRootBlur}
+          >
+            {children}
+          </div>
+        </DatePickerContext.Provider>
+      </DatePickerInteractionContext.Provider>
     );
   },
 );

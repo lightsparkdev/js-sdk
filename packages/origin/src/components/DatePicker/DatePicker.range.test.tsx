@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/experimental-ct-react";
+import type { Page } from "playwright-core";
 import {
   TestCallbackOnlyRangeDraft,
   TestControlledRangeDraft,
@@ -9,6 +10,72 @@ import {
   TestSameDayRangeWithTime,
   TestUncontrolledRangeWithTime,
 } from "./DatePicker.test-stories";
+
+interface ValidationTraceEntry {
+  event: string;
+  hasError: boolean;
+  invalid: boolean;
+  value: string;
+}
+
+async function startValidationTrace(
+  page: Page,
+  inputLabel: string,
+  dayLabel: string,
+) {
+  await page.evaluate(
+    ({ dayLabel, inputLabel }) => {
+      const input = Array.from(document.querySelectorAll("input")).find(
+        (element) => element.getAttribute("aria-label") === inputLabel,
+      );
+      const day = Array.from(document.querySelectorAll("button")).find(
+        (element) => element.getAttribute("aria-label") === dayLabel,
+      );
+      if (!input || !day) {
+        throw new Error("DatePicker trace targets were not found");
+      }
+
+      const trace: ValidationTraceEntry[] = [];
+      const snapshot = (event: string) => {
+        trace.push({
+          event,
+          hasError: Array.from(document.querySelectorAll("*")).some(
+            (element) => element.textContent === "Enter a valid date",
+          ),
+          invalid: input.getAttribute("aria-invalid") === "true",
+          value: input.value,
+        });
+      };
+      input.addEventListener("blur", () => snapshot("blur"));
+      day.addEventListener("pointerdown", () => snapshot("pointerdown"));
+      day.addEventListener("click", () => snapshot("click"));
+      const observer = new MutationObserver(() => snapshot("mutation"));
+      observer.observe(document.body, {
+        attributeFilter: ["aria-describedby", "aria-invalid"],
+        attributes: true,
+        childList: true,
+        subtree: true,
+      });
+
+      Object.assign(window, {
+        __datePickerValidationObserver: observer,
+        __datePickerValidationTrace: trace,
+      });
+    },
+    { dayLabel, inputLabel },
+  );
+}
+
+async function stopValidationTrace(page: Page) {
+  return page.evaluate(() => {
+    const traceWindow = window as typeof window & {
+      __datePickerValidationObserver?: MutationObserver;
+      __datePickerValidationTrace?: ValidationTraceEntry[];
+    };
+    traceWindow.__datePickerValidationObserver?.disconnect();
+    return traceWindow.__datePickerValidationTrace ?? [];
+  });
+}
 
 test.describe("DatePicker range ownership and ordering", () => {
   test("restores the controlled range when a completed update is rejected", async ({
@@ -55,6 +122,275 @@ test.describe("DatePicker range ownership and ordering", () => {
     await endDate.blur();
 
     await expect(endDate).toHaveValue("02/20/2026");
+  });
+
+  test("uses a focused endpoint for the next calendar click", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    await endDate.focus();
+    await page
+      .getByRole("button", { name: "Friday, February 20, 2026" })
+      .click();
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/11/2026",
+    );
+    await expect(endDate).toHaveValue("02/20/2026");
+    await expect(page.getByRole("textbox", { name: "End time" })).toHaveValue(
+      "5:30 PM",
+    );
+  });
+
+  for (const { dayLabel, expectedEnd, expectedStart, inputLabel, testName } of [
+    {
+      dayLabel: "Tuesday, February 10, 2026",
+      expectedEnd: "02/15/2026",
+      expectedStart: "02/10/2026",
+      inputLabel: "Start date",
+      testName: "replacing Start date",
+    },
+    {
+      dayLabel: "Friday, February 20, 2026",
+      expectedEnd: "02/20/2026",
+      expectedStart: "02/11/2026",
+      inputLabel: "End date",
+      testName: "replacing End date",
+    },
+    {
+      dayLabel: "Thursday, February 5, 2026",
+      expectedEnd: "02/11/2026",
+      expectedStart: "02/05/2026",
+      inputLabel: "End date",
+      testName: "cleared End crosses before Start",
+    },
+    {
+      dayLabel: "Friday, February 20, 2026",
+      expectedEnd: "02/20/2026",
+      expectedStart: "02/15/2026",
+      inputLabel: "Start date",
+      testName: "cleared Start crosses after End",
+    },
+  ]) {
+    test(`preserves range roles without transient validation when ${testName}`, async ({
+      mount,
+      page,
+    }) => {
+      await mount(<TestRangeWithTime />);
+
+      const input = page.getByRole("textbox", { name: inputLabel });
+      await input.fill("");
+      await startValidationTrace(page, inputLabel, dayLabel);
+      await page.getByRole("button", { name: dayLabel }).click();
+
+      await expect(
+        page.getByRole("textbox", { name: "Start date" }),
+      ).toHaveValue(expectedStart);
+      await expect(
+        page.getByRole("textbox", { name: "Start time" }),
+      ).toHaveValue("9:00 AM");
+      await expect(page.getByRole("textbox", { name: "End date" })).toHaveValue(
+        expectedEnd,
+      );
+      await expect(page.getByRole("textbox", { name: "End time" })).toHaveValue(
+        "5:30 PM",
+      );
+      const trace = await stopValidationTrace(page);
+      expect(trace.filter((entry) => entry.hasError || entry.invalid)).toEqual(
+        [],
+      );
+    });
+  }
+
+  test("shows invalid state when a cleared endpoint leaves the DatePicker", async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <>
+        <TestRangeWithTime />
+        <button type="button">Outside</button>
+      </>,
+    );
+
+    const startDate = page.getByRole("textbox", { name: "Start date" });
+    await startDate.fill("");
+    await page.getByRole("button", { name: "Outside" }).click();
+
+    await expect(startDate).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByText("Enter a valid date")).toBeVisible();
+  });
+
+  test("shows invalid state when a calendar replacement is canceled", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    const day = page.getByRole("button", {
+      name: "Friday, February 20, 2026",
+    });
+    await endDate.fill("");
+    await day.dispatchEvent("pointerdown");
+    await endDate.evaluate((element) => element.blur());
+    await day.dispatchEvent("pointercancel");
+
+    await expect(endDate).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByText("Enter a valid date")).toBeVisible();
+  });
+
+  test("shows invalid state when a calendar replacement does not complete", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    const startDate = page.getByRole("textbox", { name: "Start date" });
+    const day = page.getByRole("button", {
+      name: "Tuesday, February 10, 2026",
+    });
+    await startDate.fill("");
+    await day.dispatchEvent("pointerdown");
+    await startDate.evaluate((element) => element.blur());
+    await day.dispatchEvent("pointerup");
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    await expect(startDate).toHaveValue("");
+    await expect(startDate).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByText("Enter a valid date")).toBeVisible();
+  });
+
+  test("keeps endpoint intent when an internal pointer does not move focus", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    const dayButton = page.getByRole("button", {
+      name: "Friday, February 20, 2026",
+    });
+    await endDate.focus();
+    await dayButton.dispatchEvent("pointerdown");
+    await endDate.evaluate((element) => element.blur());
+    await dayButton.dispatchEvent("pointerup");
+    await dayButton.dispatchEvent("click");
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/11/2026",
+    );
+    await expect(endDate).toHaveValue("02/20/2026");
+  });
+
+  test("resets an internal pointer handoff when no click follows", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    const firstDay = page.getByRole("button", {
+      name: "Friday, February 20, 2026",
+    });
+    await endDate.focus();
+    await firstDay.dispatchEvent("pointerdown");
+    await endDate.evaluate((element) => element.blur());
+    await firstDay.dispatchEvent("pointerup");
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    const nextMonth = page.getByRole("button", { name: "Next month" });
+    await nextMonth.focus();
+    await nextMonth.evaluate((element) => element.blur());
+    await firstDay.click();
+    await page
+      .getByRole("button", { name: "Tuesday, February 24, 2026" })
+      .click();
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/20/2026",
+    );
+    await expect(endDate).toHaveValue("02/24/2026");
+  });
+
+  test("discards endpoint intent when focus leaves the DatePicker", async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <>
+        <TestRangeWithTime />
+        <button type="button">Outside</button>
+      </>,
+    );
+
+    await page.getByRole("textbox", { name: "End date" }).focus();
+    await page
+      .getByRole("button", { name: "Friday, February 20, 2026" })
+      .focus();
+    await page.getByRole("button", { name: "Outside" }).focus();
+    await page
+      .getByRole("button", { name: "Friday, February 20, 2026" })
+      .click();
+    await page
+      .getByRole("button", { name: "Tuesday, February 24, 2026" })
+      .click();
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/20/2026",
+    );
+    await expect(page.getByRole("textbox", { name: "End date" })).toHaveValue(
+      "02/24/2026",
+    );
+  });
+
+  test("keeps endpoint intent through internal calendar navigation", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestRangeWithTime />);
+
+    await page.getByRole("textbox", { name: "End date" }).focus();
+    await page.getByRole("button", { name: "Next month" }).click();
+    await page.getByRole("button", { name: "Friday, March 20, 2026" }).click();
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/11/2026",
+    );
+    await expect(page.getByRole("textbox", { name: "End date" })).toHaveValue(
+      "03/20/2026",
+    );
+  });
+
+  test("discards intent after pointer navigation followed by an outside click", async ({
+    mount,
+    page,
+  }) => {
+    await mount(
+      <>
+        <TestRangeWithTime />
+        <button type="button">Outside</button>
+      </>,
+    );
+
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    const nextMonth = page.getByRole("button", { name: "Next month" });
+    await endDate.focus();
+    await nextMonth.dispatchEvent("pointerdown");
+    await endDate.evaluate((element) => element.blur());
+    await nextMonth.dispatchEvent("pointerup");
+    await nextMonth.dispatchEvent("click");
+    await page.getByRole("button", { name: "Outside" }).click();
+    await page.getByRole("button", { name: "Friday, March 20, 2026" }).click();
+    await page.getByRole("button", { name: "Tuesday, March 24, 2026" }).click();
+
+    await expect(page.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "03/20/2026",
+    );
+    await expect(endDate).toHaveValue("03/24/2026");
   });
 
   test("keeps a typed partial date visible until the range is complete", async ({

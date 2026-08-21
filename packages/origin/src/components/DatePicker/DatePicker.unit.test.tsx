@@ -8,8 +8,324 @@ import {
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import * as DatePicker from "./";
+import { useRangeEndpointIntent } from "./useRangeEndpointIntent";
+
+function ControlledRangeDraftHarness() {
+  const [draft, setDraft] = useState<{
+    start: Date | null;
+    end: Date | null;
+  }>({
+    start: new Date(2026, 1, 5),
+    end: new Date(2026, 1, 20),
+  });
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      rangeDraft={draft}
+      onRangeDraftChange={setDraft}
+      defaultMonth={new Date(2026, 1, 1)}
+    >
+      <DatePicker.Header />
+      <DatePicker.Grid />
+    </DatePicker.Root>
+  );
+}
 
 describe("DatePicker range ownership", () => {
+  it("uses null teardown for legacy forwarded callback refs", () => {
+    const legacyRef = vi.fn();
+    let setRootRef:
+      | ReturnType<typeof useRangeEndpointIntent>["setRootRef"]
+      | undefined;
+
+    function Harness() {
+      setRootRef = useRangeEndpointIntent(legacyRef, undefined).setRootRef;
+      return null;
+    }
+
+    render(<Harness />);
+    const rootElement = document.createElement("div");
+
+    expect(setRootRef?.(rootElement)).toBeUndefined();
+    setRootRef?.(null);
+
+    expect(legacyRef).toHaveBeenNthCalledWith(1, rootElement);
+    expect(legacyRef).toHaveBeenNthCalledWith(2, null);
+  });
+
+  it("runs a forwarded Root callback ref cleanup on unmount", () => {
+    const refCleanup = vi.fn();
+    const rootRef = vi.fn(() => refCleanup);
+    const { unmount } = render(
+      <DatePicker.Root ref={rootRef}>
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    expect(rootRef).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+
+    unmount();
+
+    expect(refCleanup).toHaveBeenCalledOnce();
+    expect(rootRef).not.toHaveBeenCalledWith(null);
+  });
+
+  it("updates the focused end date from the calendar while preserving the start", () => {
+    function Harness() {
+      const [range, setRange] = useState({
+        start: new Date(2026, 1, 5),
+        end: new Date(2026, 1, 20),
+      });
+
+      return (
+        <DatePicker.Root
+          mode="range"
+          value={range}
+          onValueChange={(value) => {
+            if (!(value instanceof Date)) {
+              setRange(value);
+            }
+          }}
+          defaultMonth={new Date(2026, 1, 1)}
+        >
+          <DatePicker.Header />
+          <DatePicker.Grid />
+        </DatePicker.Root>
+      );
+    }
+
+    render(<Harness />);
+    const endInput = screen.getByRole("textbox", { name: "End date" });
+
+    fireEvent.focus(endInput);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Tuesday, February 24, 2026",
+      }),
+    );
+
+    expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/05/2026",
+    );
+    expect(endInput).toHaveValue("02/24/2026");
+  });
+
+  it("applies focused start intent through the existing range ordering rules", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        includeTime
+        value={{
+          start: new Date(2026, 1, 11, 9, 0),
+          end: new Date(2026, 1, 15, 17, 30),
+        }}
+        onValueChange={onValueChange}
+        defaultMonth={new Date(2026, 1, 1)}
+      >
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    fireEvent.focus(screen.getByRole("textbox", { name: "Start date" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Friday, February 20, 2026",
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: new Date(2026, 1, 15, 9, 0),
+      end: new Date(2026, 1, 20, 17, 30),
+    });
+  });
+
+  it("applies focused end intent through the existing range ordering rules", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        includeTime
+        value={{
+          start: new Date(2026, 1, 11, 9, 0),
+          end: new Date(2026, 1, 15, 17, 30),
+        }}
+        onValueChange={onValueChange}
+        defaultMonth={new Date(2026, 1, 1)}
+      >
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    fireEvent.focus(screen.getByRole("textbox", { name: "End date" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Thursday, February 5, 2026",
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: new Date(2026, 1, 5, 9, 0),
+      end: new Date(2026, 1, 11, 17, 30),
+    });
+  });
+
+  it("starts a conventional new range when no endpoint has fresh intent", () => {
+    render(<ControlledRangeDraftHarness />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Thursday, February 12, 2026",
+      }),
+    );
+
+    expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/12/2026",
+    );
+    expect(screen.getByRole("textbox", { name: "End date" })).toHaveValue("");
+  });
+
+  it("consumes endpoint intent after one calendar selection", () => {
+    render(<ControlledRangeDraftHarness />);
+    fireEvent.focus(screen.getByRole("textbox", { name: "End date" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Tuesday, February 24, 2026",
+      }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Thursday, February 12, 2026",
+      }),
+    );
+
+    expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/12/2026",
+    );
+    expect(screen.getByRole("textbox", { name: "End date" })).toHaveValue("");
+  });
+
+  it("replaces a cleared invalid endpoint from the calendar", () => {
+    render(<ControlledRangeDraftHarness />);
+    const endInput = screen.getByRole("textbox", { name: "End date" });
+    fireEvent.focus(endInput);
+    fireEvent.change(endInput, { target: { value: "" } });
+    const dayButton = screen.getByRole("button", {
+      name: "Tuesday, February 24, 2026",
+    });
+    fireEvent.blur(endInput, { relatedTarget: dayButton });
+    expect(screen.getByText("Enter a valid date")).toBeInTheDocument();
+
+    fireEvent.click(dayButton);
+
+    expect(screen.queryByText("Enter a valid date")).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Start date" })).toHaveValue(
+      "02/05/2026",
+    );
+    expect(endInput).toHaveValue("02/24/2026");
+  });
+
+  it("uses focused time input intent for the next calendar selection", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        includeTime
+        value={{
+          start: new Date(2026, 1, 11, 9, 0),
+          end: new Date(2026, 1, 15, 17, 30),
+        }}
+        onValueChange={onValueChange}
+        defaultMonth={new Date(2026, 1, 1)}
+      >
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    fireEvent.focus(screen.getByRole("textbox", { name: "End time" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Friday, February 20, 2026",
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: new Date(2026, 1, 11, 9, 0),
+      end: new Date(2026, 1, 20, 17, 30),
+    });
+  });
+
+  it("preserves a pending conventional start when the end input takes intent", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        onValueChange={onValueChange}
+        defaultMonth={new Date(2026, 1, 1)}
+      >
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Thursday, February 5, 2026",
+      }),
+    );
+    fireEvent.focus(screen.getByRole("textbox", { name: "End date" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Friday, February 20, 2026",
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: new Date(2026, 1, 5),
+      end: new Date(2026, 1, 20),
+    });
+  });
+
+  it("preserves start and end role times when end intent completes a pending start", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DatePicker.Root
+        mode="range"
+        includeTime
+        value={{
+          start: new Date(2026, 1, 11, 9, 0),
+          end: new Date(2026, 1, 15, 17, 30),
+        }}
+        onValueChange={onValueChange}
+        defaultMonth={new Date(2026, 1, 1)}
+      >
+        <DatePicker.Header />
+        <DatePicker.Grid />
+      </DatePicker.Root>,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Thursday, February 5, 2026",
+      }),
+    );
+    fireEvent.focus(screen.getByRole("textbox", { name: "End date" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Friday, February 20, 2026",
+      }),
+    );
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: new Date(2026, 1, 5, 9, 0),
+      end: new Date(2026, 1, 20, 17, 30),
+    });
+  });
+
   it("keeps a rejected first calendar selection controlled", () => {
     const rangeDraft = {
       start: new Date(2026, 1, 5),

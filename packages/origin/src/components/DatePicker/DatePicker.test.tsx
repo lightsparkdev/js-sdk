@@ -446,6 +446,24 @@ test.describe("DatePicker", () => {
     await expect(page.getByTestId("selected")).toHaveText("2026-02-11");
   });
 
+  test("clears deferred validation after a single calendar selection", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestDateInput />);
+
+    const dateInput = page.getByRole("textbox", { name: "Date" });
+    await dateInput.fill("");
+    await page
+      .getByRole("button", { name: "Friday, February 20, 2026" })
+      .click();
+    await page.evaluate(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    await expect(dateInput).toHaveValue("02/20/2026");
+    await expect(dateInput).not.toHaveAttribute("aria-invalid");
+    await expect(page.getByText("Enter a valid date")).toHaveCount(0);
+  });
+
   test("range with time shows all four inputs", async ({ mount, page }) => {
     await mount(<TestRangeWithTime />);
 

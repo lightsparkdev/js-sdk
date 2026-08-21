@@ -86,12 +86,36 @@ export interface DatePickerContextValue {
   labels: Required<DatePickerLabels>;
 }
 
+export type DateRangeEndpoint = "start" | "end";
+
+interface DatePickerInteractionContextValue {
+  deferRangeEndpointInvalidCommit: (
+    endpoint: DateRangeEndpoint,
+    commit: () => void,
+  ) => boolean;
+  setRangeEndpointIntent: (endpoint: DateRangeEndpoint) => void;
+}
+
 export const DatePickerContext = React.createContext<
   DatePickerContextValue | undefined
 >(undefined);
 
+export const DatePickerInteractionContext = React.createContext<
+  DatePickerInteractionContextValue | undefined
+>(undefined);
+
 export function useDatePickerContext(): DatePickerContextValue {
   const context = React.useContext(DatePickerContext);
+  if (context === undefined) {
+    throw new Error(
+      "DatePicker parts must be placed within <DatePicker.Root>.",
+    );
+  }
+  return context;
+}
+
+export function useDatePickerInteractionContext(): DatePickerInteractionContextValue {
+  const context = React.useContext(DatePickerInteractionContext);
   if (context === undefined) {
     throw new Error(
       "DatePicker parts must be placed within <DatePicker.Root>.",

@@ -381,6 +381,38 @@ test.describe("FilterBar", () => {
     ).toBeVisible();
   });
 
+  test("commits endpoint calendar edits only on Apply", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<WithDateApplied />);
+    const initialSignature = new URLSearchParams({
+      createdAt: "2026-06-01T09:30:00.000Z,2026-06-10T17:00:00.000Z",
+    }).toString();
+    const nextSignature = new URLSearchParams({
+      createdAt: "2026-06-01T09:30:00.000Z,2026-06-12T17:00:00.000Z",
+    }).toString();
+    const pill = page.getByRole("button", {
+      name: "Jun 01, 09:30 - Jun 10, 17:00",
+      exact: true,
+    });
+
+    await pill.click();
+    const endDate = page.getByRole("textbox", { name: "End date" });
+    await endDate.fill("");
+    await page.getByRole("button", { name: "Friday, June 12, 2026" }).click();
+    await expect(endDate).toHaveValue("06/12/2026");
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("signature")).toHaveText(initialSignature);
+
+    await pill.click();
+    await page.getByRole("textbox", { name: "End date" }).focus();
+    await page.getByRole("button", { name: "Friday, June 12, 2026" }).click();
+    await expect(page.getByTestId("signature")).toHaveText(initialSignature);
+    await page.getByRole("button", { name: "Apply" }).click();
+    await expect(page.getByTestId("signature")).toHaveText(nextSignature);
+  });
+
   test.describe("UTC date editor through a DST gap", () => {
     test.use({ timezoneId: "America/New_York" });
 
