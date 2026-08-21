@@ -19,7 +19,13 @@ interface DateFilterDraftState {
   isValid: boolean;
 }
 
-type NormalizeCustomRangeDraft = (range: DateRangeDraft) => DateRangeDraft;
+type NormalizeCustomRangeDraft = (
+  nextRange: DateRangeDraft,
+  context: {
+    readonly previousRange: Readonly<DateRangeDraft>;
+    readonly now: Date;
+  },
+) => DateRangeDraft;
 
 type DateFilterDraftAction =
   | { type: "external-resync"; draft: DateFilterDraft }
@@ -29,6 +35,7 @@ type DateFilterDraftAction =
   | {
       type: "edit-range";
       range: DateRangeDraft;
+      now: Date;
       normalizeCustomRangeDraft: NormalizeCustomRangeDraft | undefined;
     }
   | { type: "set-validity"; isValid: boolean };
@@ -82,12 +89,25 @@ function getCommittedDraft(
   };
 }
 
+function cloneDateRangeDraft(range: DateRangeDraft): DateRangeDraft {
+  return {
+    start: range.start ? new Date(range.start) : null,
+    end: range.end ? new Date(range.end) : null,
+  };
+}
+
 function normalizeCustomRange(
   current: DateFilterDraft,
   range: DateRangeDraft,
   normalizer: NormalizeCustomRangeDraft | undefined,
+  now: Date,
 ): DateRangeDraft {
-  return current.presetId === null && normalizer ? normalizer(range) : range;
+  return current.presetId === null && normalizer
+    ? normalizer(cloneDateRangeDraft(range), {
+        previousRange: cloneDateRangeDraft(current),
+        now: new Date(now),
+      })
+    : range;
 }
 
 function dateFilterDraftReducer(
@@ -127,6 +147,7 @@ function dateFilterDraftReducer(
         current.draft,
         action.range,
         action.normalizeCustomRangeDraft,
+        action.now,
       );
       return {
         ...current,
@@ -241,6 +262,7 @@ export function useDateFilterDraft(
       dispatch({
         type: "edit-range",
         range,
+        now: new Date(),
         normalizeCustomRangeDraft,
       }),
     [normalizeCustomRangeDraft],

@@ -108,6 +108,19 @@ const datePickerShortcutConfig: DateFilterDatePickerConfig = {
     },
   ],
 };
+const oneArgumentRangeNormalizerConfig: DateFilterDatePickerConfig = {
+  mode: "range",
+  granularity: "date-time",
+  normalizeCustomRangeDraft: (range) => range,
+};
+const contextualRangeNormalizerConfig: DateFilterDatePickerConfig = {
+  mode: "range",
+  granularity: "date-time",
+  normalizeCustomRangeDraft: (range, { previousRange, now }) => ({
+    start: range.start ?? previousRange.start,
+    end: range.end ?? now,
+  }),
+};
 // @ts-expect-error FilterBar DatePicker variants require a fixed mode.
 const missingDatePickerMode: DateFilterDatePickerConfig = {
   granularity: "date",
@@ -119,6 +132,8 @@ const legacyDefaultDatePickerConfig: DateFilterDatePickerConfig = {
 };
 void datePickerConfig;
 void datePickerShortcutConfig;
+void oneArgumentRangeNormalizerConfig;
+void contextualRangeNormalizerConfig;
 void missingDatePickerMode;
 void legacyDefaultDatePickerConfig;
 

@@ -89,11 +89,19 @@ type DateFilterDatePickerConfigVariant<
 } & (TMode extends "range"
   ? {
       /**
-       * Normalize Custom range edits before the draft renders or applies.
-       * This callback must be pure, deterministic, and must not mutate its
-       * input because React can replay reducer transitions in development.
+       * Normalize a Custom range transition before the draft renders or
+       * applies. Treat the next and previous ranges as immutable, and return
+       * the normalized next range. Context contains the exact pre-transition
+       * range and edit-time instant. This callback must be pure and
+       * deterministic because React can replay reducer transitions.
        */
-      normalizeCustomRangeDraft?: (range: DateRangeDraft) => DateRangeDraft;
+      normalizeCustomRangeDraft?: (
+        nextRange: DateRangeDraft,
+        context: {
+          readonly previousRange: Readonly<DateRangeDraft>;
+          readonly now: Date;
+        },
+      ) => DateRangeDraft;
     }
   : { normalizeCustomRangeDraft?: never });
 
