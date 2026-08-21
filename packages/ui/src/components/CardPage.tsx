@@ -23,6 +23,7 @@ import { StyledButtonRow } from "./ButtonRow.js";
 type Props = {
   children?: React.ReactNode;
   title?: string | undefined;
+  titleAccessory?: React.ReactNode;
   minContentHeight?: number;
   minContentWidth?: number;
   maxContentWidth?: number;
@@ -33,17 +34,41 @@ type Props = {
   id?: string;
 };
 
+const CardPageTitleAccessoryContext =
+  React.createContext<React.ReactNode>(null);
+
+export function CardPageTitleAccessoryProvider({
+  children,
+  titleAccessory,
+}: {
+  children: React.ReactNode;
+  titleAccessory: React.ReactNode;
+}) {
+  return (
+    <CardPageTitleAccessoryContext.Provider value={titleAccessory}>
+      {children}
+    </CardPageTitleAccessoryContext.Provider>
+  );
+}
+
 export function CardPage(props: Props) {
   const initiallyExpanded = useRef(Boolean(props.expandRight));
 
   // wait to animate until expandRight is changed at least once
   const [wasExpanded, setWasExpanded] = useState(Boolean(props.expandRight));
   const bp = useBreakpoints();
+  const inheritedTitleAccessory = React.useContext(
+    CardPageTitleAccessoryContext,
+  );
+  const titleAccessory = props.titleAccessory ?? inheritedTitleAccessory;
   const header = props.title ? (
     <CardPageHeader>
-      <Heading type="h1" m0>
-        {props.title}
-      </Heading>
+      <CardPageTitle>
+        <Heading type="h1" m0>
+          {props.title}
+        </Heading>
+        {titleAccessory}
+      </CardPageTitle>
       {props.headerRightContent && (
         <CardPageHeaderRight>{props.headerRightContent}</CardPageHeaderRight>
       )}
@@ -357,6 +382,13 @@ const CardPageHeader = styled.div<{ headerMarginBottom?: number }>`
 const CardPageHeaderRight = styled.div`
   display: flex;
   align-items: center;
+`;
+
+const CardPageTitle = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 `;
 
 export const CardPageContent = styled.div<CardPageContentProps>`

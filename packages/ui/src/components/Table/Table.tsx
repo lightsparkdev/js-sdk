@@ -149,6 +149,7 @@ export type TableProps<T extends Record<string, unknown>> = {
     selectedRowIds: string[];
     onSelectedRowIdsChange: (selectedRowIds: string[]) => void;
     getRowId: (row: T) => string;
+    isRowSelectable?: (row: T) => boolean;
   };
   /**
    * Opt-in keyboard row navigation: highlights an "active" row, moves it with
@@ -232,16 +233,17 @@ export function Table<T extends Record<string, unknown>>({
     () => new Set(rowSelection?.selectedRowIds ?? []),
     [rowSelection?.selectedRowIds],
   );
-  const visibleRowIds = useMemo(
+  const selectableVisibleRowIds = useMemo(
     () =>
       data
+        .filter((row) => rowSelection?.isRowSelectable?.(row) ?? true)
         .map((row) => rowSelection?.getRowId(row))
         .filter((rowId): rowId is string => Boolean(rowId)),
     [data, rowSelection],
   );
   const allVisibleRowsSelected =
-    visibleRowIds.length > 0 &&
-    visibleRowIds.every((rowId) => selectedRowIdsSet.has(rowId));
+    selectableVisibleRowIds.length > 0 &&
+    selectableVisibleRowIds.every((rowId) => selectedRowIdsSet.has(rowId));
 
   const toggleRowSelection = useCallback(
     (rowId: string) => {
@@ -267,12 +269,12 @@ export function Table<T extends Record<string, unknown>>({
 
     const nextSelection = new Set(rowSelection.selectedRowIds);
     if (allVisibleRowsSelected) {
-      visibleRowIds.forEach((rowId) => nextSelection.delete(rowId));
+      selectableVisibleRowIds.forEach((rowId) => nextSelection.delete(rowId));
     } else {
-      visibleRowIds.forEach((rowId) => nextSelection.add(rowId));
+      selectableVisibleRowIds.forEach((rowId) => nextSelection.add(rowId));
     }
     rowSelection.onSelectedRowIdsChange([...nextSelection]);
-  }, [allVisibleRowsSelected, rowSelection, visibleRowIds]);
+  }, [allVisibleRowsSelected, rowSelection, selectableVisibleRowIds]);
 
   const mappedColumns = useMemo(() => {
     const columnsToRender: ColumnDef<T, TableCell>[] = columns.map(
@@ -453,20 +455,27 @@ export function Table<T extends Record<string, unknown>>({
           >
             <Checkbox
               checked={allVisibleRowsSelected}
+              disabled={selectableVisibleRowIds.length === 0}
               onChange={toggleAllVisibleRowsSelection}
             />
           </SelectionCheckboxContainer>
         ),
         cell: (context) => {
-          const rowId = rowSelection.getRowId(context.row.original);
+          const originalRow = context.row.original;
+          const rowId = rowSelection.getRowId(originalRow);
+          const isSelectable =
+            rowSelection.isRowSelectable?.(originalRow) ?? true;
           return (
             <SelectionCheckboxContainer
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
             >
               <Checkbox
-                checked={selectedRowIdsSet.has(rowId)}
-                onChange={() => toggleRowSelection(rowId)}
+                checked={isSelectable && selectedRowIdsSet.has(rowId)}
+                disabled={!isSelectable}
+                onChange={() => {
+                  if (isSelectable) toggleRowSelection(rowId);
+                }}
               />
             </SelectionCheckboxContainer>
           );
@@ -510,6 +519,7 @@ export function Table<T extends Record<string, unknown>>({
     customComponents,
     rowSelection,
     allVisibleRowsSelected,
+    selectableVisibleRowIds.length,
     toggleAllVisibleRowsSelection,
     selectedRowIdsSet,
     toggleRowSelection,
