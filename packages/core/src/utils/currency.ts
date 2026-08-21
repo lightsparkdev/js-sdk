@@ -63,6 +63,7 @@ export const CurrencyUnit = {
   RON: "RON",
   SEK: "SEK",
   CHF: "CHF",
+  ILS: "ILS",
   USDT: "USDT",
   USDC: "USDC",
   USDB: "USDB",
@@ -98,6 +99,7 @@ export const CurrencyUnit = {
   Ron: "RON",
   Sek: "SEK",
   Chf: "CHF",
+  Ils: "ILS",
   Usdt: "USDT",
   Usdc: "USDC",
   Usdb: "USDB",
@@ -171,6 +173,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.RON]: (v: number) => v,
   [CurrencyUnit.SEK]: (v: number) => v,
   [CurrencyUnit.CHF]: (v: number) => v,
+  [CurrencyUnit.ILS]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
   [CurrencyUnit.USDB]: (v: number) => v,
@@ -243,6 +246,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toBitcoinConversion,
     [CurrencyUnit.SEK]: toBitcoinConversion,
     [CurrencyUnit.CHF]: toBitcoinConversion,
+    [CurrencyUnit.ILS]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
     [CurrencyUnit.USDB]: toBitcoinConversion,
@@ -299,6 +303,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toMicrobitcoinConversion,
     [CurrencyUnit.SEK]: toMicrobitcoinConversion,
     [CurrencyUnit.CHF]: toMicrobitcoinConversion,
+    [CurrencyUnit.ILS]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
     [CurrencyUnit.USDB]: toMicrobitcoinConversion,
@@ -355,6 +360,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toMillibitcoinConversion,
     [CurrencyUnit.SEK]: toMillibitcoinConversion,
     [CurrencyUnit.CHF]: toMillibitcoinConversion,
+    [CurrencyUnit.ILS]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
     [CurrencyUnit.USDB]: toMillibitcoinConversion,
@@ -411,6 +417,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toMillisatoshiConversion,
     [CurrencyUnit.SEK]: toMillisatoshiConversion,
     [CurrencyUnit.CHF]: toMillisatoshiConversion,
+    [CurrencyUnit.ILS]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
     [CurrencyUnit.USDB]: toMillisatoshiConversion,
@@ -467,6 +474,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toNanobitcoinConversion,
     [CurrencyUnit.SEK]: toNanobitcoinConversion,
     [CurrencyUnit.CHF]: toNanobitcoinConversion,
+    [CurrencyUnit.ILS]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
     [CurrencyUnit.USDB]: toNanobitcoinConversion,
@@ -523,6 +531,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.RON]: toSatoshiConversion,
     [CurrencyUnit.SEK]: toSatoshiConversion,
     [CurrencyUnit.CHF]: toSatoshiConversion,
+    [CurrencyUnit.ILS]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
     [CurrencyUnit.USDB]: toSatoshiConversion,
@@ -572,6 +581,7 @@ const CONVERSION_MAP = {
   [CurrencyUnit.RON]: standardUnitConversionObj,
   [CurrencyUnit.SEK]: standardUnitConversionObj,
   [CurrencyUnit.CHF]: standardUnitConversionObj,
+  [CurrencyUnit.ILS]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
   [CurrencyUnit.USDB]: standardUnitConversionObj,
@@ -681,6 +691,7 @@ export type CurrencyMap = {
   [CurrencyUnit.RON]: number;
   [CurrencyUnit.SEK]: number;
   [CurrencyUnit.CHF]: number;
+  [CurrencyUnit.ILS]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.USDB]: number;
@@ -740,6 +751,7 @@ export type CurrencyMap = {
     [CurrencyUnit.RON]: string;
     [CurrencyUnit.SEK]: string;
     [CurrencyUnit.CHF]: string;
+    [CurrencyUnit.ILS]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.USDB]: string;
@@ -980,6 +992,7 @@ function convertCurrencyAmountValues(
     ron: CurrencyUnit.RON,
     sek: CurrencyUnit.SEK,
     chf: CurrencyUnit.CHF,
+    ils: CurrencyUnit.ILS,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -1084,6 +1097,7 @@ export function mapCurrencyAmount(
     ron,
     sek,
     chf,
+    ils,
     usdt,
     usdc,
     usdb,
@@ -1138,6 +1152,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.RON]: ron,
     [CurrencyUnit.SEK]: sek,
     [CurrencyUnit.CHF]: chf,
+    [CurrencyUnit.ILS]: ils,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -1350,6 +1365,10 @@ export function mapCurrencyAmount(
         value: chf,
         unit: CurrencyUnit.CHF,
       }),
+      [CurrencyUnit.ILS]: formatCurrencyStr({
+        value: ils,
+        unit: CurrencyUnit.ILS,
+      }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
         unit: CurrencyUnit.USDT,
@@ -1526,6 +1545,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "SEK";
     case CurrencyUnit.CHF:
       return "CHF";
+    case CurrencyUnit.ILS:
+      return "ILS";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -1615,6 +1636,7 @@ export function formatCurrencyStr(
       CurrencyUnit.RON,
       CurrencyUnit.SEK,
       CurrencyUnit.CHF,
+      CurrencyUnit.ILS,
       CurrencyUnit.HKD,
       CurrencyUnit.SGD,
     ] as string[];
