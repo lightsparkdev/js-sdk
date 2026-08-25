@@ -209,6 +209,17 @@ export type {
 } from "./components/SegmentedNav";
 export { Sidebar } from "./components/Sidebar";
 export { Skeleton } from "./components/Skeleton";
+export { Stepper } from "./components/Stepper";
+export type {
+  StepperRootProps,
+  StepperStepProps,
+  StepperTriggerProps,
+  StepperMarkerProps,
+  StepperLabelProps,
+  StepperSubstepsProps,
+  StepperStepStatus,
+  StepperStepProgress,
+} from "./components/Stepper";
 export { Table } from "./components/Table";
 export { Tabs } from "./components/Tabs";
 export { Toast } from "./components/Toast";
