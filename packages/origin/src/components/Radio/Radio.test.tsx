@@ -83,6 +83,30 @@ test.describe("Radio", () => {
     });
   });
 
+  test.describe("field composition styles", () => {
+    test("item labels use regular weight", async ({ mount, page }) => {
+      await mount(<TestRadioDefault />);
+
+      await expect(page.getByText("Option 1")).toHaveCSS("font-weight", "400");
+    });
+
+    test("group carries the legend text inset", async ({ mount, page }) => {
+      await mount(<TestRadioDefault />);
+
+      const group = page.getByTestId("radio-group");
+      await expect(group).toHaveCSS("padding-left", "4px");
+      await expect(group).toHaveCSS("padding-right", "4px");
+    });
+
+    test("card group keeps the full field width", async ({ mount, page }) => {
+      await mount(<TestRadioCard />);
+
+      const group = page.getByTestId("radio-group");
+      await expect(group).toHaveCSS("padding-left", "0px");
+      await expect(group).toHaveCSS("padding-right", "0px");
+    });
+  });
+
   test.describe("controlled mode", () => {
     test("updates value when option clicked", async ({ mount, page }) => {
       await mount(<TestRadioControlled />);

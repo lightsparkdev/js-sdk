@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   TestCheckboxDefault,
   TestCheckboxCard,
+  TestCheckboxMixedVariants,
   TestCheckboxDisabled,
   TestCheckboxControlled,
   TestCheckboxIndeterminate,
@@ -47,6 +48,42 @@ test.describe("Checkbox", () => {
     const checkboxes = page.getByRole("checkbox");
     await expect(checkboxes.first()).toBeVisible();
     await expect(checkboxes.first()).toBeChecked();
+  });
+
+  test("item labels use regular weight", async ({ mount, page }) => {
+    await mount(<TestCheckboxDefault />);
+
+    await expect(page.getByText("Option 1").first()).toHaveCSS(
+      "font-weight",
+      "400",
+    );
+  });
+
+  test("group carries the legend text inset", async ({ mount, page }) => {
+    await mount(<TestCheckboxDefault />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "4px");
+    await expect(group).toHaveCSS("padding-right", "4px");
+  });
+
+  test("card group keeps the full field width", async ({ mount, page }) => {
+    await mount(<TestCheckboxCard />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "0px");
+    await expect(group).toHaveCSS("padding-right", "0px");
+  });
+
+  test("a single card item flips its group to full width", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestCheckboxMixedVariants />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "0px");
+    await expect(group).toHaveCSS("padding-right", "0px");
   });
 
   test("renders disabled state", async ({ mount, page }) => {
