@@ -20,6 +20,10 @@
     box-shadow 150ms ease;
 
   &:has(.chips) {
+    /* A 24px chip is taller than the bare input's text, so the default 6px
+       block padding would push a one-row multi-select to 38px — 2px past every
+       other control. 5px lands the chip row back on the 36px control height. */
+    padding-block: 5px;
     padding-right: var(--spacing-2xs);
     padding-left: var(--spacing-2xs);
   }

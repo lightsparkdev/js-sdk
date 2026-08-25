@@ -180,6 +180,43 @@ export const TestComboboxChipPassThrough = () => (
   </Combobox.Root>
 );
 
+export const TestComboboxChipsHeight = () => (
+  <Combobox.Root items={fruits} multiple>
+    <Combobox.InputWrapper data-testid="chips-wrapper">
+      <Combobox.Chips>
+        <Combobox.Value>
+          {(selectedValue: string[]) => (
+            <>
+              {selectedValue.map((item) => (
+                <Combobox.Chip key={item}>
+                  {item}
+                  <Combobox.ChipRemove aria-label={`Remove ${item}`} />
+                </Combobox.Chip>
+              ))}
+              <Combobox.Input placeholder="Select fruits..." />
+            </>
+          )}
+        </Combobox.Value>
+      </Combobox.Chips>
+    </Combobox.InputWrapper>
+    <Combobox.Portal>
+      <Combobox.Positioner sideOffset={4}>
+        <Combobox.Popup>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                <Combobox.ItemIndicator />
+                <Combobox.ItemText>{item}</Combobox.ItemText>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Popup>
+      </Combobox.Positioner>
+    </Combobox.Portal>
+  </Combobox.Root>
+);
+
 export const TestComboboxDisabled = () => (
   <Combobox.Root items={fruits} disabled>
     <Combobox.InputWrapper>

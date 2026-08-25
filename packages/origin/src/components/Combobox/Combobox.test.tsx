@@ -10,6 +10,7 @@ import {
   TestComboboxWithClear,
   TestComboboxWithClearClassNameCallback,
   TestComboboxChipPassThrough,
+  TestComboboxChipsHeight,
   ConformanceInputWrapper,
   ConformanceActionButtons,
 } from "./Combobox.test-stories";
@@ -224,6 +225,23 @@ test.describe("Combobox", () => {
 
       await page.getByRole("button", { name: "Remove Apple" }).click();
       await expect(chip).toBeHidden();
+    });
+
+    test("a one-row chip field matches the empty control height", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<TestComboboxChipsHeight />);
+      const wrapper = page.getByTestId("chips-wrapper");
+      await expect(wrapper).toHaveCSS("height", "36px");
+
+      await component.getByPlaceholder("Select fruits...").click();
+      await page.getByRole("option", { name: "Apple" }).click();
+
+      await expect(
+        page.getByRole("button", { name: "Remove Apple" }),
+      ).toBeVisible();
+      await expect(wrapper).toHaveCSS("height", "36px");
     });
   });
 
