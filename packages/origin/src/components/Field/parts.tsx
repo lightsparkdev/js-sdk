@@ -29,16 +29,22 @@ export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
 );
 
 export interface FieldLabelProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Label> {}
+  extends React.ComponentPropsWithoutRef<typeof BaseField.Label> {
+  /**
+   * The size variant of the label.
+   * @default 'sm'
+   */
+  size?: "sm" | "md";
+}
 
 export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
   function FieldLabel(props, ref) {
-    const { className, ...other } = props;
+    const { className, size = "sm", ...other } = props;
 
     return (
       <BaseField.Label
         ref={ref}
-        className={clsx(styles.label, className)}
+        className={clsx(styles.label, size === "md" && styles.md, className)}
         {...other}
       />
     );

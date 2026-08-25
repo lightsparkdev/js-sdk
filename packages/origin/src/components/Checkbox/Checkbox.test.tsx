@@ -30,6 +30,12 @@ test.describe("Checkbox", () => {
     await expect(option2).toBeVisible();
     await expect(description).toBeVisible();
 
+    // Checkbox.Legend layers .legend over Field.Label's single-class default
+    // and must win by source order; if Field's default label style ever
+    // gains specificity, the legend regresses to 12px/16px.
+    await expect(legend).toHaveCSS("font-size", "14px");
+    await expect(legend).toHaveCSS("line-height", "20px");
+
     const checkboxes = page.getByRole("checkbox");
     await expect(checkboxes.first()).toBeChecked();
     await expect(checkboxes.nth(1)).not.toBeChecked();

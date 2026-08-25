@@ -21,6 +21,17 @@ export function DefaultField() {
   );
 }
 
+export function FieldWithMediumLabel() {
+  return (
+    <Field.Root>
+      <Field.Label size="md" data-testid="field-label-md">
+        Email
+      </Field.Label>
+      <Input placeholder="Enter your email" />
+    </Field.Root>
+  );
+}
+
 export function FieldWithLabelSuffix() {
   return (
     <Field.Root>

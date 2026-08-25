@@ -25,6 +25,20 @@ test.describe("Radio", () => {
       await expect(page.getByTestId("legend")).toHaveText("Select an option");
     });
 
+    test("legend keeps the choice-legend text style over Field.Label's default", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<TestRadioDefault />);
+
+      // Radio.Legend layers .legend over Field.Label's single-class default
+      // and must win by source order; if Field's default label style ever
+      // gains specificity, the legend regresses to 12px/16px.
+      const legend = page.getByTestId("legend");
+      await expect(legend).toHaveCSS("font-size", "14px");
+      await expect(legend).toHaveCSS("line-height", "20px");
+    });
+
     test("renders description", async ({ mount, page }) => {
       await mount(<TestRadioDefault />);
 

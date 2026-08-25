@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultField,
+  FieldWithMediumLabel,
   FieldWithLabelSuffix,
   FieldWithInlineDescriptionLink,
   FieldWithError,
@@ -78,6 +79,28 @@ test.describe("Field", () => {
       await expect(description).toContainText(
         "We'll never share your email. Learn more",
       );
+    });
+
+    test("label renders the small text style by default", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<DefaultField />);
+
+      const label = page.getByText("Email", { exact: true });
+      await expect(label).toHaveCSS("font-size", "12px");
+      await expect(label).toHaveCSS("line-height", "16px");
+    });
+
+    test("label renders the medium text style when size is md", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithMediumLabel />);
+
+      const label = page.getByTestId("field-label-md");
+      await expect(label).toHaveCSS("font-size", "14px");
+      await expect(label).toHaveCSS("line-height", "20px");
     });
 
     test("label is associated with input via aria", async ({ mount, page }) => {

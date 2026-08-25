@@ -16,6 +16,13 @@
   display: block;
   padding-inline: var(--spacing-3xs);
   color: var(--text-primary);
+
+  // Only the opt-in size nests: the default must stay single-class so
+  // sibling single-class overrides (e.g. choice legends) keep winning by
+  // source order.
+  &.md {
+    @include label;
+  }
 }
 
 .labelSuffix {
