@@ -27,7 +27,9 @@ const CREDS_PATH = path.resolve(
 
 const credsStore = fileCredsStore(CREDS_PATH);
 
-function readJsonBody(req: import("node:http").IncomingMessage): Promise<unknown> {
+function readJsonBody(
+  req: import("node:http").IncomingMessage,
+): Promise<unknown> {
   return new Promise((resolve, reject) => {
     let raw = "";
     req.on("data", (chunk) => {
@@ -137,6 +139,11 @@ function harnessCredsPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [react(), gridTargetGuardPlugin(), harnessCredsPlugin()],
+  build: {
+    /* Lightning CSS mangles @font-face unicode-range values; see the pin in
+       @lightsparkdev/vite buildConfig. */
+    cssMinify: "esbuild",
+  },
   server: {
     port: settings.strigaGridHarness.port,
     proxy: {

@@ -1,133 +1,145 @@
 /**
  * Suisse Intl Font Face Declarations
- * 
- * Only includes weights actually used in the design system:
- * - Regular (400) - body text
- * - Book (450) - component labels
- * - Medium (500) - headings, labels, buttons
- * - Semibold (600) - legacy UI typography aliases
- * - Bold (700) - legacy UI typography aliases
- * - Mono Regular - code blocks
+ *
+ * "Suisse Intl" is the variable font (wght 300-700, baked vertical metrics,
+ * single-story "a"), split into a core face (Basic Latin, Latin-1,
+ * General Punctuation, Currency Symbols, TM, minus, plus the characters
+ * shipped UI text renders: Č/č, İ/ı, the arrows ←↑→↓↗↙, and ≈ ≤ ≥) and an
+ * ext face (Latin Extended, Cyrillic, Vietnamese, combining marks,
+ * superscripts, fractions, remaining arrows, ligatures). The two
+ * unicode-range lists partition the font's charset with zero overlap, so
+ * every shipped UI page downloads only the ~171 KiB core file; ext loads
+ * only for runtime foreign-script data. "Suisse Intl Arabic" is a separate
+ * static family that the sans stacks list immediately after "Suisse Intl";
+ * the VF carries no Arabic glyphs, so browsers fall through to it per
+ * character.
+ *
+ * ========================== HARD RULES ==========================
+ * 1. Every face in the "Suisse Intl" family (and its SuisseIntl
+ *    alias) MUST declare the identical `font-weight: 300 700` span.
+ *    Never add an exact-weight or differently-spanned face to these
+ *    families: Chromium then silently falls back to Arial for the
+ *    WHOLE family (reproduced in Chromium 145; verification
+ *    evidence on PR #33261).
+ * 2. Arabic and any other static fallback live in the separate
+ *    "Suisse Intl Arabic" family with NO unicode-range — never as
+ *    range-limited faces inside the variable-font family (rule 1).
+ * 3. The unicode-range lists must ship VERBATIM. Lightning CSS
+ *    rewrites U+0000-00FF into the U+?? wildcard, which changes
+ *    which faces match; the shared vite buildConfig pins
+ *    `build.cssMinify: "esbuild"` to preserve them. Keep the core
+ *    and ext lists an exact partition — no overlap, no gaps.
+ * ================================================================
  */
 
-// Suisse Intl - Regular (400)
+// Suisse Intl - variable (wght 300-700), core subset
 @font-face {
   font-family: "Suisse Intl";
+  src: url("/fonts/SuisseIntlVF-wght300-700-core.woff2")
+    format("woff2-variations");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+010C-010D, U+0130-0131, U+2000-206F, U+20A0-20CF,
+    U+2122, U+2190-2193, U+2197, U+2199, U+2212, U+2248, U+2264-2265;
+}
+
+// Suisse Intl - variable (wght 300-700), extended subset
+@font-face {
+  font-family: "Suisse Intl";
+  src: url("/fonts/SuisseIntlVF-wght300-700-ext.woff2")
+    format("woff2-variations");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-010B, U+010E-012F, U+0132-0137, U+0139-0148, U+014A-017E,
+    U+0186, U+018F-0190, U+01A0-01A1, U+01AF-01B0, U+01CD-01D4, U+01E6-01E7,
+    U+01EA-01EB, U+01F4-01F5, U+0218-021B, U+0232-0233, U+0237, U+0245, U+0254,
+    U+0259, U+025B, U+026A, U+028C, U+02BB-02BC, U+02C6-02C7, U+02D8-02DD,
+    U+0300-0304, U+0306-030C, U+031B, U+0323, U+0326-0328, U+0401-044F,
+    U+0451-045F, U+0490-0493, U+0496-049D, U+04A0-04A3, U+04AA-04AB, U+04AE-04B3,
+    U+04B6-04BB, U+04C0-04C2, U+04CF-04D1, U+04D6-04D9, U+04E2-04E3, U+04E6-04E9,
+    U+04EE-04EF, U+04F2-04F3, U+060B, U+0E3F, U+1E04-1E05, U+1E0C-1E0D,
+    U+1E20-1E21, U+1E24-1E27, U+1E36-1E37, U+1E44-1E47, U+1E56-1E57, U+1E62-1E63,
+    U+1E6C-1E6D, U+1E80-1E85, U+1E8C-1E8D, U+1E92-1E93, U+1E9E, U+1EA0-1EF9,
+    U+2070, U+2074-2079, U+2080-2089, U+2116-2117, U+2150-215F, U+2196, U+2198,
+    U+21A4-21A7, U+2215, U+2260, U+25CC, U+2766, U+A7AE, U+FB01-FB02, U+FDFC;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntlVF-wght300-700-core.woff2")
+    format("woff2-variations");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+010C-010D, U+0130-0131, U+2000-206F, U+20A0-20CF,
+    U+2122, U+2190-2193, U+2197, U+2199, U+2212, U+2248, U+2264-2265;
+}
+
+// Legacy alias used by @lightsparkdev/ui typography tokens.
+@font-face {
+  font-family: SuisseIntl;
+  src: url("/fonts/SuisseIntlVF-wght300-700-ext.woff2")
+    format("woff2-variations");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-010B, U+010E-012F, U+0132-0137, U+0139-0148, U+014A-017E,
+    U+0186, U+018F-0190, U+01A0-01A1, U+01AF-01B0, U+01CD-01D4, U+01E6-01E7,
+    U+01EA-01EB, U+01F4-01F5, U+0218-021B, U+0232-0233, U+0237, U+0245, U+0254,
+    U+0259, U+025B, U+026A, U+028C, U+02BB-02BC, U+02C6-02C7, U+02D8-02DD,
+    U+0300-0304, U+0306-030C, U+031B, U+0323, U+0326-0328, U+0401-044F,
+    U+0451-045F, U+0490-0493, U+0496-049D, U+04A0-04A3, U+04AA-04AB, U+04AE-04B3,
+    U+04B6-04BB, U+04C0-04C2, U+04CF-04D1, U+04D6-04D9, U+04E2-04E3, U+04E6-04E9,
+    U+04EE-04EF, U+04F2-04F3, U+060B, U+0E3F, U+1E04-1E05, U+1E0C-1E0D,
+    U+1E20-1E21, U+1E24-1E27, U+1E36-1E37, U+1E44-1E47, U+1E56-1E57, U+1E62-1E63,
+    U+1E6C-1E6D, U+1E80-1E85, U+1E8C-1E8D, U+1E92-1E93, U+1E9E, U+1EA0-1EF9,
+    U+2070, U+2074-2079, U+2080-2089, U+2116-2117, U+2150-215F, U+2196, U+2198,
+    U+21A4-21A7, U+2215, U+2260, U+25CC, U+2766, U+A7AE, U+FB01-FB02, U+FDFC;
+}
+
+// Suisse Intl Arabic - static per-weight fallback family (rule 2: no
+// unicode-range). The sans stacks list it immediately after "Suisse Intl".
+@font-face {
+  font-family: "Suisse Intl Arabic";
   src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
 }
 
-// Legacy alias used by @lightsparkdev/ui typography tokens.
 @font-face {
-  font-family: SuisseIntl;
-  src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
-}
-
-// Suisse Intl - Book (450)
-@font-face {
-  font-family: "Suisse Intl";
+  font-family: "Suisse Intl Arabic";
   src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
   font-weight: 450;
   font-style: normal;
   font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
 }
 
-// Legacy alias used by @lightsparkdev/ui typography tokens.
 @font-face {
-  font-family: SuisseIntl;
-  src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
-  font-weight: 450;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
-}
-
-// Suisse Intl - Medium (500)
-@font-face {
-  font-family: "Suisse Intl";
+  font-family: "Suisse Intl Arabic";
   src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
 }
 
-// Legacy alias used by @lightsparkdev/ui typography tokens.
 @font-face {
-  font-family: SuisseIntl;
-  src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
-}
-
-// Suisse Intl - Semibold (600)
-@font-face {
-  font-family: "Suisse Intl";
+  font-family: "Suisse Intl Arabic";
   src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
 }
 
-// Legacy alias used by @lightsparkdev/ui typography tokens.
 @font-face {
-  font-family: SuisseIntl;
-  src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
-}
-
-// Suisse Intl - Bold (700)
-@font-face {
-  font-family: "Suisse Intl";
+  font-family: "Suisse Intl Arabic";
   src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
-}
-
-// Legacy alias used by @lightsparkdev/ui typography tokens.
-@font-face {
-  font-family: SuisseIntl;
-  src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  ascent-override: 81%;
-  descent-override: 19%;
-  line-gap-override: 0%;
 }
 
 // Suisse Intl Mono - Regular

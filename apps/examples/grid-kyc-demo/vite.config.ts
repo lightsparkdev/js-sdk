@@ -28,6 +28,11 @@ const ENVS = {
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    /* Lightning CSS mangles @font-face unicode-range values; see the pin in
+       @lightsparkdev/vite buildConfig. */
+    cssMinify: "esbuild",
+  },
   server: {
     port: settings.gridKycDemo.port,
     proxy: Object.fromEntries(

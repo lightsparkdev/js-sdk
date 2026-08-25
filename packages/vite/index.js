@@ -546,6 +546,10 @@ export const buildConfig = ({
       include: ["@lightsparkdev/crypto-wasm"],
     },
     build: {
+      /* Lightning CSS rewrites @font-face unicode-range values (e.g.
+         U+0000-00FF -> U+??), changing which faces match; esbuild preserves
+         them verbatim. */
+      cssMinify: "esbuild",
       rolldownOptions: {
         ...rolldownOptions,
         output: { manualChunks, ...rolldownOptions?.output },

@@ -4,7 +4,7 @@ import { standardFocusOutline } from "../styles/common.js";
 
 export const UnstyledButton = styled.button`
   ${standardFocusOutline}
-  font-family: ${({ theme }) => theme.typography.fontFamilies.main};
+  font-family: ${({ theme }) => theme.typography.cssFontFamilies.main};
   appearance: none;
   background: transparent;
   border: none;

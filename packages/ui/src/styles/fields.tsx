@@ -178,7 +178,7 @@ export const textInputStyle = ({
 
   position: relative;
   z-index: ${z.textInput};
-  font-family: ${theme.typography?.fontFamilies.main};
+  font-family: ${theme.typography?.cssFontFamilies.main};
   padding: ${textInputPaddingPx - (hasError ? 1 : 0)}px;
   ${paddingLeftPx
     ? `padding-left: ${paddingLeftPx - (hasError ? 1 : 0)}px;`

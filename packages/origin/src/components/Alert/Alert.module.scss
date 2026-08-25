@@ -30,7 +30,10 @@
 .iconWrapper {
   display: flex;
   flex-shrink: 0;
-  padding-top: var(--spacing-px);
+
+  /* Centers the 16px icon against the title's 20px line box, since the row is
+     top-aligned so it survives a title that wraps. */
+  padding-top: var(--spacing-4xs);
 }
 
 .text {

@@ -11,6 +11,11 @@ const config: StorybookConfig = {
   staticDirs: ["../public"],
   viteFinal: async (viteConfig, { configType }) =>
     mergeConfig(viteConfig, {
+      build: {
+        /* Lightning CSS mangles @font-face unicode-range values; see the pin
+           in @lightsparkdev/vite buildConfig. */
+        cssMinify: "esbuild",
+      },
       define: {
         "process.env.NODE_ENV": JSON.stringify(
           configType === "PRODUCTION" ? "production" : "development",

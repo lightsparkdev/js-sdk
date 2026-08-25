@@ -321,6 +321,15 @@ export interface FontFamilies {
   code: string;
 }
 
+/* The Suisse VF carries no Arabic glyphs; "Suisse Intl Arabic" (static
+   fallback family) must sit immediately after it in every sans stack so
+   Arabic characters fall through per character. */
+function withArabicFallback(fontFamily: string) {
+  return fontFamily === "SuisseIntl"
+    ? 'SuisseIntl, "Suisse Intl Arabic"'
+    : fontFamily;
+}
+
 export const TokenSize = {
   Large: "Large",
   Mlarge: "Mlarge",
@@ -5902,9 +5911,16 @@ export function getTypography(
   customFontFamilies?: FontFamilies,
 ) {
   const fontFamilies = customFontFamilies ?? FONT_FAMILIES;
+  /* fontFamilies.main stays a bare family key for theme comparisons;
+     cssFontFamilies.main is the full stack for direct CSS emission. */
+  const cssFontFamilies = {
+    main: withArabicFallback(fontFamilies.main),
+    code: fontFamilies.code,
+  };
   return {
     group: typographyGroup,
     fontFamilies,
+    cssFontFamilies,
     lineHeights: LINE_HEIGHTS[typographyGroup],
     fontWeights: FONT_WEIGHTS,
     fontSize: FONT_SIZE[typographyGroup],
@@ -5913,7 +5929,7 @@ export function getTypography(
     textDecoration: TEXT_DECORATION,
     paragraphIndent: PARAGRAPH_INDENT,
     paragraphSpacing: PARAGRAPH_SPACING,
-    types: getTypographyTypes(fontFamilies)[typographyGroup],
+    types: getTypographyTypes(cssFontFamilies)[typographyGroup],
   };
 }
 

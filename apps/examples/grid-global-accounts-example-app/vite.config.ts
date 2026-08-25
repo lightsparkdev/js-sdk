@@ -11,6 +11,11 @@ const PROD_GRID_URL = process.env.GRID_URL ?? "https://api.lightspark.com";
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    /* Lightning CSS mangles @font-face unicode-range values; see the pin in
+       @lightsparkdev/vite buildConfig. */
+    cssMinify: "esbuild",
+  },
   server: {
     port: settings.gridGlobalAccountsExampleApp.port,
     proxy: {

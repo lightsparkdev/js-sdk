@@ -8,6 +8,11 @@
 @use "../tokens/effects";
 
 :root {
+  /* Overrides the generated single-family token from _variables.scss:
+     "Suisse Intl Arabic" must sit right after "Suisse Intl" so Arabic
+     characters fall through to the static fallback family (the VF has no
+     Arabic glyphs). The Figma token pipeline can only emit one family. */
+  --font-family-sans: "Suisse Intl", "Suisse Intl Arabic";
   --doc-height: 100vh;
   --rt-opacity: 1;
   --rt-transition-show-delay: 0.15s;

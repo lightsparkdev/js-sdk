@@ -14,7 +14,13 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: auto;
-  font-family: var(--font-family-sans, "Suisse Intl", system-ui, sans-serif);
+  font-family: var(
+    --font-family-sans,
+    "Suisse Intl",
+    "Suisse Intl Arabic",
+    system-ui,
+    sans-serif
+  );
   font-size: var(--font-size-base, 14px);
   line-height: var(--font-leading-20, 20px);
   text-wrap: pretty;
