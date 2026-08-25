@@ -128,7 +128,7 @@
   white-space: nowrap;
 
   &[data-placeholder] {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 }
 

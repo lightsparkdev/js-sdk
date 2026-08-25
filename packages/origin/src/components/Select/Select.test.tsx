@@ -282,6 +282,26 @@ test.describe("Select Ghost Variant", () => {
     const trigger = page.getByRole("combobox");
     await expect(trigger).toBeVisible();
     await expect(trigger).toContainText("Select environment");
+    // Select's placeholder is a real element, not ::placeholder; it shares
+    // the input-placeholder mixin with the text inputs.
+    await expect(trigger.locator("[data-placeholder]")).toHaveCSS(
+      "color",
+      "rgb(152, 152, 152)",
+    );
+  });
+
+  test("ghost trigger placeholder keeps the tertiary token in dark mode", async ({
+    mount,
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await mount(<GhostSelectPlaceholder />);
+
+    const trigger = page.getByRole("combobox");
+    await expect(trigger.locator("[data-placeholder]")).toHaveCSS(
+      "color",
+      "rgb(101, 101, 101)",
+    );
   });
 
   test("ghost trigger opens popup on click", async ({ mount, page }) => {

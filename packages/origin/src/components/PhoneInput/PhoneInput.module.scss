@@ -139,7 +139,7 @@
   color: var(--text-primary);
 
   &::placeholder {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 
   &:focus {

@@ -81,7 +81,7 @@ $screen-sm: 640px;
   outline: none;
 
   &::placeholder {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 
   &:disabled {

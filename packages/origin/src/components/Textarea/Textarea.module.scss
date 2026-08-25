@@ -25,7 +25,7 @@
     box-shadow 150ms ease;
 
   &::placeholder {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 
   &:focus {
