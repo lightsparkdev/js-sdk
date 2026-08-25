@@ -66,6 +66,8 @@ export type LinkProps = LinkAnchorProps & {
   hash?: RouteHash | undefined;
   typography?: SimpleTypographyProps | undefined;
   disabled?: boolean | undefined;
+  replace?: boolean | undefined;
+  state?: unknown;
 };
 
 export function replaceParams(
@@ -124,6 +126,8 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
       newTab: newTabProp,
       typography,
       disabled: _disabled,
+      replace = false,
+      state,
       style,
       ...anchorProps
     },
@@ -171,6 +175,8 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
       <RLink
         {...anchorProps}
         to={toStr}
+        replace={replace}
+        state={state}
         id={id}
         css={css}
         onClick={onClick}
