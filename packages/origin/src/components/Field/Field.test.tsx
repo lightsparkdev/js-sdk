@@ -42,6 +42,9 @@ test.describe("Field", () => {
       await expect(suffix).toHaveText("(optional)");
       // Spacing lives on the suffix slot, not on a label flex gap.
       await expect(suffix).toHaveCSS("margin-left", "4px");
+      // The aside treatment is weight + color; size already matches the label.
+      await expect(suffix).toHaveCSS("font-weight", "400");
+      await expect(suffix).toHaveCSS("color", "rgb(124, 124, 124)");
     });
 
     test("label lays out mixed text and a suffix as one inline run", async ({

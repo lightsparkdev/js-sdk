@@ -19,7 +19,10 @@
 }
 
 .labelSuffix {
+  @include body-sm;
+
   margin-inline-start: var(--spacing-3xs);
+  color: var(--text-secondary);
 }
 
 .description {
