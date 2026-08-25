@@ -3,8 +3,11 @@
 // SMS_OTP challengeId from start is echoed back on complete automatically.
 // PASSKEY drives a real WebAuthn ceremony: start returns request options + the
 // allowed origin, complete submits the signed assertion.
+//
+// Login start names its options `passkeyOptions`, while factor-enrollment start
+// names the same shape `options` — the two are not interchangeable.
 
-import { Button, Field } from "@lightsparkdev/origin";
+import { Button, Field, Input } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
 import { type LoginPasskeyOptions, signLoginPasskey } from "./passkeyLogin";
@@ -13,9 +16,13 @@ import { ButtonRow, EnumSelect, Mono, Note, Panel } from "./ui";
 
 interface LoginStartResponse {
   challengeId?: string;
-  options?: LoginPasskeyOptions;
+  passkeyOptions?: LoginPasskeyOptions;
   allowedOrigins?: string[];
 }
+
+// login/complete requires a syntactically valid IP; loopback satisfies it for a
+// local harness run, and the field is editable for a real end-user address.
+const DEFAULT_END_USER_IP = "127.0.0.1";
 
 export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
   const [factor, setFactor] = useState<string>("SMS_OTP");
@@ -24,6 +31,7 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
     useState<LoginPasskeyOptions | null>(null);
   const [allowedOrigins, setAllowedOrigins] = useState<string[] | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [endUserIp, setEndUserIp] = useState(DEFAULT_END_USER_IP);
 
   const start = useCallback(async () => {
     const r = await call<LoginStartResponse>(
@@ -32,19 +40,29 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
       { factor },
     );
     setChallengeId(r.json?.challengeId ?? null);
-    setPasskeyOptions(r.json?.options ?? null);
+    setPasskeyOptions(r.json?.passkeyOptions ?? null);
     setAllowedOrigins(r.json?.allowedOrigins ?? null);
     setStatus(null);
   }, [call, customerId, factor]);
 
   const complete = useCallback(async () => {
-    const body: Record<string, unknown> = { factor };
+    const body: Record<string, unknown> = {
+      factor,
+      endUserIpAddress: endUserIp.trim(),
+    };
     if (factor === "PASSKEY") {
       if (!passkeyOptions) {
         setStatus("run login start first");
         return;
       }
-      body.passkeyAssertion = await signLoginPasskey(passkeyOptions);
+      try {
+        body.passkeyAssertion = await signLoginPasskey(passkeyOptions);
+      } catch (err) {
+        // A cancelled ceremony never reaches the network, so without this the
+        // click would look like it did nothing at all.
+        setStatus(err instanceof Error ? err.message : String(err));
+        return;
+      }
       body.origin = allowedOrigins?.[0] ?? location.origin;
     } else {
       body.code = code;
@@ -64,6 +82,7 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
     challengeId,
     passkeyOptions,
     allowedOrigins,
+    endUserIp,
   ]);
 
   return (
@@ -77,6 +96,13 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
           value={factor}
           onValueChange={setFactor}
           options={SCA_FACTORS}
+        />
+      </Field.Root>
+      <Field.Root>
+        <Field.Label>endUserIpAddress (required by login/complete)</Field.Label>
+        <Input
+          value={endUserIp}
+          onChange={(e) => setEndUserIp(e.target.value)}
         />
       </Field.Root>
       <ButtonRow>

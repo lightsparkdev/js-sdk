@@ -30,7 +30,15 @@ import {
   type HttpMethod,
   type LogEntry,
 } from "./api";
+import { ExternalAccountsPanel } from "./grid/ExternalAccountsPanel";
+import { PlatformAccountsPanel } from "./grid/PlatformAccountsPanel";
+import { RatesAndFeesPanel } from "./grid/RatesAndFeesPanel";
+import { ReceiverLookupPanel } from "./grid/ReceiverLookupPanel";
+import { TransactionsPanel } from "./grid/TransactionsPanel";
+import { VerificationsPanel } from "./grid/VerificationsPanel";
+import type { ScaChallengeView } from "./sca/scaApi";
 import { ScaSection } from "./sca/ScaSection";
+import { EnumSelect } from "./sca/ui";
 import { SettingsPanel } from "./SettingsPanel";
 
 interface AccountRow {
@@ -41,6 +49,9 @@ interface AccountRow {
 }
 
 const POLL_INTERVAL_MS = 5000;
+
+// Per-transaction SCA accepts only these two; TOTP cannot carry dynamic linking.
+const PER_TX_SCA_FACTORS = ["SMS_OTP", "PASSKEY"] as const;
 
 export function App() {
   const [creds, setCreds] = useState<HarnessCreds>({});
@@ -53,10 +64,19 @@ export function App() {
   const [quoteSource, setQuoteSource] = useState("");
   const [quoteBody, setQuoteBody] = useState("");
   const [quoteId, setQuoteId] = useState<string | null>(null);
+  const [scaFactor, setScaFactor] = useState("SMS_OTP");
+  const [scaChallenge, setScaChallenge] = useState<ScaChallengeView | null>(
+    null,
+  );
   const [fundAccount, setFundAccount] = useState("");
   const [fundBody, setFundBody] = useState("");
   const [transferBody, setTransferBody] = useState("");
+  const [transferInBody, setTransferInBody] = useState("");
+  const [customerUpdateBody, setCustomerUpdateBody] = useState("");
+  const [sandboxSendBody, setSandboxSendBody] = useState("");
+  const [umaReceiveBody, setUmaReceiveBody] = useState("");
   const [confirmCode, setConfirmCode] = useState("123456");
+  const [page, setPage] = useState<PageId>("connection");
 
   const [accounts, setAccounts] = useState<AccountRow[] | null>(null);
   const [stateNote, setStateNote] = useState("");
@@ -104,6 +124,23 @@ export function App() {
     [call],
   );
 
+  const applyPrefill = useCallback(
+    (next: HarnessCreds) =>
+      prefill(next, {
+        setCreateBody,
+        setQuoteSource,
+        setQuoteBody,
+        setFundAccount,
+        setFundBody,
+        setTransferBody,
+        setTransferInBody,
+        setCustomerUpdateBody,
+        setSandboxSendBody,
+        setUmaReceiveBody,
+      }),
+    [],
+  );
+
   /* ---- Bootstrap ---- */
   useEffect(() => {
     void (async () => {
@@ -118,14 +155,7 @@ export function App() {
         setCustomerIds([loaded.customer_id]);
         setActiveCustomer(loaded.customer_id);
       }
-      prefill(loaded, {
-        setCreateBody,
-        setQuoteSource,
-        setQuoteBody,
-        setFundAccount,
-        setFundBody,
-        setTransferBody,
-      });
+      applyPrefill(loaded);
       if (loaded.customer_id) void refreshState(loaded.customer_id);
     })();
     // Run once on mount.
@@ -175,12 +205,17 @@ export function App() {
 
   const executeQuote = useCallback(async () => {
     if (!quoteId) return;
-    await call(
+    // scaFactor is honoured only here — create-quote ignores it — and the
+    // challenge it mints is returned once: GET /quotes/{id} never carries it and
+    // authorize/resend refuses passkey, so it has to be captured off this call.
+    const r = await call<{ scaChallenge?: ScaChallengeView | null }>(
       "POST",
       gridPath(`/quotes/${encodeURIComponent(quoteId)}/execute`),
+      { scaFactor },
     );
+    setScaChallenge(r.json?.scaChallenge ?? null);
     void refreshState();
-  }, [call, quoteId, refreshState]);
+  }, [call, quoteId, scaFactor, refreshState]);
 
   const sandboxFund = useCallback(async () => {
     const acct = fundAccount.trim();
@@ -197,6 +232,50 @@ export function App() {
     await call("POST", gridPath("/transfer-out"), parseJsonField(transferBody));
     void refreshState();
   }, [call, transferBody, refreshState]);
+
+  const transferIn = useCallback(async () => {
+    await call(
+      "POST",
+      gridPath("/transfer-in"),
+      parseJsonField(transferInBody),
+    );
+    void refreshState();
+  }, [call, transferInBody, refreshState]);
+
+  const sandboxSend = useCallback(async () => {
+    await call(
+      "POST",
+      gridPath("/sandbox/send"),
+      parseJsonField(sandboxSendBody),
+    );
+    void refreshState();
+  }, [call, sandboxSendBody, refreshState]);
+
+  const umaReceive = useCallback(async () => {
+    await call(
+      "POST",
+      gridPath("/sandbox/uma/receive"),
+      parseJsonField(umaReceiveBody),
+    );
+    void refreshState();
+  }, [call, umaReceiveBody, refreshState]);
+
+  const getQuote = useCallback(() => {
+    if (!quoteId) return;
+    void call("GET", gridPath(`/quotes/${encodeURIComponent(quoteId)}`));
+  }, [call, quoteId]);
+
+  const customerAction = useCallback(
+    (method: HttpMethod, body?: unknown) => {
+      if (!activeCustomer) return;
+      void call(
+        method,
+        gridPath(`/customers/${encodeURIComponent(activeCustomer)}`),
+        body,
+      );
+    },
+    [call, activeCustomer],
+  );
 
   const custPath = useCallback(
     (suffix: string) =>
@@ -233,6 +312,8 @@ export function App() {
         </Meta>
       </TopBar>
 
+      <PageNav active={page} onSelect={setPage} />
+
       {credsError && (
         <Alert
           variant="critical"
@@ -242,212 +323,382 @@ export function App() {
       )}
 
       <Layout>
-        {/* LEFT: flows */}
+        {/* LEFT: the active page */}
         <Col>
-          <Panel
-            title="0 · Connection"
-            subtitle="Point the harness at an environment. Local runs are prefilled by seed.py; dev/prod need an existing platform's API token."
-          >
-            <SettingsPanel
-              creds={creds}
+          {page === "connection" && (
+            <Panel
+              title="Connection"
+              subtitle="Point the harness at an environment. Local runs are prefilled by seed.py; dev/prod need an existing platform's API token."
+            >
+              <SettingsPanel
+                creds={creds}
+                call={call}
+                onCredsChange={(next) => {
+                  setCreds(next);
+                  setCredsError(null);
+                  // Templates embed the target's account ids and uma, so they
+                  // have to be rebuilt or they would send the previous
+                  // environment's ids to the new one.
+                  applyPrefill(next);
+                  if (next.customer_id) {
+                    addCustomerId(next.customer_id);
+                    return;
+                  }
+                  // The server drops environment-scoped ids when the connection
+                  // changes, so a missing customer here means "switched target".
+                  // Clear the in-memory selection in the same update rather than
+                  // waiting for discovery to return: the poll timer and every
+                  // other panel read activeCustomer, and until it is cleared they
+                  // would send the previous environment's customer id to the new
+                  // target.
+                  setCustomerIds([]);
+                  setActiveCustomer("");
+                  setAccounts(null);
+                  setStateNote("no active customer");
+                }}
+                onCustomerDiscovered={(ids) => {
+                  for (const id of ids) addCustomerId(id);
+                }}
+              />
+            </Panel>
+          )}
+
+          {page === "customers" && (
+            <>
+              <Panel
+                title="Customers"
+                subtitle="Create a customer and manage its lifecycle. Pick the active customer in the right column."
+              >
+                <Field.Root>
+                  <Field.Label>
+                    Create individual customer — POST {gridPath("/customers")}
+                  </Field.Label>
+                  <Textarea
+                    rows={11}
+                    value={createBody}
+                    onChange={(e) => setCreateBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button onClick={() => void createCustomer()}>
+                    Create individual customer
+                  </Button>
+                </ButtonRow>
+                <SectionLabel>Active customer lifecycle</SectionLabel>
+                <ButtonRow>
+                  <Button
+                    variant="secondary"
+                    disabled={!activeCustomer}
+                    onClick={() => customerAction("GET")}
+                  >
+                    Get
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    disabled={!activeCustomer}
+                    onClick={() => customerAction("DELETE")}
+                  >
+                    Delete
+                  </Button>
+                </ButtonRow>
+                <Field.Root>
+                  <Field.Label>Update body (PATCH)</Field.Label>
+                  <Textarea
+                    rows={4}
+                    value={customerUpdateBody}
+                    onChange={(e) => setCustomerUpdateBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button
+                    variant="secondary"
+                    disabled={!activeCustomer}
+                    onClick={() =>
+                      customerAction(
+                        "PATCH",
+                        parseJsonField(customerUpdateBody),
+                      )
+                    }
+                  >
+                    Update customer
+                  </Button>
+                </ButtonRow>
+              </Panel>
+
+              <Panel
+                title="Onboarding"
+                subtitle="All actions target the active customer id."
+              >
+                <SectionLabel>KYC</SectionLabel>
+                <ButtonRow>
+                  <Button
+                    variant="secondary"
+                    onClick={onboardingActions.kycLink}
+                  >
+                    KYC link
+                  </Button>
+                </ButtonRow>
+                <SectionLabel>Email verification</SectionLabel>
+                <ButtonRow>
+                  <Button
+                    variant="outline"
+                    onClick={onboardingActions.verifyEmail}
+                  >
+                    verify-email
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={onboardingActions.confirmEmail}
+                  >
+                    verify-email/confirm
+                  </Button>
+                </ButtonRow>
+                <SectionLabel>Phone verification</SectionLabel>
+                <ButtonRow>
+                  <Button
+                    variant="outline"
+                    onClick={onboardingActions.verifyPhone}
+                  >
+                    verify-phone
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={onboardingActions.confirmPhone}
+                  >
+                    verify-phone/confirm
+                  </Button>
+                </ButtonRow>
+                <Field.Root>
+                  <Field.Label>
+                    Confirm code (used by both confirm calls)
+                  </Field.Label>
+                  <Input
+                    value={confirmCode}
+                    onChange={(e) => setConfirmCode(e.target.value)}
+                  />
+                </Field.Root>
+              </Panel>
+
+              <VerificationsPanel call={call} customerId={activeCustomer} />
+            </>
+          )}
+
+          {page === "send" && (
+            <>
+              <Panel
+                title="Quotes + execute"
+                subtitle="Create a quote, then execute it."
+              >
+                <Field.Root>
+                  <Field.Label>Source account id</Field.Label>
+                  <Input
+                    value={quoteSource}
+                    onChange={(e) => setQuoteSource(e.target.value)}
+                  />
+                </Field.Root>
+                <Field.Root>
+                  <Field.Label>
+                    Quote request body — POST {gridPath("/quotes")}
+                  </Field.Label>
+                  <Textarea
+                    rows={11}
+                    value={quoteBody}
+                    onChange={(e) => setQuoteBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button onClick={() => void createQuote()}>
+                    Create quote
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={!quoteId}
+                    onClick={getQuote}
+                  >
+                    Get quote
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={!quoteId}
+                    onClick={() => void executeQuote()}
+                  >
+                    Execute quote
+                  </Button>
+                </ButtonRow>
+                <Field.Root>
+                  <Field.Label>
+                    scaFactor for execute (PASSKEY needs an enrolled passkey;
+                    TOTP is rejected per-transaction)
+                  </Field.Label>
+                  <EnumSelect
+                    value={scaFactor}
+                    onValueChange={setScaFactor}
+                    options={PER_TX_SCA_FACTORS}
+                  />
+                </Field.Root>
+                <Note>
+                  Current quote id: <Mono>{quoteId ?? "—"}</Mono>
+                </Note>
+              </Panel>
+
+              <Panel
+                title="Transfers"
+                subtitle="Same-currency transfer out to / in from an external account."
+              >
+                <Field.Root>
+                  <Field.Label>
+                    Transfer-out body — POST {gridPath("/transfer-out")}
+                  </Field.Label>
+                  <Textarea
+                    rows={9}
+                    value={transferBody}
+                    onChange={(e) => setTransferBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button onClick={() => void transferOut()}>
+                    Transfer out
+                  </Button>
+                </ButtonRow>
+                <Field.Root>
+                  <Field.Label>
+                    Transfer-in body — POST {gridPath("/transfer-in")}
+                  </Field.Label>
+                  <Textarea
+                    rows={7}
+                    value={transferInBody}
+                    onChange={(e) => setTransferInBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button variant="secondary" onClick={() => void transferIn()}>
+                    Transfer in
+                  </Button>
+                </ButtonRow>
+              </Panel>
+
+              <Panel
+                title="Deposits"
+                subtitle="Sandbox shortcut to simulate an inbound deposit."
+                badge={<Badge variant="sky">sandbox fund</Badge>}
+              >
+                <Row>
+                  <Field.Root>
+                    <Field.Label>Account id</Field.Label>
+                    <Input
+                      value={fundAccount}
+                      onChange={(e) => setFundAccount(e.target.value)}
+                    />
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label>Fund body</Field.Label>
+                    <Textarea
+                      rows={4}
+                      value={fundBody}
+                      onChange={(e) => setFundBody(e.target.value)}
+                    />
+                  </Field.Root>
+                </Row>
+                <ButtonRow>
+                  <Button onClick={() => void sandboxFund()}>
+                    Sandbox fund
+                  </Button>
+                </ButtonRow>
+                <Note>
+                  Real deposits arrive via Striga webhook → ngrok → balance
+                  update. This button credits the path account, then refreshes
+                  balances.
+                </Note>
+                <SectionLabel>Sandbox simulations</SectionLabel>
+                <Field.Root>
+                  <Field.Label>
+                    Simulate send — POST {gridPath("/sandbox/send")}
+                  </Field.Label>
+                  <Textarea
+                    rows={5}
+                    value={sandboxSendBody}
+                    onChange={(e) => setSandboxSendBody(e.target.value)}
+                  />
+                </Field.Root>
+                <Field.Root>
+                  <Field.Label>
+                    Simulate UMA receive — POST{" "}
+                    {gridPath("/sandbox/uma/receive")}
+                  </Field.Label>
+                  <Textarea
+                    rows={7}
+                    value={umaReceiveBody}
+                    onChange={(e) => setUmaReceiveBody(e.target.value)}
+                  />
+                </Field.Root>
+                <ButtonRow>
+                  <Button
+                    variant="secondary"
+                    onClick={() => void sandboxSend()}
+                  >
+                    Sandbox send
+                  </Button>
+                  <Button variant="secondary" onClick={() => void umaReceive()}>
+                    Sandbox UMA receive
+                  </Button>
+                </ButtonRow>
+              </Panel>
+            </>
+          )}
+
+          {page === "accounts" && (
+            <>
+              <ExternalAccountsPanel call={call} customerId={activeCustomer} />
+              <ReceiverLookupPanel
+                call={call}
+                customerId={activeCustomer}
+                defaultUma={creds.customer_uma}
+              />
+              <RatesAndFeesPanel call={call} accounts={creds.accounts} />
+            </>
+          )}
+
+          {page === "transactions" && (
+            <TransactionsPanel call={call} customerId={activeCustomer} />
+          )}
+
+          {page === "sca" && (
+            <ScaSection
               call={call}
-              onCredsChange={(next) => {
-                setCreds(next);
-                setCredsError(null);
-                if (next.customer_id) {
-                  addCustomerId(next.customer_id);
-                  return;
-                }
-                // The server drops environment-scoped ids when the connection
-                // changes, so a missing customer here means "switched target".
-                // Clear the in-memory selection in the same update rather than
-                // waiting for discovery to return: the poll timer and every other
-                // panel read activeCustomer, and until it is cleared they would
-                // send the previous environment's customer id to the new target.
-                setCustomerIds([]);
-                setActiveCustomer("");
-                setAccounts(null);
-                setStateNote("no active customer");
-              }}
-              onCustomerDiscovered={(ids) => {
-                for (const id of ids) addCustomerId(id);
-              }}
+              customerId={activeCustomer}
+              quoteId={quoteId}
+              scaChallenge={scaChallenge}
+              onScaChallenge={setScaChallenge}
             />
-          </Panel>
+          )}
 
-          <Panel
-            title="1 · Customers"
-            subtitle="List existing customers or create a new individual."
-          >
-            <ButtonRow>
-              <Button variant="secondary" onClick={() => void listCustomers()}>
-                List customers
-              </Button>
-            </ButtonRow>
-            <Field.Root>
-              <Field.Label>Active customer (used by other panels)</Field.Label>
-              <CustomerSelect
-                value={activeCustomer}
-                onValueChange={setActiveCustomer}
-                ids={customerIds}
-              />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label>
-                Create individual customer — POST {gridPath("/customers")}
-              </Field.Label>
-              <Textarea
-                rows={11}
-                value={createBody}
-                onChange={(e) => setCreateBody(e.target.value)}
-              />
-            </Field.Root>
-            <ButtonRow>
-              <Button onClick={() => void createCustomer()}>
-                Create individual customer
-              </Button>
-            </ButtonRow>
-          </Panel>
-
-          <Panel
-            title="3 · Quotes + execute"
-            subtitle="Create a quote, then execute it."
-          >
-            <Field.Root>
-              <Field.Label>Source account id</Field.Label>
-              <Input
-                value={quoteSource}
-                onChange={(e) => setQuoteSource(e.target.value)}
-              />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label>
-                Quote request body — POST {gridPath("/quotes")}
-              </Field.Label>
-              <Textarea
-                rows={11}
-                value={quoteBody}
-                onChange={(e) => setQuoteBody(e.target.value)}
-              />
-            </Field.Root>
-            <ButtonRow>
-              <Button onClick={() => void createQuote()}>Create quote</Button>
-              <Button
-                variant="secondary"
-                disabled={!quoteId}
-                onClick={() => void executeQuote()}
-              >
-                Execute quote
-              </Button>
-            </ButtonRow>
-            <Note>
-              Current quote id: <Mono>{quoteId ?? "—"}</Mono>
-            </Note>
-          </Panel>
-
-          <Panel
-            title="4 · Deposits"
-            subtitle="Sandbox shortcut to simulate an inbound deposit."
-            badge={<Badge variant="sky">sandbox fund</Badge>}
-          >
-            <Row>
-              <Field.Root>
-                <Field.Label>Account id</Field.Label>
-                <Input
-                  value={fundAccount}
-                  onChange={(e) => setFundAccount(e.target.value)}
-                />
-              </Field.Root>
-              <Field.Root>
-                <Field.Label>Fund body</Field.Label>
-                <Textarea
-                  rows={4}
-                  value={fundBody}
-                  onChange={(e) => setFundBody(e.target.value)}
-                />
-              </Field.Root>
-            </Row>
-            <ButtonRow>
-              <Button onClick={() => void sandboxFund()}>Sandbox fund</Button>
-            </ButtonRow>
-            <Note>
-              Real deposits arrive via Striga webhook → ngrok → balance update.
-              This button credits the path account, then refreshes balances.
-            </Note>
-          </Panel>
-
-          <Panel
-            title="5 · Withdrawals"
-            subtitle="Transfer out to an external account."
-          >
-            <Field.Root>
-              <Field.Label>
-                Transfer-out body — POST {gridPath("/transfer-out")}
-              </Field.Label>
-              <Textarea
-                rows={11}
-                value={transferBody}
-                onChange={(e) => setTransferBody(e.target.value)}
-              />
-            </Field.Root>
-            <ButtonRow>
-              <Button onClick={() => void transferOut()}>Transfer out</Button>
-            </ButtonRow>
-          </Panel>
-
-          <Panel
-            title="6 · Onboarding"
-            subtitle="All actions target the active customer id."
-          >
-            <SectionLabel>KYC</SectionLabel>
-            <ButtonRow>
-              <Button variant="secondary" onClick={onboardingActions.kycLink}>
-                KYC link
-              </Button>
-            </ButtonRow>
-            <SectionLabel>Email verification</SectionLabel>
-            <ButtonRow>
-              <Button variant="outline" onClick={onboardingActions.verifyEmail}>
-                verify-email
-              </Button>
-              <Button
-                variant="outline"
-                onClick={onboardingActions.confirmEmail}
-              >
-                verify-email/confirm
-              </Button>
-            </ButtonRow>
-            <SectionLabel>Phone verification</SectionLabel>
-            <ButtonRow>
-              <Button variant="outline" onClick={onboardingActions.verifyPhone}>
-                verify-phone
-              </Button>
-              <Button
-                variant="outline"
-                onClick={onboardingActions.confirmPhone}
-              >
-                verify-phone/confirm
-              </Button>
-            </ButtonRow>
-            <Field.Root>
-              <Field.Label>
-                Confirm code (used by both confirm calls)
-              </Field.Label>
-              <Input
-                value={confirmCode}
-                onChange={(e) => setConfirmCode(e.target.value)}
-              />
-            </Field.Root>
-          </Panel>
-
-          <ScaSection call={call} customerId={activeCustomer} />
+          {page === "platform" && <PlatformAccountsPanel call={call} />}
         </Col>
 
-        {/* RIGHT: state + log */}
+        {/* RIGHT: persistent context + feedback across every page */}
         <Col>
           <Sticky>
+            <Panel title="Active customer" subtitle="Shared by every page.">
+              <ButtonRow>
+                <Button
+                  variant="secondary"
+                  onClick={() => void listCustomers()}
+                >
+                  List customers
+                </Button>
+              </ButtonRow>
+              <Field.Root>
+                <Field.Label>Active customer</Field.Label>
+                <CustomerSelect
+                  value={activeCustomer}
+                  onValueChange={setActiveCustomer}
+                  ids={customerIds}
+                />
+              </Field.Root>
+            </Panel>
+
             <Panel
-              title="2 · State — internal accounts"
+              title="State — internal accounts"
               badge={
                 <PollToggle>
                   <span>poll 5s</span>
@@ -517,6 +768,47 @@ function Panel({
         <PanelBody>{children}</PanelBody>
       </Card.Body>
     </Card.Root>
+  );
+}
+
+type PageId =
+  | "connection"
+  | "customers"
+  | "send"
+  | "accounts"
+  | "transactions"
+  | "sca"
+  | "platform";
+
+const PAGES: ReadonlyArray<{ id: PageId; label: string }> = [
+  { id: "connection", label: "Connection" },
+  { id: "customers", label: "Customers" },
+  { id: "send", label: "Send" },
+  { id: "accounts", label: "Accounts" },
+  { id: "transactions", label: "Transactions" },
+  { id: "sca", label: "SCA" },
+  { id: "platform", label: "Platform" },
+];
+
+function PageNav({
+  active,
+  onSelect,
+}: {
+  active: PageId;
+  onSelect: (page: PageId) => void;
+}) {
+  return (
+    <PageBar aria-label="Pages">
+      {PAGES.map((p) => (
+        <PageTab
+          key={p.id}
+          aria-current={active === p.id ? "page" : undefined}
+          onClick={() => onSelect(p.id)}
+        >
+          {p.label}
+        </PageTab>
+      ))}
+    </PageBar>
   );
 }
 
@@ -721,11 +1013,16 @@ function prefill(
     setFundAccount: (v: string) => void;
     setFundBody: (v: string) => void;
     setTransferBody: (v: string) => void;
+    setTransferInBody: (v: string) => void;
+    setCustomerUpdateBody: (v: string) => void;
+    setSandboxSendBody: (v: string) => void;
+    setUmaReceiveBody: (v: string) => void;
   },
 ) {
   const accounts = creds.accounts || {};
   const eur = accounts.EUR || "<EUR-account-id>";
   const btc = accounts.BITCOIN || "<BITCOIN-account-id>";
+  const uma = creds.customer_uma || "<customer-uma>";
 
   set.setCreateBody(
     JSON.stringify(
@@ -777,6 +1074,43 @@ function prefill(
         destination: { accountId: "<external-account-id>" },
         amount: 1000,
         remittanceInformation: "harness test",
+      },
+      null,
+      2,
+    ),
+  );
+
+  set.setTransferInBody(
+    JSON.stringify(
+      {
+        source: { accountId: "<external-account-id>" },
+        destination: { accountId: eur },
+        amount: 1000,
+      },
+      null,
+      2,
+    ),
+  );
+
+  set.setCustomerUpdateBody(
+    JSON.stringify({ phoneNumber: "+4915123456789" }, null, 2),
+  );
+
+  set.setSandboxSendBody(
+    JSON.stringify(
+      { quoteId: "<quote-id>", currencyCode: "EUR", currencyAmount: 5000 },
+      null,
+      2,
+    ),
+  );
+
+  set.setUmaReceiveBody(
+    JSON.stringify(
+      {
+        senderUmaAddress: "$sender@sandbox.uma.money",
+        receiverUmaAddress: uma,
+        receivingCurrencyCode: "EUR",
+        receivingCurrencyAmount: 5000,
       },
       null,
       2,
@@ -858,10 +1192,47 @@ const Col = styled.div`
 
 const Sticky = styled.div`
   position: sticky;
-  top: var(--spacing-md, 16px);
+  top: 72px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md, 16px);
+`;
+
+const PageBar = styled.nav`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3xs, 4px);
+  padding: var(--spacing-2xs, 6px) var(--spacing-sm, 12px);
+  background: var(--surface-primary, #fff);
+  border: var(--stroke-xs, 1px) solid var(--border-primary, #e0e0e0);
+  border-radius: var(--corner-radius-lg, 12px);
+`;
+
+const PageTab = styled.button`
+  appearance: none;
+  border: var(--stroke-xs, 1px) solid transparent;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  font-size: var(--font-size-sm, 13px);
+  font-family: inherit;
+  padding: 4px 12px;
+  border-radius: var(--corner-radius-sm, 6px);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--surface-base, #f5f5f7);
+  }
+
+  &[aria-current="page"] {
+    color: var(--text-primary);
+    background: var(--surface-base, #f5f5f7);
+    border-color: var(--border-primary, #e0e0e0);
+    font-weight: var(--font-weight-semibold, 600);
+  }
 `;
 
 const PanelBody = styled.div`

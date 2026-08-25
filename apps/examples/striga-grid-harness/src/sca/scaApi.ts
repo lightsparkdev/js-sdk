@@ -6,8 +6,9 @@
 // apiPrefixValue is read per call, not captured: environments do not all serve the
 // same Grid API version prefix, and the settings panel can change it at runtime.
 import { apiPrefixValue, type CallResult, type HttpMethod } from "../api";
+import type { LoginPasskeyOptions } from "./passkeyLogin";
 
-export type CallFn = <T,>(
+export type CallFn = <T>(
   method: HttpMethod,
   path: string,
   body?: unknown,
@@ -22,7 +23,9 @@ export interface ScaPanelProps {
 // <prefix>/sca<suffix>?customerId=<id>. `suffix` starts with "/".
 export function scaPath(suffix: string, customerId: string): string {
   const sep = suffix.includes("?") ? "&" : "?";
-  return `${apiPrefixValue()}/sca${suffix}${sep}customerId=${encodeURIComponent(customerId)}`;
+  return `${apiPrefixValue()}/sca${suffix}${sep}customerId=${encodeURIComponent(
+    customerId,
+  )}`;
 }
 
 export function quotePath(quoteId: string, suffix = ""): string {
@@ -36,6 +39,18 @@ export function externalAccountPath(
   return `${apiPrefixValue()}/customers/external-accounts/${encodeURIComponent(
     externalAccountId,
   )}${suffix}`;
+}
+
+// The pending challenge an execute (or a chained authorize) returns. Delivered
+// once per initiate: GET /quotes/{id} does not carry it and authorize/resend
+// answers 204, so whoever receives it owns it until it is used or expires.
+export interface ScaChallengeView {
+  id?: string;
+  factor?: string;
+  expiresAt?: string;
+  availableFactors?: string[];
+  // Populated only when `factor` is PASSKEY.
+  passkeyAssertionOptions?: LoginPasskeyOptions;
 }
 
 export const SCA_FACTORS = ["SMS_OTP", "TOTP", "PASSKEY"] as const;

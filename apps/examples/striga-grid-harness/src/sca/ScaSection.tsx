@@ -11,16 +11,22 @@ import { FactorsPanel } from "./FactorsPanel";
 import { LoginPanel } from "./LoginPanel";
 import { PerTxAuthorizePanel } from "./PerTxAuthorizePanel";
 import { ResetPanel } from "./ResetPanel";
-import type { CallFn } from "./scaApi";
+import type { CallFn, ScaChallengeView } from "./scaApi";
 import { SecurityEventPanel } from "./SecurityEventPanel";
 import { Note } from "./ui";
 
 export function ScaSection({
   call,
   customerId,
+  quoteId,
+  scaChallenge,
+  onScaChallenge,
 }: {
   call: CallFn;
   customerId: string;
+  quoteId: string | null;
+  scaChallenge: ScaChallengeView | null;
+  onScaChallenge: (next: ScaChallengeView | null) => void;
 }) {
   const [code, setCode] = useState("123456");
 
@@ -38,11 +44,18 @@ export function ScaSection({
     <Group>
       <Header>SCA (Striga EU)</Header>
       <Field.Root>
-        <Field.Label>Sandbox OTP code (shared by all confirm steps)</Field.Label>
+        <Field.Label>
+          Sandbox OTP code (shared by all confirm steps)
+        </Field.Label>
         <Input value={code} onChange={(e) => setCode(e.target.value)} />
       </Field.Root>
       <FactorsPanel {...props} />
-      <PerTxAuthorizePanel {...props} />
+      <PerTxAuthorizePanel
+        {...props}
+        quoteId={quoteId}
+        challenge={scaChallenge}
+        onChallenge={onScaChallenge}
+      />
       <LoginPanel {...props} />
       <SecurityEventPanel {...props} />
       <ResetPanel {...props} />

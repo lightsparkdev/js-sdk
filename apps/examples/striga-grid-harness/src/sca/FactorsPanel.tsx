@@ -1,27 +1,32 @@
-// SCA factor enrollment + management. TOTP is driven end-to-end with the sandbox
-// OTP; PASSKEY start/list/delete are callable but the WebAuthn credential blob is
-// entered by hand (no automated ceremony). The `secret` from a TOTP start is
-// threaded into confirm automatically so the two clicks complete an enrollment.
+// SCA factor enrollment + management. Both factors run end-to-end: the `secret`
+// from a TOTP start is threaded into confirm, and a passkey start's options are
+// threaded into a real WebAuthn ceremony whose credential confirm submits.
+//
+// Striga allows one passkey per customer and holds the ceremony server-side with
+// a TTL, so a re-enroll needs the old factor deleted first and the two clicks
+// have to be back-to-back.
 
-import { Badge, Button, Field, Input, Table, Textarea } from "@lightsparkdev/origin";
+import { Badge, Button, Field, Input, Table } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
-import { parseJsonField } from "../api";
+import {
+  createEnrollmentPasskey,
+  type EnrollPasskeyOptions,
+} from "./passkeyEnroll";
 import { scaPath, type ScaPanelProps } from "./scaApi";
 import { computeTotp } from "./totp";
 import { ButtonRow, Mono, Note, Panel, Pre } from "./ui";
+
+interface PasskeyStartResponse {
+  options?: EnrollPasskeyOptions;
+  allowedOrigins?: string[];
+}
 
 interface FactorView {
   factor: string;
   credentialId?: string;
   name?: string;
 }
-
-const PASSKEY_CONFIRM_TEMPLATE = JSON.stringify(
-  { type: "PASSKEY", origin: "", credential: {} },
-  null,
-  2,
-);
 
 export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
   const [factors, setFactors] = useState<FactorView[] | null>(null);
@@ -30,9 +35,10 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
   const [totpUri, setTotpUri] = useState("");
   const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
   const [passkeyStart, setPasskeyStart] = useState("");
-  const [passkeyConfirmBody, setPasskeyConfirmBody] = useState(
-    PASSKEY_CONFIRM_TEMPLATE,
-  );
+  const [passkeyOptions, setPasskeyOptions] =
+    useState<EnrollPasskeyOptions | null>(null);
+  const [allowedOrigins, setAllowedOrigins] = useState<string[] | null>(null);
+  const [passkeyStatus, setPasskeyStatus] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState("");
 
   const listFactors = useCallback(async () => {
@@ -42,7 +48,7 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
     );
     // Only render a factor set on success; a 4xx error body has no `factors`
     // and must not read as "none enrolled" (the log carries the real response).
-    setFactors(r.ok ? (r.json?.factors ?? []) : null);
+    setFactors(r.ok ? r.json?.factors ?? [] : null);
   }, [call, customerId]);
 
   const enrollTotp = useCallback(async () => {
@@ -71,26 +77,47 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
   }, [call, customerId, totpSecret, totpB32, code, listFactors]);
 
   const enrollPasskey = useCallback(async () => {
-    const r = await call("POST", scaPath("/factors", customerId), {
-      type: "PASSKEY",
-    });
+    const r = await call<PasskeyStartResponse>(
+      "POST",
+      scaPath("/factors", customerId),
+      { type: "PASSKEY" },
+    );
     setPasskeyStart(r.json ? JSON.stringify(r.json, null, 2) : r.text);
-    setPasskeyConfirmBody(PASSKEY_CONFIRM_TEMPLATE);
+    setPasskeyOptions(r.json?.options ?? null);
+    setAllowedOrigins(r.json?.allowedOrigins ?? null);
+    setPasskeyStatus(
+      r.ok ? "challenge ready — confirm now, it expires" : "start failed",
+    );
   }, [call, customerId]);
 
   const confirmPasskey = useCallback(async () => {
-    await call(
-      "POST",
-      scaPath("/factors/confirm", customerId),
-      parseJsonField(passkeyConfirmBody),
-    );
+    if (!passkeyOptions) return;
+    let credential;
+    try {
+      credential = await createEnrollmentPasskey(passkeyOptions);
+    } catch (err) {
+      // A cancelled or unsupported ceremony never reaches the network, so the
+      // request log would otherwise show nothing at all.
+      setPasskeyStatus(err instanceof Error ? err.message : String(err));
+      return;
+    }
+    const origin = allowedOrigins?.[0] ?? location.origin;
+    const r = await call("POST", scaPath("/factors/confirm", customerId), {
+      type: "PASSKEY",
+      origin,
+      credential,
+    });
+    setPasskeyStatus(r.ok ? "passkey enrolled" : "confirm rejected — see log");
     void listFactors();
-  }, [call, customerId, passkeyConfirmBody, listFactors]);
+  }, [call, customerId, passkeyOptions, allowedOrigins, listFactors]);
 
   const deleteFactor = useCallback(async () => {
     const id = deleteId.trim();
     if (!id) return;
-    await call("DELETE", scaPath(`/factors/${encodeURIComponent(id)}`, customerId));
+    await call(
+      "DELETE",
+      scaPath(`/factors/${encodeURIComponent(id)}`, customerId),
+    );
     void listFactors();
   }, [call, customerId, deleteId, listFactors]);
 
@@ -131,24 +158,31 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
         <Button variant="outline" onClick={() => void enrollPasskey()}>
           Enroll passkey (start)
         </Button>
-        <Button variant="outline" onClick={() => void confirmPasskey()}>
-          Confirm passkey
+        <Button
+          variant="outline"
+          disabled={!passkeyOptions}
+          onClick={() => void confirmPasskey()}
+        >
+          Confirm passkey (sign)
         </Button>
       </ButtonRow>
+      {passkeyStatus && (
+        <Note>
+          {passkeyStatus}
+          {passkeyOptions && (
+            <>
+              {" · origin: "}
+              <Mono>{allowedOrigins?.[0] ?? location.origin}</Mono>
+            </>
+          )}
+        </Note>
+      )}
       {passkeyStart && (
         <>
-          <Note>passkey start response (build the assertion from this):</Note>
+          <Note>passkey start response:</Note>
           <Pre>{passkeyStart}</Pre>
         </>
       )}
-      <Field.Root>
-        <Field.Label>Passkey confirm body (manual)</Field.Label>
-        <Textarea
-          rows={5}
-          value={passkeyConfirmBody}
-          onChange={(e) => setPasskeyConfirmBody(e.target.value)}
-        />
-      </Field.Root>
 
       <Field.Root>
         <Field.Label>Delete factor — credentialId</Field.Label>
