@@ -9,16 +9,21 @@ import {
   InfoToast,
   InvalidToast,
   LayoutToast,
+  MultipleToasts,
   NoAutoDismiss,
+  PlacementToast,
   StackedToasts,
   StateAttributeOverrideToast,
   SuccessToast,
   TimedStackedToasts,
   ToastWithAction,
   ToastWithDescription,
+  ToastWithHostileGlobalMargins,
+  ToastWithTextLinks,
   ViewportRefCleanup,
   WarningToast,
 } from "./Toast.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 const SEMANTIC_ICON_EXPECTATIONS = {
   info: "rgb(0, 114, 219)",
@@ -212,6 +217,155 @@ test.describe("Toast", () => {
     await expect(page.getByTestId("action-count")).toHaveText("1");
   });
 
+  test("defaults the viewport and stack to bottom placement", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<BasicToast />);
+    const viewport = page.getByRole("region", { name: "Notifications" });
+
+    await expect(viewport).toHaveAttribute("data-placement", "bottom");
+    await expect(viewport).toHaveCSS("bottom", "16px");
+    expect(
+      await viewport.evaluate(
+        (element) =>
+          window.innerHeight - element.getBoundingClientRect().bottom,
+      ),
+    ).toBe(16);
+  });
+
+  for (const [placement, direction] of [
+    ["bottom", 1],
+    ["top", -1],
+  ] as const) {
+    test(`${placement} placement anchors and uses its edge for normal enter and exit`, async ({
+      mount,
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await mount(<PlacementToast placement={placement} />);
+      const viewport = page.getByRole("region", { name: "Notifications" });
+
+      await expect(viewport).toHaveAttribute("data-placement", placement);
+      await expect(viewport).toHaveCSS(placement, "16px");
+      expect(
+        await viewport.evaluate((element, edge) => {
+          const bounds = element.getBoundingClientRect();
+          return edge === "top"
+            ? bounds.top
+            : window.innerHeight - bounds.bottom;
+        }, placement),
+      ).toBe(16);
+
+      await page.getByTestId("trigger").click();
+      const toast = page.getByRole("dialog");
+      await waitForAnimations(toast);
+      const transitionDirections = await toast.evaluate((element) => {
+        const directionFor = (
+          attribute: "data-ending-style" | "data-starting-style",
+        ) => {
+          element.removeAttribute("data-ending-style");
+          element.removeAttribute("data-starting-style");
+          element.setAttribute(attribute, "");
+          return Math.sign(
+            new DOMMatrixReadOnly(getComputedStyle(element).transform).m42,
+          );
+        };
+
+        return {
+          enter: directionFor("data-starting-style"),
+          exit: directionFor("data-ending-style"),
+        };
+      });
+
+      expect(transitionDirections).toEqual({
+        enter: direction,
+        exit: direction,
+      });
+    });
+  }
+
+  test("top placement stacks and expands away from the top edge", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<MultipleToasts placement="top" />);
+    const trigger = page.getByTestId("multi-trigger");
+    await trigger.click();
+    await trigger.click();
+
+    const oldest = getToast(page, "Toast 1");
+    const newest = getToast(page, "Toast 2");
+    await Promise.all([waitForAnimations(oldest), waitForAnimations(newest)]);
+    const [collapsedOldest, collapsedNewest] = await Promise.all([
+      getVerticalBounds(oldest),
+      getVerticalBounds(newest),
+    ]);
+    expect(collapsedOldest.top).toBeGreaterThan(collapsedNewest.top);
+
+    await newest.hover();
+    await Promise.all([waitForAnimations(oldest), waitForAnimations(newest)]);
+    const [expandedOldest, expandedNewest] = await Promise.all([
+      getVerticalBounds(oldest),
+      getVerticalBounds(newest),
+    ]);
+    expect(expandedOldest.top).toBeGreaterThanOrEqual(expandedNewest.bottom);
+  });
+
+  test("styles native and rendered text links as inline Origin links", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ToastWithTextLinks />);
+    await page.getByTestId("trigger").click();
+
+    const nativeLink = page.getByTestId("native-toast-link");
+    const renderedLink = page.getByTestId("rendered-toast-link");
+    const renderedButton = page.getByTestId("rendered-toast-button");
+    const linkColor = await resolveTokenColor(page, "--text-link");
+    const title = page.getByRole("heading", { name: /Read the/ });
+
+    await expect(nativeLink).toHaveAttribute("href", "/docs");
+    await expect(nativeLink).toHaveCSS("color", linkColor);
+    await expect(nativeLink).toHaveCSS("display", "inline");
+    await expect(nativeLink).toHaveCSS("text-decoration-line", "underline");
+    await expect(nativeLink).toHaveCSS(
+      "font-size",
+      await title.evaluate((element) => getComputedStyle(element).fontSize),
+    );
+    await expect(renderedLink).toHaveAttribute("href", "/settings");
+    await expect(renderedLink).toHaveAttribute("data-router-link", "");
+    await expect(renderedLink).toHaveClass(/consumer-toast-link/);
+    await expect(renderedLink).toHaveClass(/router-toast-link/);
+    await expect(renderedLink).toHaveCSS("color", linkColor);
+    await expect(renderedButton).toHaveRole("button");
+    await expect(renderedButton).toHaveCSS("margin", "0px");
+    await expect(renderedButton).toHaveCSS("padding", "0px");
+    await expect(renderedButton).toHaveCSS(
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    );
+    await expect(renderedButton).toHaveCSS("border-top-width", "0px");
+    await expect(renderedButton).toHaveCSS("cursor", "pointer");
+    await expect(renderedButton).toHaveCSS("text-decoration-line", "underline");
+  });
+
+  test("neutralizes global heading and paragraph margins", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ToastWithHostileGlobalMargins />);
+    await page.getByTestId("trigger").click();
+
+    const title = page.getByRole("heading", { name: "Toast title" });
+    const description = page.getByText("Toast description.");
+
+    await expect(title).toHaveCSS("margin-top", "0px");
+    await expect(title).toHaveCSS("margin-bottom", "0px");
+    await expect(description).toHaveCSS("margin-top", "0px");
+    await expect(description).toHaveCSS("margin-bottom", "0px");
+  });
+
   test("renders responsive neutral feedback without an icon", async ({
     mount,
     page,
@@ -230,6 +384,27 @@ test.describe("Toast", () => {
   test("renders the info semantic icon", async ({ mount, page }) => {
     await mount(<InfoToast />);
     await assertSemanticIcon(page, "info");
+  });
+
+  test("centers single-line content with its semantic icon", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<InfoToast />);
+    await page.getByTestId("trigger").click();
+
+    const toast = page.getByRole("dialog");
+    const icon = page.getByTestId("semantic-icon");
+    const title = page.getByRole("heading", { name: "Info toast" });
+    const [toastBounds, iconBounds, titleBounds] = await Promise.all([
+      getVerticalBounds(toast),
+      getVerticalBounds(icon),
+      getVerticalBounds(title),
+    ]);
+    const toastCenter = toastBounds.top + toastBounds.height / 2;
+
+    expect(iconBounds.top + iconBounds.height / 2).toBe(toastCenter);
+    expect(titleBounds.top + titleBounds.height / 2).toBe(toastCenter);
   });
 
   test("renders the success semantic icon", async ({ mount, page }) => {

@@ -10,6 +10,36 @@
   outline: none;
 }
 
+.viewport[data-placement="top"] {
+  top: var(--spacing-md);
+  bottom: auto;
+
+  > .root {
+    --toast-stack-collapsed-y: translateY(var(--toast-swipe-movement-y, 0px))
+      translateY(calc(var(--toast-index) * var(--toast-stack-peek)))
+      translateY(calc(var(--toast-stack-shrink) * var(--toast-stack-height)));
+    --toast-stack-expanded-y: translateY(var(--toast-offset-y))
+      translateY(calc(var(--toast-index) * var(--toast-stack-gap)))
+      translateY(var(--toast-swipe-movement-y, 0px));
+
+    top: 0;
+    bottom: auto;
+    transform-origin: top center;
+
+    &[data-starting-style],
+    &[data-ending-style]:not([data-swipe-direction]) {
+      opacity: 0;
+      transform: translateX(var(--toast-swipe-movement-x, 0px))
+        translateY(calc(var(--toast-swipe-movement-y, 0px) - 150%));
+    }
+
+    &::after {
+      top: auto;
+      bottom: 100%;
+    }
+  }
+}
+
 .root {
   --toast-stack-gap: var(--spacing-xs);
   --toast-stack-peek: var(--spacing-sm);
@@ -162,6 +192,7 @@
 .content {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   flex: 1 0 0;
   height: 100%;
   min-width: 0;
@@ -199,7 +230,19 @@
 
 .title {
   @include body;
+  margin: 0;
   color: var(--text-primary);
+}
+
+.link {
+  margin: 0;
+  padding: 0;
+  color: var(--text-link);
+  font: inherit;
+  text-decoration: underline;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .root[data-layout="compact"] .content,
@@ -216,6 +259,7 @@
 
 .description {
   @include body-sm;
+  margin: 0;
   color: var(--text-secondary);
 }
 

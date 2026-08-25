@@ -230,6 +230,8 @@ export type {
   ToastDescriptionProps,
   ToastIconProps,
   ToastLayout,
+  ToastLinkProps,
+  ToastPlacement,
   ToastPortalProps,
   ToastProviderProps,
   ToastRootProps,

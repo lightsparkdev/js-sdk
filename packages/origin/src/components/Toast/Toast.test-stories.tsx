@@ -3,7 +3,12 @@
 import * as React from "react";
 import { Button } from "@/components/Button";
 import { CentralIcon, type CentralIconName } from "@/components/Icon";
-import { Toast, type ToastLayout, type ToastVariant } from "./";
+import {
+  Toast,
+  type ToastLayout,
+  type ToastPlacement,
+  type ToastVariant,
+} from "./";
 
 interface ToastData {
   layout?: ToastLayout;
@@ -11,7 +16,7 @@ interface ToastData {
 }
 
 interface ToastTriggerProps {
-  title: string;
+  title: React.ReactNode;
   description?: string;
   layout?: ToastLayout;
   variant?: ToastVariant;
@@ -90,17 +95,19 @@ function ToastRenderer() {
 function ToastFixture({
   children,
   limit,
+  placement = "bottom",
   timeout,
 }: {
   children: React.ReactNode;
   limit?: number;
+  placement?: ToastPlacement;
   timeout?: number;
 }) {
   return (
     <Toast.Provider limit={limit} timeout={timeout}>
       {children}
       <Toast.Portal>
-        <Toast.Viewport>
+        <Toast.Viewport placement={placement}>
           <ToastRenderer />
         </Toast.Viewport>
       </Toast.Portal>
@@ -145,11 +152,71 @@ export function BasicToast() {
   );
 }
 
+export function PlacementToast({ placement }: { placement: ToastPlacement }) {
+  return (
+    <ToastFixture placement={placement} timeout={0}>
+      <ToastTrigger title={`${placement} toast`} />
+    </ToastFixture>
+  );
+}
+
+const RouterLikeLink = React.forwardRef<
+  HTMLAnchorElement,
+  Omit<React.ComponentPropsWithoutRef<"a">, "href"> & { to: string }
+>(function RouterLikeLink({ to, ...props }, ref) {
+  return <a ref={ref} href={to} data-router-link="" {...props} />;
+});
+
+export function ToastWithTextLinks() {
+  return (
+    <ToastFixture timeout={0}>
+      <ToastTrigger
+        title={
+          <>
+            Read the{" "}
+            <Toast.Link data-testid="native-toast-link" href="/docs">
+              docs
+            </Toast.Link>{" "}
+            or open{" "}
+            <Toast.Link
+              className="consumer-toast-link"
+              data-testid="rendered-toast-link"
+              render={
+                <RouterLikeLink className="router-toast-link" to="/settings" />
+              }
+            >
+              settings
+            </Toast.Link>
+            {" or "}
+            <Toast.Link
+              data-testid="rendered-toast-button"
+              render={<button type="button" />}
+            >
+              reload
+            </Toast.Link>
+          </>
+        }
+      />
+    </ToastFixture>
+  );
+}
+
 export function ToastWithDescription() {
   return (
     <ToastFixture>
       <ToastTrigger title="Toast title" description="Toast description." />
     </ToastFixture>
+  );
+}
+
+export function ToastWithHostileGlobalMargins() {
+  return (
+    <>
+      <style>{"h2, p { margin: 47px; }"}</style>
+      <ToastFixture>
+        <ToastTrigger title="Toast title" description="Toast description." />
+      </ToastFixture>
+    </>
   );
 }
 
@@ -251,9 +318,15 @@ function MultiToastTrigger() {
   );
 }
 
-export function MultipleToasts({ limit = 3 }: { limit?: number }) {
+export function MultipleToasts({
+  limit = 3,
+  placement = "bottom",
+}: {
+  limit?: number;
+  placement?: ToastPlacement;
+}) {
   return (
-    <ToastFixture limit={limit} timeout={0}>
+    <ToastFixture limit={limit} placement={placement} timeout={0}>
       <MultiToastTrigger />
     </ToastFixture>
   );

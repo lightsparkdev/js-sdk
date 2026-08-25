@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Toast as BaseToast } from "@base-ui/react/toast";
+import { useRender } from "@base-ui/react/use-render";
 import clsx from "clsx";
 import { Button } from "../Button";
 import { CentralIcon, type CentralIconName } from "../Icon";
@@ -18,6 +19,8 @@ import styles from "./Toast.module.scss";
  * viewport width and the frontmost toast's height to keep the stack covered.
  */
 export type ToastLayout = "default" | "compact" | "pill";
+
+export type ToastPlacement = "bottom" | "top";
 
 export type ToastVariant =
   | "default"
@@ -59,11 +62,16 @@ export function Portal(props: PortalProps) {
 
 export interface ViewportProps extends BaseToast.Viewport.Props {
   className?: string;
+  /**
+   * Vertical edge that anchors the viewport, stack, and enter/exit motion.
+   * @default "bottom"
+   */
+  placement?: ToastPlacement;
 }
 
 export const Viewport = React.forwardRef<HTMLDivElement, ViewportProps>(
   function Viewport(props, ref) {
-    const { className, ...other } = props;
+    const { className, placement = "bottom", ...other } = props;
     const viewportCleanupRef = React.useRef<(() => void) | undefined>(
       undefined,
     );
@@ -135,9 +143,10 @@ export const Viewport = React.forwardRef<HTMLDivElement, ViewportProps>(
 
     return (
       <BaseToast.Viewport
+        {...other}
         ref={handleViewportRef}
         className={clsx(styles.viewport, className)}
-        {...other}
+        data-placement={placement}
       />
     );
   },
@@ -230,6 +239,31 @@ export const Title = React.forwardRef<HTMLHeadingElement, TitleProps>(
         {...other}
       />
     );
+  },
+);
+
+export interface LinkProps extends React.ComponentPropsWithoutRef<"a"> {
+  /**
+   * Replaces the default `a` element, for example with a router-aware link.
+   * Props are merged per Base UI `useRender` semantics.
+   */
+  render?: useRender.RenderProp | undefined;
+}
+
+/** Renders an inline, token-styled text link within Toast content. */
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  function Link(props, ref) {
+    const { className, render, ...other } = props;
+
+    return useRender({
+      defaultTagName: "a",
+      render,
+      ref,
+      props: {
+        ...other,
+        className: clsx(styles.link, className),
+      },
+    });
   },
 );
 
