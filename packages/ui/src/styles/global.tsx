@@ -57,8 +57,8 @@ const getFontsBase = () => {
    1. Every SuisseIntl face MUST declare the identical `font-weight: 300 700`
       span — an exact-weight or differently-spanned face makes Chromium
       silently fall back to Arial for the whole family (Chromium 145 repro).
-   2. Arabic statics live in the separate "Suisse Intl Arabic" family with no
-      unicode-range; the sans stacks list it right after the VF family.
+   2. Arabic statics live in the separate "Suisse Intl Extended" family with
+      no unicode-range; the sans stacks list it right after the VF family.
    3. The unicode-range lists ship verbatim and partition the VF charset with
       zero overlap. */
 const suisseCoreUnicodeRange =
@@ -80,6 +80,8 @@ const suisseExtUnicodeRange =
   "U+2080-2089, U+2116-2117, U+2150-215F, U+2196, U+2198, U+21A4-21A7, " +
   "U+2215, U+2260, U+25CC, U+2766, U+A7AE, U+FB01-FB02, U+FDFC";
 
+/* "Suisse Intl Extended" covers Arabic-script glyphs for runtime data:
+   static per-weight faces that load lazily per character. */
 const arabicFallbackWeights = [
   ["SuisseIntl-Light.woff2", 300],
   ["SuisseIntl-Regular.woff2", 400],
@@ -114,7 +116,7 @@ const getFontFaces = (theme: Theme) => {
         .map(
           ([file, weight]) => `
       @font-face {
-        font-family: "Suisse Intl Arabic";
+        font-family: "Suisse Intl Extended";
         src: url("${fontsBase}/${file}") format("woff2");
         font-weight: ${weight};
         font-style: normal;

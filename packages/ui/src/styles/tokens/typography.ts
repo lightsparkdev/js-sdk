@@ -321,12 +321,12 @@ export interface FontFamilies {
   code: string;
 }
 
-/* The Suisse VF carries no Arabic glyphs; "Suisse Intl Arabic" (static
+/* The Suisse VF carries no Arabic glyphs; "Suisse Intl Extended" (static
    fallback family) must sit immediately after it in every sans stack so
    Arabic characters fall through per character. */
 function withArabicFallback(fontFamily: string) {
   return fontFamily === "SuisseIntl"
-    ? 'SuisseIntl, "Suisse Intl Arabic"'
+    ? 'SuisseIntl, "Suisse Intl Extended"'
     : fontFamily;
 }
 

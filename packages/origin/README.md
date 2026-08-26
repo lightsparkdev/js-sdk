@@ -187,7 +187,7 @@ punctuation, currency, and the characters shipped UI text renders — Č/č,
 (`SuisseIntlVF-wght300-700-ext.woff2`, everything else). Both faces declare
 the identical `font-weight: 300 700` span — see the hard rules in
 `_fonts.scss` before touching the declarations. A separate static family,
-"Suisse Intl Arabic" (the per-weight `SuisseIntl-*.woff2` statics), sits
+"Suisse Intl Extended" (the per-weight `SuisseIntl-*.woff2` statics), sits
 after "Suisse Intl" in the sans stack so Arabic falls through per character.
 Intermediate weights are available for animation
 (`font-variation-settings: "wght" ...`).

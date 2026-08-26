@@ -9,7 +9,7 @@
  * superscripts, fractions, remaining arrows, ligatures). The two
  * unicode-range lists partition the font's charset with zero overlap, so
  * every shipped UI page downloads only the ~171 KiB core file; ext loads
- * only for runtime foreign-script data. "Suisse Intl Arabic" is a separate
+ * only for runtime foreign-script data. "Suisse Intl Extended" is a separate
  * static family that the sans stacks list immediately after "Suisse Intl";
  * the VF carries no Arabic glyphs, so browsers fall through to it per
  * character.
@@ -22,7 +22,7 @@
  *    WHOLE family (reproduced in Chromium 145; verification
  *    evidence on PR #33261).
  * 2. Arabic and any other static fallback live in the separate
- *    "Suisse Intl Arabic" family with NO unicode-range — never as
+ *    "Suisse Intl Extended" family with NO unicode-range — never as
  *    range-limited faces inside the variable-font family (rule 1).
  * 3. The unicode-range lists must ship VERBATIM. Lightning CSS
  *    rewrites U+0000-00FF into the U+?? wildcard, which changes
@@ -100,10 +100,11 @@
     U+21A4-21A7, U+2215, U+2260, U+25CC, U+2766, U+A7AE, U+FB01-FB02, U+FDFC;
 }
 
-// Suisse Intl Arabic - static per-weight fallback family (rule 2: no
-// unicode-range). The sans stacks list it immediately after "Suisse Intl".
+// Suisse Intl Extended - static per-weight fallback family serving
+// Arabic-script glyphs for runtime data; loads lazily per character (rule 2:
+// no unicode-range). The sans stacks list it immediately after "Suisse Intl".
 @font-face {
-  font-family: "Suisse Intl Arabic";
+  font-family: "Suisse Intl Extended";
   src: url("/fonts/SuisseIntl-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
@@ -111,7 +112,7 @@
 }
 
 @font-face {
-  font-family: "Suisse Intl Arabic";
+  font-family: "Suisse Intl Extended";
   src: url("/fonts/SuisseIntl-Book.woff2") format("woff2");
   font-weight: 450;
   font-style: normal;
@@ -119,7 +120,7 @@
 }
 
 @font-face {
-  font-family: "Suisse Intl Arabic";
+  font-family: "Suisse Intl Extended";
   src: url("/fonts/SuisseIntl-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
@@ -127,7 +128,7 @@
 }
 
 @font-face {
-  font-family: "Suisse Intl Arabic";
+  font-family: "Suisse Intl Extended";
   src: url("/fonts/SuisseIntl-Semibold.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
@@ -135,7 +136,7 @@
 }
 
 @font-face {
-  font-family: "Suisse Intl Arabic";
+  font-family: "Suisse Intl Extended";
   src: url("/fonts/SuisseIntl-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
