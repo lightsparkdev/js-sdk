@@ -25,6 +25,24 @@
 .viewport {
   position: fixed;
   inset: 0;
+  z-index: 100;
+  overflow: hidden;
+
+  > .popup {
+    top: 50%;
+    max-height: calc(100dvh - var(--spacing-2xl));
+
+    > .header,
+    > .footer {
+      flex-shrink: 0;
+    }
+
+    > .content {
+      min-height: 0;
+      overflow: hidden auto;
+      overscroll-behavior: contain;
+    }
+  }
 }
 
 .popup {
