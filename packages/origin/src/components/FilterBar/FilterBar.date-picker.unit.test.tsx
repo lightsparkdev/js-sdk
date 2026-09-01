@@ -706,6 +706,8 @@ describe("FilterBar DatePicker draft boundary", () => {
   });
 
   it("clears the required range error when the user selects a date", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-31T17:30:45.000Z"));
     const initialStates = getDefaultFilterStates(DESCRIPTORS);
     initialStates.createdAt.isApplied = true;
     render(<Harness initialStates={initialStates} />);
