@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   DefaultField,
+  FieldWithMediumLabel,
+  FieldWithLabelSuffix,
+  FieldWithInlineDescriptionLink,
   FieldWithError,
   DisabledField,
   FieldWithoutLabel,
@@ -8,6 +11,8 @@ import {
   ControlledField,
   FieldWithValidation,
   FieldWithName,
+  FieldWithRenderedRoot,
+  FieldWithStatefulRootClassName,
 } from "./Field.test-stories";
 
 test.describe("Field", () => {
@@ -22,6 +27,80 @@ test.describe("Field", () => {
       await expect(label).toBeVisible();
       await expect(input).toBeVisible();
       await expect(description).toBeVisible();
+    });
+
+    test("spaces the label suffix slot with the spacing token", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithLabelSuffix />);
+
+      const label = page.getByTestId("field-label-with-suffix");
+      const suffix = page.getByTestId("field-label-suffix");
+
+      await expect(label).toBeVisible();
+      await expect(label).toContainText("Display name");
+      await expect(suffix).toHaveText("(optional)");
+      // Spacing lives on the suffix slot, not on a label flex gap.
+      await expect(suffix).toHaveCSS("margin-left", "4px");
+      // The aside treatment is weight + color; size already matches the label.
+      await expect(suffix).toHaveCSS("font-weight", "400");
+      await expect(suffix).toHaveCSS("color", "rgb(124, 124, 124)");
+    });
+
+    test("label lays out mixed text and a suffix as one inline run", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithLabelSuffix />);
+
+      const label = page.getByTestId("field-label-with-suffix");
+      const suffix = page.getByTestId("field-label-suffix");
+
+      // Block (not flex) layout keeps the label text and suffix in the same
+      // wrapping text run instead of splitting them into flex items.
+      await expect(label).toHaveCSS("display", "block");
+      await expect(suffix).toHaveCSS("display", "inline");
+    });
+
+    test("description lays out mixed text and elements as one inline run", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithInlineDescriptionLink />);
+
+      const description = page.getByTestId("description-with-link");
+      const link = page.getByTestId("description-link");
+
+      // Block (not flex) layout keeps a text node + inline element in the
+      // same wrapping text run instead of splitting them into flex items.
+      await expect(description).toHaveCSS("display", "block");
+      await expect(link).toHaveCSS("display", "inline");
+      await expect(description).toContainText(
+        "We'll never share your email. Learn more",
+      );
+    });
+
+    test("label renders the small text style by default", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<DefaultField />);
+
+      const label = page.getByText("Email", { exact: true });
+      await expect(label).toHaveCSS("font-size", "12px");
+      await expect(label).toHaveCSS("line-height", "16px");
+    });
+
+    test("label renders the medium text style when size is md", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithMediumLabel />);
+
+      const label = page.getByTestId("field-label-md");
+      await expect(label).toHaveCSS("font-size", "14px");
+      await expect(label).toHaveCSS("line-height", "20px");
     });
 
     test("label is associated with input via aria", async ({ mount, page }) => {
@@ -193,6 +272,43 @@ test.describe("Field", () => {
 
       const input = page.getByPlaceholder("Enter your email");
       await expect(input).toBeVisible();
+    });
+  });
+
+  test.describe("render prop", () => {
+    test("renders a custom root while preserving Origin and consumer classes", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithRenderedRoot />);
+
+      const root = page.getByTestId("rendered-field-root");
+      await expect(root).toBeVisible();
+      await expect(root).toHaveJSProperty("tagName", "SECTION");
+      await expect(root).toHaveAttribute("data-custom-root", "");
+      await expect(root).toHaveAttribute("data-invalid", "");
+      await expect(root).toHaveCSS("display", "flex");
+      await expect(root).toHaveCSS("flex-direction", "column");
+      await expect(root).toHaveClass(/consumer-field-root/);
+      await expect(root).toHaveClass(/rendered-field-root/);
+    });
+
+    test("supports stateful root class names with a rendered root class", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FieldWithStatefulRootClassName />);
+
+      const root = page.getByTestId("stateful-class-field-root");
+      await expect(root).toBeVisible();
+      await expect(root).toHaveJSProperty("tagName", "SECTION");
+      await expect(root).toHaveAttribute("data-custom-root", "");
+      await expect(root).toHaveAttribute("data-invalid", "");
+      await expect(root).toHaveCSS("display", "flex");
+      await expect(root).toHaveCSS("flex-direction", "column");
+      await expect(root).toHaveClass(/consumer-field-root-invalid/);
+      await expect(root).toHaveClass(/rendered-stateful-field-root/);
+      await expect(root).not.toHaveClass(/consumer-field-root-valid/);
     });
   });
 });

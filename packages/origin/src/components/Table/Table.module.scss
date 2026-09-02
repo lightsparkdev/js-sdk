@@ -8,7 +8,14 @@
 .root {
   width: 100%;
   table-layout: fixed;
-  border-collapse: collapse;
+
+  // Separate border model, zero spacing. Chromium snaps collapsed-model
+  // borders to whole device pixels, so the 0.5px --stroke-xs hairlines
+  // painted at double weight; under `separate` they honor the token width,
+  // and borders stay attached to cells consumers pin with position: sticky.
+  // Safe because every border here is bottom-only (no shared edges relied
+  // on collapsing) — keep it that way when adding borders (DES-77).
+  border-collapse: separate;
   border-spacing: 0;
 
   .caption {
@@ -41,6 +48,10 @@
   font-weight: normal;
   vertical-align: middle;
   position: relative;
+
+  &[data-loading] {
+    pointer-events: none;
+  }
 
   // Checkbox column - narrower padding
   &--checkbox {
@@ -89,6 +100,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+}
+
+.loadingBar {
+  width: 100%;
+  max-width: var(--spacing-16xl);
+  height: 16px;
+
+  .headerCell--right > &,
+  .cell--right > & {
+    margin-left: auto;
+  }
 }
 
 .sortIcon {
@@ -193,6 +215,47 @@
   flex-direction: column;
   justify-content: center;
   min-width: 0;
+
+  &[data-bounded] {
+    max-width: var(--spacing-18xl);
+    overflow: hidden;
+
+    .cell--right > & {
+      margin-left: auto;
+    }
+  }
+}
+
+.cellDisclosureTrigger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--state-focus);
+    @include smooth-corners(var(--corner-radius-xs));
+  }
+}
+
+.cellDisclosurePopup {
+  @include body;
+
+  max-width: var(--spacing-18xl);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .cellLabel {

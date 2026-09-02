@@ -21,6 +21,11 @@ const fruits: Fruit[] = [
   { value: "honeydew", label: "Honeydew" },
 ];
 
+const longFruits: Fruit[] = Array.from({ length: 40 }, (_, index) => ({
+  value: `fruit-${index + 1}`,
+  label: `Fruit ${index + 1}`,
+}));
+
 const meta: Meta<typeof Autocomplete.Root> = {
   title: "Components/Autocomplete",
   component: Autocomplete.Root,
@@ -42,6 +47,33 @@ export const Basic: Story = {
   render: (args) => (
     <div style={{ width: 300 }}>
       <Autocomplete.Root items={fruits} {...args}>
+        <Autocomplete.Input placeholder="Search fruits..." />
+        <Autocomplete.Portal>
+          <Autocomplete.Positioner>
+            <Autocomplete.Popup>
+              <Autocomplete.Empty>No results found.</Autocomplete.Empty>
+              <Autocomplete.List>
+                {(item: Fruit) => (
+                  <Autocomplete.Item key={item.value} value={item}>
+                    {item.label}
+                  </Autocomplete.Item>
+                )}
+              </Autocomplete.List>
+            </Autocomplete.Popup>
+          </Autocomplete.Positioner>
+        </Autocomplete.Portal>
+      </Autocomplete.Root>
+    </div>
+  ),
+};
+
+export const LongList: Story = {
+  render: () => (
+    <div style={{ width: 300 }}>
+      <Autocomplete.Root
+        items={longFruits}
+        itemToStringValue={(item: Fruit) => item.label}
+      >
         <Autocomplete.Input placeholder="Search fruits..." />
         <Autocomplete.Portal>
           <Autocomplete.Positioner>

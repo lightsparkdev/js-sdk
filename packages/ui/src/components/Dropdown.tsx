@@ -1,6 +1,5 @@
-import type { CSSInterpolation } from "@emotion/css";
 import { css, useTheme } from "@emotion/react";
-import type { CSSObject } from "@emotion/styled";
+import type { CSSInterpolation } from "@emotion/serialize";
 import styled from "@emotion/styled";
 import type {
   ComponentProps,
@@ -116,9 +115,12 @@ type DropdownProps = {
   dropdownItemOffsetTop?: number;
   verticalPlacement?: "top" | "bottom";
   footer?: ReactNode | null;
-  getFooterCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
-  getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
-  getDropdownItemsCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSObject;
+  getFooterCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
+  getCSS?: ({ isOpen, theme }: DropdownGetProps) => CSSInterpolation;
+  getDropdownItemsCSS?: ({
+    isOpen,
+    theme,
+  }: DropdownGetProps) => CSSInterpolation;
   onOpen?: () => void;
   onClose?: () => void;
   isOpen?: boolean;
@@ -398,7 +400,7 @@ export function Dropdown({
 
   return (
     <div
-      css={{ position: "relative", display: "inline-flex", ...containerCSS }}
+      css={[{ position: "relative", display: "inline-flex" }, containerCSS]}
       ref={dropdownRef}
     >
       {buttonNode}
@@ -434,9 +436,7 @@ export function Dropdown({
               })}
               {dropdownContent}
               {footer && (
-                <DropdownFooter {...(footerCSS && { css: footerCSS })}>
-                  {footer}
-                </DropdownFooter>
+                <DropdownFooter customCSS={footerCSS}>{footer}</DropdownFooter>
               )}
             </DropdownItems>,
             nodeRef.current,
@@ -446,15 +446,11 @@ export function Dropdown({
   );
 }
 
-const DropdownFooter = styled.div<{ css?: CSSObject }>`
-  ${({ css, theme }) =>
-    css
-      ? css
-      : `
-    padding: 24px 16px 0;
-    border-top: 1px solid ${theme.c2Neutral};
-    margin-top: 16px;
-  `}
+const DropdownFooter = styled.div<{ customCSS?: CSSInterpolation }>`
+  padding: 24px 16px 0;
+  border-top: 1px solid ${({ theme }) => theme.c2Neutral};
+  margin-top: 16px;
+  ${({ customCSS }) => customCSS}
 `;
 
 type DropdownItemsProps = {
@@ -488,7 +484,7 @@ type DropdownItemProps = {
   dropdownButtonHeight: number;
   onClick?: () => void;
   getDropdownCss?:
-    | (({ isOpen, theme }: DropdownGetProps) => CSSObject)
+    | (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation)
     | undefined;
   getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
 };

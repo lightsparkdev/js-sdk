@@ -10,6 +10,7 @@ import {
   CapWithIconButton,
   WithText,
   WithButton,
+  WithIconOnlyButton,
   WithOutlineButton,
   WithSelectTrigger,
   WithOutlineSelectTrigger,
@@ -56,6 +57,14 @@ test.describe("InputGroup", () => {
 
     test("with button has no violations", async ({ mount, page }) => {
       await mount(<WithButton />);
+      const results = await new AxeBuilder({ page })
+        .options(axeConfig)
+        .analyze();
+      expect(results.violations).toEqual([]);
+    });
+
+    test("with icon-only button has no violations", async ({ mount, page }) => {
+      await mount(<WithIconOnlyButton />);
       const results = await new AxeBuilder({ page })
         .options(axeConfig)
         .analyze();
@@ -437,6 +446,46 @@ test.describe("InputGroup", () => {
         (el) => getComputedStyle(el).borderStyle,
       );
       expect(border).toBe("none");
+    });
+
+    test("icon-only button geometry works in root and Cap compositions", async ({
+      mount,
+      page,
+    }) => {
+      await mount(
+        <>
+          <WithIconOnlyButton />
+          <CapWithIconButton />
+          <WithButton />
+          <CapWithButton />
+        </>,
+      );
+      const roots = page.locator("[data-input-group]");
+      const directIconButton = roots
+        .nth(0)
+        .getByRole("button", { name: "Search" });
+      const capIconButton = roots
+        .nth(1)
+        .getByRole("button", { name: "Search" });
+      const directTextButton = roots
+        .nth(2)
+        .getByRole("button", { name: "Search" });
+      const capTextButton = roots.nth(3).getByRole("button", { name: "Copy" });
+
+      await expect(directIconButton).toHaveCSS("width", "24px");
+      await expect(directIconButton).toHaveCSS("height", "24px");
+      await expect(directIconButton).toHaveCSS("padding-left", "0px");
+      await expect(directIconButton).toHaveCSS("padding-right", "0px");
+      await expect(capIconButton).toHaveCSS("width", "24px");
+      await expect(capIconButton).toHaveCSS("height", "24px");
+      await expect(capIconButton).toHaveCSS("padding-left", "0px");
+      await expect(capIconButton).toHaveCSS("padding-right", "0px");
+      await expect(directTextButton).toHaveCSS("height", "24px");
+      await expect(directTextButton).toHaveCSS("padding-left", "8px");
+      await expect(directTextButton).toHaveCSS("padding-right", "8px");
+      await expect(capTextButton).toHaveCSS("height", "34px");
+      await expect(capTextButton).toHaveCSS("padding-left", "12px");
+      await expect(capTextButton).toHaveCSS("padding-right", "12px");
     });
 
     test("outline button has border and shadow", async ({ mount, page }) => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Combobox } from "./index";
+import { Combobox, type ComboboxClearProps } from "./index";
 
 const fruits = [
   "Apple",
@@ -11,6 +11,11 @@ const fruits = [
   "Fig",
   "Grape",
 ];
+
+const longFruits = Array.from(
+  { length: 40 },
+  (_, index) => `Fruit ${index + 1}`,
+);
 
 /** InputWrapper conformance - forwards props, ref, className */
 export function ConformanceInputWrapper(
@@ -48,15 +53,6 @@ export function ConformanceItemText(
           </Combobox.List>
         </Combobox.Popup>
       </Combobox.Positioner>
-    </Combobox.Root>
-  );
-}
-
-/** Value conformance - forwards props, ref, className */
-export function ConformanceValue(props: React.HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <Combobox.Root items={fruits} defaultValue="Apple">
-      <Combobox.Value data-testid="test-root" {...props} />
     </Combobox.Root>
   );
 }
@@ -108,6 +104,32 @@ export const TestCombobox = () => (
   </Combobox.Root>
 );
 
+export const TestComboboxLongList = () => (
+  <Combobox.Root items={longFruits}>
+    <Combobox.InputWrapper>
+      <Combobox.Input placeholder="Select a fruit..." />
+      <Combobox.ActionButtons>
+        <Combobox.Trigger aria-label="Open popup" />
+      </Combobox.ActionButtons>
+    </Combobox.InputWrapper>
+    <Combobox.Portal>
+      <Combobox.Positioner sideOffset={4}>
+        <Combobox.Popup data-testid="combobox-long-list-popup">
+          <Combobox.Empty />
+          <Combobox.List data-testid="combobox-long-list">
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                <Combobox.ItemIndicator />
+                <Combobox.ItemText>{item}</Combobox.ItemText>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Popup>
+      </Combobox.Positioner>
+    </Combobox.Portal>
+  </Combobox.Root>
+);
+
 export const TestComboboxMultiple = () => (
   <Combobox.Root items={fruits} multiple>
     <Combobox.InputWrapper>
@@ -115,6 +137,67 @@ export const TestComboboxMultiple = () => (
       <Combobox.ActionButtons>
         <Combobox.Trigger aria-label="Open popup" />
       </Combobox.ActionButtons>
+    </Combobox.InputWrapper>
+    <Combobox.Portal>
+      <Combobox.Positioner sideOffset={4}>
+        <Combobox.Popup>
+          <Combobox.Empty />
+          <Combobox.List>
+            {(item: string) => (
+              <Combobox.Item key={item} value={item}>
+                <Combobox.ItemIndicator />
+                <Combobox.ItemText>{item}</Combobox.ItemText>
+              </Combobox.Item>
+            )}
+          </Combobox.List>
+        </Combobox.Popup>
+      </Combobox.Positioner>
+    </Combobox.Portal>
+  </Combobox.Root>
+);
+
+export const TestComboboxChipPassThrough = () => (
+  <Combobox.Root items={fruits} multiple defaultValue={["Apple"]}>
+    <Combobox.InputWrapper>
+      <Combobox.Chips>
+        <Combobox.Value>
+          {(selectedValue: string[]) => (
+            <>
+              {selectedValue.map((item) => (
+                <Combobox.Chip key={item} data-testid="combobox-chip">
+                  <strong data-testid="chip-label-child">{item}</strong>
+                  <span data-testid="remove-wrapper">
+                    <Combobox.ChipRemove aria-label={`Remove ${item}`} />
+                  </span>
+                </Combobox.Chip>
+              ))}
+              <Combobox.Input placeholder="Select fruits..." />
+            </>
+          )}
+        </Combobox.Value>
+      </Combobox.Chips>
+    </Combobox.InputWrapper>
+  </Combobox.Root>
+);
+
+export const TestComboboxChipsHeight = () => (
+  <Combobox.Root items={fruits} multiple>
+    <Combobox.InputWrapper data-testid="chips-wrapper">
+      <Combobox.Chips>
+        <Combobox.Value>
+          {(selectedValue: string[]) => (
+            <>
+              {selectedValue.map((item) => (
+                <Combobox.Chip key={item}>
+                  {item}
+                  <Combobox.ChipRemove aria-label={`Remove ${item}`} />
+                </Combobox.Chip>
+              ))}
+              <Combobox.Input placeholder="Select fruits..." />
+            </>
+          )}
+        </Combobox.Value>
+      </Combobox.Chips>
     </Combobox.InputWrapper>
     <Combobox.Portal>
       <Combobox.Positioner sideOffset={4}>
@@ -261,12 +344,22 @@ export const TestComboboxWithGroups = () => (
   </Combobox.Root>
 );
 
-export const TestComboboxWithClear = () => (
+export const TestComboboxWithClear = ({
+  clearClassName,
+  visibility,
+}: {
+  clearClassName?: ComboboxClearProps["className"];
+  visibility?: ComboboxClearProps["visibility"];
+} = {}) => (
   <Combobox.Root items={fruits} defaultValue="Apple">
-    <Combobox.InputWrapper>
+    <Combobox.InputWrapper data-testid="combobox-clear-wrapper">
       <Combobox.Input placeholder="Select a fruit..." />
       <Combobox.ActionButtons>
-        <Combobox.Clear aria-label="Clear selection" />
+        <Combobox.Clear
+          aria-label="Clear selection"
+          className={clearClassName}
+          visibility={visibility}
+        />
         <Combobox.Trigger aria-label="Open popup" />
       </Combobox.ActionButtons>
     </Combobox.InputWrapper>
@@ -286,4 +379,11 @@ export const TestComboboxWithClear = () => (
       </Combobox.Positioner>
     </Combobox.Portal>
   </Combobox.Root>
+);
+
+export const TestComboboxWithClearClassNameCallback = () => (
+  <TestComboboxWithClear
+    clearClassName={(state) => (state.open ? "clear-open" : "clear-closed")}
+    visibility="always"
+  />
 );

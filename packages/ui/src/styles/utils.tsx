@@ -1,5 +1,5 @@
-import type { CSSInterpolation } from "@emotion/css";
 import { css } from "@emotion/react";
+import type { CSSInterpolation } from "@emotion/serialize";
 import { rootFontSizePx } from "./common.js";
 
 export function pxToRems<T extends boolean>(

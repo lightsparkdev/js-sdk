@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Item } from "./Item";
+import { Badge } from "@/components/Badge";
 import { CentralIcon } from "@/components/Icon";
 
 // Basic rendering
@@ -11,6 +12,16 @@ export function BasicItem() {
 
 export function ItemWithDescription() {
   return <Item title="Dark mode" description="Use system setting" />;
+}
+
+export function ItemWithLabel() {
+  return (
+    <Item
+      title="Jane Doe"
+      description="jane@example.com"
+      label={<Badge>Admin</Badge>}
+    />
+  );
 }
 
 // Slots
@@ -39,6 +50,39 @@ export function ItemWithBothSlots() {
       description="Manage your preferences"
       leading={<CentralIcon name="IconSettingsGear1" size={24} />}
       trailing={<CentralIcon name="IconChevronRightSmall" size={20} />}
+    />
+  );
+}
+
+// Sizes
+export function CompactItem() {
+  return (
+    <Item title="Payment received" description="2 minutes ago" size="compact" />
+  );
+}
+
+export function DefaultSizeItem() {
+  return <Item title="Payment received" description="2 minutes ago" />;
+}
+
+export function CompactItemWithLabel() {
+  return (
+    <Item
+      title="Jane Doe"
+      description="jane@example.com"
+      label={<Badge>Admin</Badge>}
+      size="compact"
+    />
+  );
+}
+
+export function CompactItemAsLink() {
+  return (
+    <Item
+      title="Payment received"
+      description="2 minutes ago"
+      size="compact"
+      render={<a href="#details" />}
     />
   );
 }

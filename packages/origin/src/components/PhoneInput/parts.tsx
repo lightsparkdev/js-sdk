@@ -5,6 +5,7 @@ import {
   Select as BaseSelect,
   type SelectRootProps,
 } from "@base-ui/react/select";
+import { Field as BaseField } from "@base-ui/react/field";
 import { Input as BaseInput } from "@base-ui/react/input";
 import { CentralIcon } from "../Icon";
 import clsx from "clsx";
@@ -91,13 +92,30 @@ export function CountrySelect<Value>({
   disabled: selectDisabled,
   ...props
 }: CountrySelectProps<Value>) {
-  const { disabled: rootDisabled } = usePhoneInputContext();
+  const { disabled: rootDisabled, invalid } = usePhoneInputContext();
   const isDisabled = selectDisabled ?? rootDisabled;
 
+  /* The nested Field.Root is a field boundary, not a visual element
+     (display: contents). Base UI allows one control per Field: without the
+     boundary, a Field.Root wrapped around the whole phone input adopts the
+     phone <Input>'s name and the Select's hidden serialization input
+     inherits it, submitting a second (earlier-in-DOM) entry under the phone
+     field's name. Inside the boundary the hidden input only gets a name
+     when the consumer passes `name` to CountrySelect.
+
+     The boundary also blocks the outer field's disabled/invalid context, so
+     PhoneInput's own state is re-threaded into the nested field to keep the
+     trigger's disabled behavior and aria-invalid intact. */
   return (
-    <BaseSelect.Root disabled={isDisabled} {...props}>
-      {children}
-    </BaseSelect.Root>
+    <BaseField.Root
+      className={styles.countryField}
+      disabled={isDisabled}
+      invalid={invalid}
+    >
+      <BaseSelect.Root disabled={isDisabled} {...props}>
+        {children}
+      </BaseSelect.Root>
+    </BaseField.Root>
   );
 }
 
@@ -288,6 +306,30 @@ export const CountryItemIndicator = React.forwardRef<
     >
       {children ?? <span className={styles.itemIndicatorDot} />}
     </BaseSelect.ItemIndicator>
+  );
+});
+
+// LockedCountry - static leading cap rendered in place of CountrySelect when
+// the country cannot be changed. Not a select: no combobox in the DOM, not
+// focusable, no popup. The flag/dial-code content is real text content and
+// stays visible to assistive technology.
+// Unlike CountrySelect, this part serializes nothing into form data; consumers
+// that need the locked country in native form submissions should add their own
+// hidden input.
+export interface LockedCountryProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+
+export const LockedCountry = React.forwardRef<
+  HTMLDivElement,
+  LockedCountryProps
+>(function LockedCountry({ className, ...props }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={clsx(styles.locked, className)}
+      data-phone-input-locked=""
+      {...props}
+    />
   );
 });
 

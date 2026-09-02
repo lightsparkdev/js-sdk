@@ -209,7 +209,7 @@ export const SidePanel: StoryObj = {
                     alignItems: "center",
                     padding: "var(--spacing-md) var(--spacing-xl)",
                     borderBottom:
-                      "var(--stroke-xs) solid var(--border-primary)",
+                      "var(--stroke-xs) solid var(--border-overlay)",
                   }}
                 >
                   <span
@@ -296,7 +296,7 @@ export const Panel: StoryObj = {
                 style={
                   {
                     "--drawer-margin": "var(--spacing-xs)",
-                    "--drawer-surface": "var(--surface-primary)",
+                    "--drawer-surface": "var(--surface-overlay)",
                     "--drawer-radius": "var(--corner-radius-md)",
                   } as React.CSSProperties
                 }
@@ -308,7 +308,7 @@ export const Panel: StoryObj = {
                     alignItems: "center",
                     padding: "var(--spacing-md) var(--spacing-xl)",
                     borderBottom:
-                      "var(--stroke-xs) solid var(--border-primary)",
+                      "var(--stroke-xs) solid var(--border-overlay)",
                   }}
                 >
                   <span
@@ -491,7 +491,7 @@ export const LeftPanel: StoryObj = {
                     alignItems: "center",
                     padding: "var(--spacing-md) var(--spacing-xl)",
                     borderBottom:
-                      "var(--stroke-xs) solid var(--border-primary)",
+                      "var(--stroke-xs) solid var(--border-overlay)",
                   }}
                 >
                   <span
@@ -902,7 +902,7 @@ export const CustomWidth: StoryObj = {
                     alignItems: "center",
                     padding: "var(--spacing-md) var(--spacing-xl)",
                     borderBottom:
-                      "var(--stroke-xs) solid var(--border-primary)",
+                      "var(--stroke-xs) solid var(--border-overlay)",
                   }}
                 >
                   <span
@@ -1291,7 +1291,7 @@ export const ActionSheet: StoryObj = {
                           borderRadius: 0,
                           borderTop:
                             i > 0
-                              ? "var(--stroke-xs) solid var(--border-primary)"
+                              ? "var(--stroke-xs) solid var(--border-overlay)"
                               : "none",
                           justifyContent: "center",
                         }}

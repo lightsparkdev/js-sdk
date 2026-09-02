@@ -12,7 +12,8 @@ export type InteractionType =
   | "select"
   | "expand"
   | "collapse"
-  | "sort";
+  | "sort"
+  | "intersect";
 
 export interface InteractionInfo {
   name: string;

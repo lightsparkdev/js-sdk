@@ -10,17 +10,23 @@
 }
 
 .popup {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4xs);
   padding: var(--spacing-3xs);
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  max-height: min(23rem, var(--available-height));
+  max-width: var(--available-width);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
-  overflow: hidden;
-  min-width: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-padding-block: var(--spacing-3xs);
+  min-width: min(200px, var(--available-width));
   transform-origin: var(--transform-origin);
   transition:
     opacity 150ms ease,
@@ -37,18 +43,31 @@
   }
 }
 
-.item {
+.item,
+.checkboxItem,
+.radioItem,
+.submenuTrigger {
   @include body;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  height: 36px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  @include smooth-corners(var(--corner-radius-xs));
+  flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 36px;
   color: var(--text-primary);
   cursor: pointer;
   outline: none;
+  overflow-wrap: anywhere;
   user-select: none;
+}
+
+.item,
+.checkboxItem,
+.radioItem {
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  @include smooth-corners(var(--corner-radius-xs));
 
   &[data-highlighted] {
     background-color: var(--surface-hover);
@@ -60,27 +79,9 @@
   }
 }
 
-.checkboxItem {
-  @include body;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  height: 36px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  @include smooth-corners(var(--corner-radius-xs));
-  color: var(--text-primary);
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-
-  &[data-highlighted] {
-    background-color: var(--surface-hover);
-  }
-
-  &[data-disabled] {
-    opacity: calc(var(--opacity-50) / 100);
-    cursor: not-allowed;
-  }
+.itemText {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .checkboxIndicator {
@@ -115,29 +116,6 @@
   flex-direction: column;
 }
 
-.radioItem {
-  @include body;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  height: 36px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  @include smooth-corners(var(--corner-radius-xs));
-  color: var(--text-primary);
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-
-  &[data-highlighted] {
-    background-color: var(--surface-hover);
-  }
-
-  &[data-disabled] {
-    opacity: calc(var(--opacity-50) / 100);
-    cursor: not-allowed;
-  }
-}
-
 .radioIndicator {
   display: flex;
   align-items: center;
@@ -169,13 +147,14 @@
     left: 0;
     right: 0;
     height: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-overlay);
   }
 }
 
 .group {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .groupLabel {
@@ -187,23 +166,16 @@
   padding-block-end: 0;
   padding-inline: var(--spacing-sm);
   color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .submenuTrigger {
-  @include body;
-  display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: var(--spacing-xs);
-  height: 36px;
   padding-block: var(--spacing-xs);
   padding-inline-start: var(--spacing-sm);
   padding-inline-end: var(--spacing-3xs);
   @include smooth-corners(var(--corner-radius-xs));
-  color: var(--text-primary);
-  cursor: pointer;
-  outline: none;
-  user-select: none;
 
   &[data-highlighted] {
     background-color: var(--surface-hover);
@@ -218,18 +190,17 @@
     cursor: not-allowed;
   }
 
-  // Arrow icon should be text-secondary
-  > svg:last-child,
-  > [data-icon]:last-child {
-    color: var(--text-secondary);
+  // Figma spec: trailing chevron uses icon-secondary
+  > svg:last-child {
+    color: var(--icon-secondary);
     flex-shrink: 0;
   }
 }
 
 .arrow {
   display: flex;
-  fill: var(--surface-primary);
-  stroke: var(--border-primary);
+  fill: var(--surface-overlay);
+  stroke: var(--border-overlay);
   stroke-width: var(--stroke-xs);
 }
 

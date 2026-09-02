@@ -129,7 +129,7 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  color: var(--text-inverse);
+  color: var(--text-on-color);
   text-align: center;
   font-weight: var(--font-weight-book);
   transition: opacity 200ms ease;
@@ -141,31 +141,31 @@
   // Typography scales with avatar size
   .size16 & {
     @include label-xs;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 
   .size20 & {
     @include label-sm;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 
   .size24 & {
     @include label-sm;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 
   .size32 & {
     @include label-sm;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 
   .size40 & {
     @include label;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 
   .size48 & {
     @include label-lg;
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }

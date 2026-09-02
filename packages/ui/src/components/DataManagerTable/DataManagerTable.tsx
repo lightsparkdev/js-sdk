@@ -2,14 +2,16 @@ import styled from "@emotion/styled";
 import {
   Fragment,
   useEffect,
+  useRef,
   useState,
   type ComponentProps,
   type Dispatch,
+  type ReactElement,
   type SetStateAction,
 } from "react";
 
-import { type CSSInterpolation } from "@emotion/css";
 import { css } from "@emotion/react";
+import { type CSSInterpolation } from "@emotion/serialize";
 import { CurrencyUnit, ensureArray } from "@lightsparkdev/core";
 import { useSearchParams } from "react-router-dom";
 import { type useClipboard } from "../../hooks/useClipboard.js";
@@ -64,20 +66,32 @@ import {
 import { type FilterState } from "./Filter.js";
 import {
   FilterType,
+  isValidNumberFilterValue,
   type Filter,
+  type IdFilter as IdFilterType,
   type StringFilter as StringFilterType,
 } from "./filters.js";
 import {
-  IdFilter,
   getDefaultIdFilterState,
+  IdFilter,
   isIdFilterState,
   type IdFilterState,
 } from "./IdFilter.js";
+import {
+  getDefaultInputObjectFilterState,
+  InputObjectFilter,
+  type InputObjectFilterState,
+} from "./InputObjectFilter.js";
+import {
+  getDefaultNumberFilterState,
+  NumberFilter,
+  type NumberFilterState,
+} from "./NumberFilter.js";
 import { PillFilter } from "./PillFilter.js";
 import {
-  StringFilter,
   getDefaultStringFilterState,
   isStringFilterState,
+  StringFilter,
   type StringFilterState,
 } from "./StringFilter.js";
 
@@ -94,6 +108,10 @@ interface FilterOptions<
   ) => QueryVariablesType;
   refetch: (fetchVariables: QueryVariablesType) => Promise<QueryResultType>;
   initialQueryVariables: QueryVariablesType;
+  initialFilterStates?: DataManagerTableState<T> | undefined;
+  onAppliedFilterStatesChange?:
+    | ((filterStates: DataManagerTableState<T>) => void)
+    | undefined;
   /**
    * Called when a filter state changes.
    * Use setFilterStates to modify other filters (e.g., for mutual exclusivity).
@@ -112,7 +130,8 @@ interface ShowMoreOptions<QueryVariablesType, QueryResultType> {
   pageSizeVariables?: string[] | undefined;
 }
 
-interface CustomDataManagerTableComponents extends CustomTableComponents {
+interface CustomDataManagerTableComponents<T extends Record<string, unknown>>
+  extends CustomTableComponents {
   filterContainerComponent?: React.ComponentType<
     React.ComponentProps<typeof DataManagerTableFilterContainer>
   >;
@@ -123,6 +142,9 @@ interface CustomDataManagerTableComponents extends CustomTableComponents {
     React.ComponentProps<typeof TextInput>
   >;
   customCalendarCss?: CSSInterpolation | undefined;
+  filterControlsComponent?: React.ComponentType<
+    DataManagerTableFilterControlsProps<T>
+  >;
 }
 
 export type DataManagerTableProps<
@@ -131,6 +153,8 @@ export type DataManagerTableProps<
   QueryResultType,
 > = TableProps<T> & {
   pageSizes: number[];
+  initialPageSize?: number | undefined;
+  onPageSizeChange?: ((pageSize: number) => void) | undefined;
   nextPageCursor?: string | null | undefined;
   resultCount?: number | undefined;
   isFullCount?: boolean | undefined;
@@ -145,13 +169,13 @@ export type DataManagerTableProps<
     | FilterOptions<T, QueryVariablesType, QueryResultType>
     | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
-  header?: JSX.Element;
+  header?: ReactElement;
   cardPageFullWidth?: boolean | undefined;
   cardPageMt?: number;
   filterDropdownAlign?: "left" | "right" | "center";
   filterButtonProps?: ComponentProps<typeof Button>;
   filterEditorStyle?: "default" | "pills";
-  customComponents?: CustomDataManagerTableComponents;
+  customComponents?: CustomDataManagerTableComponents<T>;
   paginationDisplayOptions?:
     | {
         showPaginationPreviousNext?: boolean | undefined;
@@ -161,6 +185,7 @@ export type DataManagerTableProps<
     | undefined;
   minHeight?: number | undefined;
   enableURLFilters?: boolean | undefined;
+  urlFilterNamespace?: string | undefined;
   refetchOnPropsChange?: (string | number | boolean)[] | undefined;
   showFooter?: boolean | undefined;
 };
@@ -169,6 +194,17 @@ export type DataManagerTableState<T extends Record<string, unknown>> = Record<
   keyof T,
   FilterState
 >;
+
+export type DataManagerTableFilterControlsProps<
+  T extends Record<string, unknown>,
+> = {
+  filters: Filter<T>[];
+  filterStates: DataManagerTableState<T>;
+  onBeginFilter: (filter: Filter<T>) => void;
+  onCommitFilter: (filter: Filter<T>, state: FilterState) => void;
+  onRemoveFilter: (filter: Filter<T>) => void;
+  onClearFilters: () => void;
+};
 
 function getDefaultFilterState<T extends Record<string, unknown>>(
   filter: Filter<T>,
@@ -181,11 +217,15 @@ function getDefaultFilterState<T extends Record<string, unknown>>(
     case FilterType.STRING:
       return getDefaultStringFilterState();
     case FilterType.ID:
-      return getDefaultIdFilterState(filter.allowedEntities);
+      return getDefaultIdFilterState(filter.allowedEntities, filter.validation);
     case FilterType.BOOLEAN:
       return getDefaultBooleanFilterState();
     case FilterType.CURRENCY:
       return getDefaultCurrencyFilterState();
+    case FilterType.NUMBER:
+      return getDefaultNumberFilterState();
+    case FilterType.INPUT_OBJECT:
+      return getDefaultInputObjectFilterState();
     default:
       throw new Error("Invalid filter type");
   }
@@ -215,21 +255,29 @@ type PageCursorState = {
   };
 };
 
+function getAfterCursor(queryVariables: unknown) {
+  return queryVariables && typeof queryVariables === "object"
+    ? (queryVariables as { after?: unknown }).after
+    : undefined;
+}
+
 // Utility functions for URL state management
 function saveFiltersToURL<T extends Record<string, unknown>>(
   searchParams: URLSearchParams,
   filters: Filter<T>[],
   filterStates: DataManagerTableState<T>,
   currentPage: number,
+  namespace?: string,
 ): URLSearchParams {
   // Clear all existing filter-related params first
   filters.forEach((filter) => {
-    searchParams.delete(String(filter.accessorKey));
+    searchParams.delete(getURLFilterKey(filter, namespace));
   });
 
   // Set new filter values based on filter accessorKeys
   filters.forEach((filter) => {
     const filterState = filterStates[filter.accessorKey];
+    const urlKey = getURLFilterKey(filter, namespace);
     if (filterState && filterState.isApplied) {
       if (
         filter.type === FilterType.STRING ||
@@ -239,22 +287,23 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
         const appliedValues = (
           filterState as StringFilterState | EnumFilterState | IdFilterState
         ).appliedValues;
-        searchParams.set(
-          String(filter.accessorKey),
-          appliedValues?.join(",") || "",
-        );
+        if (appliedValues?.length) {
+          searchParams.set(urlKey, appliedValues.join(","));
+        }
       } else if (filter.type === FilterType.BOOLEAN) {
-        const appliedValue = (filterState as BooleanFilterState).value || "";
-        searchParams.set(String(filter.accessorKey), String(appliedValue));
+        const appliedValue = (filterState as BooleanFilterState).value;
+        if (appliedValue !== undefined) {
+          searchParams.set(urlKey, String(appliedValue));
+        }
       } else if (filter.type === FilterType.DATE) {
         const dateFilter = filterState as DateFilterState;
-        // For date filters, save both start and end dates
         const startStr = dateFilter.start ? dateFilter.start.toISOString() : "";
         const endStr = dateFilter.end ? dateFilter.end.toISOString() : "";
-        searchParams.set(String(filter.accessorKey), `${startStr},${endStr}`);
+        if (startStr || endStr) {
+          searchParams.set(urlKey, `${startStr},${endStr}`);
+        }
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = filterState as CurrencyFilterState;
-        // For currency filters, we'll save a simple representation
         const minValue = currencyFilter.min_amount?.value;
         const maxValue = currencyFilter.max_amount?.value;
         if (minValue !== undefined || maxValue !== undefined) {
@@ -264,7 +313,17 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
               : minValue !== undefined
               ? `>${minValue}`
               : `<${maxValue}`;
-          searchParams.set(String(filter.accessorKey), currencyValue);
+          searchParams.set(urlKey, currencyValue);
+        }
+      } else if (filter.type === FilterType.NUMBER) {
+        const value = (filterState as NumberFilterState).value;
+        if (value) {
+          searchParams.set(urlKey, value);
+        }
+      } else if (filter.type === FilterType.INPUT_OBJECT) {
+        const values = (filterState as InputObjectFilterState).values;
+        if (Object.values(values).some((fieldValues) => fieldValues.length)) {
+          searchParams.set(urlKey, JSON.stringify(values));
         }
       }
     }
@@ -276,13 +335,13 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
 function loadFiltersFromURL<T extends Record<string, unknown>>(
   searchParams: URLSearchParams,
   filters: Filter<T>[],
-  currentFilterStates: DataManagerTableState<T>,
+  namespace?: string,
 ): DataManagerTableState<T> {
-  const newFilterStates = { ...currentFilterStates };
+  const newFilterStates = initialFilterState(filters);
 
   // Update each filter based on URL params
   filters.forEach((filter) => {
-    const paramValue = searchParams.get(String(filter.accessorKey));
+    const paramValue = searchParams.get(getURLFilterKey(filter, namespace));
 
     if (paramValue !== null && paramValue !== undefined && paramValue !== "") {
       // URL has a value for this filter
@@ -290,8 +349,7 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         const stringFilter = newFilterStates[
           filter.accessorKey
         ] as StringFilterState;
-        // Handle comma-separated values for multi-value filters
-        const appliedValues = paramValue.includes(",")
+        const appliedValues = filter.isMulti
           ? paramValue.split(",").filter((v) => v.trim() !== "")
           : [paramValue];
         newFilterStates[filter.accessorKey] = {
@@ -303,36 +361,58 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         const enumFilter = newFilterStates[
           filter.accessorKey
         ] as EnumFilterState;
-        // Handle comma-separated values for multi-value filters
-        const appliedValues = paramValue.includes(",")
-          ? paramValue.split(",").filter((v) => v.trim() !== "")
-          : [paramValue];
-        newFilterStates[filter.accessorKey] = {
-          ...enumFilter,
-          appliedValues,
-          isApplied: true,
-        } as EnumFilterState;
+        const candidateValues = paramValue
+          .split(",")
+          .filter((value) => value.trim() !== "");
+        const allowedValues = new Set(
+          filter.enumValues.flatMap((option) => ensureArray(option.value)),
+        );
+        const matchingScalarOption = filter.enumValues.find((option) => {
+          const optionValues = ensureArray(option.value);
+          return (
+            optionValues.length === candidateValues.length &&
+            optionValues.every((value) => candidateValues.includes(value))
+          );
+        });
+        const appliedValues = filter.isMulti
+          ? candidateValues.filter((value) => allowedValues.has(value))
+          : matchingScalarOption
+          ? ensureArray(matchingScalarOption.value)
+          : [];
+        if (appliedValues.length) {
+          newFilterStates[filter.accessorKey] = {
+            ...enumFilter,
+            appliedValues,
+            isApplied: true,
+          } as EnumFilterState;
+        }
       } else if (filter.type === FilterType.ID) {
         const idFilter = newFilterStates[filter.accessorKey] as IdFilterState;
-        // Handle comma-separated values for multi-value filters
-        const appliedValues = paramValue.includes(",")
+        const candidateValues = filter.isMulti
           ? paramValue.split(",").filter((v) => v.trim() !== "")
           : [paramValue];
-        newFilterStates[filter.accessorKey] = {
-          ...idFilter,
-          appliedValues,
-          isApplied: true,
-        } as IdFilterState;
+        const appliedValues = candidateValues.flatMap((value) => {
+          const normalizedValue = normalizeURLIdValue(value, filter);
+          return normalizedValue === null ? [] : [normalizedValue];
+        });
+        if (appliedValues.length) {
+          newFilterStates[filter.accessorKey] = {
+            ...idFilter,
+            appliedValues,
+            isApplied: true,
+          } as IdFilterState;
+        }
       } else if (filter.type === FilterType.BOOLEAN) {
         const booleanFilter = newFilterStates[
           filter.accessorKey
         ] as BooleanFilterState;
-        const boolValue = paramValue === "true";
-        newFilterStates[filter.accessorKey] = {
-          ...booleanFilter,
-          value: boolValue,
-          isApplied: true,
-        } as BooleanFilterState;
+        if (paramValue === "true" || paramValue === "false") {
+          newFilterStates[filter.accessorKey] = {
+            ...booleanFilter,
+            value: paramValue === "true",
+            isApplied: true,
+          } as BooleanFilterState;
+        }
       } else if (filter.type === FilterType.DATE) {
         const dateFilter = newFilterStates[
           filter.accessorKey
@@ -340,77 +420,194 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         // Parse start and end dates from comma-separated ISO strings
         if (paramValue.includes(",")) {
           const [startStr, endStr] = paramValue.split(",");
-          const startDate = startStr ? new Date(startStr) : null;
-          const endDate = endStr ? new Date(endStr) : null;
-          const isValidParams =
-            (startDate && !isNaN(startDate.getTime())) ||
-            (endDate && !isNaN(endDate.getTime()));
-          newFilterStates[filter.accessorKey] = {
-            ...dateFilter,
-            start: isValidParams ? startDate : null,
-            end: isValidParams ? endDate : null,
-            isApplied: true,
-          } as DateFilterState;
+          const parsedStart = startStr ? new Date(startStr) : null;
+          const parsedEnd = endStr ? new Date(endStr) : null;
+          const startDate =
+            parsedStart && !isNaN(parsedStart.getTime()) ? parsedStart : null;
+          const endDate =
+            parsedEnd && !isNaN(parsedEnd.getTime()) ? parsedEnd : null;
+          const isOrderedRange =
+            !startDate || !endDate || startDate.getTime() <= endDate.getTime();
+          if ((startDate || endDate) && isOrderedRange) {
+            newFilterStates[filter.accessorKey] = {
+              ...dateFilter,
+              start: startDate,
+              end: endDate,
+              isApplied: true,
+            } as DateFilterState;
+          }
         } else {
           // Single date value (no comma)
           const dateValue = new Date(paramValue);
-          newFilterStates[filter.accessorKey] = {
-            ...dateFilter,
-            start: !isNaN(dateValue.getTime()) ? dateValue : null,
-            end: null,
-            isApplied: true,
-          } as DateFilterState;
+          if (!isNaN(dateValue.getTime())) {
+            newFilterStates[filter.accessorKey] = {
+              ...dateFilter,
+              start: dateValue,
+              end: null,
+              isApplied: true,
+            } as DateFilterState;
+          }
         }
       } else if (filter.type === FilterType.CURRENCY) {
         const currencyFilter = newFilterStates[
           filter.accessorKey
         ] as CurrencyFilterState;
-        // Parse currency range from string like "100-200", ">100", "<200"
-        if (paramValue.includes("-")) {
-          const [min, max] = paramValue.split("-").map((v) => parseInt(v));
-          const isValidParams = !isNaN(min) && !isNaN(max);
-          newFilterStates[filter.accessorKey] = {
-            ...currencyFilter,
-            min_amount: isValidParams
-              ? { value: min, unit: CurrencyUnit.SATOSHI }
-              : null,
-            max_amount: isValidParams
-              ? { value: max, unit: CurrencyUnit.SATOSHI }
-              : null,
-            isApplied: true,
-          } as CurrencyFilterState;
-        } else if (paramValue.startsWith(">")) {
-          const min = parseInt(paramValue.substring(1));
-          newFilterStates[filter.accessorKey] = {
-            ...currencyFilter,
-            min_amount: !isNaN(min)
-              ? { value: min, unit: CurrencyUnit.SATOSHI }
-              : null,
-            max_amount: null,
-            isApplied: true,
-          } as CurrencyFilterState;
+        if (paramValue.startsWith(">")) {
+          const min = parseSafeInteger(paramValue.substring(1));
+          if (min !== null) {
+            newFilterStates[filter.accessorKey] = {
+              ...currencyFilter,
+              min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
+              max_amount: null,
+              isApplied: true,
+            } as CurrencyFilterState;
+          }
         } else if (paramValue.startsWith("<")) {
-          const max = parseInt(paramValue.substring(1));
+          const max = parseSafeInteger(paramValue.substring(1));
+          if (max !== null) {
+            newFilterStates[filter.accessorKey] = {
+              ...currencyFilter,
+              min_amount: null,
+              max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
+              isApplied: true,
+            } as CurrencyFilterState;
+          }
+        } else {
+          const range = paramValue.match(/^(-?\d+)-(-?\d+)$/);
+          if (range) {
+            const min = parseSafeInteger(range[1]);
+            const max = parseSafeInteger(range[2]);
+            if (min !== null && max !== null && min <= max) {
+              newFilterStates[filter.accessorKey] = {
+                ...currencyFilter,
+                min_amount: { value: min, unit: CurrencyUnit.SATOSHI },
+                max_amount: { value: max, unit: CurrencyUnit.SATOSHI },
+                isApplied: true,
+              } as CurrencyFilterState;
+            }
+          }
+        }
+      } else if (filter.type === FilterType.NUMBER) {
+        if (isValidNumberFilterValue(paramValue, filter)) {
           newFilterStates[filter.accessorKey] = {
-            ...currencyFilter,
-            min_amount: null,
-            max_amount: !isNaN(max)
-              ? { value: max, unit: CurrencyUnit.SATOSHI }
-              : null,
+            ...(newFilterStates[filter.accessorKey] as NumberFilterState),
+            value: paramValue,
             isApplied: true,
-          } as CurrencyFilterState;
+          } as NumberFilterState;
+        }
+      } else if (filter.type === FilterType.INPUT_OBJECT) {
+        try {
+          const values = JSON.parse(paramValue) as unknown;
+          if (values && typeof values === "object" && !Array.isArray(values)) {
+            const sanitizedValues = Object.fromEntries(
+              filter.fields.flatMap((field) => {
+                const fieldValues = (values as Record<string, unknown>)[
+                  field.name
+                ];
+                if (!Array.isArray(fieldValues)) return [];
+                const allowedValues = new Set(
+                  field.enumValues.flatMap((option) =>
+                    ensureArray(option.value),
+                  ),
+                );
+                const validValues = fieldValues.filter(
+                  (value): value is string =>
+                    typeof value === "string" && allowedValues.has(value),
+                );
+                if (!validValues.length) return [];
+                return [
+                  [
+                    field.name,
+                    field.isMulti ? validValues : validValues.slice(0, 1),
+                  ],
+                ];
+              }),
+            );
+            if (Object.keys(sanitizedValues).length) {
+              newFilterStates[filter.accessorKey] = {
+                ...(newFilterStates[
+                  filter.accessorKey
+                ] as InputObjectFilterState),
+                values: sanitizedValues,
+                isApplied: true,
+              } as InputObjectFilterState;
+            }
+          }
+        } catch {
+          newFilterStates[filter.accessorKey] =
+            getDefaultInputObjectFilterState();
         }
       }
-    } else {
-      const isKeyInURL = searchParams.has(String(filter.accessorKey));
-      newFilterStates[filter.accessorKey] = {
-        ...getDefaultFilterState(filter),
-        isApplied: isKeyInURL,
-      };
     }
   });
 
   return newFilterStates;
+}
+
+export function serializeDataManagerTableFilterStates<
+  T extends Record<string, unknown>,
+>(filters: Filter<T>[], filterStates: DataManagerTableState<T>) {
+  return saveFiltersToURL(
+    new URLSearchParams(),
+    filters,
+    filterStates,
+    1,
+  ).toString();
+}
+
+export function deserializeDataManagerTableFilterStates<
+  T extends Record<string, unknown>,
+>(filters: Filter<T>[], serializedState: string, namespace?: string) {
+  return loadFiltersFromURL(
+    new URLSearchParams(serializedState),
+    filters,
+    namespace,
+  );
+}
+
+function getURLFilterKey<T extends Record<string, unknown>>(
+  filter: Filter<T>,
+  namespace?: string,
+) {
+  const accessorKey = String(filter.accessorKey);
+  return namespace ? `${namespace}.${accessorKey}` : accessorKey;
+}
+
+function getURLFilterSignature<T extends Record<string, unknown>>(
+  searchParams: URLSearchParams,
+  filters: Filter<T>[],
+  namespace?: string,
+) {
+  return JSON.stringify(
+    filters.map((filter) => {
+      const key = getURLFilterKey(filter, namespace);
+      return [key, searchParams.get(key)];
+    }),
+  );
+}
+
+function parseSafeInteger(value: string) {
+  const numericValue = Number(value);
+  return /^-?\d+$/.test(value) && Number.isSafeInteger(numericValue)
+    ? numericValue
+    : null;
+}
+
+function normalizeURLIdValue<T extends Record<string, unknown>>(
+  value: string,
+  filter: IdFilterType<T>,
+) {
+  if ((filter.validation ?? "uuid") === "none") return value;
+
+  const entityPrefix = filter.allowedEntities?.find((entity) =>
+    value.startsWith(`${entity}:`),
+  );
+  const uuid = entityPrefix ? value.slice(entityPrefix.length + 1) : value;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    uuid,
+  )
+    ? uuid
+    : null;
 }
 
 export function DataManagerTable<
@@ -419,6 +616,15 @@ export function DataManagerTable<
   QueryResultType,
 >(props: DataManagerTableProps<T, QueryVariablesType, QueryResultType>) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const urlFilterSignature =
+    props.filterOptions && props.enableURLFilters
+      ? getURLFilterSignature(
+          searchParams,
+          props.filterOptions.filters,
+          props.urlFilterNamespace,
+        )
+      : "";
+  const locallyAppliedURLSignatureRef = useRef<string | null>(null);
   const isCardPageFullWidth =
     typeof props.cardPageFullWidth === "boolean"
       ? props.cardPageFullWidth
@@ -437,48 +643,124 @@ export function DataManagerTable<
   const showFooter =
     typeof props.showFooter === "boolean" ? props.showFooter : true;
   const breakPoint = useBreakpoints();
-  const [pageSize, setPageSize] = useState<number>(props.pageSizes?.[0] || 20);
+  const [pageSize, setPageSize] = useState<number>(() => {
+    const defaultPageSize = props.pageSizes?.[0] || 20;
+    return props.initialPageSize !== undefined &&
+      props.pageSizes.includes(props.initialPageSize)
+      ? props.initialPageSize
+      : defaultPageSize;
+  });
   const [pageCursorState, setPageCursorState] = useState<PageCursorState>({
     startResult: undefined,
     nextPageCursor: props.nextPageCursor,
     cursorCache: {},
   });
-  const [isLoading, setIsLoading] = useState<boolean>(props.loading || false);
+  const [isRefetching, setIsRefetching] = useState(false);
+  const [awaitingPaginationResetResult, setAwaitingPaginationResetResult] =
+    useState(false);
+  const latestRefetchGeneration = useRef(0);
+  const isLoading = Boolean(props.loading) || isRefetching;
   const [hasLoadedFiltersFromURL, setHasLoadedFiltersFromURL] =
     useState<boolean>(false);
-  const [numFiltersApplied, setNumFiltersApplied] = useState<number>(0);
   const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
     props.filterOptions
-      ? initialFilterState(props.filterOptions.filters)
+      ? props.filterOptions.initialFilterStates ??
+          initialFilterState(props.filterOptions.filters)
       : ({} as DataManagerTableState<T>),
   );
+  const [numFiltersApplied, setNumFiltersApplied] = useState<number>(() =>
+    Object.values(filterStates).reduce(
+      (count, state) => count + (state.isApplied ? 1 : 0),
+      0,
+    ),
+  );
+  const filterStatesRef = useRef(filterStates);
+  filterStatesRef.current = filterStates;
+  const updateFilterStates = (
+    updater: SetStateAction<DataManagerTableState<T>>,
+  ) => {
+    const newStates =
+      typeof updater === "function"
+        ? updater(filterStatesRef.current)
+        : updater;
+    filterStatesRef.current = newStates;
+    setFilterStates(newStates);
+    return newStates;
+  };
   const [fetchVariables, setFetchVariables] = useState<QueryVariablesType>(
     props.filterOptions?.initialQueryVariables || ({} as QueryVariablesType),
   );
+  const [successfulAfterCursor, setSuccessfulAfterCursor] = useState(() =>
+    getAfterCursor(
+      props.filterOptions?.initialQueryVariables ??
+        props.showMoreOptions?.initialQueryVariables,
+    ),
+  );
+
+  function resetPagination() {
+    setAwaitingPaginationResetResult(true);
+    setPageCursorState({
+      startResult: undefined,
+      nextPageCursor: undefined,
+      cursorCache: {},
+    });
+  }
+
+  async function refetchLatest(
+    refetch: (fetchVariables: QueryVariablesType) => Promise<QueryResultType>,
+    newFetchVariables: QueryVariablesType,
+  ) {
+    const generation = latestRefetchGeneration.current + 1;
+    latestRefetchGeneration.current = generation;
+    setIsRefetching(true);
+    try {
+      const result = await refetch(newFetchVariables);
+      if (latestRefetchGeneration.current === generation) {
+        setSuccessfulAfterCursor(getAfterCursor(newFetchVariables));
+        setAwaitingPaginationResetResult(false);
+        setIsRefetching(false);
+      }
+      return result;
+    } catch (error) {
+      if (latestRefetchGeneration.current === generation) {
+        setIsRefetching(false);
+      }
+      throw error;
+    }
+  }
+
+  function runAsyncAction(action: Promise<unknown>) {
+    void action.catch(() => undefined);
+  }
 
   const DropdownComponent =
     props.customComponents?.dropdownComponent || Dropdown;
 
   const isSm = breakPoint.isSm();
 
-  useEffect(() => {
-    setIsLoading(Boolean(props.loading));
-  }, [props.loading]);
-
   // Sync filter states with URL query parameters
   useEffect(() => {
     if (!props.filterOptions || !props.enableURLFilters) return;
 
+    if (locallyAppliedURLSignatureRef.current === urlFilterSignature) {
+      locallyAppliedURLSignatureRef.current = null;
+      return;
+    }
+    locallyAppliedURLSignatureRef.current = null;
+
     const { filters, getFilterQueryVariables } = props.filterOptions;
 
-    // Load filter states from URL query parameters
-    const newFilterStates = loadFiltersFromURL(
-      searchParams,
-      filters,
-      filterStates,
+    const hasURLFilterState = filters.some((filter) =>
+      searchParams.has(getURLFilterKey(filter, props.urlFilterNamespace)),
     );
-    setFilterStates(newFilterStates);
+    const newFilterStates =
+      !hasLoadedFiltersFromURL &&
+      !hasURLFilterState &&
+      props.filterOptions.initialFilterStates
+        ? props.filterOptions.initialFilterStates
+        : loadFiltersFromURL(searchParams, filters, props.urlFilterNamespace);
+    updateFilterStates(newFilterStates);
 
     const newFetchVariables = getFilterQueryVariables(
       filters,
@@ -495,34 +777,26 @@ export function DataManagerTable<
       0,
     );
     setNumFiltersApplied(numFiltersApplied);
+    if (hasLoadedFiltersFromURL || hasURLFilterState) {
+      props.filterOptions.onAppliedFilterStatesChange?.(newFilterStates);
+    }
 
     // Refetch data if filters changed and we have filter options
     if (
-      props.filterOptions &&
-      Object.values(newFilterStates).some((state) => state.isApplied)
+      hasLoadedFiltersFromURL ||
+      (!props.filterOptions.initialFilterStates &&
+        Object.values(newFilterStates).some((state) => state.isApplied))
     ) {
-      setIsLoading(true);
-
-      // Clear start result number when filters change
-      setPageCursorState((prevState) => ({
-        ...prevState,
-        startResult: undefined,
-      }));
+      resetPagination();
 
       // Refetch with new filter variables
-      props.filterOptions
-        .refetch(newFetchVariables)
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch((e) => {
-          setIsLoading(false);
-          throw e;
-        });
+      runAsyncAction(
+        refetchLatest(props.filterOptions.refetch, newFetchVariables),
+      );
     }
 
     setHasLoadedFiltersFromURL(true);
-  }, [searchParams, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [urlFilterSignature]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle refetching data when props from the parent component change.
   useEffect(() => {
@@ -531,7 +805,9 @@ export function DataManagerTable<
       props.filterOptions &&
       hasLoadedFiltersFromURL
     ) {
-      void handleApplyFilters(filterStates, props.filterOptions, pageSize);
+      runAsyncAction(
+        handleApplyFilters(filterStates, props.filterOptions, pageSize),
+      );
     }
   }, [...(props.refetchOnPropsChange || []), hasLoadedFiltersFromURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -540,57 +816,54 @@ export function DataManagerTable<
   // The cursor cache remembers previously seen cursors for paginating to the previous page.
   // New cursors are added to the cache.
   useEffect(() => {
-    if (!props.nextPageCursor) {
+    if (isLoading || awaitingPaginationResetResult || !props.nextPageCursor) {
       return;
     }
+    const nextPageCursor = props.nextPageCursor;
 
-    // Find the result number that the cursor is associated with
-    const cursorCacheResult = Object.entries(
-      pageCursorState.cursorCache[pageSize] || {},
-    ).find(([_, cursor]) => cursor === props.nextPageCursor);
+    const afterCursor = successfulAfterCursor;
+    const previousPage =
+      typeof afterCursor === "string" && afterCursor
+        ? Object.entries(pageCursorState.cursorCache[pageSize] || {}).find(
+            ([_, cursor]) => cursor === afterCursor,
+          )
+        : undefined;
+    if (afterCursor && !previousPage) return;
 
-    // If the cursor exists already, update the start result to the result number
-    if (cursorCacheResult) {
-      setPageCursorState((prevState) => ({
+    const startResult = previousPage ? parseInt(previousPage[0]) + pageSize : 1;
+    setPageCursorState((prevState) => {
+      if (
+        prevState.startResult === startResult &&
+        prevState.nextPageCursor === nextPageCursor &&
+        prevState.cursorCache[pageSize]?.[startResult] === nextPageCursor
+      ) {
+        return prevState;
+      }
+      return {
         ...prevState,
-        startResult: parseInt(cursorCacheResult[0]),
-        nextPageCursor: cursorCacheResult[1],
-      }));
-    } else {
-      // Otherwise, update the result number and cursor cache with the new cursor
-      setPageCursorState((prevState) => {
-        // Only update if the cursor has changed
-        if (
-          prevState.nextPageCursor === props.nextPageCursor &&
-          prevState.startResult !== undefined
-        )
-          return prevState;
-
-        // Either start at 1 or add the page size to the result number
-        const startResult =
-          prevState.startResult === undefined
-            ? 1
-            : prevState.startResult + pageSize;
-
-        return {
-          ...prevState,
-          startResult,
-          nextPageCursor: props.nextPageCursor,
-          cursorCache: {
-            ...prevState.cursorCache,
-            [pageSize]: {
-              ...prevState.cursorCache[pageSize],
-              [startResult]: props.nextPageCursor!,
-            },
+        startResult,
+        nextPageCursor,
+        cursorCache: {
+          ...prevState.cursorCache,
+          [pageSize]: {
+            ...prevState.cursorCache[pageSize],
+            [startResult]: nextPageCursor,
           },
-        };
-      });
-    }
-  }, [props.nextPageCursor, pageSize, pageCursorState.cursorCache]);
+        },
+      };
+    });
+  }, [
+    props.nextPageCursor,
+    pageSize,
+    pageCursorState.cursorCache,
+    isLoading,
+    awaitingPaginationResetResult,
+    successfulAfterCursor,
+  ]);
 
   function updateFilterState(filter: Filter<T>) {
     return (state: FilterState) => {
-      setFilterStates((prevState) => ({
+      updateFilterStates((prevState) => ({
         ...prevState,
         [filter.accessorKey]: state,
       }));
@@ -610,12 +883,10 @@ export function DataManagerTable<
     };
 
     // Validate that the filter states are valid
-    const filterStatesArray = Object.values(appliedFilterStates);
     let isValid = true;
-    for (let i = 0; i < filterStatesArray.length; i++) {
-      const filterState = filterStatesArray[i];
+    for (const filter of filters) {
+      const filterState = appliedFilterStates[filter.accessorKey];
       if (filterState.isApplied && filterState.onValidate) {
-        const filter = filters[i];
         const validResult = filterState.onValidate(
           filterState,
           (filter as { isMulti?: boolean }).isMulti,
@@ -643,18 +914,17 @@ export function DataManagerTable<
     }
     if (!isValid) {
       // Trigger state update with all the error messages
-      setFilterStates((prevState) => ({
+      updateFilterStates((prevState) => ({
         ...prevState,
       }));
       return;
     }
 
     // Handle filter types that can have multiple applied values.
-    for (let i = 0; i < filterStatesArray.length; i++) {
-      const filterState = filterStatesArray[i];
+    for (const filter of filters) {
+      const filterState = appliedFilterStates[filter.accessorKey];
       if (!filterState.isApplied) continue;
 
-      const filter = filters[i];
       if (isStringFilterState(filterState)) {
         if (filterState.value) {
           const value = filterState.value;
@@ -695,93 +965,124 @@ export function DataManagerTable<
     }
 
     // Count the number of filters that are applied
-    const numFiltersApplied = filterStatesArray.reduce((acc, state) => {
-      return state.isApplied ? acc + 1 : acc;
-    }, 0);
+    const numFiltersApplied = Object.values(appliedFilterStates).reduce(
+      (acc, state) => {
+        return state.isApplied ? acc + 1 : acc;
+      },
+      0,
+    );
     setNumFiltersApplied(numFiltersApplied);
 
     // Note: we only want to apply the filter states updated with validation results.
     setShowFilterEditor(false);
-    setIsLoading(true);
-
     const newFetchVariables = getFilterQueryVariables(
       filters,
       appliedFilterStates,
       pageSize,
     );
     setFetchVariables(newFetchVariables);
+    filterOptions.onAppliedFilterStatesChange?.(appliedFilterStates);
 
     if (props.enableURLFilters) {
       // Update url query params with the applied filters using utility function
       const newSearchParams = saveFiltersToURL(
-        searchParams,
+        new URLSearchParams(searchParams),
         filters,
         appliedFilterStates,
         currentPage,
+        props.urlFilterNamespace,
       );
+      const newURLFilterSignature = getURLFilterSignature(
+        newSearchParams,
+        filters,
+        props.urlFilterNamespace,
+      );
+      if (newURLFilterSignature !== urlFilterSignature) {
+        locallyAppliedURLSignatureRef.current = newURLFilterSignature;
+      }
       setSearchParams(newSearchParams);
     }
 
-    // Clear start result number when filters are applied
-    setPageCursorState((prevState) => ({
-      ...prevState,
-      startResult: undefined,
-    }));
+    resetPagination();
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handleClearFilters = () => {
     if (props.filterOptions) {
       const { filters } = props.filterOptions;
       const newFilterStates = initialFilterState(filters);
-      setFilterStates(newFilterStates);
-      void handleApplyFilters(newFilterStates, props.filterOptions, pageSize);
+      updateFilterStates(newFilterStates);
+      runAsyncAction(
+        handleApplyFilters(newFilterStates, props.filterOptions, pageSize),
+      );
     }
   };
 
+  const handleBeginPillFilter = (filter: Filter<T>) => {
+    updateFilterStates((currentStates) => ({
+      ...currentStates,
+      [filter.accessorKey]: getDefaultFilterState<T>(filter),
+    }));
+  };
+
+  const handleCommitPillFilter = (
+    filter: Filter<T>,
+    newFilterState: FilterState,
+  ) => {
+    const newStates = updateFilterStates((currentStates) => {
+      let nextStates = {
+        ...currentStates,
+        [filter.accessorKey]: newFilterState,
+      };
+      props.filterOptions?.onFilterStateChange?.(
+        filter.accessorKey,
+        newFilterState,
+        (updater) => {
+          nextStates =
+            typeof updater === "function" ? updater(nextStates) : updater;
+        },
+      );
+      return nextStates;
+    });
+    runAsyncAction(
+      handleApplyFilters(newStates, props.filterOptions!, pageSize),
+    );
+  };
+
+  const handleRemovePillFilter = (filter: Filter<T>) => {
+    const newStates = updateFilterStates((currentStates) => ({
+      ...currentStates,
+      [filter.accessorKey]: getDefaultFilterState<T>(filter),
+    }));
+    runAsyncAction(
+      handleApplyFilters(newStates, props.filterOptions!, pageSize),
+    );
+  };
+
   const handleNext = async () => {
-    if (!props.filterOptions) {
+    if (isLoading || !props.filterOptions || !pageCursorState.nextPageCursor) {
       return;
     }
 
     const { refetch } = props.filterOptions;
-
-    setIsLoading(true);
 
     // Update the page cursor query param but keep the filters intact
     const newFetchVariables: QueryVariablesType = {
       ...fetchVariables,
-      after:
-        pageCursorState === undefined
-          ? undefined
-          : pageCursorState.nextPageCursor,
+      after: pageCursorState.nextPageCursor,
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handlePrev = async () => {
-    if (!props.filterOptions) {
+    if (isLoading || !props.filterOptions) {
       return;
     }
 
     const { refetch } = props.filterOptions;
-
-    setIsLoading(true);
 
     // Update the page cursor query param but keep the filters intact
     const newFetchVariables: QueryVariablesType = {
@@ -794,13 +1095,7 @@ export function DataManagerTable<
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const currentPage =
@@ -809,11 +1104,12 @@ export function DataManagerTable<
   const handleChangePage = async (page: number) => {
     const pageCursorIndex = (page - 1) * pageSize + 1 - pageSize;
     const cachedCursorState =
-      pageCursorState.cursorCache[pageSize][pageCursorIndex];
+      pageCursorState.cursorCache[pageSize]?.[pageCursorIndex];
 
     // If the page is not yet queried, don't allow jumping ahead.
     // Also don't requery for the current page.
     if (
+      isLoading ||
       !props.filterOptions ||
       (pageCursorIndex > 0 && !cachedCursorState) ||
       page === currentPage
@@ -823,29 +1119,27 @@ export function DataManagerTable<
 
     const { refetch } = props.filterOptions;
 
-    setIsLoading(true);
     const newFetchVariables: QueryVariablesType = {
       ...fetchVariables,
       after: cachedCursorState,
     };
     setFetchVariables(newFetchVariables);
 
-    try {
-      await refetch(newFetchVariables);
-    } catch (e) {
-      setIsLoading(false);
-      throw e;
-    }
-    setIsLoading(false);
+    await refetchLatest(refetch, newFetchVariables);
   };
 
   const handleChangePageSize = async (size: number) => {
+    if (isLoading || (size === pageSize && !awaitingPaginationResetResult)) {
+      return;
+    }
+
     setPageSize(size);
+    props.onPageSizeChange?.(size);
 
     if (props.showMoreOptions) {
       const { refetch, initialQueryVariables } = props.showMoreOptions;
+      resetPagination();
 
-      setIsLoading(true);
       let pageSizeQueryVariables: Record<string, number>;
       if (props.showMoreOptions.pageSizeVariables) {
         pageSizeQueryVariables = {};
@@ -861,28 +1155,28 @@ export function DataManagerTable<
       };
       setFetchVariables(newFetchVariables);
 
-      try {
-        await refetch(newFetchVariables);
-      } catch (e) {
-        setIsLoading(false);
-        throw e;
-      }
-      setIsLoading(false);
+      await refetchLatest(refetch, newFetchVariables);
     } else if (props.filterOptions) {
-      void handleApplyFilters(filterStates, props.filterOptions, size);
+      await handleApplyFilters(filterStates, props.filterOptions, size);
+    } else {
+      setPageCursorState({
+        startResult: undefined,
+        nextPageCursor: undefined,
+        cursorCache: {},
+      });
     }
   };
 
   const createFilterStateUpdater =
     (filter: Filter<T>) => (state: FilterState) => {
-      setFilterStates((prevState) => ({
+      updateFilterStates((prevState) => ({
         ...prevState,
         [filter.accessorKey]: state,
       }));
       props.filterOptions?.onFilterStateChange?.(
         filter.accessorKey,
         state,
-        setFilterStates,
+        updateFilterStates,
       );
     };
 
@@ -895,6 +1189,7 @@ export function DataManagerTable<
                 <DateFilter
                   updateFilterState={createFilterStateUpdater(filter)}
                   state={filterStates[filter.accessorKey] as DateFilterState}
+                  label={filter.label}
                 />
               </div>
             );
@@ -955,6 +1250,29 @@ export function DataManagerTable<
                 />
               </div>
             );
+          case FilterType.NUMBER:
+            return (
+              <div key={filter.label}>
+                <NumberFilter
+                  updateFilterState={createFilterStateUpdater(filter)}
+                  label={filter.label}
+                  state={filterStates[filter.accessorKey] as NumberFilterState}
+                  allowDecimals={filter.valueType !== "integer"}
+                />
+              </div>
+            );
+          case FilterType.INPUT_OBJECT:
+            return (
+              <div key={filter.label}>
+                <InputObjectFilter
+                  updateFilterState={createFilterStateUpdater(filter)}
+                  fields={filter.fields}
+                  state={
+                    filterStates[filter.accessorKey] as InputObjectFilterState
+                  }
+                />
+              </div>
+            );
           default:
             return null;
         }
@@ -964,7 +1282,9 @@ export function DataManagerTable<
   const isFilterButtonSmall = isSm && props.header;
 
   function onApply() {
-    void handleApplyFilters(filterStates, props.filterOptions!, pageSize);
+    runAsyncAction(
+      handleApplyFilters(filterStates, props.filterOptions!, pageSize),
+    );
   }
 
   const filterContent = (
@@ -1004,178 +1324,197 @@ export function DataManagerTable<
   } as const;
 
   if (props.filterOptions && props.filterOptions.filters.length > 0) {
-    const FilterContainerComponent =
-      props.customComponents?.filterContainerComponent ||
-      DataManagerTableFilterContainer;
+    const FilterControlsComponent =
+      props.customComponents?.filterControlsComponent;
+    if (FilterControlsComponent) {
+      filters = (
+        <FilterControlsComponent
+          filters={props.filterOptions.filters}
+          filterStates={filterStates}
+          onBeginFilter={handleBeginPillFilter}
+          onCommitFilter={handleCommitPillFilter}
+          onRemoveFilter={handleRemovePillFilter}
+          onClearFilters={handleClearFilters}
+        />
+      );
+    } else {
+      const FilterContainerComponent =
+        props.customComponents?.filterContainerComponent ||
+        DataManagerTableFilterContainer;
 
-    const defaultFilterContent = (
-      <>
-        {isSm ? (
-          <Fragment>
-            <Button
-              {...commonButtonProps}
-              {...props.filterButtonProps}
-              onClick={() => setShowFilterEditor(!showFilterEditor)}
-            />
-            <Modal
-              visible={showFilterEditor}
-              onClose={() => setShowFilterEditor(false)}
-              smKind="fullscreen"
-            >
-              {filterContent}
-            </Modal>
-          </Fragment>
-        ) : (
-          <DropdownComponent
-            borderRadius={12}
-            maxDropdownItemsWidth={400}
-            dropdownContent={
-              <FilterDropdownContent visible={showFilterEditor}>
-                {filterContent}
-              </FilterDropdownContent>
-            }
-            isOpen={showFilterEditor}
-            onOpen={() => {
-              setShowFilterEditor(true);
-            }}
-            onClose={() => {
-              setShowFilterEditor(false);
-            }}
-            button={{
-              ...commonButtonProps,
-              ...props.filterButtonProps,
-            }}
-            align={props.filterDropdownAlign || "right"}
-          />
-        )}
-      </>
-    );
-
-    const pillFilters = props.filterOptions
-      ? props.filterOptions.filters
-          .filter((filter: Filter<T>) => {
-            // If the filter is not applied, don't show it in the pills.
-            return filterStates[filter.accessorKey]?.isApplied;
-          })
-          .map((filter: Filter<T>) => {
-            return (
-              <PillFilter
-                key={filter.label}
-                filter={filter}
-                state={filterStates[filter.accessorKey] as EnumFilterState}
-                onDelete={() => {
-                  setFilterStates((prevStates) => {
-                    const newStates = { ...prevStates };
-                    newStates[filter.accessorKey] =
-                      getDefaultFilterState<T>(filter);
-                    void handleApplyFilters(
-                      newStates,
-                      props.filterOptions!,
-                      pageSize,
-                    );
-                    return newStates;
-                  });
-                }}
-                customComponents={{
-                  customDropdown: props.customComponents?.dropdownComponent,
-                  customTextInput: props.customComponents?.textInputComponent,
-                  customCalendarCss: props.customComponents?.customCalendarCss,
-                }}
-                onUpdateFilter={(newFilterState) => {
-                  setFilterStates((prevStates) => {
-                    let newStates = { ...prevStates };
-                    newStates[filter.accessorKey] = newFilterState;
-                    // Call onFilterStateChange to allow mutual exclusivity logic
-                    props.filterOptions?.onFilterStateChange?.(
-                      filter.accessorKey,
-                      newFilterState,
-                      (updater) => {
-                        if (typeof updater === "function") {
-                          newStates = updater(newStates);
-                        } else {
-                          newStates = updater;
-                        }
-                      },
-                    );
-                    void handleApplyFilters(
-                      newStates,
-                      props.filterOptions!,
-                      pageSize,
-                    );
-                    setShowFilterEditor(false);
-                    return newStates;
-                  });
-                }}
+      const defaultFilterContent = (
+        <>
+          {isSm ? (
+            <Fragment>
+              <Button
+                {...commonButtonProps}
+                {...props.filterButtonProps}
+                onClick={() => setShowFilterEditor(!showFilterEditor)}
               />
-            );
-          })
-      : [];
-
-    const pillsFilterContent = (
-      <PillFiltersContainer>
-        <Flex gap={4} align="center" flexWrap="wrap">
-          {pillFilters}
-          <DropdownComponent
-            borderRadius={12}
-            maxDropdownItemsWidth={200}
-            dropdownItems={getPillDropdownItems({
-              filterOptions: props.filterOptions,
-              filterStates,
-              setFilterStates,
-              handleApplyFilters,
-              pageSize,
-              setShowFilterEditor,
-              customDropdownComponent:
-                props.customComponents?.dropdownComponent,
-              onFilterStateChange: props.filterOptions.onFilterStateChange,
-            })}
-            isOpen={showFilterEditor}
-            onOpen={() => {
-              setShowFilterEditor(true);
-            }}
-            onClose={() => {
-              setShowFilterEditor(false);
-            }}
-            button={{
-              ...commonButtonProps,
-              ...props.filterButtonProps,
-              iconSide: "left",
-            }}
-            align={props.filterDropdownAlign || "right"}
-          />
-        </Flex>
-        <Flex>
-          {numFiltersApplied > 0 && (
-            <Button
-              {...commonButtonProps}
-              {...props.filterButtonProps}
-              icon={{
-                name: "CentralCrossSmall",
-                width: 16,
-                color: "text",
-                iconProps: {
-                  strokeWidth: 3,
-                },
+              <Modal
+                visible={showFilterEditor}
+                onClose={() => setShowFilterEditor(false)}
+                smKind="fullscreen"
+              >
+                {filterContent}
+              </Modal>
+            </Fragment>
+          ) : (
+            <DropdownComponent
+              borderRadius={12}
+              maxDropdownItemsWidth={400}
+              dropdownContent={
+                <FilterDropdownContent visible={showFilterEditor}>
+                  {filterContent}
+                </FilterDropdownContent>
+              }
+              isOpen={showFilterEditor}
+              onOpen={() => {
+                setShowFilterEditor(true);
               }}
-              text="Clear"
-              typography={{
-                color: "secondary",
+              onClose={() => {
+                setShowFilterEditor(false);
               }}
-              onClick={handleClearFilters}
-              kind="transparent"
+              button={{
+                ...commonButtonProps,
+                ...props.filterButtonProps,
+              }}
+              align={props.filterDropdownAlign || "right"}
             />
           )}
-        </Flex>
-      </PillFiltersContainer>
-    );
+        </>
+      );
 
-    filters = (
-      <FilterContainerComponent>
-        {(!props.filterEditorStyle || props.filterEditorStyle === "default") &&
-          defaultFilterContent}
-        {props.filterEditorStyle === "pills" && pillsFilterContent}
-      </FilterContainerComponent>
-    );
+      const pillFilters = props.filterOptions
+        ? props.filterOptions.filters
+            .filter((filter: Filter<T>) => {
+              // If the filter is not applied, don't show it in the pills.
+              return filterStates[filter.accessorKey]?.isApplied;
+            })
+            .map((filter: Filter<T>) => {
+              return (
+                <PillFilter
+                  key={filter.label}
+                  filter={filter}
+                  state={filterStates[filter.accessorKey] as EnumFilterState}
+                  onDelete={() => {
+                    const newStates = updateFilterStates((currentStates) => ({
+                      ...currentStates,
+                      [filter.accessorKey]: getDefaultFilterState<T>(filter),
+                    }));
+                    runAsyncAction(
+                      handleApplyFilters(
+                        newStates,
+                        props.filterOptions!,
+                        pageSize,
+                      ),
+                    );
+                  }}
+                  customComponents={{
+                    customDropdown: props.customComponents?.dropdownComponent,
+                    customTextInput: props.customComponents?.textInputComponent,
+                    customCalendarCss:
+                      props.customComponents?.customCalendarCss,
+                  }}
+                  onUpdateFilter={(newFilterState) => {
+                    const newStates = updateFilterStates((currentStates) => {
+                      let nextStates = {
+                        ...currentStates,
+                        [filter.accessorKey]: newFilterState,
+                      };
+                      props.filterOptions?.onFilterStateChange?.(
+                        filter.accessorKey,
+                        newFilterState,
+                        (updater) => {
+                          nextStates =
+                            typeof updater === "function"
+                              ? updater(nextStates)
+                              : updater;
+                        },
+                      );
+                      return nextStates;
+                    });
+                    runAsyncAction(
+                      handleApplyFilters(
+                        newStates,
+                        props.filterOptions!,
+                        pageSize,
+                      ),
+                    );
+                    setShowFilterEditor(false);
+                  }}
+                />
+              );
+            })
+        : [];
+
+      const pillsFilterContent = (
+        <PillFiltersContainer>
+          <Flex gap={4} align="center" flexWrap="wrap">
+            {pillFilters}
+            <DropdownComponent
+              borderRadius={12}
+              maxDropdownItemsWidth={200}
+              dropdownItems={getPillDropdownItems({
+                filterOptions: props.filterOptions,
+                getFilterStates: () => filterStatesRef.current,
+                updateFilterStates,
+                handleApplyFilters,
+                pageSize,
+                setShowFilterEditor,
+                customDropdownComponent:
+                  props.customComponents?.dropdownComponent,
+                onFilterStateChange: props.filterOptions.onFilterStateChange,
+              })}
+              isOpen={showFilterEditor}
+              onOpen={() => {
+                setShowFilterEditor(true);
+              }}
+              onClose={() => {
+                setShowFilterEditor(false);
+              }}
+              button={{
+                ...commonButtonProps,
+                ...props.filterButtonProps,
+                iconSide: "left",
+              }}
+              align={props.filterDropdownAlign || "right"}
+            />
+          </Flex>
+          <Flex>
+            {numFiltersApplied > 0 && (
+              <Button
+                {...commonButtonProps}
+                {...props.filterButtonProps}
+                icon={{
+                  name: "CentralCrossSmall",
+                  width: 16,
+                  color: "text",
+                  iconProps: {
+                    strokeWidth: 3,
+                  },
+                }}
+                text="Clear"
+                typography={{
+                  color: "secondary",
+                }}
+                onClick={handleClearFilters}
+                kind="transparent"
+              />
+            )}
+          </Flex>
+        </PillFiltersContainer>
+      );
+
+      filters = (
+        <FilterContainerComponent>
+          {(!props.filterEditorStyle ||
+            props.filterEditorStyle === "default") &&
+            defaultFilterContent}
+          {props.filterEditorStyle === "pills" && pillsFilterContent}
+        </FilterContainerComponent>
+      );
+    }
   }
 
   let showMoreDropdown: React.ReactNode;
@@ -1211,7 +1550,7 @@ export function DataManagerTable<
         dropdownItems={props.pageSizes.map((size) => ({
           label: `${size}`,
           onClick: () => {
-            void handleChangePageSize(size);
+            runAsyncAction(handleChangePageSize(size));
           },
         }))}
       />
@@ -1228,7 +1567,9 @@ export function DataManagerTable<
             text="Show more"
             paddingY="short"
             onClick={() =>
-              void handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20))
+              runAsyncAction(
+                handleChangePageSize(pageSize + (props.pageSizes?.[0] || 20)),
+              )
             }
           />
           {showMoreDropdown}
@@ -1265,6 +1606,13 @@ export function DataManagerTable<
         { length: Math.ceil(props.resultCount / pageSize) },
         (_, i) => i,
       );
+      const isPageNumberUnavailable = (page: number) => {
+        const pageCursorIndex = (page - 1) * pageSize + 1 - pageSize;
+        return (
+          pageCursorIndex > 0 &&
+          !pageCursorState.cursorCache[pageSize]?.[pageCursorIndex]
+        );
+      };
 
       const pageNumberButtons = props.paginationDisplayOptions
         ?.showPageNumberButtons ? (
@@ -1277,15 +1625,17 @@ export function DataManagerTable<
             }}
             kind="ghost"
             paddingY="short"
-            onClick={() => void handlePrev()}
-            disabled={!hasPrev}
+            onClick={() => runAsyncAction(handlePrev())}
+            disabled={isLoading || !hasPrev}
           />
           {/* Get first two page numbers based on page size and current page */}
           {pageNumbers.slice(0, 2).map((pageNumber) => (
             <PageNumberButton
               key={pageNumber}
-              onClick={() => void handleChangePage(pageNumber + 1)}
+              onClick={() => runAsyncAction(handleChangePage(pageNumber + 1))}
               isCurrentPage={currentPage === pageNumber + 1}
+              aria-current={currentPage === pageNumber + 1 ? "page" : undefined}
+              disabled={isLoading || isPageNumberUnavailable(pageNumber + 1)}
             >
               <Body content={`${pageNumber + 1}`} />
             </PageNumberButton>
@@ -1305,7 +1655,9 @@ export function DataManagerTable<
             <PageNumberButton
               key={currentPage}
               isCurrentPage
-              onClick={() => void handleChangePage(currentPage)}
+              aria-current="page"
+              onClick={() => runAsyncAction(handleChangePage(currentPage))}
+              disabled={isLoading || isPageNumberUnavailable(currentPage)}
             >
               <Body content={`${currentPage}`} />
             </PageNumberButton>
@@ -1325,7 +1677,15 @@ export function DataManagerTable<
             <PageNumberButton
               key={pageNumbers.length}
               isCurrentPage={currentPage === pageNumbers.length}
-              onClick={() => void handleChangePage(pageNumbers.length)}
+              aria-current={
+                currentPage === pageNumbers.length ? "page" : undefined
+              }
+              onClick={() =>
+                runAsyncAction(handleChangePage(pageNumbers.length))
+              }
+              disabled={
+                isLoading || isPageNumberUnavailable(pageNumbers.length)
+              }
             >
               <Body content={`${pageNumbers.length}`} />
             </PageNumberButton>
@@ -1338,8 +1698,8 @@ export function DataManagerTable<
             }}
             kind="ghost"
             paddingY="short"
-            onClick={() => void handleNext()}
-            disabled={!hasNext}
+            onClick={() => runAsyncAction(handleNext())}
+            disabled={isLoading || !hasNext}
           />
         </PageNumberPaginationButtonsContainer>
       ) : (
@@ -1358,17 +1718,17 @@ export function DataManagerTable<
                   text="Previous"
                   paddingY="short"
                   onClick={() => {
-                    void handlePrev();
+                    runAsyncAction(handlePrev());
                   }}
-                  disabled={!hasPrev}
+                  disabled={isLoading || !hasPrev}
                 />
                 <Button
                   text="Next"
                   paddingY="short"
                   onClick={() => {
-                    void handleNext();
+                    runAsyncAction(handleNext());
                   }}
-                  disabled={!hasNext}
+                  disabled={isLoading || !hasNext}
                 />
               </PaginationButtonsContainer>
             )}
@@ -1414,8 +1774,8 @@ function getPillDropdownItems<
   QueryResultType,
 >({
   filterOptions,
-  filterStates,
-  setFilterStates,
+  getFilterStates,
+  updateFilterStates,
   handleApplyFilters,
   pageSize,
   setShowFilterEditor,
@@ -1423,8 +1783,10 @@ function getPillDropdownItems<
   onFilterStateChange,
 }: {
   filterOptions: FilterOptions<T, QueryVariablesType, QueryResultType>;
-  filterStates: DataManagerTableState<T>;
-  setFilterStates: Dispatch<SetStateAction<DataManagerTableState<T>>>;
+  getFilterStates: () => DataManagerTableState<T>;
+  updateFilterStates: (
+    updater: SetStateAction<DataManagerTableState<T>>,
+  ) => DataManagerTableState<T>;
   handleApplyFilters: (
     filterStates: DataManagerTableState<T>,
     filterOptions: FilterOptions<T, QueryVariablesType, QueryResultType>,
@@ -1443,21 +1805,29 @@ function getPillDropdownItems<
 }) {
   // Helper to apply a new filter state with mutual exclusivity support
   const applyFilterState = (filter: Filter<T>, newFilterState: FilterState) => {
-    setFilterStates((prevStates: DataManagerTableState<T>) => {
-      let newStates = { ...prevStates };
-      newStates[filter.accessorKey] = newFilterState;
-      // Call onFilterStateChange for mutual exclusivity logic
+    const newStates = updateFilterStates((currentStates) => {
+      let nextStates = {
+        ...currentStates,
+        [filter.accessorKey]: newFilterState,
+      };
       onFilterStateChange?.(filter.accessorKey, newFilterState, (updater) => {
-        if (typeof updater === "function") {
-          newStates = updater(newStates);
-        } else {
-          newStates = updater;
-        }
+        nextStates =
+          typeof updater === "function" ? updater(nextStates) : updater;
       });
-      void handleApplyFilters(newStates, filterOptions, pageSize);
-      setShowFilterEditor(false);
-      return newStates;
+      return nextStates;
     });
+    void handleApplyFilters(newStates, filterOptions, pageSize).catch(
+      () => undefined,
+    );
+    setShowFilterEditor(false);
+  };
+
+  const beginFilterState = (filter: Filter<T>, newFilterState: FilterState) => {
+    updateFilterStates((currentStates) => ({
+      ...currentStates,
+      [filter.accessorKey]: newFilterState,
+    }));
+    setShowFilterEditor(false);
   };
 
   const getDropdownItemForFilter = (filter: Filter<T>): DropdownItemType => {
@@ -1467,7 +1837,9 @@ function getPillDropdownItems<
         label: option.label,
         onClick: () => {
           const optionValues = ensureArray(option.value);
-          const state = filterStates[filter.accessorKey] as EnumFilterState;
+          const state = getFilterStates()[
+            filter.accessorKey
+          ] as EnumFilterState;
           let updatedAppliedValues: string[] = [];
           if (filter.isMulti) {
             updatedAppliedValues = state.appliedValues
@@ -1490,6 +1862,17 @@ function getPillDropdownItems<
           } as unknown as FilterState);
         },
       }));
+    } else if (filter.type === FilterType.BOOLEAN) {
+      filterSubDropdownOptions = [true, false].map((value) => ({
+        label: value ? "True" : "False",
+        onClick: () => {
+          applyFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            value,
+            isApplied: true,
+          } as unknown as FilterState);
+        },
+      }));
     }
 
     return {
@@ -1502,7 +1885,9 @@ function getPillDropdownItems<
       iconSide: "right",
       onClick: () => {
         if (filter.type === FilterType.STRING) {
-          const state = filterStates[filter.accessorKey] as StringFilterState;
+          const state = getFilterStates()[
+            filter.accessorKey
+          ] as StringFilterState;
           let updatedAppliedValues: string[] = [];
           updatedAppliedValues =
             filter.isMulti && state.appliedValues
@@ -1515,20 +1900,14 @@ function getPillDropdownItems<
               ? [...state.appliedValues]
               : [];
 
-          applyFilterState(filter, {
+          beginFilterState(filter, {
             ...getDefaultFilterState<T>(filter),
             value: updatedAppliedValues.join(", "),
             isApplied: true,
             appliedValues: updatedAppliedValues,
-          } as unknown as FilterState);
-        } else if (filter.type === FilterType.BOOLEAN) {
-          applyFilterState(filter, {
-            ...getDefaultFilterState<T>(filter),
-            value: filter.value as boolean,
-            isApplied: true,
           } as unknown as FilterState);
         } else if (filter.type === FilterType.ID) {
-          const state = filterStates[filter.accessorKey] as IdFilterState;
+          const state = getFilterStates()[filter.accessorKey] as IdFilterState;
           let updatedAppliedValues: string[] = [];
           updatedAppliedValues =
             filter.isMulti && state.appliedValues
@@ -1541,22 +1920,35 @@ function getPillDropdownItems<
               ? [...state.appliedValues]
               : [];
 
-          applyFilterState(filter, {
+          beginFilterState(filter, {
             ...getDefaultFilterState<T>(filter),
             value: updatedAppliedValues.join(", "),
             isApplied: true,
             appliedValues: updatedAppliedValues,
           } as unknown as FilterState);
+        } else if (filter.type === FilterType.NUMBER) {
+          beginFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            isApplied: true,
+          } as FilterState);
         } else if (filter.type === FilterType.CURRENCY) {
-          // TODO: Currency filter state, design tbd
+          beginFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            isApplied: true,
+          } as FilterState);
         } else if (filter.type === FilterType.DATE) {
-          applyFilterState(filter, {
+          beginFilterState(filter, {
             ...getDefaultFilterState<T>(filter),
             preset: DatePreset.Custom,
             start: null,
             end: null,
             isApplied: true,
           } as unknown as FilterState);
+        } else if (filter.type === FilterType.INPUT_OBJECT) {
+          beginFilterState(filter, {
+            ...getDefaultFilterState<T>(filter),
+            isApplied: true,
+          } as FilterState);
         }
       },
       subDropdown:
@@ -1569,9 +1961,9 @@ function getPillDropdownItems<
     };
   };
 
-  return filterOptions.filters.map((filter) =>
-    getDropdownItemForFilter(filter),
-  );
+  return filterOptions.filters
+    .filter((filter) => !getFilterStates()[filter.accessorKey]?.isApplied)
+    .map((filter) => getDropdownItemForFilter(filter));
 }
 
 const StyledDataManagerTable = styled.div<{ fullHeight: boolean | undefined }>`

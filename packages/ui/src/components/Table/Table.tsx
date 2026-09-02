@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 
 import {
@@ -7,13 +7,22 @@ import {
   getSortedRowModel,
   useReactTable,
   type CellContext,
+  type ColumnDef,
   type ColumnSort,
   type HeaderContext,
   type Row,
+  type SortingFnOption,
 } from "@tanstack/react-table";
 import { isObject } from "lodash-es";
 import type { KeyboardEvent, MouseEvent, ReactNode } from "react";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useClipboard } from "../../hooks/useClipboard.js";
 import {
   Link,
@@ -31,6 +40,7 @@ import {
 import { type NewRoutesType } from "../../types/index.js";
 import { type ElideObjArgs } from "../../utils/strings.js";
 import { type ToReactNodesArgs } from "../../utils/toReactNodes/toReactNodes.js";
+import { Checkbox } from "../Checkbox.js";
 import { ClipboardTextField } from "../ClipboardTextField.js";
 import { Dropdown } from "../Dropdown.js";
 import { Icon } from "../Icon/Icon.js";
@@ -98,6 +108,9 @@ interface Column<T extends Record<string, unknown>> {
   header: TableColumnHeaderInfo;
   accessorKey: keyof T;
   function?: (context: CellContext<T, TableCell>) => ReactNode;
+  enableSorting?: boolean;
+  sortDescFirst?: boolean;
+  sortingFn?: SortingFnOption<T>;
 }
 
 export type CustomTableComponents = {
@@ -115,9 +128,14 @@ export type TableProps<T extends Record<string, unknown>> = {
   columns: Column<T>[];
   data: T[];
   loading?: boolean;
-  onClickRow?: (
-    row: Row<T>,
-  ) => { link?: string; to?: NewRoutesType; params?: RouteParams } | void;
+  onClickRow?: (row: Row<T>) => {
+    link?: string;
+    to?: NewRoutesType;
+    params?: RouteParams;
+    // Passed to the router as navigation state (in-memory, never in the
+    // URL), for payloads that shouldn't appear in history or logs.
+    state?: unknown;
+  } | void;
   emptyState?: ReactNode;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   rowHoverEffect?: "border" | "background" | "none" | undefined;
@@ -127,6 +145,34 @@ export type TableProps<T extends Record<string, unknown>> = {
     text: ToReactNodesArgs;
     onClick: (row: T) => void;
   }[];
+  rowSelection?: {
+    selectedRowIds: string[];
+    onSelectedRowIdsChange: (selectedRowIds: string[]) => void;
+    getRowId: (row: T) => string;
+    isRowSelectable?: (row: T) => boolean;
+  };
+  /**
+   * Opt-in keyboard row navigation: highlights an "active" row, moves it with
+   * ArrowUp/ArrowDown, and activates it on Enter. Off by default so existing
+   * tables are unaffected. Optionally control the active index from the caller
+   * (e.g. to drive it from a search box); falls back to internal state.
+   */
+  keyboardRowNavigation?: boolean | undefined;
+  activeRowIndex?: number | undefined;
+  onActiveRowIndexChange?: ((activeRowIndex: number) => void) | undefined;
+  /**
+   * Fires with the active row's underlying data (in the table's displayed
+   * order) whenever the highlight moves. Use this — not the caller's own array
+   * + index — to act on the highlighted row, so sorting can't desync them.
+   */
+  onActiveRowChange?: ((row: T | undefined) => void) | undefined;
+  /**
+   * Stable id for a row's data. Defaults to the row index, which means the
+   * change-detection key stays constant across result sets of the same size —
+   * pass this (e.g. `(row) => row.id`) so keyboard-nav state resets correctly
+   * when the data changes.
+   */
+  getRowId?: ((originalRow: T) => string) | undefined;
   loadingStyle?:
     | {
         style: "spinner";
@@ -150,13 +196,29 @@ export function Table<T extends Record<string, unknown>>({
   clipboardCallbacks,
   customComponents,
   tripleDotsMenuItems,
+  rowSelection,
   rowHoverEffect = "border",
   minHeight = 300,
   loadingStyle = { style: "spinner" },
   fullHeight = false,
+  keyboardRowNavigation = false,
+  activeRowIndex,
+  onActiveRowIndexChange,
+  onActiveRowChange,
+  getRowId,
 }: TableProps<T>) {
   const navigate = useNavigate();
+  const theme = useTheme();
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
+  const [internalActiveRowIndex, setInternalActiveRowIndex] = useState(0);
+  const activeRow = activeRowIndex ?? internalActiveRowIndex;
+  const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
+  // Refs so effects can notify a controlled parent without taking the
+  // (potentially unmemoized) callbacks as dependencies.
+  const onActiveRowIndexChangeRef = useRef(onActiveRowIndexChange);
+  onActiveRowIndexChangeRef.current = onActiveRowIndexChange;
+  const onActiveRowChangeRef = useRef(onActiveRowChange);
+  onActiveRowChangeRef.current = onActiveRowChange;
 
   const { canWriteToClipboard, writeTextToClipboard } =
     useClipboard(clipboardCallbacks);
@@ -167,10 +229,56 @@ export function Table<T extends Record<string, unknown>>({
     },
     [writeTextToClipboard],
   );
-
-  const mappedColumns = useMemo(
+  const selectedRowIdsSet = useMemo(
+    () => new Set(rowSelection?.selectedRowIds ?? []),
+    [rowSelection?.selectedRowIds],
+  );
+  const selectableVisibleRowIds = useMemo(
     () =>
-      columns.map((column) => ({
+      data
+        .filter((row) => rowSelection?.isRowSelectable?.(row) ?? true)
+        .map((row) => rowSelection?.getRowId(row))
+        .filter((rowId): rowId is string => Boolean(rowId)),
+    [data, rowSelection],
+  );
+  const allVisibleRowsSelected =
+    selectableVisibleRowIds.length > 0 &&
+    selectableVisibleRowIds.every((rowId) => selectedRowIdsSet.has(rowId));
+
+  const toggleRowSelection = useCallback(
+    (rowId: string) => {
+      if (!rowSelection) {
+        return;
+      }
+
+      const nextSelection = new Set(rowSelection.selectedRowIds);
+      if (nextSelection.has(rowId)) {
+        nextSelection.delete(rowId);
+      } else {
+        nextSelection.add(rowId);
+      }
+      rowSelection.onSelectedRowIdsChange([...nextSelection]);
+    },
+    [rowSelection],
+  );
+
+  const toggleAllVisibleRowsSelection = useCallback(() => {
+    if (!rowSelection) {
+      return;
+    }
+
+    const nextSelection = new Set(rowSelection.selectedRowIds);
+    if (allVisibleRowsSelected) {
+      selectableVisibleRowIds.forEach((rowId) => nextSelection.delete(rowId));
+    } else {
+      selectableVisibleRowIds.forEach((rowId) => nextSelection.add(rowId));
+    }
+    rowSelection.onSelectedRowIdsChange([...nextSelection]);
+  }, [allVisibleRowsSelected, rowSelection, selectableVisibleRowIds]);
+
+  const mappedColumns = useMemo(() => {
+    const columnsToRender: ColumnDef<T, TableCell>[] = columns.map(
+      (column) => ({
         ...column,
         header: (context: HeaderContext<T, TableCell>) =>
           typeof column.header === "string" ? (
@@ -186,6 +294,8 @@ export function Table<T extends Record<string, unknown>>({
             </div>
           ),
         accessorKey: column.accessorKey.toString(),
+        enableSorting: column.enableSorting ?? false,
+        sortDescFirst: column.sortDescFirst ?? false,
         cell: (context: CellContext<T, TableCell>) => {
           if (column.function && typeof column.function === "function") {
             return column.function(context);
@@ -331,45 +441,95 @@ export function Table<T extends Record<string, unknown>>({
           }
           return <span>{content}</span>;
         },
-      })),
-    [
-      columns,
-      canWriteToClipboard,
-      onClickCopy,
-      clipboardCallbacks,
-      customComponents,
-    ],
-  );
+      }),
+    );
 
-  if (tripleDotsMenuItems) {
-    const DropdownComponent = customComponents?.dropdownComponent || Dropdown;
+    if (rowSelection) {
+      columnsToRender.unshift({
+        id: "rowSelection",
+        enableSorting: false,
+        header: () => (
+          <SelectionCheckboxContainer
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
+            <Checkbox
+              checked={allVisibleRowsSelected}
+              disabled={selectableVisibleRowIds.length === 0}
+              onChange={toggleAllVisibleRowsSelection}
+            />
+          </SelectionCheckboxContainer>
+        ),
+        cell: (context) => {
+          const originalRow = context.row.original;
+          const rowId = rowSelection.getRowId(originalRow);
+          const isSelectable =
+            rowSelection.isRowSelectable?.(originalRow) ?? true;
+          return (
+            <SelectionCheckboxContainer
+              onClick={(event) => event.stopPropagation()}
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              <Checkbox
+                checked={isSelectable && selectedRowIdsSet.has(rowId)}
+                disabled={!isSelectable}
+                onChange={() => {
+                  if (isSelectable) toggleRowSelection(rowId);
+                }}
+              />
+            </SelectionCheckboxContainer>
+          );
+        },
+      });
+    }
 
-    mappedColumns.push({
-      header: (context: HeaderContext<T, TableCell>) => "",
-      accessorKey: "tripleDots",
-      cell: (context) => (
-        <DropdownComponent
-          button={{
-            icon: {
-              name: "CentralDotGrid1x3Vertical",
-            },
-            kind: "ghost",
-          }}
-          align="right"
-          dropdownItems={
-            tripleDotsMenuItems?.map((item) => ({
-              label: item.text,
-              onClick: () => item.onClick(context.row.original),
-            })) || []
-          }
-        />
-      ),
-    });
-  }
+    if (tripleDotsMenuItems) {
+      const DropdownComponent = customComponents?.dropdownComponent || Dropdown;
+
+      columnsToRender.push({
+        id: "tripleDots",
+        enableSorting: false,
+        header: () => "",
+        cell: (context) => (
+          <DropdownComponent
+            button={{
+              icon: {
+                name: "CentralDotGrid1x3Vertical",
+              },
+              kind: "ghost",
+            }}
+            align="right"
+            dropdownItems={
+              tripleDotsMenuItems?.map((item) => ({
+                label: item.text,
+                onClick: () => item.onClick(context.row.original),
+              })) || []
+            }
+          />
+        ),
+      });
+    }
+
+    return columnsToRender;
+  }, [
+    columns,
+    canWriteToClipboard,
+    onClickCopy,
+    clipboardCallbacks,
+    customComponents,
+    rowSelection,
+    allVisibleRowsSelected,
+    selectableVisibleRowIds.length,
+    toggleAllVisibleRowsSelection,
+    selectedRowIdsSet,
+    toggleRowSelection,
+    tripleDotsMenuItems,
+  ]);
 
   const tableInstance = useReactTable({
     columns: mappedColumns,
     data,
+    ...(getRowId ? { getRowId } : {}),
     state: {
       sorting,
     },
@@ -378,6 +538,61 @@ export function Table<T extends Record<string, unknown>>({
     getSortedRowModel: getSortedRowModel(),
     // debugTable: true
   });
+
+  const visibleRows = tableInstance.getRowModel().rows;
+  const visibleRowsRef = useRef(visibleRows);
+  visibleRowsRef.current = visibleRows;
+  const visibleRowIdsKey = visibleRows.map((row) => row.id).join(",");
+  // Reset the highlight to the top row whenever the result set changes (-1 when
+  // empty), so a fresh search auto-highlights the first result, and report that
+  // top row. Reporting here (rather than relying on the activeRow effect below)
+  // avoids a same-flush race: on a data change the activeRow state reset hasn't
+  // committed yet, so reading `activeRow` could be a stale, out-of-range index.
+  useEffect(() => {
+    const next = visibleRowIdsKey === "" ? -1 : 0;
+    setInternalActiveRowIndex(next);
+    onActiveRowIndexChangeRef.current?.(next);
+    if (keyboardRowNavigation) {
+      onActiveRowChangeRef.current?.(visibleRowsRef.current[next]?.original);
+    }
+  }, [visibleRowIdsKey, keyboardRowNavigation]);
+
+  // Report the active row's data (in displayed order) as the highlight moves
+  // (arrows). Not keyed on the data — data changes are handled above with the
+  // correct reset index, so this never reads a stale activeRow. Also scroll the
+  // active row into view (without stealing focus) so a highlight driven by an
+  // external control (e.g. a search box) can't move off-screen.
+  useEffect(() => {
+    if (!keyboardRowNavigation) {
+      return;
+    }
+    onActiveRowChangeRef.current?.(visibleRowsRef.current[activeRow]?.original);
+    rowRefs.current[activeRow]?.scrollIntoView({ block: "nearest" });
+  }, [activeRow, keyboardRowNavigation]);
+
+  function moveActiveRow(delta: number) {
+    const next = Math.min(
+      Math.max(activeRow + delta, 0),
+      visibleRows.length - 1,
+    );
+    setInternalActiveRowIndex(next);
+    onActiveRowIndexChange?.(next);
+    rowRefs.current[next]?.focus();
+    rowRefs.current[next]?.scrollIntoView({ block: "nearest" });
+  }
+
+  function onTableKeyDown(event: KeyboardEvent<HTMLTableElement>) {
+    if (!keyboardRowNavigation) {
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveActiveRow(1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveActiveRow(-1);
+    }
+  }
 
   function onClickDataRow(
     event: MouseEvent<HTMLTableRowElement> | KeyboardEvent<HTMLTableRowElement>,
@@ -394,7 +609,13 @@ export function Table<T extends Record<string, unknown>>({
         const target = newTabKey ? "_blank" : undefined;
         window.open(link, target);
       } else if (onClickRowResult?.to) {
-        navigate(onClickRowResult.to, onClickRowResult.params);
+        navigate(
+          onClickRowResult.to,
+          onClickRowResult.params,
+          onClickRowResult.state !== undefined
+            ? { state: onClickRowResult.state }
+            : undefined,
+        );
       }
     }
   }
@@ -406,16 +627,71 @@ export function Table<T extends Record<string, unknown>>({
         tableInstance.getHeaderGroups().map((headerGroup) => {
           return (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </th>
-              ))}
+              {headerGroup.headers.map((header) => {
+                const canSort = header.column.getCanSort();
+                const sortDirection = header.column.getIsSorted();
+                const onSort = header.column.getToggleSortingHandler();
+                return (
+                  <th
+                    key={header.id}
+                    aria-sort={
+                      sortDirection === "asc"
+                        ? "ascending"
+                        : sortDirection === "desc"
+                        ? "descending"
+                        : canSort
+                        ? "none"
+                        : undefined
+                    }
+                    data-sortable={canSort ? "true" : undefined}
+                    data-sorted={sortDirection || undefined}
+                    onClick={canSort ? onSort : undefined}
+                    onKeyDown={
+                      canSort
+                        ? (event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              onSort?.(event);
+                            }
+                          }
+                        : undefined
+                    }
+                    style={
+                      canSort
+                        ? { cursor: "pointer", userSelect: "none" }
+                        : undefined
+                    }
+                    tabIndex={canSort ? 0 : undefined}
+                  >
+                    {header.isPlaceholder ? null : (
+                      <HeaderContent>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                        {canSort ? (
+                          <SortIcon
+                            aria-hidden="true"
+                            data-sort-icon
+                            $active={Boolean(sortDirection)}
+                          >
+                            <Icon
+                              name={
+                                sortDirection === "asc"
+                                  ? "ChevronUp"
+                                  : sortDirection === "desc"
+                                  ? "ChevronDown"
+                                  : "Sort"
+                              }
+                              width={12}
+                            />
+                          </SortIcon>
+                        ) : null}
+                      </HeaderContent>
+                    )}
+                  </th>
+                );
+              })}
             </tr>
           );
         })
@@ -427,20 +703,47 @@ export function Table<T extends Record<string, unknown>>({
     <tbody>
       {(!loading || ["none", "spinner"].includes(loadingStyle.style)) &&
         // Loop over the table rows
-        tableInstance.getRowModel().rows.map((row) => {
+        tableInstance.getRowModel().rows.map((row, rowIndex) => {
+          const isActiveRow = keyboardRowNavigation && rowIndex === activeRow;
           return (
             <tr
               key={row.id}
+              ref={(el) => {
+                rowRefs.current[rowIndex] = el;
+              }}
               onClick={(event) => onClickDataRow(event, row)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   onClickDataRow(event, row);
                 }
               }}
-              tabIndex={0}
+              // Roving tabindex in keyboard-nav mode: only the active row is in
+              // the tab order; otherwise keep every row focusable as before.
+              tabIndex={
+                keyboardRowNavigation ? (rowIndex === activeRow ? 0 : -1) : 0
+              }
+              aria-selected={
+                keyboardRowNavigation ? rowIndex === activeRow : undefined
+              }
             >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+              {row.getVisibleCells().map((cell, cellIndex) => (
+                <td
+                  key={cell.id}
+                  // Highlight the active row inline (not via styled CSS) so it
+                  // works regardless of the custom `table` component a caller
+                  // supplies. Left accent on the first cell marks the selection.
+                  style={
+                    isActiveRow
+                      ? {
+                          background: theme.c1Neutral,
+                          boxShadow:
+                            cellIndex === 0
+                              ? `inset 3px 0 0 ${theme.c4Neutral}`
+                              : undefined,
+                        }
+                      : undefined
+                  }
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -457,6 +760,10 @@ export function Table<T extends Record<string, unknown>>({
       <TableComponent
         clickable={Boolean(onClickRow)}
         rowHoverEffect={rowHoverEffect}
+        // role="grid" makes aria-selected on rows valid (a plain table's rows
+        // don't support it). Only applied in keyboard-nav mode.
+        role={keyboardRowNavigation ? "grid" : undefined}
+        onKeyDown={keyboardRowNavigation ? onTableKeyDown : undefined}
       >
         {thead}
         {tbody}
@@ -585,6 +892,35 @@ const Base64Icon = styled.img`
   object-fit: contain;
   border-radius: 4px;
   margin-right: 12px;
+`;
+
+const SelectionCheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const HeaderContent = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+`;
+
+const SortIcon = styled.span<{ $active: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: ${({ $active }) => ($active ? 1 : 0)};
+  transition: opacity 150ms ease;
+
+  th:hover &,
+  th:focus-visible & {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 `;
 
 const cellPaddingPx = 15;

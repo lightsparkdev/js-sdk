@@ -1,0 +1,8 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["LIGHTSPARK_FRONTEND_COMMIT_PLACEHOLDER", "VITE_BASENAME"]
+    }
+  }
+}

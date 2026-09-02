@@ -182,5 +182,5 @@ const PillInput = styled.input`
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  font-family: ${({ theme }) => theme.typography.fontFamilies.main};
+  font-family: ${({ theme }) => theme.typography.cssFontFamilies.main};
 `;

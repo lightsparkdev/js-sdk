@@ -11,7 +11,9 @@ import {
    the MDX to ReactNode rendering. Instead we allow these components to render any
    children. */
 
-export const getHeadlineText = (element: React.ReactNode): string => {
+export const getHeadlineText = (
+  element: React.ReactNode,
+): string | undefined => {
   if (typeof element === "string") {
     return element;
   }
@@ -24,12 +26,7 @@ export const getHeadlineText = (element: React.ReactNode): string => {
     return getHeadlineText(element.props.children);
   }
 
-  throw new Error(
-    "Could not find text in Headline element: " +
-      (typeof element === "object"
-        ? JSON.stringify(element)
-        : String(element as number | boolean)),
-  );
+  return undefined;
 };
 
 /**
@@ -39,11 +36,11 @@ export const getHeadlineText = (element: React.ReactNode): string => {
  * with the rehypeAutolinkHeadings plugin. Otherwise, anchor links will not
  * work.
  */
-const getHeaderId = (element: React.ReactNode): string => {
+const getHeaderId = (element: React.ReactNode): string | undefined => {
   if (
     React.isValidElement(element) &&
     element?.type === "a" &&
-    "href" in element.props
+    "href" in (element.props as object)
   ) {
     const props = element.props as { href: string };
     return getHeaderId(props.href);
@@ -62,12 +59,7 @@ const getHeaderId = (element: React.ReactNode): string => {
     return getHeaderId(element.props.children);
   }
 
-  throw new Error(
-    "Could not find text in Headline element: " +
-      (typeof element === "object"
-        ? JSON.stringify(element)
-        : String(element as number | boolean)),
-  );
+  return undefined;
 };
 
 const toKebabCase = (str: string) => {
@@ -76,6 +68,7 @@ const toKebabCase = (str: string) => {
 
 type DocsHeadlineProps = {
   children: React.ReactNode;
+  id?: string;
 } & Partial<
   Pick<
     HeadlineProps,
@@ -86,13 +79,15 @@ type DocsHeadlineProps = {
 export const DocsHeadline = ({
   children,
   color,
+  id: idProp,
   size = "Medium",
   heading = "h1",
   onClick,
   textAlign,
   underline = false,
 }: DocsHeadlineProps) => {
-  const id = toKebabCase(getHeaderId(children as ReactElement));
+  const headerId = getHeaderId(children as ReactElement);
+  const id = idProp ?? (headerId ? toKebabCase(headerId) : undefined);
   return (
     <StyledHeadline
       as={heading}

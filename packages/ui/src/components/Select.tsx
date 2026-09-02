@@ -2,9 +2,18 @@ import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import type { Ref } from "react";
 import type {
+  ControlProps,
+  CSSObjectWithLabel,
   GroupBase,
+  InputProps,
+  MenuProps,
+  OptionProps,
+  PlaceholderProps,
   Props as ReactSelectProps,
+  SelectComponentsConfig,
+  SingleValueProps,
   StylesConfig,
+  Theme,
 } from "react-select";
 import BaseSelect, { type SelectInstance } from "react-select";
 import {
@@ -21,19 +30,40 @@ import { getColor, themeOr } from "../styles/themes.js";
 import { z } from "../styles/z-index.js";
 import { Icon } from "./Icon/Icon.js";
 
+type SelectStyleGetter<Props> = (
+  base: CSSObjectWithLabel,
+  props: Props,
+) => CSSObjectWithLabel;
+
+type BaseReactSelectProps<
+  Option,
+  IsMulti extends boolean,
+  Group extends GroupBase<Option>,
+> = Omit<
+  ReactSelectProps<Option, IsMulti, Group>,
+  "components" | "openMenuOnFocus" | "tabSelectsValue"
+>;
+
 export type SelectProps<
   Option,
   IsMulti extends boolean = false,
   Group extends GroupBase<Option> = GroupBase<Option>,
-> = ReactSelectProps<Option, IsMulti, Group> & {
+> = BaseReactSelectProps<Option, IsMulti, Group> & {
   zIndex?: number | undefined;
   label?: string | undefined;
-  getMenuStyles?: StylesConfig<Option, IsMulti, Group>["menu"];
-  getOptionStyles?: StylesConfig<Option, IsMulti, Group>["option"];
-  getControlStyles?: StylesConfig<Option, IsMulti, Group>["control"];
-  getPlaceholderStyles?: StylesConfig<Option, IsMulti, Group>["placeholder"];
-  getInputStyles?: StylesConfig<Option, IsMulti, Group>["input"];
-  getSingleValueStyles?: StylesConfig<Option, IsMulti, Group>["singleValue"];
+  components?: SelectComponentsConfig<Option, IsMulti, Group> | undefined;
+  openMenuOnFocus?: boolean | undefined;
+  tabSelectsValue?: boolean | undefined;
+  getMenuStyles?: SelectStyleGetter<MenuProps<Option, IsMulti, Group>>;
+  getOptionStyles?: SelectStyleGetter<OptionProps<Option, IsMulti, Group>>;
+  getControlStyles?: SelectStyleGetter<ControlProps<Option, IsMulti, Group>>;
+  getPlaceholderStyles?: SelectStyleGetter<
+    PlaceholderProps<Option, IsMulti, Group>
+  >;
+  getInputStyles?: SelectStyleGetter<InputProps<Option, IsMulti, Group>>;
+  getSingleValueStyles?: SelectStyleGetter<
+    SingleValueProps<Option, IsMulti, Group>
+  >;
   selectRef?: Ref<SelectInstance<Option, IsMulti, Group>> | undefined;
 };
 
@@ -53,6 +83,7 @@ export function Select<
   getPlaceholderStyles,
   getInputStyles,
   getSingleValueStyles,
+  components,
   ...rest
 }: SelectProps<Option, IsMulti, Group>) {
   const theme = useTheme();
@@ -211,9 +242,9 @@ export function Select<
         ref={selectRef}
         components={{
           DropdownIndicator: () => <Icon name="Chevron" width={16} />,
-          ...rest.components,
+          ...components,
         }}
-        theme={(selectTheme) => ({
+        theme={(selectTheme: Theme) => ({
           ...selectTheme,
           borderRadius: 8,
           colors: {

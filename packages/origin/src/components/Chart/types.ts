@@ -67,7 +67,7 @@ export const SERIES_COLORS = [
   "var(--text-secondary)",
   "var(--surface-blue-strong)",
   "var(--surface-purple-strong)",
-  "var(--surface-green-strong)",
+  "var(--icon-success)",
   "var(--surface-pink-strong)",
 ];
 
@@ -128,6 +128,30 @@ export function axisTickTarget(axisLength: number, horizontal = false): number {
     ? MIN_TICK_SPACING_HORIZONTAL
     : MIN_TICK_SPACING_VERTICAL;
   return Math.max(2, Math.floor(axisLength / spacing));
+}
+
+export type XAxisLabelsMode = "fixed" | "measured";
+export type XAxisEdgeLabelsMode = "show" | "hide";
+
+/**
+ * Shared opt-in controls for how charts thin their x-axis labels. Defaults
+ * preserve the legacy fixed-spacing, all-labels-shown behavior.
+ */
+export interface XAxisLabelProps {
+  /**
+   * How x-axis labels are thinned to avoid overlap.
+   * - `"fixed"` (default): roughly one label per 60px, regardless of width.
+   * - `"measured"`: spacing based on the measured pixel width of the labels,
+   *   so wide labels (dates, currency) get more room and short labels pack in.
+   */
+  xAxisLabels?: XAxisLabelsMode;
+  /**
+   * Whether the first and last x-axis labels are shown.
+   * - `"show"` (default): keep the edge labels.
+   * - `"hide"`: drop the first and last labels (useful when they collide with
+   *   the y-axis or chart edges).
+   */
+  xAxisEdgeLabels?: XAxisEdgeLabelsMode;
 }
 
 export const DASH_PATTERNS: Record<string, string | undefined> = {

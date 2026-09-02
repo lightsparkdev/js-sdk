@@ -94,6 +94,24 @@ export const WithCollapsedItems: Story = {
   ),
 };
 
+export const LinkRenderProp: Story = {
+  render: () => (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          {/* Stand-in for a router-aware link, e.g. render={<Link to="/" />} */}
+          <Breadcrumb.Link render={<a href="/" data-router-link="" />}>
+            Home
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Current Page</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  ),
+};
+
 export const CustomSeparator: Story = {
   render: () => (
     <Breadcrumb.Root>

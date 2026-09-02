@@ -29,6 +29,21 @@ test.describe("AlertDialog", () => {
     await expect(page.getByRole("alertdialog")).not.toBeVisible();
   });
 
+  test("preserves the light panel surface and dark overlay treatment", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestDialog />);
+
+    const popup = page.getByRole("alertdialog");
+    await expect(popup).toHaveCSS("background-color", "rgb(250, 250, 249)");
+
+    await page.evaluate(() => {
+      document.documentElement.dataset.theme = "dark";
+    });
+    await expect(popup).toHaveCSS("background-color", "rgb(26, 26, 26)");
+  });
+
   test("traps focus inside the dialog", async ({ mount, page }) => {
     await mount(<TestDialog />);
 

@@ -61,14 +61,14 @@
     color 150ms ease;
 
   &[aria-current="page"] {
-    background: var(--surface-panel);
-    border-color: var(--border-primary);
+    background: var(--surface-raised);
+    border-color: var(--border-control);
     box-shadow: var(--shadow-sm);
     color: var(--text-primary);
   }
 
   &:focus-visible {
-    background: var(--surface-panel);
+    background: var(--surface-raised);
     border-color: var(--border-secondary);
     box-shadow: var(--input-focus);
     color: var(--text-primary);
@@ -78,5 +78,27 @@
 @media (prefers-reduced-motion: reduce) {
   .link {
     transition: none;
+  }
+}
+
+:global([data-theme="dark"]) .list,
+:global(.dark) .list {
+  background: var(--surface-neutral-subtle);
+}
+
+:global([data-theme="dark"]).link[aria-current="page"],
+:global(.dark).link[aria-current="page"],
+:global([data-theme="dark"]) .link[aria-current="page"],
+:global(.dark) .link[aria-current="page"] {
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .list {
+    background: var(--surface-neutral-subtle);
+  }
+
+  :global(html:not([data-theme="light"])) .link[aria-current="page"] {
+    box-shadow: none;
   }
 }

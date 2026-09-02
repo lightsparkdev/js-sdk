@@ -1,28 +1,53 @@
 "use client";
 
 import * as React from "react";
-import { Toast } from "./";
 import { Button } from "@/components/Button";
+import { CentralIcon, type CentralIconName } from "@/components/Icon";
+import {
+  Toast,
+  type ToastLayout,
+  type ToastPlacement,
+  type ToastVariant,
+} from "./";
 
-// Inner component that uses the hook
+interface ToastData {
+  layout?: ToastLayout;
+  variant?: ToastVariant;
+}
+
+interface ToastTriggerProps {
+  title: React.ReactNode;
+  description?: string;
+  layout?: ToastLayout;
+  variant?: ToastVariant;
+  actionLabel?: string;
+  actionTestId?: string;
+  onAction?: () => void;
+}
+
 function ToastTrigger({
   title,
   description,
-  variant,
+  layout = "default",
+  variant = "default",
   actionLabel,
-}: {
-  title: string;
-  description?: string;
-  variant?: "default" | "info" | "success" | "warning" | "invalid";
-  actionLabel?: string;
-}) {
-  const toastManager = Toast.useToastManager();
+  actionTestId,
+  onAction,
+}: ToastTriggerProps) {
+  const toastManager = Toast.useToastManager<ToastData>();
 
   const handleAdd = () => {
     toastManager.add({
       title,
       description,
-      data: { variant: variant || "default", actionLabel },
+      actionProps: actionLabel
+        ? {
+            children: actionLabel,
+            "data-testid": actionTestId,
+            onClick: onAction,
+          }
+        : undefined,
+      data: { layout, variant },
     });
   };
 
@@ -33,32 +58,32 @@ function ToastTrigger({
   );
 }
 
-// Inner component that renders toasts
 function ToastRenderer() {
-  const toastManager = Toast.useToastManager();
+  const toastManager = Toast.useToastManager<ToastData>();
 
   return (
     <>
       {toastManager.toasts.map((toast) => {
-        const variant =
-          (toast.data?.variant as
-            | "default"
-            | "info"
-            | "success"
-            | "warning"
-            | "invalid") || "default";
+        const layout = toast.data?.layout ?? "default";
+        const variant = toast.data?.variant ?? "default";
+
         return (
-          <Toast.Root key={toast.id} toast={toast} variant={variant}>
-            {variant !== "default" && <Toast.Icon variant={variant} />}
+          <Toast.Root
+            key={toast.id}
+            toast={toast}
+            layout={layout}
+            variant={variant}
+          >
+            {variant !== "default" && (
+              <Toast.Icon data-testid="semantic-icon" variant={variant} />
+            )}
             <Toast.Content>
               <Toast.Title>{toast.title}</Toast.Title>
               {toast.description && (
                 <Toast.Description>{toast.description}</Toast.Description>
               )}
             </Toast.Content>
-            {toast.data?.actionLabel && (
-              <Toast.Action>{toast.data.actionLabel}</Toast.Action>
-            )}
+            <Toast.Action />
             <Toast.Close aria-label="Close toast" />
           </Toast.Root>
         );
@@ -67,117 +92,223 @@ function ToastRenderer() {
   );
 }
 
-// Basic toast with title only
+function ToastFixture({
+  children,
+  limit,
+  placement = "bottom",
+  timeout,
+}: {
+  children: React.ReactNode;
+  limit?: number;
+  placement?: ToastPlacement;
+  timeout?: number;
+}) {
+  return (
+    <Toast.Provider limit={limit} timeout={timeout}>
+      {children}
+      <Toast.Portal>
+        <Toast.Viewport placement={placement}>
+          <ToastRenderer />
+        </Toast.Viewport>
+      </Toast.Portal>
+    </Toast.Provider>
+  );
+}
+
+export function ViewportRefCleanup() {
+  const [showViewport, setShowViewport] = React.useState(true);
+  const [cleanupCount, setCleanupCount] = React.useState(0);
+  const viewportRef = React.useCallback((node: HTMLDivElement | null) => {
+    if (!node) {
+      return;
+    }
+
+    return () => setCleanupCount((count) => count + 1);
+  }, []);
+
+  return (
+    <Toast.Provider timeout={0}>
+      <Button
+        onClick={() => setShowViewport(false)}
+        data-testid="unmount-viewport"
+      >
+        Unmount viewport
+      </Button>
+      <output data-testid="viewport-ref-cleanup-count">{cleanupCount}</output>
+      {showViewport && (
+        <Toast.Portal>
+          <Toast.Viewport ref={viewportRef} />
+        </Toast.Portal>
+      )}
+    </Toast.Provider>
+  );
+}
+
 export function BasicToast() {
   return (
-    <Toast.Provider>
+    <ToastFixture>
       <ToastTrigger title="Toast title" />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    </ToastFixture>
   );
 }
 
-// Toast with title and description
+export function PlacementToast({ placement }: { placement: ToastPlacement }) {
+  return (
+    <ToastFixture placement={placement} timeout={0}>
+      <ToastTrigger title={`${placement} toast`} />
+    </ToastFixture>
+  );
+}
+
+const RouterLikeLink = React.forwardRef<
+  HTMLAnchorElement,
+  Omit<React.ComponentPropsWithoutRef<"a">, "href"> & { to: string }
+>(function RouterLikeLink({ to, ...props }, ref) {
+  return <a ref={ref} href={to} data-router-link="" {...props} />;
+});
+
+export function ToastWithTextLinks() {
+  return (
+    <ToastFixture timeout={0}>
+      <ToastTrigger
+        title={
+          <>
+            Read the{" "}
+            <Toast.Link data-testid="native-toast-link" href="/docs">
+              docs
+            </Toast.Link>{" "}
+            or open{" "}
+            <Toast.Link
+              className="consumer-toast-link"
+              data-testid="rendered-toast-link"
+              render={
+                <RouterLikeLink className="router-toast-link" to="/settings" />
+              }
+            >
+              settings
+            </Toast.Link>
+            {" or "}
+            <Toast.Link
+              data-testid="rendered-toast-button"
+              render={<button type="button" />}
+            >
+              reload
+            </Toast.Link>
+          </>
+        }
+      />
+    </ToastFixture>
+  );
+}
+
 export function ToastWithDescription() {
   return (
-    <Toast.Provider>
+    <ToastFixture>
       <ToastTrigger title="Toast title" description="Toast description." />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    </ToastFixture>
   );
 }
 
-// Toast with action button
-export function ToastWithAction() {
+export function ToastWithHostileGlobalMargins() {
   return (
-    <Toast.Provider>
+    <>
+      <style>{"h2, p { margin: 47px; }"}</style>
+      <ToastFixture>
+        <ToastTrigger title="Toast title" description="Toast description." />
+      </ToastFixture>
+    </>
+  );
+}
+
+export function ToastWithAction() {
+  const [actionCount, setActionCount] = React.useState(0);
+
+  return (
+    <ToastFixture>
       <ToastTrigger
         title="Toast title"
         description="Toast description."
         actionLabel="Undo"
+        actionTestId="action"
+        onAction={() => setActionCount((count) => count + 1)}
       />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+      <output data-testid="action-count">{actionCount}</output>
+    </ToastFixture>
   );
 }
 
-// Info variant
+function SemanticToast({
+  icon,
+  title,
+  variant,
+}: {
+  icon: CentralIconName;
+  title: string;
+  variant: Exclude<ToastVariant, "default">;
+}) {
+  return (
+    <>
+      <ToastFixture>
+        <ToastTrigger title={title} variant={variant} />
+      </ToastFixture>
+      <span hidden data-testid="expected-semantic-icon">
+        <CentralIcon name={icon} />
+      </span>
+    </>
+  );
+}
+
 export function InfoToast() {
   return (
-    <Toast.Provider>
-      <ToastTrigger title="Info toast" variant="info" />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    <SemanticToast
+      icon="IconCircleInfoFilled"
+      title="Info toast"
+      variant="info"
+    />
   );
 }
 
-// Success variant
 export function SuccessToast() {
   return (
-    <Toast.Provider>
-      <ToastTrigger title="Success toast" variant="success" />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    <SemanticToast
+      icon="IconCircleCheckFilled"
+      title="Success toast"
+      variant="success"
+    />
   );
 }
 
-// Warning variant
 export function WarningToast() {
   return (
-    <Toast.Provider>
-      <ToastTrigger title="Warning toast" variant="warning" />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    <SemanticToast
+      icon="IconExclamationTriangleFilled"
+      title="Warning toast"
+      variant="warning"
+    />
   );
 }
 
-// Invalid variant
 export function InvalidToast() {
   return (
-    <Toast.Provider>
-      <ToastTrigger title="Invalid toast" variant="invalid" />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    <SemanticToast
+      icon="IconExclamationTriangleFilled"
+      title="Invalid toast"
+      variant="invalid"
+    />
   );
 }
 
-// Multiple toasts trigger
 function MultiToastTrigger() {
-  const toastManager = Toast.useToastManager();
+  const toastManager = Toast.useToastManager<ToastData>();
   const [count, setCount] = React.useState(0);
 
   const handleAdd = () => {
     const newCount = count + 1;
     setCount(newCount);
-    toastManager.add({ title: `Toast ${newCount}` });
+    toastManager.add({
+      title: `Toast ${newCount}`,
+      data: { layout: "default", variant: "default" },
+    });
   };
 
   return (
@@ -187,28 +318,176 @@ function MultiToastTrigger() {
   );
 }
 
-// Multiple toasts
-export function MultipleToasts() {
+export function MultipleToasts({
+  limit = 3,
+  placement = "bottom",
+}: {
+  limit?: number;
+  placement?: ToastPlacement;
+}) {
   return (
-    <Toast.Provider limit={3}>
+    <ToastFixture limit={limit} placement={placement} timeout={0}>
       <MultiToastTrigger />
-      <Toast.Portal>
-        <Toast.Viewport>
-          <ToastRenderer />
-        </Toast.Viewport>
-      </Toast.Portal>
-    </Toast.Provider>
+    </ToastFixture>
   );
 }
 
-// No auto-dismiss (timeout=0)
+function StackTrigger() {
+  const toastManager = Toast.useToastManager<ToastData>();
+  const [count, setCount] = React.useState(0);
+
+  const toasts = [
+    {
+      actionProps: { children: "Undo 1" },
+      data: { layout: "default", variant: "info" },
+      description:
+        "The oldest notification has enough supporting text to use multiple lines.",
+      title: "Toast 1",
+    },
+    {
+      data: { layout: "compact", variant: "warning" },
+      title: "Toast 2",
+    },
+    {
+      data: { layout: "pill", variant: "success" },
+      title: "Toast 3",
+    },
+  ] satisfies Array<{
+    actionProps?: { children: string };
+    data: ToastData;
+    description?: string;
+    title: string;
+  }>;
+
+  const handleAdd = () => {
+    const toast = toasts[count % toasts.length];
+    toastManager.add(toast);
+    setCount((currentCount) => currentCount + 1);
+  };
+
+  return (
+    <Button onClick={handleAdd} data-testid="stack-trigger">
+      Add Toast ({count})
+    </Button>
+  );
+}
+
+export function StackedToasts({
+  adjustableLimit = false,
+  limit = 3,
+}: {
+  adjustableLimit?: boolean;
+  limit?: number;
+}) {
+  const [runtimeLimit, setRuntimeLimit] = React.useState(limit);
+
+  return (
+    <ToastFixture limit={runtimeLimit} timeout={0}>
+      <StackTrigger />
+      {adjustableLimit && (
+        <Button onClick={() => setRuntimeLimit(3)} data-testid="increase-limit">
+          Show three toasts
+        </Button>
+      )}
+    </ToastFixture>
+  );
+}
+
+function TimedStackTrigger() {
+  const toastManager = Toast.useToastManager<ToastData>();
+  const [count, setCount] = React.useState(0);
+
+  const handleAdd = () => {
+    if (count === 0) {
+      toastManager.add({
+        title: "Tall Default toast",
+        description:
+          "This persistent notification is deliberately tall enough to expose mixed-layout promotion.",
+        data: { layout: "default", variant: "info" },
+        timeout: 0,
+      });
+    } else {
+      toastManager.add({
+        title: "Timed Pill toast",
+        data: { layout: "pill", variant: "success" },
+        timeout: 500,
+      });
+    }
+    setCount((currentCount) => currentCount + 1);
+  };
+
+  return (
+    <Button
+      onClick={handleAdd}
+      data-testid="timed-stack-trigger"
+      disabled={count >= 2}
+    >
+      Add timed toast ({count})
+    </Button>
+  );
+}
+
+export function TimedStackedToasts() {
+  return (
+    <ToastFixture timeout={0}>
+      <TimedStackTrigger />
+    </ToastFixture>
+  );
+}
+
 export function NoAutoDismiss() {
   return (
-    <Toast.Provider timeout={0}>
+    <ToastFixture timeout={0}>
       <ToastTrigger title="Persistent toast" />
+    </ToastFixture>
+  );
+}
+
+export function LayoutToast({ layout }: { layout: ToastLayout }) {
+  return (
+    <ToastFixture timeout={0}>
+      <ToastTrigger
+        title="Layout toast"
+        description="Description should only appear in Default."
+        layout={layout}
+        variant="success"
+        actionLabel="Undo"
+      />
+    </ToastFixture>
+  );
+}
+
+function StateAttributeOverrideRenderer() {
+  const toastManager = Toast.useToastManager<ToastData>();
+
+  return (
+    <>
+      {toastManager.toasts.map((toast) => (
+        <Toast.Root
+          key={toast.id}
+          toast={toast}
+          layout="compact"
+          variant="success"
+          data-layout="pill"
+          data-variant="invalid"
+        >
+          <Toast.Icon data-testid="semantic-icon" variant="success" />
+          <Toast.Content>
+            <Toast.Title>{toast.title}</Toast.Title>
+          </Toast.Content>
+        </Toast.Root>
+      ))}
+    </>
+  );
+}
+
+export function StateAttributeOverrideToast() {
+  return (
+    <Toast.Provider timeout={0}>
+      <ToastTrigger title="State attribute toast" />
       <Toast.Portal>
         <Toast.Viewport>
-          <ToastRenderer />
+          <StateAttributeOverrideRenderer />
         </Toast.Viewport>
       </Toast.Portal>
     </Toast.Provider>

@@ -5,6 +5,7 @@ export * from "./isReactNodeWithChildren.js";
 export * from "./locale.js";
 export * from "./NextLink.js";
 export * from "./parseURLFragments.js";
+export * from "./stateCodesToNames.js";
 export * from "./strings.js";
 export * from "./toReactNodes/nodes.js";
 export * from "./toReactNodes/setReactNodesTypography.js";

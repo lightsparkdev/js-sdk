@@ -13,5 +13,6 @@ export type {
   CountryItemProps as PhoneInputCountryItemProps,
   CountryItemTextProps as PhoneInputCountryItemTextProps,
   CountryItemIndicatorProps as PhoneInputCountryItemIndicatorProps,
+  LockedCountryProps as PhoneInputLockedCountryProps,
   InputProps as PhoneInputInputProps,
 } from "./parts";

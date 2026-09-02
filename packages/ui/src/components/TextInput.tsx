@@ -1,5 +1,6 @@
 // Copyright  ©, 2022, Lightspark Group, Inc. - All Rights Reserved
 import styled from "@emotion/styled";
+import { stripNonPrintable } from "@lightsparkdev/core";
 import type {
   ChangeEvent,
   ClipboardEvent,
@@ -121,7 +122,7 @@ export type TextInputProps = {
   ) => void;
   onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  inputRef?: RefObject<HTMLInputElement> | undefined;
+  inputRef?: RefObject<HTMLInputElement | null> | undefined;
   inputRefCb?: RefCallback<HTMLInputElement>;
   id?: string;
   type?: "text" | "password" | "hidden" | undefined;
@@ -267,7 +268,7 @@ export function TextInput(textInputProps: TextInputProps) {
         onChange={(e) => {
           // needed to prevent default chrome error message when in a form element
           e.target.setCustomValidity("");
-          props.onChange(e.target.value, e);
+          props.onChange(stripNonPrintable(e.target.value), e);
         }}
         onFocus={(focusEvent) => {
           setFocused(true);

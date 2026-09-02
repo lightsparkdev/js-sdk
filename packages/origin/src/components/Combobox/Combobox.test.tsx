@@ -1,12 +1,16 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   TestCombobox,
+  TestComboboxLongList,
   TestComboboxMultiple,
   TestComboboxDisabled,
   TestComboboxDefaultValue,
   TestComboboxControlled,
   TestComboboxWithGroups,
   TestComboboxWithClear,
+  TestComboboxWithClearClassNameCallback,
+  TestComboboxChipPassThrough,
+  TestComboboxChipsHeight,
   ConformanceInputWrapper,
   ConformanceActionButtons,
 } from "./Combobox.test-stories";
@@ -54,6 +58,75 @@ test.describe("Combobox", () => {
       await expect(page.getByRole("option", { name: "Apple" })).toBeVisible();
       await expect(page.getByRole("option", { name: "Cherry" })).toBeVisible();
       await expect(page.getByRole("option", { name: "Grape" })).toBeVisible();
+    });
+
+    test("keeps long-list scrolling on the list", async ({ mount, page }) => {
+      const component = await mount(<TestComboboxLongList />);
+      const input = component.getByPlaceholder("Select a fruit...");
+
+      await input.click();
+
+      const popup = page.getByTestId("combobox-long-list-popup");
+      const listbox = page.getByTestId("combobox-long-list");
+      await expect(listbox).toBeVisible();
+
+      const state = await listbox.evaluate((list) => {
+        const popup = document.querySelector(
+          '[data-testid="combobox-long-list-popup"]',
+        );
+        const firstItem = list.querySelector('[role="option"]');
+
+        if (!(popup instanceof HTMLElement)) {
+          throw new Error("Combobox long-list popup is missing");
+        }
+
+        if (!(firstItem instanceof HTMLElement)) {
+          throw new Error("Combobox list is missing option rows");
+        }
+
+        const listStyles = window.getComputedStyle(list);
+        const popupStyles = window.getComputedStyle(popup);
+        const itemStyles = window.getComputedStyle(firstItem);
+        popup.scrollTop = popup.scrollHeight;
+        list.scrollTop = list.scrollHeight;
+
+        return {
+          itemFlexShrink: itemStyles.flexShrink,
+          popupMaxHeight: popupStyles.maxHeight,
+          popupOverflowY: popupStyles.overflowY,
+          popupHasScrollableOverflow: popup.scrollHeight > popup.clientHeight,
+          popupCanScroll: popup.scrollTop > 0,
+          listMaxHeight: listStyles.maxHeight,
+          listOverflowY: listStyles.overflowY,
+          listOverscrollBehaviorY: listStyles.overscrollBehaviorY,
+          listScrollPaddingBlockEnd: listStyles.scrollPaddingBlockEnd,
+          listScrollPaddingBlockStart: listStyles.scrollPaddingBlockStart,
+          listHasScrollableOverflow: list.scrollHeight > list.clientHeight,
+          listCanScroll: list.scrollTop > 0,
+        };
+      });
+
+      expect(state.itemFlexShrink).toBe("0");
+      expect(state.popupMaxHeight).toBe("none");
+      expect(state.popupOverflowY).toBe("hidden");
+      expect(state.popupHasScrollableOverflow).toBe(false);
+      expect(state.popupCanScroll).toBe(false);
+      expect(state.listMaxHeight).not.toBe("none");
+      expect(state.listOverflowY).toBe("auto");
+      expect(state.listOverscrollBehaviorY).toBe("contain");
+      expect(
+        Number.parseFloat(state.listScrollPaddingBlockStart),
+      ).toBeGreaterThan(0);
+      expect(
+        Number.parseFloat(state.listScrollPaddingBlockEnd),
+      ).toBeGreaterThan(0);
+      expect(state.listHasScrollableOverflow).toBe(true);
+      expect(state.listCanScroll).toBe(true);
+
+      await expect(popup).toBeVisible();
+      await expect(
+        page.getByRole("option", { name: "Fruit 40" }),
+      ).toBeVisible();
     });
 
     test("shows empty state when no matches", async ({ mount, page }) => {
@@ -135,6 +208,41 @@ test.describe("Combobox", () => {
       await expect(apple).toHaveAttribute("data-selected", "");
       await expect(banana).toHaveAttribute("data-selected", "");
     });
+
+    test("renders chip children directly and removes through wrapped ChipRemove", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<TestComboboxChipPassThrough />);
+      const chip = page.getByTestId("combobox-chip");
+
+      await expect(
+        chip.locator("> [data-testid='chip-label-child']"),
+      ).toHaveText("Apple");
+      await expect(
+        chip.locator("> [data-testid='remove-wrapper']"),
+      ).toBeVisible();
+
+      await page.getByRole("button", { name: "Remove Apple" }).click();
+      await expect(chip).toBeHidden();
+    });
+
+    test("a one-row chip field matches the empty control height", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<TestComboboxChipsHeight />);
+      const wrapper = page.getByTestId("chips-wrapper");
+      await expect(wrapper).toHaveCSS("height", "36px");
+
+      await component.getByPlaceholder("Select fruits...").click();
+      await page.getByRole("option", { name: "Apple" }).click();
+
+      await expect(
+        page.getByRole("button", { name: "Remove Apple" }),
+      ).toBeVisible();
+      await expect(wrapper).toHaveCSS("height", "36px");
+    });
   });
 
   test.describe("disabled prop", () => {
@@ -181,14 +289,103 @@ test.describe("Combobox", () => {
   });
 
   test.describe("clear button", () => {
-    test("clears selection on click", async ({ mount }) => {
+    test("defaults to active visibility and clears selection on click", async ({
+      mount,
+      page,
+    }) => {
       const component = await mount(<TestComboboxWithClear />);
       const input = component.getByPlaceholder("Select a fruit...");
-      const clear = component.locator('button[class*="clear"]');
+      const clear = component.getByRole("button", {
+        name: "Clear selection",
+        includeHidden: true,
+      });
 
       await expect(input).toHaveValue("Apple");
+      await expect(clear).toHaveCSS("display", "none");
+
+      await input.click();
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(clear).toBeVisible();
       await clear.click();
       await expect(input).toHaveValue("");
+    });
+
+    test("always clear remains visible while clearable", async ({ mount }) => {
+      const component = await mount(
+        <TestComboboxWithClear visibility="always" />,
+      );
+      const input = component.getByPlaceholder("Select a fruit...");
+      const clear = component.getByRole("button", { name: "Clear selection" });
+
+      await expect(input).toHaveValue("Apple");
+      await expect(clear).toBeVisible();
+      await expect(clear).not.toHaveAttribute("visibility", "always");
+      await expect(clear).not.toHaveAttribute(
+        "data-clear-visibility",
+        "always",
+      );
+      await clear.click();
+      await expect(input).toHaveValue("");
+      await expect(clear).toBeHidden();
+    });
+
+    test("preserves Base UI stateful clear className callback", async ({
+      mount,
+    }) => {
+      const component = await mount(<TestComboboxWithClearClassNameCallback />);
+      const clear = component.getByRole("button", { name: "Clear selection" });
+
+      await expect(clear).toHaveClass(/clear-closed/);
+    });
+
+    test("active clear is hidden at rest and appears while focused or open", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(
+        <TestComboboxWithClear visibility="active" />,
+      );
+      const input = component.getByPlaceholder("Select a fruit...");
+      const wrapper = page.getByTestId("combobox-clear-wrapper");
+      const clear = component.getByRole("button", {
+        name: "Clear selection",
+        includeHidden: true,
+      });
+
+      const restingPadding = await wrapper.evaluate((element) =>
+        Number.parseFloat(window.getComputedStyle(element).paddingRight),
+      );
+
+      await expect(input).toHaveValue("Apple");
+      await expect(clear).toHaveCSS("display", "none");
+      await expect(
+        component.getByRole("button", { name: "Clear selection" }),
+      ).toBeHidden();
+
+      await input.click();
+      await expect(page.getByRole("listbox")).toBeVisible();
+      await expect(clear).toBeVisible();
+
+      const activePadding = await wrapper.evaluate((element) =>
+        Number.parseFloat(window.getComputedStyle(element).paddingRight),
+      );
+      expect(activePadding).toBeGreaterThan(restingPadding);
+
+      await clear.click();
+      await expect(input).toHaveValue("");
+    });
+
+    test("omitting Clear does not render the clear affordance", async ({
+      mount,
+    }) => {
+      const component = await mount(<TestCombobox />);
+
+      await expect(
+        component.getByRole("button", {
+          name: "Clear selection",
+          includeHidden: true,
+        }),
+      ).toHaveCount(0);
     });
   });
 
@@ -233,9 +430,6 @@ test.describe("Combobox", () => {
 
     // ItemText tests skipped - requires popup to be visible in DOM
     // The component itself follows slot pattern, but testing requires complex setup
-
-    // Value tests skipped - Value is a context provider for accessing selected values,
-    // not a DOM wrapper. It doesn't render props to a DOM element.
 
     // ChipText tests skipped - requires multi-select chips to render
     // The component itself follows slot pattern, but testing requires complex setup

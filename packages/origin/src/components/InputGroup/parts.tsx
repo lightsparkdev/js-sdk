@@ -172,13 +172,28 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // Extends native button props, not BaseButton.Props, to restrict API surface.
-export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
+type NativeButtonProps = React.ComponentPropsWithoutRef<"button">;
+type AccessibleNameProps =
+  | {
+      "aria-label": string;
+    }
+  | {
+      "aria-labelledby": string;
+    };
+
+export type ButtonProps = NativeButtonProps & {
   variant?: "ghost" | "outline";
-}
+} & ({ iconOnly?: false } | ({ iconOnly: boolean } & AccessibleNameProps));
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
-    { className, variant = "ghost", disabled: buttonDisabled, ...props },
+    {
+      className,
+      variant = "ghost",
+      iconOnly = false,
+      disabled: buttonDisabled,
+      ...props
+    },
     ref,
   ) {
     const { disabled: rootDisabled } = useInputGroupContext();
@@ -190,6 +205,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={clsx(
           styles.button,
           variant === "outline" && styles.buttonOutline,
+          iconOnly && styles.buttonIconOnly,
           className,
         )}
         disabled={isDisabled}

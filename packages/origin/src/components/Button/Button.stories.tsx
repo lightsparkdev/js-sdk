@@ -54,6 +54,7 @@ const meta: Meta<typeof Button> = {
     },
     loading: { control: "boolean" },
     disabled: { control: "boolean" },
+    fullWidth: { control: "boolean" },
     children: { control: "text" },
   },
 };
@@ -67,6 +68,7 @@ export const Default: Story = {
     size: "default",
     loading: false,
     disabled: false,
+    fullWidth: false,
     children: "Button",
   },
 };

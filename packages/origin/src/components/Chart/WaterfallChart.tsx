@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import clsx from "clsx";
-import { linearScale, niceTicks, thinIndices, axisPadForLabels } from "./utils";
+import {
+  linearScale,
+  niceTicks,
+  thinIndices,
+  xAxisTickTarget,
+  applyEdgeLabels,
+  axisPadForLabels,
+} from "./utils";
 import { useResizeWidth } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
 import {
@@ -12,6 +19,7 @@ import {
   PAD_BOTTOM_AXIS,
   TOOLTIP_GAP,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
@@ -26,7 +34,8 @@ export interface WaterfallSegment {
 }
 
 export interface WaterfallChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   data: WaterfallSegment[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -78,6 +87,8 @@ export const Waterfall = React.forwardRef<HTMLDivElement, WaterfallChartProps>(
       data,
       formatValue,
       formatYLabel,
+      xAxisLabels = "fixed",
+      xAxisEdgeLabels = "show",
       showConnectors = true,
       showValues = false,
       height = 300,
@@ -317,9 +328,12 @@ export const Waterfall = React.forwardRef<HTMLDivElement, WaterfallChartProps>(
     }, [data.length]);
 
     const xLabelIndices = React.useMemo(() => {
-      const maxLabels = Math.max(2, Math.floor(plotWidth / 60));
-      return thinIndices(data.length, maxLabels);
-    }, [data.length, plotWidth]);
+      const maxLabels = xAxisTickTarget(xAxisLabels, plotWidth, () =>
+        data.map((d) => d.label),
+      );
+      const indices = thinIndices(data.length, maxLabels);
+      return applyEdgeLabels(xAxisEdgeLabels, indices);
+    }, [data, plotWidth, xAxisLabels, xAxisEdgeLabels]);
 
     return (
       <ChartWrapper
