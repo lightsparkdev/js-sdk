@@ -51,6 +51,10 @@
   gap: var(--spacing-xs);
   flex-shrink: 0;
   max-inline-size: 100%;
+
+  /* Controls are taller than the text lines, so top-aligning them reads as
+     misaligned; centering is inert once the slot wraps to its own line. */
+  align-self: center;
 }
 
 .title {
