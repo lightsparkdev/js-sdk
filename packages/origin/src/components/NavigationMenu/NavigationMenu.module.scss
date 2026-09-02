@@ -307,8 +307,8 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
@@ -391,8 +391,8 @@
 
 .arrow {
   display: flex;
-  fill: var(--surface-primary);
-  stroke: var(--border-primary);
+  fill: var(--surface-overlay);
+  stroke: var(--border-overlay);
   stroke-width: var(--stroke-xs);
 }
 
@@ -462,6 +462,51 @@
     left: 0;
     right: 0;
     height: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-overlay);
+  }
+}
+
+[data-theme="dark"].link[data-active],
+:global(.dark).link[data-active],
+[data-theme="dark"] .link[data-active],
+:global(.dark) .link[data-active],
+[data-theme="dark"].action[data-active],
+:global(.dark).action[data-active],
+[data-theme="dark"] .action[data-active],
+:global(.dark) .action[data-active],
+[data-theme="dark"].actionIcon[data-active],
+:global(.dark).actionIcon[data-active],
+[data-theme="dark"] .actionIcon[data-active],
+:global(.dark) .actionIcon[data-active],
+[data-theme="dark"].link:focus-visible,
+:global(.dark).link:focus-visible,
+[data-theme="dark"] .link:focus-visible,
+:global(.dark) .link:focus-visible,
+[data-theme="dark"].action:focus-visible,
+:global(.dark).action:focus-visible,
+[data-theme="dark"] .action:focus-visible,
+:global(.dark) .action:focus-visible,
+[data-theme="dark"].actionIcon:focus-visible,
+:global(.dark).actionIcon:focus-visible,
+[data-theme="dark"] .actionIcon:focus-visible,
+:global(.dark) .actionIcon:focus-visible,
+[data-theme="dark"].trigger:focus-visible,
+:global(.dark).trigger:focus-visible,
+[data-theme="dark"] .trigger:focus-visible,
+:global(.dark) .trigger:focus-visible {
+  background-color: var(--surface-raised);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .link[data-active],
+    .action[data-active],
+    .actionIcon[data-active],
+    .link:focus-visible,
+    .action:focus-visible,
+    .actionIcon:focus-visible,
+    .trigger:focus-visible {
+      background-color: var(--surface-raised);
+    }
   }
 }

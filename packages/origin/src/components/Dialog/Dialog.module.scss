@@ -46,6 +46,12 @@
 }
 
 .popup {
+  // Wash that dims this dialog while a nested dialog stacks above it. A 5%
+  // black wash is imperceptible on dark surfaces, so dark themes use a
+  // stronger step (see the theme overrides below).
+  --dialog-stack-overlay: rgb(0 0 0 / 0.05);
+  --dialog-border: var(--border-secondary);
+
   position: fixed;
   // 38% optical center -- feels slightly above midpoint like Linear/Vercel
   top: 38%;
@@ -57,7 +63,7 @@
   max-width: calc(100vw - var(--spacing-2xl));
   overflow: clip;
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-secondary);
+  border: var(--stroke-xs) solid var(--dialog-border);
   @include smooth-corners(var(--corner-radius-md));
   box-shadow: var(--shadow-lg);
   transition:
@@ -80,11 +86,26 @@
     inset: 0;
     position: absolute;
     border-radius: inherit;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--dialog-stack-overlay);
   }
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+}
+
+[data-theme="dark"].popup,
+:global(.dark).popup,
+[data-theme="dark"] .popup,
+:global(.dark) .popup {
+  --dialog-stack-overlay: var(--color-alpha-black-20);
+  --dialog-border: var(--border-overlay);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .popup {
+    --dialog-stack-overlay: var(--color-alpha-black-20);
+    --dialog-border: var(--border-overlay);
   }
 }
 

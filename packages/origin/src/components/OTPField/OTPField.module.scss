@@ -23,7 +23,7 @@
   padding: var(--spacing-none);
   text-align: center;
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);
   outline: none;

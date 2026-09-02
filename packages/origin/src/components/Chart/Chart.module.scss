@@ -79,14 +79,17 @@
 // Tooltip
 
 .tooltip {
+  --chart-tooltip-shadow: 0 1px 3px
+    rgba(0, 0, 0, var(--chart-tooltip-shadow-opacity, 0.06));
+
   display: flex;
   flex-direction: column;
   gap: var(--spacing-4xs);
   padding: var(--spacing-3xs) var(--spacing-2xs);
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   border-radius: var(--corner-radius-xs);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, var(--chart-tooltip-shadow-opacity, 0.06));
+  box-shadow: var(--chart-tooltip-shadow);
   z-index: 10;
   white-space: nowrap;
 
@@ -102,6 +105,17 @@
   }
 }
 
+[data-theme="dark"] .tooltip,
+:global(.dark) .tooltip {
+  --chart-tooltip-shadow: var(--shadow-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tooltip {
+    --chart-tooltip-shadow: var(--shadow-sm);
+  }
+}
+
 .tooltipLabel {
   @include label-chart;
 
@@ -109,7 +123,7 @@
   color: var(--text-secondary);
   padding-bottom: var(--spacing-3xs);
   margin-bottom: var(--spacing-4xs);
-  border-bottom: var(--stroke-xs) solid var(--border-primary);
+  border-bottom: var(--stroke-xs) solid var(--border-overlay);
   margin-inline: calc(-1 * var(--spacing-2xs));
   padding-inline: var(--spacing-2xs);
 }
@@ -147,7 +161,7 @@
 }
 
 .tooltipFooter {
-  border-top: var(--stroke-xs) solid var(--border-primary);
+  border-top: var(--stroke-xs) solid var(--border-overlay);
   margin: var(--spacing-4xs) calc(-1 * var(--spacing-2xs)) 0;
   padding: var(--spacing-3xs) var(--spacing-2xs) 0;
 }
@@ -665,7 +679,7 @@
 }
 
 .barListChangeUp {
-  color: var(--text-success, var(--surface-green-strong));
+  color: var(--text-green);
 }
 
 .barListChangeDown {

@@ -7,7 +7,7 @@
   align-items: center;
   border: var(--stroke-xs) solid var(--border-primary);
   @include smooth-corners(var(--corner-radius-sm));
-  background-color: var(--surface-secondary);
+  background-color: var(--surface-neutral-subtle);
   color: var(--text-primary);
   // Clip interactive-segment hover backgrounds (dismiss, value triggers)
   // to the rounded corners. Focus rings inside use negative outline-offset

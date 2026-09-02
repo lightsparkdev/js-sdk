@@ -10,7 +10,7 @@
   padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
     var(--spacing-md); // 8px 8px 8px 16px
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(10px);
   box-shadow: var(--shadow-lg);
 }

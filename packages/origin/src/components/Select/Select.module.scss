@@ -10,7 +10,7 @@
   padding-inline-start: var(--spacing-sm);
   padding-inline-end: var(--spacing-xs);
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);
   cursor: pointer;
@@ -51,7 +51,9 @@
   @include smooth-corners(var(--corner-radius-sm));
   background: transparent;
   color: var(--text-primary);
-  transition: background-color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
 
   @media (hover: hover) {
     &:hover:not([data-disabled]) {
@@ -209,8 +211,8 @@
   overscroll-behavior: contain;
   scroll-padding-block: var(--spacing-3xs);
   min-width: var(--select-popup-min-width, var(--anchor-width));
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
@@ -341,7 +343,7 @@
     left: 0;
     right: 0;
     height: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-overlay);
   }
 }
 
@@ -356,4 +358,45 @@
   padding-block-end: 0;
   padding-inline: var(--spacing-sm);
   color: var(--text-secondary);
+}
+
+// Dark ghost chrome: mute rest so hover/open can read as brighter. Light
+// already uses primary (near-black) at rest and should stay as-is.
+[data-theme="dark"].triggerGhost,
+:global(.dark).triggerGhost,
+[data-theme="dark"] .triggerGhost,
+:global(.dark) .triggerGhost {
+  color: var(--text-secondary);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      color: var(--text-primary);
+    }
+  }
+
+  &:focus,
+  &[data-popup-open],
+  &[aria-expanded="true"] {
+    color: var(--text-primary);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .triggerGhost {
+      color: var(--text-secondary);
+
+      @media (hover: hover) {
+        &:hover:not([data-disabled]) {
+          color: var(--text-primary);
+        }
+      }
+
+      &:focus,
+      &[data-popup-open],
+      &[aria-expanded="true"] {
+        color: var(--text-primary);
+      }
+    }
+  }
 }

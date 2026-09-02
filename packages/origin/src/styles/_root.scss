@@ -6,6 +6,7 @@
 
 // Import effect tokens (shadows, focus rings)
 @use "../tokens/effects";
+@use "../tokens/dark-effects";
 
 :root {
   /* Overrides the generated single-family token from _variables.scss:

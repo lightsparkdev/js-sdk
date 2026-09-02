@@ -7,7 +7,7 @@
   align-items: center;
   height: 36px;
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   overflow: visible;
   transition:
@@ -161,8 +161,8 @@
   box-sizing: border-box;
   width: var(--anchor-width);
   overflow: hidden;
-  background: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;

@@ -69,7 +69,7 @@
   margin: 0;
   padding: var(--spacing-md);
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-md));
   box-shadow: var(--shadow-md);
   outline: none;
@@ -278,7 +278,7 @@
   height: 20px;
   padding: 0;
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   border-radius: var(--corner-radius-round);
   box-shadow: none;
   cursor: pointer;

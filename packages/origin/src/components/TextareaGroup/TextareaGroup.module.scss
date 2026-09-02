@@ -7,7 +7,7 @@
   min-height: 64px;
   max-height: var(--_textarea-group-max-height, none);
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-lg));
   // clip instead of hidden: avoids creating a scroll context so the
   // textarea can own its own overflow-y scrolling independently.

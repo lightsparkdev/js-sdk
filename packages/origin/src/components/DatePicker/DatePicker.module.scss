@@ -6,8 +6,8 @@
   flex-direction: column;
   width: 270px;
   overflow: hidden;
-  background: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
 }

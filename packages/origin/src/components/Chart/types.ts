@@ -67,7 +67,7 @@ export const SERIES_COLORS = [
   "var(--text-secondary)",
   "var(--surface-blue-strong)",
   "var(--surface-purple-strong)",
-  "var(--surface-green-strong)",
+  "var(--icon-success)",
   "var(--surface-pink-strong)",
 ];
 

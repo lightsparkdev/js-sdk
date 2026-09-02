@@ -5,6 +5,9 @@ import {
   SecondaryButton,
   DisabledSecondaryButton,
   OutlineButton,
+  ScopedDarkOutlineButton,
+  SelfThemedDarkOutlineButton,
+  ClassThemedDarkOutlineButton,
   GhostButton,
   CriticalButton,
   DisabledButton,
@@ -51,6 +54,82 @@ test.describe("Button", () => {
     await mount(<OutlineButton />);
     const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
     expect(results.violations).toEqual([]);
+  });
+
+  test("applies dark outline hover inside a scoped theme", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ScopedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover when explicitly themed on the button", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<SelfThemedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover from a class on the button", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ClassThemedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover from the system preference", async ({
+    mount,
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.evaluate(() =>
+      document.documentElement.removeAttribute("data-theme"),
+    );
+    await mount(<OutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
   });
 
   test("ghost variant has no accessibility violations", async ({

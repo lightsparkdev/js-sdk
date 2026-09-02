@@ -15,7 +15,7 @@
   min-height: 66px;
   padding: var(--spacing-sm);
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);
   outline: none;

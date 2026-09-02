@@ -85,7 +85,7 @@
   padding: var(--spacing-md);
   padding-right: var(--spacing-3xl);
   @include surface-with-hover(var(--surface-secondary));
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-md));
   overflow: hidden;
 

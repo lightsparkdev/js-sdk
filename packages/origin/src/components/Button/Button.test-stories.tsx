@@ -43,6 +43,30 @@ export function OutlineButton() {
   return <Button variant="outline">Click me</Button>;
 }
 
+export function ScopedDarkOutlineButton() {
+  return (
+    <div data-theme="dark">
+      <Button variant="outline">Click me</Button>
+    </div>
+  );
+}
+
+export function SelfThemedDarkOutlineButton() {
+  return (
+    <Button data-theme="dark" variant="outline">
+      Click me
+    </Button>
+  );
+}
+
+export function ClassThemedDarkOutlineButton() {
+  return (
+    <Button className="dark" variant="outline">
+      Click me
+    </Button>
+  );
+}
+
 export function GhostButton() {
   return <Button variant="ghost">Click me</Button>;
 }

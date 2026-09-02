@@ -1,7 +1,7 @@
 @mixin html-globals($selector: ":where(html)") {
   #{$selector} {
     height: 100%;
-    background: var(--surface-primary, #ffffff);
+    background: var(--surface-page, #ffffff);
     font-feature-settings: "kern" 1;
 
     /* required for iOS https://bit.ly/3Q8syG8 */

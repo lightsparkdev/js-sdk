@@ -46,8 +46,8 @@
   width: 32px;
   height: 32px;
   padding: 0;
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-control);
+  border: var(--stroke-xs) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-sm);
   color: var(--icon-primary);
@@ -65,6 +65,23 @@
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+}
+
+:global([data-theme="dark"]).backButton,
+:global(.dark).backButton,
+:global([data-theme="dark"]) .backButton,
+:global(.dark) .backButton {
+  &:hover {
+    background-color: var(--surface-raised);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .backButton {
+    &:hover {
+      background-color: var(--surface-raised);
+    }
   }
 }
 

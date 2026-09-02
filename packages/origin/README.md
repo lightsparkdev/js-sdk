@@ -64,7 +64,9 @@ import { CentralIcon } from "@/components/Icon";
 
 ## Tokens
 
-Color and spacing tokens are built from exported Figma variables (`npm run tokens:build`). Typography mixins (`_text-styles.scss`) and shadow variables (`_effects.scss`) are generated from an internal Figma file and committed to the repo — external contributors don't need to regenerate them. Don't edit these generated files by hand.
+Color and spacing tokens are built from the repository token JSON (`yarn tokens:build`). Typography mixins (`_text-styles.scss`) and shadow variables (`_effects.scss`) are generated from an internal Figma file and committed to the repo — external contributors don't need to regenerate them. Don't edit these generated files by hand.
+
+See [src/tokens/README.md](src/tokens/README.md) for the token role guide — how to pick surface, border, and alpha tokens.
 
 ## Scripts
 
@@ -73,7 +75,7 @@ Color and spacing tokens are built from exported Figma variables (`npm run token
 | `npm run dev`           | Start development server             |
 | `npm run build`         | Production build                     |
 | `npm run storybook`     | Start Storybook                      |
-| `npm run tokens:build`  | Build tokens from Figma exports      |
+| `yarn tokens:build`     | Build tokens from repository JSON    |
 | `npm run icons:extract` | Vendor icons and regenerate registry |
 | `npm run test`          | Vitest unit tests                    |
 | `npm run test:ct`       | Playwright component tests           |
@@ -114,6 +116,18 @@ export default nextConfig;
 
 ```ts
 import "@lightsparkdev/origin/styles.css";
+```
+
+### Color Theme
+
+Set `data-theme="light"` or `data-theme="dark"` on the document element.
+Remove the attribute to follow `prefers-color-scheme`. Keep the theme boundary
+on `html` so overlays portaled to `body` inherit the same tokens and browser
+color scheme.
+
+```ts
+document.documentElement.dataset.theme = "dark";
+document.documentElement.removeAttribute("data-theme"); // System preference
 ```
 
 ### Copy Fonts

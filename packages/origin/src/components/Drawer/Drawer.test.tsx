@@ -65,36 +65,41 @@ test.describe("Drawer", () => {
       await expect(backdrop).toBeAttached();
     });
 
-    test("uses surface-primary and border-primary by default", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<TestDefault />);
-      const popup = page.getByTestId("popup");
-      await expect(popup).toBeVisible();
-
-      const expectedBackgroundColor = await resolveTokenColor(
+    for (const theme of ["light", "dark"] as const) {
+      test(`uses the overlay surface and border in ${theme} mode`, async ({
+        mount,
         page,
-        "--surface-primary",
-        "backgroundColor",
-      );
-      const expectedOutlineColor = await resolveTokenColor(
-        page,
-        "--border-primary",
-        "outlineColor",
-      );
+      }) => {
+        await page.evaluate((nextTheme) => {
+          document.documentElement.dataset.theme = nextTheme;
+        }, theme);
+        await mount(<TestDefault />);
+        const popup = page.getByTestId("popup");
+        await expect(popup).toBeVisible();
 
-      const popupStyles = await popup.evaluate((element) => {
-        const styles = getComputedStyle(element);
-        return {
-          backgroundColor: styles.backgroundColor,
-          outlineColor: styles.outlineColor,
-        };
+        const expectedBackgroundColor = await resolveTokenColor(
+          page,
+          "--surface-overlay",
+          "backgroundColor",
+        );
+        const expectedOutlineColor = await resolveTokenColor(
+          page,
+          "--border-overlay",
+          "outlineColor",
+        );
+
+        const popupStyles = await popup.evaluate((element) => {
+          const styles = getComputedStyle(element);
+          return {
+            backgroundColor: styles.backgroundColor,
+            outlineColor: styles.outlineColor,
+          };
+        });
+
+        expect(popupStyles.backgroundColor).toBe(expectedBackgroundColor);
+        expect(popupStyles.outlineColor).toBe(expectedOutlineColor);
       });
-
-      expect(popupStyles.backgroundColor).toBe(expectedBackgroundColor);
-      expect(popupStyles.outlineColor).toBe(expectedOutlineColor);
-    });
+    }
   });
 
   test.describe("Interaction", () => {

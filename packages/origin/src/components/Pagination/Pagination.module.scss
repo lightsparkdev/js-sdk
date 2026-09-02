@@ -35,8 +35,8 @@
   width: 24px;
   height: 24px;
   padding: 0;
-  border: var(--stroke-xs) solid var(--border-primary);
-  background-color: var(--surface-primary);
+  border: var(--stroke-xs) solid var(--border-control);
+  background-color: var(--surface-control);
   color: var(--icon-primary);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
@@ -84,5 +84,26 @@
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+}
+
+:global([data-theme="dark"]).button,
+:global(.dark).button,
+:global([data-theme="dark"]) .button,
+:global(.dark) .button {
+  @media (hover: hover) {
+    &:hover:not(:disabled):not([data-disabled]) {
+      background-color: var(--surface-raised);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .button {
+    @media (hover: hover) {
+      &:hover:not(:disabled):not([data-disabled]) {
+        background-color: var(--surface-raised);
+      }
+    }
   }
 }

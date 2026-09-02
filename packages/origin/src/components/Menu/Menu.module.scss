@@ -17,8 +17,8 @@
   padding: var(--spacing-3xs);
   max-height: min(23rem, var(--available-height));
   max-width: var(--available-width);
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
@@ -147,7 +147,7 @@
     left: 0;
     right: 0;
     height: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-overlay);
   }
 }
 
@@ -199,8 +199,8 @@
 
 .arrow {
   display: flex;
-  fill: var(--surface-primary);
-  stroke: var(--border-primary);
+  fill: var(--surface-overlay);
+  stroke: var(--border-overlay);
   stroke-width: var(--stroke-xs);
 }
 
