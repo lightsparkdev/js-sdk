@@ -53,6 +53,16 @@ describe("toRequestOptions — decodes the login/start options", () => {
     expect(opts.userVerification).toBe("required");
   });
 
+  it("names the problem when handed the envelope instead of the options", () => {
+    // Striga's envelope, whose `challenge` sits one level down; the decoder
+    // sees no string and must say so rather than throw on undefined.
+    const envelope = {
+      challengeId: "aed03671",
+      options: { challenge: bytesToB64Url(challenge), rpId: "localhost" },
+    } as unknown as Parameters<typeof toRequestOptions>[0];
+    expect(() => toRequestOptions(envelope)).toThrow(/carry no challenge/);
+  });
+
   it("yields an empty allowCredentials when none are supplied", () => {
     const bare = toRequestOptions({ challenge: bytesToB64Url(challenge) });
     expect(bare.allowCredentials).toEqual([]);

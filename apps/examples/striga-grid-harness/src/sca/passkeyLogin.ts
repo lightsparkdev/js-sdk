@@ -49,6 +49,14 @@ export function b64UrlToBytes(value: string): Uint8Array {
 export function toRequestOptions(
   options: LoginPasskeyOptions,
 ): PublicKeyCredentialRequestOptions {
+  // The server hands these through opaquely, so a shape mismatch otherwise
+  // surfaces as a bare "cannot read properties of undefined" from the decoder.
+  if (typeof options?.challenge !== "string") {
+    throw new Error(
+      "Passkey options carry no challenge — expected the WebAuthn request " +
+        `options, got: ${JSON.stringify(options)}`,
+    );
+  }
   return {
     challenge: b64UrlToBytes(options.challenge),
     timeout: options.timeout,
