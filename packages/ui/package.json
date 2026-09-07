@@ -119,7 +119,7 @@
     "libphonenumber-js": "^1.13.5",
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.0",
-    "next": "^15.5.18",
+    "next": "^15.5.25",
     "prismjs": "^1.29.0",
     "qrcode.react": "^4.0.1",
     "react": "^19.2.6",
