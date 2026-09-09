@@ -43,5 +43,8 @@ don't get mixed up. Switching env swaps the visible credential pair.
   on creation and the link flow has nothing to do.
 - For INDIVIDUAL customers on the LSP grid switch, the
   `LSP_INDIVIDUAL_KYC_ENABLED` gatekeeper also has to be on for the platform.
+- The dashboard's own "Create KYC link" button is gated separately on
+  `GRID_DASHBOARD_INDIVIDUAL_KYC_LINK_ENABLED`; this demo calls the REST
+  endpoint directly and does not need it.
 - The redirect URI must be `https://` — Sumsub rejects `http://` and localhost.
   Leave the field blank to use Sumsub's default post-flow page.
