@@ -55,3 +55,8 @@ export interface ScaChallengeView {
 
 export const SCA_FACTORS = ["SMS_OTP", "TOTP", "PASSKEY"] as const;
 export type ScaFactorValue = (typeof SCA_FACTORS)[number];
+
+// Striga requires a syntactically valid `ip` on every SCA endpoint; loopback
+// satisfies it for a local harness run, and each panel's field is editable for a
+// real end-user address.
+export const DEFAULT_END_USER_IP = "127.0.0.1";

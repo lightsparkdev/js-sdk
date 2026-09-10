@@ -2,11 +2,16 @@
 // poll status until LIVENESS_PASSED, then complete. The mobile body is only needed
 // for an SMS_OTP reset (leave it blank otherwise).
 
-import { Button, Field, Textarea } from "@lightsparkdev/origin";
+import { Button, Field, Input, Textarea } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
 import { parseJsonField } from "../api";
-import { SCA_FACTORS, scaPath, type ScaPanelProps } from "./scaApi";
+import {
+  DEFAULT_END_USER_IP,
+  SCA_FACTORS,
+  scaPath,
+  type ScaPanelProps,
+} from "./scaApi";
 import { ButtonRow, EnumSelect, Mono, Note, Panel } from "./ui";
 
 export function ResetPanel({ call, customerId }: ScaPanelProps) {
@@ -16,18 +21,22 @@ export function ResetPanel({ call, customerId }: ScaPanelProps) {
   const [livenessToken, setLivenessToken] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [mobileBody, setMobileBody] = useState("");
+  const [endUserIp, setEndUserIp] = useState(DEFAULT_END_USER_IP);
 
   const start = useCallback(async () => {
     const r = await call<{
       resetId?: string;
       verificationLink?: string;
       livenessAccessToken?: string;
-    }>("POST", scaPath("/factors/reset", customerId), { factor });
+    }>("POST", scaPath("/factors/reset", customerId), {
+      factor,
+      endUserIpAddress: endUserIp.trim(),
+    });
     setResetId(r.json?.resetId ?? null);
     setVerificationLink(r.json?.verificationLink ?? null);
     setLivenessToken(r.json?.livenessAccessToken ?? null);
     setStatus(null);
-  }, [call, customerId, factor]);
+  }, [call, customerId, factor, endUserIp]);
 
   const pollStatus = useCallback(async () => {
     if (!resetId) return;
@@ -40,7 +49,25 @@ export function ResetPanel({ call, customerId }: ScaPanelProps) {
 
   const complete = useCallback(async () => {
     if (!resetId) return;
-    const body = mobileBody.trim() ? parseJsonField(mobileBody) : undefined;
+    const body: Record<string, unknown> = {
+      endUserIpAddress: endUserIp.trim(),
+    };
+    if (mobileBody.trim()) {
+      const parsed = parseJsonField(mobileBody);
+      // Only `mobile` is read off the pasted JSON: merging it wholesale would let
+      // it overwrite endUserIpAddress. parseJsonField also hands back the raw
+      // string when it does not parse, which would otherwise silently drop the
+      // number rather than reaching the server.
+      const mobile =
+        typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+          ? (parsed as { mobile?: unknown }).mobile
+          : undefined;
+      if (mobile === undefined) {
+        setStatus('mobile body must be JSON shaped {"mobile": {...}}');
+        return;
+      }
+      body.mobile = mobile;
+    }
     await call(
       "POST",
       scaPath(
@@ -49,7 +76,7 @@ export function ResetPanel({ call, customerId }: ScaPanelProps) {
       ),
       body,
     );
-  }, [call, customerId, resetId, mobileBody]);
+  }, [call, customerId, resetId, mobileBody, endUserIp]);
 
   return (
     <Panel
@@ -100,6 +127,13 @@ export function ResetPanel({ call, customerId }: ScaPanelProps) {
           livenessAccessToken: <Mono>{livenessToken}</Mono>
         </Note>
       )}
+      <Field.Root>
+        <Field.Label>endUserIpAddress</Field.Label>
+        <Input
+          value={endUserIp}
+          onChange={(e) => setEndUserIp(e.target.value)}
+        />
+      </Field.Root>
       <Field.Root>
         <Field.Label>
           Mobile body — SMS_OTP reset only, e.g. {"{"}"mobile":{"{"}

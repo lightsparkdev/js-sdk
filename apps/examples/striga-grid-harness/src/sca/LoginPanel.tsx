@@ -11,7 +11,12 @@ import { Button, Field, Input } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
 import { type LoginPasskeyOptions, signLoginPasskey } from "./passkeyLogin";
-import { SCA_FACTORS, scaPath, type ScaPanelProps } from "./scaApi";
+import {
+  DEFAULT_END_USER_IP,
+  SCA_FACTORS,
+  scaPath,
+  type ScaPanelProps,
+} from "./scaApi";
 import { ButtonRow, EnumSelect, Mono, Note, Panel } from "./ui";
 
 interface LoginStartResponse {
@@ -19,10 +24,6 @@ interface LoginStartResponse {
   passkeyOptions?: LoginPasskeyOptions;
   allowedOrigins?: string[];
 }
-
-// login/complete requires a syntactically valid IP; loopback satisfies it for a
-// local harness run, and the field is editable for a real end-user address.
-const DEFAULT_END_USER_IP = "127.0.0.1";
 
 export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
   const [factor, setFactor] = useState<string>("SMS_OTP");
