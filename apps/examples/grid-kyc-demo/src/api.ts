@@ -4,6 +4,11 @@
 
 export type GridEnv = "prod" | "dev" | "local";
 
+export type CustomerType = "INDIVIDUAL" | "BUSINESS";
+
+// Sentinel for "exclude from payload" — can't be "" or NONE (PepStatus has a real NONE).
+export const OMIT = "OMIT";
+
 export interface GridCredentials {
   id: string;
   secret: string;
@@ -23,7 +28,7 @@ export const ENV_LABELS: Record<GridEnv, string> = {
 
 export interface CustomerCreateResponse {
   id: string;
-  customerType: "INDIVIDUAL" | "BUSINESS";
+  customerType: CustomerType;
   platformCustomerId: string;
   kycStatus?: string;
   kybStatus?: string;
@@ -35,6 +40,47 @@ export interface KycLinkResponse {
   expiresAt: string;
   provider: string;
   token?: string;
+}
+
+export interface VerificationErrorItem {
+  resourceId: string;
+  type: string;
+  field?: string;
+  acceptedDocumentTypes?: string[];
+  reason: string;
+}
+
+export interface Verification {
+  id: string;
+  customerId: string;
+  verificationStatus: string;
+  errors: VerificationErrorItem[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface VerificationListResponse {
+  data: Verification[];
+  nextCursor?: string;
+}
+
+export interface BeneficialOwnerResponse {
+  id: string;
+  customerId: string;
+  roles: string[];
+  ownershipPercentage?: number;
+  personalInfo?: {
+    firstName?: string;
+    lastName?: string;
+  };
+  [key: string]: unknown;
+}
+
+export interface DocumentResponse {
+  id: string;
+  documentType: string;
+  documentHolder: string;
+  [key: string]: unknown;
 }
 
 export interface LogEntry {
@@ -53,13 +99,24 @@ function authHeader(creds: GridCredentials): string {
   return "Basic " + btoa(`${creds.id.trim()}:${creds.secret.trim()}`);
 }
 
+export type GridMethod = "GET" | "POST" | "PATCH" | "PUT";
+
 export interface CallOptions {
   env: GridEnv;
   creds: GridCredentials;
-  method: "GET" | "POST";
+  method: GridMethod;
   path: string;
   body?: unknown;
+  // No explicit Content-Type when set — the browser must generate the multipart boundary.
+  formData?: FormData;
 }
+
+export type RunCall = <T>(
+  method: GridMethod,
+  path: string,
+  body?: unknown,
+  formData?: FormData,
+) => Promise<T | null>;
 
 export interface CallResult<T> {
   status: number;
@@ -79,7 +136,8 @@ export async function callGrid<T = unknown>(
       ...(opts.body ? { "Content-Type": "application/json" } : {}),
     },
   };
-  if (opts.body) init.body = JSON.stringify(opts.body);
+  if (opts.formData) init.body = opts.formData;
+  else if (opts.body) init.body = JSON.stringify(opts.body);
   const res = await fetch(API_BASE[opts.env] + opts.path, init);
   const text = await res.text();
   let data: unknown = text;

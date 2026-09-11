@@ -6,7 +6,6 @@ import {
   Card,
   Field,
   Input,
-  Select,
   Textarea,
 } from "@lightsparkdev/origin";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -15,15 +14,29 @@ import {
   callGrid,
   ENV_LABELS,
   nowTs,
+  OMIT,
   randomSuffix,
   type CustomerCreateResponse,
+  type CustomerType,
   type GridCredentials,
   type GridEnv,
+  type GridMethod,
   type KycLinkResponse,
   type LogEntry,
+  type RunCall,
 } from "./api";
+import { ProgrammaticFlow } from "./ProgrammaticFlow";
+import {
+  ButtonRow,
+  Divider,
+  ResultMeta,
+  ResultPanel,
+  Row,
+  SectionLabel,
+  SelectControl,
+} from "./ui";
 
-type CustomerType = "INDIVIDUAL" | "BUSINESS";
+type KycFlow = "LINK" | "API";
 type FlowMode = "HOSTED" | "SDK";
 type Status = { kind: "ok" | "err"; message: string } | null;
 
@@ -95,6 +108,59 @@ const TX_VOLUME = [
   "VOLUME_OVER_10M",
 ] as const;
 
+const INDIVIDUAL_ID_TYPES = ["SSN", "ITIN"] as const;
+
+const INDIVIDUAL_SOURCE_OF_FUNDS = [
+  "SALARY",
+  "SELF_EMPLOYMENT_INCOME",
+  "INVESTMENT_INCOME",
+  "PENSION",
+  "RENTAL_INCOME",
+  "GIFT",
+  "INHERITANCE",
+  "LOAN",
+  "SAVINGS",
+  "SALE_OF_ASSETS",
+  "OTHER",
+] as const;
+
+const SOURCE_OF_WEALTH = [
+  "SALARY",
+  "BUSINESS_INCOME",
+  "INVESTMENTS",
+  "INHERITANCE",
+  "PROPERTY_SALE",
+  "GIFT",
+  "RETIREMENT",
+  "SAVINGS",
+  "OTHER",
+] as const;
+
+const ANNUAL_INCOME_RANGE = [
+  "UNDER_50K",
+  "RANGE_50K_100K",
+  "RANGE_100K_250K",
+  "RANGE_250K_1M",
+  "OVER_1M",
+] as const;
+
+const NET_WORTH_RANGE = [
+  "UNDER_100K",
+  "RANGE_100K_500K",
+  "RANGE_500K_1M",
+  "RANGE_1M_5M",
+  "RANGE_5M_25M",
+  "OVER_25M",
+] as const;
+
+const PEP_STATUS = [
+  "NONE",
+  "DOMESTIC",
+  "FOREIGN",
+  "HIO",
+  "FAMILY_OR_ASSOCIATE",
+] as const;
+
 interface IndividualForm {
   platformCustomerId: string;
   region: string;
@@ -103,6 +169,26 @@ interface IndividualForm {
   nationality: string;
   email: string;
   currencies: string;
+  addrLine1: string;
+  addrLine2: string;
+  addrCity: string;
+  addrState: string;
+  addrPostal: string;
+  addrCountry: string;
+  idType: string;
+  identifier: string;
+  countryOfIssuance: string;
+  sourceOfFunds: string;
+  sourceOfFundsOther: string;
+  sourceOfWealth: string;
+  sourceOfWealthOther: string;
+  purposeOfAccount: string;
+  purposeOfAccountOther: string;
+  txCount: string;
+  txVolume: string;
+  annualIncomeRange: string;
+  netWorthRange: string;
+  pepStatus: string;
 }
 
 interface BusinessForm {
@@ -140,6 +226,26 @@ function defaultIndividual(): IndividualForm {
     nationality: "US",
     email: "",
     currencies: "USD,USDC",
+    addrLine1: "123 Market Street",
+    addrLine2: "",
+    addrCity: "San Francisco",
+    addrState: "CA",
+    addrPostal: "94105",
+    addrCountry: "US",
+    idType: "SSN",
+    identifier: "123-45-6789",
+    countryOfIssuance: "US",
+    sourceOfFunds: "SALARY",
+    sourceOfFundsOther: "",
+    sourceOfWealth: "",
+    sourceOfWealthOther: "",
+    purposeOfAccount: OMIT,
+    purposeOfAccountOther: "",
+    txCount: OMIT,
+    txVolume: OMIT,
+    annualIncomeRange: OMIT,
+    netWorthRange: OMIT,
+    pepStatus: OMIT,
   };
 }
 
@@ -178,22 +284,75 @@ function splitCsv(value: string): string[] {
     .filter(Boolean);
 }
 
-function buildIndividualPayload(form: IndividualForm): Record<string, unknown> {
+function buildIndividualCore(form: IndividualForm): Record<string, unknown> {
   const currencies = splitCsv(form.currencies);
-  const payload: Record<string, unknown> = {
-    customerType: "INDIVIDUAL",
-    platformCustomerId: form.platformCustomerId.trim(),
-    region: form.region.trim(),
+  const data: Record<string, unknown> = {
     fullName: form.fullName.trim(),
     birthDate: form.birthDate,
     nationality: form.nationality.trim(),
   };
-  if (currencies.length) payload.currencies = currencies;
-  if (form.email.trim()) payload.email = form.email.trim();
-  return payload;
+  if (currencies.length) data.currencies = currencies;
+  if (form.email.trim()) data.email = form.email.trim();
+  return data;
 }
 
-function buildBusinessPayload(form: BusinessForm): Record<string, unknown> {
+function buildIndividualKycData(form: IndividualForm): Record<string, unknown> {
+  const data = buildIndividualCore(form);
+  if (form.addrLine1.trim() && form.addrPostal.trim() && form.addrCountry.trim()) {
+    const address: Record<string, unknown> = {
+      line1: form.addrLine1.trim(),
+      postalCode: form.addrPostal.trim(),
+      country: form.addrCountry.trim(),
+    };
+    if (form.addrCity.trim()) address.city = form.addrCity.trim();
+    if (form.addrState.trim()) address.state = form.addrState.trim();
+    if (form.addrLine2.trim()) address.line2 = form.addrLine2.trim();
+    data.address = address;
+  }
+  if (form.identifier.trim()) {
+    data.idType = form.idType;
+    data.identifier = form.identifier.trim();
+    if (form.countryOfIssuance.trim())
+      data.countryOfIssuance = form.countryOfIssuance.trim();
+  }
+  const sourceOfFunds = splitCsv(form.sourceOfFunds);
+  if (sourceOfFunds.length) data.sourceOfFundsCategories = sourceOfFunds;
+  if (sourceOfFunds.includes("OTHER") && form.sourceOfFundsOther.trim())
+    data.sourceOfFundsOtherDescription = form.sourceOfFundsOther.trim();
+  const sourceOfWealth = splitCsv(form.sourceOfWealth);
+  if (sourceOfWealth.length) data.sourceOfWealthCategories = sourceOfWealth;
+  if (sourceOfWealth.includes("OTHER") && form.sourceOfWealthOther.trim())
+    data.sourceOfWealthOtherDescription = form.sourceOfWealthOther.trim();
+  if (form.purposeOfAccount !== OMIT) data.purposeOfAccount = form.purposeOfAccount;
+  if (form.purposeOfAccount === "OTHER" && form.purposeOfAccountOther.trim())
+    data.purposeOfAccountOtherDescription = form.purposeOfAccountOther.trim();
+  if (form.txCount !== OMIT) data.expectedMonthlyTransactionCount = form.txCount;
+  if (form.txVolume !== OMIT) data.expectedMonthlyTransactionVolume = form.txVolume;
+  if (form.annualIncomeRange !== OMIT) data.annualIncomeRange = form.annualIncomeRange;
+  if (form.netWorthRange !== OMIT) data.netWorthRange = form.netWorthRange;
+  if (form.pepStatus !== OMIT) data.pepStatus = form.pepStatus;
+  return data;
+}
+
+function buildIndividualPayload(
+  form: IndividualForm,
+  includeKycData: boolean,
+): Record<string, unknown> {
+  return {
+    customerType: "INDIVIDUAL",
+    platformCustomerId: form.platformCustomerId.trim(),
+    region: form.region.trim(),
+    ...(includeKycData ? buildIndividualKycData(form) : buildIndividualCore(form)),
+  };
+}
+
+function buildIndividualUpdatePayload(
+  form: IndividualForm,
+): Record<string, unknown> {
+  return { customerType: "INDIVIDUAL", ...buildIndividualKycData(form) };
+}
+
+function buildBusinessKycData(form: BusinessForm): Record<string, unknown> {
   const currencies = splitCsv(form.currencies);
   const businessInfo: Record<string, unknown> = {
     legalName: form.legalName.trim(),
@@ -215,22 +374,29 @@ function buildBusinessPayload(form: BusinessForm): Record<string, unknown> {
 
   const address: Record<string, unknown> = {
     line1: form.addrLine1.trim(),
-    city: form.addrCity.trim(),
-    state: form.addrState.trim(),
     postalCode: form.addrPostal.trim(),
     country: form.addrCountry.trim(),
   };
+  if (form.addrCity.trim()) address.city = form.addrCity.trim();
+  if (form.addrState.trim()) address.state = form.addrState.trim();
   if (form.addrLine2.trim()) address.line2 = form.addrLine2.trim();
 
-  const payload: Record<string, unknown> = {
+  const data: Record<string, unknown> = { businessInfo, address };
+  if (currencies.length) data.currencies = currencies;
+  return data;
+}
+
+function buildBusinessPayload(form: BusinessForm): Record<string, unknown> {
+  return {
     customerType: "BUSINESS",
     platformCustomerId: form.platformCustomerId.trim(),
     region: form.region.trim(),
-    businessInfo,
-    address,
+    ...buildBusinessKycData(form),
   };
-  if (currencies.length) payload.currencies = currencies;
-  return payload;
+}
+
+function buildBusinessUpdatePayload(form: BusinessForm): Record<string, unknown> {
+  return { customerType: "BUSINESS", ...buildBusinessKycData(form) };
 }
 
 export function App() {
@@ -245,6 +411,7 @@ export function App() {
   const [business, setBusiness] = useState<BusinessForm>(defaultBusiness);
   const [customerId, setCustomerId] = useState("");
   const [redirectUri, setRedirectUri] = useState("");
+  const [kycFlow, setKycFlow] = useState<KycFlow>("LINK");
   const [flowMode, setFlowMode] = useState<FlowMode>("HOSTED");
   const [kycLink, setKycLink] = useState<KycLinkResponse | null>(null);
   // SdkLauncher owns its own launched-or-not state so it resets cleanly on
@@ -290,19 +457,30 @@ export function App() {
     setLog((prev) => [{ id, ts: nowTs(), ...entry }, ...prev].slice(0, 100));
   }, []);
 
-  const runCall = useCallback(
+  const runCall = useCallback<RunCall>(
     async <T,>(
-      method: "GET" | "POST",
+      method: GridMethod,
       path: string,
       body?: unknown,
+      formData?: FormData,
     ): Promise<T | null> => {
+      const logBody = formData
+        ? Object.fromEntries(
+            [...formData.entries()].map(([k, v]) => [
+              k,
+              v instanceof File
+                ? { name: v.name, type: v.type, size: v.size }
+                : v,
+            ]),
+          )
+        : body;
       try {
-        const result = await callGrid<T>({ env, creds, method, path, body });
+        const result = await callGrid<T>({ env, creds, method, path, body, formData });
         appendLog({
           env,
           method,
           path,
-          requestBody: body,
+          requestBody: logBody,
           status: result.status,
           responseBody: result.data,
         });
@@ -313,7 +491,7 @@ export function App() {
           env,
           method,
           path,
-          requestBody: body,
+          requestBody: logBody,
           status: e.status,
           responseBody: e.body,
           error: e.message,
@@ -347,7 +525,7 @@ export function App() {
     try {
       const payload =
         customerType === "INDIVIDUAL"
-          ? buildIndividualPayload(individual)
+          ? buildIndividualPayload(individual, kycFlow === "API")
           : buildBusinessPayload(business);
       const data = await runCall<CustomerCreateResponse>(
         "POST",
@@ -364,7 +542,15 @@ export function App() {
     } catch (err) {
       setCreateStatus({ kind: "err", message: (err as Error).message });
     }
-  }, [customerType, individual, business, runCall]);
+  }, [customerType, individual, business, kycFlow, runCall]);
+
+  const buildUpdatePayload = useCallback(
+    () =>
+      customerType === "INDIVIDUAL"
+        ? buildIndividualUpdatePayload(individual)
+        : buildBusinessUpdatePayload(business),
+    [customerType, individual, business],
+  );
 
   const onGenerateLink = useCallback(async () => {
     setKycLink(null);
@@ -449,10 +635,10 @@ export function App() {
         <PageHeader>
           <PageTitle>Grid KYC/KYB Demo</PageTitle>
           <PageSubtitle>
-            Internal demo tool for exercising the Grid hosted KYC/KYB link
-            API. Everything runs client-side — credentials live in this
-            browser tab only. Requests are proxied through Vite to the
-            selected environment.
+            Internal demo tool for exercising the Grid KYC/KYB APIs — the
+            hosted link flow and the programmatic verification API. Everything
+            runs client-side — credentials live in this browser tab only.
+            Requests are proxied through Vite to the selected environment.
           </PageSubtitle>
         </PageHeader>
 
@@ -531,9 +717,11 @@ export function App() {
           <Card.TitleGroup>
             <Card.Title>Customer</Card.Title>
             <Card.Subtitle>
-              The customer type determines the create payload and whether the
-              link is KYC (individual) or KYB (business). Either way the link
-              is generated by <code>POST /customers/&lt;id&gt;/kyc-link</code>.
+              The customer type determines the create payload and whether
+              verification is KYC (individual) or KYB (business). The hosted
+              link is generated by <code>POST /customers/&lt;id&gt;/kyc-link</code>;
+              the programmatic flow submits the data below via{" "}
+              <code>POST /verifications</code>.
             </Card.Subtitle>
           </Card.TitleGroup>
         </Card.Header>
@@ -543,9 +731,16 @@ export function App() {
               <Field.Label>Customer type</Field.Label>
               <SelectControl
                 value={customerType}
-                onValueChange={(v) => setCustomerType(v as CustomerType)}
+                onValueChange={(v) => {
+                  setCustomerType(v as CustomerType);
+                  setCustomerId("");
+                }}
                 items={customerTypeOptions}
               />
+              <Field.Description>
+                Switching type clears the customer ID — a customer created as
+                one type can&apos;t be acted on as the other.
+              </Field.Description>
             </Field.Root>
 
             {customerType === "INDIVIDUAL" ? (
@@ -587,56 +782,85 @@ export function App() {
               />
             </Field.Root>
             <Field.Root>
-              <Field.Label>Verification mode</Field.Label>
+              <Field.Label>KYC flow</Field.Label>
               <SelectControl
-                value={flowMode}
-                onValueChange={(v) => setFlowMode(v as FlowMode)}
+                value={kycFlow}
+                onValueChange={(v) => setKycFlow(v as KycFlow)}
                 items={[
-                  { value: "HOSTED", label: "Hosted link (open in new tab)" },
-                  { value: "SDK", label: "Embedded SDK (Sumsub WebSDK inline)" },
+                  { value: "LINK", label: "Hosted link / embedded SDK" },
+                  { value: "API", label: "Programmatic API" },
                 ]}
               />
               <Field.Description>
-                Both modes call the same <code>/kyc-link</code> endpoint —
-                hosted mode uses the returned <code>kycUrl</code>, embedded
-                mode uses the returned provider <code>token</code> via
-                Sumsub&apos;s WebSDK script.
+                Hosted link sends the customer through Sumsub; programmatic API
+                submits KYC data directly via <code>/customers</code>,{" "}
+                <code>/beneficial-owners</code>, <code>/documents</code> and{" "}
+                <code>/verifications</code>.
               </Field.Description>
             </Field.Root>
-            {flowMode === "HOSTED" && (
-              <Field.Root>
-                <Field.Label>Redirect URI (optional)</Field.Label>
-                <Input
-                  value={redirectUri}
-                  onChange={(e) => setRedirectUri(e.target.value)}
-                  placeholder="https://app.example.com/onboarding/done"
-                />
-                <Field.Description>
-                  Where Sumsub sends the customer after the hosted flow. Must
-                  be <code>https://</code>; Sumsub rejects <code>http://</code>{" "}
-                  and localhost URLs. Leave blank to use Sumsub&apos;s default
-                  post-flow page.
-                </Field.Description>
-              </Field.Root>
-            )}
-            <Button onClick={onGenerateLink}>2. Generate KYC link</Button>
-            {linkStatus && (
-              <Alert
-                variant={linkStatus.kind === "ok" ? "default" : "critical"}
-                title={
-                  linkStatus.kind === "ok" ? "Link generated" : "Link failed"
-                }
-                description={linkStatus.message}
-              />
-            )}
-            {kycLink && flowMode === "HOSTED" && (
-              <KycLinkResult result={kycLink} />
-            )}
-            {kycLink && flowMode === "SDK" && (
-              <SdkLauncher
-                token={kycLink.token ?? ""}
-                provider={kycLink.provider}
-                onTokenRefresh={refreshSdkToken}
+            {kycFlow === "LINK" ? (
+              <>
+                <Field.Root>
+                  <Field.Label>Verification mode</Field.Label>
+                  <SelectControl
+                    value={flowMode}
+                    onValueChange={(v) => setFlowMode(v as FlowMode)}
+                    items={[
+                      { value: "HOSTED", label: "Hosted link (open in new tab)" },
+                      { value: "SDK", label: "Embedded SDK (Sumsub WebSDK inline)" },
+                    ]}
+                  />
+                  <Field.Description>
+                    Both modes call the same <code>/kyc-link</code> endpoint —
+                    hosted mode uses the returned <code>kycUrl</code>, embedded
+                    mode uses the returned provider <code>token</code> via
+                    Sumsub&apos;s WebSDK script.
+                  </Field.Description>
+                </Field.Root>
+                {flowMode === "HOSTED" && (
+                  <Field.Root>
+                    <Field.Label>Redirect URI (optional)</Field.Label>
+                    <Input
+                      value={redirectUri}
+                      onChange={(e) => setRedirectUri(e.target.value)}
+                      placeholder="https://app.example.com/onboarding/done"
+                    />
+                    <Field.Description>
+                      Where Sumsub sends the customer after the hosted flow. Must
+                      be <code>https://</code>; Sumsub rejects <code>http://</code>{" "}
+                      and localhost URLs. Leave blank to use Sumsub&apos;s default
+                      post-flow page.
+                    </Field.Description>
+                  </Field.Root>
+                )}
+                <Button onClick={onGenerateLink}>2. Generate KYC link</Button>
+                {linkStatus && (
+                  <Alert
+                    variant={linkStatus.kind === "ok" ? "default" : "critical"}
+                    title={
+                      linkStatus.kind === "ok" ? "Link generated" : "Link failed"
+                    }
+                    description={linkStatus.message}
+                  />
+                )}
+                {kycLink && flowMode === "HOSTED" && (
+                  <KycLinkResult result={kycLink} />
+                )}
+                {kycLink && flowMode === "SDK" && (
+                  <SdkLauncher
+                    token={kycLink.token ?? ""}
+                    provider={kycLink.provider}
+                    onTokenRefresh={refreshSdkToken}
+                  />
+                )}
+              </>
+            ) : (
+              <ProgrammaticFlow
+                key={`${customerType}:${customerId}`}
+                customerType={customerType}
+                customerId={customerId}
+                buildUpdatePayload={buildUpdatePayload}
+                runCall={runCall}
               />
             )}
 
@@ -754,8 +978,211 @@ function IndividualFields({
           onChange={(e) => set("currencies", e.target.value)}
         />
       </Field.Root>
+
+      <SectionLabel>Address</SectionLabel>
+      <Row>
+        <Field.Root>
+          <Field.Label>Line 1</Field.Label>
+          <Input
+            value={form.addrLine1}
+            onChange={(e) => set("addrLine1", e.target.value)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>Line 2 (optional)</Field.Label>
+          <Input
+            value={form.addrLine2}
+            onChange={(e) => set("addrLine2", e.target.value)}
+          />
+        </Field.Root>
+      </Row>
+      <Row>
+        <Field.Root>
+          <Field.Label>City</Field.Label>
+          <Input
+            value={form.addrCity}
+            onChange={(e) => set("addrCity", e.target.value)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>State</Field.Label>
+          <Input
+            value={form.addrState}
+            onChange={(e) => set("addrState", e.target.value)}
+          />
+        </Field.Root>
+      </Row>
+      <Row>
+        <Field.Root>
+          <Field.Label>Postal code</Field.Label>
+          <Input
+            value={form.addrPostal}
+            onChange={(e) => set("addrPostal", e.target.value)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>Country (ISO 3166-1)</Field.Label>
+          <Input
+            value={form.addrCountry}
+            onChange={(e) => set("addrCountry", e.target.value)}
+          />
+        </Field.Root>
+      </Row>
+
+      <SectionLabel>Identification</SectionLabel>
+      <Row>
+        <Field.Root>
+          <Field.Label>ID type</Field.Label>
+          <SelectControl
+            value={form.idType}
+            onValueChange={(v) => set("idType", v)}
+            items={INDIVIDUAL_ID_TYPES.map((v) => ({ value: v, label: v }))}
+          />
+          <Field.Description>
+            Only SSN and ITIN are accepted for individuals.
+          </Field.Description>
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>Identifier</Field.Label>
+          <Input
+            value={form.identifier}
+            onChange={(e) => set("identifier", e.target.value)}
+            placeholder="123-45-6789"
+          />
+          <Field.Description>
+            Write-only — never returned in customer responses.
+          </Field.Description>
+        </Field.Root>
+      </Row>
+      <Field.Root>
+        <Field.Label>Country of issuance</Field.Label>
+        <Input
+          value={form.countryOfIssuance}
+          onChange={(e) => set("countryOfIssuance", e.target.value)}
+        />
+        <Field.Description>
+          SSN/ITIN are US-issued — must stay <code>US</code> for individuals.
+        </Field.Description>
+      </Field.Root>
+
+      <SectionLabel>EDD (optional — programmatic flow)</SectionLabel>
+      <Field.Root>
+        <Field.Label>Source of funds categories (comma-separated)</Field.Label>
+        <Input
+          value={form.sourceOfFunds}
+          onChange={(e) => set("sourceOfFunds", e.target.value)}
+        />
+        <Field.Description>
+          {INDIVIDUAL_SOURCE_OF_FUNDS.join(", ")}
+        </Field.Description>
+      </Field.Root>
+      {splitCsv(form.sourceOfFunds).includes("OTHER") && (
+        <Field.Root>
+          <Field.Label>Source of funds — OTHER description</Field.Label>
+          <Input
+            value={form.sourceOfFundsOther}
+            onChange={(e) => set("sourceOfFundsOther", e.target.value)}
+          />
+          <Field.Description>
+            Required by the API when OTHER is included.
+          </Field.Description>
+        </Field.Root>
+      )}
+      <Field.Root>
+        <Field.Label>Source of wealth categories (comma-separated)</Field.Label>
+        <Input
+          value={form.sourceOfWealth}
+          onChange={(e) => set("sourceOfWealth", e.target.value)}
+        />
+        <Field.Description>{SOURCE_OF_WEALTH.join(", ")}</Field.Description>
+      </Field.Root>
+      {splitCsv(form.sourceOfWealth).includes("OTHER") && (
+        <Field.Root>
+          <Field.Label>Source of wealth — OTHER description</Field.Label>
+          <Input
+            value={form.sourceOfWealthOther}
+            onChange={(e) => set("sourceOfWealthOther", e.target.value)}
+          />
+          <Field.Description>
+            Required by the API when OTHER is included.
+          </Field.Description>
+        </Field.Root>
+      )}
+      <Row>
+        <Field.Root>
+          <Field.Label>Purpose of account</Field.Label>
+          <SelectControl
+            value={form.purposeOfAccount}
+            onValueChange={(v) => set("purposeOfAccount", v)}
+            items={omittedFirst(PURPOSE_OF_ACCOUNT)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>PEP status</Field.Label>
+          <SelectControl
+            value={form.pepStatus}
+            onValueChange={(v) => set("pepStatus", v)}
+            items={omittedFirst(PEP_STATUS)}
+          />
+        </Field.Root>
+      </Row>
+      {form.purposeOfAccount === "OTHER" && (
+        <Field.Root>
+          <Field.Label>Purpose of account — OTHER description</Field.Label>
+          <Input
+            value={form.purposeOfAccountOther}
+            onChange={(e) => set("purposeOfAccountOther", e.target.value)}
+          />
+          <Field.Description>
+            Required by the API when purpose of account is OTHER.
+          </Field.Description>
+        </Field.Root>
+      )}
+      <Row>
+        <Field.Root>
+          <Field.Label>Expected monthly tx count</Field.Label>
+          <SelectControl
+            value={form.txCount}
+            onValueChange={(v) => set("txCount", v)}
+            items={omittedFirst(TX_COUNT)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>Expected monthly tx volume</Field.Label>
+          <SelectControl
+            value={form.txVolume}
+            onValueChange={(v) => set("txVolume", v)}
+            items={omittedFirst(TX_VOLUME)}
+          />
+        </Field.Root>
+      </Row>
+      <Row>
+        <Field.Root>
+          <Field.Label>Annual income range</Field.Label>
+          <SelectControl
+            value={form.annualIncomeRange}
+            onValueChange={(v) => set("annualIncomeRange", v)}
+            items={omittedFirst(ANNUAL_INCOME_RANGE)}
+          />
+        </Field.Root>
+        <Field.Root>
+          <Field.Label>Net worth range</Field.Label>
+          <SelectControl
+            value={form.netWorthRange}
+            onValueChange={(v) => set("netWorthRange", v)}
+            items={omittedFirst(NET_WORTH_RANGE)}
+          />
+        </Field.Root>
+      </Row>
     </>
   );
+}
+
+function omittedFirst(values: readonly string[]) {
+  return [
+    { value: OMIT, label: "— omit from payload —" },
+    ...values.map((v) => ({ value: v, label: v })),
+  ];
 }
 
 function BusinessFields({
@@ -961,46 +1388,6 @@ function BusinessFields({
         </Field.Root>
       </Row>
     </>
-  );
-}
-
-function SelectControl({
-  value,
-  onValueChange,
-  items,
-}: {
-  value: string;
-  onValueChange: (next: string) => void;
-  items: { value: string; label: string }[];
-}) {
-  return (
-    <Select.Root
-      value={value}
-      onValueChange={(next) => {
-        if (next != null) onValueChange(next);
-      }}
-    >
-      <Select.Trigger>
-        <Select.Value>
-          {(v: string) => items.find((i) => i.value === v)?.label ?? v}
-        </Select.Value>
-        <Select.Icon />
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Positioner>
-          <Select.Popup>
-            <Select.List>
-              {items.map((item) => (
-                <Select.Item key={item.value} value={item.value}>
-                  <Select.ItemIndicator />
-                  <Select.ItemText>{item.label}</Select.ItemText>
-                </Select.Item>
-              ))}
-            </Select.List>
-          </Select.Popup>
-        </Select.Positioner>
-      </Select.Portal>
-    </Select.Root>
   );
 }
 
@@ -1258,49 +1645,6 @@ const FormGrid = styled.div`
   flex-direction: column;
   gap: var(--spacing-md, 12px);
   max-width: 720px;
-`;
-
-const Row = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md, 12px);
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  gap: var(--spacing-sm, 8px);
-  flex-wrap: wrap;
-`;
-
-const SectionLabel = styled.div`
-  margin-top: var(--spacing-sm, 8px);
-  font-size: var(--font-size-xs, 12px);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-secondary, #666);
-  font-weight: var(--font-weight-medium, 500);
-`;
-
-const Divider = styled.hr`
-  border: none;
-  border-top: var(--stroke-xs, 1px) solid var(--border-primary, #e0e0e0);
-  margin: var(--spacing-sm, 8px) 0;
-`;
-
-const ResultPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm, 8px);
-  padding: var(--spacing-md, 12px);
-  background: var(--surface-primary, #fff);
-  border: var(--stroke-xs, 1px) solid var(--border-primary, #e0e0e0);
-  border-radius: var(--corner-radius-md, 8px);
-`;
-
-const ResultMeta = styled.div`
-  display: flex;
-  gap: var(--spacing-xs, 4px);
-  flex-wrap: wrap;
 `;
 
 const ResultUrl = styled.div`
