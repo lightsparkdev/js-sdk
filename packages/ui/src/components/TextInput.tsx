@@ -6,6 +6,7 @@ import type {
   ClipboardEvent,
   CompositionEvent,
   FocusEvent,
+  FormEvent,
   InputHTMLAttributes,
   KeyboardEvent,
   ReactNode,
@@ -111,6 +112,7 @@ export type TextInputProps = {
   name?: string;
   onBlur?: (event: FocusEvent<HTMLInputElement, Element>) => void;
   onChange: (newValue: string, event: ChangeEvent<HTMLInputElement>) => void;
+  onInput?: (newValue: string, event: FormEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
   onFocus?:
     | ((event: FocusEvent<HTMLInputElement, Element>) => void)
@@ -269,6 +271,9 @@ export function TextInput(textInputProps: TextInputProps) {
           // needed to prevent default chrome error message when in a form element
           e.target.setCustomValidity("");
           props.onChange(stripNonPrintable(e.target.value), e);
+        }}
+        onInput={(event) => {
+          props.onInput?.(stripNonPrintable(event.currentTarget.value), event);
         }}
         onFocus={(focusEvent) => {
           setFocused(true);
