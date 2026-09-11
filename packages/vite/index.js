@@ -7,6 +7,8 @@ import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
 import svgr from "vite-plugin-svgr";
 
+export { documentBootstrapPlugin } from "./document-bootstrap.js";
+
 const currentCommitPlaceholder = "__LSCM__";
 const currentCommitRuntimeKey = "__LIGHTSPARK_CURRENT_COMMIT__";
 
