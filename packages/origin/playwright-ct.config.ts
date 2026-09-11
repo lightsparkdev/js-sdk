@@ -1,35 +1,36 @@
-import { defineConfig, devices } from '@playwright/experimental-ct-react';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { defineConfig, devices } from "@playwright/experimental-ct-react";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  testDir: './src/components',
-  testMatch: '**/*.test.tsx',
-  testIgnore: ['**/*.unit.test.tsx'],
-  snapshotDir: './__snapshots__',
+  testDir: "./src/components",
+  testMatch: "**/*.test.tsx",
+  testIgnore: ["**/*.unit.test.tsx"],
+  snapshotDir: "./__snapshots__",
   timeout: 10000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
+  reporter: "html",
   use: {
     ctPort: 3100,
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
     ctViteConfig: {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, './src'),
+          "@": path.resolve(__dirname, "./src"),
+          "@test-utils": path.resolve(__dirname, "./test-utils"),
         },
       },
       css: {
         preprocessorOptions: {
           scss: {
-            api: 'modern-compiler',
+            api: "modern-compiler",
             // Mirror next.config.js sassOptions.includePaths
-            loadPaths: [path.resolve(__dirname, './src/tokens')],
+            loadPaths: [path.resolve(__dirname, "./src/tokens")],
           },
         },
       },
@@ -37,9 +38,8 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
   ],
 });
-

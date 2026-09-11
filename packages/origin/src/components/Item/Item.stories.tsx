@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import * as React from "react";
 import { Item } from "./Item";
+import { Badge } from "@/components/Badge";
 import { CentralIcon } from "@/components/Icon";
 import { Switch } from "@/components/Switch";
 
@@ -13,6 +14,10 @@ const meta: Meta<typeof Item> = {
   argTypes: {
     title: { control: "text" },
     description: { control: "text" },
+    size: {
+      control: "radio",
+      options: ["default", "compact"],
+    },
     clickable: { control: "boolean" },
     selected: { control: "boolean" },
     disabled: { control: "boolean" },
@@ -26,6 +31,14 @@ export const Default: Story = {
   args: {
     title: "Settings",
     description: "Manage your preferences",
+  },
+};
+
+export const WithLabel: Story = {
+  args: {
+    title: "Jane Doe",
+    description: "jane@example.com",
+    label: <Badge>Admin</Badge>,
   },
 };
 
@@ -91,4 +104,60 @@ function SelectableListComponent() {
 
 export const SelectableList: Story = {
   render: () => <SelectableListComponent />,
+};
+
+const transactions = [
+  {
+    id: "tx-1",
+    title: "Payment received",
+    description: "2 minutes ago",
+    amount: "+$120.00",
+  },
+  {
+    id: "tx-2",
+    title: "Invoice paid",
+    description: "1 hour ago",
+    amount: "-$45.50",
+  },
+  {
+    id: "tx-3",
+    title: "Transfer sent",
+    description: "Yesterday",
+    amount: "-$300.00",
+  },
+];
+
+function SizeComparisonComponent() {
+  return (
+    <div style={{ display: "flex", gap: "var(--spacing-2xl)" }}>
+      {(["default", "compact"] as const).map((size) => (
+        <div
+          key={size}
+          style={{ display: "flex", flexDirection: "column", width: 320 }}
+        >
+          {transactions.map((transaction) => (
+            <Item
+              key={transaction.id}
+              size={size}
+              title={transaction.title}
+              description={transaction.description}
+              trailing={<span>{transaction.amount}</span>}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export const SizeComparison: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Default and compact densities side by side. Compact tightens padding, gap, and type scale for dense lists such as transaction rows.",
+      },
+    },
+  },
+  render: () => <SizeComparisonComponent />,
 };

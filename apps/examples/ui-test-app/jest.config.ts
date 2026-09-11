@@ -16,7 +16,7 @@ const config: JestConfigWithTsJest = {
   },
   resetMocks: true,
   /* Sometimes turbo slows down test execution across many tasks: */
-  testTimeout: 20000,
+  testTimeout: 60_000,
   moduleNameMapper: {
     "^.+\\.(css|svg|png)$": "identity-obj-proxy",
   },

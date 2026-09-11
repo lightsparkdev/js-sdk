@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Combobox } from "./index";
+import { Combobox, type ComboboxClearProps } from "./index";
 import { Field } from "@/components/Field";
 
 const meta: Meta<typeof Combobox.Root> = {
@@ -27,9 +27,22 @@ const fruits = [
   "Lemon",
 ];
 
+const longFruits = Array.from(
+  { length: 40 },
+  (_, index) => `Fruit ${index + 1}`,
+);
+
 export const Default: Story = {
   args: {
     disabled: false,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "No-clear reference. Omit Combobox.Clear when a flow should not expose a clear affordance.",
+      },
+    },
   },
   render: (args) => (
     <Combobox.Root items={fruits} {...args}>
@@ -58,13 +71,12 @@ export const Default: Story = {
   ),
 };
 
-export const WithClear: Story = {
+export const LongList: Story = {
   render: () => (
-    <Combobox.Root items={fruits} defaultValue="Apple">
+    <Combobox.Root items={longFruits}>
       <Combobox.InputWrapper>
         <Combobox.Input placeholder="Select a fruit..." />
         <Combobox.ActionButtons>
-          <Combobox.Clear aria-label="Clear selection" />
           <Combobox.Trigger aria-label="Open popup" />
         </Combobox.ActionButtons>
       </Combobox.InputWrapper>
@@ -87,12 +99,22 @@ export const WithClear: Story = {
   ),
 };
 
-export const Multiple: Story = {
-  render: () => (
-    <Combobox.Root items={fruits} multiple>
+function ClearStory({
+  visibility,
+  label,
+}: {
+  visibility?: ComboboxClearProps["visibility"];
+  label: string;
+}) {
+  return (
+    <Combobox.Root items={fruits} defaultValue="Apple">
       <Combobox.InputWrapper>
-        <Combobox.Input placeholder="Select fruits..." />
+        <Combobox.Input placeholder={label} />
         <Combobox.ActionButtons>
+          <Combobox.Clear
+            aria-label="Clear selection"
+            visibility={visibility}
+          />
           <Combobox.Trigger aria-label="Open popup" />
         </Combobox.ActionButtons>
       </Combobox.InputWrapper>
@@ -112,10 +134,35 @@ export const Multiple: Story = {
         </Combobox.Positioner>
       </Combobox.Portal>
     </Combobox.Root>
-  ),
+  );
+}
+
+export const WithClear: Story = {
+  name: "Default Active Clear",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Default edit-existing flow. The clear affordance is hidden at rest, appears while the field is focused or open, and is removed by Base UI once the value is cleared.",
+      },
+    },
+  },
+  render: () => <ClearStory label="Edit saved fruit..." />,
 };
 
-function MultipleWithChipsField({
+export const AlwaysClear: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Opt in when a clear affordance should remain visible while the value is clearable. Base UI still removes it once the value is cleared.",
+      },
+    },
+  },
+  render: () => <ClearStory label="Select a fruit..." visibility="always" />,
+};
+
+function MultipleField({
   defaultValue,
   label,
 }: {
@@ -131,12 +178,12 @@ function MultipleWithChipsField({
         <Combobox.InputWrapper>
           <Combobox.Chips>
             <Combobox.Value>
-              {(values: string[]) => (
+              {(selectedValue: string[]) => (
                 <>
-                  {values.map((value) => (
-                    <Combobox.Chip key={value} aria-label={value}>
-                      {value}
-                      <Combobox.ChipRemove />
+                  {selectedValue.map((item) => (
+                    <Combobox.Chip key={item}>
+                      {item}
+                      <Combobox.ChipRemove aria-label={`Remove ${item}`} />
                     </Combobox.Chip>
                   ))}
                   <Combobox.Input placeholder="Add fruits" />
@@ -165,7 +212,7 @@ function MultipleWithChipsField({
   );
 }
 
-export const MultipleWithChips: Story = {
+export const Multiple: Story = {
   render: () => (
     <div
       style={{
@@ -175,9 +222,9 @@ export const MultipleWithChips: Story = {
         maxWidth: 480,
       }}
     >
-      <MultipleWithChipsField label="Empty" />
-      <MultipleWithChipsField label="One chip" defaultValue={["Apple"]} />
-      <MultipleWithChipsField
+      <MultipleField label="Empty" />
+      <MultipleField label="One chip" defaultValue={["Apple"]} />
+      <MultipleField
         label="Many chips (overflow / wrap)"
         defaultValue={[
           "Apple",

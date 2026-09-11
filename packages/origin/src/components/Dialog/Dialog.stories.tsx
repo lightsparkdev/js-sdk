@@ -3,6 +3,54 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "./index";
 import { Button } from "../Button";
 
+const LONG_CONTENT = Array.from({ length: 20 }, (_, index) => (
+  <p key={index} style={{ margin: 0, color: "var(--text-secondary)" }}>
+    Content section {index + 1}. Long dialogs keep this body content reachable
+    while the header and footer remain available.
+  </p>
+));
+
+function LongContentDialog() {
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Open Long Dialog
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Viewport>
+          <Dialog.Popup>
+            <Dialog.CloseButton />
+            <Dialog.Header>
+              <Dialog.Title>Review all details</Dialog.Title>
+              <Dialog.Description>
+                Scroll the body to review every content section.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Content
+              style={
+                {
+                  "--dialog-content-gap": "var(--spacing-md)",
+                } as React.CSSProperties
+              }
+            >
+              <Button variant="outline">First body control</Button>
+              {LONG_CONTENT}
+              <Button variant="outline">Final body control</Button>
+            </Dialog.Content>
+            <Dialog.Footer>
+              <Dialog.Close render={<Button variant="outline" />}>
+                Cancel
+              </Dialog.Close>
+              <Button variant="filled">Confirm</Button>
+            </Dialog.Footer>
+          </Dialog.Popup>
+        </Dialog.Viewport>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
 const meta: Meta = {
   title: "Components/Dialog",
   component: Dialog.Root,
@@ -57,6 +105,10 @@ export const Default: StoryObj = {
       </Dialog.Portal>
     </Dialog.Root>
   ),
+};
+
+export const LongContent: StoryObj = {
+  render: () => <LongContentDialog />,
 };
 
 export const WithoutCloseButton: StoryObj = {

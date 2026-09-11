@@ -2,9 +2,14 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicItem,
   ItemWithDescription,
+  ItemWithLabel,
   ItemWithLeading,
   ItemWithTrailing,
   ItemWithBothSlots,
+  CompactItem,
+  DefaultSizeItem,
+  CompactItemWithLabel,
+  CompactItemAsLink,
   ClickableItem,
   NonClickableItem,
   SelectedItem,
@@ -26,6 +31,20 @@ test.describe("Item", () => {
       await expect(page.getByText("Dark mode")).toBeVisible();
       await expect(page.getByText("Use system setting")).toBeVisible();
     });
+
+    test("renders label inline with the title", async ({ mount, page }) => {
+      await mount(<ItemWithLabel />);
+      await expect(page.getByText("Jane Doe")).toBeVisible();
+      await expect(page.getByText("Admin")).toBeVisible();
+
+      const title = page.getByText("Jane Doe");
+      const label = page.getByText("Admin");
+      const titleBox = await title.boundingBox();
+      const labelBox = await label.boundingBox();
+      // Label sits on the same row, after the title.
+      expect(labelBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+      expect(labelBox!.y).toBeLessThan(titleBox!.y + titleBox!.height);
+    });
   });
 
   test.describe("Slots", () => {
@@ -46,6 +65,41 @@ test.describe("Item", () => {
       await expect(page.getByText("Settings")).toBeVisible();
       await expect(page.getByText("Manage your preferences")).toBeVisible();
       await expect(page.locator("svg")).toHaveCount(2);
+    });
+  });
+
+  test.describe("Sizes", () => {
+    test('compact item has data-size="compact"', async ({ mount, page }) => {
+      await mount(<CompactItem />);
+      await expect(page.locator('[data-size="compact"]')).toBeVisible();
+    });
+
+    test("default item has no data-size attribute", async ({ mount, page }) => {
+      await mount(<DefaultSizeItem />);
+      await expect(page.getByText("Payment received")).toBeVisible();
+      await expect(page.locator("[data-size]")).toHaveCount(0);
+    });
+
+    test("compact item keeps the label inline with the title", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<CompactItemWithLabel />);
+      await expect(page.locator('[data-size="compact"]')).toBeVisible();
+
+      const title = page.getByText("Jane Doe");
+      const label = page.getByText("Admin");
+      const titleBox = await title.boundingBox();
+      const labelBox = await label.boundingBox();
+      expect(labelBox!.x).toBeGreaterThan(titleBox!.x + titleBox!.width);
+      expect(labelBox!.y).toBeLessThan(titleBox!.y + titleBox!.height);
+    });
+
+    test("compact applies through the render prop", async ({ mount, page }) => {
+      await mount(<CompactItemAsLink />);
+      const link = page.getByRole("link", { name: /Payment received/ });
+      await expect(link).toBeVisible();
+      await expect(link).toHaveAttribute("data-size", "compact");
     });
   });
 

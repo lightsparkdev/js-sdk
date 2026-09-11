@@ -1,6 +1,13 @@
 import { Dialog } from "./index";
 import { Button } from "../Button";
 
+const LONG_CONTENT = Array.from({ length: 30 }, (_, index) => (
+  <p key={index}>
+    Long dialog content section {index + 1}. This content verifies that the
+    dialog body remains reachable.
+  </p>
+));
+
 export function TestDialog() {
   return (
     <Dialog.Root defaultOpen>
@@ -24,6 +31,38 @@ export function TestDialog() {
             </Dialog.Close>
           </Dialog.Footer>
         </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+export function TestLongViewportDialog() {
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop data-testid="long-dialog-backdrop" />
+        <Dialog.Viewport>
+          <Dialog.Popup data-testid="long-dialog-popup">
+            <Dialog.CloseButton />
+            <Dialog.Header data-testid="long-dialog-header">
+              <Dialog.Title>Long Dialog</Dialog.Title>
+              <Dialog.Description>
+                Scroll the body to review all content.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Content data-testid="long-dialog-content">
+              <Button variant="outline">First body control</Button>
+              {LONG_CONTENT}
+              <Button variant="outline">Final body control</Button>
+            </Dialog.Content>
+            <Dialog.Footer data-testid="long-dialog-footer">
+              <Dialog.Close render={<Button variant="outline" />}>
+                Cancel
+              </Dialog.Close>
+              <Button variant="filled">Confirm</Button>
+            </Dialog.Footer>
+          </Dialog.Popup>
+        </Dialog.Viewport>
       </Dialog.Portal>
     </Dialog.Root>
   );

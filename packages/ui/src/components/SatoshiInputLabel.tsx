@@ -26,7 +26,7 @@ export function SatoshiInputLabel({
           link({
             text: "Learn more",
             externalLink:
-              "https://docs.lightspark.com/lightspark-sdk/api-reference/types/Balances",
+              "https://node.lightspark.com/lightspark-sdk/api-reference/types/Balances",
           }),
         ]}
       />

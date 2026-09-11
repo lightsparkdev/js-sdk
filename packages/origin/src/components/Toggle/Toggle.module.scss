@@ -8,9 +8,9 @@
   height: 32px;
   min-width: 32px;
   padding: 0 var(--spacing-xs);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-xs));
-  background-color: var(--surface-primary);
+  background-color: var(--surface-control);
   box-shadow: var(--shadow-sm);
   color: var(--text-primary);
   cursor: pointer;
@@ -97,6 +97,37 @@
     // Collapse duplicate borders between adjacent toggles
     & + .toggle {
       margin-left: calc(-1 * var(--stroke-xs));
+    }
+  }
+}
+
+:global([data-theme="dark"]).toggle,
+:global(.dark).toggle,
+:global([data-theme="dark"]) .toggle,
+:global(.dark) .toggle {
+  &:focus-visible,
+  &[data-pressed] {
+    background-color: var(--surface-raised);
+  }
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-raised);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .toggle {
+    &:focus-visible,
+    &[data-pressed] {
+      background-color: var(--surface-raised);
+    }
+
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        background-color: var(--surface-raised);
+      }
     }
   }
 }

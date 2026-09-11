@@ -7,7 +7,7 @@
 .popup {
   max-width: 320px;
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   overflow: clip;
@@ -39,7 +39,7 @@
   height: 8px;
   transform: rotate(45deg);
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
 
   &[data-side="top"] {
     bottom: -4px;

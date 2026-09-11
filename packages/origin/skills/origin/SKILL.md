@@ -101,7 +101,7 @@ These use dot notation for sub-components:
 </Dialog.Root>
 ```
 
-Compound components: Accordion, AlertDialog, Autocomplete, Breadcrumb, Card, Checkbox, Combobox, Command, ContextMenu, Dialog, Field, Fieldset, InputGroup, Menu, Menubar, Meter, NavigationMenu, Pagination, PhoneInput, Popover, Progress, Radio, Select, Sidebar, Table, Tabs, TextareaGroup, Toast, Tooltip.
+Compound components: Accordion, AlertDialog, Autocomplete, Breadcrumb, Card, Checkbox, Combobox, Command, ContextMenu, Dialog, Field, Fieldset, InputGroup, Menu, Menubar, Meter, NavigationMenu, OTPField, Pagination, PhoneInput, Popover, Progress, Radio, Select, Sidebar, Table, Tabs, TextareaGroup, Toast, Tooltip.
 
 ### Simple components (direct props)
 

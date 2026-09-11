@@ -6,6 +6,7 @@ import type {
   FooterProps,
   CommandItem,
   CommandGroup,
+  CommandChangeEventDetails,
 } from "./parts";
 
 export const Command = {
@@ -20,4 +21,5 @@ export type {
   FooterProps as CommandFooterProps,
   CommandItem,
   CommandGroup,
+  CommandChangeEventDetails,
 };

@@ -9,7 +9,7 @@
   align-items: center;
   height: 36px;
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   // PhoneInput uses overflow: visible for dropdown positioning; safe here.
   overflow: hidden;
@@ -81,7 +81,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-secondary);
+  background: var(--surface-neutral-subtle);
   padding: var(--spacing-none) var(--spacing-sm);
   @include input;
   color: var(--text-secondary);
@@ -110,11 +110,58 @@
     border: none;
     box-shadow: none;
     @include btn;
+
+    &.buttonIconOnly {
+      height: var(--spacing-xl);
+      padding: var(--spacing-none);
+    }
   }
 
   &:has(> .button:only-child) {
     padding: 0;
     background: transparent;
+  }
+}
+
+:global([data-theme="dark"]).cap,
+:global(.dark).cap,
+:global([data-theme="dark"]) .cap,
+:global(.dark) .cap {
+  background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .cap {
+    background: transparent;
+  }
+}
+
+// The dark 4% standing fill of the outline variants matches --surface-hover,
+// so their hover steps one alpha stop up (--surface-raised, 6%) to stay
+// visible. Non-outline variants rest transparent and keep the shared hover.
+:global([data-theme="dark"]).buttonOutline,
+:global(.dark).buttonOutline,
+:global([data-theme="dark"]) .buttonOutline,
+:global(.dark) .buttonOutline,
+:global([data-theme="dark"]).selectTriggerOutline,
+:global(.dark).selectTriggerOutline,
+:global([data-theme="dark"]) .selectTriggerOutline,
+:global(.dark) .selectTriggerOutline {
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background: var(--surface-raised);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .buttonOutline,
+  :global(html:not([data-theme="light"])) .selectTriggerOutline {
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        background: var(--surface-raised);
+      }
+    }
   }
 }
 
@@ -131,7 +178,7 @@
   outline: none;
 
   &::placeholder {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 
   &[data-disabled] {
@@ -165,9 +212,14 @@
 }
 
 .buttonOutline {
-  background: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-control);
+  border: var(--stroke-xs) solid var(--border-control);
   box-shadow: var(--shadow-sm);
+}
+
+.buttonIconOnly {
+  width: var(--spacing-xl);
+  padding: var(--spacing-none);
 }
 
 .selectTrigger {
@@ -207,8 +259,8 @@
 }
 
 .selectTriggerOutline {
-  background: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-control);
+  border: var(--stroke-xs) solid var(--border-control);
   box-shadow: var(--shadow-sm);
 }
 

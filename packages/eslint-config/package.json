@@ -8,7 +8,6 @@
     "base.mjs",
     "react-lib.mjs",
     "react-app.mjs",
-    "react-app-with-internal-ui.mjs",
     "constants/"
   ],
   "exports": {
@@ -18,8 +17,6 @@
     "./react-lib": "./react-lib.mjs",
     "./react-app.mjs": "./react-app.mjs",
     "./react-app": "./react-app.mjs",
-    "./react-app-with-internal-ui.mjs": "./react-app-with-internal-ui.mjs",
-    "./react-app-with-internal-ui": "./react-app-with-internal-ui.mjs",
     "./constants/react-restricted-imports.js": "./constants/react-restricted-imports.js",
     "./constants/react-restricted-imports": "./constants/react-restricted-imports.js"
   },

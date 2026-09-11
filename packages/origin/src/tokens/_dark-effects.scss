@@ -1,0 +1,24 @@
+// Hand-maintained theme overrides for the generated effect variables.
+// Keep these separate so effect regeneration cannot remove them.
+[data-theme="dark"],
+.dark {
+  --input-focus: 0px 0px 0px 3px var(--state-focus);
+  --input-focus-critical: 0px 0px 0px 3px var(--state-focus-critical);
+  --shadow-lg: 0px 1px 2px -1px rgba(0, 0, 0, 0.4),
+    0px 4px 6px -1px rgba(0, 0, 0, 0.45), 0px 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0px 1px 2px -1px rgba(0, 0, 0, 0.4),
+    0px 4px 6px -1px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --input-focus: 0px 0px 0px 3px var(--state-focus);
+    --input-focus-critical: 0px 0px 0px 3px var(--state-focus-critical);
+    --shadow-lg: 0px 1px 2px -1px rgba(0, 0, 0, 0.4),
+      0px 4px 6px -1px rgba(0, 0, 0, 0.45), 0px 8px 16px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0px 1px 2px -1px rgba(0, 0, 0, 0.4),
+      0px 4px 6px -1px rgba(0, 0, 0, 0.45);
+    --shadow-sm: 0px 1px 2px rgba(0, 0, 0, 0.4);
+  }
+}

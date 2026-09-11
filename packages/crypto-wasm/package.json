@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/crypto-wasm",
-  "version": "0.1.26",
+  "version": "0.1.25",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lightsparkdev/js-sdk.git"
@@ -16,7 +16,7 @@
     "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand --bail"
   },
   "dependencies": {
-    "@lightsparkdev/core": "1.5.2"
+    "@lightsparkdev/core": "1.5.1"
   },
   "devDependencies": {
     "jest": "^29.6.2",

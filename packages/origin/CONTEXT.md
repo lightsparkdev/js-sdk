@@ -17,7 +17,7 @@ Origin is a **complete rewrite** of the Origin Design System, shifting from a co
 
 ### The Old Problem (v1)
 
-- Complex MCP spec-generation pipeline with many transformation steps
+- Complex spec-generation pipeline with many transformation steps
 - Design drift accumulated at each transformation layer
 - Heavy engineering overhead for maintaining generators
 - Memory/context issues across sessions
@@ -60,7 +60,9 @@ Then import `tools/base-ui-lint/manifest.json` in Figma → Plugins → Developm
 
 ### 2. Token System
 
-Tokens are exported natively from Figma Variables in W3C DTCG format.
+Tokens live in the repo as W3C DTCG JSON and mirror the design variables
+one-to-one. The repo JSON is the source of truth. Keep design variables and
+repository tokens in sync through deliberate, reviewed updates.
 
 **Token sources:**
 - `tokens/figma/origin/` — Origin design system tokens (Dark, Light, Value)
@@ -133,8 +135,12 @@ origin/
 │   ├── lib/
 │   │   └── dev-warn.ts         # Dev-only warning utility
 │   └── tokens/
-│       ├── _variables.scss     # Generated from Figma tokens
-│       └── _mixins.scss        # SCSS mixins
+│       ├── _variables.scss     # Generated from token JSON
+│       ├── _effects.scss       # Generated effect variables
+│       ├── _text-styles.scss   # Generated typography mixins
+│       ├── _typography.scss    # Generated typography classes
+│       ├── _dark-effects.scss  # Hand-maintained theme effect overrides
+│       └── _mixins.scss        # Hand-maintained SCSS mixins
 ├── tokens/
 │   └── figma/
 │       ├── origin/             # Origin tokens (Dark, Light, Value)

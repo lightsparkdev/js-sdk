@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   TestCheckboxDefault,
   TestCheckboxCard,
+  TestCheckboxMixedVariants,
   TestCheckboxDisabled,
   TestCheckboxControlled,
   TestCheckboxIndeterminate,
@@ -10,6 +11,7 @@ import {
   TestCheckboxReadOnly,
   TestCheckboxRequired,
   TestCheckboxName,
+  TestCheckboxInDrawer,
 } from "./Checkbox.test-stories";
 
 test.describe("Checkbox", () => {
@@ -29,6 +31,12 @@ test.describe("Checkbox", () => {
     await expect(option2).toBeVisible();
     await expect(description).toBeVisible();
 
+    // Checkbox.Legend layers .legend over Field.Label's single-class default
+    // and must win by source order; if Field's default label style ever
+    // gains specificity, the legend regresses to 12px/16px.
+    await expect(legend).toHaveCSS("font-size", "14px");
+    await expect(legend).toHaveCSS("line-height", "20px");
+
     const checkboxes = page.getByRole("checkbox");
     await expect(checkboxes.first()).toBeChecked();
     await expect(checkboxes.nth(1)).not.toBeChecked();
@@ -40,6 +48,42 @@ test.describe("Checkbox", () => {
     const checkboxes = page.getByRole("checkbox");
     await expect(checkboxes.first()).toBeVisible();
     await expect(checkboxes.first()).toBeChecked();
+  });
+
+  test("item labels use regular weight", async ({ mount, page }) => {
+    await mount(<TestCheckboxDefault />);
+
+    await expect(page.getByText("Option 1").first()).toHaveCSS(
+      "font-weight",
+      "400",
+    );
+  });
+
+  test("group carries the legend text inset", async ({ mount, page }) => {
+    await mount(<TestCheckboxDefault />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "4px");
+    await expect(group).toHaveCSS("padding-right", "4px");
+  });
+
+  test("card group keeps the full field width", async ({ mount, page }) => {
+    await mount(<TestCheckboxCard />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "0px");
+    await expect(group).toHaveCSS("padding-right", "0px");
+  });
+
+  test("a single card item flips its group to full width", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestCheckboxMixedVariants />);
+
+    const group = page.getByTestId("checkbox-group");
+    await expect(group).toHaveCSS("padding-left", "0px");
+    await expect(group).toHaveCSS("padding-right", "0px");
   });
 
   test("renders disabled state", async ({ mount, page }) => {
@@ -158,5 +202,17 @@ test.describe("Checkbox", () => {
 
     const checkbox = page.getByRole("checkbox", { name: "With Name" });
     await expect(checkbox).toBeChecked();
+  });
+
+  // A drawer's swipe-to-dismiss gesture captures the pointer, which drops the
+  // click before it reaches a span-rooted control (data-base-ui-swipe-ignore).
+  test("toggles inside a drawer", async ({ mount, page }) => {
+    await mount(<TestCheckboxInDrawer />);
+
+    const option = page.getByRole("checkbox", { name: "Option 2" });
+    await option.click();
+
+    await expect(option).toBeChecked();
+    await expect(page.getByTestId("selected-values")).toHaveText("option2");
   });
 });

@@ -102,7 +102,7 @@ export type UseNumberInputArgs = {
   formatValueOnBlur?: boolean | undefined;
 
   /* text input props: */
-  ref?: RefObject<HTMLInputElement>;
+  ref?: RefObject<HTMLInputElement | null>;
   min?: InputProps["min"];
   max?: InputProps["max"];
   value?: InputProps["value"];

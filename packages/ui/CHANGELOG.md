@@ -1,15 +1,5 @@
 # @lightsparkdev/ui
 
-## 1.1.20
-
-### Patch Changes
-
-- d1d0682: - Add Base, Ethereum, Polygon, and Solana chain icon components, plus a `ChainIcon` helper.
-  - Improve package build output for CSS and SVG assets.
-- Updated dependencies [d1d0682]
-- Updated dependencies [d1d0682]
-  - @lightsparkdev/core@1.5.2
-
 ## 1.1.19
 
 ### Patch Changes

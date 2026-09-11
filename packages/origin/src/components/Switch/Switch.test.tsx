@@ -8,6 +8,7 @@ import {
   DisabledCheckedSwitch,
   ReadOnlySwitch,
   ControlledSwitch,
+  SwitchInDrawer,
 } from "./Switch.test-stories";
 
 test.describe("Switch", () => {
@@ -148,5 +149,15 @@ test.describe("Switch", () => {
       await page.keyboard.press("Tab");
       await expect(switchEl).not.toBeFocused();
     });
+  });
+
+  // A drawer's swipe-to-dismiss gesture captures the pointer, which drops the
+  // click before it reaches a span-rooted control (data-base-ui-swipe-ignore).
+  test("toggles inside a drawer", async ({ mount, page }) => {
+    await mount(<SwitchInDrawer />);
+
+    await page.getByRole("switch").click();
+
+    await expect(page.getByTestId("status")).toHaveText("on");
   });
 });

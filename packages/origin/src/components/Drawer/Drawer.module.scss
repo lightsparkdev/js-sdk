@@ -57,6 +57,11 @@
 .popup {
   --bleed: 3rem;
   --peek: 1rem;
+
+  // Wash that dims this drawer while a nested drawer stacks above it. A 5%
+  // black wash is imperceptible on dark surfaces, so dark themes use a
+  // stronger step (see the theme overrides at the end of this file).
+  --drawer-stack-overlay: rgb(0 0 0 / 0.05);
   --panel-stack-side-peek: 33px;
   --panel-stack-sheet-peek: 24px;
   --panel-stack-scale: 0.95;
@@ -96,12 +101,12 @@
   margin-bottom: calc(-1 * var(--bleed));
   padding-bottom: calc(var(--bleed) + env(safe-area-inset-bottom, 0px));
   overflow: visible;
-  background-color: var(--drawer-surface, var(--surface-primary));
+  background-color: var(--drawer-surface, var(--surface-overlay));
   border-radius: var(
     --drawer-radius,
     var(--corner-radius-lg) var(--corner-radius-lg) 0 0
   );
-  outline: var(--stroke-xs) solid var(--border-primary);
+  outline: var(--stroke-xs) solid var(--border-overlay);
   box-shadow: var(--shadow-lg);
   touch-action: none;
   transform-origin: 50% calc(100% - var(--bleed));
@@ -141,7 +146,7 @@
     overflow: hidden;
 
     &::after {
-      background-color: rgb(0 0 0 / 0.05);
+      background-color: var(--drawer-stack-overlay);
     }
   }
 
@@ -207,7 +212,7 @@
         overflow: hidden;
 
         &::after {
-          background-color: rgb(0 0 0 / 0.05);
+          background-color: var(--drawer-stack-overlay);
         }
       }
 
@@ -270,7 +275,7 @@
         overflow: hidden;
 
         &::after {
-          background-color: rgb(0 0 0 / 0.05);
+          background-color: var(--drawer-stack-overlay);
         }
       }
 
@@ -318,7 +323,7 @@
         overflow: hidden;
 
         &::after {
-          background-color: rgb(0 0 0 / 0.05);
+          background-color: var(--drawer-stack-overlay);
         }
       }
 
@@ -446,4 +451,17 @@
   inset: 0;
   background-color: var(--surface-secondary);
   z-index: -1;
+}
+
+[data-theme="dark"].popup,
+:global(.dark).popup,
+[data-theme="dark"] .popup,
+:global(.dark) .popup {
+  --drawer-stack-overlay: var(--color-alpha-black-20);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .popup {
+    --drawer-stack-overlay: var(--color-alpha-black-20);
+  }
 }

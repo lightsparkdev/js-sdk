@@ -7,8 +7,8 @@
  * For real browser testing (accessibility tree, keyboard), see Breadcrumb.test.tsx
  */
 
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
 import * as React from "react";
 import { Breadcrumb } from "./";
 
@@ -105,6 +105,101 @@ describe("Breadcrumb.Link conformance", () => {
       render(renderWithProps({ className: "custom-link" }));
       const element = screen.getByTestId("test-link");
       expect(element).toHaveClass("custom-link");
+    });
+  });
+
+  describe("render prop", () => {
+    it("renders the provided element instead of the default anchor", () => {
+      render(
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link
+                data-testid="render-link"
+                render={<a href="/from-render" data-router-link="" />}
+              >
+                Home
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>,
+      );
+      const element = screen.getByTestId("render-link");
+      expect(element.tagName).toBe("A");
+      expect(element).toHaveAttribute("href", "/from-render");
+      expect(element).toHaveAttribute("data-router-link");
+      expect(element).toHaveTextContent("Home");
+    });
+
+    it("merges className from both the component and the render element", () => {
+      render(
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link
+                data-testid="render-link"
+                className="outer-class"
+                render={<a href="/x" className="render-class" />}
+              >
+                Home
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>,
+      );
+      const element = screen.getByTestId("render-link");
+      expect(element).toHaveClass("outer-class");
+      expect(element).toHaveClass("render-class");
+    });
+
+    it("composes event handlers from both the component and the render element", () => {
+      const outerClick = vi.fn((event: React.MouseEvent) =>
+        event.preventDefault(),
+      );
+      const renderClick = vi.fn((event: React.MouseEvent) =>
+        event.preventDefault(),
+      );
+      render(
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link
+                data-testid="render-link"
+                onClick={outerClick}
+                render={<a href="/x" onClick={renderClick} />}
+              >
+                Home
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>,
+      );
+      fireEvent.click(screen.getByTestId("render-link"));
+      expect(outerClick).toHaveBeenCalledTimes(1);
+      expect(renderClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("merges refs onto the rendered element", () => {
+      const outerRef = React.createRef<HTMLAnchorElement>();
+      const renderRef = React.createRef<HTMLAnchorElement>();
+      render(
+        <Breadcrumb.Root>
+          <Breadcrumb.List>
+            <Breadcrumb.Item>
+              <Breadcrumb.Link
+                data-testid="render-link"
+                ref={outerRef}
+                render={<a href="/x" ref={renderRef} />}
+              >
+                Home
+              </Breadcrumb.Link>
+            </Breadcrumb.Item>
+          </Breadcrumb.List>
+        </Breadcrumb.Root>,
+      );
+      const element = screen.getByTestId("render-link");
+      expect(outerRef.current).toBe(element);
+      expect(renderRef.current).toBe(element);
     });
   });
 });

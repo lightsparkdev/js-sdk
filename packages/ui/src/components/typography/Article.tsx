@@ -23,7 +23,7 @@ type ArticleProps = {
     type: TypographyTypeKey;
     size: TokenSizeKey;
   };
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 export function Article({ defaultTypography, children }: ArticleProps) {

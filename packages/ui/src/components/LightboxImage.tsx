@@ -30,7 +30,7 @@ export const LightboxImage = ({ children }: { children: ReactNode }) => {
     setIsOpen(!isOpen);
   };
 
-  const handleSetBoundingRect = (ref: RefObject<HTMLImageElement>) => {
+  const handleSetBoundingRect = (ref: RefObject<HTMLImageElement | null>) => {
     const rect = ref.current?.getBoundingClientRect();
     if (rect) {
       setBoundingRect({

@@ -332,12 +332,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   ref,
 ) {
   return (
-    <div
-      ref={ref}
-      className={clsx(styles.menu, className)}
-      role="menu"
-      {...props}
-    >
+    <div ref={ref} className={clsx(styles.menu, className)} {...props}>
       {children}
     </div>
   );
@@ -519,7 +514,6 @@ export const ExpandableItem = React.forwardRef<
           id={submenuId}
           className={styles.submenu}
           data-variant={submenuVariant}
-          role="menu"
         >
           {children}
         </div>

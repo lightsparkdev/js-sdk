@@ -36,6 +36,9 @@ export const Switch = React.forwardRef<HTMLSpanElement, SwitchProps>(
     return (
       <BaseSwitch.Root
         ref={ref}
+        // See the Checkbox.Item note: span-rooted controls must opt out of
+        // drawer/toast swipe gestures or they swallow the click.
+        data-base-ui-swipe-ignore=""
         className={clsx(styles.root, styles[size], className)}
         onCheckedChange={trackedChange}
         {...other}

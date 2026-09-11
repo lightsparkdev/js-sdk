@@ -496,6 +496,39 @@ describe("SidebarContext", () => {
 });
 
 describe("Accessibility", () => {
+  describe("Menu", () => {
+    it("does not use ARIA menu semantics by default", () => {
+      render(
+        <Sidebar.Root>
+          <Sidebar.Content>
+            <Sidebar.Menu data-testid="menu">
+              <Sidebar.Item>Dashboard</Sidebar.Item>
+            </Sidebar.Menu>
+          </Sidebar.Content>
+        </Sidebar.Root>,
+      );
+
+      expect(screen.getByTestId("menu")).not.toHaveAttribute("role");
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    });
+
+    it("forwards explicit menu role as an escape hatch", () => {
+      render(
+        <Sidebar.Root>
+          <Sidebar.Content>
+            <Sidebar.Menu aria-label="Custom command menu" role="menu">
+              <div role="menuitem">Custom command</div>
+            </Sidebar.Menu>
+          </Sidebar.Content>
+        </Sidebar.Root>,
+      );
+
+      expect(
+        screen.getByRole("menu", { name: "Custom command menu" }),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe("GroupLabel", () => {
     it("is visually hidden when collapsed", () => {
       render(
@@ -582,7 +615,8 @@ describe("Accessibility", () => {
 
       const submenu = document.getElementById(submenuId!);
       expect(submenu).toBeInTheDocument();
-      expect(submenu).toHaveAttribute("role", "menu");
+      expect(submenu).not.toHaveAttribute("role");
+      expect(screen.queryByRole("menu")).not.toBeInTheDocument();
     });
   });
 

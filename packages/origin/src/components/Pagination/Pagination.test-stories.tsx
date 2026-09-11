@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Pagination } from "./Pagination";
+import { Pagination, usePaginationContext } from "./Pagination";
 import { Select } from "../Select";
 
 // Basic pagination with all parts
@@ -146,6 +146,97 @@ export function ControlledPagination() {
       </Pagination.Root>
       <p data-testid="current-page">Current page: {page}</p>
     </div>
+  );
+}
+
+export function AnchorRender() {
+  const page = 3;
+
+  return (
+    <Pagination.Root page={page} totalItems={250} pageSize={25}>
+      <Pagination.Range />
+      <Pagination.Navigation>
+        <Pagination.Previous
+          data-testid="prev"
+          render={
+            <a
+              href={`?page=${page - 1}`}
+              onClick={(event) => {
+                event.preventDefault();
+              }}
+            />
+          }
+        />
+        <Pagination.Next
+          data-testid="next"
+          render={
+            <a
+              href={`?page=${page + 1}`}
+              onClick={(event) => {
+                event.preventDefault();
+              }}
+            />
+          }
+        />
+      </Pagination.Navigation>
+    </Pagination.Root>
+  );
+}
+
+export function AnchorRenderFirstPage() {
+  const page = 1;
+
+  return (
+    <Pagination.Root page={page} totalItems={250} pageSize={25}>
+      <Pagination.Navigation>
+        <Pagination.Previous
+          data-testid="prev"
+          render={
+            <a
+              href={`?page=${page - 1}`}
+              onClick={(event) => {
+                event.preventDefault();
+              }}
+            />
+          }
+        />
+        <Pagination.Next data-testid="next" />
+      </Pagination.Navigation>
+    </Pagination.Root>
+  );
+}
+
+export function WithoutTotals() {
+  const [page, setPage] = React.useState(1);
+
+  return (
+    <div>
+      <Pagination.Root page={page} pageSize={25} onPageChange={setPage}>
+        <Pagination.Range>
+          {({ totalItems }) =>
+            totalItems === undefined ? `Page ${page}` : `${totalItems} total`
+          }
+        </Pagination.Range>
+        <Pagination.Navigation>
+          <Pagination.Previous />
+          <Pagination.Next />
+        </Pagination.Navigation>
+      </Pagination.Root>
+      <p data-testid="current-page">Current page: {page}</p>
+    </div>
+  );
+}
+
+function CurrentPageBadge() {
+  const { page } = usePaginationContext();
+  return <span data-testid="ctx-page">{page}</span>;
+}
+
+export function ContextConsumer() {
+  return (
+    <Pagination.Root page={7} totalItems={500} pageSize={25}>
+      <CurrentPageBadge />
+    </Pagination.Root>
   );
 }
 

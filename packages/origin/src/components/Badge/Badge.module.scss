@@ -12,12 +12,28 @@
 }
 
 .gray {
-  background-color: var(--surface-secondary);
+  background-color: var(--surface-neutral-subtle);
   color: var(--text-primary);
 
   &.vibrant {
     background-color: var(--surface-neutral);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
+  }
+}
+
+// The shared 4% --surface-neutral-subtle fill is subliminal at badge size in
+// dark, so the neutral badge steps up to 10% to read as a filled chip. The
+// token stays at 4% for larger quiet surfaces (Tabs, SegmentedNav).
+:global([data-theme="dark"]).gray:not(.vibrant),
+:global(.dark).gray:not(.vibrant),
+:global([data-theme="dark"]) .gray:not(.vibrant),
+:global(.dark) .gray:not(.vibrant) {
+  background-color: var(--surface-alpha-tertiary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .gray:not(.vibrant) {
+    background-color: var(--surface-alpha-tertiary);
   }
 }
 
@@ -27,7 +43,7 @@
 
   &.vibrant {
     background-color: var(--surface-purple-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -37,7 +53,7 @@
 
   &.vibrant {
     background-color: var(--surface-blue-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -47,7 +63,7 @@
 
   &.vibrant {
     background-color: var(--surface-sky-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -57,7 +73,7 @@
 
   &.vibrant {
     background-color: var(--surface-pink-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -67,7 +83,7 @@
 
   &.vibrant {
     background-color: var(--surface-green-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -77,7 +93,7 @@
 
   &.vibrant {
     background-color: var(--surface-yellow-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }
 
@@ -87,6 +103,6 @@
 
   &.vibrant {
     background-color: var(--surface-red-strong);
-    color: var(--text-inverse);
+    color: var(--text-on-color);
   }
 }

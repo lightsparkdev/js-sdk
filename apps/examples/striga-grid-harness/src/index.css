@@ -1,0 +1,12 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  /* Fallback so the surface paints the full canvas even before React mounts;
+     the Page element carries it for scrolled-past-fold content. */
+  background: var(--surface-base, #f5f5f7);
+}

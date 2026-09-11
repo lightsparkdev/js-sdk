@@ -15,6 +15,11 @@ export default meta;
 
 type Story = StoryObj;
 
+const longMenuItems = Array.from(
+  { length: 40 },
+  (_, index) => `Item ${index + 1}`,
+);
+
 export const Default: Story = {
   render: () => (
     <Menu.Root>
@@ -30,6 +35,25 @@ export const Default: Story = {
             <Menu.Separator />
             <Menu.Item>Export</Menu.Item>
             <Menu.Item>Print</Menu.Item>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
+  ),
+};
+
+export const LongList: Story = {
+  render: () => (
+    <Menu.Root>
+      <Menu.Trigger render={<Button variant="outline" />}>
+        Open Long Menu
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner>
+          <Menu.Popup>
+            {longMenuItems.map((item) => (
+              <Menu.Item key={item}>{item}</Menu.Item>
+            ))}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>

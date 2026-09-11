@@ -45,6 +45,9 @@ yarn workspace @lightsparkdev/ui test
 - Use workspace protocol for internal deps: `"@lightsparkdev/ui": "*"`
 - Shared configs: `@lightsparkdev/{tsconfig,eslint-config}`
 
+### Changesets
+Always prefer `patch` version increments unless a maintainer explicitly calls for `minor`/`major`.
+
 ### Enums
 Prefer generated TypeScript enums from `src/generated/graphql` rather than raw strings when
 available. This ensures type safety and keeps code in sync with the schema.

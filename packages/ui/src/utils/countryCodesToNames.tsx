@@ -1,4 +1,4 @@
-import { invert } from "lodash-es";
+import { invert, pick } from "lodash-es";
 
 export const countryCodesToNames = {
   BD: "Bangladesh",
@@ -262,3 +262,35 @@ export const countryNamesToCodes = invert(countryCodesToNames) as Record<
   CountryNames,
   CountryCodes
 >;
+
+const euCountryCodes = [
+  "AT",
+  "BE",
+  "BG",
+  "HR",
+  "CY",
+  "CZ",
+  "DK",
+  "EE",
+  "FI",
+  "FR",
+  "DE",
+  "GR",
+  "HU",
+  "IE",
+  "IT",
+  "LV",
+  "LT",
+  "LU",
+  "MT",
+  "NL",
+  "PL",
+  "PT",
+  "RO",
+  "SK",
+  "SI",
+  "ES",
+  "SE",
+] as const satisfies readonly CountryCodes[];
+
+export const euCountryCodesToNames = pick(countryCodesToNames, euCountryCodes);

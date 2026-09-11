@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Drawer } from "../Drawer";
 import { Radio } from "./Radio";
 
 export function TestRadioDefault() {
@@ -105,5 +106,29 @@ export function TestRadioCritical() {
         This field is required
       </Radio.Error>
     </Radio.Field>
+  );
+}
+
+export function TestRadioInDrawer() {
+  const [value, setValue] = React.useState<string>("");
+  return (
+    <Drawer.Root defaultOpen swipeDirection="right">
+      <Drawer.Portal>
+        <Drawer.Viewport>
+          <Drawer.Popup data-testid="popup">
+            <Radio.Field>
+              <Radio.Group
+                value={value}
+                onValueChange={(next) => setValue(String(next))}
+              >
+                <Radio.Item value="opt1" label="Option 1" />
+                <Radio.Item value="opt2" label="Option 2" />
+              </Radio.Group>
+            </Radio.Field>
+            <span data-testid="selected-value">{value}</span>
+          </Drawer.Popup>
+        </Drawer.Viewport>
+      </Drawer.Portal>
+    </Drawer.Root>
   );
 }

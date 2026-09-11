@@ -9,6 +9,7 @@ export type {
   ActionButtonsProps as ComboboxActionButtonsProps,
   TriggerProps as ComboboxTriggerProps,
   ClearProps as ComboboxClearProps,
+  ClearVisibility as ComboboxClearVisibility,
   PortalProps as ComboboxPortalProps,
   PositionerProps as ComboboxPositionerProps,
   PopupProps as ComboboxPopupProps,

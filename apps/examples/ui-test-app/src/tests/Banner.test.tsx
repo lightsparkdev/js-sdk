@@ -1,4 +1,4 @@
-import { Banner } from "@lightsparkdev/ui/components";
+import { Banner } from "@lightsparkdev/ui/components/Banner/Banner";
 import { link } from "@lightsparkdev/ui/utils/toReactNodes/nodes";
 import { screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";

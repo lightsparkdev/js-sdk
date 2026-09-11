@@ -1,0 +1,293 @@
+@use "../../tokens/text-styles" as *;
+
+@keyframes data-table-cold-reveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  // Page tables run flush — the toolbar and footer borders act as the
+  // separators — and own their surface so no page background shows through
+  // the table area.
+  &[data-layout="page"] {
+    flex: 1;
+    min-height: 0;
+    background: var(--surface-primary);
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  flex-shrink: 0;
+  padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm)
+    var(--spacing-sm);
+  border-bottom: var(--stroke-xs) solid var(--border-primary);
+}
+
+// Non-scrolling wrapper around the scroll owner. It hosts the
+// scroll-affordance treatments so they pin to the *visible* scrollport
+// edges instead of scrolling with content, driven purely by the data
+// attributes the viewport's scroll measurement maintains:
+// - Horizontal alpha fades (::before left, ::after right) appear on the
+//   edges that still have columns to scroll to. They derive from the table
+//   surface token (dark-mode safe) and never intercept pointer events.
+// - The pinned header's shadow engages only once content is scrolled
+//   beneath it.
+// Z-index story (all inside this shell's stacking context, because the
+// scroller stays position: static): rows are unpositioned (level 0), the
+// fade overlays sit above them (z-index 1), and the sticky header cells
+// sit above the fades (z-index 2). The footer is a later sibling of the
+// shell, so it paints above everything here.
+.viewportShell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: var(--spacing-xl);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, var(--surface-primary), transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, var(--surface-primary), transparent);
+  }
+
+  &[data-overflow-x="true"]:not([data-at-left="true"])::before,
+  &[data-overflow-x="true"]:not([data-at-right="true"])::after {
+    opacity: 1;
+  }
+
+  &[data-overflow-y="true"]:not([data-at-top="true"]) thead th::after {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before,
+    &::after {
+      transition: none;
+    }
+  }
+}
+
+// The single scroll owner for the table: vertical always, horizontal when
+// data-scroll-x (the default) is on. Wide tables scroll in here instead of
+// leaking a min-width up through the page shell.
+// A flex column so a flex: 1 sibling after the table (the empty/error
+// state host) fills the viewport's remaining height, centering its card in
+// the visible region without forcing scroll.
+// Kept position: static (no stacking context) so the sticky header's
+// z-index resolves against the shell's overlays — see the z-index story on
+// .viewportShell.
+table.autoLayoutTable {
+  table-layout: auto;
+
+  &.coldLoadingTable {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .loadingColumn {
+    width: var(--spacing-16xl);
+  }
+
+  &[data-cold-reveal] {
+    animation: data-table-cold-reveal 120ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-cold-reveal] {
+      animation: none;
+    }
+  }
+}
+
+.viewport {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+
+  // overflow-x must be explicit: once overflow-y is a scroll value,
+  // visible would compute to auto. Hidden preserves scrollX={false} by
+  // clipping horizontal overflow instead of making this element a scroll owner.
+  overflow-x: hidden;
+
+  &[data-scroll-x="true"] {
+    overflow-x: auto;
+  }
+
+  // Placed after the scroll-x rule so the lock wins while a zero-rows
+  // overlay is showing (see the stateOverlay prop).
+  &[data-state-overlay="true"] {
+    overflow: hidden;
+
+    table {
+      display: none;
+    }
+  }
+
+  // The table never flex-shrinks: when rows overflow, the viewport scrolls
+  // instead of the flex algorithm compressing the table. Origin Table uses
+  // border-collapse: separate, so the 0.5px --stroke-xs borders render at
+  // token width and stay attached to the sticky header cells below.
+  table {
+    flex-shrink: 0;
+  }
+
+  // Pinned header: cells stick to the scrollport top (sticky lives on the
+  // cells, not thead — Chromium never shipped sticky for row groups) and
+  // paint the table surface so rows slide beneath them opaquely. Inert
+  // without vertical overflow, so it applies unconditionally.
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface-primary);
+  }
+
+  // The header's cast shadow lives on a hairline strip at each cell's
+  // bottom edge rather than the cell box itself: a cell-box shadow bleeds
+  // sideways onto neighboring header cells (later cells paint over earlier
+  // cells' shadows), striping the seams. Strips adjoin edge-to-edge, and
+  // Gaussian blur is additive over adjoining rects, so the strips' shadows
+  // compose into one continuous band below the header. Engagement is gated
+  // by the shell's scroll attributes — see .viewportShell.
+  thead th::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    pointer-events: none;
+    box-shadow: var(--shadow-sm);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    thead th::after {
+      transition: none;
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  min-width: 0;
+  flex-shrink: 0;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-top: var(--stroke-xs) solid var(--border-primary);
+
+  &:empty {
+    display: none;
+  }
+}
+
+// Sized, positioned box the state cards center in. Inside the viewport (a
+// flex column) the host flexes to fill the space left by the hidden table,
+// so the card centers in the visible scrollport; the min-height keeps the
+// card from collapsing in content-sized contexts.
+.stateHost {
+  position: relative;
+  flex: 1;
+
+  // Tallest card layout (error: 20px title + 2px gap + 20px description +
+  // 12px retry margin + 32px compact button = 86px) plus 28px clearance
+  // above and below, so the centered card never touches the toolbar or
+  // footer border in inline (content-sized) contexts.
+  min-height: 142px;
+}
+
+.stateCardContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.stateCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4xs);
+  width: 320px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.stateCardTitle {
+  @include label;
+
+  color: var(--text-primary);
+}
+
+.stateCardText {
+  @include body;
+
+  color: var(--text-secondary);
+}
+
+// Same title/text rhythm as the empty card (4xs); the action gets a
+// clearer sm separation from the copy.
+.retryButton {
+  margin-top: var(--spacing-sm);
+}
+
+// Gap matches Origin Pager.Root's own item gap so the label, select,
+// range, and nav buttons share one uniform rhythm across the footer, and
+// the label matches Pager.Status typography.
+.pageSizeField {
+  @include body-sm;
+
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+// The footer is slimmer than the Select trigger's default height; collapse
+// the ghost trigger to its content.
+.pageSizeTrigger {
+  height: auto;
+}

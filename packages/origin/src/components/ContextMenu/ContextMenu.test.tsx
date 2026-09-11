@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicContextMenu,
+  LongListContextMenu,
   ContextMenuWithIcons,
   ContextMenuWithCheckboxItems,
   ContextMenuWithRadioItems,
@@ -25,6 +26,72 @@ test.describe("ContextMenu", () => {
     await expect(page.getByRole("menuitem", { name: "Cut" })).toBeVisible();
     await expect(page.getByRole("menuitem", { name: "Copy" })).toBeVisible();
     await expect(page.getByRole("menuitem", { name: "Paste" })).toBeVisible();
+  });
+
+  test("bounds long menus and keeps keyboard navigation visible", async ({
+    mount,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 320, height: 480 });
+    await mount(<LongListContextMenu />);
+
+    await page.getByText("Right-click long list").click({ button: "right" });
+
+    const popup = page.getByTestId("long-context-menu-popup");
+    await expect(popup).toBeVisible();
+
+    const popupState = await popup.evaluate((element) => {
+      const styles = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+
+      return {
+        hasScrollableOverflow: element.scrollHeight > element.clientHeight,
+        maxHeight: styles.maxHeight,
+        overflowY: styles.overflowY,
+        bottom: rect.bottom,
+        top: rect.top,
+        viewportHeight: window.innerHeight,
+      };
+    });
+
+    expect(popupState.maxHeight).not.toBe("none");
+    expect(popupState.overflowY).toBe("auto");
+    expect(popupState.hasScrollableOverflow).toBe(true);
+    expect(popupState.top).toBeGreaterThanOrEqual(0);
+    expect(popupState.bottom).toBeLessThanOrEqual(popupState.viewportHeight);
+
+    for (let index = 0; index < 40; index++) {
+      await page.keyboard.press("ArrowDown");
+    }
+
+    const lastItem = page.getByRole("menuitem", { name: "Item 40" });
+    await expect(lastItem).toHaveAttribute("data-highlighted", "");
+
+    const navigationState = await lastItem.evaluate((item) => {
+      const menu = item.parentElement;
+
+      if (!menu) {
+        throw new Error("Context menu item is missing its popup parent");
+      }
+
+      const itemRect = item.getBoundingClientRect();
+      const menuRect = menu.getBoundingClientRect();
+
+      return {
+        isVisible:
+          itemRect.top >= menuRect.top && itemRect.bottom <= menuRect.bottom,
+        scrollTop: menu.scrollTop,
+      };
+    });
+
+    expect(navigationState.isVisible).toBe(true);
+    expect(navigationState.scrollTop).toBeGreaterThan(0);
+
+    await page.keyboard.press("Enter");
+    await expect(popup).not.toBeVisible();
+    await expect(page.getByTestId("selected-context-menu-item")).toHaveText(
+      "Item 40",
+    );
   });
 
   test("closes when clicking an item", async ({ mount, page }) => {

@@ -1,10 +1,10 @@
-import { type CSSInterpolation } from "@emotion/css";
+import { type CSSInterpolation } from "@emotion/serialize";
 import styled from "@emotion/styled";
 import { ensureArray } from "@lightsparkdev/core";
 import DateTimeRangePicker from "@wojtekmaj/react-datetimerange-picker";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
-import { capitalize } from "lodash-es";
+import { capitalize, startCase } from "lodash-es";
 import { useState } from "react";
 import { colors } from "../../styles/colors.js";
 import { getColor, type LightsparkTheme } from "../../styles/themes.js";
@@ -13,23 +13,44 @@ import { Button } from "../Button.js";
 import { Dropdown } from "../Dropdown.js";
 import { Flex } from "../Flex.js";
 import { Icon } from "../Icon/Icon.js";
+import NumberInput from "../NumberInput.js";
 import { TextInput } from "../TextInput.js";
 import { Body } from "../typography/Body.js";
 import { Label } from "../typography/Label.js";
 import { isBooleanFilterState } from "./BooleanFilter.js";
-import { DateRangeOperation } from "./date_utils.js";
+import {
+  CurrencyFilter,
+  getDefaultCurrencyFilterState,
+  isCurrencyFilterState,
+  type CurrencyFilterState,
+} from "./CurrencyFilter.js";
+import {
+  DateRangeOperation,
+  toLocalDateTimeFromUTC,
+  toUTCDateTimeFromLocal,
+} from "./date_utils.js";
 import { DatePreset, isDateFilterState } from "./DateFilter.js";
 import { type Dates } from "./DateWidget.js";
 import { isEnumFilterState } from "./EnumFilter.js";
 import { type FilterState } from "./Filter.js";
 import { FilterType, type Filter } from "./filters.js";
 import { isIdFilterState } from "./IdFilter.js";
+import {
+  getDefaultInputObjectFilterState,
+  InputObjectFilter,
+  isInputObjectFilterState,
+  type InputObjectFilterState,
+} from "./InputObjectFilter.js";
+import { isNumberFilterState } from "./NumberFilter.js";
 import { isStringFilterState } from "./StringFilter.js";
 import {
   isBooleanFilterAndState,
+  isCurrencyFilterAndState,
   isDateFilterAndState,
   isEnumFilterAndState,
   isIdFilterAndState,
+  isInputObjectFilterAndState,
+  isNumberFilterAndState,
   isStringFilterAndState,
 } from "./utils.js";
 
@@ -67,7 +88,7 @@ export function PillFilter<T extends Record<string, unknown>>({
         <Body
           size="Small"
           color="secondary"
-          content={getOperatorLabel(filter)}
+          content={getOperatorLabel(filter, state)}
         />
       </Operator>
       <FilterDropdown
@@ -75,7 +96,11 @@ export function PillFilter<T extends Record<string, unknown>>({
         onUpdateFilter={onUpdateFilter}
         customComponents={customComponents}
       />
-      <DeleteButton onClick={onDelete}>
+      <DeleteButton
+        type="button"
+        aria-label={`Remove ${filter.label} filter`}
+        onClick={onDelete}
+      >
         <Icon
           name="CentralCrossSmall"
           color="secondary"
@@ -91,12 +116,13 @@ export function PillFilter<T extends Record<string, unknown>>({
 
 function getOperatorLabel<T extends Record<string, unknown>>(
   filter: Filter<T>,
+  state: FilterState,
 ) {
   switch (filter.type) {
     case FilterType.ENUM:
       return "is";
     case FilterType.DATE:
-      return "is";
+      return "between";
     case FilterType.STRING:
       // TODO: Add string "contains" operator
       return "is";
@@ -104,7 +130,17 @@ function getOperatorLabel<T extends Record<string, unknown>>(
       return "is";
     case FilterType.BOOLEAN:
       return "is";
-    // TODO: Currency filter state, design tbd
+    case FilterType.CURRENCY:
+      if (isCurrencyFilterState(state)) {
+        if (state.min_amount && state.max_amount) return "between";
+        if (state.min_amount) return "at least";
+        if (state.max_amount) return "at most";
+      }
+      return "is";
+    case FilterType.NUMBER:
+      return "is";
+    case FilterType.INPUT_OBJECT:
+      return "includes";
     default:
       return "is";
   }
@@ -126,9 +162,26 @@ function getFilterValue(state: FilterState) {
       ? `${formatDateValue(state.start)} - ${formatDateValue(state.end)}`
       : "Empty";
   } else if (isBooleanFilterState(state)) {
-    return state.value ? "True" : "False";
+    return state.value === undefined ? "Empty" : state.value ? "True" : "False";
+  } else if (isCurrencyFilterState(state)) {
+    const min = state.min_amount?.value;
+    const max = state.max_amount?.value;
+    if (typeof min === "number" && typeof max === "number") {
+      return `${min} – ${max} sats`;
+    }
+    if (typeof min === "number") return `${min} sats`;
+    if (typeof max === "number") return `${max} sats`;
+    return "Empty";
+  } else if (isNumberFilterState(state)) {
+    return state.value || "Empty";
+  } else if (isInputObjectFilterState(state)) {
+    const parts = Object.entries(state.values).flatMap(([field, values]) =>
+      values.map(
+        (value) => `${startCase(field)}: ${startCase(value.toLowerCase())}`,
+      ),
+    );
+    return parts.join(", ") || "Empty";
   }
-  // TODO: Currency filter state, design tbd
 
   throw new Error("Invalid filter state");
 }
@@ -165,6 +218,17 @@ function FilterDropdown<T extends Record<string, unknown>>({
   const [stringFilterValue, setStringFilterValue] = useState("");
   const [dates, setDates] = useState<Dates>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [currencyState, setCurrencyState] = useState<CurrencyFilterState>(
+    isCurrencyFilterState(filterAndState.state)
+      ? filterAndState.state
+      : getDefaultCurrencyFilterState(),
+  );
+  const [inputObjectState, setInputObjectState] =
+    useState<InputObjectFilterState>(
+      isInputObjectFilterState(filterAndState.state)
+        ? filterAndState.state
+        : getDefaultInputObjectFilterState(),
+    );
   const DropdownComponent = customComponents?.customDropdown || Dropdown;
 
   if (isEnumFilterAndState(filterAndState)) {
@@ -226,24 +290,27 @@ function FilterDropdown<T extends Record<string, unknown>>({
 
     const { filter, state } = filterAndState;
     const handleApplyFilter = () => {
+      const value = stringFilterValue.trim();
+      if (!value) return;
+
       let updatedAppliedValues: string[] = [];
       if (filter.isMulti) {
         updatedAppliedValues = state.appliedValues
           ? [
               ...state.appliedValues.filter(
-                (appliedValue) => appliedValue !== stringFilterValue,
+                (appliedValue) => appliedValue !== value,
               ),
-              stringFilterValue,
+              value,
             ]
-          : [stringFilterValue];
+          : [value];
       } else {
-        updatedAppliedValues = [stringFilterValue];
+        updatedAppliedValues = [value];
       }
 
       onUpdateFilter({
         ...state,
         appliedValues: updatedAppliedValues,
-        value: stringFilterValue,
+        value,
         isApplied: true,
       } as unknown as FilterState);
       setIsOpen(false);
@@ -295,6 +362,61 @@ function FilterDropdown<T extends Record<string, unknown>>({
                 type: "Btn",
               }}
               fullWidth
+              disabled={!stringFilterValue.trim()}
+              onClick={handleApplyFilter}
+            />
+          </Flex>
+        }
+      />
+    );
+  } else if (isNumberFilterAndState(filterAndState)) {
+    const { filter, state } = filterAndState;
+    const handleApplyFilter = () => {
+      const value = stringFilterValue.trim();
+      if (!value) return;
+      onUpdateFilter({
+        ...state,
+        value,
+        isApplied: true,
+      } as unknown as FilterState);
+      setIsOpen(false);
+    };
+
+    return (
+      <DropdownComponent
+        {...commonDropdownProps}
+        isOpen={isOpen}
+        onOpen={() => {
+          setStringFilterValue(state.value);
+          setIsOpen(true);
+        }}
+        onClose={() => setIsOpen(false)}
+        button={{
+          getContent: () => (
+            <Value>
+              <Label
+                size="Small"
+                content={getFilterValue(state)}
+                color={state.value ? "text" : "secondary"}
+              />
+            </Value>
+          ),
+        }}
+        dropdownContent={
+          <Flex column gap={8} pt={8} pr={8} pb={8} pl={8} width={240}>
+            <NumberInput
+              value={stringFilterValue}
+              onChange={setStringFilterValue}
+              allowDecimals={filter.valueType !== "integer"}
+              decimalsLimit={filter.valueType === "integer" ? undefined : 100}
+              allowNegativeValue
+            />
+            <Button
+              kind="primary"
+              text="Apply"
+              typography={{ type: "Btn" }}
+              fullWidth
+              disabled={stringFilterValue === ""}
               onClick={handleApplyFilter}
             />
           </Flex>
@@ -323,9 +445,9 @@ function FilterDropdown<T extends Record<string, unknown>>({
           onClick: () => {
             onUpdateFilter({
               ...state,
-              value: option,
+              value: option === "True",
               isApplied: true,
-            } as FilterState);
+            } as unknown as FilterState);
           },
         }))}
       />
@@ -355,14 +477,8 @@ function FilterDropdown<T extends Record<string, unknown>>({
         return;
       }
 
-      const start = dayjs
-        .utc(dates[0])
-        .add(dayjs().utcOffset(), "minutes")
-        .toDate();
-      const end = dayjs
-        .utc(dates[1])
-        .add(dayjs().utcOffset(), "minutes")
-        .toDate();
+      const start = toUTCDateTimeFromLocal(dates[0], state.start ?? undefined);
+      const end = toUTCDateTimeFromLocal(dates[1], state.end ?? undefined);
 
       onUpdateFilter({
         ...state,
@@ -379,7 +495,17 @@ function FilterDropdown<T extends Record<string, unknown>>({
       <DropdownComponent
         {...commonDropdownProps}
         isOpen={isOpen}
-        onOpen={() => setIsOpen(true)}
+        onOpen={() => {
+          setDates(
+            state.start && state.end
+              ? [
+                  toLocalDateTimeFromUTC(state.start),
+                  toLocalDateTimeFromUTC(state.end),
+                ]
+              : null,
+          );
+          setIsOpen(true);
+        }}
         onClose={() => setIsOpen(false)}
         button={{
           getContent: ({ isOpen, theme }) => {
@@ -436,6 +562,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
                   }}
                   fullWidth
                   text="Apply"
+                  disabled={!isValidDateRange(dates)}
                   onClick={() => {
                     updateCalendarState(dates);
                   }}
@@ -443,6 +570,104 @@ function FilterDropdown<T extends Record<string, unknown>>({
               </Flex>
             </div>
           </>
+        }
+      />
+    );
+  } else if (isCurrencyFilterAndState(filterAndState)) {
+    const { filter, state } = filterAndState;
+    const minAmount = currencyState.min_amount?.value;
+    const maxAmount = currencyState.max_amount?.value;
+    const hasMinAmount = typeof minAmount === "number";
+    const hasMaxAmount = typeof maxAmount === "number";
+    const isValidCurrencyRange =
+      (hasMinAmount || hasMaxAmount) &&
+      (!hasMinAmount || !hasMaxAmount || minAmount <= maxAmount);
+    return (
+      <DropdownComponent
+        {...commonDropdownProps}
+        isOpen={isOpen}
+        onOpen={() => {
+          setCurrencyState(state);
+          setIsOpen(true);
+        }}
+        onClose={() => setIsOpen(false)}
+        button={{
+          getContent: () => (
+            <Value>
+              <Label
+                size="Small"
+                content={getFilterValue(state)}
+                color={state.isApplied ? "text" : "secondary"}
+              />
+            </Value>
+          ),
+        }}
+        dropdownContent={
+          <Flex column gap={8} pt={8} pr={8} pb={8} pl={8} width={320}>
+            <CurrencyFilter
+              updateFilterState={setCurrencyState}
+              state={currencyState}
+              label={filter.label}
+            />
+            <Button
+              kind="primary"
+              text="Apply"
+              typography={{ type: "Btn" }}
+              fullWidth
+              disabled={!isValidCurrencyRange}
+              onClick={() => {
+                onUpdateFilter(currencyState);
+                setIsOpen(false);
+              }}
+            />
+          </Flex>
+        }
+      />
+    );
+  } else if (isInputObjectFilterAndState(filterAndState)) {
+    const { filter, state } = filterAndState;
+    const hasInputObjectValues = Object.values(inputObjectState.values).some(
+      (values) => values.length > 0,
+    );
+    return (
+      <DropdownComponent
+        {...commonDropdownProps}
+        isOpen={isOpen}
+        onOpen={() => {
+          setInputObjectState(state);
+          setIsOpen(true);
+        }}
+        onClose={() => setIsOpen(false)}
+        button={{
+          getContent: () => (
+            <Value>
+              <Label
+                size="Small"
+                content={getFilterValue(state)}
+                color={state.isApplied ? "text" : "secondary"}
+              />
+            </Value>
+          ),
+        }}
+        dropdownContent={
+          <Flex column gap={16} pt={8} pr={8} pb={8} pl={8} width={320}>
+            <InputObjectFilter
+              updateFilterState={setInputObjectState}
+              state={inputObjectState}
+              fields={filter.fields}
+            />
+            <Button
+              kind="primary"
+              text="Apply"
+              typography={{ type: "Btn" }}
+              fullWidth
+              disabled={!hasInputObjectValues}
+              onClick={() => {
+                onUpdateFilter(inputObjectState);
+                setIsOpen(false);
+              }}
+            />
+          </Flex>
         }
       />
     );
@@ -487,7 +712,9 @@ const Value = styled.div`
   white-space: nowrap;
 `;
 
-const DeleteButton = styled.div`
+const DeleteButton = styled.button`
+  border: 0;
+  background: transparent;
   padding: 0px ${Spacing.px["2xs"]};
   display: flex;
   justify-content: center;

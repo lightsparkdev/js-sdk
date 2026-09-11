@@ -153,6 +153,27 @@ export function LinkPropForwarding() {
   );
 }
 
+// Link render prop: custom element replaces the default anchor
+export function LinkRenderProp() {
+  return (
+    <Breadcrumb.Root>
+      <Breadcrumb.List>
+        <Breadcrumb.Item>
+          <Breadcrumb.Link
+            data-testid="test-render-link"
+            render={<a href="/custom" data-router-link="" />}
+          >
+            Custom Link
+          </Breadcrumb.Link>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Current</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      </Breadcrumb.List>
+    </Breadcrumb.Root>
+  );
+}
+
 // Page conformance: prop forwarding
 export function PagePropForwarding() {
   return (

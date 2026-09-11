@@ -2,7 +2,12 @@
   "extends": ["stylelint-config-standard-scss"],
   "rules": {
     "declaration-no-important": true,
-    
+
+    "selector-pseudo-class-no-unknown": [
+      true,
+      { "ignorePseudoClasses": ["global"] }
+    ],
+
     "selector-class-pattern": null,
     "scss/at-mixin-pattern": null,
     "scss/dollar-variable-pattern": null,

@@ -11,7 +11,7 @@
   box-sizing: border-box;
   padding-inline: var(--spacing-sm);
   background: transparent;
-  border: var(--stroke-sm) solid var(--border-primary);
+  border: var(--stroke-sm) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-sm));
   color: var(--text-primary);
   outline: none;
@@ -20,7 +20,7 @@
     box-shadow 150ms ease;
 
   &::placeholder {
-    color: var(--text-secondary);
+    @include input-placeholder;
   }
 
   &:focus {
@@ -49,11 +49,10 @@
 .popup {
   box-sizing: border-box;
   width: var(--anchor-width);
-  max-height: min(23rem, var(--available-height));
   max-width: var(--available-width);
   overflow: hidden;
-  background: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   outline: 0;
@@ -95,6 +94,7 @@
   display: flex;
   gap: var(--spacing-2xs);
   align-items: center;
+  flex-shrink: 0;
   height: 36px;
   padding: var(--spacing-xs);
   @include smooth-corners(var(--corner-radius-xs));
@@ -151,7 +151,7 @@
     left: 0;
     right: 0;
     height: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-overlay);
   }
 }
 

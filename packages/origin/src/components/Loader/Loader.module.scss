@@ -1,5 +1,8 @@
 .loader {
   display: flex;
+}
+
+.dots {
   gap: 2px;
   padding: 0 var(--spacing-4xs);
 }
@@ -19,6 +22,52 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+.ring {
+  align-items: center;
+  justify-content: center;
+}
+
+.ringSvg {
+  animation: ring-rotate 0.5s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+.ringTrack {
+  stroke: var(--border-secondary);
+  stroke-width: var(--stroke-lg);
+
+  // Reduced motion: the track becomes a static full ring in the indicator
+  // color at lowered opacity, mirroring Progress's indeterminate treatment.
+  @media (prefers-reduced-motion: reduce) {
+    stroke: var(--stroke-primary);
+    opacity: 0.3;
+  }
+}
+
+.ringIndicator {
+  stroke: var(--stroke-primary);
+  stroke-width: var(--stroke-lg);
+  stroke-linecap: round;
+
+  // Reduced motion: hide the frozen quarter-arc; the track carries the
+  // static state.
+  @media (prefers-reduced-motion: reduce) {
+    opacity: 0;
+  }
+}
+
+@keyframes ring-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
