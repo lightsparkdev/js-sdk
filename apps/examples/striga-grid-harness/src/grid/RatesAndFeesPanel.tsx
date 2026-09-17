@@ -70,9 +70,6 @@ export function RatesAndFeesPanel({
         <Button variant="secondary" onClick={() => rates("/exchange-rates")}>
           Get rates
         </Button>
-        <Button variant="secondary" onClick={() => rates("/exchange-rates-v2")}>
-          Get rates v2
-        </Button>
       </ButtonRow>
       <JsonField
         label={`Fee estimate body — POST ${gridPath(
