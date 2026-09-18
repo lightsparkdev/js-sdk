@@ -54,7 +54,7 @@ export function RatesAndFeesPanel({
   return (
     <Panel
       title="Exchange rates & fees"
-      subtitle="Rates (v1/v2) for a currency pair, plus the on-chain withdrawal fee estimate."
+      subtitle="Rates for a currency pair, plus the on-chain withdrawal fee estimate."
     >
       <TextField
         label="sourceCurrency"
