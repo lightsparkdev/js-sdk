@@ -1,11 +1,18 @@
 import type { ReactElement } from "react";
+import { Arbitrum } from "./Arbitrum.js";
 import { Base } from "./Base.js";
 import { Ethereum } from "./Ethereum.js";
 import { Polygon } from "./Polygon.js";
 import { Solana } from "./Solana.js";
 import { Tron } from "./Tron.js";
 
-export type Chain = "solana" | "ethereum" | "base" | "polygon" | "tron";
+export type Chain =
+  | "solana"
+  | "ethereum"
+  | "base"
+  | "polygon"
+  | "arbitrum"
+  | "tron";
 
 const CHAIN_COMPONENTS: Record<
   Chain,
@@ -15,6 +22,7 @@ const CHAIN_COMPONENTS: Record<
   ethereum: Ethereum,
   base: Base,
   polygon: Polygon,
+  arbitrum: Arbitrum,
   tron: Tron,
 };
 

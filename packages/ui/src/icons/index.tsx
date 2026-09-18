@@ -103,6 +103,7 @@ export { Messenger } from "./Messenger.js";
 export { Minus } from "./Minus.js";
 export { Monitor } from "./Monitor.js";
 export { Moon } from "./Moon.js";
+export { NetworkArbitrum } from "./NetworkArbitrum.js";
 export { NetworkBase } from "./NetworkBase.js";
 export { NetworkEthereum } from "./NetworkEthereum.js";
 export { NetworkLightning } from "./NetworkLightning.js";
