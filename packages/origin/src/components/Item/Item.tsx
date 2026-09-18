@@ -4,13 +4,18 @@ import * as React from "react";
 import clsx from "clsx";
 import styles from "./Item.module.scss";
 
+export type ItemSize = "default" | "compact";
+
 export interface ItemProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
   title: string;
+  label?: React.ReactNode;
   description?: string;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
   trailingPadding?: "sm" | "lg";
+  /** Item density — compact reduces padding and type scale for dense lists */
+  size?: ItemSize;
   clickable?: boolean;
   selected?: boolean;
   disabled?: boolean;
@@ -21,10 +26,12 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
   function Item(props, forwardedRef) {
     const {
       title,
+      label,
       description,
       leading,
       trailing,
       trailingPadding,
+      size = "default",
       clickable = true,
       selected,
       disabled,
@@ -52,6 +59,7 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
     const itemProps = {
       ref: forwardedRef,
       className: clsx(styles.root, clickable && styles.clickable, className),
+      "data-size": size !== "default" ? size : undefined,
       "data-clickable": clickable ? undefined : "false",
       "data-selected": selected || undefined,
       "data-disabled": disabled || undefined,
@@ -66,7 +74,10 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(
         <div className={styles.container}>
           {leading && <div className={styles.leading}>{leading}</div>}
           <div className={styles.content}>
-            <span className={styles.title}>{title}</span>
+            <div className={styles.titleRow}>
+              <span className={styles.title}>{title}</span>
+              {label && <span className={styles.label}>{label}</span>}
+            </div>
             {description && (
               <span className={styles.description}>{description}</span>
             )}

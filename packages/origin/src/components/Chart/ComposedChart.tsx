@@ -12,6 +12,8 @@ import {
   monotoneInterpolator,
   linearInterpolator,
   thinIndices,
+  xAxisTickTarget,
+  applyEdgeLabels,
   axisPadForLabels,
   formatChartDatumValue,
   type Point,
@@ -36,6 +38,7 @@ import {
   BAR_ITEM_GAP,
   resolveTooltipMode,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import styles from "./Chart.module.scss";
@@ -57,7 +60,8 @@ type ResolvedComposedSeries = {
 };
 
 export interface ComposedChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   data: ChartDatum[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -131,6 +135,8 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
       formatValue,
       formatXLabel,
       formatYLabel,
+      xAxisLabels = "fixed",
+      xAxisEdgeLabels = "show",
       formatYLabelRight,
       connectNulls = true,
       yDomain: yDomainProp,
@@ -372,6 +378,30 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
         return;
       trackedClick(scrub.activeIndex, data[scrub.activeIndex]);
     }, [onClickDatum, trackedClick, scrub.activeIndex, data]);
+
+    // X axis labels (thinned to avoid overlap)
+    const xLabels = React.useMemo(() => {
+      if (!xKey) return [];
+      const labels = data.map((d) =>
+        formatXLabel ? formatXLabel(d[xKey]) : formatChartDatumValue(d[xKey]),
+      );
+      const maxLabels = xAxisTickTarget(xAxisLabels, plotWidth, () => labels);
+      const indices = thinIndices(data.length, maxLabels);
+      const visibleIndices = applyEdgeLabels(xAxisEdgeLabels, indices);
+      return visibleIndices.map((i) => ({
+        x: (i + 0.5) * slotWidth,
+        text: labels[i],
+        index: i,
+      }));
+    }, [
+      xKey,
+      data,
+      formatXLabel,
+      xAxisLabels,
+      xAxisEdgeLabels,
+      plotWidth,
+      slotWidth,
+    ]);
 
     const svgDesc = React.useMemo(() => {
       if (series.length === 0 || data.length === 0) return undefined;
@@ -689,25 +719,18 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
                   ))}
 
                   {/* X axis labels (thinned to avoid overlap) */}
-                  {xKey &&
-                    (() => {
-                      const maxLabels = Math.max(2, Math.floor(plotWidth / 60));
-                      const indices = thinIndices(data.length, maxLabels);
-                      return indices.map((i) => (
-                        <text
-                          key={i}
-                          x={(i + 0.5) * slotWidth}
-                          y={plotHeight + 20}
-                          className={styles.axisLabel}
-                          textAnchor="middle"
-                          dominantBaseline="auto"
-                        >
-                          {formatXLabel
-                            ? formatXLabel(data[i][xKey])
-                            : formatChartDatumValue(data[i][xKey])}
-                        </text>
-                      ));
-                    })()}
+                  {xLabels.map(({ x, text, index }) => (
+                    <text
+                      key={index}
+                      x={x}
+                      y={plotHeight + 20}
+                      className={styles.axisLabel}
+                      textAnchor="middle"
+                      dominantBaseline="auto"
+                    >
+                      {text}
+                    </text>
+                  ))}
                 </g>
               </svg>
 

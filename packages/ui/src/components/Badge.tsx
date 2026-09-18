@@ -10,7 +10,7 @@ import { Icon } from "./Icon/Icon.js";
 import { type IconName } from "./Icon/types.js";
 import { type PartialSimpleTypographyProps } from "./typography/types.js";
 
-export type BadgeKind = "success" | "danger" | "default";
+export type BadgeKind = "success" | "danger" | "default" | "warning";
 
 export type BadgeProps = {
   content?: ToReactNodesArgs | undefined;
@@ -43,7 +43,13 @@ export function Badge({
     size: typographyProp?.size || "Small",
     color:
       typographyProp?.color ||
-      (kind === "danger" ? "danger" : kind === "success" ? "white" : "text"),
+      (kind === "danger"
+        ? "danger"
+        : kind === "success"
+        ? "white"
+        : kind === "warning"
+        ? "warningText"
+        : "text"),
   } as const;
 
   const nodesWithTypography = setDefaultReactNodesTypography(contentProp, {
@@ -65,6 +71,8 @@ export function Badge({
               ? "danger"
               : kind === "success"
               ? "success"
+              : kind === "warning"
+              ? "warningText"
               : undefined
           }
         />
@@ -100,6 +108,8 @@ const StyledBadge = styled.div<StyledBadgeProps>`
       return getColor(theme, "red42a10");
     } else if (kind === "success") {
       return getColor(theme, "success");
+    } else if (kind === "warning") {
+      return getColor(theme, "warningBackground");
     } else {
       return getColor(theme, theme.badge.bg);
     }

@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { type ReactNode, useLayoutEffect, useState } from "react";
 import { type PartialSimpleTypographyProps } from "../components/typography/types.js";
 import type { ToReactNodesArgs } from "../utils/toReactNodes/toReactNodes.js";
 import { toReactNodes } from "../utils/toReactNodes/toReactNodes.js";
@@ -178,7 +178,7 @@ export const textInputStyle = ({
 
   position: relative;
   z-index: ${z.textInput};
-  font-family: ${theme.typography?.fontFamilies.main};
+  font-family: ${theme.typography?.cssFontFamilies.main};
   padding: ${textInputPaddingPx - (hasError ? 1 : 0)}px;
   ${paddingLeftPx
     ? `padding-left: ${paddingLeftPx - (hasError ? 1 : 0)}px;`
@@ -284,7 +284,6 @@ export function InputSubtext({
   focused?: boolean | undefined;
   subTextPaddingX?: number | undefined;
 }) {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [subtext, setSubtext] = useState(text);
   const [visible, setVisible] = useState(Boolean(text));
 
@@ -292,15 +291,13 @@ export function InputSubtext({
     if (text || content) {
       setSubtext(text);
       setVisible(true);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    } else {
-      setVisible(false);
-      timeoutRef.current = setTimeout(() => {
-        setSubtext(undefined);
-      }, inputSubtextSeconds * 1000);
+      return undefined;
     }
+    setVisible(false);
+    const timeout = setTimeout(() => {
+      setSubtext(undefined);
+    }, inputSubtextSeconds * 1000);
+    return () => clearTimeout(timeout);
   }, [text, content]);
 
   return (

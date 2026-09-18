@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Alert } from "./Alert";
+import { Button } from "../Button";
 
 const meta = {
   title: "Components/Alert",
@@ -35,6 +36,26 @@ export const TitleOnly: Story = {
     variant: "default",
     title: "Title only alert",
   },
+};
+
+export const WithTrailingAction: Story = {
+  args: {
+    title: "Review required",
+    description:
+      "Check the details before you continue with this account update.",
+  },
+  render: (args) => (
+    <div style={{ width: 960, maxWidth: "calc(100vw - 2rem)" }}>
+      <Alert
+        {...args}
+        trailing={
+          <Button size="compact" variant="filled">
+            Review
+          </Button>
+        }
+      />
+    </div>
+  ),
 };
 
 export const AllVariants: Story = {

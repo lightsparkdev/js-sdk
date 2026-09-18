@@ -7,6 +7,7 @@ export {
   ControlItem,
   Footer,
   type DatePickerRootProps,
+  type DatePickerActions,
   type DatePickerHeaderProps,
   type DatePickerNavigationProps,
   type DatePickerGridProps,
@@ -14,6 +15,18 @@ export {
   type DatePickerControlItemProps,
   type DatePickerFooterProps,
   type DatePickerLabels,
+  type DatePickerTimeZone,
   type DayCellState,
   type DateRange,
+  type DateRangeDraft,
 } from "./parts";
+export {
+  PresetSelect,
+  type DatePickerPresetSelectProps,
+} from "./presetControls";
+export type {
+  DatePickerMode,
+  DatePickerGranularity,
+  DatePickerPreset,
+  DatePickerPresetResult,
+} from "./types";

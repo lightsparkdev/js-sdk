@@ -12,11 +12,12 @@ import { Headline } from "@lightsparkdev/ui/components/typography";
 import "@lightsparkdev/ui/static/fonts.css";
 import { GlobalStyles } from "@lightsparkdev/ui/styles/global";
 import { themes } from "@lightsparkdev/ui/styles/themes";
+import type { JSX } from "react";
 import { useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { TestAppRoutes } from "./types";
 
-export function Root() {
+export function Root(): JSX.Element {
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [textInputValue, setTextInputValue] = useState("");

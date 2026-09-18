@@ -36,8 +36,8 @@
   left: var(--active-tab-left);
   width: var(--active-tab-width);
   height: var(--active-tab-height);
-  background: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background: var(--surface-raised);
+  border: var(--stroke-xs) solid var(--border-control);
   @include smooth-corners(var(--corner-radius-xs));
   box-shadow: var(--shadow-sm);
   transition: top, left, width, height;
@@ -68,7 +68,7 @@
 
   // Focused state (keyboard navigation)
   &:focus-visible {
-    background: var(--surface-panel);
+    background: var(--surface-raised);
     border-color: var(--border-secondary);
     outline: none;
     box-shadow: var(--input-focus);
@@ -95,16 +95,31 @@
   }
 }
 
-.panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: var(--spacing-4xl) 0;
-  overflow: clip;
-  border: var(--stroke-xs) solid var(--border-primary);
-  @include smooth-corners(var(--corner-radius-sm));
+:global([data-theme="dark"]).list.default,
+:global(.dark).list.default,
+:global([data-theme="dark"]) .list.default,
+:global(.dark) .list.default {
+  background: var(--surface-neutral-subtle);
+}
 
+:global([data-theme="dark"]).indicator,
+:global(.dark).indicator,
+:global([data-theme="dark"]) .indicator,
+:global(.dark) .indicator {
+  box-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .list.default {
+    background: var(--surface-neutral-subtle);
+  }
+
+  :global(html:not([data-theme="light"])) .indicator {
+    box-shadow: none;
+  }
+}
+
+.panel {
   &[data-hidden] {
     display: none;
   }

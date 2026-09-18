@@ -67,11 +67,11 @@ export const EnumFilter = ({
   return (
     <>
       <Filter label={label}>
-        <Select
+        <Select<EnumFilterValue>
           zIndex={z.dropdown + 1}
           placeholder="Select value"
           options={options}
-          onChange={(option) => {
+          onChange={(option: EnumFilterValue | null) => {
             if (option) {
               const optionValues = ensureArray(option.value);
               let updatedAppliedValues: string[] = [];

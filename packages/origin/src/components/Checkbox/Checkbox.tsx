@@ -149,6 +149,10 @@ export const CheckboxItem = React.forwardRef<
   return (
     <BaseCheckbox.Root
       ref={ref}
+      // Base UI's drawer/toast swipe gestures skip native interactive elements
+      // (button, a, input, …) but not this span-rooted control, and a started
+      // gesture captures the pointer, so the click never reaches the checkbox.
+      data-base-ui-swipe-ignore=""
       value={value}
       checked={checked}
       defaultChecked={defaultChecked}

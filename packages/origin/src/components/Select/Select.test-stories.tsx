@@ -9,6 +9,19 @@ const fruits = [
   { value: "orange", label: "Orange" },
 ];
 
+const longOptions = Array.from({ length: 40 }, (_, index) => ({
+  value: `option-${index + 1}`,
+  label: `Option ${index + 1}`,
+}));
+
+const groupedOptions = Array.from({ length: 5 }, (_, groupIndex) => ({
+  label: `Group ${groupIndex + 1}`,
+  options: Array.from({ length: 4 }, (_, optionIndex) => ({
+    value: `group-${groupIndex + 1}-option-${optionIndex + 1}`,
+    label: `Group ${groupIndex + 1} Option ${optionIndex + 1}`,
+  })),
+}));
+
 const environments = [
   { value: "production", label: "Production" },
   { value: "sandbox", label: "Sandbox" },
@@ -33,6 +46,64 @@ export function DefaultSelect() {
                 </Select.Item>
               ))}
             </Select.List>
+          </Select.Popup>
+        </Select.Positioner>
+      </Select.Portal>
+    </Select.Root>
+  );
+}
+
+export function LongListSelect() {
+  return (
+    <Select.Root>
+      <Select.Trigger>
+        <Select.Value placeholder="Select option" />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Positioner>
+          <Select.Popup>
+            <Select.List>
+              {longOptions.map((option) => (
+                <Select.Item key={option.value} value={option.value}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{option.label}</Select.ItemText>
+                </Select.Item>
+              ))}
+            </Select.List>
+          </Select.Popup>
+        </Select.Positioner>
+      </Select.Portal>
+    </Select.Root>
+  );
+}
+
+export function LongGroupedSelect() {
+  return (
+    <Select.Root>
+      <Select.Trigger>
+        <Select.Value placeholder="Select option" />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Positioner>
+          <Select.Popup data-testid="long-grouped-select-popup">
+            {groupedOptions.map((group, groupIndex) => (
+              <React.Fragment key={group.label}>
+                {groupIndex > 0 ? <Select.Separator /> : null}
+                <Select.Group>
+                  <Select.GroupLabel>{group.label}</Select.GroupLabel>
+                  <Select.List>
+                    {group.options.map((option) => (
+                      <Select.Item key={option.value} value={option.value}>
+                        <Select.ItemIndicator />
+                        <Select.ItemText>{option.label}</Select.ItemText>
+                      </Select.Item>
+                    ))}
+                  </Select.List>
+                </Select.Group>
+              </React.Fragment>
+            ))}
           </Select.Popup>
         </Select.Positioner>
       </Select.Portal>

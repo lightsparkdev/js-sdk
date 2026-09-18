@@ -500,7 +500,7 @@ function CommandDemo() {
           Basic
         </span>
         <Button variant="outline" onClick={() => setBasicOpen(true)}>
-          Type a command or search...
+          Run a command or search
         </Button>
         <Command.Root
           items={basicItems}
@@ -531,26 +531,7 @@ function CommandDemo() {
           onOpenChange={setFullOpen}
           placeholder="Search for apps and commands..."
         >
-          <Command.Footer>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Shortcut keys={["↑", "↓"]} />
-              <span>Navigate</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <span>Select</span>
-                <Shortcut keys={["↵"]} />
-              </div>
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
-              >
-                <span>Close</span>
-                <Shortcut keys={["Esc"]} />
-              </div>
-            </div>
-          </Command.Footer>
+          <Command.Footer />
         </Command.Root>
       </div>
     </div>

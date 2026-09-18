@@ -9,8 +9,10 @@ import {
   StyleForwardingBreadcrumb,
   ClassNameBreadcrumb,
   LinkPropForwarding,
+  LinkRenderProp,
   PagePropForwarding,
 } from "./Breadcrumb.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 test.describe("Breadcrumb", () => {
   // Structure
@@ -95,6 +97,40 @@ test.describe("Breadcrumb", () => {
     await expect(currentItem).toBeVisible();
   });
 
+  // Separator active-layer promotion (Figma: Separator state=Current)
+  test("separator before the current crumb renders icon-primary", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<WithLinksBreadcrumb />);
+
+    const iconPrimary = await resolveTokenColor(page, "--icon-primary");
+    const iconSecondary = await resolveTokenColor(page, "--icon-secondary");
+
+    // Home > Products > [Current Page]: the chevron after Products promotes,
+    // the chevron after Home stays secondary.
+    const chevrons = component.locator('li > span[aria-hidden="true"] svg');
+    await expect(chevrons.first()).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(1)).toHaveCSS("color", iconPrimary);
+  });
+
+  test("collapsed breadcrumb promotes only the separator before current", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<CollapsedBreadcrumb />);
+
+    const iconPrimary = await resolveTokenColor(page, "--icon-primary");
+    const iconSecondary = await resolveTokenColor(page, "--icon-secondary");
+
+    // Home > [ellipsis] > Shoes > [Current: Running]: only the chevron
+    // after Shoes (index 2) promotes.
+    const chevrons = component.locator('li > span[aria-hidden="true"] svg');
+    await expect(chevrons.first()).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(1)).toHaveCSS("color", iconSecondary);
+    await expect(chevrons.nth(2)).toHaveCSS("color", iconPrimary);
+  });
+
   // Ref forwarding
   test("forwards ref to nav element", async ({ mount, page }) => {
     await mount(<DefaultBreadcrumb />);
@@ -140,6 +176,20 @@ test.describe("Breadcrumb.Link conformance", () => {
     await mount(<LinkPropForwarding />);
     const link = page.locator('[data-testid="test-link"]');
     await expect(link).toHaveAttribute("lang", "de");
+  });
+
+  test("render prop replaces the default anchor with merged props", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<LinkRenderProp />);
+    const link = page.locator('[data-testid="test-render-link"]');
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", "/custom");
+    await expect(link).toHaveAttribute("data-router-link", "");
+    await expect(link).toHaveText("Custom Link");
+    // Breadcrumb link styling class remains applied
+    await expect(link).toHaveClass(/link/);
   });
 });
 

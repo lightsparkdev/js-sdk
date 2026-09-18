@@ -17,10 +17,17 @@ import {
   type Filter,
   FilterType,
   type IdFilter,
+  type InputObjectFilter,
+  type NumberFilter,
   type StringFilter,
 } from "./filters.js";
 import { type IdFilterState, isIdFilterState } from "./IdFilter.js";
-import { type StringFilterState, isStringFilterState } from "./StringFilter.js";
+import {
+  type InputObjectFilterState,
+  isInputObjectFilterState,
+} from "./InputObjectFilter.js";
+import { isNumberFilterState, type NumberFilterState } from "./NumberFilter.js";
+import { isStringFilterState, type StringFilterState } from "./StringFilter.js";
 
 interface EnumFilterAndState<T extends Record<string, unknown>> {
   filter: EnumFilter<T>;
@@ -50,6 +57,16 @@ interface IdFilterAndState<T extends Record<string, unknown>> {
 interface StringFilterAndState<T extends Record<string, unknown>> {
   filter: StringFilter<T>;
   state: StringFilterState;
+}
+
+interface NumberFilterAndState<T extends Record<string, unknown>> {
+  filter: NumberFilter<T>;
+  state: NumberFilterState;
+}
+
+interface InputObjectFilterAndState<T extends Record<string, unknown>> {
+  filter: InputObjectFilter<T>;
+  state: InputObjectFilterState;
 }
 
 export function isEnumFilterAndState<
@@ -121,5 +138,29 @@ export function isStringFilterAndState<
   return (
     filterAndState.filter.type === FilterType.STRING &&
     isStringFilterState(filterAndState.state)
+  );
+}
+
+export function isNumberFilterAndState<
+  T extends Record<string, unknown>,
+>(filterAndState: {
+  filter: Filter<T>;
+  state: FilterState;
+}): filterAndState is NumberFilterAndState<T> {
+  return (
+    filterAndState.filter.type === FilterType.NUMBER &&
+    isNumberFilterState(filterAndState.state)
+  );
+}
+
+export function isInputObjectFilterAndState<
+  T extends Record<string, unknown>,
+>(filterAndState: {
+  filter: Filter<T>;
+  state: FilterState;
+}): filterAndState is InputObjectFilterAndState<T> {
+  return (
+    filterAndState.filter.type === FilterType.INPUT_OBJECT &&
+    isInputObjectFilterState(filterAndState.state)
   );
 }

@@ -12,6 +12,8 @@ import {
   monotoneInterpolator,
   linearInterpolator,
   thinIndices,
+  xAxisTickTarget,
+  applyEdgeLabels,
   axisPadForLabels,
   formatChartDatumValue,
   type Point,
@@ -34,6 +36,7 @@ import {
   resolveTooltipMode,
   resolveSeries,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import styles from "./Chart.module.scss";
@@ -42,7 +45,9 @@ export type { Series, TooltipProp, ReferenceLine, ReferenceBand };
 
 const clickIndexMeta = (index: number) => ({ index });
 
-export interface LineChartProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface LineChartProps
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   /**
    * Array of data objects. Each object should contain keys matching `dataKey` or `series[].key`.
    */
@@ -154,6 +159,8 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
       formatValue,
       formatXLabel,
       formatYLabel,
+      xAxisLabels = "fixed",
+      xAxisEdgeLabels = "show",
       connectNulls = true,
       initialWidth,
       className,
@@ -394,20 +401,22 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
     // X axis labels
     const xLabels = React.useMemo(() => {
       if (!xKey || data.length === 0 || plotWidth <= 0) return [];
-      const maxLabels = Math.max(2, Math.floor(plotWidth / 60));
+      const labels = data.map((d) => {
+        const raw = d[xKey];
+        return formatXLabel ? formatXLabel(raw) : formatChartDatumValue(raw);
+      });
+      const maxLabels = xAxisTickTarget(xAxisLabels, plotWidth, () => labels);
       const indices = thinIndices(data.length, maxLabels);
-      return indices.map((i) => {
+      const xLabels = indices.map((i) => {
         const x =
           data.length === 1
             ? plotWidth / 2
             : (i / (data.length - 1)) * plotWidth;
-        const raw = data[i][xKey];
-        const text = formatXLabel
-          ? formatXLabel(raw)
-          : formatChartDatumValue(raw);
+        const text = labels[i];
         return { x, text, index: i };
       });
-    }, [xKey, data, plotWidth, formatXLabel]);
+      return applyEdgeLabels(xAxisEdgeLabels, xLabels);
+    }, [xKey, data, plotWidth, formatXLabel, xAxisLabels, xAxisEdgeLabels]);
 
     // Y axis labels
     const yLabels = React.useMemo(() => {
@@ -899,9 +908,9 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
                       y={plotHeight + 20}
                       className={styles.axisLabel}
                       textAnchor={
-                        i === 0
+                        labelIndex === 0
                           ? "start"
-                          : i === xLabels.length - 1
+                          : labelIndex === data.length - 1
                           ? "end"
                           : "middle"
                       }

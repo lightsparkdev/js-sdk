@@ -6,6 +6,9 @@
     },
     "build:watch": {
       "with": ["@lightsparkdev/core#build:watch"]
+    },
+    "test": {
+      "dependsOn": ["build", "^build", "gql-codegen"]
     }
   }
 }

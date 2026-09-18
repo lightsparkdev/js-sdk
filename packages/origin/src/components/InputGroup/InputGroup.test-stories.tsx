@@ -133,7 +133,7 @@ export function CapWithIconButton() {
   return (
     <InputGroup.Root>
       <InputGroup.Cap>
-        <InputGroup.Button aria-label="Search">
+        <InputGroup.Button iconOnly aria-label="Search">
           <SearchIcon />
         </InputGroup.Button>
       </InputGroup.Cap>
@@ -162,6 +162,17 @@ export function WithButton() {
       </InputGroup.Addon>
       <InputGroup.Input placeholder="Search..." />
       <InputGroup.Button aria-label="Search">Search</InputGroup.Button>
+    </InputGroup.Root>
+  );
+}
+
+export function WithIconOnlyButton() {
+  return (
+    <InputGroup.Root>
+      <InputGroup.Input placeholder="Search..." />
+      <InputGroup.Button iconOnly aria-label="Search">
+        <SearchIcon />
+      </InputGroup.Button>
     </InputGroup.Root>
   );
 }

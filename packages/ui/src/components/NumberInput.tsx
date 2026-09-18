@@ -66,7 +66,10 @@ export function NumberInput({
       onKeyDown={onKeyDown}
       onKeyUp={handleOnKeyUp}
       onChange={onChange}
-      onBlur={handleOnBlur}
+      onBlur={(event) => {
+        handleOnBlur(event);
+        rest.onBlur?.(event);
+      }}
       onFocus={handleOnFocus}
       value={getRenderValue()}
       inputRef={ref}

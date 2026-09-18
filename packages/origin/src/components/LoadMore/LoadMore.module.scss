@@ -1,0 +1,12 @@
+@use "../../tokens/mixins" as *;
+
+.sentinel {
+  display: block;
+  width: 100%;
+  height: 1px;
+  pointer-events: none;
+}
+
+.status {
+  @include visually-hidden;
+}

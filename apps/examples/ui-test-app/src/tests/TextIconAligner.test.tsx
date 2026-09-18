@@ -1,4 +1,4 @@
-import { TextIconAligner } from "@lightsparkdev/ui/components";
+import { TextIconAligner } from "@lightsparkdev/ui/components/TextIconAligner";
 import { link } from "@lightsparkdev/ui/utils/toReactNodes/nodes";
 import { screen, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";

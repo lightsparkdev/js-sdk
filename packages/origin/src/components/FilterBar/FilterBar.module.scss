@@ -1,0 +1,53 @@
+@use "../../tokens/text-styles" as *;
+
+.root {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-2xs);
+}
+
+// Composing Origin's ChipFilter.Trigger part opts the pill's value segment
+// into the interactive treatment (segment padding, hover, focus); this
+// only styles the empty state. The doubled class outranks Origin's
+// `.value [data-chip-trigger]` color without depending on bundle order.
+.pillValueTrigger.pillValueTrigger[data-empty] {
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-regular);
+}
+
+.submenuLabel {
+  flex: 1;
+}
+
+.activeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--surface-blue-strong);
+  flex-shrink: 0;
+}
+
+.textEditorBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  width: 240px;
+}
+
+.editorError {
+  @include body-sm;
+
+  color: var(--text-critical);
+}
+
+.clearButton {
+  margin-inline-start: auto;
+}
+
+.dateApplyButton {
+  width: 100%;
+}

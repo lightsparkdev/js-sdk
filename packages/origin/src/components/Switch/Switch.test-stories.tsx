@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Drawer } from "../Drawer";
 import { Switch } from "./Switch";
 
 export function DefaultSwitch() {
@@ -47,5 +48,25 @@ export function RequiredSwitch() {
       <Switch required name="agree" />
       <button type="submit">Submit</button>
     </form>
+  );
+}
+
+export function SwitchInDrawer() {
+  const [checked, setChecked] = React.useState(false);
+  return (
+    <Drawer.Root defaultOpen swipeDirection="right">
+      <Drawer.Portal>
+        <Drawer.Viewport>
+          <Drawer.Popup data-testid="popup">
+            <Switch
+              checked={checked}
+              onCheckedChange={setChecked}
+              aria-label="Notifications"
+            />
+            <span data-testid="status">{checked ? "on" : "off"}</span>
+          </Drawer.Popup>
+        </Drawer.Viewport>
+      </Drawer.Portal>
+    </Drawer.Root>
   );
 }

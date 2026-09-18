@@ -19,6 +19,11 @@ const fruits: Fruit[] = [
   { value: "elderberry", label: "Elderberry" },
 ];
 
+const longFruits: Fruit[] = Array.from({ length: 40 }, (_, index) => ({
+  value: `fruit-${index + 1}`,
+  label: `Fruit ${index + 1}`,
+}));
+
 const groupedItems = [
   {
     label: "Fruits",
@@ -48,6 +53,34 @@ export function BasicAutocomplete() {
           <Autocomplete.Popup>
             <Autocomplete.Empty>No results found.</Autocomplete.Empty>
             <Autocomplete.List>
+              {(item: Fruit) => (
+                <Autocomplete.Item key={item.value} value={item}>
+                  {item.label}
+                </Autocomplete.Item>
+              )}
+            </Autocomplete.List>
+          </Autocomplete.Popup>
+        </Autocomplete.Positioner>
+      </Autocomplete.Portal>
+    </Autocomplete.Root>
+  );
+}
+
+/**
+ * Autocomplete with enough items to require list scrolling.
+ */
+export function LongListAutocomplete() {
+  return (
+    <Autocomplete.Root
+      items={longFruits}
+      itemToStringValue={(item: Fruit) => item.label}
+    >
+      <Autocomplete.Input placeholder="Search fruits..." />
+      <Autocomplete.Portal>
+        <Autocomplete.Positioner>
+          <Autocomplete.Popup data-testid="autocomplete-long-list-popup">
+            <Autocomplete.Empty>No results found.</Autocomplete.Empty>
+            <Autocomplete.List data-testid="autocomplete-long-list">
               {(item: Fruit) => (
                 <Autocomplete.Item key={item.value} value={item}>
                   {item.label}

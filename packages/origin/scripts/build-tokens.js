@@ -9,7 +9,9 @@ const TOKENS_DIR = path.join(__dirname, '../tokens/figma');
 const OUTPUT_FILE = path.join(__dirname, '../src/tokens/_variables.scss');
 
 function findTokenFiles(dir, files = []) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((left, right) => left.name.localeCompare(right.name));
   
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
@@ -47,7 +49,7 @@ function figmaColorToCSS(colorObj) {
   if (colorObj && typeof colorObj === 'object') {
     const { components, alpha, hex } = colorObj;
     
-    if (alpha >= 0.999 && hex) return hex;
+    if (alpha >= 0.999 && hex) return hex.toLowerCase();
     
     if (components && components.length >= 3) {
       const r = Math.round(components[0] * 255);
@@ -56,10 +58,10 @@ function figmaColorToCSS(colorObj) {
       const a = alpha ?? 1;
       
       if (a >= 0.999) return `rgb(${r}, ${g}, ${b})`;
-      return `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`;
+      return `rgba(${r}, ${g}, ${b}, ${Number(a.toFixed(2))})`;
     }
     
-    if (hex) return hex;
+    if (hex) return hex.toLowerCase();
   }
   
   return String(colorObj);
@@ -157,6 +159,7 @@ function build() {
   let scss = `// Auto-generated — do not edit. Run: yarn tokens:build
 
 :root {
+  color-scheme: light;
 `;
 
   function writeTokenGroup(tokens) {
@@ -179,6 +182,7 @@ function build() {
 
 [data-theme="dark"],
 .dark {
+  color-scheme: dark;
 `;
 
   for (const [name, token] of darkTokens) {
@@ -189,6 +193,7 @@ function build() {
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    color-scheme: dark;
 `;
 
   for (const [name, token] of darkTokens) {

@@ -91,3 +91,11 @@
   border-color: var(--border-critical);
   box-shadow: var(--input-focus-critical);
 }
+
+/// Placeholder text - one step below helper text; a placeholder is never
+/// content, so no component gets a louder value
+/// @example
+///   .input::placeholder { @include input-placeholder; }
+@mixin input-placeholder {
+  color: var(--text-tertiary);
+}

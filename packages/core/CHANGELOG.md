@@ -1,13 +1,5 @@
 # @lightsparkdev/core
 
-## 1.5.2
-
-### Patch Changes
-
-- d1d0682: - Add ARS and USDB support to currency conversion and formatting utilities.
-  - Keep request signing nonces as numbers for compatibility with existing signing request payloads.
-- d1d0682: - Mark generated types as type-only exports while preserving query helper runtime exports.
-
 ## 1.5.1
 
 ### Patch Changes

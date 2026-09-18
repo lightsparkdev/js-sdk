@@ -1,96 +1,25 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import * as DatePicker from "./index";
-import type { DateRange, DayCellState } from "./index";
-import { Switch } from "../Switch";
+import type {
+  DatePickerLabels,
+  DatePickerPreset,
+  DateRangeDraft,
+} from "./index";
 import { Button } from "../Button";
 
 function SingleCalendar() {
   const [value, setValue] = useState<Date | null>(null);
   return (
     <DatePicker.Root value={value} onValueChange={(v) => setValue(v as Date)}>
-      <DatePicker.Header />
       <DatePicker.Navigation />
       <DatePicker.Grid />
+      <DatePicker.Header />
       <DatePicker.Footer>
         <Button variant="outline" size="compact" style={{ width: "100%" }}>
           Apply
         </Button>
       </DatePicker.Footer>
-    </DatePicker.Root>
-  );
-}
-
-function RangeCalendar() {
-  const [mode, setMode] = useState<"single" | "range">("range");
-  const [includeTime, setIncludeTime] = useState(false);
-  const [value, setValue] = useState<Date | DateRange | null>(null);
-
-  return (
-    <DatePicker.Root
-      mode={mode}
-      includeTime={includeTime}
-      value={value}
-      onValueChange={setValue}
-    >
-      <DatePicker.Header />
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
-      <DatePicker.Controls>
-        <DatePicker.ControlItem label="End date">
-          <Switch
-            size="sm"
-            checked={mode === "range"}
-            onCheckedChange={(v) => {
-              setMode(v ? "range" : "single");
-              setValue(null);
-            }}
-          />
-        </DatePicker.ControlItem>
-        <DatePicker.ControlItem label="Include time">
-          <Switch
-            size="sm"
-            checked={includeTime}
-            onCheckedChange={setIncludeTime}
-          />
-        </DatePicker.ControlItem>
-      </DatePicker.Controls>
-      <DatePicker.Footer>
-        <Button variant="outline" size="compact" style={{ width: "100%" }}>
-          Apply
-        </Button>
-      </DatePicker.Footer>
-    </DatePicker.Root>
-  );
-}
-
-function WithTimeCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
-  return (
-    <DatePicker.Root
-      value={value}
-      onValueChange={(v) => setValue(v as Date)}
-      includeTime
-    >
-      <DatePicker.Header />
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
-    </DatePicker.Root>
-  );
-}
-
-function RangeWithTimeCalendar() {
-  const [value, setValue] = useState<DateRange | null>(null);
-  return (
-    <DatePicker.Root
-      mode="range"
-      includeTime
-      value={value}
-      onValueChange={(v) => setValue(v as DateRange)}
-    >
-      <DatePicker.Header />
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
     </DatePicker.Root>
   );
 }
@@ -107,34 +36,7 @@ function ConstrainedCalendar() {
       onValueChange={(v) => setValue(v as Date)}
       min={today}
       max={max}
-    >
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
-    </DatePicker.Root>
-  );
-}
-
-function WeekdaysOnlyCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
-  return (
-    <DatePicker.Root
-      value={value}
-      onValueChange={(v) => setValue(v as Date)}
       disabled={(date) => date.getDay() === 0 || date.getDay() === 6}
-    >
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
-    </DatePicker.Root>
-  );
-}
-
-function MondayStartCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
-  return (
-    <DatePicker.Root
-      value={value}
-      onValueChange={(v) => setValue(v as Date)}
-      weekStartsOn={1}
     >
       <DatePicker.Navigation />
       <DatePicker.Grid />
@@ -151,111 +53,180 @@ export default meta;
 
 type Story = StoryObj;
 
+const STORY_PRESETS = [
+  {
+    id: "today",
+    label: "Today",
+    textValue: "Today",
+    resolve: (now) => ({
+      value: {
+        start: new Date(now),
+        end: new Date(now),
+      },
+      mode: "range",
+      granularity: "date-time",
+    }),
+  },
+  {
+    id: "previous-24-hours",
+    label: "Previous 24 hours with a deliberately long label",
+    textValue: "Previous 24 hours with a deliberately long label",
+    resolve: (now) => ({
+      value: {
+        start: new Date(now.getTime() - 86_400_000),
+        end: new Date(now),
+      },
+      mode: "range",
+      granularity: "date-time",
+    }),
+  },
+  {
+    id: "unavailable",
+    label: "Unavailable period",
+    textValue: "Unavailable period",
+    disabled: true,
+    disabledReason: "Requires historical data access",
+    resolve: (now) => ({
+      value: {
+        start: new Date(now),
+        end: new Date(now),
+      },
+      mode: "range",
+      granularity: "date-time",
+    }),
+  },
+] as const satisfies readonly DatePickerPreset[];
+
+function PresetsAndCustomCalendar() {
+  const [presetId, setPresetId] = useState<string | null>(null);
+  const [rangeDraft, setRangeDraft] = useState<DateRangeDraft>({
+    start: null,
+    end: null,
+  });
+
+  return (
+    <DatePicker.Root
+      mode="range"
+      granularity="date-time"
+      presets={STORY_PRESETS}
+      presetId={presetId}
+      onPresetIdChange={setPresetId}
+      rangeDraft={rangeDraft}
+      onRangeDraftChange={setRangeDraft}
+      defaultMonth={new Date("2026-07-01T00:00:00.000Z")}
+      timeZone="UTC"
+    >
+      <DatePicker.Navigation />
+      <DatePicker.Grid />
+      <DatePicker.PresetSelect />
+      <DatePicker.Header />
+      <DatePicker.Footer>
+        <Button variant="outline" size="compact" style={{ width: "100%" }}>
+          Apply
+        </Button>
+      </DatePicker.Footer>
+    </DatePicker.Root>
+  );
+}
+
+export const PresetsAndCustom: Story = {
+  render: () => <PresetsAndCustomCalendar />,
+};
+
 export const Single: Story = {
   render: () => <SingleCalendar />,
-};
-
-export const Range: Story = {
-  render: () => <RangeCalendar />,
-};
-
-export const WithTime: Story = {
-  render: () => <WithTimeCalendar />,
-};
-
-export const RangeWithTime: Story = {
-  render: () => <RangeWithTimeCalendar />,
 };
 
 export const Constrained: Story = {
   render: () => <ConstrainedCalendar />,
 };
 
-export const WeekdaysOnly: Story = {
-  render: () => <WeekdaysOnlyCalendar />,
-};
+const LOCALIZED_PRESETS = [
+  {
+    id: "heute",
+    label: "Heute",
+    textValue: "Heute",
+    resolve: (now: Date) => ({
+      value: {
+        start: new Date(now),
+        end: new Date(now),
+      },
+      mode: "range" as const,
+      granularity: "date-time" as const,
+    }),
+  },
+  {
+    id: "letzte-24-stunden",
+    label: "Letzte 24 Stunden",
+    textValue: "Letzte 24 Stunden",
+    resolve: (now: Date) => ({
+      value: {
+        start: new Date(now.getTime() - 86_400_000),
+        end: new Date(now),
+      },
+      mode: "range" as const,
+      granularity: "date-time" as const,
+    }),
+  },
+] satisfies readonly DatePickerPreset[];
 
-export const MondayStart: Story = {
-  render: () => <MondayStartCalendar />,
-};
+const LOCALIZED_LABELS = {
+  previousMonth: "Vorheriger Monat",
+  nextMonth: "Nächster Monat",
+  date: "Datum",
+  startDate: "Startdatum",
+  endDate: "Enddatum",
+  time: "Uhrzeit",
+  startTime: "Startzeit",
+  endTime: "Endzeit",
+  dateRange: "Datumsbereich",
+  dateAndTime: "Datum und Uhrzeit",
+  startDateAndTime: "Startdatum und Uhrzeit",
+  endDateAndTime: "Enddatum und Uhrzeit",
+  preset: "Zeitraum",
+  custom: "Benutzerdefiniert",
+  unavailablePreset: "Dieser Zeitraum enthält nicht verfügbare Tage",
+  invalidDate: "Geben Sie ein gültiges Datum ein",
+  invalidTime: "Geben Sie eine gültige Uhrzeit ein",
+  requiredDate: "Wählen Sie ein Datum aus",
+  requiredDateRange: "Wählen Sie einen Datumsbereich aus",
+} satisfies Required<DatePickerLabels>;
 
-function GermanCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
+function LocalizedCalendar() {
+  const [presetId, setPresetId] = useState<string | null>(null);
+  const [rangeDraft, setRangeDraft] = useState<DateRangeDraft>({
+    start: null,
+    end: null,
+  });
+
   return (
     <DatePicker.Root
-      value={value}
-      onValueChange={(v) => setValue(v as Date)}
+      mode="range"
+      granularity="date-time"
+      presets={LOCALIZED_PRESETS}
+      presetId={presetId}
+      onPresetIdChange={setPresetId}
+      rangeDraft={rangeDraft}
+      onRangeDraftChange={setRangeDraft}
+      defaultMonth={new Date("2026-07-01T00:00:00.000Z")}
+      timeZone="UTC"
       locale="de-DE"
       weekStartsOn={1}
-      labels={{
-        previousMonth: "Vorheriger Monat",
-        nextMonth: "Nächster Monat",
-        date: "Datum",
-      }}
+      labels={LOCALIZED_LABELS}
     >
-      <DatePicker.Header />
       <DatePicker.Navigation />
       <DatePicker.Grid />
-    </DatePicker.Root>
-  );
-}
-
-export const LocaleGerman: Story = {
-  render: () => <GermanCalendar />,
-};
-
-function JapaneseCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
-  return (
-    <DatePicker.Root
-      value={value}
-      onValueChange={(v) => setValue(v as Date)}
-      locale="ja-JP"
-    >
+      <DatePicker.PresetSelect />
       <DatePicker.Header />
-      <DatePicker.Navigation />
-      <DatePicker.Grid />
+      <DatePicker.Footer>
+        <Button variant="outline" size="compact" style={{ width: "100%" }}>
+          Anwenden
+        </Button>
+      </DatePicker.Footer>
     </DatePicker.Root>
   );
 }
 
-export const LocaleJapanese: Story = {
-  render: () => <JapaneseCalendar />,
-};
-
-function EventDotsCalendar() {
-  const [value, setValue] = useState<Date | null>(null);
-  const eventDays = new Set([3, 7, 14, 21, 28]);
-
-  return (
-    <DatePicker.Root value={value} onValueChange={(v) => setValue(v as Date)}>
-      <DatePicker.Navigation />
-      <DatePicker.Grid
-        renderDay={(date: Date, state: DayCellState) => (
-          <span style={{ position: "relative" }}>
-            {date.getDate()}
-            {!state.isOutsideMonth && eventDays.has(date.getDate()) && (
-              <span
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  bottom: -2,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  width: 4,
-                  height: 4,
-                  borderRadius: "50%",
-                  backgroundColor: "var(--color-accent)",
-                }}
-              />
-            )}
-          </span>
-        )}
-      />
-    </DatePicker.Root>
-  );
-}
-
-export const EventDots: Story = {
-  render: () => <EventDotsCalendar />,
+export const Localized: Story = {
+  render: () => <LocalizedCalendar />,
 };
