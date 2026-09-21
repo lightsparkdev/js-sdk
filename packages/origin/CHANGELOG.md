@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.3
+
+### Patch Changes
+
+- d1d0682: - Fix form control backgrounds so inputs, textareas, selects, and autocompletes inherit the surrounding surface.
+  - Fix Combobox multi-select chip layout so selected chips and the input wrap together with consistent spacing.
+
 ## 0.14.2
 
 ### Patch Changes

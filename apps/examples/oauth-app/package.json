@@ -1,14 +1,14 @@
 {
   "name": "@lightsparkdev/oauth-app",
-  "version": "0.0.68",
+  "version": "0.0.69",
   "private": true,
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@lightsparkdev/lightspark-sdk": "1.9.18",
+    "@lightsparkdev/lightspark-sdk": "1.9.19",
     "@lightsparkdev/oauth": "*",
-    "@lightsparkdev/ui": "1.1.19",
+    "@lightsparkdev/ui": "1.1.20",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "6.30.3",

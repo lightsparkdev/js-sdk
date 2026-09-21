@@ -35,7 +35,9 @@
     "test": "turbo run test",
     "test:ui": "turbo run test:ui",
     "test:integration": "turbo run test:integration",
-    "types": "turbo run types"
+    "types": "turbo run types",
+    "release:preflight": "node scripts/sdk-preflight.cjs --root . --checks",
+    "release:test": "node --test scripts/tests/*.test.cjs"
   },
   "workspaces": [
     "packages/*",

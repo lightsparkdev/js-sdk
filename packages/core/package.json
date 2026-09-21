@@ -1,6 +1,6 @@
 {
   "name": "@lightsparkdev/core",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Lightspark JS SDK",
   "author": "Lightspark Inc.",
   "keywords": [
@@ -13,7 +13,8 @@
   "homepage": "https://github.com/lightsparkdev/js-sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lightsparkdev/js-sdk.git"
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
+    "directory": "packages/core"
   },
   "bugs": {
     "url": "https://github.com/lightsparkdev/js-sdk/issues"

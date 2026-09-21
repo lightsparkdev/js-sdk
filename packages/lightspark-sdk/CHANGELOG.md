@@ -1,5 +1,15 @@
 # @lightsparkdev/lightspark-sdk
 
+## 1.9.19
+
+### Patch Changes
+
+- d1d0682: - Mark generated types as type-only exports while preserving query helper runtime exports.
+- Updated dependencies [d1d0682]
+- Updated dependencies [d1d0682]
+  - @lightsparkdev/core@1.5.2
+  - @lightsparkdev/crypto-wasm@0.1.26
+
 ## 1.9.18
 
 ### Patch Changes
