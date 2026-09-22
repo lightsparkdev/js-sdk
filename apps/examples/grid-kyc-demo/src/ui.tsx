@@ -1,15 +1,32 @@
 import styled from "@emotion/styled";
-import { Select } from "@lightsparkdev/origin";
+import {
+  Button,
+  Input,
+  Select,
+  type ButtonProps,
+  type InputProps,
+} from "@lightsparkdev/origin";
+import { useState } from "react";
+
+// Non-primary actions (fetch, refresh, load, clear). Ghost buttons read as
+// plain text until hovered, so these keep a visible keyline at rest.
+export function SecondaryButton(props: ButtonProps) {
+  return <Button variant="outline" {...props} />;
+}
 
 export function SelectControl({
   value,
   onValueChange,
   items,
+  mutedValues,
 }: {
   value: string;
   onValueChange: (next: string) => void;
   items: { value: string; label: string }[];
+  /** Values rendered greyed out, for "not sent" style sentinels. */
+  mutedValues?: readonly string[];
 }) {
+  const isMuted = (v: string) => mutedValues?.includes(v) ?? false;
   return (
     <Select.Root
       value={value}
@@ -19,7 +36,11 @@ export function SelectControl({
     >
       <Select.Trigger>
         <Select.Value>
-          {(v: string) => items.find((i) => i.value === v)?.label ?? v}
+          {(v: string) => (
+            <MutedWhen $muted={isMuted(v)}>
+              {items.find((i) => i.value === v)?.label ?? v}
+            </MutedWhen>
+          )}
         </Select.Value>
         <Select.Icon />
       </Select.Trigger>
@@ -30,7 +51,11 @@ export function SelectControl({
               {items.map((item) => (
                 <Select.Item key={item.value} value={item.value}>
                   <Select.ItemIndicator />
-                  <Select.ItemText>{item.label}</Select.ItemText>
+                  <Select.ItemText>
+                    <MutedWhen $muted={isMuted(item.value)}>
+                      {item.label}
+                    </MutedWhen>
+                  </Select.ItemText>
                 </Select.Item>
               ))}
             </Select.List>
@@ -83,3 +108,44 @@ export const ResultMeta = styled.div`
   gap: var(--spacing-xs, 4px);
   flex-wrap: wrap;
 `;
+
+const MutedWhen = styled.span<{ $muted: boolean }>`
+  color: ${(p) => (p.$muted ? "var(--text-tertiary, #989898)" : "inherit")};
+  font-style: ${(p) => (p.$muted ? "italic" : "normal")};
+`;
+
+/**
+ * Text input whose value may be a sentinel meaning "already on file, not
+ * re-sent". The sentinel is never shown as editable text: the box renders
+ * empty with the sentinel as a grey placeholder, typing replaces it, and
+ * leaving the box empty restores it.
+ */
+export function OmittableInput({
+  value,
+  sentinel,
+  onValueChange,
+  placeholder,
+  ...rest
+}: Omit<InputProps, "value" | "onChange" | "placeholder"> & {
+  value: string;
+  sentinel: string;
+  onValueChange: (next: string) => void;
+  placeholder?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const omitted = value === sentinel;
+  return (
+    <Input
+      {...rest}
+      value={omitted ? "" : value}
+      placeholder={omitted && !editing ? sentinel : placeholder}
+      onFocus={() => setEditing(true)}
+      onChange={(e) => onValueChange(e.target.value)}
+      onBlur={() => {
+        setEditing(false);
+        if (!value.trim()) onValueChange(sentinel);
+      }}
+      style={omitted ? { fontStyle: "italic" } : undefined}
+    />
+  );
+}

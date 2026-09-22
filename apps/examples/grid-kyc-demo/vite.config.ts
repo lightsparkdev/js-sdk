@@ -44,6 +44,16 @@ export default defineConfig({
           secure: env.secure,
           rewrite: (path: string) =>
             path.replace(new RegExp(`^${env.prefix}`), env.apiPath),
+          // The Grid API is basic-auth only, but the browser attaches every
+          // cookie set on localhost (cookies aren't port-scoped, so every
+          // other local dev app contributes). Once that jar passes ~10KB
+          // CloudFront rejects the request outright with a 403 "Request
+          // blocked" page, which looks like an auth failure.
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              proxyReq.removeHeader("cookie");
+            });
+          },
         },
       ]),
     ),

@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "@lightsparkdev/origin/styles.css";
+import "@lightsparkdev/origin/styles.scss";
 
 import { App } from "./App";
 
