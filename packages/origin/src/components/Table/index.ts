@@ -27,3 +27,4 @@ export type {
   ResizeHandleProps,
   CheckboxWrapperProps,
 } from "./parts";
+export type { RowActivationEvent } from "./rowActivation";

@@ -64,7 +64,7 @@
 
 // -- Secondary variant --------------------------------------------------------
 // No container shadow or border-radius. Thin separators between buttons
-// using --border-primary, same pseudo-element technique as filled.
+// use --border-control because they segment interactive affordances.
 
 .secondary {
   > * {
@@ -80,7 +80,7 @@
     bottom: 0;
     left: 0;
     width: var(--stroke-xs);
-    background-color: var(--border-primary);
+    background-color: var(--border-control);
   }
 }
 

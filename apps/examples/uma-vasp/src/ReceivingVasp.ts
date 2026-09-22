@@ -164,10 +164,10 @@ export default class ReceivingVasp {
       );
     }
     if (
-      !this.complianceService.shouldAcceptTransactionFromVasp(
+      !(await this.complianceService.shouldAcceptTransactionFromVasp(
         umaQuery.vaspDomain!,
         umaQuery.receiverAddress,
-      )
+      ))
     ) {
       throw new uma.UmaError(
         "This user is not allowed to transact with this VASP.",

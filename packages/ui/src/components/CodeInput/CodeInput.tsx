@@ -6,6 +6,7 @@ import type {
   ClipboardEvent,
   KeyboardEvent,
   MutableRefObject,
+  ReactElement,
   Ref,
 } from "react";
 import { createRef, useCallback, useRef, useState } from "react";
@@ -64,7 +65,7 @@ export function CodeInput({
   autoFocus = true,
   onBlur,
   variant = "default",
-}: CodeInputProps): JSX.Element {
+}: CodeInputProps): ReactElement {
   const componentId = useRef(nanoid(5));
   const inputRefs = useRef<InputRefs>({});
   const autofillValuesRef = useRef("");

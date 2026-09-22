@@ -6,6 +6,7 @@ import { filerp, CHART_LABEL_FONT } from "./utils";
 import { useMergedRef } from "./useMergedRef";
 import { Skeleton } from "../Skeleton";
 import styles from "./Chart.module.scss";
+import { observeThemeChanges } from "./themeObserver";
 
 export interface LivePoint {
   time: number;
@@ -240,12 +241,29 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
       };
     });
 
-    // Resolve accent color to RGB
+    // Canvas cannot read CSS variables directly, so the accent color and the
+    // theme inks are resolved to RGB up front and re-resolved on theme change.
     const rgbRef = React.useRef<[number, number, number]>([59, 130, 246]);
+    const themeRef = React.useRef({
+      ink: [26, 26, 26] as [number, number, number],
+      surface: [250, 250, 249] as [number, number, number],
+      isDark: false,
+    });
     React.useEffect(() => {
-      if (containerRef.current) {
-        rgbRef.current = resolveColor(color, containerRef.current);
-      }
+      const el = containerRef.current;
+      if (!el) return;
+      const resolve = () => {
+        rgbRef.current = resolveColor(color, el);
+        const ink = resolveColor("var(--text-primary)", el);
+        const surface = resolveColor("var(--surface-panel)", el);
+        themeRef.current = {
+          ink,
+          surface,
+          isDark: (surface[0] + surface[1] + surface[2]) / 3 < 128,
+        };
+      };
+      resolve();
+      return observeThemeChanges(el, resolve);
     }, [color]);
 
     if (process.env.NODE_ENV !== "production") {
@@ -342,6 +360,8 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
       const cfg = configRef.current;
       const st = stateRef.current;
       const [r, g, b] = rgbRef.current;
+      const { ink, surface, isDark } = themeRef.current;
+      const inkStyle = `rgb(${ink[0]},${ink[1]},${ink[2]})`;
 
       // Lerp display value
       st.displayValue = filerp(st.displayValue, cfg.value, cfg.lerpSpeed, dt);
@@ -444,7 +464,7 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
           const v = key / 1000;
           const y = Math.round(toY(v)) + 0.5;
           ctx.globalAlpha = alpha * 0.18;
-          ctx.strokeStyle = `rgb(0,0,0)`;
+          ctx.strokeStyle = inkStyle;
           ctx.setLineDash([1, 3]);
           ctx.beginPath();
           ctx.moveTo(padLeft, y);
@@ -492,7 +512,8 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
         ctx.stroke();
       }
 
-      // Left-edge fade (destination-out)
+      // Left-edge fade (destination-out only uses the alpha channel, so the
+      // gradient color is theme-neutral)
       ctx.save();
       ctx.globalCompositeOperation = "destination-out";
       const fadeGrad = ctx.createLinearGradient(
@@ -514,7 +535,7 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
         ctx.font = CHART_LABEL_FONT;
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillStyle = inkStyle;
         for (const [key, alpha] of st.gridLabels) {
           if (alpha < 0.01) continue;
           const v = key / 1000;
@@ -533,7 +554,7 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
         ctx.font = CHART_LABEL_FONT;
         ctx.textAlign = "center";
         ctx.textBaseline = "top";
-        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillStyle = inkStyle;
         for (let t = firstT; t <= rightEdge; t += timeStep) {
           const x = toX(t);
           if (x < padLeft + 20 || x > padLeft + chartW - 20) continue;
@@ -566,12 +587,12 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
         // Outer circle
         ctx.globalAlpha = 1;
         ctx.save();
-        ctx.shadowColor = "rgba(0,0,0,0.15)";
+        ctx.shadowColor = `rgba(0,0,0,${isDark ? 0.45 : 0.15})`;
         ctx.shadowBlur = 6 * (1 - dim);
         ctx.shadowOffsetY = 1;
         ctx.beginPath();
         ctx.arc(dotX, dotY, 6.5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,0.95)";
+        ctx.fillStyle = `rgba(${surface[0]},${surface[1]},${surface[2]},0.95)`;
         ctx.fill();
         ctx.restore();
 
@@ -606,7 +627,7 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
 
           // Vertical line
           ctx.globalAlpha = opacity * 0.1;
-          ctx.strokeStyle = "rgb(0,0,0)";
+          ctx.strokeStyle = inkStyle;
           ctx.lineWidth = 1;
           ctx.setLineDash([]);
           ctx.beginPath();
@@ -648,7 +669,7 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
           const labelY = PAD.top + 2;
 
           ctx.textAlign = "left";
-          ctx.fillStyle = "rgb(26,26,26)";
+          ctx.fillStyle = inkStyle;
           ctx.fillText(label, labelX, labelY);
 
           cfg.onActiveChange?.({

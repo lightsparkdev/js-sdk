@@ -9,7 +9,7 @@
   max-width: 240px;
   padding: var(--spacing-2xs) var(--spacing-sm);
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-sm);
   @include body;
@@ -42,7 +42,7 @@
   height: 8px;
   transform: rotate(45deg);
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-primary);
+  border: var(--stroke-xs) solid var(--border-overlay);
 
   &[data-side="top"] {
     bottom: -4px;

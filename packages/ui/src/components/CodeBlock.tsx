@@ -167,7 +167,7 @@ export const CodeBlock = ({
                   value: lang,
                   label: lang,
                 }))}
-                onChange={(selected) => {
+                onChange={(selected: OptionType | null) => {
                   if (selected?.value) {
                     onSelectLanguage(selected.value);
                   }

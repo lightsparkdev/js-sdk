@@ -1,0 +1,31 @@
+name: SDK release dependencies
+description: Install the pinned public toolchain without service credentials
+inputs:
+  cwd:
+    description: Candidate JavaScript workspace
+    required: true
+  node-version:
+    description: Release Node.js version
+    default: "22.14.0"
+  mode:
+    description: immutable or lockfile
+    default: immutable
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        package-manager-cache: false
+    - shell: bash
+      working-directory: ${{ inputs.cwd }}
+      env:
+        INSTALL_MODE: ${{ inputs.mode }}
+        HUSKY: "0"
+      run: |
+        corepack enable
+        case "$INSTALL_MODE" in
+          immutable) yarn install --immutable ;;
+          lockfile) YARN_ENABLE_SCRIPTS=false yarn install --mode=update-lockfile ;;
+          *) echo "Unknown install mode: $INSTALL_MODE" >&2; exit 1 ;;
+        esac

@@ -11,12 +11,13 @@ NODE_VERSION=$(node -v | cut -c 2-)
 IFS='.' read -ra VERSION_PARTS <<< "$NODE_VERSION"
 
 # Check if Node.js version is 18.19 or greater, or any version above 18
-if (( ${VERSION_PARTS[0]} > 18 || ( ${VERSION_PARTS[0]} == 18 && ${VERSION_PARTS[1]} >= 19 ) )); then
+if (( VERSION_PARTS[0] > 18 || ( VERSION_PARTS[0] == 18 && VERSION_PARTS[1] >= 19 ) )); then
   CMD="node --loader ts-node/esm"
-elif (( ${VERSION_PARTS[0]} == 18 )); then
+elif (( VERSION_PARTS[0] == 18 )); then
   CMD="ts-node"
 else
   echo "Only Node.js versions 18 and above are supported"
 fi
 
+# shellcheck disable=SC2086  # $CMD intentionally splits into a command + flags
 yarn nodemon --watch 'src/*.ts' --exec $CMD src/startServer.ts

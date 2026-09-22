@@ -16,3 +16,19 @@ export function devWarn(...messages: unknown[]) {
     logger.warn(...messages);
   }
 }
+
+const warnedMessages = new Set<string>();
+
+/**
+ * Like `devWarn`, but each distinct message fires at most once per module
+ * lifetime. Use for warnings emitted from render paths so re-renders (and
+ * StrictMode double-invocation) don't spam the console.
+ */
+export function devWarnOnce(message: string) {
+  if (!isDev || warnedMessages.has(message)) {
+    return;
+  }
+
+  warnedMessages.add(message);
+  devWarn(message);
+}

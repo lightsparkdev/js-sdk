@@ -4,8 +4,10 @@ import * as React from "react";
 import clsx from "clsx";
 import styles from "./Table.module.scss";
 import { CentralIcon } from "../Icon";
+import { Popover } from "../Popover";
 import { Skeleton } from "../Skeleton";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
+import type { RowActivationEvent } from "./rowActivation";
 
 // ============================================================================
 // Root
@@ -97,6 +99,8 @@ export interface HeaderCellProps
   resizable?: boolean;
   /** Leading slot content (e.g. checkbox) */
   leading?: React.ReactNode;
+  /** Whether cell is in loading state */
+  loading?: boolean;
   analyticsName?: string;
 }
 
@@ -113,8 +117,14 @@ export const HeaderCell = React.forwardRef<
     onSort,
     resizable: _resizable = false,
     leading,
+    loading = false,
     analyticsName,
     children,
+    onClick: nativeOnClick,
+    onKeyDown: nativeOnKeyDown,
+    tabIndex: nativeTabIndex,
+    "aria-label": nativeAriaLabel,
+    "aria-sort": nativeAriaSort,
     ...props
   },
   ref,
@@ -126,10 +136,11 @@ export const HeaderCell = React.forwardRef<
     onSort,
     () => ({ column: analyticsName, from_direction: sortDirection }),
   );
+  const sortableEnabled = sortable && !loading;
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (
-      sortable &&
+      sortableEnabled &&
       trackedSort &&
       (event.key === "Enter" || event.key === " ")
     ) {
@@ -138,7 +149,7 @@ export const HeaderCell = React.forwardRef<
     }
   };
 
-  const sortIcon = sortable ? (
+  const sortIcon = sortableEnabled ? (
     <span className={styles.sortIcon} aria-hidden="true">
       {sortDirection === "asc" ? (
         <CentralIcon name="IconChevronTopSmall" size={12} />
@@ -152,37 +163,63 @@ export const HeaderCell = React.forwardRef<
 
   return (
     <th
+      {...props}
       ref={ref}
       className={clsx(
         styles.headerCell,
         variant !== "default" && styles[`headerCell--${variant}`],
         align !== "left" && styles[`headerCell--${align}`],
-        sortable && styles["headerCell--sortable"],
+        sortableEnabled && styles["headerCell--sortable"],
         className,
       )}
       data-align={align}
-      data-sortable={sortable || undefined}
-      data-sorted={sortDirection || undefined}
-      tabIndex={sortable ? 0 : undefined}
-      onClick={sortable ? trackedSort : undefined}
-      onKeyDown={sortable ? handleKeyDown : undefined}
-      aria-sort={
-        sortDirection === "asc"
-          ? "ascending"
-          : sortDirection === "desc"
-          ? "descending"
-          : sortable
-          ? "none"
-          : undefined
+      data-sortable={sortableEnabled || undefined}
+      data-sorted={sortableEnabled ? sortDirection || undefined : undefined}
+      data-loading={loading || undefined}
+      tabIndex={
+        loading
+          ? undefined
+          : nativeTabIndex ?? (sortableEnabled ? 0 : undefined)
       }
-      {...props}
+      onClick={
+        loading
+          ? undefined
+          : nativeOnClick ?? (sortableEnabled ? trackedSort : undefined)
+      }
+      onKeyDown={
+        loading
+          ? undefined
+          : nativeOnKeyDown ?? (sortableEnabled ? handleKeyDown : undefined)
+      }
+      aria-label={
+        nativeAriaLabel ??
+        (loading && typeof children === "string" ? children : undefined)
+      }
+      aria-sort={
+        loading
+          ? undefined
+          : nativeAriaSort ??
+            (!sortableEnabled
+              ? undefined
+              : sortDirection === "asc"
+              ? "ascending"
+              : sortDirection === "desc"
+              ? "descending"
+              : "none")
+      }
     >
-      <span className={styles.headerCellContent}>
-        {leading && <span className={styles.headerCellLeading}>{leading}</span>}
-        {align === "right" && sortIcon}
-        <span className={styles.headerCellLabel}>{children}</span>
-        {align !== "right" && sortIcon}
-      </span>
+      {loading ? (
+        <Skeleton className={styles.loadingBar} />
+      ) : (
+        <span className={styles.headerCellContent}>
+          {leading && (
+            <span className={styles.headerCellLeading}>{leading}</span>
+          )}
+          {align === "right" && sortIcon}
+          <span className={styles.headerCellLabel}>{children}</span>
+          {align !== "right" && sortIcon}
+        </span>
+      )}
     </th>
   );
 });
@@ -204,7 +241,69 @@ export const Body = React.forwardRef<HTMLTableSectionElement, BodyProps>(
 // Row
 // ============================================================================
 
-export interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+const INTERACTIVE_ROW_DESCENDANT_SELECTOR = [
+  "a[href]",
+  "area[href]",
+  "audio[controls]",
+  "button",
+  "input",
+  "label",
+  "select",
+  "summary",
+  "textarea",
+  "video[controls]",
+  '[contenteditable]:not([contenteditable="false"])',
+  '[tabindex]:not([tabindex="-1"])',
+  '[role="button"]',
+  '[role="checkbox"]',
+  '[role="combobox"]',
+  '[role="grid"]',
+  '[role="link"]',
+  '[role="listbox"]',
+  '[role="menu"]',
+  '[role="menuitem"]',
+  '[role="menuitemcheckbox"]',
+  '[role="menuitemradio"]',
+  '[role="option"]',
+  '[role="radio"]',
+  '[role="searchbox"]',
+  '[role="slider"]',
+  '[role="spinbutton"]',
+  '[role="switch"]',
+  '[role="tab"]',
+  '[role="textbox"]',
+  '[role="tree"]',
+  '[role="treeitem"]',
+].join(",");
+
+function isInteractiveRowDescendant(
+  event: React.MouseEvent<HTMLTableRowElement>,
+): boolean {
+  if (!(event.target instanceof Element)) {
+    return false;
+  }
+  const interactiveTarget = event.target.closest(
+    INTERACTIVE_ROW_DESCENDANT_SELECTOR,
+  );
+  return (
+    interactiveTarget !== null &&
+    interactiveTarget !== event.currentTarget &&
+    event.currentTarget.contains(interactiveTarget)
+  );
+}
+
+function toRowActivationEvent(
+  event:
+    | React.MouseEvent<HTMLTableRowElement>
+    | React.KeyboardEvent<HTMLTableRowElement>,
+): RowActivationEvent {
+  return {
+    metaKey: event.metaKey,
+    ctrlKey: event.ctrlKey,
+  };
+}
+
+interface RowBaseProps extends React.HTMLAttributes<HTMLTableRowElement> {
   /**
    * Whether row is selected — sets data-selected for external styling/tests. No internal visual
    * change per design spec (checkbox indicates selection).
@@ -214,22 +313,74 @@ export interface RowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   last?: boolean;
 }
 
+export type RowProps = RowBaseProps &
+  (
+    | {
+        /**
+         * Activates the row from a pointer click or Enter/Space. Unlike the native
+         * `onClick`, this callback receives only provider-free activation modifiers.
+         * Pointer clicks call `onClick` first; preventing that event suppresses
+         * activation. Interactive descendants do not activate the row, and keyboard
+         * activation calls only `onActivate` when present.
+         */
+        onActivate: (event: RowActivationEvent) => void;
+        /**
+         * Accessible action name for an activated row. Preserves the native
+         * `<tr>` role while exposing actionability and keyboard shortcuts.
+         */
+        activationLabel: string;
+      }
+    | {
+        /**
+         * Without normalized activation, native `onClick` remains available
+         * and dispatches a real DOM click from Enter/Space.
+         */
+        onActivate?: undefined;
+        activationLabel?: string;
+      }
+  );
+
 export const Row = React.forwardRef<HTMLTableRowElement, RowProps>(function Row(
-  { className, selected = false, last = false, onClick, onKeyDown, ...props },
+  {
+    activationLabel,
+    className,
+    selected = false,
+    last = false,
+    onActivate,
+    onClick,
+    onKeyDown,
+    ...props
+  },
   ref,
 ) {
+  const interactive = onActivate !== undefined || onClick !== undefined;
+  const handleClick = React.useMemo(() => {
+    if (!onActivate) return onClick;
+    return (event: React.MouseEvent<HTMLTableRowElement>) => {
+      onClick?.(event);
+      if (event.defaultPrevented || isInteractiveRowDescendant(event)) {
+        return;
+      }
+      onActivate(toRowActivationEvent(event));
+    };
+  }, [onActivate, onClick]);
+
   const handleKeyDown = React.useMemo(() => {
-    if (!onClick) return onKeyDown;
+    if (!onActivate && !onClick) return onKeyDown;
     return (event: React.KeyboardEvent<HTMLTableRowElement>) => {
       onKeyDown?.(event);
       if (event.defaultPrevented) return;
       if (event.target !== event.currentTarget) return;
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        onClick(event as unknown as React.MouseEvent<HTMLTableRowElement>);
+        if (onActivate) {
+          onActivate(toRowActivationEvent(event));
+        } else {
+          event.currentTarget.click();
+        }
       }
     };
-  }, [onClick, onKeyDown]);
+  }, [onActivate, onClick, onKeyDown]);
 
   return (
     <tr
@@ -237,13 +388,16 @@ export const Row = React.forwardRef<HTMLTableRowElement, RowProps>(function Row(
       className={clsx(
         styles.row,
         last && styles["row--last"],
-        onClick && styles["row--interactive"],
+        interactive && styles["row--interactive"],
         className,
       )}
       data-selected={selected || undefined}
-      onClick={onClick}
+      aria-keyshortcuts={activationLabel ? "Enter Space" : undefined}
+      aria-label={activationLabel}
+      aria-roledescription={activationLabel ? "actionable row" : undefined}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
-      tabIndex={onClick ? 0 : undefined}
+      tabIndex={interactive ? 0 : undefined}
       {...props}
     />
   );
@@ -297,7 +451,7 @@ export const Cell = React.forwardRef<HTMLTableCellElement, CellProps>(
         {...props}
       >
         {loading ? (
-          <Skeleton style={{ width: "100%", height: 16 }} />
+          <Skeleton className={styles.loadingBar} />
         ) : hasSlots ? (
           <span className={styles.cellLayout}>
             {leading && <span className={styles.cellSlot}>{leading}</span>}
@@ -317,35 +471,120 @@ export const Cell = React.forwardRef<HTMLTableCellElement, CellProps>(
 // ============================================================================
 
 export interface CellContentProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Primary label text */
+  /** Primary label content */
   label: React.ReactNode;
-  /** Secondary description text */
+  /** Secondary description content */
   description?: React.ReactNode;
   /** Optional indicator dot */
   indicator?: boolean;
   /** Optional badge content */
   badge?: React.ReactNode;
+  /** Bounds intrinsic width for deliberately open-ended table text */
+  bounded?: boolean;
+  /**
+   * Whether bounded plain text opens a full-value popover.
+   * @default true
+   */
+  disclosure?: boolean;
 }
 
 export const CellContent = React.forwardRef<HTMLDivElement, CellContentProps>(
   function CellContent(
-    { className, label, description, indicator = false, badge, ...props },
+    {
+      className,
+      label,
+      description,
+      bounded = false,
+      disclosure: disclosureEnabled = true,
+      indicator = false,
+      badge,
+      ...props
+    },
     ref,
   ) {
+    let disclosureText: string | undefined;
+    if (
+      bounded &&
+      disclosureEnabled &&
+      typeof label === "string" &&
+      (description == null || typeof description === "string") &&
+      badge == null
+    ) {
+      const disclosureParts = [label, description].filter(
+        (part): part is string =>
+          typeof part === "string" && part.trim().length > 0,
+      );
+      disclosureText =
+        disclosureParts.length > 0 ? disclosureParts.join("\n") : undefined;
+    }
+
     return (
-      <div ref={ref} className={clsx(styles.cellContent, className)} {...props}>
-        <span className={styles.cellLabel}>
-          <span className={styles.cellLabelText}>{label}</span>
-          {indicator && <span className={styles.cellIndicator} />}
-          {badge}
-        </span>
-        {description && (
-          <span className={styles.cellDescription}>{description}</span>
+      <div
+        ref={ref}
+        className={clsx(styles.cellContent, className)}
+        data-bounded={bounded || undefined}
+        {...props}
+      >
+        {disclosureText !== undefined ? (
+          <Popover.Root>
+            <Popover.Trigger
+              render={
+                <button
+                  type="button"
+                  className={styles.cellDisclosureTrigger}
+                />
+              }
+            >
+              <CellContentText
+                label={label}
+                description={description}
+                indicator={indicator}
+                badge={badge}
+              />
+            </Popover.Trigger>
+            <Popover.Portal>
+              <Popover.Positioner sideOffset={4}>
+                <Popover.Popup
+                  aria-label="Full cell value"
+                  className={styles.cellDisclosurePopup}
+                >
+                  {disclosureText}
+                </Popover.Popup>
+              </Popover.Positioner>
+            </Popover.Portal>
+          </Popover.Root>
+        ) : (
+          <CellContentText
+            label={label}
+            description={description}
+            indicator={indicator}
+            badge={badge}
+          />
         )}
       </div>
     );
   },
 );
+
+function CellContentText({
+  badge,
+  description,
+  indicator,
+  label,
+}: Pick<CellContentProps, "badge" | "description" | "indicator" | "label">) {
+  return (
+    <>
+      <span className={styles.cellLabel}>
+        <span className={styles.cellLabelText}>{label}</span>
+        {indicator && <span className={styles.cellIndicator} />}
+        {badge}
+      </span>
+      {description && (
+        <span className={styles.cellDescription}>{description}</span>
+      )}
+    </>
+  );
+}
 
 // ============================================================================
 // Footer

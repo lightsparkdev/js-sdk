@@ -5,6 +5,7 @@ import {
   AlignedTable,
   SortableAlignedTable,
   LoadingTable,
+  LoadingSortableHeaderTable,
   DescriptionTable,
   FooterTable,
   CompactFooterTable,
@@ -19,6 +20,91 @@ test.describe("Table", () => {
       // Check data is visible
       await expect(component.locator("text=Alice Johnson")).toBeVisible();
       await expect(component.locator("text=bob@example.com")).toBeVisible();
+    });
+
+    test("retains fixed layout for direct Table consumers", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<BasicTable />);
+
+      await expect(page.locator("table")).toHaveCSS("table-layout", "fixed");
+    });
+  });
+
+  test.describe("Border model", () => {
+    // DES-77: the collapsed border model makes Chromium snap the 0.5px
+    // hairline borders to a whole device pixel (double-weight edges) and
+    // detaches borders from sticky header cells. Table owns the separate
+    // model; these tests pin it.
+    test("uses the separate border model with zero spacing", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<BasicTable />);
+
+      const model = await page.locator("table").evaluate((el) => {
+        const style = getComputedStyle(el);
+        return {
+          borderCollapse: style.borderCollapse,
+          borderSpacing: style.borderSpacing,
+        };
+      });
+
+      expect(model.borderCollapse).toBe("separate");
+      // Chromium serializes equal horizontal/vertical spacing as one value.
+      expect(model.borderSpacing).toBe("0px");
+    });
+
+    test("header and body cells draw bottom-only borders", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<BasicTable />);
+
+      const readBorders = (el: Element) => {
+        const style = getComputedStyle(el);
+        return {
+          top: parseFloat(style.borderTopWidth),
+          right: parseFloat(style.borderRightWidth),
+          bottom: parseFloat(style.borderBottomWidth),
+          left: parseFloat(style.borderLeftWidth),
+        };
+      };
+
+      // Under `separate`, adjacent borders no longer merge — bottom-only
+      // borders are what keeps edges from doubling.
+      const headerBorders = await page
+        .locator("thead th")
+        .first()
+        .evaluate(readBorders);
+      expect(headerBorders.bottom).toBeGreaterThan(0);
+      expect(headerBorders.top).toBe(0);
+      expect(headerBorders.left).toBe(0);
+      expect(headerBorders.right).toBe(0);
+
+      const cellBorders = await page
+        .locator("tbody td")
+        .first()
+        .evaluate(readBorders);
+      expect(cellBorders.bottom).toBeGreaterThan(0);
+      expect(cellBorders.top).toBe(0);
+      expect(cellBorders.left).toBe(0);
+      expect(cellBorders.right).toBe(0);
+    });
+
+    test("last row drops its bottom border", async ({ mount, page }) => {
+      // FooterTable marks its final row with the `last` prop.
+      await mount(<FooterTable />);
+
+      const lastRowBottom = await page
+        .locator("tbody tr")
+        .last()
+        .locator("td")
+        .first()
+        .evaluate((el) => parseFloat(getComputedStyle(el).borderBottomWidth));
+
+      expect(lastRowBottom).toBe(0);
     });
   });
 
@@ -95,6 +181,28 @@ test.describe("Table", () => {
       // Find cells with loading state
       const loadingCells = component.locator('[data-loading="true"]');
       await expect(loadingCells.first()).toBeVisible();
+    });
+
+    test("loading sortable header is non-interactive", async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<LoadingSortableHeaderTable />);
+      const header = component.locator("th").first();
+
+      await expect(header).not.toHaveAttribute("tabindex");
+      await expect(header).not.toHaveAttribute("aria-sort");
+      await expect(header).not.toHaveAttribute("data-sortable");
+      await expect(header).not.toHaveAttribute("data-sorted");
+      await expect(header).toHaveCSS("pointer-events", "none");
+
+      await header.click({ force: true });
+      await header.press("Enter");
+      await header.press("Space");
+
+      await expect(component.getByTestId("sort-count")).toHaveText("0");
+      await page.keyboard.press("Tab");
+      await expect(header).not.toBeFocused();
     });
   });
 

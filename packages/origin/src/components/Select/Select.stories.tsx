@@ -27,6 +27,11 @@ const fruits = [
   { value: "mango", label: "Mango" },
 ];
 
+const longOptions = Array.from({ length: 40 }, (_, index) => ({
+  value: `option-${index + 1}`,
+  label: `Option ${index + 1}`,
+}));
+
 export const Default: StoryObj<{
   disabled?: boolean;
   variant?: "default" | "ghost";
@@ -49,6 +54,31 @@ export const Default: StoryObj<{
                 <Select.Item key={fruit.value} value={fruit.value}>
                   <Select.ItemIndicator />
                   <Select.ItemText>{fruit.label}</Select.ItemText>
+                </Select.Item>
+              ))}
+            </Select.List>
+          </Select.Popup>
+        </Select.Positioner>
+      </Select.Portal>
+    </Select.Root>
+  ),
+};
+
+export const LongList: StoryObj = {
+  render: () => (
+    <Select.Root>
+      <Select.Trigger>
+        <Select.Value placeholder="Select option" />
+        <Select.Icon />
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Positioner>
+          <Select.Popup>
+            <Select.List>
+              {longOptions.map((option) => (
+                <Select.Item key={option.value} value={option.value}>
+                  <Select.ItemIndicator />
+                  <Select.ItemText>{option.label}</Select.ItemText>
                 </Select.Item>
               ))}
             </Select.List>

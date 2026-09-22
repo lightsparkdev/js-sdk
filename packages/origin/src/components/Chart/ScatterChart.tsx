@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import clsx from "clsx";
-import { linearScale, niceTicks, thinIndices, axisPadForLabels } from "./utils";
+import {
+  linearScale,
+  niceTicks,
+  thinIndices,
+  xAxisTickTarget,
+  applyEdgeLabels,
+  axisPadForLabels,
+} from "./utils";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import { useResizeWidth } from "./hooks";
 import { useMergedRef } from "./useMergedRef";
@@ -17,6 +24,7 @@ import {
   TOOLTIP_GAP,
   resolveTooltipMode,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import styles from "./Chart.module.scss";
@@ -37,7 +45,8 @@ export interface ScatterSeries {
 }
 
 export interface ScatterChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   data: ScatterSeries[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -112,6 +121,8 @@ export const Scatter = React.forwardRef<HTMLDivElement, ScatterChartProps>(
       formatValue,
       formatXLabel,
       formatYLabel,
+      xAxisLabels = "fixed",
+      xAxisEdgeLabels = "show",
       xDomain: xDomainProp,
       yDomain: yDomainProp,
       onClickDatum,
@@ -239,13 +250,25 @@ export const Scatter = React.forwardRef<HTMLDivElement, ScatterChartProps>(
 
     const xLabels = React.useMemo(() => {
       if (plotWidth <= 0) return [];
-      const maxLabels = Math.max(2, Math.floor(plotWidth / 60));
+      const labels = xTicks.map((tick) =>
+        formatXLabel ? formatXLabel(tick) : String(tick),
+      );
+      const maxLabels = xAxisTickTarget(xAxisLabels, plotWidth, () => labels);
       const indices = thinIndices(xTicks.length, maxLabels);
-      return indices.map((i) => ({
+      const visibleIndices = applyEdgeLabels(xAxisEdgeLabels, indices);
+      return visibleIndices.map((i) => ({
         x: linearScale(xTicks[i], xMin, xMax, 0, plotWidth),
-        text: formatXLabel ? formatXLabel(xTicks[i]) : String(xTicks[i]),
+        text: labels[i],
       }));
-    }, [xTicks, xMin, xMax, plotWidth, formatXLabel]);
+    }, [
+      xTicks,
+      xMin,
+      xMax,
+      plotWidth,
+      formatXLabel,
+      xAxisLabels,
+      xAxisEdgeLabels,
+    ]);
 
     const screenPoints = React.useMemo(() => {
       if (plotWidth <= 0 || plotHeight <= 0) return [];

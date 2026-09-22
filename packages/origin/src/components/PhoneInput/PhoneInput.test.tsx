@@ -6,7 +6,9 @@ import {
   Disabled,
   Invalid,
   CustomPlaceholder,
+  LongCountryList,
   WithPhoneNumber,
+  Locked,
 } from "./PhoneInput.test-stories";
 
 const axeConfig = {
@@ -54,6 +56,74 @@ test.describe("PhoneInput", () => {
     await expect(
       page.getByRole("option", { name: /United Kingdom/ }),
     ).toBeVisible();
+  });
+
+  test("bounds long country lists and lets the list scroll", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<LongCountryList />);
+
+    const trigger = page.getByRole("combobox");
+    await trigger.click();
+
+    const popup = page.locator("[data-phone-input-popup]");
+    const listbox = page.getByRole("listbox");
+    await expect(listbox).toBeVisible();
+
+    const listState = await listbox.evaluate((list) => {
+      const popup = document.querySelector("[data-phone-input-popup]");
+      const firstItem = list.querySelector('[role="option"]');
+
+      if (!(popup instanceof HTMLElement)) {
+        throw new Error("PhoneInput long-list popup is missing");
+      }
+
+      if (!(firstItem instanceof HTMLElement)) {
+        throw new Error("PhoneInput list is missing option rows");
+      }
+
+      const listStyles = window.getComputedStyle(list);
+      const popupStyles = window.getComputedStyle(popup);
+      const itemStyles = window.getComputedStyle(firstItem);
+      popup.scrollTop = popup.scrollHeight;
+      list.scrollTop = list.scrollHeight;
+
+      return {
+        itemFlexShrink: itemStyles.flexShrink,
+        popupMaxHeight: popupStyles.maxHeight,
+        popupOverflowY: popupStyles.overflowY,
+        popupHasScrollableOverflow: popup.scrollHeight > popup.clientHeight,
+        popupCanScroll: popup.scrollTop > 0,
+        maxHeight: listStyles.maxHeight,
+        overflowY: listStyles.overflowY,
+        overscrollBehaviorY: listStyles.overscrollBehaviorY,
+        scrollPaddingBlockEnd: listStyles.scrollPaddingBlockEnd,
+        scrollPaddingBlockStart: listStyles.scrollPaddingBlockStart,
+        hasScrollableOverflow: list.scrollHeight > list.clientHeight,
+        canScroll: list.scrollTop > 0,
+      };
+    });
+
+    expect(listState.itemFlexShrink).toBe("0");
+    expect(listState.popupMaxHeight).toBe("none");
+    expect(listState.popupOverflowY).toBe("hidden");
+    expect(listState.popupHasScrollableOverflow).toBe(false);
+    expect(listState.popupCanScroll).toBe(false);
+    expect(listState.maxHeight).not.toBe("none");
+    expect(listState.overflowY).toBe("auto");
+    expect(listState.overscrollBehaviorY).toBe("contain");
+    expect(
+      Number.parseFloat(listState.scrollPaddingBlockStart),
+    ).toBeGreaterThan(0);
+    expect(Number.parseFloat(listState.scrollPaddingBlockEnd)).toBeGreaterThan(
+      0,
+    );
+    expect(listState.hasScrollableOverflow).toBe(true);
+    expect(listState.canScroll).toBe(true);
+
+    await expect(popup).toBeVisible();
+    await expect(page.getByRole("option", { name: /Zimbabwe/ })).toBeVisible();
   });
 
   test("can select a different country", async ({ mount, page }) => {
@@ -149,8 +219,13 @@ test.describe("PhoneInput", () => {
     await input.focus();
 
     // The root container should have data-invalid attribute
-    const root = page.locator("[data-invalid]");
+    const root = page.locator("[data-phone-input-root][data-invalid]");
     await expect(root).toBeVisible();
+
+    // The invalid state re-threads through the country Select's field
+    // boundary, marking the trigger as well.
+    const trigger = page.locator("[data-phone-input-trigger][data-invalid]");
+    await expect(trigger).toBeVisible();
   });
 
   test("has correct height", async ({ mount, page }) => {
@@ -197,5 +272,69 @@ test.describe("PhoneInput", () => {
     );
 
     expect(borderRight).toBe("1px");
+  });
+
+  test("locked country has no accessibility violations", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+    const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("locked country renders a static cap with no select semantics", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+
+    // No combobox anywhere in the DOM
+    await expect(page.getByRole("combobox")).toHaveCount(0);
+
+    const locked = page.locator("[data-phone-input-locked]");
+    await expect(locked).toBeVisible();
+
+    // Dial code is real, visible content
+    await expect(locked.getByText("+1")).toBeVisible();
+
+    // Tab from the page moves focus straight to the phone input, skipping
+    // the locked cap
+    await page.keyboard.press("Tab");
+    const focused = await page.evaluate(
+      () => document.activeElement?.getAttribute("placeholder") ?? null,
+    );
+    expect(focused).toBe("Enter phone");
+  });
+
+  test("locked country has the locked padding and border separator", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<Locked />);
+
+    const locked = page.locator("[data-phone-input-locked]");
+    const box = await locked.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        paddingLeft: s.paddingLeft,
+        paddingRight: s.paddingRight,
+        borderRightWidth: s.borderRightWidth,
+        gap: s.gap,
+      };
+    });
+
+    expect(box.paddingLeft).toBe("8px");
+    expect(box.paddingRight).toBe("12px");
+    expect(box.borderRightWidth).toBe("1px");
+    expect(box.gap).toBe("6px");
+  });
+
+  test("locked phone input keeps 36px height", async ({ mount, page }) => {
+    await mount(<Locked />);
+
+    const root = page.locator("[data-phone-input-root]");
+    const box = await root.boundingBox();
+    expect(box?.height).toBe(36);
   });
 });

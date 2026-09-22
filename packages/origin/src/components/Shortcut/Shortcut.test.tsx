@@ -4,7 +4,9 @@ import {
   MultipleKeys,
   TwoKeys,
   CustomClassName,
+  IconKey,
 } from "./Shortcut.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 test.describe("Shortcut", () => {
   test.describe("rendering", () => {
@@ -24,6 +26,17 @@ test.describe("Shortcut", () => {
       await expect(page.getByText("⌘")).toBeVisible();
       await expect(page.getByText("⇧")).toBeVisible();
       await expect(page.getByText("K")).toBeVisible();
+    });
+
+    test("renders a node key inside a kbd with an accessible name", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<IconKey />);
+      const kbd = page.locator("kbd");
+      await expect(kbd).toHaveCount(1);
+      await expect(page.getByRole("img", { name: "Arrow up" })).toBeVisible();
+      await expect(kbd.locator("svg")).toBeVisible();
     });
   });
 
@@ -50,6 +63,22 @@ test.describe("Shortcut", () => {
       await mount(<CustomClassName />);
       const shortcut = page.locator(".custom-class");
       await expect(shortcut).toBeVisible();
+    });
+
+    test("key background uses the alpha surface token", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<SingleKey />);
+      const kbd = page.locator("kbd");
+      const expected = await resolveTokenColor(
+        page,
+        "--surface-alpha-primary",
+        "backgroundColor",
+      );
+      await expect(kbd).toHaveCSS("background-color", expected);
+      // Alpha token must stay translucent so the key adapts to its surface.
+      expect(expected).toMatch(/rgba\(.*0\.0\d+\)/);
     });
   });
 });

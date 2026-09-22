@@ -1,0 +1,39 @@
+name: "JS SDK Publish"
+
+on:
+  workflow_dispatch:
+    inputs:
+      preparation_run_id:
+        description: "Trusted JS SDK Prepare Release workflow run"
+        required: true
+        type: string
+      source_commit:
+        description: "Exact candidate commit on public main"
+        required: true
+        type: string
+      release_commit:
+        description: "Prepared public release commit"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  id-token: write
+
+concurrency:
+  group: js-sdk-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Run trusted publisher
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+    uses: lightsparkdev/js-sdk/.github/workflows/js-sdk-publish-trusted.yml@main
+    with:
+      preparation_run_id: ${{ inputs.preparation_run_id }}
+      source_commit: ${{ inputs.source_commit }}
+      release_commit: ${{ inputs.release_commit }}

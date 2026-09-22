@@ -1,74 +1,8 @@
-name: Create or update release PR
-
-on:
-  pull_request:
-    types: [edited]
-    branches:
-      - main
-  push:
-    branches:
-      - develop
-
+name: Legacy public release automation (retired)
+on: workflow_dispatch
+permissions: {}
 jobs:
-  create-release-pr:
-    name: Create or update release PR
+  retired:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
-      - name: "Checkout"
-        uses: "actions/checkout@v3"
-        with:
-          fetch-depth: 0
-
-      - name: Create main branch
-        run: "git branch --track main origin/main"
-
-      - name: Setup node
-        uses: "actions/setup-node@v4"
-        env:
-          SKIP_YARN_COREPACK_CHECK: true
-        with:
-          node-version: "20.x"
-
-      - name: yarn install with cache
-        uses: ./.github/actions/yarn-nm-install
-        with:
-          cwd: "."
-          # Lock file differences shouldn't matter for these jobs and it's difficult to
-          # sync up with the test-release-sync workflow (which actually needs the lock
-          # to be updated and runs at the same time)
-          install-mode: "install-allow-lock-update"
-
-      - name: Create release PR if necessary
-        id: create-release-pr
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF: ${{ github.ref }}
-        run: |
-          node ./.github/workflows/runEnsureReleasePR.mjs
-
-      - name: Run changeset
-        id: changesets
-        run: |
-          echo -n "$(node ./.github/workflows/runChangeset.mjs | grep changeset)" >> $GITHUB_OUTPUT
-
-      - name: List changed packages
-        run: |
-          echo "${{ steps.changeset.outputs.changeset }}"
-
-      - name: Get PR comment vars
-        id: pr-comment-vars
-        run: |
-          echo "lastCommit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Update or post comment on PR with link to create changeset
-        id: pr-comment
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REF: ${{ github.ref }}
-          LAST_COMMIT: ${{ steps.pr-comment-vars.outputs.lastCommit }}
-          CHANGESET: ${{ steps.changesets.outputs.changeset }}
-        run: |
-          node ./.github/workflows/updatePR.mjs
+      - run: echo "Versioning now belongs to Webdev. See RELEASING.md."

@@ -31,6 +31,10 @@
   }
 }
 
+.fullWidth {
+  width: 100%;
+}
+
 .dense {
   --button-icon-size: 12px;
 
@@ -116,10 +120,11 @@
 }
 
 .outline {
-  background-color: var(--surface-primary);
+  background-color: var(--surface-control);
   color: var(--text-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
+  // Dark primary hairlines are 6%; outline controls keep a 10% keyline.
+  border: var(--stroke-xs) solid var(--border-control);
+  box-shadow: var(--shadow-sm);
 
   @media (hover: hover) {
     &:hover:not([data-disabled]) {
@@ -129,7 +134,7 @@
 
   &:focus-visible {
     box-shadow:
-      0px 1px 2px 0px rgba(0, 0, 0, 0.08),
+      var(--shadow-sm),
       0 0 0 3px var(--state-focus);
   }
 
@@ -164,7 +169,9 @@
 
 .critical {
   background-color: var(--surface-red-strong);
-  color: var(--text-inverse);
+  // On-color, not inverse: the red fill stays chromatic in dark, so the
+  // label must stay light in both themes.
+  color: var(--text-on-color);
 
   @media (hover: hover) {
     &:hover:not([data-disabled]) {
@@ -289,4 +296,25 @@
 .label {
   flex-shrink: 0;
   padding: 0 var(--spacing-3xs);
+}
+
+:global([data-theme="dark"]).outline,
+:global(.dark).outline,
+:global([data-theme="dark"]) .outline,
+:global(.dark) .outline {
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      background-color: var(--surface-raised);
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(html:not([data-theme="light"])) .outline {
+    @media (hover: hover) {
+      &:hover:not([data-disabled]) {
+        background-color: var(--surface-raised);
+      }
+    }
+  }
 }

@@ -6,7 +6,7 @@
  */
 
 import React from "react";
-import { devWarn } from "../../lib/dev-warn";
+import { devWarnOnce } from "../../lib/dev-warn";
 import { ICON_REGISTRY, type CentralIconName } from "./icon-registry";
 
 export interface CentralIconProps {
@@ -14,7 +14,10 @@ export interface CentralIconProps {
   name: CentralIconName;
   /** Icon size in pixels */
   size?: number;
-  /** Color override */
+  /**
+   * Color override. When omitted, the icon inherits `currentColor` through
+   * CSS with no inline style, so stylesheet rules targeting the svg apply.
+   */
   color?: string;
   /** Additional CSS class */
   className?: string;
@@ -31,14 +34,14 @@ export interface CentralIconProps {
 export const CentralIcon: React.FC<CentralIconProps> = ({
   name,
   size = 24,
-  color = "currentColor",
+  color,
   className,
   style,
 }) => {
   const IconComponent = ICON_REGISTRY[name];
 
   if (!IconComponent) {
-    devWarn(`CentralIcon: Icon "${name}" not found in registry`);
+    devWarnOnce(`CentralIcon: Icon "${name}" not found in registry`);
     return null;
   }
 

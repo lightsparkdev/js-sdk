@@ -1,10 +1,10 @@
 #! /bin/bash
 
 # Need an initial build since the next command executes in any order
-build_cmd="turbo run build:deps"
+build_cmd=(turbo run build:deps)
 # We don't use turbo's watch mode here because it's inefficient to restart
 # these tasks on file change. Instead we rely task level watch mode.
-start_cmd="turbo run start types:watch lint:watch --parallel --concurrency 200"
+start_cmd=(turbo run start types:watch lint:watch --parallel --concurrency 200)
 
 # Predefined filters
 examples_filters="--filter=...{./apps/examples/*}"
@@ -23,20 +23,20 @@ for arg in "$@"; do
 done
 
 if [ "$use_examples_filters" -eq 1 ]; then
-  build_cmd+=" $examples_filters"
-  start_cmd+=" $examples_filters"
+  build_cmd+=("$examples_filters")
+  start_cmd+=("$examples_filters")
 elif [ "$use_private_filters" -eq 1 ]; then
-  build_cmd+=" $private_filters"
-  start_cmd+=" $private_filters"
+  build_cmd+=("$private_filters")
+  start_cmd+=("$private_filters")
 elif [ $# -gt 0 ]; then
   # Process regular arguments if no special arguments are found
   for arg in "$@"; do
-    build_cmd+=" --filter=@lightsparkdev/$arg"
-    start_cmd+=" --filter=@lightsparkdev/$arg"
+    build_cmd+=("--filter=@lightsparkdev/$arg")
+    start_cmd+=("--filter=@lightsparkdev/$arg")
   done
 else
-  build_cmd+=" --filter='./apps/private/*' --filter='./packages/*'"
-  start_cmd+=" --filter='./apps/private/*' --filter='./packages/*'"
+  build_cmd+=(--filter='./apps/private/*' --filter='./packages/*')
+  start_cmd+=(--filter='./apps/private/*' --filter='./packages/*')
 fi
 
-echo $build_cmd && eval $build_cmd && echo $start_cmd && eval $start_cmd
+echo "${build_cmd[@]}" && "${build_cmd[@]}" && echo "${start_cmd[@]}" && "${start_cmd[@]}"

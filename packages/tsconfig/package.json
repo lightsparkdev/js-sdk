@@ -28,5 +28,10 @@
   },
   "engines": {
     "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
+    "directory": "packages/tsconfig"
   }
 }

@@ -33,7 +33,9 @@
 
 .thumb {
   display: block;
-  background-color: var(--surface-panel);
+  // Light handle in both themes: a dark thumb reads as a hole on the green ON
+  // track, so the thumb stays at the light-neutral handle level.
+  background-color: var(--surface-handle);
   border-radius: var(--corner-radius-round);
   box-shadow: var(--shadow-sm);
   transition: transform 150ms ease;

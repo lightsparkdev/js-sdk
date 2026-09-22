@@ -17,6 +17,34 @@ test.describe("Input", () => {
       await expect(input).toBeVisible();
     });
 
+    test("placeholder resolves to the tertiary text color", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<DefaultInput />);
+      const input = page.getByPlaceholder("Placeholder");
+      const placeholderColor = await input.evaluate(
+        (el) => getComputedStyle(el, "::placeholder").color,
+      );
+      expect(placeholderColor).toBe("rgb(152, 152, 152)");
+    });
+
+    test("placeholder resolves to the tertiary text color in dark mode", async ({
+      mount,
+      page,
+    }) => {
+      // Dark --text-secondary equals light --text-tertiary (#989898), so
+      // only a dark-theme assertion can catch a regression to the
+      // secondary token.
+      await page.emulateMedia({ colorScheme: "dark" });
+      await mount(<DefaultInput />);
+      const input = page.getByPlaceholder("Placeholder");
+      const placeholderColor = await input.evaluate(
+        (el) => getComputedStyle(el, "::placeholder").color,
+      );
+      expect(placeholderColor).toBe("rgb(101, 101, 101)");
+    });
+
     test("accepts text input", async ({ mount, page }) => {
       await mount(<DefaultInput />);
       const input = page.getByPlaceholder("Placeholder");

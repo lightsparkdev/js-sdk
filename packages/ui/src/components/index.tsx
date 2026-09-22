@@ -29,6 +29,7 @@ export {
   CardPageFullWidth,
   CardPageRightContentInner,
   CardPageSubtitle,
+  CardPageTitleAccessoryProvider,
 } from "./CardPage.js";
 export { Checkbox, CheckboxContainer, type CheckboxProps } from "./Checkbox.js";
 export { ClipboardTextField } from "./ClipboardTextField.js";

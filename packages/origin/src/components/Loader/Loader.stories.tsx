@@ -12,6 +12,14 @@ const meta = {
     label: {
       control: "text",
     },
+    variant: {
+      control: "radio",
+      options: ["dots", "ring"],
+    },
+    size: {
+      control: "number",
+      if: { arg: "variant", eq: "ring" },
+    },
   },
 } satisfies Meta<typeof Loader>;
 
@@ -21,6 +29,21 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     label: "Loading",
+  },
+};
+
+export const Ring: Story = {
+  args: {
+    label: "Loading",
+    variant: "ring",
+  },
+};
+
+export const RingSmall: Story = {
+  args: {
+    label: "Loading",
+    variant: "ring",
+    size: 12,
   },
 };
 

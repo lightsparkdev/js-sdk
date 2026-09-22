@@ -63,10 +63,11 @@ export function errorToJSON(
   /* Objects can add standard toJSON method to determine JSON.stringify output, https://mzl.la/3Gks9zu: */
   if (isObject(err) && "toJSON" in err && typeof err.toJSON === "function") {
     const toJSON = err.toJSON as () => unknown;
+    const json = toJSON.call(err);
     if (stringifyObjects === true) {
-      return objectToJSON(toJSON());
+      return objectToJSON(json);
     }
-    return toJSON() as JSONType;
+    return json as JSONType;
   }
 
   if (

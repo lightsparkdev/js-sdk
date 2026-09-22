@@ -21,6 +21,7 @@ export interface IdFilterState extends FilterState {
    * The allowed entities that the ID can be prefixed with.
    */
   allowedEntities?: string[];
+  validation: "uuid" | "none";
 }
 
 export const isIdFilterState = (state: FilterState): state is IdFilterState =>
@@ -30,7 +31,7 @@ export const isIdFilterState = (state: FilterState): state is IdFilterState =>
  * Validates the filter state and updates the filter state.
  */
 const onValidate = (state: IdFilterState, isMulti?: boolean) => {
-  const { value, allowedEntities } = state;
+  const { value, allowedEntities, validation } = state;
 
   // Only validate when the value of the filter is not empty.
   if (!value) {
@@ -39,7 +40,16 @@ const onValidate = (state: IdFilterState, isMulti?: boolean) => {
     };
   }
 
-  let uuid = value;
+  let normalizedValue = value;
+
+  if (validation === "none") {
+    const appliedValues = isMulti
+      ? state.appliedValues?.filter((appliedValue) => appliedValue !== value) ||
+        []
+      : [];
+    appliedValues.push(value);
+    return { ...state, appliedValues };
+  }
 
   if (allowedEntities) {
     const entityPrefix = allowedEntities.find((entity) =>
@@ -50,10 +60,10 @@ const onValidate = (state: IdFilterState, isMulti?: boolean) => {
       return false;
     }
 
-    uuid = value.replace(`${entityPrefix}:`, "");
+    normalizedValue = value.replace(`${entityPrefix}:`, "");
   }
-  const isUuid = uuid.match(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+  const isUuid = normalizedValue.match(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
   );
   if (!isUuid) {
     return false;
@@ -65,21 +75,25 @@ const onValidate = (state: IdFilterState, isMulti?: boolean) => {
       state.appliedValues?.filter((appliedValue) => appliedValue !== value) ||
       [];
   }
-  updatedAppliedValues.push(uuid);
+  updatedAppliedValues.push(normalizedValue);
 
   // Return the updated state with the UUID and the updated applied values list
   return {
     ...state,
-    value: uuid,
+    value: normalizedValue,
     appliedValues: updatedAppliedValues,
   };
 };
 
-export const getDefaultIdFilterState = (allowedEntities?: string[]) => ({
+export const getDefaultIdFilterState = (
+  allowedEntities?: string[],
+  validation: "uuid" | "none" = "uuid",
+) => ({
   type: FilterType.ID,
   value: "",
   errorMessage: "",
   allowedEntities,
+  validation,
   isApplied: false,
   onValidate: (filterState: IdFilterState, isMulti?: boolean) =>
     onValidate(filterState, isMulti),

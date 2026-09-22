@@ -15,7 +15,7 @@
       "@test-utils/*": ["./test-utils/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "type-tests/**/*.tsx"],
   "exclude": [
     "node_modules",
     "tools",

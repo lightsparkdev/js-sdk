@@ -90,7 +90,6 @@ export const Default: Story = {
   args: {
     items: basicItems,
     defaultOpen: true,
-    placeholder: "Type a command or search...",
   },
 };
 
@@ -138,11 +137,7 @@ export const WithShortcuts: Story = {
 
     return (
       <Command.Root items={items} defaultOpen>
-        <Command.Footer>
-          <span>↑↓ Navigate</span>
-          <span>↵ Open</span>
-          <span>Esc Close</span>
-        </Command.Footer>
+        <Command.Footer />
       </Command.Root>
     );
   },
@@ -406,11 +401,7 @@ function RaycastStyleComponent() {
         <Shortcut keys={["⌘", "K"]} />
       </button>
       <Command.Root items={items} open={open} onOpenChange={setOpen}>
-        <Command.Footer>
-          <span>↑↓ Navigate</span>
-          <span>↵ Open</span>
-          <span>Esc Close</span>
-        </Command.Footer>
+        <Command.Footer />
       </Command.Root>
       <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)" }}>
         Press ⌘K to toggle the command palette
@@ -421,4 +412,79 @@ function RaycastStyleComponent() {
 
 export const RaycastStyle: Story = {
   render: () => <RaycastStyleComponent />,
+};
+
+/**
+ * Async search with a loading state, custom empty copy, and a filter
+ * drill-in that keeps the palette open via `closeOnSelect: false`.
+ */
+function AsyncSearchWithDrillInComponent() {
+  const [open, setOpen] = React.useState(true);
+  const [view, setView] = React.useState<"root" | "filters">("root");
+  const [inputValue, setInputValue] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (view !== "root" || inputValue.length < 2) {
+      setLoading(false);
+      return undefined;
+    }
+    setLoading(true);
+    const timeout = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timeout);
+  }, [view, inputValue]);
+
+  const rootItems: CommandItem[] = [
+    {
+      id: "filter",
+      label: "Filter...",
+      icon: <CentralIcon name="IconFilter2" size={16} />,
+      closeOnSelect: false,
+      onSelect: () => {
+        setView("filters");
+        setInputValue("");
+      },
+    },
+    {
+      id: "transactions",
+      label: "Go to transactions",
+      icon: <CentralIcon name="IconReceiptBill" size={16} />,
+    },
+    {
+      id: "customers",
+      label: "Go to customers",
+      icon: <CentralIcon name="IconUserDuo" size={16} />,
+    },
+  ];
+
+  const filterItems: CommandItem[] = [
+    { id: "status", label: "Status", closeOnSelect: false },
+    { id: "currency", label: "Currency", closeOnSelect: false },
+    { id: "date", label: "Date range", closeOnSelect: false },
+  ];
+
+  return (
+    <Command.Root
+      items={view === "root" ? rootItems : filterItems}
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+          setView("root");
+          setInputValue("");
+        }
+      }}
+      inputValue={inputValue}
+      onInputValueChange={setInputValue}
+      loading={loading}
+      empty={inputValue ? `No results found for "${inputValue}"` : undefined}
+      placeholder={
+        view === "root" ? "Search or run a command..." : "Filter by..."
+      }
+    />
+  );
+}
+
+export const AsyncSearchWithDrillIn: Story = {
+  render: () => <AsyncSearchWithDrillInComponent />,
 };

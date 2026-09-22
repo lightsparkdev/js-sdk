@@ -1,0 +1,361 @@
+name: "JS SDK Trusted Publisher"
+
+on:
+  workflow_call:
+    inputs:
+      preparation_run_id:
+        description: "Trusted JS SDK Prepare Release workflow run"
+        required: true
+        type: string
+      source_commit:
+        description: "Exact candidate commit on public main"
+        required: true
+        type: string
+      release_commit:
+        description: "Prepared public release commit"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    if: github.repository == 'lightsparkdev/js-sdk' && vars.JS_SDK_RELEASE_ENABLED == 'true'
+    name: Plan public release
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      commit: ${{ steps.plan.outputs.commit }}
+      has_candidates: ${{ steps.plan.outputs.has_candidates }}
+      has_work: ${{ steps.plan.outputs.has_work }}
+      has_major: ${{ steps.plan.outputs.has_major }}
+      lockfile_sha256: ${{ steps.authorization.outputs.lockfile_sha256 }}
+      release_branch: ${{ steps.authorization.outputs.release_branch }}
+      trusted_commit: ${{ steps.trusted.outputs.commit }}
+      plan: ${{ steps.plan.outputs.plan }}
+    steps:
+      - name: "Require prepared release branch"
+        env:
+          DISPATCH_COMMIT: ${{ github.sha }}
+          DISPATCH_REF: ${{ github.ref }}
+          RELEASE_COMMIT: ${{ inputs.release_commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          if [[ ! "$SOURCE_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]] ||
+            [[ ! "$RELEASE_COMMIT" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            echo "source_commit and release_commit must be full Git commit SHAs." >&2
+            exit 1
+          fi
+          branch_prefix="refs/heads/sdk-release/stable/${SOURCE_COMMIT}-"
+          branch_suffix="${DISPATCH_REF#"$branch_prefix"}"
+          if [[ "$DISPATCH_REF" != "$branch_prefix"* ]] ||
+            [[ ! "$branch_suffix" =~ ^[0-9a-f]{32}$ ]]; then
+            echo "JS SDK publishing requires the candidate's prepared stable release branch." >&2
+            exit 1
+          fi
+          if [[ "$DISPATCH_COMMIT" != "$RELEASE_COMMIT" ]]; then
+            echo "The dispatched branch tip does not match release_commit." >&2
+            exit 1
+          fi
+
+      - name: "Resolve trusted public main"
+        id: trusted
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const { data: ref } = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'heads/main',
+            });
+            core.setOutput('commit', ref.object.sha);
+
+      - name: "Download release authorization"
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: js-sdk-release-authorization-${{ inputs.preparation_run_id }}
+          path: ${{ runner.temp }}/js-sdk-release-authorization
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.preparation_run_id }}
+
+      - name: "Checkout trusted publisher controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.trusted.outputs.commit }}
+          persist-credentials: false
+
+      - name: "Validate preparation workflow"
+        id: authorization
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          AUTHORIZATION_PATH: ${{ runner.temp }}/js-sdk-release-authorization/release-authorization.json
+          PREPARATION_RUN_ID: ${{ inputs.preparation_run_id }}
+          RELEASE_BRANCH: ${{ github.ref_name }}
+          RELEASE_COMMIT: ${{ inputs.release_commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        with:
+          script: |
+            await require('./scripts/sdk-release-authorization.cjs')({ github, context, core });
+
+      - name: "Checkout prepared release"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.release_commit }}
+          fetch-depth: 0
+          path: release
+
+      - name: "Verify immutable release ref"
+        working-directory: release
+        env:
+          RELEASE_BRANCH: ${{ steps.authorization.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ inputs.release_commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          git fetch origin main
+          remote_commit="$(git ls-remote --heads origin "refs/heads/${RELEASE_BRANCH}" | awk '{print $1}')"
+          if [[ "$remote_commit" != "$RELEASE_COMMIT" ]]; then
+            echo "Prepared release branch no longer points to the authorized commit." >&2
+            exit 1
+          fi
+          node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" select-candidate \
+            --root "$GITHUB_WORKSPACE/release" \
+            --ref origin/main \
+            --exact-commit "$SOURCE_COMMIT"
+
+      - name: "Build exact npm release plan"
+        id: plan
+        working-directory: release
+        env:
+          AUTHORIZATION_PATH: ${{ runner.temp }}/js-sdk-release-authorization/release-authorization.json
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          authorized_plan="$(jq -c '.plan' "$AUTHORIZATION_PATH")"
+          AUTHORIZED_RELEASE_PLAN="$authorized_plan" \
+            node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" publish-plan \
+              --root "$GITHUB_WORKSPACE/release" \
+              --candidate-ref "$SOURCE_COMMIT" \
+              --expect-env AUTHORIZED_RELEASE_PLAN \
+              --github-output "$GITHUB_OUTPUT"
+
+      - name: "Summarize release plan"
+        env:
+          RELEASE_PLAN: ${{ steps.plan.outputs.plan }}
+        run: |
+          {
+            echo '## Public JS SDK release plan'
+            echo
+            echo "- Source commit: \`${{ inputs.source_commit }}\`"
+            echo "- Release branch: \`${{ steps.authorization.outputs.release_branch }}\`"
+            echo "- Release commit: \`${{ inputs.release_commit }}\`"
+            echo "- Preparation run: \`${{ inputs.preparation_run_id }}\`"
+            echo
+            echo '```json'
+            echo "$RELEASE_PLAN" | jq .
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  preflight:
+    name: Verify release candidate
+    needs: plan
+    if: needs.plan.outputs.has_work == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: "Checkout trusted publisher controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.plan.outputs.trusted_commit }}
+          persist-credentials: false
+
+      - name: "Checkout release commit"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+          fetch-depth: 0
+          path: release
+
+      - name: "Verify authorized public lockfile"
+        env:
+          EXPECTED_LOCK_SHA256: ${{ needs.plan.outputs.lockfile_sha256 }}
+        run: |
+          actual_hash="$(sha256sum release/yarn.lock | awk '{print $1}')"
+          if [[ "$actual_hash" != "$EXPECTED_LOCK_SHA256" ]]; then
+            echo "Prepared release lockfile does not match its authorization." >&2
+            exit 1
+          fi
+
+      - name: "Setup Node.js and install exact release dependencies"
+        uses: ./.github/actions/sdk-setup
+        with:
+          node-version: "22.14.0"
+          cwd: ${{ github.workspace }}/release
+
+      - name: "Test release tooling"
+        run: node --test scripts/tests/*.test.cjs
+
+      - name: "Run public package preflight"
+        run: node scripts/sdk-preflight.cjs --root "$GITHUB_WORKSPACE/release" --checks
+
+  publish:
+    name: Publish packages
+    needs:
+      - plan
+      - preflight
+    if: needs.plan.outputs.has_work == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.preparation_run_id }}
+    permissions:
+      actions: read
+      contents: write
+      id-token: write
+    steps:
+      - name: "Checkout trusted publisher controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.plan.outputs.trusted_commit }}
+          persist-credentials: false
+
+      - name: "Download release authorization"
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: js-sdk-release-authorization-${{ inputs.preparation_run_id }}
+          path: ${{ runner.temp }}/js-sdk-release-authorization
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.preparation_run_id }}
+
+      - name: "Recheck authorization before publication"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          AUTHORIZATION_PATH: ${{ runner.temp }}/js-sdk-release-authorization/release-authorization.json
+          PREPARATION_RUN_ID: ${{ inputs.preparation_run_id }}
+          RELEASE_BRANCH: ${{ needs.plan.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ needs.plan.outputs.commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        with:
+          script: |
+            await require('./scripts/sdk-release-authorization.cjs')({ github, context, core });
+
+      - name: "Checkout release commit"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.plan.outputs.commit }}
+          fetch-depth: 0
+          path: release
+
+      - name: "Require unchanged release branch"
+        working-directory: release
+        env:
+          EXPECTED_LOCK_SHA256: ${{ needs.plan.outputs.lockfile_sha256 }}
+          RELEASE_BRANCH: ${{ needs.plan.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ needs.plan.outputs.commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          git fetch origin main
+          remote_commit="$(git ls-remote --heads origin "refs/heads/${RELEASE_BRANCH}" | awk '{print $1}')"
+          if [[ "$remote_commit" != "$RELEASE_COMMIT" ]]; then
+            echo "Prepared release branch changed after preflight; rerun preparation." >&2
+            exit 1
+          fi
+          actual_hash="$(sha256sum yarn.lock | awk '{print $1}')"
+          if [[ "$actual_hash" != "$EXPECTED_LOCK_SHA256" ]]; then
+            echo "Prepared release lockfile no longer matches its authorization." >&2
+            exit 1
+          fi
+          node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" select-candidate \
+            --root "$GITHUB_WORKSPACE/release" \
+            --ref origin/main \
+            --exact-commit "$SOURCE_COMMIT"
+
+      - name: "Setup Node.js for trusted publishing"
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22.14.0"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - name: "Install Yarn dependencies"
+        working-directory: release
+        env:
+          HUSKY: "0"
+        run: |
+          corepack enable
+          yarn install --immutable
+
+      - name: "Install trusted-publishing npm version"
+        run: npm install --global npm@11.15.0
+
+      - name: "Build and verify packed packages"
+        if: needs.plan.outputs.has_candidates == 'true'
+        run: node scripts/sdk-preflight.cjs --root "$GITHUB_WORKSPACE/release"
+
+      - name: "Revalidate npm release plan"
+        id: verify-plan
+        env:
+          SDK_RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: >-
+          node scripts/sdk-release.cjs publish-plan
+          --root "$GITHUB_WORKSPACE/release"
+          --candidate-ref "$SOURCE_COMMIT"
+          --expect-env SDK_RELEASE_PLAN
+
+      - name: "Publish unpublished package versions"
+        id: publish-packages
+        if: needs.plan.outputs.has_candidates == 'true'
+        continue-on-error: true
+        working-directory: release
+        env:
+          NPM_CONFIG_PROVENANCE: "true"
+          SDK_RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
+          RELEASE_BRANCH: ${{ needs.plan.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ needs.plan.outputs.commit }}
+          SOURCE_COMMIT: ${{ inputs.source_commit }}
+        run: |
+          remote_commit="$(git ls-remote --heads origin "refs/heads/${RELEASE_BRANCH}" | awk '{print $1}')"
+          if [[ "$remote_commit" != "$RELEASE_COMMIT" ]]; then
+            echo "Prepared release branch changed before npm publish; rerun preparation." >&2
+            exit 1
+          fi
+          node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" publish --root "$GITHUB_WORKSPACE/release" --plan-env SDK_RELEASE_PLAN
+
+      - name: "Finalize published package records"
+        if: >-
+          always() &&
+          steps.verify-plan.outcome == 'success' &&
+          (needs.plan.outputs.has_candidates != 'true' ||
+          steps.publish-packages.outcome == 'success' ||
+          steps.publish-packages.outcome == 'failure')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SDK_RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
+        run: >-
+          node scripts/sdk-release.cjs finalize
+          --root "$GITHUB_WORKSPACE/release"
+          --plan-env SDK_RELEASE_PLAN
+
+      - name: "Report release result"
+        if: success()
+        env:
+          RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo '## Release result'
+            echo
+            echo "$RELEASE_PLAN" | jq -r '.finalizationPackages[] | "- Released `\(.name)@\(.version)`"'
+            echo
+            echo "- Candidate source commit: \`${{ inputs.source_commit }}\`"
+            echo "- Release branch: \`${{ needs.plan.outputs.release_branch }}\`"
+            echo "- Public release commit: \`${{ needs.plan.outputs.commit }}\`"
+            echo "- Workflow run: $RUN_URL"
+          } >> "$GITHUB_STEP_SUMMARY"

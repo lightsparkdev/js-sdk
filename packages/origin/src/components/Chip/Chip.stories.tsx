@@ -50,6 +50,18 @@ export const FilterVariant: StoryObj<typeof ChipFilter> = {
   },
 };
 
+export const FilterInteractiveValue: StoryObj<typeof ChipFilter> = {
+  render: () => (
+    <ChipFilter
+      property="Status"
+      operator="is"
+      value={<ChipFilter.Trigger onClick={() => {}}>Active</ChipFilter.Trigger>}
+      valueLabel="Active"
+      onDismiss={() => {}}
+    />
+  ),
+};
+
 export const FilterSmall: StoryObj<typeof ChipFilter> = {
   render: (args) => <ChipFilter {...args} />,
   args: {

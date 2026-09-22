@@ -1,0 +1,546 @@
+name: "JS SDK Prepare Release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_commit:
+        description: "Optional public candidate source SHA to retry; blank selects the oldest unpublished candidate"
+        required: false
+        type: string
+      allow_major:
+        description: "Request approval for a major release"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: js-sdk-release
+  cancel-in-progress: false
+
+jobs:
+  select:
+    if: github.repository == 'lightsparkdev/js-sdk' && vars.JS_SDK_RELEASE_ENABLED == 'true'
+    name: Select stable release candidate
+    runs-on: ubuntu-latest
+    outputs:
+      has_candidate: ${{ steps.candidate.outputs.has_candidate }}
+      source_commit: ${{ steps.candidate.outputs.source_commit }}
+      candidate: ${{ steps.candidate.outputs.candidate }}
+    steps:
+      - name: "Require public main"
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "SDK releases must be prepared from public main." >&2
+          exit 1
+
+      - name: "Require maintainer permission"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        with:
+          script: |
+            const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: process.env.TRIGGERING_ACTOR,
+            });
+            const role = data.role_name || data.permission;
+            if (!['admin', 'maintain'].includes(role)) {
+              core.setFailed(`SDK releases require maintain permission; ${process.env.TRIGGERING_ACTOR} has ${role}`);
+            }
+
+      - name: "Checkout public main"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: "Select release candidate"
+        id: candidate
+        env:
+          REQUESTED_CANDIDATE: ${{ inputs.candidate_commit }}
+        run: |
+          args=(--ref "$GITHUB_SHA")
+          if [[ -n "$REQUESTED_CANDIDATE" ]]; then
+            if [[ ! "$REQUESTED_CANDIDATE" =~ ^[0-9a-fA-F]{40}$ ]]; then
+              echo "candidate_commit must be a full Git commit SHA." >&2
+              exit 1
+            fi
+            args+=(--exact-commit "$REQUESTED_CANDIDATE")
+          fi
+          node scripts/sdk-release.cjs select-candidate \
+            "${args[@]}" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: "Summarize candidate selection"
+        env:
+          HAS_CANDIDATE: ${{ steps.candidate.outputs.has_candidate }}
+          SOURCE_COMMIT: ${{ steps.candidate.outputs.source_commit }}
+          RELEASE_CANDIDATE: ${{ steps.candidate.outputs.candidate }}
+        run: |
+          {
+            echo '## Stable JS SDK release candidate'
+            echo
+            if [[ "$HAS_CANDIDATE" != "true" ]]; then
+              echo 'No unpublished stable release candidate was found.'
+            else
+              echo "- Source commit: \`$SOURCE_COMMIT\`"
+              echo
+              echo '```json'
+              echo "$RELEASE_CANDIDATE" | jq .
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  major-plan:
+    name: Classify candidate major versions
+    needs: select
+    if: needs.select.outputs.has_candidate == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      has_major: ${{ steps.policy.outputs.has_major }}
+      plan: ${{ steps.policy.outputs.plan }}
+    steps:
+      - name: "Checkout trusted release controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: "Checkout candidate source"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.select.outputs.source_commit }}
+          fetch-depth: 0
+          path: release
+          persist-credentials: false
+
+      - name: "Classify unpublished candidate versions"
+        id: policy
+        env:
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        run: >-
+          node scripts/sdk-release.cjs candidate-policy-plan
+          --root "$GITHUB_WORKSPACE/release"
+          --candidate-ref "$SOURCE_COMMIT"
+          --github-output "$GITHUB_OUTPUT"
+
+      - name: "Summarize major-version policy"
+        env:
+          MAJOR_PLAN: ${{ steps.policy.outputs.plan }}
+        run: |
+          {
+            echo '## Candidate major-version policy'
+            echo
+            echo '```json'
+            echo "$MAJOR_PLAN" | jq .
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  prepare-lockfile:
+    name: Generate candidate lockfile
+    needs: select
+    if: needs.select.outputs.has_candidate == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      lockfile_sha256: ${{ steps.lockfile.outputs.sha256 }}
+    steps:
+      - name: "Checkout trusted release controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: "Checkout candidate source"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.select.outputs.source_commit }}
+          fetch-depth: 0
+          path: release
+          persist-credentials: false
+
+      - name: "Generate public lockfile"
+        uses: ./.github/actions/sdk-setup
+        with:
+          node-version: "22.14.0"
+          cwd: release
+          mode: lockfile
+
+      - name: "Validate generated lockfile"
+        id: lockfile
+        working-directory: release
+        run: |
+          if ! git diff --quiet -- . ':(exclude)yarn.lock'; then
+            echo "Lockfile generation changed files outside yarn.lock." >&2
+            git diff --name-only >&2
+            exit 1
+          fi
+          echo "sha256=$(sha256sum yarn.lock | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+
+      - name: "Upload generated lockfile"
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: js-sdk-release-lock-${{ github.run_id }}
+          path: release/yarn.lock
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30
+
+  create-release-ref:
+    name: Create immutable release branch
+    needs:
+      - select
+      - prepare-lockfile
+      - major-policy
+    if: >-
+      needs.prepare-lockfile.result == 'success' &&
+      needs.major-policy.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      release_branch: ${{ steps.release.outputs.branch }}
+      release_commit: ${{ steps.release.outputs.commit }}
+      lockfile_sha256: ${{ steps.release.outputs.lockfile_sha256 }}
+    steps:
+      - name: "Require maintainer permission"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        with:
+          script: |
+            const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: process.env.TRIGGERING_ACTOR,
+            });
+            const role = data.role_name || data.permission;
+            if (!['admin', 'maintain'].includes(role)) {
+              core.setFailed(`SDK releases require maintain permission; ${process.env.TRIGGERING_ACTOR} has ${role}`);
+            }
+
+      - name: "Checkout trusted release controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: "Checkout candidate source"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.select.outputs.source_commit }}
+          fetch-depth: 0
+          path: release
+
+      - name: "Download generated lockfile"
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: js-sdk-release-lock-${{ github.run_id }}
+          path: ${{ runner.temp }}/js-sdk-release-lock
+
+      - name: "Create or reuse release branch"
+        id: release
+        working-directory: release
+        env:
+          EXPECTED_LOCK_SHA256: ${{ needs.prepare-lockfile.outputs.lockfile_sha256 }}
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        run: |
+          lockfile="${RUNNER_TEMP}/js-sdk-release-lock/yarn.lock"
+          actual_hash="$(sha256sum "$lockfile" | awk '{print $1}')"
+          if [[ "$actual_hash" != "$EXPECTED_LOCK_SHA256" ]]; then
+            echo "Downloaded lockfile hash does not match the read-only build job." >&2
+            exit 1
+          fi
+
+          cp "$lockfile" yarn.lock
+          mkdir -p .github/workflows
+          rm -f .github/workflows/js-sdk-publish.yml
+          cp "$GITHUB_WORKSPACE/.github/workflows/js-sdk-publish.yml" \
+            .github/workflows/js-sdk-publish.yml
+          if ! git diff --quiet -- . \
+            ':(exclude).github/workflows/js-sdk-publish.yml' \
+            ':(exclude)yarn.lock'; then
+            echo "Release preparation changed files outside the lockfile and release dispatcher." >&2
+            git diff --name-only >&2
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/js-sdk-publish.yml yarn.lock
+          if ! git diff --cached --quiet; then
+            git commit -m "[js] Prepare stable SDK release ${SOURCE_COMMIT:0:12}"
+          fi
+          expected_commit="$(git rev-parse HEAD)"
+
+          published_state="$(node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" \
+            published-candidate-commit \
+            --root "$GITHUB_WORKSPACE/release" \
+            --candidate-ref "$SOURCE_COMMIT")"
+          release_commit="$(jq -r '.releaseCommit // empty' <<< "$published_state")"
+          if [[ -n "$release_commit" ]]; then
+            git fetch --no-tags origin "$release_commit"
+            if [[ "$(git rev-parse FETCH_HEAD)" != "$release_commit" ]]; then
+              echo "npm release commit changed while fetching recovery provenance." >&2
+              exit 1
+            fi
+            trusted_dispatcher_hash="$(sha256sum \
+              "$GITHUB_WORKSPACE/.github/workflows/js-sdk-publish.yml" | awk '{print $1}')"
+            recovered_dispatcher_hash="$(git show \
+              "${release_commit}:.github/workflows/js-sdk-publish.yml" | sha256sum | awk '{print $1}')"
+            if [[ "$recovered_dispatcher_hash" != "$trusted_dispatcher_hash" ]]; then
+              echo "npm release commit does not contain the trusted release dispatcher." >&2
+              exit 1
+            fi
+            if [[ "$release_commit" != "$SOURCE_COMMIT" ]]; then
+              read -ra commit_line <<< "$(git rev-list --parents -n 1 "$release_commit")"
+              if [[ "${#commit_line[@]}" -ne 2 || "${commit_line[1]}" != "$SOURCE_COMMIT" ]]; then
+                echo "npm release commit must directly descend from the source candidate." >&2
+                exit 1
+              fi
+              changed_files="$(git diff --name-only "$SOURCE_COMMIT" "$release_commit")"
+              unexpected_files=""
+              while IFS= read -r changed_file; do
+                case "$changed_file" in
+                  .github/workflows/js-sdk-publish.yml|yarn.lock) ;;
+                  "") ;;
+                  *) unexpected_files+="${changed_file}"$'\n' ;;
+                esac
+              done <<< "$changed_files"
+              if [[ -z "$changed_files" || -n "$unexpected_files" ]]; then
+                echo "npm release commit may only change the release dispatcher and yarn.lock." >&2
+                exit 1
+              fi
+            fi
+            git checkout --detach "$release_commit"
+            recovery_plan="$(node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" \
+              publish-plan \
+              --root "$GITHUB_WORKSPACE/release" \
+              --candidate-ref "$SOURCE_COMMIT")"
+            package_count="$(jq '.finalizationPackages | length' <<< "$recovery_plan")"
+            unpublished_count="$(jq '.publishCandidates | length' <<< "$recovery_plan")"
+            if [[ "$package_count" -le "$unpublished_count" ]]; then
+              echo "npm provenance did not identify a partially published candidate." >&2
+              exit 1
+            fi
+            echo "Recovering the release commit proven by existing npm gitHead metadata."
+          else
+            git checkout --detach "$expected_commit"
+            release_commit="$expected_commit"
+          fi
+
+          release_nonce="$(node -e "process.stdout.write(require('crypto').randomBytes(16).toString('hex'))")"
+          release_branch="sdk-release/stable/${SOURCE_COMMIT}-${release_nonce}"
+          git push origin "${release_commit}:refs/heads/${release_branch}"
+
+          echo "branch=$release_branch" >> "$GITHUB_OUTPUT"
+          echo "commit=$release_commit" >> "$GITHUB_OUTPUT"
+          release_lock_sha256="$(git show "${release_commit}:yarn.lock" | sha256sum | awk '{print $1}')"
+          echo "lockfile_sha256=$release_lock_sha256" >> "$GITHUB_OUTPUT"
+          {
+            echo '## Prepared public SDK release'
+            echo
+            echo "- Source commit: \`$SOURCE_COMMIT\`"
+            echo "- Release branch: \`$release_branch\`"
+            echo "- Release commit: \`$release_commit\`"
+            echo "- Lockfile SHA-256: \`$release_lock_sha256\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  plan:
+    name: Plan prepared public release
+    needs:
+      - select
+      - create-release-ref
+      - major-plan
+    if: needs.create-release-ref.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      has_major: ${{ steps.plan.outputs.has_major }}
+      plan: ${{ steps.plan.outputs.plan }}
+    steps:
+      - name: "Checkout trusted release controls"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: "Checkout prepared release"
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.create-release-ref.outputs.release_commit }}
+          fetch-depth: 0
+          path: release
+          persist-credentials: false
+
+      - name: "Verify source candidate is on public main"
+        working-directory: release
+        env:
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        run: |
+          git fetch origin main
+          node "$GITHUB_WORKSPACE/scripts/sdk-release.cjs" select-candidate \
+            --root "$GITHUB_WORKSPACE/release" \
+            --ref origin/main \
+            --exact-commit "$SOURCE_COMMIT"
+
+      - name: "Build exact npm release plan"
+        id: plan
+        env:
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        run: >-
+          node scripts/sdk-release.cjs publish-plan
+          --root "$GITHUB_WORKSPACE/release"
+          --candidate-ref "$SOURCE_COMMIT"
+          --github-output "$GITHUB_OUTPUT"
+
+      - name: "Verify major classification covered the release plan"
+        env:
+          CLASSIFIED_HAS_MAJOR: ${{ needs.major-plan.outputs.has_major }}
+          PLANNED_HAS_MAJOR: ${{ steps.plan.outputs.has_major }}
+        run: |
+          if [[ "$PLANNED_HAS_MAJOR" == "true" && "$CLASSIFIED_HAS_MAJOR" != "true" ]]; then
+            echo "Exact release planning found a major version that was not classified before branch creation." >&2
+            exit 1
+          fi
+
+  authorize-major:
+    name: Approve major release candidate
+    needs: major-plan
+    if: >-
+      needs.major-plan.outputs.has_major == 'true' &&
+      inputs.allow_major == true
+    runs-on: ubuntu-latest
+    environment: js-sdk-major-release
+    permissions:
+      contents: read
+    steps:
+      - name: "Record exact candidate approval"
+        env:
+          RELEASE_PLAN: ${{ needs.major-plan.outputs.plan }}
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        run: |
+          echo "Major release authorization completed for the request triggered by $TRIGGERING_ACTOR."
+          echo "$RELEASE_PLAN" | jq .
+
+  major-policy:
+    name: Enforce major release policy
+    if: always() && needs.major-plan.result == 'success'
+    needs:
+      - major-plan
+      - authorize-major
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Block unapproved major releases"
+        env:
+          APPROVAL_RESULT: ${{ needs.authorize-major.result }}
+          HAS_MAJOR: ${{ needs.major-plan.outputs.has_major }}
+        run: |
+          if [[ "$HAS_MAJOR" == "true" && "$APPROVAL_RESULT" != "success" ]]; then
+            echo "A major release requires allow_major and protected environment approval." >&2
+            exit 1
+          fi
+
+  dispatch-publisher:
+    name: Authorize and dispatch publisher
+    needs:
+      - select
+      - prepare-lockfile
+      - create-release-ref
+      - plan
+      - major-policy
+    if: >-
+      needs.plan.result == 'success' &&
+      needs.major-policy.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: "Require maintainer permission"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+        with:
+          script: |
+            const { data } = await github.rest.repos.getCollaboratorPermissionLevel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              username: process.env.TRIGGERING_ACTOR,
+            });
+            const role = data.role_name || data.permission;
+            if (!['admin', 'maintain'].includes(role)) {
+              core.setFailed(`SDK releases require maintain permission; ${process.env.TRIGGERING_ACTOR} has ${role}`);
+            }
+
+      - name: "Write release authorization"
+        env:
+          ALLOW_MAJOR: ${{ inputs.allow_major }}
+          AUTHORIZED_BY: ${{ github.triggering_actor }}
+          LOCKFILE_SHA256: ${{ needs.create-release-ref.outputs.lockfile_sha256 }}
+          RELEASE_BRANCH: ${{ needs.create-release-ref.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ needs.create-release-ref.outputs.release_commit }}
+          RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        run: |
+          jq -n \
+            --argjson schemaVersion 1 \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg runId "$GITHUB_RUN_ID" \
+            --arg authorizedBy "$AUTHORIZED_BY" \
+            --arg lockfileSha256 "$LOCKFILE_SHA256" \
+            --arg sourceCommit "$SOURCE_COMMIT" \
+            --arg releaseBranch "$RELEASE_BRANCH" \
+            --arg releaseCommit "$RELEASE_COMMIT" \
+            --argjson allowMajor "$ALLOW_MAJOR" \
+            --argjson plan "$RELEASE_PLAN" \
+            '{
+              schemaVersion: $schemaVersion,
+              repository: $repository,
+              runId: $runId,
+              authorizedBy: $authorizedBy,
+              lockfileSha256: $lockfileSha256,
+              sourceCommit: $sourceCommit,
+              releaseBranch: $releaseBranch,
+              releaseCommit: $releaseCommit,
+              allowMajor: $allowMajor,
+              plan: $plan
+            }' > release-authorization.json
+
+      - name: "Upload release authorization"
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: js-sdk-release-authorization-${{ github.run_id }}
+          path: release-authorization.json
+          if-no-files-found: error
+          overwrite: true
+          retention-days: 30
+
+      - name: "Dispatch trusted publisher"
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          PREPARATION_RUN_ID: ${{ github.run_id }}
+          RELEASE_BRANCH: ${{ needs.create-release-ref.outputs.release_branch }}
+          RELEASE_COMMIT: ${{ needs.create-release-ref.outputs.release_commit }}
+          SOURCE_COMMIT: ${{ needs.select.outputs.source_commit }}
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'js-sdk-publish.yml',
+              ref: process.env.RELEASE_BRANCH,
+              inputs: {
+                preparation_run_id: process.env.PREPARATION_RUN_ID,
+                source_commit: process.env.SOURCE_COMMIT,
+                release_commit: process.env.RELEASE_COMMIT,
+              },
+            });

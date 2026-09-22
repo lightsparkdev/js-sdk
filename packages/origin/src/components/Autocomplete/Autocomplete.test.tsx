@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicAutocomplete,
+  LongListAutocomplete,
   WithLeadingIcon,
   WithDisabledItems,
   DisabledAutocomplete,
@@ -30,6 +31,94 @@ test.describe("Autocomplete", () => {
       // Wait for options to be visible (indicates popup is rendered)
       await expect(page.getByRole("option", { name: "Apple" })).toBeVisible();
       await expect(page.getByRole("listbox")).toBeVisible();
+    });
+
+    test("keeps long-list scrolling on the list", async ({ mount, page }) => {
+      const component = await mount(<LongListAutocomplete />);
+      const input = component.getByPlaceholder("Search fruits...");
+
+      await input.focus();
+      await input.press("ArrowDown");
+
+      const popup = page.getByTestId("autocomplete-long-list-popup");
+      const listbox = page.getByTestId("autocomplete-long-list");
+      await expect(listbox).toBeVisible();
+
+      const state = await listbox.evaluate((list) => {
+        const popup = document.querySelector(
+          '[data-testid="autocomplete-long-list-popup"]',
+        );
+        const firstItem = list.querySelector('[role="option"]');
+
+        if (!(popup instanceof HTMLElement)) {
+          throw new Error("Autocomplete long-list popup is missing");
+        }
+
+        if (!(firstItem instanceof HTMLElement)) {
+          throw new Error("Autocomplete list is missing option rows");
+        }
+
+        const listStyles = window.getComputedStyle(list);
+        const popupStyles = window.getComputedStyle(popup);
+        const itemStyles = window.getComputedStyle(firstItem);
+        popup.scrollTop = popup.scrollHeight;
+        list.scrollTop = list.scrollHeight;
+
+        return {
+          itemFlexShrink: itemStyles.flexShrink,
+          itemHeight: itemStyles.height,
+          itemRenderedHeight: firstItem.getBoundingClientRect().height,
+          popupMaxHeight: popupStyles.maxHeight,
+          popupOverflowY: popupStyles.overflowY,
+          popupHasScrollableOverflow: popup.scrollHeight > popup.clientHeight,
+          popupCanScroll: popup.scrollTop > 0,
+          listMaxHeight: listStyles.maxHeight,
+          listOverflowY: listStyles.overflowY,
+          listOverscrollBehaviorY: listStyles.overscrollBehaviorY,
+          listScrollPaddingBlockEnd: listStyles.scrollPaddingBlockEnd,
+          listScrollPaddingBlockStart: listStyles.scrollPaddingBlockStart,
+          listHasScrollableOverflow: list.scrollHeight > list.clientHeight,
+          listCanScroll: list.scrollTop > 0,
+        };
+      });
+
+      expect(state.itemFlexShrink).toBe("0");
+      expect(state.itemHeight).toBe("36px");
+      expect(state.itemRenderedHeight).toBeGreaterThanOrEqual(34);
+      expect(state.popupMaxHeight).toBe("none");
+      expect(state.popupOverflowY).toBe("hidden");
+      expect(state.popupHasScrollableOverflow).toBe(false);
+      expect(state.popupCanScroll).toBe(false);
+      expect(state.listMaxHeight).not.toBe("none");
+      expect(state.listOverflowY).toBe("auto");
+      expect(state.listOverscrollBehaviorY).toBe("contain");
+      expect(
+        Number.parseFloat(state.listScrollPaddingBlockStart),
+      ).toBeGreaterThan(0);
+      expect(
+        Number.parseFloat(state.listScrollPaddingBlockEnd),
+      ).toBeGreaterThan(0);
+      expect(state.listHasScrollableOverflow).toBe(true);
+      expect(state.listCanScroll).toBe(true);
+
+      await expect(popup).toBeVisible();
+      await expect(
+        page.getByRole("option", { name: "Fruit 40" }),
+      ).toBeVisible();
+    });
+
+    test("filters long-list object items by label", async ({ mount, page }) => {
+      const component = await mount(<LongListAutocomplete />);
+      const input = component.getByPlaceholder("Search fruits...");
+
+      await input.fill("40");
+
+      await expect(
+        page.getByRole("option", { name: "Fruit 40" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("option", { name: "Fruit 1" }),
+      ).not.toBeVisible();
     });
 
     test("filters items as user types", async ({ mount, page }) => {

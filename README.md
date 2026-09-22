@@ -26,3 +26,11 @@ yarn start remote-signing-server
 ```
 
 Please see the README files in the [examples directory](./apps/examples) for instructions on running the examples. Please note that some packages such as @lightsparkdev/ui are for building the examples only and not necessary for your implementation of our [published SDK packages](https://www.npmjs.com/search?q=%40lightsparkdev).
+
+## Contributions and releases
+
+After the migration in [RELEASING.md](RELEASING.md) is activated, target
+contribution PRs at `develop` and include a Changeset for public package changes.
+Contributions are imported into Webdev for review and testing, then exported to
+`main`. Versioning happens in Webdev; public `main` supplies immutable release
+candidates.

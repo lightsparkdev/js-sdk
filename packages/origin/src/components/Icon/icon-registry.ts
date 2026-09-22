@@ -8,6 +8,7 @@
 // Arrows & Navigation
 import { IconArrow } from "./icons/IconArrow";
 import { IconArrowBoxRight } from "./icons/IconArrowBoxRight";
+import { IconArrowCornerDownLeft } from "./icons/IconArrowCornerDownLeft";
 import { IconArrowDown } from "./icons/IconArrowDown";
 import { IconArrowDownLeft } from "./icons/IconArrowDownLeft";
 import { IconArrowDownRight } from "./icons/IconArrowDownRight";
@@ -152,6 +153,7 @@ import { IconPlusLarge } from "./icons/IconPlusLarge";
 import { IconPlusSmall } from "./icons/IconPlusSmall";
 import { IconPrompt } from "./icons/IconPrompt";
 import { IconRandom } from "./icons/IconRandom";
+import { IconReceiptBill } from "./icons/IconReceiptBill";
 import { IconRemix } from "./icons/IconRemix";
 import { IconRemoveKeyframe } from "./icons/IconRemoveKeyframe";
 import { IconRepeat } from "./icons/IconRepeat";
@@ -251,6 +253,7 @@ export const ICON_REGISTRY = {
   // Arrows & Navigation
   IconArrow,
   IconArrowBoxRight,
+  IconArrowCornerDownLeft,
   IconArrowDown,
   IconArrowDownLeft,
   IconArrowDownRight,
@@ -396,6 +399,7 @@ export const ICON_REGISTRY = {
   IconPlusSmall,
   IconPrompt,
   IconRandom,
+  IconReceiptBill,
   IconRemix,
   IconRemoveKeyframe,
   IconRepeat,

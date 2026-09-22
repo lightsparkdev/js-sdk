@@ -373,6 +373,16 @@ describe("formatCurrencyStr", () => {
     ).toBe("$50.00");
   });
 
+  it("should format Turkish lira from minor units", () => {
+    const currencyMap = mapCurrencyAmount({
+      value: 12_345,
+      unit: CurrencyUnit.Try,
+    });
+
+    expect(currencyMap.TRY).toBe(12_345);
+    expect(currencyMap.formatted.TRY).toBe("₺123.45");
+  });
+
   it("should return the expected currency string with precision 1", () => {
     expect(
       formatCurrencyStr(

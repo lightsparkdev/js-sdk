@@ -137,7 +137,7 @@ export const FullwidthBody: Story = {
       <Card.Body fullwidth>
         <div
           style={{
-            background: "var(--surface-secondary)",
+            background: "var(--surface-neutral-subtle)",
             padding: "12px 24px",
           }}
         >

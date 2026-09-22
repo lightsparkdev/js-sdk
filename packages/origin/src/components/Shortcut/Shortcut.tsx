@@ -5,8 +5,11 @@ import clsx from "clsx";
 import styles from "./Shortcut.module.scss";
 
 export interface ShortcutProps extends React.HTMLAttributes<HTMLElement> {
-  /** Array of key labels to display (e.g., ['⌘', '⇧', 'K']) */
-  keys: string[];
+  /**
+   * Keys to display. Each entry renders in its own `<kbd>`; non-text nodes
+   * must provide an accessible name.
+   */
+  keys: React.ReactNode[];
   /** Additional class name */
   className?: string;
 }

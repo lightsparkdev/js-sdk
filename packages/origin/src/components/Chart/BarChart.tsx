@@ -7,6 +7,8 @@ import {
   niceTicks,
   thinIndices,
   dynamicTickTarget,
+  xAxisTickTarget,
+  applyEdgeLabels,
   measureLabelWidth,
   axisPadForLabels,
   formatChartDatumValue,
@@ -30,6 +32,7 @@ import {
   resolveSeries,
   resolveTooltipMode,
   axisTickTarget,
+  type XAxisLabelProps,
 } from "./types";
 import { ChartWrapper } from "./ChartWrapper";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
@@ -39,7 +42,9 @@ const EMPTY_TICKS = { min: 0, max: 1, ticks: [0, 1] } as const;
 
 const clickIndexMeta = (index: number) => ({ index });
 
-export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface BarChartProps
+  extends React.ComponentPropsWithoutRef<"div">,
+    XAxisLabelProps {
   data: ChartDatum[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -65,6 +70,22 @@ export interface BarChartProps extends React.ComponentPropsWithoutRef<"div"> {
   formatValue?: (value: number) => string;
   formatXLabel?: (value: ChartDatumValue) => string;
   formatYLabel?: (value: number) => string;
+  /**
+   * How vertical-bar x-axis (category) labels are thinned to avoid overlap.
+   * Has no effect on horizontal bar charts.
+   * - `"fixed"` (default): roughly one label per 60px, regardless of width.
+   * - `"measured"`: spacing based on the measured pixel width of the labels,
+   *   so wide labels (dates, currency) get more room and short labels pack in.
+   */
+  xAxisLabels?: "fixed" | "measured";
+  /**
+   * Whether the first and last x-axis (category) labels are shown on vertical
+   * bar charts. Has no effect on horizontal bar charts.
+   * - `"show"` (default): keep the edge labels.
+   * - `"hide"`: drop the first and last labels (useful when they collide with
+   *   the y-axis or chart edges).
+   */
+  xAxisEdgeLabels?: "show" | "hide";
   /** Fixed Y-axis domain. Overrides auto-computed domain from data. */
   yDomain?: [number, number];
   /** Show legend below chart. */
@@ -111,6 +132,8 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
     formatValue,
     formatXLabel,
     formatYLabel,
+    xAxisLabels = "fixed",
+    xAxisEdgeLabels = "show",
     yDomain,
     legend,
     loading,
@@ -233,6 +256,30 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
   ]);
   const padRight = isHorizontal && showValueAxis ? 40 : PAD_RIGHT;
   const plotWidth = Math.max(0, width - padLeft - padRight);
+
+  const categoryAxisLabels = React.useMemo(() => {
+    if (!xKey) return [];
+    const labels = data.map((d) =>
+      formatXLabel ? formatXLabel(d[xKey]) : formatChartDatumValue(d[xKey]),
+    );
+    const maxLabels = isHorizontal
+      ? Math.max(2, Math.floor(plotHeight / 24))
+      : xAxisTickTarget(xAxisLabels, plotWidth, () => labels);
+    const indices = thinIndices(data.length, maxLabels);
+    const visibleIndices = isHorizontal
+      ? indices
+      : applyEdgeLabels(xAxisEdgeLabels, indices);
+    return visibleIndices.map((index) => ({ index, label: labels[index] }));
+  }, [
+    data,
+    formatXLabel,
+    isHorizontal,
+    plotHeight,
+    plotWidth,
+    xKey,
+    xAxisLabels,
+    xAxisEdgeLabels,
+  ]);
 
   const tickTarget = React.useMemo(() => {
     if (!isHorizontal) return verticalTickTarget;
@@ -819,12 +866,22 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                         const barFill = getBarColor?.(d, di, s.key) ?? s.color;
                         const barOffset =
                           slotStart + si * (barThickness + BAR_ITEM_GAP);
+                        const anchor = Math.min(yMax, Math.max(yMin, 0));
                         if (isHorizontal) {
-                          const barW = ((v - yMin) / (yMax - yMin)) * plotWidth;
+                          const xAnchor = linearScale(
+                            anchor,
+                            yMin,
+                            yMax,
+                            0,
+                            plotWidth,
+                          );
+                          const xVal = linearScale(v, yMin, yMax, 0, plotWidth);
+                          const barX = Math.min(xAnchor, xVal);
+                          const barW = Math.abs(xVal - xAnchor);
                           return (
                             <rect
                               key={s.key}
-                              x={0}
+                              x={barX}
                               y={barOffset}
                               width={Math.max(0, barW)}
                               height={barThickness}
@@ -841,8 +898,16 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                             />
                           );
                         }
-                        const barH = ((v - yMin) / (yMax - yMin)) * plotHeight;
-                        const barY = plotHeight - barH;
+                        const yAnchor = linearScale(
+                          anchor,
+                          yMin,
+                          yMax,
+                          plotHeight,
+                          0,
+                        );
+                        const yVal = linearScale(v, yMin, yMax, plotHeight, 0);
+                        const barY = Math.min(yAnchor, yVal);
+                        const barH = Math.abs(yVal - yAnchor);
                         return (
                           <rect
                             key={s.key}
@@ -897,11 +962,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                 {/* Category axis labels (thinned to avoid overlap) */}
                 {xKey &&
                   (() => {
-                    const maxLabels = isHorizontal
-                      ? Math.max(2, Math.floor(plotHeight / 24))
-                      : Math.max(2, Math.floor(plotWidth / 60));
-                    const indices = thinIndices(data.length, maxLabels);
-                    return indices.map((i) =>
+                    return categoryAxisLabels.map(({ index: i, label }) =>
                       isHorizontal ? (
                         <text
                           key={i}
@@ -911,9 +972,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                           textAnchor="end"
                           dominantBaseline="middle"
                         >
-                          {formatXLabel
-                            ? formatXLabel(data[i][xKey])
-                            : formatChartDatumValue(data[i][xKey])}
+                          {label}
                         </text>
                       ) : (
                         <text
@@ -924,9 +983,7 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
                           textAnchor="middle"
                           dominantBaseline="auto"
                         >
-                          {formatXLabel
-                            ? formatXLabel(data[i][xKey])
-                            : formatChartDatumValue(data[i][xKey])}
+                          {label}
                         </text>
                       ),
                     );

@@ -140,6 +140,20 @@ export const WithGhostButton: Story = {
   ),
 };
 
+export const WithIconOnlyButton: Story = {
+  name: "Button (Icon only)",
+  render: () => (
+    <div style={{ width: 300 }}>
+      <InputGroup.Root>
+        <InputGroup.Input placeholder="Search..." />
+        <InputGroup.Button iconOnly aria-label="Search">
+          <SearchIcon />
+        </InputGroup.Button>
+      </InputGroup.Root>
+    </div>
+  ),
+};
+
 export const WithOutlineButton: Story = {
   name: "Button (Outline)",
   render: () => (
@@ -223,7 +237,7 @@ export const CapWithIconButton: Story = {
     <div style={{ width: 300 }}>
       <InputGroup.Root>
         <InputGroup.Cap>
-          <InputGroup.Button aria-label="Search">
+          <InputGroup.Button iconOnly aria-label="Search">
             <SearchIcon />
           </InputGroup.Button>
         </InputGroup.Cap>

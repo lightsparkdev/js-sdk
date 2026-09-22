@@ -119,9 +119,15 @@ describe("NumberInput core", () => {
     expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
-  it("should allow .3 decimal inputs", async () => {
+  it("preserves decimal formatting when invoking the caller's blur callback", async () => {
+    const onBlurSpy = jest.fn();
     const { rerender } = render(
-      <NumberInput prefix="£" value="" onChange={onChangeSpy} />,
+      <NumberInput
+        prefix="£"
+        value=""
+        onChange={onChangeSpy}
+        onBlur={onBlurSpy}
+      />,
     );
     await userEvent.type(screen.getByRole("textbox"), ".3");
 
@@ -131,9 +137,20 @@ describe("NumberInput core", () => {
       value: ".3",
     });
 
-    rerender(<NumberInput prefix="£" value=".3" onChange={onChangeSpy} />);
+    rerender(
+      <NumberInput
+        prefix="£"
+        value=".3"
+        onChange={onChangeSpy}
+        onBlur={onBlurSpy}
+      />,
+    );
     fireEvent.focusOut(screen.getByRole("textbox"));
     expect(screen.getByRole("textbox")).toHaveValue("£0.3");
+    expect(onBlurSpy).toHaveBeenCalledTimes(1);
+    expect(onBlurSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ target: screen.getByRole("textbox") }),
+    );
   });
 
   it("should update the input when prop value changes to another number", () => {
