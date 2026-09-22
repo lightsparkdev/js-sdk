@@ -24,6 +24,7 @@ import {
   ResultMeta,
   ResultPanel,
   Row,
+  SecondaryButton,
   SectionLabel,
   SelectControl,
 } from "./ui";
@@ -564,9 +565,9 @@ export function ProgrammaticFlow({
             <Button variant="outline" onClick={onAddOwner}>
               Add beneficial owner
             </Button>
-            <Button variant="ghost" onClick={onLoadOwners}>
+            <SecondaryButton onClick={onLoadOwners}>
               Load existing owners
-            </Button>
+            </SecondaryButton>
           </ButtonRow>
           {ownerStatus && (
             <Alert
@@ -703,9 +704,9 @@ export function ProgrammaticFlow({
         <Button variant="outline" onClick={onUploadDoc}>
           Upload document
         </Button>
-        <Button variant="ghost" onClick={onLoadDocs}>
+        <SecondaryButton onClick={onLoadDocs}>
           Load existing documents
-        </Button>
+        </SecondaryButton>
       </ButtonRow>
       {docStatus && (
         <Alert
@@ -732,9 +733,9 @@ export function ProgrammaticFlow({
       </SectionLabel>
       <ButtonRow>
         <Button onClick={onSubmitVerification}>Submit verification</Button>
-        <Button variant="ghost" onClick={onPollVerifications}>
+        <SecondaryButton onClick={onPollVerifications}>
           Refresh (GET /verifications)
-        </Button>
+        </SecondaryButton>
       </ButtonRow>
       {verifyStatus && (
         <Alert
