@@ -74,7 +74,7 @@ export const EnumFilter = ({
           onChange={(option: EnumFilterValue | null) => {
             if (option) {
               const optionValues = ensureArray(option.value);
-              let updatedAppliedValues: string[] = [];
+              let updatedAppliedValues: string[];
               if (isMulti) {
                 updatedAppliedValues = state.appliedValues
                   ? [

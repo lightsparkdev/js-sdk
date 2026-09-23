@@ -303,7 +303,7 @@ export function Table<T extends Record<string, unknown>>({
 
           const value = context.getValue();
 
-          let content: ReactNode = null;
+          let content: ReactNode;
           let icon = null;
           if (isObjectCell(value)) {
             const base64icon = value.base64icon ? (

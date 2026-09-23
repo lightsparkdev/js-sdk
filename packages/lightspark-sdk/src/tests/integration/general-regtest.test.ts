@@ -284,7 +284,7 @@ describe(p0SuiteName, () => {
     "Should withdraw all funds from the node, also causing all channels to be closed",
     async () => {
       // first make sure we have a balance to withdraw
-      let regtestNode = await getRegtestNode();
+      const regtestNode = await getRegtestNode();
 
       const initialSendBalance = mapCurrencyAmount(
         regtestNode?.balances?.availableToSendBalance,
@@ -292,7 +292,7 @@ describe(p0SuiteName, () => {
       log("initialSendBalance.sats", initialSendBalance.sats);
 
       if (initialSendBalance.sats < 100_000) {
-        regtestNode = await fundNode(100_000);
+        await fundNode(100_000);
       }
 
       const withdrawalRequest = await lightsparkClient.requestWithdrawal(

@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 import DateTimeRangePicker from "@wojtekmaj/react-datetimerange-picker";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import DatePicker from "react-date-picker";
 import DateTimePicker from "react-datetime-picker";
 import { textInputStyle } from "../../styles/fields.js";
@@ -89,7 +89,7 @@ export const DateWidget = ({
     setActive(false);
   };
 
-  let calendarComponent = null;
+  let calendarComponent: ReactNode;
   switch (dateRangeOperation) {
     case DateRangeOperation.IsBetween:
       if (isDateOnly) {

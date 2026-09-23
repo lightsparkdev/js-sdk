@@ -1840,7 +1840,7 @@ function getPillDropdownItems<
           const state = getFilterStates()[
             filter.accessorKey
           ] as EnumFilterState;
-          let updatedAppliedValues: string[] = [];
+          let updatedAppliedValues: string[];
           if (filter.isMulti) {
             updatedAppliedValues = state.appliedValues
               ? [
@@ -1888,8 +1888,7 @@ function getPillDropdownItems<
           const state = getFilterStates()[
             filter.accessorKey
           ] as StringFilterState;
-          let updatedAppliedValues: string[] = [];
-          updatedAppliedValues =
+          const updatedAppliedValues: string[] =
             filter.isMulti && state.appliedValues
               ? [
                   ...state.appliedValues.filter(
@@ -1908,8 +1907,7 @@ function getPillDropdownItems<
           } as unknown as FilterState);
         } else if (filter.type === FilterType.ID) {
           const state = getFilterStates()[filter.accessorKey] as IdFilterState;
-          let updatedAppliedValues: string[] = [];
-          updatedAppliedValues =
+          const updatedAppliedValues: string[] =
             filter.isMulti && state.appliedValues
               ? [
                   ...state.appliedValues.filter(

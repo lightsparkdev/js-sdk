@@ -48,7 +48,7 @@ export function toReactNodes(toReactNodesArg: ToReactNodesArgs) {
       return null;
     } else if (typeof node === "string" || isTextNode(node)) {
       const text = typeof node === "string" ? node : node.text;
-      let content: ReactNode = text;
+      let content: ReactNode;
       if (isTextNode(node) && node.typography) {
         const { type: typographyType, ...typographyProps } = node.typography;
         content = renderTypography(typographyType, {

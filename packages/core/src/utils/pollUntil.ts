@@ -30,7 +30,6 @@ export async function pollUntil<D extends () => Promise<unknown>, T>(
   while (!stopPolling) {
     polls += 1;
     if (polls > maxPolls) {
-      stopPolling = true;
       const maxPollsError = getMaxPollsError(maxPolls);
       throw maxPollsError;
     }
@@ -45,7 +44,6 @@ export async function pollUntil<D extends () => Promise<unknown>, T>(
       }
     } catch (e) {
       if (!ignoreErrors || (isFunction(ignoreErrors) && !ignoreErrors(e))) {
-        stopPolling = true;
         throw e;
       }
     }
