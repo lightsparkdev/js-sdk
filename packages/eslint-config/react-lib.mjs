@@ -1,7 +1,8 @@
+import { fixupPluginRules } from '@eslint/compat';
 import globals from 'globals';
 import restrictedGlobals from 'confusing-browser-globals';
 import react from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
+import importX from 'eslint-plugin-import-x';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import jestPlugin from 'eslint-plugin-jest';
@@ -14,8 +15,11 @@ export default [
     files: ['**/src/**/*.ts?(x)'],
     ignores: ['**/tests/**/*'],
     plugins: {
-      react,
-      import: importPlugin,
+      // eslint-plugin-react 7.37 still calls context methods ESLint 10
+      // removed. Drop the wrapper once a release supports ESLint 10.
+      // https://github.com/jsx-eslint/eslint-plugin-react/issues/3977
+      react: fixupPluginRules(react),
+      import: importX,
       'jsx-a11y': jsxA11y,
       'react-hooks': reactHooks,
       jest: jestPlugin,
