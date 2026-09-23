@@ -114,7 +114,7 @@ export class NodeIdAndPasswordSigningKeyLoader implements SigningKeyLoader {
       );
     }
 
-    let signingPrivateKeyPEM = "";
+    let signingPrivateKeyPEM: string;
     if (new Uint8Array(signingPrivateKey)[0] === 48) {
       // Support DER format - https://github.com/lightsparkdev/webdev/pull/1982
       signingPrivateKeyPEM = b64encode(signingPrivateKey);

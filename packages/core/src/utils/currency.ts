@@ -1717,7 +1717,7 @@ export function formatCurrencyStr(
     }
   }
 
-  let formattedStr = "";
+  let formattedStr: string;
   let forceAppendUnits = false;
   switch (unit) {
     case CurrencyUnit.BITCOIN:

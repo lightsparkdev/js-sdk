@@ -29,7 +29,7 @@ export function MultiToggle<T extends string>({
   return (
     <StyledMultiToggle bgColor={bgColor}>
       {options.map(({ key, ...optionProps }) => {
-        let content: string | ReactNode = null;
+        let content: string | ReactNode;
         if ("name" in optionProps) {
           content = (
             <Icon

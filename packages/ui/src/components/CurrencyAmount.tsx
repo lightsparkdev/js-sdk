@@ -52,7 +52,6 @@ export function CurrencyAmount({
   let displayUnitStr: string;
   let currencyAmountForFormatting: CurrencyAmountArg | UmaCurrencyAmount;
   if (isUmaCurrencyAmount(amount)) {
-    value = amount.value;
     defaultFormattedNumber = formatCurrencyStr(amount);
     displayUnitStr =
       amount.currency.code === "SAT"

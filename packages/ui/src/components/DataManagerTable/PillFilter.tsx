@@ -258,7 +258,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
           label: option.label,
           onClick: () => {
             const optionValues = ensureArray(option.value);
-            let updatedAppliedValues: string[] = [];
+            let updatedAppliedValues: string[];
             if (filter.isMulti) {
               updatedAppliedValues = state.appliedValues
                 ? [
@@ -293,7 +293,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
       const value = stringFilterValue.trim();
       if (!value) return;
 
-      let updatedAppliedValues: string[] = [];
+      let updatedAppliedValues: string[];
       if (filter.isMulti) {
         updatedAppliedValues = state.appliedValues
           ? [

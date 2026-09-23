@@ -376,7 +376,7 @@ export function Dropdown({
         : undefined,
   };
 
-  let buttonNode: ReactNode = null;
+  let buttonNode: ReactNode;
   if ("label" in button) {
     buttonNode = (
       <UnstyledDropdownButton {...commonUnstyledButtonProps}>

@@ -11,7 +11,7 @@ export const getPackageVersion = (): string => {
 
 export const bytesToHex = (bytes: Uint8Array): string => {
   return bytes.reduce((acc: string, byte: number) => {
-    return (acc += ("0" + byte.toString(16)).slice(-2));
+    return acc + ("0" + byte.toString(16)).slice(-2);
   }, "");
 };
 
