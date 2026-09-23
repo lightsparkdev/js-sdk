@@ -42,6 +42,7 @@ export async function createExternalAccount(
       paymentRails: ["ACH", "WIRE", "RTP", "FEDNOW"],
       accountNumber,
       routingNumber,
+      bankAccountType: "CHECKING",
       beneficiary: {
         beneficiaryType: "INDIVIDUAL",
         fullName,
@@ -96,6 +97,7 @@ function usdBankAccountInfo(
     paymentRails: ["ACH", "WIRE", "RTP", "FEDNOW"],
     accountNumber,
     routingNumber,
+    bankAccountType: "CHECKING",
     beneficiary: {
       beneficiaryType: "INDIVIDUAL",
       fullName,
