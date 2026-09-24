@@ -19,6 +19,7 @@
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
     "lint:fix": "eslint --fix .",
+    "lint:watch": "nodemon --watch ./src --ext ts,tsx,js,cjs,mjs --exec \"eslint ./src --color\"",
     "lint": "eslint .",
     "local": "sudo npm i -g && lightspark",
     "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",

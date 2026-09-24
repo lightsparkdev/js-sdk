@@ -69,6 +69,11 @@
     "lint:fix": {
       "dependsOn": ["^build", "gql-codegen"]
     },
+    "lint:watch": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
     "package:checks": {
       "dependsOn": []
     },
