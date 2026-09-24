@@ -23,12 +23,13 @@ changelogs, private consumers, and `js/yarn.lock`, consumes notes, and writes
 `js/release-candidate.json`. Review and **squash merge** this PR. Candidates must
 have one parent and describe exactly that commit's public version changes.
 
-`JS SDK Major Version Policy` reads PR metadata using trusted base code. Its
-protected `js-sdk-major-release` approval is bound to the exact PR head. For a
-change that does not need release notes, apply `js:no-changeset`, obtain a
-maintain/admin approval of that exact head, then rerun the policy workflow.
-Malformed new notes still fail. Unrelated PRs do not need to rebase to approve
-someone else's major release.
+`JS SDK Version Policy` reads PR metadata using trusted base code and validates
+Changesets and candidate versions through Webdev's required `ci-gate`. Major
+version changes receive ordinary PR review; they do not require a separate
+approval environment or organization required-workflow rule. For a change that
+does not need release notes, apply `js:no-changeset`, obtain a maintain/admin
+approval of that exact head, then rerun the policy workflow. Malformed new notes
+still fail.
 
 Public packages are discovered from workspaces and restricted to `packages/*`,
 with `@lightsparkdev/*` names and public repository metadata. Internal workspaces
@@ -41,8 +42,9 @@ lightspark-sdk, origin, tsconfig, and ui.
 1. In the public repository, dispatch `JS SDK Prepare Release` from `main`.
    Leave `candidate_commit` blank to select the oldest unpublished candidate;
    provide its full source SHA to retry or repair finalization.
-2. For a major version, select `allow_major` and obtain the protected environment
-   approval. The workflow checks maintain/admin permission, including reruns.
+2. For a major version, explicitly select `allow_major`, which defaults to false.
+   The workflow checks maintain/admin permission, including reruns. Without this
+   opt-in, a major release fails before creating its release branch.
 3. Preparation generates the candidate's public `yarn.lock` without write or
    publishing credentials. It creates an unpredictable
    `sdk-release/stable/<source-sha>-<nonce>` branch and authorizes its exact commit
@@ -55,6 +57,18 @@ lightspark-sdk, origin, tsconfig, and ui.
 5. The publisher revalidates the authorization, ref, lockfile, registry, and
    candidate, then publishes planned missing versions in dependency order using npm OIDC.
    npm `gitHead`, package tags, and GitHub releases identify the prepared commit.
+
+Major releases can break downstream APIs and integrations, require consumer
+migrations, and need a coordinated rollout. Published npm versions cannot be
+replaced with corrected contents. Before selecting `allow_major`, confirm the
+exact candidate, affected packages and versions, migration requirements, and
+rollout plan with the team. The checkbox records the maintainer's explicit
+authorization for that release; it does not request another approval.
+
+The public `npm` environment supplies the OIDC identity and restricts publication
+to prepared release branches. It has no required reviewer. Normal publication
+proceeds after maintainer dispatch and successful preflight without a second
+approval step.
 
 Dependency cycles among planned publications fail before any version is uploaded.
 
@@ -90,8 +104,9 @@ package preflight, exact-commit checks, FIFO policy, and registry verification.
 3. Dispatch private `JS SDK Private Fallback Publish` from `main`, supplying the
    merged Version Packages PR number. Acknowledge both the public release gap
    and that public publication is paused and drained. The caller needs
-   maintain/admin permission. A major release also needs `allow_major` and
-   protected major approval.
+   maintain/admin permission. A major release also needs explicit `allow_major`,
+   defaulting to false, after confirming the same major-release risks and rollout
+   plan with the team.
 4. Approve `npm-private-fallback`. Its granular `NPM_TOKEN` must cover the planned
    packages. The workflow publishes the exact private PR merge SHA, which must
    remain an ancestor of private main. It does not create public tags, GitHub
@@ -153,16 +168,17 @@ Prepare the following settings while publication remains disabled:
   and pull-request permissions sufficient for export and private PR creation.
   The version bot must remain `lightspark-copybara[bot]` so its version-only
   lockfile updates pass the existing attribution gate.
-- Require the trusted private `js-sdk-major-version-policy.yml` workflow by
-  workflow identity after it is on main; do not rely on a spoofable job name.
-  Require normal private CI and public package checks. Restrict public main
+- Require normal private CI, including Changeset and version-policy validation,
+  and public package checks. A dedicated organization required-workflow rule for
+  Webdev major approvals is not needed. Restrict public main
   writes to the private exporter and reviewed repository administration.
   Protect public `develop` with contributor review requirements before intake
   can create private CI runs from its commits.
-- Configure protected `js-sdk-major-release` environments in both repositories,
-  public `npm`, and private `npm-private-fallback` with appropriate maintainer
-  reviewers and no self-approval. Restrict fallback to `main` and public npm to
-  `sdk-release/stable/*`.
+- Configure private `npm-private-fallback` with appropriate maintainer reviewers,
+  no self-approval, no administrator bypass, and deployment restricted to `main`.
+  Configure public `npm` with no required reviewers and deployment restricted to
+  `sdk-release/stable/*`; retain this environment for npm OIDC. Webdev and public
+  js-sdk do not need `js-sdk-major-release` environments.
 - Protect release refs against updates, force pushes, and deletion. Permit
   their creation only through the reviewed release workflow. Protect `main` and
   disallow creating a **tag** called `main`, since it can shadow the reusable
@@ -176,6 +192,21 @@ Prepare the following settings while publication remains disabled:
   private fallback environment. Check package scope, expiration, and required
   automation/2FA bypass policy before use. No npm token belongs in the public
   release workflow.
+
+If the earlier organization major-policy rule was configured, retire only its
+Webdev requirement immediately before merging the approved policy follow-up.
+Keep publication paused and the normal required `ci-gate` in place. The policy
+workflow becomes `workflow_call`-only on merge, so the old organization requirement
+cannot run it independently.
+
+Retire the private/public `js-sdk-major-release` environments only after the
+follow-up is merged into private main and exported to public main. First verify
+normal required CI covers the Changeset and version policy, both release paths
+enforce `allow_major`, and no active run depends on the old approvals. Remove any
+public `npm` reviewer requirement at that point, preserving its release-branch
+restriction and OIDC configuration. Keep private fallback approval. Spark's
+rules, environments, and approval team remain in use and must not be removed as
+part of this cutover.
 
 For the one-time authority cutover:
 
@@ -215,8 +246,8 @@ For the one-time authority cutover:
    the version workflow and review its first candidate PR, including private
    dependency pins. Squash merge it after required review and checks. Inspect the
    export acknowledgement and subsequent develop refresh.
-6. Enable public publishing, manually prepare that candidate, approve its npm
-   deployment, and verify package contents, npm provenance, gitHead, dist-tags,
+6. Enable public publishing, manually prepare that candidate, let preflight and
+   publication complete, and verify package contents, npm provenance, gitHead, dist-tags,
    package tags, and GitHub releases. Dispatch the same source again to confirm
    a no-op or metadata-only repair. Record the successful run before considering
    automatic candidate-triggered publication.
