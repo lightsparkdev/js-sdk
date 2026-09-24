@@ -8,7 +8,11 @@ on:
         required: false
         type: string
       allow_major:
-        description: "Request approval for a major release"
+        description: >-
+          WARNING: Major releases can break APIs and downstream integrations, requiring consumer upgrades and migration guidance.
+          Published npm versions cannot be overwritten; recovery may require another release.
+          Confirm the exact package versions, breaking changes, and rollout with the team before proceeding.
+          Selecting this confirms that coordination and permits major publishing.
         required: true
         type: boolean
         default: false
@@ -412,41 +416,30 @@ jobs:
             exit 1
           fi
 
-  authorize-major:
-    name: Approve major release candidate
-    needs: major-plan
-    if: >-
-      needs.major-plan.outputs.has_major == 'true' &&
-      inputs.allow_major == true
-    runs-on: ubuntu-latest
-    environment: js-sdk-major-release
-    permissions:
-      contents: read
-    steps:
-      - name: "Record exact candidate approval"
-        env:
-          RELEASE_PLAN: ${{ needs.major-plan.outputs.plan }}
-          TRIGGERING_ACTOR: ${{ github.triggering_actor }}
-        run: |
-          echo "Major release authorization completed for the request triggered by $TRIGGERING_ACTOR."
-          echo "$RELEASE_PLAN" | jq .
-
   major-policy:
     name: Enforce major release policy
-    if: always() && needs.major-plan.result == 'success'
-    needs:
-      - major-plan
-      - authorize-major
+    needs: major-plan
     runs-on: ubuntu-latest
     steps:
-      - name: "Block unapproved major releases"
+      - name: "Require explicit major release opt-in"
         env:
-          APPROVAL_RESULT: ${{ needs.authorize-major.result }}
+          ALLOW_MAJOR: ${{ inputs.allow_major }}
           HAS_MAJOR: ${{ needs.major-plan.outputs.has_major }}
         run: |
-          if [[ "$HAS_MAJOR" == "true" && "$APPROVAL_RESULT" != "success" ]]; then
-            echo "A major release requires allow_major and protected environment approval." >&2
-            exit 1
+          if [[ "$HAS_MAJOR" == "true" ]]; then
+            {
+              echo '## Major release warning'
+              echo
+              echo 'Major releases can break APIs and downstream integrations. Consumers may need coordinated upgrades, migration guidance, and changes to their applications.'
+              echo 'Published npm versions cannot be overwritten; correcting a bad release may require another release and additional consumer upgrades.'
+              echo '**Before proceeding, confirm the exact package versions, breaking changes, migration guidance, and rollout with the team.** Selecting **allow_major** confirms that coordination.'
+              echo
+              echo "- Major publishing explicitly enabled: \`$ALLOW_MAJOR\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+            if [[ "$ALLOW_MAJOR" != "true" ]]; then
+              echo "A major release requires allow_major=true. Confirm the release with the team before dispatching again." >&2
+              exit 1
+            fi
           fi
 
   dispatch-publisher:
