@@ -4,6 +4,11 @@ import * as React from "react";
 import { ContextMenu } from "./";
 import { CentralIcon } from "@/components/Icon";
 
+const longContextMenuItems = Array.from(
+  { length: 40 },
+  (_, index) => `Item ${index + 1}`,
+);
+
 // Basic context menu with items
 export function BasicContextMenu() {
   return (
@@ -29,6 +34,43 @@ export function BasicContextMenu() {
         </ContextMenu.Positioner>
       </ContextMenu.Portal>
     </ContextMenu.Root>
+  );
+}
+
+export function LongListContextMenu() {
+  const [selectedItem, setSelectedItem] = React.useState("");
+
+  return (
+    <>
+      <span data-testid="selected-context-menu-item">{selectedItem}</span>
+      <ContextMenu.Root>
+        <ContextMenu.Trigger>
+          <div
+            style={{
+              padding: "40px",
+              border: "1px dashed #ccc",
+              borderRadius: "8px",
+            }}
+          >
+            Right-click long list
+          </div>
+        </ContextMenu.Trigger>
+        <ContextMenu.Portal>
+          <ContextMenu.Positioner>
+            <ContextMenu.Popup data-testid="long-context-menu-popup">
+              {longContextMenuItems.map((item) => (
+                <ContextMenu.Item
+                  key={item}
+                  onClick={() => setSelectedItem(item)}
+                >
+                  {item}
+                </ContextMenu.Item>
+              ))}
+            </ContextMenu.Popup>
+          </ContextMenu.Positioner>
+        </ContextMenu.Portal>
+      </ContextMenu.Root>
+    </>
   );
 }
 

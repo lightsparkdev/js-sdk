@@ -4,6 +4,7 @@ import * as React from "react";
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import clsx from "clsx";
 import styles from "./Menu.module.scss";
+import { wrapTextChildren } from "./wrapTextChildren";
 import { CentralIcon } from "../Icon";
 import { useTrackedOpenChange } from "../Analytics/useTrackedOpenChange";
 import { useTrackedCallback } from "../Analytics/useTrackedCallback";
@@ -95,7 +96,7 @@ export interface ItemProps extends BaseMenu.Item.Props {
 }
 
 export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
-  { className, analyticsName, analyticsValue, onClick, ...props },
+  { className, children, analyticsName, analyticsValue, onClick, ...props },
   ref,
 ) {
   const trackedClick = useTrackedCallback(
@@ -112,7 +113,9 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
       className={clsx(styles.item, className)}
       onClick={trackedClick}
       {...props}
-    />
+    >
+      {wrapTextChildren(children, styles.itemText)}
+    </BaseMenu.Item>
   );
 });
 
@@ -123,13 +126,15 @@ export const Item = React.forwardRef<HTMLDivElement, ItemProps>(function Item(
 export interface CheckboxItemProps extends BaseMenu.CheckboxItem.Props {}
 
 export const CheckboxItem = React.forwardRef<HTMLDivElement, CheckboxItemProps>(
-  function CheckboxItem({ className, ...props }, ref) {
+  function CheckboxItem({ className, children, ...props }, ref) {
     return (
       <BaseMenu.CheckboxItem
         ref={ref}
         className={clsx(styles.checkboxItem, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseMenu.CheckboxItem>
     );
   },
 );
@@ -186,13 +191,15 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
 export interface RadioItemProps extends BaseMenu.RadioItem.Props {}
 
 export const RadioItem = React.forwardRef<HTMLDivElement, RadioItemProps>(
-  function RadioItem({ className, ...props }, ref) {
+  function RadioItem({ className, children, ...props }, ref) {
     return (
       <BaseMenu.RadioItem
         ref={ref}
         className={clsx(styles.radioItem, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseMenu.RadioItem>
     );
   },
 );
@@ -231,13 +238,15 @@ export const RadioItemIndicator = React.forwardRef<
 export interface LinkItemProps extends BaseMenu.LinkItem.Props {}
 
 export const LinkItem = React.forwardRef<Element, LinkItemProps>(
-  function LinkItem({ className, ...props }, ref) {
+  function LinkItem({ className, children, ...props }, ref) {
     return (
       <BaseMenu.LinkItem
         ref={ref}
         className={clsx(styles.item, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseMenu.LinkItem>
     );
   },
 );
@@ -285,13 +294,15 @@ export const Group = React.forwardRef<HTMLDivElement, GroupProps>(
 export interface GroupLabelProps extends BaseMenu.GroupLabel.Props {}
 
 export const GroupLabel = React.forwardRef<HTMLDivElement, GroupLabelProps>(
-  function GroupLabel({ className, ...props }, ref) {
+  function GroupLabel({ className, children, ...props }, ref) {
     return (
       <BaseMenu.GroupLabel
         ref={ref}
         className={clsx(styles.groupLabel, className)}
         {...props}
-      />
+      >
+        {wrapTextChildren(children, styles.itemText)}
+      </BaseMenu.GroupLabel>
     );
   },
 );
@@ -315,13 +326,15 @@ export interface SubmenuTriggerProps extends BaseMenu.SubmenuTrigger.Props {}
 export const SubmenuTrigger = React.forwardRef<
   HTMLDivElement,
   SubmenuTriggerProps
->(function SubmenuTrigger({ className, ...props }, ref) {
+>(function SubmenuTrigger({ className, children, ...props }, ref) {
   return (
     <BaseMenu.SubmenuTrigger
       ref={ref}
       className={clsx(styles.submenuTrigger, className)}
       {...props}
-    />
+    >
+      {wrapTextChildren(children, styles.itemText)}
+    </BaseMenu.SubmenuTrigger>
   );
 });
 

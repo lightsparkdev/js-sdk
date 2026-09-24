@@ -527,3 +527,33 @@
     transition: none;
   }
 }
+
+[data-theme="dark"].item[data-active="true"],
+:global(.dark).item[data-active="true"],
+[data-theme="dark"] .item[data-active="true"],
+:global(.dark) .item[data-active="true"],
+[data-theme="dark"].submenuItem[data-active="true"],
+:global(.dark).submenuItem[data-active="true"],
+[data-theme="dark"] .submenuItem[data-active="true"],
+:global(.dark) .submenuItem[data-active="true"],
+[data-theme="dark"].drilldownItem[data-active="true"],
+:global(.dark).drilldownItem[data-active="true"],
+[data-theme="dark"] .drilldownItem[data-active="true"],
+:global(.dark) .drilldownItem[data-active="true"],
+[data-theme="dark"].treeItemButton[data-active="true"],
+:global(.dark).treeItemButton[data-active="true"],
+[data-theme="dark"] .treeItemButton[data-active="true"],
+:global(.dark) .treeItemButton[data-active="true"] {
+  background-color: var(--surface-raised);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .item[data-active="true"],
+    .submenuItem[data-active="true"],
+    .drilldownItem[data-active="true"],
+    .treeItemButton[data-active="true"] {
+      background-color: var(--surface-raised);
+    }
+  }
+}

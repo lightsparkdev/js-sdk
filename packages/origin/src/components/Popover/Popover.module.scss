@@ -5,8 +5,8 @@
 }
 
 .popup {
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
   @include smooth-corners(var(--corner-radius-sm));
   box-shadow: var(--shadow-lg);
   overflow: clip;
@@ -58,8 +58,8 @@
   width: 8px;
   height: 8px;
   transform: rotate(45deg);
-  background-color: var(--surface-primary);
-  border: var(--stroke-xs) solid var(--border-primary);
+  background-color: var(--surface-overlay);
+  border: var(--stroke-xs) solid var(--border-overlay);
 
   &[data-side="top"] {
     bottom: -4px;

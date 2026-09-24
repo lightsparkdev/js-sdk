@@ -6,20 +6,36 @@
   gap: var(--spacing-xs);
 }
 
+// Label, description, and error are block text, not flex containers: flex
+// turns a text node + inline element (e.g. a suffix or trailing link) into
+// separate flex items instead of one wrapping inline run. Suffix spacing
+// lives on the .labelSuffix slot instead.
 .label {
   @include label-sm;
 
-  display: flex;
-  align-items: center;
+  display: block;
   padding-inline: var(--spacing-3xs);
   color: var(--text-primary);
+
+  // Only the opt-in size nests: the default must stay single-class so
+  // sibling single-class overrides (e.g. choice legends) keep winning by
+  // source order.
+  &.md {
+    @include label;
+  }
+}
+
+.labelSuffix {
+  @include body-sm;
+
+  margin-inline-start: var(--spacing-3xs);
+  color: var(--text-secondary);
 }
 
 .description {
   @include body-sm;
 
-  display: flex;
-  align-items: center;
+  display: block;
   padding-inline: var(--spacing-3xs);
   color: var(--text-secondary);
 }
@@ -27,8 +43,7 @@
 .error {
   @include body-sm;
 
-  display: flex;
-  align-items: center;
+  display: block;
   padding-inline: var(--spacing-3xs);
   color: var(--text-critical);
 }

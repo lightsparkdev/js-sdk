@@ -60,6 +60,7 @@ const SECTIONS = [
     section: "Arrows & Navigation",
     icons: [
       { name: "IconArrow", variant: "sharp" },
+      { name: "IconArrowCornerDownLeft", variant: "sharp" },
       { name: "IconArrowDown", variant: "sharp" },
       { name: "IconArrowDownLeft", variant: "sharp" },
       { name: "IconArrowDownRight", variant: "sharp" },
@@ -235,6 +236,7 @@ const SECTIONS = [
       { name: "IconPlusSmall" },
       { name: "IconPrompt" },
       { name: "IconRandom" },
+      { name: "IconReceiptBill" },
       { name: "IconRemix" },
       { name: "IconRemoveKeyframe" },
       { name: "IconRepeat" },
@@ -357,13 +359,24 @@ const ALIASES = [
 function resolvePackagePath(variant) {
   const pkg = PACKAGES[variant];
   if (!pkg) throw new Error(`Unknown variant: ${variant}`);
-  const pkgPath = join(ROOT, "node_modules", pkg);
-  if (!existsSync(pkgPath)) {
-    throw new Error(
-      `Package ${pkg} not found. Run yarn install with CENTRAL_LICENSE_KEY set.`,
-    );
+  // Check the package's own node_modules first, then walk up for
+  // hoisted installs (yarn workspaces hoist to the repo-level node_modules).
+  // Stop at the repo root so a stray node_modules outside the repo (e.g. in
+  // the home directory) can't shadow a missing install.
+  for (
+    let dir = ROOT, prev = null;
+    dir !== prev;
+    prev = dir, dir = dirname(dir)
+  ) {
+    const pkgPath = join(dir, "node_modules", pkg);
+    if (existsSync(pkgPath)) return pkgPath;
+    const isRepoRoot =
+      existsSync(join(dir, "yarn.lock")) || existsSync(join(dir, ".git"));
+    if (isRepoRoot) break;
   }
-  return pkgPath;
+  throw new Error(
+    `Package ${pkg} not found. Run yarn install with CENTRAL_LICENSE_KEY set.`,
+  );
 }
 
 // ── React element tree → JSX ─────────────────────────────────
@@ -492,9 +505,11 @@ async function importIconMjs(mjsPath) {
   // Strip source map comments
   code = code.replace(/\n\/\/#\s*sourceMappingURL=.*$/m, "");
 
-  // Replace `import X from "react"` with inline mock
+  // Replace `import X from "react"` with an inline mock. Upstream dist may
+  // be minified (multiple imports on one line, no space before "react"), so
+  // the pattern must not be line-anchored.
   code = code.replace(
-    /^import\s+(\w+)\s+from\s+"react";?\s*$/gm,
+    /import\s+(\w+)\s+from\s*"react";?/g,
     (_, varName) =>
       `const ${varName} = { createElement: ${MOCK_CREATE_ELEMENT} };`,
   );

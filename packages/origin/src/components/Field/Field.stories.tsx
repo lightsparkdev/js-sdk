@@ -31,6 +31,20 @@ export const Default: Story = {
   ),
 };
 
+export const WithLabelSuffix: Story = {
+  render: () => (
+    <div style={{ width: "256px" }}>
+      <Field.Root>
+        <Field.Label>
+          Display name
+          <Field.LabelSuffix>(optional)</Field.LabelSuffix>
+        </Field.Label>
+        <Input placeholder="Enter display name" />
+      </Field.Root>
+    </div>
+  ),
+};
+
 export const WithError: Story = {
   render: () => (
     <div style={{ width: "256px" }}>

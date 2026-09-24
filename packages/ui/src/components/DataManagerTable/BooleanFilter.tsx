@@ -54,7 +54,7 @@ export const BooleanFilter = ({
                   : selectedOption === BooleanRadioOption.NO
                   ? false
                   : undefined,
-              isApplied: true,
+              isApplied: selectedOption !== BooleanRadioOption.BOTH,
             });
           }}
         />

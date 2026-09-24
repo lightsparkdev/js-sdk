@@ -1,12 +1,14 @@
-# Copybara is run by CI automatically. To run manually locally download and install copybara, then run:
+# Copybara is run by CI automatically. To validate manually, download the pinned
+# Copybara release from .github/workflows/js.yaml, then run:
 # $ cd <webdev repo>
-# $ ../copybara/bazel-bin/java/com/google/copybara/copybara copy.bara.sky js-sdk-push
+# $ java -jar /path/to/copybara.jar validate js/copy.bara.sky
 
 core.workflow(
     name="webdev-push-to-js-sdk",
     origin=git.github_origin(
         url="https://github.com/lightsparkdev/webdev.git",
         ref="main",
+        partial_fetch=True,
     ),
     destination=git.github_destination(
         url="https://github.com/lightsparkdev/js-sdk.git",
@@ -36,6 +38,8 @@ core.workflow(
     authoring=authoring.pass_thru("Lightspark Eng <engineering@lightspark.com>"),
     transformations=[
         metadata.restore_author("ORIGINAL_AUTHOR", search_all_changes=True),
+        # Private PR bodies may contain internal context; publish only the title.
+        metadata.replace_message("${COPYBARA_CURRENT_MESSAGE_TITLE}"),
         metadata.expose_label("COPYBARA_INTEGRATE_REVIEW"),
         core.move("js/README-PUBLIC.md", "README.md"),
         core.move("js/", ""),

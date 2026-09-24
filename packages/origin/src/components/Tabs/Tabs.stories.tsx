@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Tabs } from "./index";
+import styles from "./Tabs.stories.module.scss";
 
 const meta: Meta = {
   title: "Components/Tabs",
@@ -27,13 +28,15 @@ export const Default: StoryObj = {
         <Tabs.Tab value="password">Password</Tabs.Tab>
         <Tabs.Tab value="settings">Settings</Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel value="account">
+      <Tabs.Panel value="account" className={styles.panelCard}>
         Manage your account settings and preferences.
       </Tabs.Panel>
-      <Tabs.Panel value="password">
+      <Tabs.Panel value="password" className={styles.panelCard}>
         Change your password and security options.
       </Tabs.Panel>
-      <Tabs.Panel value="settings">Configure application settings.</Tabs.Panel>
+      <Tabs.Panel value="settings" className={styles.panelCard}>
+        Configure application settings.
+      </Tabs.Panel>
     </Tabs.Root>
   ),
 };
@@ -48,9 +51,15 @@ export const WithDisabled: StoryObj = {
         </Tabs.Tab>
         <Tabs.Tab value="another">Another</Tabs.Tab>
       </Tabs.List>
-      <Tabs.Panel value="active">This tab is active.</Tabs.Panel>
-      <Tabs.Panel value="disabled">This panel cannot be accessed.</Tabs.Panel>
-      <Tabs.Panel value="another">Another tab content.</Tabs.Panel>
+      <Tabs.Panel value="active" className={styles.panelCard}>
+        This tab is active.
+      </Tabs.Panel>
+      <Tabs.Panel value="disabled" className={styles.panelCard}>
+        This panel cannot be accessed.
+      </Tabs.Panel>
+      <Tabs.Panel value="another" className={styles.panelCard}>
+        Another tab content.
+      </Tabs.Panel>
     </Tabs.Root>
   ),
 };
@@ -68,9 +77,15 @@ export const Controlled: StoryObj = {
             <Tabs.Tab value="second">Second</Tabs.Tab>
             <Tabs.Tab value="third">Third</Tabs.Tab>
           </Tabs.List>
-          <Tabs.Panel value="first">First panel content.</Tabs.Panel>
-          <Tabs.Panel value="second">Second panel content.</Tabs.Panel>
-          <Tabs.Panel value="third">Third panel content.</Tabs.Panel>
+          <Tabs.Panel value="first" className={styles.panelCard}>
+            First panel content.
+          </Tabs.Panel>
+          <Tabs.Panel value="second" className={styles.panelCard}>
+            Second panel content.
+          </Tabs.Panel>
+          <Tabs.Panel value="third" className={styles.panelCard}>
+            Third panel content.
+          </Tabs.Panel>
         </Tabs.Root>
       </div>
     );

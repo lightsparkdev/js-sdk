@@ -11,6 +11,7 @@
     "build": "turbo run build",
     "build:watch": "turbo run build:watch",
     "checks": "yarn deps:check && turbo run gql-codegen lint format circular-deps package:checks",
+    "checks-tests": "yarn deps:check && turbo run test gql-codegen lint format circular-deps package:checks",
     "test-cmd": "turbo run test",
     "circular-deps": "turbo run circular-deps",
     "clean": "turbo run clean",
@@ -34,13 +35,16 @@
     "test": "turbo run test",
     "test:ui": "turbo run test:ui",
     "test:integration": "turbo run test:integration",
-    "types": "turbo run types"
+    "types": "turbo run types",
+    "release:preflight": "node scripts/sdk-preflight.cjs --root . --checks",
+    "release:test": "node --test scripts/tests/*.test.cjs"
   },
   "workspaces": [
     "packages/*",
     "packages/private/*",
     "apps/*",
     "apps/private/*",
+    "!apps/private/AGENTS.md",
     "apps/examples/*"
   ],
   "devDependencies": {
@@ -52,7 +56,7 @@
     "octokit": "^4.0.2",
     "prismjs": "^1.29.0",
     "ts-prune": "^0.10.3",
-    "turbo": "^2.5.4"
+    "turbo": "^2.10.3"
   },
   "dependenciesMeta": {
     "@central-icons-react/round-filled-radius-3-stroke-1.5": {
@@ -66,10 +70,11 @@
     }
   },
   "resolutions": {
-    "axios": "1.7.7"
+    "js-cookie": "3.0.7",
+    "tar": "7.5.20"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   },
   "packageManager": "yarn@4.13.0"
 }

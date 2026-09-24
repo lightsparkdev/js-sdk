@@ -1,16 +1,9 @@
 import styled from "@emotion/styled";
 import { type CurrencyAmountInputObj, CurrencyUnit } from "@lightsparkdev/core";
-import { useState } from "react";
-import { ButtonRow } from "../ButtonRow.js";
 import NumberInput from "../NumberInput.js";
+import { Label } from "../typography/Label.js";
 import { Filter, type FilterState } from "./Filter.js";
 import { FilterType } from "./filters.js";
-
-enum FilterRangeType {
-  LessThan = "Less than",
-  Between = "Between",
-  MoreThan = "More than",
-}
 
 export interface CurrencyFilterState extends FilterState {
   type: FilterType.CURRENCY;
@@ -22,7 +15,7 @@ export const isCurrencyFilterState = (
   state: FilterState,
 ): state is CurrencyFilterState => state.type === FilterType.CURRENCY;
 
-export const getDefaultCurrencyFilterState = () => ({
+export const getDefaultCurrencyFilterState = (): CurrencyFilterState => ({
   type: FilterType.CURRENCY,
   min_amount: null,
   max_amount: null,
@@ -38,18 +31,11 @@ export const CurrencyFilter = ({
   state: CurrencyFilterState;
   label: string;
 }) => {
-  const [filterRangeType, setFilterRangeType] = useState<FilterRangeType>(
-    FilterRangeType.LessThan,
-  );
-
-  const isMinDisplayed = filterRangeType !== FilterRangeType.LessThan;
-  const isMaxDisplayed = filterRangeType !== FilterRangeType.MoreThan;
-
   const handleMinChange = (value: string) => {
     updateFilterState({
       ...state,
       min_amount: value
-        ? { value: parseInt(value), unit: CurrencyUnit.SATOSHI }
+        ? { value: parseInt(value, 10), unit: CurrencyUnit.SATOSHI }
         : null,
       isApplied: state.max_amount !== null || !!value,
     });
@@ -59,104 +45,53 @@ export const CurrencyFilter = ({
     updateFilterState({
       ...state,
       max_amount: value
-        ? { value: parseInt(value), unit: CurrencyUnit.SATOSHI }
+        ? { value: parseInt(value, 10), unit: CurrencyUnit.SATOSHI }
         : null,
       isApplied: state.min_amount !== null || !!value,
     });
   };
 
-  const handleClick = (type: FilterRangeType) => {
-    setFilterRangeType(type);
-
-    updateFilterState({
-      ...state,
-      min_amount: null,
-      max_amount: null,
-      isApplied: false,
-    });
-  };
-
   return (
-    <div>
-      <Filter label={label}>
-        <NumberButtonRowContainer
-          smSticky={false}
-          bottomBorder={false}
-          buttons={[
-            {
-              text: "Less than",
-              kind:
-                filterRangeType === FilterRangeType.LessThan
-                  ? "primary"
-                  : undefined,
-              onClick: () => handleClick(FilterRangeType.LessThan),
-              size: "ExtraSmall",
-            },
-            {
-              text: "Between",
-              kind:
-                filterRangeType === FilterRangeType.Between
-                  ? "primary"
-                  : undefined,
-              onClick: () => handleClick(FilterRangeType.Between),
-              size: "ExtraSmall",
-            },
-            {
-              text: "More than",
-              kind:
-                filterRangeType === FilterRangeType.MoreThan
-                  ? "primary"
-                  : undefined,
-              onClick: () => handleClick(FilterRangeType.MoreThan),
-              size: "ExtraSmall",
-            },
-          ]}
-        />
-        <InputContainer>
-          {isMinDisplayed && (
-            <NumberInput
-              placeholder="0"
-              onChange={handleMinChange}
-              value={state.min_amount?.value?.toString() || ""}
-              icon={{ name: "Satoshi", side: "left", width: 8 }}
-              typography={{ color: "black" }}
-              allowNegativeValue
-            />
-          )}
-
-          {isMinDisplayed && isMaxDisplayed && <Divider />}
-          {isMaxDisplayed && (
-            <NumberInput
-              placeholder="0"
-              onChange={handleMaxChange}
-              value={state.max_amount?.value?.toString() || ""}
-              icon={{ name: "Satoshi", side: "left", width: 8 }}
-              typography={{ color: "black" }}
-              allowNegativeValue
-            />
-          )}
-        </InputContainer>
-      </Filter>
-    </div>
+    <Filter label={label}>
+      <InputContainer>
+        <AmountField>
+          <Label size="Small" content="Minimum (sats)" />
+          <NumberInput
+            placeholder="Minimum"
+            onChange={handleMinChange}
+            value={state.min_amount?.value?.toString() || ""}
+            icon={{ name: "Satoshi", side: "left", width: 8 }}
+            typography={{ color: "black" }}
+            allowDecimals={false}
+            allowNegativeValue
+          />
+        </AmountField>
+        <AmountField>
+          <Label size="Small" content="Maximum (sats)" />
+          <NumberInput
+            placeholder="Maximum"
+            onChange={handleMaxChange}
+            value={state.max_amount?.value?.toString() || ""}
+            icon={{ name: "Satoshi", side: "left", width: 8 }}
+            typography={{ color: "black" }}
+            allowDecimals={false}
+            allowNegativeValue
+          />
+        </AmountField>
+      </InputContainer>
+    </Filter>
   );
 };
-
-const NumberButtonRowContainer = styled(ButtonRow)`
-  padding: 0px !important;
-`;
 
 const InputContainer = styled.div`
   display: flex;
   flex-direction: row;
-  margin-top: 24px;
-  gap: 10px;
-  align-items: center;
+  gap: 12px;
 `;
 
-const Divider = styled.div`
-  height: 4px;
-  width: 12px;
-  flex-shrink: 0;
-  border-radius: 999px;
-  background-color: ${({ theme }) => theme.c1Neutral};
+const AmountField = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
 `;

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRender } from "@base-ui/react/use-render";
 import clsx from "clsx";
 import { CentralIcon } from "../Icon";
 import styles from "./Breadcrumb.module.scss";
@@ -119,24 +120,28 @@ if (process.env.NODE_ENV !== "production") {
 
 export interface BreadcrumbLinkProps
   extends React.ComponentPropsWithoutRef<"a"> {
-  href: string;
+  /**
+   * Replaces the default `a` element, e.g. with a router-aware link
+   * component. Props are merged per Base UI `useRender` semantics.
+   */
+  render?: useRender.RenderProp | undefined;
 }
 
 export const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
   BreadcrumbLinkProps
 >(function BreadcrumbLink(props, forwardedRef) {
-  const { className, children, ...elementProps } = props;
+  const { className, render, ...elementProps } = props;
 
-  return (
-    <a
-      ref={forwardedRef}
-      className={clsx(styles.link, className)}
-      {...elementProps}
-    >
-      {children}
-    </a>
-  );
+  return useRender({
+    defaultTagName: "a",
+    render,
+    ref: forwardedRef,
+    props: {
+      ...elementProps,
+      className: clsx(styles.link, className),
+    },
+  });
 });
 
 if (process.env.NODE_ENV !== "production") {

@@ -47,3 +47,16 @@
     transition: none;
   }
 }
+
+[data-theme="dark"].trigger:focus-visible,
+:global(.dark).trigger:focus-visible,
+[data-theme="dark"] .trigger:focus-visible,
+:global(.dark) .trigger:focus-visible {
+  background-color: var(--surface-raised);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .trigger:focus-visible {
+    background-color: var(--surface-raised);
+  }
+}

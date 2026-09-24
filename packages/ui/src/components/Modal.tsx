@@ -172,7 +172,7 @@ export function Modal({
   const ref = firstFocusRef || defaultFirstFocusRef;
   const [nodeReady, setNodeReady] = React.useState(false);
   const overlayRef = useRef<null | HTMLDivElement>(null);
-  const prevFocusedElement = useRef<Element | null>();
+  const prevFocusedElement = useRef<Element | null>(null);
   const modalContainerRef = useRef<null | HTMLDivElement>(null);
   const bp = useBreakpoints();
   const isSm = bp.current(Breakpoints.sm);

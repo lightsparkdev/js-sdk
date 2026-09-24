@@ -5,9 +5,112 @@ import {
   TestDialogWithTrigger,
   TestDialogWithoutCloseButton,
   TestDialogContentOnly,
+  TestLongViewportDialog,
 } from "./Dialog.test-stories";
 
 test.describe("Dialog", () => {
+  test("paints and hits a viewport popup above its backdrop", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<TestLongViewportDialog />);
+
+    const backdrop = page.getByTestId("long-dialog-backdrop");
+    const popup = page.getByTestId("long-dialog-popup");
+    await expect(backdrop).toBeVisible();
+    await expect(popup).toBeVisible();
+
+    const topElementIsPopup = await popup.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const topElement = document.elementFromPoint(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2,
+      );
+
+      return topElement?.closest('[role="dialog"]') === element;
+    });
+    expect(topElementIsPopup).toBe(true);
+
+    await page.getByRole("button", { name: "Confirm" }).click();
+  });
+
+  test("keeps long content reachable within a mobile viewport", async ({
+    mount,
+    page,
+  }) => {
+    const viewport = { width: 320, height: 568 };
+    await page.setViewportSize(viewport);
+    await mount(<TestLongViewportDialog />);
+
+    const popup = page.getByTestId("long-dialog-popup");
+    const content = page.getByTestId("long-dialog-content");
+    const header = page.getByTestId("long-dialog-header");
+    const footer = page.getByTestId("long-dialog-footer");
+    const finalControl = page.getByRole("button", {
+      name: "Final body control",
+    });
+    await expect(popup).toBeVisible();
+
+    const popupBounds = await popup.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        bottom: rect.bottom,
+        top: rect.top,
+      };
+    });
+    const contentIsScrollable = await content.evaluate(
+      (element) => element.scrollHeight > element.clientHeight,
+    );
+    expect(popupBounds.top).toBeGreaterThanOrEqual(0);
+    expect(popupBounds.bottom).toBeLessThanOrEqual(viewport.height);
+    expect(contentIsScrollable).toBe(true);
+
+    const initialPositions = await Promise.all([
+      header.evaluate((element) => element.getBoundingClientRect().y),
+      footer.evaluate((element) => element.getBoundingClientRect().y),
+    ]);
+
+    await content.hover();
+    const maxScrollTop = await content.evaluate(
+      (element) => element.scrollHeight - element.clientHeight,
+    );
+    await page.mouse.wheel(0, maxScrollTop);
+    await expect
+      .poll(() =>
+        content.evaluate(
+          (element) =>
+            element.scrollTop === element.scrollHeight - element.clientHeight,
+        ),
+      )
+      .toBe(true);
+
+    const scrolledPositions = await Promise.all([
+      header.evaluate((element) => element.getBoundingClientRect().y),
+      footer.evaluate((element) => element.getBoundingClientRect().y),
+    ]);
+    expect(Math.abs(scrolledPositions[0] - initialPositions[0])).toBeLessThan(
+      1,
+    );
+    expect(Math.abs(scrolledPositions[1] - initialPositions[1])).toBeLessThan(
+      1,
+    );
+    await expect(header).toBeInViewport();
+    await expect(footer).toBeInViewport();
+
+    const finalControlIsInsideBody = await finalControl.evaluate((element) => {
+      const controlRect = element.getBoundingClientRect();
+      const contentRect = element.parentElement?.getBoundingClientRect();
+
+      return (
+        contentRect !== undefined &&
+        controlRect.top >= contentRect.top &&
+        controlRect.bottom <= contentRect.bottom
+      );
+    });
+    expect(finalControlIsInsideBody).toBe(true);
+    await page.getByRole("button", { name: "Confirm" }).click();
+  });
+
   test("has no accessibility violations when open", async ({ mount, page }) => {
     await mount(<TestDialog />);
 

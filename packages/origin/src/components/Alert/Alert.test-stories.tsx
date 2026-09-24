@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Alert } from "./Alert";
+import { Alert, type AlertProps } from "./Alert";
+import { Button } from "../Button";
 
 export function DefaultAlert() {
   return (
@@ -27,13 +28,19 @@ export function TitleOnlyAlert() {
   return <Alert variant="default" title="Title Only" />;
 }
 
-export function NoIconAlert() {
+export function NoIconAlert({
+  variant = "default",
+  icon = false,
+}: {
+  variant?: AlertProps["variant"];
+  icon?: AlertProps["icon"];
+}) {
   return (
     <Alert
-      variant="default"
+      variant={variant}
       title="No Icon"
       description="This alert has no icon."
-      icon={false}
+      icon={icon}
     />
   );
 }
@@ -51,10 +58,30 @@ export function WarningAlert() {
 export function CustomIconAlert() {
   return (
     <Alert
-      variant="default"
+      variant="critical"
       title="Custom Icon"
       description="This alert has a custom icon."
       icon={<span data-testid="custom-icon">*</span>}
     />
   );
+}
+
+export function AlertWithTrailingAction({ width = 960 }: { width?: number }) {
+  return (
+    <div style={{ width }}>
+      <Alert
+        title="A longer alert title that should remain easy to scan"
+        description="This description is intentionally long enough to show that the alert shell can fill its parent while the text column stays at a readable measure."
+        trailing={
+          <Button size="compact" variant="filled">
+            Continue
+          </Button>
+        }
+      />
+    </div>
+  );
+}
+
+export function AlertWithNumericTrailing() {
+  return <Alert title="Numeric trailing content" trailing={0} />;
 }

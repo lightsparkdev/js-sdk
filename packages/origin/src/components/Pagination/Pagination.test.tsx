@@ -8,6 +8,10 @@ import {
   EmptyState,
   ControlledPagination,
   CustomRangeFormat,
+  AnchorRender,
+  AnchorRenderFirstPage,
+  WithoutTotals,
+  ContextConsumer,
 } from "./Pagination.test-stories";
 
 test.describe("Pagination", () => {
@@ -157,6 +161,112 @@ test.describe("Pagination", () => {
       await expect(page.getByText(/1-100/)).toBeVisible();
       await expect(page.getByText(/of/)).toBeVisible();
       await expect(page.getByText(/2500/)).toBeVisible();
+    });
+  });
+
+  test.describe("Render Prop", () => {
+    test("Previous and Next render as anchors when render prop is set", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<AnchorRender />);
+
+      const prev = page.getByTestId("prev");
+      const next = page.getByTestId("next");
+
+      await expect(prev).toHaveJSProperty("tagName", "A");
+      await expect(next).toHaveJSProperty("tagName", "A");
+      await expect(prev).toHaveAttribute("href", "?page=2");
+      await expect(next).toHaveAttribute("href", "?page=4");
+    });
+  });
+
+  test.describe("Data Attributes", () => {
+    test("Root exposes data-page and data-first-page on first page", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FirstPage />);
+
+      const nav = page.getByRole("navigation", { name: /pagination/i });
+      await expect(nav).toHaveAttribute("data-page", "1");
+      await expect(nav).toHaveAttribute("data-first-page", "");
+      await expect(nav).not.toHaveAttribute("data-last-page", "");
+    });
+
+    test("Root exposes data-last-page on last page", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<LastPage />);
+
+      const nav = page.getByRole("navigation", { name: /pagination/i });
+      await expect(nav).toHaveAttribute("data-page", "25");
+      await expect(nav).toHaveAttribute("data-last-page", "");
+      await expect(nav).not.toHaveAttribute("data-first-page", "");
+    });
+
+    test("nav buttons expose data-disabled when disabled", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<FirstPage />);
+
+      const prev = page.getByRole("button", { name: /previous/i });
+      const next = page.getByRole("button", { name: /next/i });
+      await expect(prev).toHaveAttribute("data-disabled", "");
+      await expect(next).not.toHaveAttribute("data-disabled", "");
+    });
+
+    test("disabled anchor renders carry data-disabled and aria-disabled", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<AnchorRenderFirstPage />);
+
+      const prev = page.getByTestId("prev");
+      await expect(prev).toHaveAttribute("data-disabled", "");
+      await expect(prev).toHaveAttribute("aria-disabled", "true");
+    });
+  });
+
+  test.describe("Optional totals", () => {
+    test("Next does not auto-disable when totalItems is omitted", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<WithoutTotals />);
+
+      const next = page.getByRole("button", { name: /next/i });
+      await expect(next).toBeEnabled();
+    });
+
+    test("Previous still auto-disables on first page without totalItems", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<WithoutTotals />);
+
+      const prev = page.getByRole("button", { name: /previous/i });
+      await expect(prev).toBeDisabled();
+    });
+
+    test("Range custom render receives undefined totals", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<WithoutTotals />);
+      await expect(page.getByText(/Page 1/)).toBeVisible();
+    });
+  });
+
+  test.describe("Context Hook", () => {
+    test("usePaginationContext exposes current page to consumer parts", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<ContextConsumer />);
+      await expect(page.getByTestId("ctx-page")).toHaveText("7");
     });
   });
 

@@ -4,7 +4,8 @@
   "description": "CLI for the Lightspark JS sdk",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lightsparkdev/js-sdk.git"
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
+    "directory": "packages/lightspark-cli"
   },
   "main": "./dist/index.js",
   "bin": {
@@ -18,7 +19,7 @@
     "format:fix": "prettier src --write",
     "format": "prettier src --check",
     "lint:fix": "eslint --fix .",
-    "lint:watch": "esw ./src -w --ext .ts,.tsx,.js --color",
+    "lint:watch": "nodemon --watch ./src --ext ts,tsx,js,cjs,mjs --exec \"eslint ./src --color\"",
     "lint": "eslint .",
     "local": "sudo npm i -g && lightspark",
     "refresh": "rm -rf ./node_modules ./package-lock.json && yarn install",
@@ -37,9 +38,8 @@
     "@types/node": "^20.2.5",
     "@types/qrcode-terminal": "^0.12.0",
     "@types/secp256k1": "^4.0.3",
-    "eslint": "^9.0.0",
-    "eslint-watch": "^8.0.0",
-    "nodemon": "^2.0.22",
+    "eslint": "^10.0.0",
+    "nodemon": "^3.1.14",
     "prettier": "3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",
     "ts-node": "^10.9.2",

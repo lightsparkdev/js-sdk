@@ -5,6 +5,9 @@ import {
   SecondaryButton,
   DisabledSecondaryButton,
   OutlineButton,
+  ScopedDarkOutlineButton,
+  SelfThemedDarkOutlineButton,
+  ClassThemedDarkOutlineButton,
   GhostButton,
   CriticalButton,
   DisabledButton,
@@ -16,7 +19,14 @@ import {
   ButtonWithLeadingIcon,
   ButtonWithTrailingIcon,
   LinkButton,
+  AnchorButtonLink,
+  DisabledAnchorButtonLink,
+  RenderedButtonLink,
+  RenderedButtonLinkWithMergedProps,
+  RenderedButtonLinkWithMergedRefs,
+  DisabledRenderedButtonLink,
   DisabledLinkButton,
+  FullWidthButton,
 } from "./Button.test-stories";
 
 const axeConfig = {
@@ -44,6 +54,82 @@ test.describe("Button", () => {
     await mount(<OutlineButton />);
     const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
     expect(results.violations).toEqual([]);
+  });
+
+  test("applies dark outline hover inside a scoped theme", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ScopedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover when explicitly themed on the button", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<SelfThemedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover from a class on the button", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<ClassThemedDarkOutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
+  });
+
+  test("applies dark outline hover from the system preference", async ({
+    mount,
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await page.evaluate(() =>
+      document.documentElement.removeAttribute("data-theme"),
+    );
+    await mount(<OutlineButton />);
+    const button = page.getByRole("button");
+
+    const restingBackground = await button.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    );
+    await button.hover();
+    await expect
+      .poll(() =>
+        button.evaluate((element) => getComputedStyle(element).backgroundColor),
+      )
+      .not.toBe(restingBackground);
   });
 
   test("ghost variant has no accessibility violations", async ({
@@ -174,6 +260,14 @@ test.describe("Button", () => {
     expect(box?.height).toBe(36);
   });
 
+  test("fullWidth fills its parent width", async ({ mount, page }) => {
+    await mount(<FullWidthButton />);
+
+    const button = page.getByRole("button", { name: "Full width" });
+    const box = await button.boundingBox();
+    expect(box?.width).toBe(320);
+  });
+
   test("icon-only button has accessible name", async ({ mount, page }) => {
     await mount(<IconOnlyButton />);
 
@@ -300,5 +394,109 @@ test.describe("Button", () => {
 
     // Link variant uses 50% opacity when disabled
     expect(parseFloat(opacity)).toBeCloseTo(0.5, 1);
+  });
+
+  test("ButtonLink renders an anchor with link semantics", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<AnchorButtonLink />);
+
+    const link = page.getByRole("link", { name: "Read docs" });
+    await expect(link).toHaveAttribute("href", /\/docs$/);
+    await expect(page.getByRole("button", { name: "Read docs" })).toHaveCount(
+      0,
+    );
+  });
+
+  test("ButtonLink omits href while disabled", async ({ mount, page }) => {
+    await mount(<DisabledAnchorButtonLink />);
+
+    const link = page.locator("a", { hasText: "Disabled docs" });
+    await expect(link).toHaveAttribute("aria-disabled", "true");
+    await expect(link).toHaveAttribute("tabindex", "-1");
+    await expect(link).not.toHaveAttribute("href");
+  });
+
+  test("ButtonLink can style a rendered anchor target", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<RenderedButtonLink />);
+
+    const link = page.getByRole("link", { name: "Settings" });
+    await expect(link).toHaveAttribute("href", /\/settings$/);
+    const bgColor = await link.evaluate(
+      (el) => getComputedStyle(el).backgroundColor,
+    );
+
+    // Secondary uses a visible low-opacity tint.
+    expect(bgColor).not.toBe("rgba(0, 0, 0, 0)");
+  });
+
+  test("ButtonLink merges render props with button props", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<RenderedButtonLinkWithMergedProps />);
+
+    const link = page.getByRole("link", { name: "Merged props" });
+    await expect(link).toHaveAttribute("href", /\/merged$/);
+    await expect(link).toHaveAttribute("data-render-source", "render");
+    await expect(link).toHaveAttribute(
+      "data-button-link-source",
+      "button-link",
+    );
+    await expect(link).toHaveClass(/rendered-link-target/);
+
+    await link.click();
+    await expect(page.locator("body")).toHaveAttribute(
+      "data-render-click",
+      "true",
+    );
+    await expect(page.locator("body")).toHaveAttribute(
+      "data-button-link-click",
+      "true",
+    );
+  });
+
+  test("ButtonLink merges refs with the rendered target", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<RenderedButtonLinkWithMergedRefs />);
+
+    const link = page.getByRole("link", { name: "Merged refs" });
+    await expect(link).toHaveAttribute("href", /\/refs$/);
+    await expect(page.locator("body")).toHaveAttribute(
+      "data-render-ref",
+      "/refs",
+    );
+    await expect(page.locator("body")).toHaveAttribute(
+      "data-button-link-ref",
+      "/refs",
+    );
+  });
+
+  test("ButtonLink prevents rendered handlers while disabled", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<DisabledRenderedButtonLink />);
+
+    const link = page.locator("a", { hasText: "Disabled link" });
+    await expect(link).toHaveAttribute("aria-disabled", "true");
+    await expect(link).toHaveAttribute("tabindex", "-1");
+    await expect(link).not.toHaveAttribute("href");
+
+    await link.click({ force: true });
+    await expect(page.locator("body")).not.toHaveAttribute(
+      "data-disabled-render-click",
+      "true",
+    );
+    await expect(page.locator("body")).not.toHaveAttribute(
+      "data-disabled-button-link-click",
+      "true",
+    );
   });
 });

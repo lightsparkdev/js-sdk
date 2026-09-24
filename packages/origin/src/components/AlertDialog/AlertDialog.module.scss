@@ -23,8 +23,9 @@
 }
 
 .popup {
+  --dialog-border: var(--border-secondary);
+
   position: fixed;
-  // 38% optical center -- feels slightly above midpoint like Linear/Vercel
   top: 38%;
   left: 50%;
   z-index: 100;
@@ -34,7 +35,7 @@
   max-width: calc(100vw - var(--spacing-2xl));
   overflow: clip;
   background-color: var(--surface-panel);
-  border: var(--stroke-xs) solid var(--border-secondary);
+  border: var(--stroke-xs) solid var(--dialog-border);
   @include smooth-corners(var(--corner-radius-md));
   box-shadow: var(--shadow-lg);
   transition:
@@ -54,6 +55,19 @@
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
+  }
+}
+
+[data-theme="dark"].popup,
+:global(.dark).popup,
+[data-theme="dark"] .popup,
+:global(.dark) .popup {
+  --dialog-border: var(--border-overlay);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .popup {
+    --dialog-border: var(--border-overlay);
   }
 }
 

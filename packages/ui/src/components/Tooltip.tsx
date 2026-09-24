@@ -1,12 +1,12 @@
 import { css } from "@emotion/css";
 import { useTheme, type Theme } from "@emotion/react";
-import React, { useEffect, useRef, type ComponentProps } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { Tooltip as ReactTooltip } from "react-tooltip";
+import { Tooltip as ReactTooltip, type ITooltip } from "react-tooltip";
 import { overlaySurface } from "../styles/common.js";
 import { z } from "../styles/z-index.js";
 
-type TooltipProps = Omit<ComponentProps<typeof ReactTooltip>, "id"> & {
+type TooltipProps = Omit<ITooltip, "id"> & {
   /* Make 3rd party types compatible with our undefined rule: */
   id?: string | undefined;
   interactive?: boolean;

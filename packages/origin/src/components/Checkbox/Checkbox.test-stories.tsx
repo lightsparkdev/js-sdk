@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { Drawer } from "../Drawer";
 import { Checkbox } from "./Checkbox";
 
 export function TestCheckboxDefault() {
   return (
     <Checkbox.Field data-testid="checkbox-field">
       <Checkbox.Legend>Legend</Checkbox.Legend>
-      <Checkbox.Group defaultValue={["option1"]}>
+      <Checkbox.Group defaultValue={["option1"]} data-testid="checkbox-group">
         <Checkbox.Item
           value="option1"
           label="Option 1"
@@ -26,7 +27,11 @@ export function TestCheckboxCard() {
   return (
     <Checkbox.Field data-testid="checkbox-field">
       <Checkbox.Legend>Legend</Checkbox.Legend>
-      <Checkbox.Group variant="card" defaultValue={["option1"]}>
+      <Checkbox.Group
+        variant="card"
+        defaultValue={["option1"]}
+        data-testid="checkbox-group"
+      >
         <Checkbox.Item
           value="option1"
           label="Option 1"
@@ -37,6 +42,18 @@ export function TestCheckboxCard() {
           label="Option 2"
           description="Description"
         />
+      </Checkbox.Group>
+    </Checkbox.Field>
+  );
+}
+
+export function TestCheckboxMixedVariants() {
+  return (
+    <Checkbox.Field data-testid="checkbox-field">
+      <Checkbox.Legend>Legend</Checkbox.Legend>
+      <Checkbox.Group defaultValue={["option1"]} data-testid="checkbox-group">
+        <Checkbox.Item value="option1" label="Option 1" />
+        <Checkbox.Item value="option2" label="Option 2" variant="card" />
       </Checkbox.Group>
     </Checkbox.Field>
   );
@@ -163,5 +180,26 @@ export function TestCheckboxName() {
         />
       </Checkbox.Group>
     </Checkbox.Field>
+  );
+}
+
+export function TestCheckboxInDrawer() {
+  const [value, setValue] = useState<string[]>([]);
+  return (
+    <Drawer.Root defaultOpen swipeDirection="right">
+      <Drawer.Portal>
+        <Drawer.Viewport>
+          <Drawer.Popup data-testid="popup">
+            <Checkbox.Field>
+              <Checkbox.Group value={value} onValueChange={(v) => setValue(v)}>
+                <Checkbox.Item value="option1" label="Option 1" />
+                <Checkbox.Item value="option2" label="Option 2" />
+              </Checkbox.Group>
+            </Checkbox.Field>
+            <span data-testid="selected-values">{value.join(",")}</span>
+          </Drawer.Popup>
+        </Drawer.Viewport>
+      </Drawer.Portal>
+    </Drawer.Root>
   );
 }

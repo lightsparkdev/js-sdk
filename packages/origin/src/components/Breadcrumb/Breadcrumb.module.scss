@@ -33,8 +33,27 @@
   justify-content: center;
   width: 20px;
   height: 20px;
+  // Custom separators can be plain text (e.g. "/"), which reads as text
   color: var(--text-secondary);
   flex-shrink: 0;
+
+  // Figma spec: the default chevron icon binds icon/secondary
+  > svg {
+    color: var(--icon-secondary);
+  }
+}
+
+// Figma spec: the separator immediately before the current crumb promotes to
+// the primary tier (Separator state=Current binds icon/primary). Covers both
+// the item-rendered separator (previous sibling item) and a manually composed
+// standalone separator. Text separators promote to text-primary for coherence.
+.item:has(+ .item [data-current]) .separator,
+.separator:has(+ .item [data-current]) {
+  color: var(--text-primary);
+
+  > svg {
+    color: var(--icon-primary);
+  }
 }
 
 .link {
@@ -70,13 +89,13 @@
   padding: 0;
   border: none;
   background: none;
-  color: var(--text-secondary);
+  color: var(--icon-secondary);
   cursor: pointer;
   @include smooth-corners(var(--corner-radius-xs));
   transition: color 150ms ease;
 
   &:hover {
-    color: var(--text-primary);
+    color: var(--icon-primary);
   }
 
   &:focus-visible {

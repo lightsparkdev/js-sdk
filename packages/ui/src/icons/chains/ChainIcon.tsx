@@ -1,18 +1,29 @@
+import type { ReactElement } from "react";
+import { Arbitrum } from "./Arbitrum.js";
 import { Base } from "./Base.js";
 import { Ethereum } from "./Ethereum.js";
 import { Polygon } from "./Polygon.js";
 import { Solana } from "./Solana.js";
+import { Tron } from "./Tron.js";
 
-export type Chain = "solana" | "ethereum" | "base" | "polygon";
+export type Chain =
+  | "solana"
+  | "ethereum"
+  | "base"
+  | "polygon"
+  | "arbitrum"
+  | "tron";
 
 const CHAIN_COMPONENTS: Record<
   Chain,
-  (props: { size?: number }) => JSX.Element
+  (props: { size?: number }) => ReactElement
 > = {
   solana: Solana,
   ethereum: Ethereum,
   base: Base,
   polygon: Polygon,
+  arbitrum: Arbitrum,
+  tron: Tron,
 };
 
 export function ChainIcon({

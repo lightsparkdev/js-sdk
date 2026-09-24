@@ -1,0 +1,23 @@
+// tsc resolves @lightsparkdev/origin's component imports against its source
+// files (the package's `main` points at src/index.ts), so when we compile
+// this app it walks into Origin's *.module.scss imports. Origin ships its
+// own scss shim under its src/declarations.d.ts, but TypeScript only picks
+// up .d.ts files inside the current compilation root — we need our own.
+
+declare module "*.module.scss" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}
+
+declare module "*.module.css" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}
+
+interface ImportMetaEnv {
+  readonly VITE_GOOGLE_CLIENT_ID?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

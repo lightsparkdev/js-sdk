@@ -19,6 +19,7 @@ import {
   TestNested,
   TestIndent,
 } from "./Drawer.test-stories";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 
 function getScaleXFromTransform(transform: string): number | null {
   const match = transform.match(/matrix\(([^)]+)\)/);
@@ -29,28 +30,6 @@ function getScaleXFromTransform(transform: string): number | null {
 
   const [scaleX] = match[1].split(",").map((value) => Number(value.trim()));
   return Number.isNaN(scaleX) ? null : scaleX;
-}
-
-async function getResolvedColor(
-  page: import("@playwright/experimental-ct-react").Page,
-  cssProperty: "backgroundColor" | "outlineColor",
-  token: string,
-) {
-  return page.evaluate(
-    ({ cssProperty, token }) => {
-      const probe = document.createElement("div");
-      if (cssProperty === "backgroundColor") {
-        probe.style.backgroundColor = `var(${token})`;
-      } else {
-        probe.style.outline = `1px solid var(${token})`;
-      }
-      document.body.appendChild(probe);
-      const resolved = getComputedStyle(probe)[cssProperty];
-      probe.remove();
-      return resolved;
-    },
-    { cssProperty, token },
-  );
 }
 
 test.describe("Drawer", () => {
@@ -86,36 +65,41 @@ test.describe("Drawer", () => {
       await expect(backdrop).toBeAttached();
     });
 
-    test("uses surface-primary and border-primary by default", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<TestDefault />);
-      const popup = page.getByTestId("popup");
-      await expect(popup).toBeVisible();
-
-      const expectedBackgroundColor = await getResolvedColor(
+    for (const theme of ["light", "dark"] as const) {
+      test(`uses the overlay surface and border in ${theme} mode`, async ({
+        mount,
         page,
-        "backgroundColor",
-        "--surface-primary",
-      );
-      const expectedOutlineColor = await getResolvedColor(
-        page,
-        "outlineColor",
-        "--border-primary",
-      );
+      }) => {
+        await page.evaluate((nextTheme) => {
+          document.documentElement.dataset.theme = nextTheme;
+        }, theme);
+        await mount(<TestDefault />);
+        const popup = page.getByTestId("popup");
+        await expect(popup).toBeVisible();
 
-      const popupStyles = await popup.evaluate((element) => {
-        const styles = getComputedStyle(element);
-        return {
-          backgroundColor: styles.backgroundColor,
-          outlineColor: styles.outlineColor,
-        };
+        const expectedBackgroundColor = await resolveTokenColor(
+          page,
+          "--surface-overlay",
+          "backgroundColor",
+        );
+        const expectedOutlineColor = await resolveTokenColor(
+          page,
+          "--border-overlay",
+          "outlineColor",
+        );
+
+        const popupStyles = await popup.evaluate((element) => {
+          const styles = getComputedStyle(element);
+          return {
+            backgroundColor: styles.backgroundColor,
+            outlineColor: styles.outlineColor,
+          };
+        });
+
+        expect(popupStyles.backgroundColor).toBe(expectedBackgroundColor);
+        expect(popupStyles.outlineColor).toBe(expectedOutlineColor);
       });
-
-      expect(popupStyles.backgroundColor).toBe(expectedBackgroundColor);
-      expect(popupStyles.outlineColor).toBe(expectedOutlineColor);
-    });
+    }
   });
 
   test.describe("Interaction", () => {

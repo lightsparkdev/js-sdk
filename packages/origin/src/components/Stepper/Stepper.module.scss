@@ -1,0 +1,258 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+// A step counts as active while it is current itself or while one of its
+// substeps is. Expressed in CSS (rather than JS bookkeeping) so server HTML
+// and the first client frame already render the active treatment.
+$active-step: ":is([data-current], :has(.substeps [data-current]))";
+
+.root {
+  --stepper-marker-size: 24px;
+  --stepper-substep-marker-size: 8px;
+  --stepper-row-gap: var(--spacing-3xs);
+  --stepper-step-gap: var(--spacing-none);
+  --stepper-substep-indent: calc(
+    var(--stepper-marker-size) + var(--stepper-row-gap)
+  );
+  --stepper-substeps-margin-top: var(--spacing-none);
+  --stepper-rail-end-gap: var(--spacing-3xs);
+  --stepper-rail-width: var(--stroke-xs);
+
+  // Marker bottom edge within a row: the trigger's vertical padding plus the
+  // marker box.
+  --stepper-rail-start: calc(var(--spacing-3xs) + var(--stepper-marker-size));
+
+  font-family: var(--font-family-sans);
+}
+
+.list {
+  counter-reset: origin-stepper;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > .step {
+  counter-increment: origin-stepper;
+}
+
+// Rail between top-level steps. The top offset clears the marker plus the
+// trigger's own vertical padding (spacing-3xs); the bottom extends across
+// the list gap (spacing-md) to meet the next step's marker.
+.list > .step:not(:last-of-type)::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--stepper-rail-start) + var(--stepper-rail-end-gap));
+  bottom: calc(
+    -1 * (var(--spacing-md) + var(--spacing-3xs) - var(--stepper-rail-end-gap))
+  );
+  left: calc(var(--stepper-marker-size) / 2);
+  width: var(--stepper-rail-width);
+  background: var(--border-secondary);
+  transform: translateX(-50%);
+}
+
+.step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--stepper-step-gap);
+}
+
+.trigger {
+  @include button-reset;
+
+  // The reset assumes a button; the non-interactive form is plain content.
+  cursor: default;
+  display: flex;
+  gap: var(--stepper-row-gap);
+  align-items: center;
+  width: 100%;
+  padding: var(--spacing-3xs) 0;
+  text-align: left;
+  @include smooth-corners(var(--corner-radius-xs));
+
+  &:focus-visible {
+    box-shadow: var(--input-focus);
+  }
+}
+
+button.trigger:not(:disabled) {
+  cursor: pointer;
+}
+
+.substeps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+  margin: var(--stepper-substeps-margin-top) 0 0;
+  padding: 0 0 0 var(--stepper-substep-indent);
+  list-style: none;
+}
+
+.substeps .trigger {
+  gap: var(--spacing-2xs);
+}
+
+// Holds the marker's ink so the glyph inside inherits it, which is what lets
+// the row's hover rules recolor an ordinal, check, or square alike.
+.marker {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--stepper-marker-size);
+  height: var(--stepper-marker-size);
+}
+
+.substeps .marker {
+  width: var(--stepper-substep-marker-size);
+  height: var(--stepper-substep-marker-size);
+}
+
+.label {
+  @include body-sm;
+
+  color: var(--text-secondary);
+
+  // Weight interpolates rather than snapping so variable font faces animate
+  // smoothly; static cuts simply ignore the transition.
+  transition:
+    color 150ms ease,
+    font-weight 150ms ease;
+}
+
+.list > .step#{$active-step} > .trigger .label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.substeps .step[data-current] > .trigger .label {
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+// Marker inks. Completion outranks being current, so a revisited finished
+// step keeps its check.
+.list > .step > .trigger .marker {
+  color: var(--text-secondary);
+}
+
+.list > .step#{$active-step} > .trigger .marker {
+  color: var(--text-primary);
+}
+
+.list > .step[data-status="complete"] > .trigger .marker {
+  color: var(--icon-secondary);
+}
+
+.list > .step[data-status="complete"]#{$active-step} > .trigger .marker {
+  color: var(--icon-primary);
+}
+
+.substeps .step > .trigger .marker {
+  color: var(--icon-tertiary);
+}
+
+.substeps .step[data-status="complete"] > .trigger .marker {
+  color: var(--icon-secondary);
+}
+
+.substeps .step[data-current] > .trigger .marker {
+  color: var(--icon-primary);
+}
+
+// Ordinal markers take their number from the list position, so substeps and
+// consumer wrappers never have to thread indexes through props.
+.ordinal {
+  @include body-sm;
+
+  &::before {
+    content: counter(origin-stepper);
+  }
+}
+
+.list > .step#{$active-step} > .trigger .ordinal {
+  font-weight: var(--font-weight-book);
+}
+
+.check {
+  display: flex;
+
+  // CentralIcon scales its stroke down with the box, so weights are set
+  // against the icon's 24px viewBox to land on screen: at the 8px glyph,
+  // 3 renders as 1px and 4.5 as 1.5px.
+  svg path {
+    stroke-width: 3;
+    transition: stroke-width 150ms ease;
+  }
+}
+
+.step#{$active-step} > .trigger .check svg path {
+  stroke-width: 4.5;
+}
+
+.square {
+  box-sizing: border-box;
+
+  // 6px pip centers on the 8px substep marker box with a 1px breathing ring.
+  width: 6px;
+  height: 6px;
+  border: var(--stroke-sm) solid currentcolor;
+  border-radius: var(--corner-radius-2xs);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.step[data-status="partial"] > .trigger .square,
+.step[data-current] > .trigger .square {
+  border: none;
+  background: currentcolor;
+}
+
+// Locked steps keep quiet ink even when marked current; hover affordances
+// are gated to enabled buttons below.
+.list > .step > .trigger:disabled .label,
+.substeps .step > .trigger:disabled .label {
+  font-weight: var(--font-weight-regular);
+  color: var(--text-secondary);
+}
+
+.list > .step > .trigger:disabled .marker,
+.substeps .step > .trigger:disabled .marker {
+  color: var(--icon-secondary);
+}
+
+.srOnly {
+  @include visually-hidden;
+}
+
+@media (hover: hover) {
+  button.trigger:hover:not(:disabled) .label {
+    color: var(--text-primary);
+  }
+
+  .list > .step > button.trigger:hover:not(:disabled) .marker {
+    color: var(--text-primary);
+  }
+
+  .list
+    > .step[data-status="complete"]
+    > button.trigger:hover:not(:disabled)
+    .marker,
+  .substeps .step > button.trigger:hover:not(:disabled) .marker {
+    color: var(--icon-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .label,
+  .square,
+  .check svg path {
+    transition: none;
+  }
+}

@@ -6,19 +6,20 @@ import clsx from "clsx";
 import styles from "./Field.module.scss";
 
 export interface FieldRootProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof BaseField.Root>,
-    "render"
-  > {}
+  extends React.ComponentPropsWithoutRef<typeof BaseField.Root> {}
 
-export const FieldRoot = React.forwardRef<HTMLDivElement, FieldRootProps>(
+export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
   function FieldRoot(props, ref) {
     const { className, children, ...other } = props;
+    const rootClassName: FieldRootProps["className"] =
+      typeof className === "function"
+        ? (state) => clsx(styles.root, className(state))
+        : clsx(styles.root, className);
 
     return (
       <BaseField.Root
-        ref={ref}
-        className={clsx(styles.root, className)}
+        ref={ref as React.Ref<HTMLDivElement>}
+        className={rootClassName}
         {...other}
       >
         {children}
@@ -28,21 +29,50 @@ export const FieldRoot = React.forwardRef<HTMLDivElement, FieldRootProps>(
 );
 
 export interface FieldLabelProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Label> {}
+  extends React.ComponentPropsWithoutRef<typeof BaseField.Label> {
+  /**
+   * The size variant of the label.
+   * @default 'sm'
+   */
+  size?: "sm" | "md";
+}
 
 export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
   function FieldLabel(props, ref) {
-    const { className, ...other } = props;
+    const { className, size = "sm", ...other } = props;
 
     return (
       <BaseField.Label
         ref={ref}
-        className={clsx(styles.label, className)}
+        className={clsx(styles.label, size === "md" && styles.md, className)}
         {...other}
       />
     );
   },
 );
+
+export interface FieldLabelSuffixProps
+  extends React.ComponentPropsWithoutRef<"span"> {}
+
+/**
+ * Trailing content for Field.Label, such as "(optional)". Carries the
+ * tokenized spacing from the label text so the label itself can stay
+ * normal inline text flow and wrap as one run.
+ */
+export const FieldLabelSuffix = React.forwardRef<
+  HTMLSpanElement,
+  FieldLabelSuffixProps
+>(function FieldLabelSuffix(props, ref) {
+  const { className, ...other } = props;
+
+  return (
+    <span
+      ref={ref}
+      className={clsx(styles.labelSuffix, className)}
+      {...other}
+    />
+  );
+});
 
 export interface FieldDescriptionProps
   extends React.ComponentPropsWithoutRef<typeof BaseField.Description> {}
@@ -90,6 +120,7 @@ export const FieldError = React.forwardRef<HTMLDivElement, FieldErrorProps>(
 if (process.env.NODE_ENV !== "production") {
   FieldRoot.displayName = "FieldRoot";
   FieldLabel.displayName = "FieldLabel";
+  FieldLabelSuffix.displayName = "FieldLabelSuffix";
   FieldDescription.displayName = "FieldDescription";
   FieldError.displayName = "FieldError";
 }
@@ -97,6 +128,7 @@ if (process.env.NODE_ENV !== "production") {
 export const Field = {
   Root: FieldRoot,
   Label: FieldLabel,
+  LabelSuffix: FieldLabelSuffix,
   Description: FieldDescription,
   Error: FieldError,
 };

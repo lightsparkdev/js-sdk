@@ -3,7 +3,8 @@
   "version": "0.1.26",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lightsparkdev/js-sdk.git"
+    "url": "git+https://github.com/lightsparkdev/js-sdk.git",
+    "directory": "packages/crypto-wasm"
   },
   "type": "module",
   "files": [
