@@ -38,7 +38,7 @@ import { TransactionsPanel } from "./grid/TransactionsPanel";
 import { VerificationsPanel } from "./grid/VerificationsPanel";
 import type { ScaChallengeView } from "./sca/scaApi";
 import { ScaSection } from "./sca/ScaSection";
-import { EnumSelect } from "./sca/ui";
+import { CopyableId, EnumSelect } from "./sca/ui";
 import { SettingsPanel } from "./SettingsPanel";
 
 interface AccountRow {
@@ -537,7 +537,7 @@ export function App() {
                   />
                 </Field.Root>
                 <Note>
-                  Current quote id: <Mono>{quoteId ?? "—"}</Mono>
+                  Current quote id: <CopyableId value={quoteId} />
                 </Note>
               </Panel>
 
@@ -816,7 +816,7 @@ function MetaItem({ label, value }: { label: string; value?: string }) {
   return (
     <MetaKv>
       <span>{label}</span>
-      <Mono>{value || "—"}</Mono>
+      <CopyableId value={value} />
     </MetaKv>
   );
 }
@@ -881,7 +881,7 @@ function StateTable({ accounts }: { accounts: AccountRow[] | null }) {
               <Mono>{a.balance}</Mono>
             </Table.Cell>
             <Table.Cell>
-              <Mono>{a.id}</Mono>
+              <CopyableId value={a.id} />
             </Table.Cell>
             <Table.Cell>
               <Badge variant="gray">{a.status}</Badge>
@@ -986,7 +986,7 @@ function parseAccounts(data: unknown): AccountRow[] | null {
     return {
       currency,
       balance,
-      id: String(a.id || a.accountId || a.account_id || "—"),
+      id: String(a.id || a.accountId || a.account_id || ""),
       status: String(a.status || a.state || "—"),
     };
   });
@@ -1165,7 +1165,7 @@ const MetaKv = styled.div`
   font-size: var(--font-size-xs, 12px);
   color: var(--text-secondary, #666);
 
-  span {
+  > span:first-of-type {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-size: 10px;

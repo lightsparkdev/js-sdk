@@ -12,7 +12,7 @@ import {
   scaPath,
   type ScaPanelProps,
 } from "./scaApi";
-import { ButtonRow, EnumSelect, Mono, Note, Panel } from "./ui";
+import { ButtonRow, CopyableId, EnumSelect, Mono, Note, Panel } from "./ui";
 
 export function ResetPanel({ call, customerId }: ScaPanelProps) {
   const [factor, setFactor] = useState<string>("TOTP");
@@ -110,7 +110,7 @@ export function ResetPanel({ call, customerId }: ScaPanelProps) {
       </ButtonRow>
       {resetId && (
         <Note>
-          resetId: <Mono>{resetId}</Mono>
+          resetId: <CopyableId value={resetId} />
           {status ? ` · status: ${status}` : ""}
         </Note>
       )}

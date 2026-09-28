@@ -17,7 +17,7 @@ import {
   scaPath,
   type ScaPanelProps,
 } from "./scaApi";
-import { ButtonRow, EnumSelect, Mono, Note, Panel } from "./ui";
+import { ButtonRow, CopyableId, EnumSelect, Mono, Note, Panel } from "./ui";
 
 interface LoginStartResponse {
   challengeId?: string;
@@ -116,7 +116,7 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
       </ButtonRow>
       {challengeId && (
         <Note>
-          challengeId: <Mono>{challengeId}</Mono>
+          challengeId: <CopyableId value={challengeId} />
         </Note>
       )}
       {passkeyOptions && (

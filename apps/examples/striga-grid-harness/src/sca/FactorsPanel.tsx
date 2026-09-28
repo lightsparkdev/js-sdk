@@ -15,7 +15,7 @@ import {
 } from "./passkeyEnroll";
 import { scaPath, type ScaPanelProps } from "./scaApi";
 import { computeTotp } from "./totp";
-import { ButtonRow, Mono, Note, Panel, Pre } from "./ui";
+import { ButtonRow, CopyableId, Mono, Note, Panel, Pre } from "./ui";
 
 interface PasskeyStartResponse {
   options?: EnrollPasskeyOptions;
@@ -216,7 +216,7 @@ function FactorTable({ factors }: { factors: FactorView[] | null }) {
               <Badge variant="gray">{f.factor}</Badge>
             </Table.Cell>
             <Table.Cell>
-              <Mono>{f.credentialId ?? "—"}</Mono>
+              <CopyableId value={f.credentialId} />
             </Table.Cell>
             <Table.Cell>{f.name ?? "—"}</Table.Cell>
           </Table.Row>

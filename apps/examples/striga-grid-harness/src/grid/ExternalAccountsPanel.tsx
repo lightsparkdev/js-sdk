@@ -2,7 +2,7 @@ import { Button } from "@lightsparkdev/origin";
 import { useEffect, useState } from "react";
 
 import { gridPath, parseJsonField } from "../api";
-import { ButtonRow, Mono, Note, Panel } from "../sca/ui";
+import { ButtonRow, CopyableId, Note, Panel } from "../sca/ui";
 import { JsonField, pickId, TextField, type CallFn } from "./common";
 
 function eurTemplate(customerId: string): string {
@@ -137,7 +137,7 @@ export function ExternalAccountsPanel({
       </ButtonRow>
       {externalAccountId && (
         <Note>
-          Last external account: <Mono>{externalAccountId}</Mono>
+          Last external account: <CopyableId value={externalAccountId} />
         </Note>
       )}
     </Panel>

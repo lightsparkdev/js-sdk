@@ -23,6 +23,7 @@ import {
   type HarnessCredsPatch,
   type HttpMethod,
 } from "./api";
+import { CopyableId } from "./sca/ui";
 
 type CallFn = <T>(
   method: HttpMethod,
@@ -203,7 +204,7 @@ export function SettingsPanel({
         {creds.customer_id ? (
           <>
             {" "}
-            · active customer <Mono>{creds.customer_id}</Mono>
+            · active customer <CopyableId value={creds.customer_id} />
           </>
         ) : null}
       </Status>

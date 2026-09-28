@@ -6,7 +6,7 @@ import { Button, Field, Input } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
 import { externalAccountPath, type ScaPanelProps } from "./scaApi";
-import { ButtonRow, Mono, Note, Panel } from "./ui";
+import { ButtonRow, CopyableId, Mono, Note, Panel } from "./ui";
 
 export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
   const [externalAccountId, setExternalAccountId] = useState("");
@@ -71,7 +71,7 @@ export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
       </ButtonRow>
       {challengeId && (
         <Note>
-          challengeId: <Mono>{challengeId}</Mono>
+          challengeId: <CopyableId value={challengeId} />
         </Note>
       )}
       {trusted && (

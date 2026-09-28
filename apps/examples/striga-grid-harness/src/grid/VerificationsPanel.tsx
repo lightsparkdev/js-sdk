@@ -5,7 +5,7 @@ import { Button } from "@lightsparkdev/origin";
 import { useState } from "react";
 
 import { gridPath } from "../api";
-import { ButtonRow, Mono, Note, Panel } from "../sca/ui";
+import { ButtonRow, CopyableId, Note, Panel } from "../sca/ui";
 import { pickId, TextField, type CallFn } from "./common";
 
 export function VerificationsPanel({
@@ -61,7 +61,7 @@ export function VerificationsPanel({
       </ButtonRow>
       {verificationId && (
         <Note>
-          Last verification: <Mono>{verificationId}</Mono>
+          Last verification: <CopyableId value={verificationId} />
         </Note>
       )}
     </Panel>

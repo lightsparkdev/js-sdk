@@ -4,8 +4,16 @@
 // inputs, actions, and the few captured values a follow-up step needs.
 
 import styled from "@emotion/styled";
-import { Card, Select } from "@lightsparkdev/origin";
-import type { ReactNode } from "react";
+import {
+  Button,
+  Card,
+  CentralIcon,
+  Select,
+  Tooltip,
+} from "@lightsparkdev/origin";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+const COPIED_RESET_MS = 1500;
 
 export function Panel({
   title,
@@ -69,6 +77,68 @@ export function EnumSelect({
   );
 }
 
+type CopyResult = { value: string; outcome: "copied" | "failed" };
+
+const COPY_FEEDBACK = {
+  idle: { label: "Copy", icon: "IconSquareBehindSquare1" },
+  copied: { label: "Copied", icon: "IconCheckmark2Small" },
+  failed: { label: "Copy failed", icon: "IconCrossSmall" },
+} as const;
+
+export function CopyableId({ value }: { value?: string | null }) {
+  const [result, setResult] = useState<CopyResult | null>(null);
+  const latestAttempt = useRef(0);
+
+  useEffect(() => {
+    if (!result) return;
+    const t = setTimeout(() => setResult(null), COPIED_RESET_MS);
+    return () => clearTimeout(t);
+  }, [result]);
+
+  if (!value) return <Mono>—</Mono>;
+
+  const { label, icon } =
+    COPY_FEEDBACK[result?.value === value ? result.outcome : "idle"];
+  return (
+    <CopyableRow>
+      <TruncatedMono title={value}>{value}</TruncatedMono>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              variant="ghost"
+              size="dense"
+              iconOnly
+              aria-label={`${label} ${value}`}
+              onClick={() => {
+                const attempt = ++latestAttempt.current;
+                const settle = (outcome: CopyResult["outcome"]) => {
+                  if (attempt === latestAttempt.current) {
+                    setResult({ value, outcome });
+                  }
+                };
+                void Promise.resolve()
+                  .then(() => navigator.clipboard.writeText(value))
+                  .then(
+                    () => settle("copied"),
+                    () => settle("failed"),
+                  );
+              }}
+            >
+              <CentralIcon name={icon} size={14} />
+            </Button>
+          }
+        />
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={6}>
+            <Tooltip.Popup>{label}</Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </CopyableRow>
+  );
+}
+
 const PanelBody = styled.div`
   display: flex;
   flex-direction: column;
@@ -105,4 +175,21 @@ export const Pre = styled.pre`
   border-radius: var(--corner-radius-sm, 6px);
   max-height: 240px;
   overflow: auto;
+`;
+
+const CopyableRow = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+`;
+
+const TruncatedMono = styled(Mono)`
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
 `;

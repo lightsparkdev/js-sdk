@@ -12,7 +12,7 @@ import { useCallback, useState } from "react";
 
 import { signLoginPasskey } from "./passkeyLogin";
 import { quotePath, type ScaChallengeView, type ScaPanelProps } from "./scaApi";
-import { ButtonRow, Mono, Note, Panel } from "./ui";
+import { ButtonRow, CopyableId, Mono, Note, Panel } from "./ui";
 
 interface AuthorizeResponse {
   status?: string;
@@ -90,7 +90,7 @@ export function PerTxAuthorizePanel({
       )}
       {challenge && (
         <Note>
-          quote: <Mono>{quoteId ?? "—"}</Mono>
+          quote: <CopyableId value={quoteId} />
           <br />
           factor: <Mono>{challenge.factor ?? "—"}</Mono>
           {challenge.availableFactors?.length
