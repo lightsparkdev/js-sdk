@@ -207,8 +207,9 @@ jobs:
       needs.prepare-lockfile.result == 'success' &&
       needs.major-policy.result == 'success'
     runs-on: ubuntu-latest
+    environment: js-sdk-release-preparation
     permissions:
-      contents: write
+      contents: read
     outputs:
       release_branch: ${{ steps.release.outputs.branch }}
       release_commit: ${{ steps.release.outputs.commit }}
@@ -236,12 +237,24 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
 
+      - name: "Create release App token"
+        id: release-app
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.JS_SDK_RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.JS_SDK_RELEASE_APP_PRIVATE_KEY }}
+          owner: lightsparkdev
+          repositories: js-sdk
+          permission-contents: write
+          permission-workflows: write
+
       - name: "Checkout candidate source"
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ needs.select.outputs.source_commit }}
           fetch-depth: 0
           path: release
+          token: ${{ steps.release-app.outputs.token }}
 
       - name: "Download generated lockfile"
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0

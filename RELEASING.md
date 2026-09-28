@@ -180,9 +180,21 @@ Prepare the following settings while publication remains disabled:
   `sdk-release/stable/*`; retain this environment for npm OIDC. Webdev and public
   js-sdk do not need `js-sdk-major-release` environments.
 - Protect release refs against updates, force pushes, and deletion. Permit
-  their creation only through the reviewed release workflow. Protect `main` and
-  disallow creating a **tag** called `main`, since it can shadow the reusable
-  workflow's branch reference.
+  their creation only through the reviewed release workflow, using a separate
+  creation ruleset whose sole bypass actor is the `lightspark-js-sdk-release`
+  GitHub App (App ID `5081612`). The built-in GitHub Actions App cannot serve as
+  this bypass actor. Keep the update/deletion protections without bypass actors.
+  Protect `main` and disallow creating a **tag** called `main`, since it can
+  shadow the reusable workflow's branch reference.
+- Install the release App only on public `lightsparkdev/js-sdk`, with Contents
+  and Workflows read/write permissions. Workflows access permits copying the
+  trusted release dispatcher into the prepared commit. Configure public
+  `js-sdk-release-preparation` with no reviewers or wait timer, no administrator
+  bypass, and a selected **branch** rule for `main` only. Store its Client ID as
+  environment variable `JS_SDK_RELEASE_APP_CLIENT_ID` and its PEM private key as
+  environment secret `JS_SDK_RELEASE_APP_PRIVATE_KEY`. The branch-creation job
+  uses this environment to obtain a repository-scoped installation token; keep
+  the key out of repository-wide secrets and the `npm` environment.
 - Configure npm trusted publishers for **all eight packages**, with repository
   `lightsparkdev/js-sdk`, workflow `js-sdk-publish.yml` (the caller), and environment
   `npm`. Permit direct publication for this workflow. Preserve granular token
