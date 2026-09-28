@@ -127,6 +127,9 @@ three-way patches relative to their recorded public parents, preserving
 intervening private edits. Conflicts fail visibly without acknowledging the
 revision; resolve them in a reviewed private import PR with the matching ledger.
 The workflow never executes public contributor code with its App token.
+Its existing `lightspark-copybara` App token is restricted to Webdev, with
+Contents and Pull requests write permissions. Reading public develop does not
+use this token. The App needs no Workflows permission for intake.
 While an import PR is open, subsequent intake runs leave its reviewed changes
 alone. Merge or close that PR before importing later public contributions.
 
@@ -151,6 +154,14 @@ workflow files and the independent lockfile are preserved. The exporter owns
 only the explicitly listed public workflow/action templates in `js/copy.bara.sky`.
 Private packages, apps, PR bodies, and agent context are excluded.
 
+The export job reads Webdev with its read-only `GITHUB_TOKEN` and writes public
+`js-sdk` with a separate `lightspark-js-sdk-sync` App token. Git selects credentials
+by the exact repository URL; no host-wide token is stored. The sync App is
+installed only on `js-sdk`, with Contents and Workflows write permissions. The
+Workflows grant is required to export the explicitly selected workflow templates
+from `js/.github/workflows/`. Copybara remains the only private-to-public source
+exporter. The same public token refreshes develop by merging public main.
+
 ## Activation checklist
 
 Prepare the following settings while publication remains disabled:
@@ -164,10 +175,26 @@ Prepare the following settings while publication remains disabled:
 | private    | `JS_SDK_EXPORT_BOOTSTRAP_SHA` | Exact reviewed public main SHA for the first export; clear immediately afterward |
 | public     | `JS_SDK_RELEASE_ENABLED`      | `true` only after the release protections are verified                           |
 
-- Install/authorize the existing Copybara App on both repositories with contents
-  and pull-request permissions sufficient for export and private PR creation.
-  The version bot must remain `lightspark-copybara[bot]` so its version-only
-  lockfile updates pass the existing attribution gate.
+- Keep the existing Copybara App authorized on Webdev for private intake and
+  version PRs. Both workflows request only Webdev Contents and Pull requests
+  write permissions. The version bot must remain `lightspark-copybara[bot]` so
+  its version-only lockfile updates pass the existing attribution gate.
+- Install a separate `lightspark-js-sdk-sync` App only on public
+  `lightsparkdev/js-sdk`, with Contents and Workflows read/write permissions.
+  Configure private environment `js-sdk-public-sync` with no required reviewers
+  or wait timer, no administrator bypass, and a selected **branch** rule for
+  `main` only. Store its Client ID as environment variable
+  `JS_SDK_SYNC_APP_CLIENT_ID` and PEM private key as environment secret
+  `JS_SDK_SYNC_APP_PRIVATE_KEY`. Keep this key out of repository-wide secrets.
+  Restrict each minted token to `js-sdk` and those two permissions. The export
+  job's built-in Webdev token has only Contents read permission.
+- In public `js-sdk-main-writers` and `js-sdk-branch-reviews`, replace the old
+  Copybara App bypass with the new sync App's numeric App ID, using Always
+  bypass. Preserve the administrator-through-PR allowance on main and all
+  review/check requirements. Keep branch integrity protections without bypass
+  actors. Do not add the sync App to release-ref creation or integrity bypasses;
+  release preparation uses its separate App. Audit other workflows before
+  removing `js-sdk` from the shared Copybara App's installation.
 - Require normal private CI, including Changeset and version-policy validation,
   and public package checks. A dedicated organization required-workflow rule for
   Webdev major approvals is not needed. Restrict public main
@@ -225,6 +252,10 @@ For the one-time authority cutover:
 1. Set private sync mode to `paused`; pause/drain the old public
    `test-release-sync.yaml` and `create-release-pr.yaml` workflows. Keep both new
    publishers and `JS_SDK_INTAKE_ENABLED` disabled. Source development can continue.
+   Configure the sync App, private environment, and public bypass actors above
+   before resuming. Merge the authentication changes while paused, then start
+   a new export run from updated main; rerunning an older run uses its old
+   workflow and authentication.
 2. Refresh the public/npm baseline audit. The September 18 baseline reconciles
    public main `46c731cfaf9b1eeb9584d2176bc006076de3b2d1` and develop
    `0b6713f8742b44a54f0cee5807f7a0b1c8d10255`. Non-Copybara commits in that develop
