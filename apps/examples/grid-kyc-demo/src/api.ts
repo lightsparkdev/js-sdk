@@ -22,7 +22,7 @@ export const API_BASE: Record<GridEnv, string> = {
 
 export const ENV_LABELS: Record<GridEnv, string> = {
   prod: "prod — api.lightspark.com/grid/2025-10-13",
-  dev: "dev — api.dev.dev.sparkinfra.net/grid/rc",
+  dev: "dev — configured development API",
   local: "local — localhost:5000/grid/rc",
 };
 

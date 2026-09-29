@@ -1,7 +1,5 @@
-// Grid REST API helpers for the harness UI. All requests are same-origin: the
-// harness proxy (scripts/striga_harness/proxy.py) injects Basic auth and
-// forwards /grid/* to the local Grid server, and serves /harness/creds. The UI
-// therefore never handles credentials itself.
+// Requests stay on the dev server's origin so stored API credentials remain
+// server-side.
 
 export interface HarnessCreds {
   platform_id?: string;
@@ -94,7 +92,9 @@ export async function loadCreds(): Promise<HarnessCreds> {
  * credentials against the target before writing, so a rejected token throws here
  * instead of failing later on every panel action.
  */
-export async function saveCreds(patch: HarnessCredsPatch): Promise<HarnessCreds> {
+export async function saveCreds(
+  patch: HarnessCredsPatch,
+): Promise<HarnessCreds> {
   const res = await fetch("/harness/creds", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

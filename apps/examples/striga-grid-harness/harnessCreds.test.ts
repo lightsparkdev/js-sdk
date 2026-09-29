@@ -1,4 +1,10 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -143,6 +149,26 @@ describe("saving harness credentials", () => {
     expect(decodeBasic(`Basic ${stored().basic_auth}`)).toBe(
       "new-id:new-secret",
     );
+  });
+
+  it("saves a first connection in a new private credentials directory", async () => {
+    stub = await startGridStub(200);
+    credsPath = path.join(dir, "new-config", "harness.json");
+
+    const res = await applyCredsPatch(
+      { base_url: stub.url, client_id: "new-id", client_secret: "new-secret" },
+      fileCredsStore(credsPath),
+    );
+
+    expect(res.status).toBe(200);
+    expect(stored().base_url).toBe(stub.url);
+    expect(decodeBasic(`Basic ${stored().basic_auth}`)).toBe(
+      "new-id:new-secret",
+    );
+    if (process.platform !== "win32") {
+      expect(statSync(credsPath).mode & 0o777).toBe(0o600);
+      expect(statSync(path.dirname(credsPath)).mode & 0o777).toBe(0o700);
+    }
   });
 
   it("drops environment-scoped ids when the target changes", async () => {

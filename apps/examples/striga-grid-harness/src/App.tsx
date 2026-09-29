@@ -318,7 +318,7 @@ export function App() {
         <Alert
           variant="critical"
           title="Could not load /harness/creds"
-          description={`${credsError}. The .grid-creds.json file may be missing — panels still work but fields are not prefilled.`}
+          description={`${credsError}. Open Settings to configure your connection.`}
         />
       )}
 

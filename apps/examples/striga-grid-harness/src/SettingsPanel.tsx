@@ -1,11 +1,3 @@
-// Point the harness at an environment without re-seeding.
-//
-// seed.py provisions a platform in the local DB and writes .grid-creds.json. For
-// dev/prod there is nothing to seed — the platform already exists — so this panel
-// takes the three values that cannot be discovered (target base URL and the API
-// token pair) and lets the UI discover the rest through the same endpoints the
-// other panels use.
-//
 // Secrets travel one way: they are POSTed to the dev server, which stores them and
 // injects the auth header on proxied requests. They are never read back into the
 // browser, so this panel shows only whether a token is configured.
@@ -64,7 +56,10 @@ export function SettingsPanel({
   );
   const [note, setNote] = useState<string | null>(null);
 
-  const save = async (patch: Parameters<typeof saveCreds>[0], okNote: string) => {
+  const save = async (
+    patch: Parameters<typeof saveCreds>[0],
+    okNote: string,
+  ) => {
     setBusy(true);
     setError(null);
     setNote(null);
@@ -157,7 +152,9 @@ export function SettingsPanel({
     <Wrapper>
       <Row>
         <Field.Root>
-          <Field.Label>Grid API base URL (including version prefix)</Field.Label>
+          <Field.Label>
+            Grid API base URL (including version prefix)
+          </Field.Label>
           <Input
             value={baseUrl}
             placeholder="http://localhost:5000/grid/rc"

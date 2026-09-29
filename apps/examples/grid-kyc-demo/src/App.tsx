@@ -563,8 +563,8 @@ export function App() {
         <PageHeader>
           <PageTitle>Grid KYC/KYB Demo</PageTitle>
           <PageSubtitle>
-            Internal demo tool for exercising the Grid KYC/KYB APIs — the hosted
-            link flow and the programmatic verification API. Everything runs
+            Example app for exercising the Grid KYC/KYB APIs — the hosted link
+            flow and the programmatic verification API. Everything runs
             client-side — credentials live in this browser tab only. Requests
             are proxied through Vite to the selected environment.
           </PageSubtitle>

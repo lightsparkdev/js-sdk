@@ -1,6 +1,6 @@
 # grid-kyc-demo
 
-Internal demo tool for exercising the Grid KYC/KYB APIs end-to-end — both the
+Example app for exercising the Grid KYC/KYB APIs end-to-end — both the
 hosted link flow and the programmatic verification API. Single-page Vite +
 React app, no backend. Credentials are entered at the top and live only in
 this tab's `sessionStorage`.
@@ -33,9 +33,12 @@ page so you can see exactly what's going over the wire.
 
 ## Run it locally
 
+From the JavaScript workspace root:
+
 ```bash
-cd js/apps/examples/grid-kyc-demo
-yarn dev
+yarn install
+yarn workspace @lightsparkdev/origin build:styles
+yarn workspace @lightsparkdev/grid-kyc-demo dev
 ```
 
 Opens on <http://localhost:3107>.
@@ -43,24 +46,28 @@ Opens on <http://localhost:3107>.
 The Vite dev server proxies API calls to one of three environments — pick from
 the **Environment** dropdown in the UI:
 
-| Env   | Target                                                    |
-| ----- | --------------------------------------------------------- |
-| prod  | `https://api.lightspark.com/grid/2025-10-13`              |
-| dev   | `https://api.dev.dev.sparkinfra.net/grid/rc`              |
-| local | `http://localhost:5000/grid/rc` (sparkcore on port 5000)  |
+| Env   | Target                                                   |
+| ----- | -------------------------------------------------------- |
+| prod  | `https://api.lightspark.com/grid/2025-10-13`             |
+| dev   | Set `GRID_DEV_API_URL` to your development Grid API URL. |
+| local | `http://localhost:5000/grid/rc`                          |
+
+For a development API, supply the full base URL, including its version path:
+
+```bash
+GRID_DEV_API_URL=https://your-grid-api.example/grid/rc yarn workspace @lightsparkdev/grid-kyc-demo dev
+```
+
+The dev environment rejects requests until this URL is configured. Restart the
+dev server after changing it.
 
 Credentials are stored under `grid-kyc-demo:creds:<env>` so prod and dev keys
 don't get mixed up. Switching env swaps the visible credential pair.
 
 ## Tips
 
-- The platform you're calling against needs `customer_kyc_mode = GRID_SWITCH_OWNED`
-  on at least one of its currencies, otherwise grid auto-approves new customers
-  on creation and the link flow has nothing to do.
-- For INDIVIDUAL customers on the LSP grid switch, the
-  `LSP_INDIVIDUAL_KYC_ENABLED` gatekeeper also has to be on for the platform.
-- The dashboard's own "Create KYC link" button is gated separately on
-  `GRID_DASHBOARD_INDIVIDUAL_KYC_LINK_ENABLED`; this demo calls the REST
-  endpoint directly and does not need it.
+- Use a platform configured for the KYC/KYB flow you want to exercise. Contact
+  your platform administrator if hosted links or individual verification are
+  unavailable for your account.
 - The redirect URI must be `https://` — Sumsub rejects `http://` and localhost.
   Leave the field blank to use Sumsub's default post-flow page.

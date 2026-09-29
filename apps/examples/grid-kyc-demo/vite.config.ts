@@ -1,33 +1,33 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { defineConfig, type ProxyOptions } from "vite";
 import settings from "../settings.json";
 
-// One proxy entry per env so the UI can switch between them at runtime
-// without restarting vite. Each rewrites the local prefix to the
-// versioned grid API path on the upstream host.
+const devApiUrl = process.env.GRID_DEV_API_URL?.trim();
 const ENVS = {
-  prod: {
-    prefix: "/api/prod",
-    target: "https://api.lightspark.com",
-    apiPath: "/grid/2025-10-13",
-    secure: true,
-  },
-  dev: {
-    prefix: "/api/dev",
-    target: "https://api.dev.dev.sparkinfra.net",
-    apiPath: "/grid/rc",
-    secure: true,
-  },
-  local: {
-    prefix: "/api/local",
-    target: "http://localhost:5000",
-    apiPath: "/grid/rc",
-    secure: false,
-  },
+  prod: "https://api.lightspark.com/grid/2025-10-13",
+  dev: devApiUrl,
+  local: "http://localhost:5000/grid/rc",
 } as const;
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: "require-development-api",
+      configureServer(server) {
+        if (devApiUrl) return;
+        server.middlewares.use("/api/dev", (_req, res) => {
+          res.statusCode = 503;
+          res.setHeader("Content-Type", "application/json");
+          res.end(
+            JSON.stringify({
+              error: "Set GRID_DEV_API_URL and restart the development server.",
+            }),
+          );
+        });
+      },
+    },
+  ],
   build: {
     /* Lightning CSS mangles @font-face unicode-range values; see the pin in
        @lightsparkdev/vite buildConfig. */
@@ -36,26 +36,37 @@ export default defineConfig({
   server: {
     port: settings.gridKycDemo.port,
     proxy: Object.fromEntries(
-      Object.values(ENVS).map((env) => [
-        env.prefix,
-        {
-          target: env.target,
+      Object.entries(ENVS).flatMap(([name, apiUrl]) => {
+        if (!apiUrl) return [];
+        const target = new URL(apiUrl);
+        if (
+          !["http:", "https:"].includes(target.protocol) ||
+          target.username ||
+          target.password ||
+          target.search ||
+          target.hash
+        ) {
+          throw new Error(
+            "Grid API URLs must use HTTP(S) without credentials, query parameters, or fragments.",
+          );
+        }
+        const prefix = `/api/${name}`;
+        const apiPath = target.pathname.replace(/\/$/, "");
+        const options: ProxyOptions = {
+          target: target.origin,
           changeOrigin: true,
-          secure: env.secure,
+          secure: target.protocol === "https:",
           rewrite: (path: string) =>
-            path.replace(new RegExp(`^${env.prefix}`), env.apiPath),
-          // The Grid API is basic-auth only, but the browser attaches every
-          // cookie set on localhost (cookies aren't port-scoped, so every
-          // other local dev app contributes). Once that jar passes ~10KB
-          // CloudFront rejects the request outright with a 403 "Request
-          // blocked" page, which looks like an auth failure.
+            path.replace(new RegExp(`^${prefix}`), apiPath),
+          // Localhost cookies from other apps can exceed the API's header limit.
           configure: (proxy) => {
             proxy.on("proxyReq", (proxyReq) => {
               proxyReq.removeHeader("cookie");
             });
           },
-        },
-      ]),
+        };
+        return [[`^${prefix}(?:/|\\?|$)`, options]];
+      }),
     ),
   },
 });

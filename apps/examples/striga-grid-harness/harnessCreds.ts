@@ -2,7 +2,8 @@
 // patch into the stored credentials, verifies a changed connection against the
 // target before persisting, and strips secrets from what the browser sees.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 
 export interface HarnessCreds {
   base_url?: string;
@@ -39,10 +40,6 @@ export interface JsonResponse {
   body: unknown;
 }
 
-/**
- * A store over the JSON file the seed script writes. Reads parse fresh on each
- * call so a re-seed or a settings save is picked up without a restart.
- */
 export function fileCredsStore(credsPath: string): CredsStore {
   return {
     read: () => {
@@ -50,12 +47,18 @@ export function fileCredsStore(credsPath: string): CredsStore {
         return JSON.parse(readFileSync(credsPath, "utf8")) as HarnessCreds;
       } catch (err) {
         return {
-          error: `Could not read .grid-creds.json: ${(err as Error).message}`,
+          error: `Could not read the credentials file: ${
+            (err as Error).message
+          }`,
         };
       }
     },
     write: (creds) => {
-      writeFileSync(credsPath, `${JSON.stringify(creds, null, 2)}\n`, "utf8");
+      mkdirSync(path.dirname(credsPath), { recursive: true, mode: 0o700 });
+      writeFileSync(credsPath, `${JSON.stringify(creds, null, 2)}\n`, {
+        encoding: "utf8",
+        mode: 0o600,
+      });
     },
   };
 }

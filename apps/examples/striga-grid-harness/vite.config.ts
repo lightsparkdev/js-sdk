@@ -1,5 +1,5 @@
+import { homedir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import react from "@vitejs/plugin-react";
 import { defineConfig, type Plugin } from "vite";
@@ -13,17 +13,10 @@ import {
   type HarnessCreds,
 } from "./harnessCreds";
 
-// The harness seed script (sparkcore/scripts/striga_harness/seed.py) writes
-// .grid-creds.json next to itself, and the settings panel POSTs to
-// /harness/creds to write it for an already-provisioned platform (dev/prod,
-// where seeding is not an option). The dev server reads it to (a) serve
-// /harness/creds to the UI and (b) inject HTTP Basic auth on the proxied
-// /grid/* requests — the two jobs the old stdlib proxy.py used to do.
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const CREDS_PATH = path.resolve(
-  HERE,
-  "../../../../sparkcore/scripts/striga_harness/.grid-creds.json",
-);
+// Keep default credentials outside the source tree to avoid accidental commits.
+const CREDS_PATH =
+  process.env.GRID_HARNESS_CREDS_FILE ??
+  path.join(homedir(), ".config", "lightspark", "striga-grid-harness.json");
 
 const credsStore = fileCredsStore(CREDS_PATH);
 
@@ -147,8 +140,7 @@ export default defineConfig({
   server: {
     port: settings.strigaGridHarness.port,
     proxy: {
-      // Forward /grid/* to the Grid server, injecting Basic auth from
-      // .grid-creds.json so the browser never handles credentials.
+      // Inject stored credentials server-side to keep them out of the browser.
       "/grid": {
         // Vite bakes this into the proxy instance at startup, so the target cannot
         // be changed per request (mutating the options `bypass` receives has no
