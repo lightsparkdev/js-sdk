@@ -314,7 +314,7 @@ From the private repository:
 
 ```sh
 node --test js/scripts/tests/*.test.cjs
-python3 -m unittest discover -s scripts/gha -p 'test_js_sdk_sync.py'
+python3 scripts/gha/test-js-sdk-sync.py
 node js/scripts/sdk-release.cjs validate-workspaces
 ```
 
