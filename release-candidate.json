@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "npmTag": "latest",
+  "packages": [
+    {
+      "name": "@lightsparkdev/core",
+      "previousVersion": "1.5.2",
+      "version": "1.5.3",
+      "directory": "packages/core"
+    },
+    {
+      "name": "@lightsparkdev/crypto-wasm",
+      "previousVersion": "0.1.26",
+      "version": "0.1.27",
+      "directory": "packages/crypto-wasm"
+    },
+    {
+      "name": "@lightsparkdev/eslint-config",
+      "previousVersion": "0.0.1",
+      "version": "0.0.2",
+      "directory": "packages/eslint-config"
+    },
+    {
+      "name": "@lightsparkdev/lightspark-cli",
+      "previousVersion": "0.1.19",
+      "version": "0.1.20",
+      "directory": "packages/lightspark-cli"
+    },
+    {
+      "name": "@lightsparkdev/lightspark-sdk",
+      "previousVersion": "1.9.19",
+      "version": "1.9.20",
+      "directory": "packages/lightspark-sdk"
+    },
+    {
+      "name": "@lightsparkdev/origin",
+      "previousVersion": "0.14.3",
+      "version": "0.15.0",
+      "directory": "packages/origin"
+    },
+    {
+      "name": "@lightsparkdev/ui",
+      "previousVersion": "1.1.20",
+      "version": "1.2.0",
+      "directory": "packages/ui"
+    }
+  ]
+}

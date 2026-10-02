@@ -1,5 +1,11 @@
 # @lightsparkdev/core
 
+## 1.5.3
+
+### Patch Changes
+
+- c10c39f: Preserve the receiver when serializing errors with custom `toJSON` methods.
+
 ## 1.5.2
 
 ### Patch Changes
