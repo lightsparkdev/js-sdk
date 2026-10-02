@@ -1,4 +1,5 @@
 #! /bin/bash
+set -euo pipefail
 
 # Need an initial build since the next command executes in any order
 build_cmd=(turbo run build:deps)

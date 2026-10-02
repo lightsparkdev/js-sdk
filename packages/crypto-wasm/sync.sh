@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 cd ../../../../lightspark-crypto-uniffi || exit
 wasm-pack build --target nodejs --out-name crypto

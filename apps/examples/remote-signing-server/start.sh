@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # See https://github.com/TypeStrong/ts-node/issues/1997#issuecomment-1774047586
 # ts-node has a known issue with es modules in Node.js 18.19 and above so we need to
@@ -17,6 +18,7 @@ elif (( VERSION_PARTS[0] == 18 )); then
   CMD="ts-node"
 else
   echo "Only Node.js versions 18 and above are supported"
+  exit 1
 fi
 
 # shellcheck disable=SC2086  # $CMD intentionally splits into a command + flags

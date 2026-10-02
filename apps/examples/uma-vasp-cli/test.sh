@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Validate that there are no CLI runtime errors. We've seen this happen with misconfigured module exports for example.
 
