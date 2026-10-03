@@ -9,10 +9,9 @@ on:
         type: string
       allow_major:
         description: >-
+          Allow major versions. You should leave this unchecked unless you're intending to release a major version which requires broader coordination with the team.
           WARNING: Major releases can break APIs and downstream integrations, requiring consumer upgrades and migration guidance.
           Published npm versions cannot be overwritten; recovery may require another release.
-          Confirm the exact package versions, breaking changes, and rollout with the team before proceeding.
-          Selecting this confirms that coordination and permits major publishing.
         required: true
         type: boolean
         default: false
