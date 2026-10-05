@@ -5,8 +5,23 @@ const registry = JSON.parse(
 );
 const calls = new Map();
 const realTimeout = global.setTimeout;
+let elapsedMs = 0;
 global.setTimeout = (callback, milliseconds, ...args) =>
-  realTimeout(callback, Math.min(milliseconds, 5), ...args);
+  realTimeout(
+    () => {
+      elapsedMs += milliseconds;
+      callback(...args);
+    },
+    Math.min(milliseconds, 5),
+  );
+
+if (process.env.REGISTRY_CLOCK_FILE) {
+  const startedAtMs = Date.now();
+  Date.now = () => startedAtMs + elapsedMs;
+  process.on("exit", () => {
+    fs.writeFileSync(process.env.REGISTRY_CLOCK_FILE, String(elapsedMs));
+  });
+}
 
 const realAbortTimeout = AbortSignal.timeout;
 AbortSignal.timeout = (milliseconds) =>
@@ -21,9 +36,10 @@ global.fetch = async (url, options = {}) => {
   const values = registry[key];
   const index = calls.get(key) || 0;
   calls.set(key, index + 1);
-  const value = Array.isArray(values)
+  let value = Array.isArray(values)
     ? values[Math.min(index, values.length - 1)]
     : values;
+  if (value?.availableAfterMs > elapsedMs) value = { status: 404 };
   if (value?.timeout) {
     if (!options.signal)
       throw new Error("Registry requests must have a timeout signal");

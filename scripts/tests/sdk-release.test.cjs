@@ -502,7 +502,41 @@ test("finalization creates exact tags and releases once, even after a newer vers
   );
 });
 
-test("missing or timed-out npm metadata prevents finalization and has bounded retries", (t) => {
+test("finalization waits for npm processing beyond two minutes", (t) => {
+  const r = repository(t);
+  const sha = r.candidate();
+  const plan = r.json(["publish-plan", "--candidate-ref", sha]);
+  r.published("0.1.1", sha);
+  const key = "@lightsparkdev/ui/0.1.1";
+  r.registry[key] = {
+    availableAfterMs: 3 * 60_000,
+    body: r.registry[key],
+  };
+  const remote = fs.mkdtempSync(path.join(os.tmpdir(), "sdk-tags-"));
+  t.after(() => fs.rmSync(remote, { recursive: true, force: true }));
+  execFileSync("git", ["init", "--bare", remote], { stdio: "pipe" });
+  r.git("remote", "add", "origin", remote);
+  const commands = fakePublishCommands(r);
+  const clockFile = path.join(r.root, "registry-clock.txt");
+  const result = r.run(["finalize", "--plan-env", "PLAN"], {
+    ...commands.env,
+    PLAN: JSON.stringify(plan),
+    REGISTRY_CLOCK_FILE: clockFile,
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Finalized.*ui@0.1.1/);
+  assert.ok(Number(fs.readFileSync(clockFile, "utf8")) >= 3 * 60_000);
+  assert.equal(commands.state().releases.length, 2);
+  assert.deepEqual(commands.state().publications, []);
+  assert.equal(
+    r
+      .git("ls-remote", "--tags", "origin", "refs/tags/@lightsparkdev/ui@0.1.1")
+      .split(/\s/)[0],
+    sha,
+  );
+});
+
+test("missing or timed-out npm metadata prevents finalization within ten minutes", (t) => {
   for (const missing of [{ status: 404 }, { timeout: true }]) {
     const r = repository(t);
     const sha = r.candidate();
@@ -510,18 +544,22 @@ test("missing or timed-out npm metadata prevents finalization and has bounded re
     r.published("0.1.1", sha);
     r.registry["@lightsparkdev/ui/0.1.1"] = missing;
     const commands = fakePublishCommands(r);
+    const clockFile = path.join(r.root, "registry-clock.txt");
     const result = r.run(["finalize", "--plan-env", "PLAN"], {
       ...commands.env,
       PLAN: JSON.stringify(plan),
+      REGISTRY_CLOCK_FILE: clockFile,
     });
     assert.notEqual(result.status, 0);
     assert.match(
       result.stderr,
-      /Packages remain unpublished|failed after retries/,
+      /metadata is still unavailable|failed after retries/,
     );
     assert.equal(commands.state().releases.length, 0);
     assert.equal(r.git("tag", "--list"), "");
-    assert.ok((result.stderr.match(/retrying in/g) || []).length <= 10);
+    assert.equal(Number(fs.readFileSync(clockFile, "utf8")), 10 * 60_000);
+    assert.match(result.stderr, /may already be published/);
+    assert.match(result.stderr, /Rerun the failed job/);
   }
 });
 

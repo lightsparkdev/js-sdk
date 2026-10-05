@@ -15,10 +15,10 @@ const PREPARED_RELEASE_PATHS = [
   ".github/workflows/js-sdk-publish.yml",
   "yarn.lock",
 ];
-const REGISTRY_VISIBILITY_ATTEMPTS = 11;
+const REGISTRY_VISIBILITY_ATTEMPTS = 45;
 const REGISTRY_VISIBILITY_INITIAL_DELAY_MS = 2_000;
 const REGISTRY_VISIBILITY_MAX_DELAY_MS = 15_000;
-const REGISTRY_VISIBILITY_TIMEOUT_MS = 120_000;
+const REGISTRY_VISIBILITY_TIMEOUT_MS = 600_000;
 const REGISTRY_REQUEST_TIMEOUT_MS = 15_000;
 const PUBLISHED_DEPENDENCY_FIELDS = [
   "dependencies",
@@ -1528,9 +1528,10 @@ async function waitForPublishedPackageMetadata(packageReleases, options = {}) {
           `${packageRelease.name}@${packageRelease.version}: ${lastError.message}`,
       )
       .join("; ");
-    throw new Error(`npm registry requests failed after retries: ${details}`, {
-      cause: requestFailures[0].lastError,
-    });
+    throw new Error(
+      `npm registry requests failed after retries: ${details}. These versions may already be published. Rerun the failed job to retry verification and finish release records.`,
+      { cause: requestFailures[0].lastError },
+    );
   }
 
   return packageReleases.map((packageRelease, index) => ({
@@ -1577,7 +1578,11 @@ async function verifyPublishedPackages(plan, options = {}) {
     verified.push(packageVersion);
   }
   if (unpublished.length) {
-    throw new Error(`Packages remain unpublished: ${unpublished.join(", ")}`);
+    throw new Error(
+      `npm metadata is still unavailable for ${unpublished.join(
+        ", ",
+      )}. These versions may already be published. Rerun the failed job to retry verification.`,
+    );
   }
   return verified;
 }
@@ -1617,12 +1622,14 @@ async function finalizePublishedPackages(plan, options = {}) {
   const missing = publishedPackages.filter(({ metadata }) => !metadata);
   if (missing.length) {
     throw new Error(
-      `Packages remain unpublished: ${missing
+      `npm metadata is still unavailable for ${missing
         .map(
           ({ packageRelease }) =>
             `${packageRelease.name}@${packageRelease.version}`,
         )
-        .join(", ")}`,
+        .join(
+          ", ",
+        )}. These versions may already be published. Rerun the failed job to retry verification and finish release records.`,
     );
   }
   for (const { packageRelease, metadata } of publishedPackages) {
