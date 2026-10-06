@@ -559,7 +559,7 @@ export const StackedArea = React.forwardRef<
                   </text>
                 ))}
 
-                {xLabels.map(({ x, text, index: labelIndex }, i) => (
+                {xLabels.map(({ x, text, index: labelIndex }) => (
                   <text
                     key={`${labelIndex}-${text}`}
                     x={x}
