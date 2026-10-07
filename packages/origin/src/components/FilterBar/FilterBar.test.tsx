@@ -89,7 +89,7 @@ test.describe("FilterBar", () => {
     await expect(page.getByTestId("applied-count")).toHaveText("2");
   });
 
-  test("closes the add menu after applying a multi-select enum option", async ({
+  test("keeps the add menu open while picking several multi-select options", async ({
     mount,
     page,
   }) => {
@@ -98,10 +98,13 @@ test.describe("FilterBar", () => {
     await page.getByRole("button", { name: "Filter" }).click();
     await page.getByRole("menuitem", { name: "Status" }).hover();
     await page.getByRole("menuitemcheckbox", { name: "Active" }).click();
+    await page.getByRole("menuitemcheckbox", { name: "Closed" }).click();
 
     await expect(page.getByTestId("applied-count")).toHaveText("1");
-    await expect(page.getByTestId("signature")).toHaveText("status=ACTIVE");
-    await expect(page.getByRole("menuitem", { name: "Status" })).toHaveCount(0);
+    await expect(page.getByTestId("signature")).toHaveText(
+      "status=ACTIVE&status=CLOSED",
+    );
+    await expect(page.getByRole("menuitem", { name: "Status" })).toBeVisible();
   });
 
   test("closes the add menu after applying an exclusive enum option", async ({

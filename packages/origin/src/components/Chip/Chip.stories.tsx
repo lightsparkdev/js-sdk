@@ -62,6 +62,22 @@ export const FilterInteractiveValue: StoryObj<typeof ChipFilter> = {
   ),
 };
 
+/** The operator can be interactive too. `operatorLabel` names it for screen readers. */
+export const FilterInteractiveOperator: StoryObj<typeof ChipFilter> = {
+  render: () => (
+    <ChipFilter
+      property="Status"
+      operator={
+        <ChipFilter.Trigger onClick={() => {}}>is not</ChipFilter.Trigger>
+      }
+      operatorLabel="is not"
+      value={<ChipFilter.Trigger onClick={() => {}}>Failed</ChipFilter.Trigger>}
+      valueLabel="Failed"
+      onDismiss={() => {}}
+    />
+  ),
+};
+
 export const FilterSmall: StoryObj<typeof ChipFilter> = {
   render: (args) => <ChipFilter {...args} />,
   args: {

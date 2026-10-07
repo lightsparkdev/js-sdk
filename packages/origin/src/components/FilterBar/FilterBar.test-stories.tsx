@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { FilterBar } from "./parts";
-import { type FilterBarConfig } from "./parts";
+import { type FilterBarConfig } from "./filterBarContext";
 import {
   loadFilterStatesFromUrl,
   getDefaultFilterStates,

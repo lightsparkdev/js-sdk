@@ -93,6 +93,30 @@
   .operator {
     @include body-sm;
     color: var(--text-secondary);
+
+    [data-chip-trigger] {
+      @include button-reset;
+      @include body-sm;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0 var(--spacing-xs);
+      color: var(--text-secondary);
+      transition: background-color 150ms ease;
+
+      &:hover:not(:disabled) {
+        background-color: var(--surface-hover);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--border-focus);
+        outline-offset: -2px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
   }
 
   .value {
@@ -139,6 +163,16 @@
     padding: 0;
 
     .value {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+    }
+  }
+
+  .segment:has(.operator [data-chip-trigger]) {
+    padding: 0;
+
+    .operator {
       display: flex;
       align-items: stretch;
       height: 100%;

@@ -1,4 +1,5 @@
 @use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
 
 .root {
   display: flex;
@@ -28,6 +29,40 @@
   border-radius: 50%;
   background: var(--surface-blue-strong);
   flex-shrink: 0;
+}
+
+// Sticky keeps the search reachable while the option list scrolls. The
+// negative top cancels the menu popup's padding.
+.optionSearch {
+  position: sticky;
+  top: calc(-1 * var(--spacing-3xs));
+  z-index: 1;
+  margin: calc(-1 * var(--spacing-3xs)) calc(-1 * var(--spacing-3xs))
+    var(--spacing-3xs);
+  border-bottom: var(--stroke-xs) solid var(--border-overlay);
+  background: var(--surface-overlay);
+}
+
+.optionSearchInput {
+  @include input;
+
+  width: 100%;
+  padding: var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-3xs));
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+
+  &::placeholder {
+    @include input-placeholder;
+  }
+}
+
+.noOptionResults {
+  @include body-sm;
+
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--text-secondary);
 }
 
 .textEditorBody {

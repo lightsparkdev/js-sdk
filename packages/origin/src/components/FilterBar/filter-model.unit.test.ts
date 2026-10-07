@@ -7,7 +7,6 @@ import {
   getDateFilterDefaultRange,
   getDefaultFilterStates,
   getFilterSignature,
-  isEnumFilterOptionApplied,
   loadFilterStatesFromUrl,
   resolveDateFilterPresetState,
   saveFilterStatesToUrl,
@@ -15,6 +14,7 @@ import {
   type EnumFilterState,
   type FilterDescriptor,
 } from "./filter-model";
+import { isEnumFilterOptionApplied } from "./enumOptions";
 
 type TestFilterKey =
   | "createdAt"
@@ -444,6 +444,43 @@ describe("loadFilterStatesFromUrl", () => {
 });
 
 describe("saveFilterStatesToUrl", () => {
+  it("round-trips a non-default filter operator", () => {
+    const descriptors = [
+      {
+        type: "enum",
+        label: "Status",
+        id: "status",
+        operators: [
+          { label: "is", value: "is" },
+          { label: "is not", value: "isNot" },
+        ],
+        options: [{ label: "Expired", value: "EXPIRED" }],
+      },
+    ] as const satisfies readonly FilterDescriptor<string>[];
+    const states = getDefaultFilterStates(descriptors);
+    states.status = {
+      type: "enum",
+      isApplied: true,
+      appliedValues: ["EXPIRED"],
+      operator: "isNot",
+    };
+
+    const saved = saveFilterStatesToUrl(
+      descriptors,
+      new URLSearchParams(),
+      states,
+    );
+    expect(saved.toString()).toBe("status.__operator=isNot&status=EXPIRED");
+
+    expect(
+      loadFilterStatesFromUrl(
+        descriptors,
+        saved,
+        getDefaultFilterStates(descriptors),
+      ).status,
+    ).toEqual(states.status);
+  });
+
   it("serializes singular strings and enum arrays without comma loss", () => {
     const descriptors = [
       {

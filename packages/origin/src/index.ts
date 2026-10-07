@@ -112,6 +112,7 @@ export type {
   FieldsetErrorProps,
 } from "./components/Fieldset";
 export {
+  FILTER_OPERATORS,
   FilterBar,
   createRegistrationChannel,
   createUrlBackedFiltersHook,
@@ -141,6 +142,8 @@ export type {
   FilterDescriptorTuple,
   FilterActionRegistry,
   FilterId,
+  FilterOperatorOption,
+  FilterOperatorValue,
   FilterOrderPolicy,
   FilterState,
   FilterStateForDescriptor,

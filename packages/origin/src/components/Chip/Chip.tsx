@@ -70,8 +70,10 @@ export interface ChipFilterProps
   extends Omit<ChipProps, "children" | "variant"> {
   /** Property name */
   property: string;
-  /** Operator text */
-  operator: string;
+  /** Operator content */
+  operator: React.ReactNode;
+  /** Plain-text operator description when `operator` is interactive content. */
+  operatorLabel?: string;
   /**
    * Value content. Strings render as static text. To make the value segment
    * interactive, pass a `<ChipFilter.Trigger>` (for example composed with a
@@ -157,11 +159,25 @@ export const Chip = React.forwardRef<HTMLSpanElement, ChipProps>(
 // which doesn't stop keyboard activation on a composed trigger.
 const ChipFilterDisabledContext = React.createContext(false);
 
+// Strings, numbers, and bigints are self-describing. Anything else needs its
+// `*Label` prop to appear in the dismiss button's accessible label.
+function toPlainText(
+  node: React.ReactNode,
+  fallback: string | undefined,
+): string | undefined {
+  return typeof node === "string"
+    ? node
+    : typeof node === "number" || typeof node === "bigint"
+    ? String(node)
+    : fallback;
+}
+
 const ChipFilterRoot = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
   function ChipFilter(props, forwardedRef) {
     const {
       property,
       operator,
+      operatorLabel,
       value,
       valueLabel,
       size = "md",
@@ -186,29 +202,28 @@ const ChipFilterRoot = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
       }
     };
 
-    // Strings, numbers, and bigints are self-describing; everything else
-    // needs `valueLabel` to appear in the dismiss button's accessible label.
-    const valueText =
-      typeof value === "string"
-        ? value
-        : typeof value === "number" || typeof value === "bigint"
-        ? String(value)
-        : valueLabel;
+    const valueText = toPlainText(value, valueLabel);
+    const operatorText = toPlainText(operator, operatorLabel);
+    // Missing or empty text (e.g. an explicit `valueLabel=""`) drops out of
+    // the label entirely. It can't leave a stray space.
+    const label = [property, operatorText, valueText].filter(Boolean).join(" ");
 
     if (valueText === undefined && value != null && onDismissProp) {
       devWarnOnce(
         "ChipFilter: a non-string `value` was provided without `valueLabel`. " +
           "The dismiss button's accessible label will omit the value " +
-          `("Remove filter ${property} ${operator}"). Pass \`valueLabel\` ` +
+          `("Remove filter ${label}"). Pass \`valueLabel\` ` +
           "to describe the value for screen readers.",
       );
     }
-
-    // Empty text (e.g. an explicit `valueLabel=""`) drops out of the label
-    // entirely so it can't leave a trailing space.
-    const label = valueText
-      ? `${property} ${operator} ${valueText}`
-      : `${property} ${operator}`;
+    if (operatorText === undefined && operator != null && onDismissProp) {
+      devWarnOnce(
+        "ChipFilter: a non-string `operator` was provided without " +
+          "`operatorLabel`. The dismiss button's accessible label will omit " +
+          `the operator ("Remove filter ${label}"). Pass \`operatorLabel\` ` +
+          "to describe the operator for screen readers.",
+      );
+    }
     const resolvedDismissIcon = dismissIcon ?? (
       <CentralIcon name="IconCrossSmall" size={DISMISS_ICON_SIZE} />
     );
@@ -224,7 +239,11 @@ const ChipFilterRoot = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
           <span className={styles.property}>{property}</span>
         </span>
         <span className={styles.segment}>
-          <span className={styles.operator}>{operator}</span>
+          <span className={styles.operator}>
+            <ChipFilterDisabledContext.Provider value={disabled}>
+              {operator}
+            </ChipFilterDisabledContext.Provider>
+          </span>
         </span>
         <span className={styles.segment}>
           <span className={styles.value}>

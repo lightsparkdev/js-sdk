@@ -8,6 +8,7 @@ import { Button } from "../Button";
 import { ChipFilter } from "../Chip";
 import { CentralIcon } from "../Icon";
 import { Input } from "../Input";
+import { stripNonPrintable } from "../../lib/text";
 import { Menu } from "../Menu";
 import { Popover } from "../Popover";
 import styles from "./FilterBar.module.scss";
@@ -17,11 +18,24 @@ import {
 } from "./datePresetParts";
 import {
   isEnumFilterOptionApplied,
-  resolveAppliedFilterIds,
+  matchesEnumFilterOption,
   toEnumOptionValueArray,
+} from "./enumOptions";
+import {
+  DEFAULT_CONFIG,
+  FilterBarContext,
+  useEditorOpenState,
+  useFilterBarContext,
+  type FilterBarConfig,
+  type FilterBarContextValue,
+  type ResolvedFilterBarConfig,
+} from "./filterBarContext";
+import {
+  resolveAppliedFilterIds,
   type DateFilterDescriptor,
   type DateFilterState,
   type EnumFilterDescriptor,
+  type EnumFilterOption,
   type EnumFilterState,
   type FilterDescriptor,
   type FilterDescriptorTuple,
@@ -29,88 +43,8 @@ import {
   type StringFilterDescriptor,
   type StringFilterState,
 } from "./filter-model";
+import { resolveFilterOperator } from "./filterOperators";
 import { type FiltersModel, type UpdateFilter } from "./useFilters";
-
-/** Generic filter-bar chrome configured once on `FilterBar.Root`. */
-export interface FilterBarConfig {
-  /**
-   * ChipFilter operator text between the filter's label and value
-   * (e.g. "is").
-   */
-  operator: string;
-  /**
-   * Pill value text while a filter is applied but has no value yet
-   * (e.g. "Empty").
-   */
-  emptyValue: string;
-  /** Commit button inside string and date value editors. */
-  apply: string;
-  /** Custom date-preset action text inside an add-menu submenu. */
-  customDatePreset?: string;
-  /** Add-filter trigger text and accessible name. */
-  addFilter: string;
-  /** Clear-all-filters action text. */
-  clearFilters: string;
-}
-
-type ResolvedFilterBarConfig = Required<FilterBarConfig>;
-
-const DEFAULT_CONFIG: ResolvedFilterBarConfig = {
-  operator: "is",
-  emptyValue: "Empty",
-  apply: "Apply",
-  customDatePreset: "Custom",
-  addFilter: "Filter",
-  clearFilters: "Clear",
-};
-
-interface ErasedFiltersModel {
-  descriptors: FilterDescriptorTuple;
-  states: Record<string, FilterState | undefined>;
-  appliedFilterIds: readonly string[];
-  appliedCount: number;
-  addFilter: (
-    descriptor: FilterDescriptor<string>,
-    options?: Parameters<FiltersModel["addFilter"]>[1],
-  ) => void;
-  updateFilter: (id: string, state: FilterState) => void;
-  removeFilter: (id: string) => void;
-  clearFilters: () => void;
-  openEditorId: string | null;
-  setEditorOpen: (id: string, open: boolean) => void;
-}
-
-interface FilterBarContextValue {
-  model: ErasedFiltersModel;
-  config: ResolvedFilterBarConfig;
-  formatDateValue: (start: Date, end: Date) => string;
-}
-
-const FilterBarContext = React.createContext<FilterBarContextValue | null>(
-  null,
-);
-
-function useFilterBarContext(): FilterBarContextValue {
-  const context = React.useContext(FilterBarContext);
-  if (context === null) {
-    throw new Error("FilterBar parts must be placed within <FilterBar.Root>.");
-  }
-  return context;
-}
-
-/**
- * Controlled open state for a pill's value editor, backed by the model
- * (`openEditorId`/`setEditorOpen`) so external callers — e.g. a command
- * surface via `addFilter({ openEditor: true })` — open the same
- * Popover/Menu the pill trigger does.
- */
-function useEditorOpenState(id: string) {
-  const { model } = useFilterBarContext();
-  return {
-    isOpen: model.openEditorId === id,
-    setIsOpen: (open: boolean) => model.setEditorOpen(id, open),
-  };
-}
 
 export interface RootProps<TDescriptors extends FilterDescriptorTuple>
   extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
@@ -192,6 +126,7 @@ function Root<const TDescriptors extends FilterDescriptorTuple>({
         },
         clearFilters: model.clearFilters,
         openEditorId: model.openEditorId,
+        discardsEmptyFilters: model.discardsEmptyFilters ?? false,
         setEditorOpen: (id, open) => {
           const descriptor = model.descriptors.find(
             (candidate) => candidate.id === id,
@@ -236,13 +171,22 @@ function Pill({ id }: PillProps) {
   if (!descriptor || !state?.isApplied) {
     return null;
   }
+  const operatorLabel =
+    resolveFilterOperator(descriptor, state.operator)?.label ?? config.operator;
 
   return (
     <ChipFilter
       data-filter-id={descriptor.id}
       size="sm"
       property={descriptor.label}
-      operator={config.operator}
+      operator={
+        descriptor.operators && descriptor.operators.length > 1 ? (
+          <OperatorEditor descriptor={descriptor} state={state} />
+        ) : (
+          operatorLabel
+        )
+      }
+      operatorLabel={operatorLabel}
       value={<PillValueEditor descriptor={descriptor} state={state} />}
       valueLabel={getFilterValueLabel(descriptor, state, {
         emptyValue: config.emptyValue,
@@ -250,6 +194,58 @@ function Pill({ id }: PillProps) {
       })}
       onDismiss={() => model.removeFilter(descriptor.id)}
     />
+  );
+}
+
+function OperatorEditor({
+  descriptor,
+  state,
+}: {
+  descriptor: FilterDescriptor<string>;
+  state: FilterState;
+}) {
+  const { model } = useFilterBarContext();
+  const options = descriptor.operators ?? [];
+  const selected = resolveFilterOperator(descriptor, state.operator);
+  const selectedValue = selected?.value ?? "";
+  const selectedLabel = selected?.label ?? "";
+
+  return (
+    <Menu.Root>
+      <Menu.Trigger
+        render={<ChipFilter.Trigger />}
+        aria-label={`${descriptor.label} operator: ${selectedLabel}`}
+      >
+        {selectedLabel}
+      </Menu.Trigger>
+      <Menu.Portal>
+        <Menu.Positioner align="start">
+          <Menu.Popup>
+            <Menu.RadioGroup
+              value={selectedValue}
+              onValueChange={(value: string) => {
+                const operator = resolveFilterOperator(descriptor, value)
+                  ?.value;
+                if (operator !== undefined) {
+                  model.updateFilter(descriptor.id, { ...state, operator });
+                }
+              }}
+            >
+              {options.map((option) => (
+                <Menu.RadioItem
+                  key={option.value}
+                  value={option.value}
+                  closeOnClick
+                >
+                  <Menu.RadioItemIndicator />
+                  {option.label}
+                </Menu.RadioItem>
+              ))}
+            </Menu.RadioGroup>
+          </Menu.Popup>
+        </Menu.Positioner>
+      </Menu.Portal>
+    </Menu.Root>
   );
 }
 
@@ -305,67 +301,70 @@ function AddButton({ label }: AddButtonProps) {
       <Menu.Portal>
         <Menu.Positioner align="start">
           <Menu.Popup>
-            {model.descriptors.map((descriptor) =>
-              descriptor.type === "enum" ? (
-                <Menu.SubmenuRoot key={descriptor.id}>
-                  <Menu.SubmenuTrigger>
-                    <span className={styles.submenuLabel}>
-                      {descriptor.label}
-                    </span>
-                    {model.states[descriptor.id]?.isApplied && (
-                      <span className={styles.activeDot} />
-                    )}
-                    <CentralIcon name="IconChevronRightSmall" size={16} />
-                  </Menu.SubmenuTrigger>
-                  <Menu.Portal>
-                    <Menu.Positioner align="start">
-                      <Menu.Popup>
-                        <AddMenuEnumOptions
-                          descriptor={descriptor}
-                          closeOnSelection
-                        />
-                      </Menu.Popup>
-                    </Menu.Positioner>
-                  </Menu.Portal>
-                </Menu.SubmenuRoot>
-              ) : descriptor.type === "date" &&
-                descriptor.datePicker?.showPresetShortcutsInAddMenu &&
-                descriptor.datePicker.presets?.length ? (
-                <Menu.SubmenuRoot key={descriptor.id}>
-                  <Menu.SubmenuTrigger>
-                    <span className={styles.submenuLabel}>
-                      {descriptor.label}
-                    </span>
-                    <CentralIcon name="IconChevronRightSmall" size={16} />
-                  </Menu.SubmenuTrigger>
-                  <Menu.Portal>
-                    <Menu.Positioner align="start">
-                      <Menu.Popup>
-                        <DatePresetShortcutOptions
-                          customLabel={config.customDatePreset}
-                          descriptor={descriptor}
-                          onApply={(state) =>
-                            model.updateFilter(descriptor.id, state)
-                          }
-                          onCustom={() =>
-                            model.addFilter(descriptor, { openEditor: true })
-                          }
-                        />
-                      </Menu.Popup>
-                    </Menu.Positioner>
-                  </Menu.Portal>
-                </Menu.SubmenuRoot>
-              ) : (
-                <Menu.Item
-                  key={descriptor.id}
-                  onClick={() =>
-                    model.addFilter(descriptor, { openEditor: true })
-                  }
-                >
-                  {descriptor.label}
-                </Menu.Item>
-              ),
-            )}
+            {model.descriptors.map((descriptor) => (
+              <React.Fragment key={descriptor.id}>
+                {descriptor.addMenuSeparatorBefore ? <Menu.Separator /> : null}
+                {descriptor.type === "enum" ? (
+                  <Menu.SubmenuRoot>
+                    <Menu.SubmenuTrigger>
+                      <span className={styles.submenuLabel}>
+                        {descriptor.label}
+                      </span>
+                      {model.states[descriptor.id]?.isApplied && (
+                        <span className={styles.activeDot} />
+                      )}
+                      <CentralIcon name="IconChevronRightSmall" size={16} />
+                    </Menu.SubmenuTrigger>
+                    <Menu.Portal>
+                      <Menu.Positioner align="start">
+                        <Menu.Popup>
+                          <AddMenuEnumOptions
+                            descriptor={descriptor}
+                            closeOnSelection
+                            removeWhenEmptied
+                          />
+                        </Menu.Popup>
+                      </Menu.Positioner>
+                    </Menu.Portal>
+                  </Menu.SubmenuRoot>
+                ) : descriptor.type === "date" &&
+                  descriptor.datePicker?.showPresetShortcutsInAddMenu &&
+                  descriptor.datePicker.presets?.length ? (
+                  <Menu.SubmenuRoot>
+                    <Menu.SubmenuTrigger>
+                      <span className={styles.submenuLabel}>
+                        {descriptor.label}
+                      </span>
+                      <CentralIcon name="IconChevronRightSmall" size={16} />
+                    </Menu.SubmenuTrigger>
+                    <Menu.Portal>
+                      <Menu.Positioner align="start">
+                        <Menu.Popup>
+                          <DatePresetShortcutOptions
+                            customLabel={config.customDatePreset}
+                            descriptor={descriptor}
+                            onApply={(state) =>
+                              model.updateFilter(descriptor.id, state)
+                            }
+                            onCustom={() =>
+                              model.addFilter(descriptor, { openEditor: true })
+                            }
+                          />
+                        </Menu.Popup>
+                      </Menu.Positioner>
+                    </Menu.Portal>
+                  </Menu.SubmenuRoot>
+                ) : (
+                  <Menu.Item
+                    onClick={() =>
+                      model.addFilter(descriptor, { openEditor: true })
+                    }
+                  >
+                    {descriptor.label}
+                  </Menu.Item>
+                )}
+              </React.Fragment>
+            ))}
           </Menu.Popup>
         </Menu.Positioner>
       </Menu.Portal>
@@ -376,29 +375,87 @@ function AddButton({ label }: AddButtonProps) {
 function AddMenuEnumOptions({
   descriptor,
   closeOnSelection = false,
+  removeWhenEmptied = false,
 }: {
   descriptor: EnumFilterDescriptor<string>;
   closeOnSelection?: boolean;
+  /**
+   * Remove the filter when its last value is unchecked, if the model
+   * discards empty filters. The pill editor keeps it so the user can pick
+   * another value before closing.
+   */
+  removeWhenEmptied?: boolean;
 }) {
-  const { model } = useFilterBarContext();
+  const { config, model } = useFilterBarContext();
   const state = model.states[descriptor.id];
+  const applyOption = (option: EnumFilterOption) => {
+    model.addFilter(descriptor, { enumValue: option });
+  };
+  const [query, setQuery] = React.useState("");
+  const visibleOptions = descriptor.searchable
+    ? descriptor.options.filter((option) =>
+        matchesEnumFilterOption(option, query),
+      )
+    : descriptor.options;
+  const search = descriptor.searchable ? (
+    <div className={styles.optionSearch}>
+      <input
+        className={styles.optionSearchInput}
+        type="text"
+        value={query}
+        onChange={(event) => setQuery(stripNonPrintable(event.target.value))}
+        placeholder={config.searchOptions}
+        aria-label={`${config.searchOptions} ${descriptor.label}`}
+        autoFocus
+        onKeyDown={(event) => {
+          // Keep typed characters out of the menu's typeahead; arrows and
+          // Escape still reach it for keyboard navigation and dismissal.
+          if (!MENU_NAVIGATION_KEYS.has(event.key)) {
+            event.stopPropagation();
+          }
+        }}
+      />
+    </div>
+  ) : null;
+  const noResults =
+    descriptor.searchable && visibleOptions.length === 0 ? (
+      <div className={styles.noOptionResults} role="status">
+        {config.noOptionResults}
+      </div>
+    ) : null;
 
   if (descriptor.isMulti) {
     return (
       <>
-        {descriptor.options.map((option) => (
+        {search}
+        {visibleOptions.map((option) => (
           <Menu.CheckboxItem
             key={option.label}
             checked={isEnumFilterOptionApplied(state, option)}
-            closeOnClick={closeOnSelection}
-            onCheckedChange={() =>
-              model.addFilter(descriptor, { enumValue: option })
-            }
+            closeOnClick={false}
+            onCheckedChange={() => {
+              const uncheckingLastValue =
+                state?.type === "enum" &&
+                state.appliedValues.every((value) =>
+                  toEnumOptionValueArray(option.value).includes(value),
+                ) &&
+                isEnumFilterOptionApplied(state, option);
+              if (
+                removeWhenEmptied &&
+                model.discardsEmptyFilters &&
+                uncheckingLastValue
+              ) {
+                model.removeFilter(descriptor.id);
+                return;
+              }
+              applyOption(option);
+            }}
           >
             <Menu.CheckboxItemIndicator />
             {option.label}
           </Menu.CheckboxItem>
         ))}
+        {noResults}
       </>
     );
   }
@@ -409,30 +466,36 @@ function AddMenuEnumOptions({
     )?.label ?? "";
 
   return (
-    <Menu.RadioGroup
-      value={selectedLabel}
-      onValueChange={(label) => {
-        const option = descriptor.options.find(
-          (candidate) => candidate.label === label,
-        );
-        if (option) {
-          model.addFilter(descriptor, { enumValue: option });
-        }
-      }}
-    >
-      {descriptor.options.map((option) => (
-        <Menu.RadioItem
-          key={option.label}
-          value={option.label}
-          closeOnClick={closeOnSelection}
-        >
-          <Menu.RadioItemIndicator />
-          {option.label}
-        </Menu.RadioItem>
-      ))}
-    </Menu.RadioGroup>
+    <>
+      {search}
+      <Menu.RadioGroup
+        value={selectedLabel}
+        onValueChange={(label) => {
+          const option = descriptor.options.find(
+            (candidate) => candidate.label === label,
+          );
+          if (option) {
+            applyOption(option);
+          }
+        }}
+      >
+        {visibleOptions.map((option) => (
+          <Menu.RadioItem
+            key={option.label}
+            value={option.label}
+            closeOnClick={closeOnSelection}
+          >
+            <Menu.RadioItemIndicator />
+            {option.label}
+          </Menu.RadioItem>
+        ))}
+      </Menu.RadioGroup>
+      {noResults}
+    </>
   );
 }
+
+const MENU_NAVIGATION_KEYS = new Set(["ArrowDown", "ArrowUp", "Escape", "Tab"]);
 
 export interface ClearProps {
   label?: string;
@@ -565,8 +628,10 @@ function StringValueEditor({
   descriptor: StringFilterDescriptor<string>;
   state: StringFilterState;
 }) {
-  const { model, config, formatDateValue } = useFilterBarContext();
-  const { isOpen, setIsOpen } = useEditorOpenState(descriptor.id);
+  const { config, formatDateValue } = useFilterBarContext();
+  const { isOpen, setIsOpen, applyAndClose } = useEditorOpenState(
+    descriptor.id,
+  );
   const [draft, setDraft] = React.useState("");
   const [showError, setShowError] = React.useState(false);
   const valueLabel = getFilterValueLabel(descriptor, state, {
@@ -584,12 +649,7 @@ function StringValueEditor({
 
   const applyDraft = () => {
     if (draft.trim() === "") {
-      model.updateFilter(descriptor.id, {
-        ...state,
-        value: null,
-        isApplied: true,
-      });
-      setIsOpen(false);
+      applyAndClose({ ...state, value: null, isApplied: true });
       return;
     }
 
@@ -601,12 +661,7 @@ function StringValueEditor({
       return;
     }
 
-    model.updateFilter(descriptor.id, {
-      ...state,
-      value: value || null,
-      isApplied: true,
-    });
-    setIsOpen(false);
+    applyAndClose({ ...state, value: value || null, isApplied: true });
   };
 
   return (
@@ -663,8 +718,8 @@ function DateValueEditor({
   descriptor: DateFilterDescriptor<string>;
   state: DateFilterState;
 }) {
-  const { config, formatDateValue, model } = useFilterBarContext();
-  const { isOpen, setIsOpen } = useEditorOpenState(descriptor.id);
+  const { config, formatDateValue } = useFilterBarContext();
+  const { isOpen, setIsOpen, commit } = useEditorOpenState(descriptor.id);
   const valueLabel = getFilterValueLabel(descriptor, state, {
     emptyValue: config.emptyValue,
     formatDateValue,
@@ -689,9 +744,7 @@ function DateValueEditor({
                 applyLabel={config.apply}
                 descriptor={descriptor}
                 state={state}
-                onApply={(nextState) =>
-                  model.updateFilter(descriptor.id, nextState)
-                }
+                onApply={commit}
                 onClose={() => setIsOpen(false)}
               />
             ) : null}

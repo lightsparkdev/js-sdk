@@ -18,10 +18,16 @@ import {
   type FilterStateForId,
   type FilterStates,
 } from "./filter-model";
+import { isEmptyFilterState } from "./emptyFilters";
 
 interface UseFiltersOptionsBase<TDescriptors extends FilterDescriptorTuple> {
   /** Filter descriptors. Must be referentially stable (a module constant). */
   descriptors: TDescriptors;
+  /**
+   * Remove a filter left without a value: when its pill editor closes, or
+   * when the add menu unchecks its last value.
+   */
+  discardEmptyFilters?: boolean;
 }
 
 interface DescriptorOrderOptions<TDescriptors extends FilterDescriptorTuple> {
@@ -115,6 +121,13 @@ export interface FiltersModel<
   appliedCount: number;
   /** Stable applied-filter serialization for cursor pagination reset keys. */
   signature: string;
+  /**
+   * Whether the filter bar removes filters left without a value. Removal when
+   * an editor closes is part of `useFilters`. A model built another way only
+   * gets the removals the filter bar makes itself. See
+   * `UseFiltersOptions.discardEmptyFilters`.
+   */
+  discardsEmptyFilters?: boolean;
   addFilter: (
     descriptor: TDescriptors[number],
     options?: AddFilterOptions,
@@ -151,6 +164,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
     states: controlledStates,
     orderPolicy = "descriptor",
     appliedFilterIds: controlledAppliedFilterIds,
+    discardEmptyFilters = false,
   } = options;
   const onDescriptorStatesChange =
     options.orderPolicy === "application" ? undefined : options.onStatesChange;
@@ -215,8 +229,97 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
     }
   }
 
-  const [openEditorId, setOpenEditorId] =
+  const [openEditorId, setOpenEditorIdState] =
     React.useState<FilterId<TDescriptors> | null>(null);
+  const openEditorIdRef = React.useRef(openEditorId);
+  const setOpenEditor = React.useCallback(
+    (id: FilterId<TDescriptors> | null) => {
+      openEditorIdRef.current = id;
+      setOpenEditorIdState(id);
+    },
+    [],
+  );
+  const statesRef = React.useRef(states);
+  statesRef.current = states;
+  // An editor's latest commit can still be on its way to a controlled
+  // consumer when the editor closes. It must not read as an empty filter.
+  // Once the filter's state changes, such as on Back, the state wins.
+  const committedRef = React.useRef(
+    new Map<
+      FilterId<TDescriptors>,
+      { state: FilterState; baseline: FilterState | undefined }
+    >(),
+  );
+  const recordCommit = React.useCallback(
+    (id: FilterId<TDescriptors>, state: FilterState) => {
+      if (openEditorIdRef.current === id) {
+        committedRef.current.set(id, {
+          state,
+          baseline: (statesRef.current as Record<string, FilterState>)[id],
+        });
+      }
+    },
+    [],
+  );
+  const descriptorsById = React.useMemo(
+    () =>
+      new Map<string, TDescriptors[number]>(
+        descriptors.map((descriptor) => [descriptor.id, descriptor]),
+      ),
+    [descriptors],
+  );
+
+  /**
+   * `base` with the filter reset when its editor closes with no value. Clears
+   * the editor's commit record.
+   */
+  const withEditorClosed = React.useCallback(
+    (
+      base: FilterStates<TDescriptors>,
+      id: FilterId<TDescriptors>,
+    ): FilterStates<TDescriptors> => {
+      const currentState = (statesRef.current as Record<string, FilterState>)[
+        id
+      ];
+      const commit = committedRef.current.get(id);
+      committedRef.current.delete(id);
+      const finalState =
+        commit && commit.baseline === currentState
+          ? commit.state
+          : currentState;
+      const descriptor = descriptorsById.get(id);
+      if (
+        !discardEmptyFilters ||
+        !descriptor ||
+        !finalState?.isApplied ||
+        !isEmptyFilterState(finalState)
+      ) {
+        return base;
+      }
+      return { ...base, [id]: getDefaultFilterState(descriptor) };
+    },
+    [descriptorsById, discardEmptyFilters],
+  );
+
+  /**
+   * Opens `id`'s editor and closes any other. Returns `base` with the closed
+   * editor's empty filter removed.
+   */
+  const switchEditor = React.useCallback(
+    (
+      id: FilterId<TDescriptors>,
+      base: FilterStates<TDescriptors>,
+    ): FilterStates<TDescriptors> => {
+      const previousId = openEditorIdRef.current;
+      if (previousId === id) {
+        return base;
+      }
+      committedRef.current.delete(id);
+      setOpenEditor(id);
+      return previousId === null ? base : withEditorClosed(base, previousId);
+    },
+    [setOpenEditor, withEditorClosed],
+  );
 
   const applyStates = React.useCallback(
     (
@@ -270,6 +373,16 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
     [applicationOrder, applyStates, states],
   );
 
+  const openEditor = React.useCallback(
+    (id: FilterId<TDescriptors>) => {
+      const nextStates = switchEditor(id, states);
+      if (nextStates !== states) {
+        applyTransition(nextStates);
+      }
+    },
+    [applyTransition, states, switchEditor],
+  );
+
   const addFilter = React.useCallback(
     (descriptor: TDescriptors[number], options?: AddFilterOptions) => {
       const currentState = (states as Record<string, FilterState>)[
@@ -280,25 +393,36 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
         currentState.isApplied &&
         options?.openEditor
       ) {
-        setOpenEditorId(descriptor.id);
+        openEditor(descriptor.id);
         return;
       }
       const addedState =
         descriptor.type === "enum" && options?.enumValue
           ? applyEnumFilterOption(descriptor, currentState, options.enumValue)
           : getAddedFilterState(descriptor);
+      // Opening this editor closes any other one. An empty filter left in that
+      // editor is removed in the same transition. Two separate transitions
+      // would lose one of the changes.
+      const baseStates = options?.openEditor
+        ? switchEditor(descriptor.id, states)
+        : states;
+      recordCommit(descriptor.id, addedState);
       applyTransition(
         applyFilterConflicts(descriptors, descriptor.id, addedState, {
-          ...states,
+          ...baseStates,
           [descriptor.id]: addedState,
         }),
         descriptor.id,
       );
-      if (options?.openEditor) {
-        setOpenEditorId(descriptor.id);
-      }
     },
-    [applyTransition, descriptors, states],
+    [
+      applyTransition,
+      descriptors,
+      openEditor,
+      recordCommit,
+      states,
+      switchEditor,
+    ],
   );
 
   const updateFilter = React.useCallback(
@@ -306,6 +430,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
       id: TId,
       newState: FilterStateForId<TDescriptors, TId>,
     ) {
+      recordCommit(id, newState);
       applyTransition(
         applyFilterConflicts(descriptors, id, newState, {
           ...states,
@@ -314,39 +439,49 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
         id,
       );
     },
-    [applyTransition, descriptors, states],
+    [applyTransition, descriptors, recordCommit, states],
   );
 
   const removeFilter = React.useCallback(
     (id: FilterId<TDescriptors>) => {
-      const descriptor = descriptors.find((candidate) => candidate.id === id);
+      const descriptor = descriptorsById.get(id);
       if (!descriptor) {
         return;
       }
+      committedRef.current.delete(id);
       applyTransition({
         ...states,
         [id]: getDefaultFilterState(descriptor),
       });
-      setOpenEditorId((current) => (current === id ? null : current));
+      if (openEditorIdRef.current === id) {
+        setOpenEditor(null);
+      }
     },
-    [applyTransition, descriptors, states],
+    [applyTransition, descriptorsById, setOpenEditor, states],
   );
 
   const clearFilters = React.useCallback(() => {
+    committedRef.current.clear();
     applyStates(getDefaultFilterStates(descriptors), []);
-    setOpenEditorId(null);
-  }, [applyStates, descriptors]);
+    setOpenEditor(null);
+  }, [applyStates, descriptors, setOpenEditor]);
 
   const setEditorOpen = React.useCallback(
     (id: FilterId<TDescriptors>, open: boolean) => {
-      setOpenEditorId((current) => {
-        if (open) {
-          return id;
-        }
-        return current === id ? null : current;
-      });
+      if (open) {
+        openEditor(id);
+        return;
+      }
+      if (openEditorIdRef.current !== id) {
+        return;
+      }
+      setOpenEditor(null);
+      const nextStates = withEditorClosed(states, id);
+      if (nextStates !== states) {
+        applyTransition(nextStates);
+      }
     },
-    [],
+    [applyTransition, openEditor, setOpenEditor, states, withEditorClosed],
   );
 
   const signature = React.useMemo(
@@ -365,6 +500,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
       appliedFilterIds,
       appliedCount,
       signature,
+      discardsEmptyFilters: discardEmptyFilters,
       addFilter,
       updateFilter,
       removeFilter,
@@ -378,6 +514,7 @@ export function useFilters<const TDescriptors extends FilterDescriptorTuple>(
       appliedFilterIds,
       appliedCount,
       signature,
+      discardEmptyFilters,
       addFilter,
       updateFilter,
       removeFilter,

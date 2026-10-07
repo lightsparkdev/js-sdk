@@ -29,26 +29,30 @@ import type {
   DateRangeDraft,
 } from "../DatePicker";
 import { resolveDatePickerPreset } from "../DatePicker/resolvePreset";
+import {
+  isEnumFilterOptionApplied,
+  toEnumOptionValueArray,
+} from "./enumOptions";
+import {
+  getOperatorState,
+  resolveFilterOperator,
+  type FilterOperatorOption,
+  type FilterOperatorValue,
+} from "./filterOperators";
 
 export interface EnumFilterOption {
   label: string;
   value: string | string[];
-}
-
-/**
- * An enum option's value(s) as an array (`value` allows a bare string for
- * the common single-value case). Shared with the pill label derivation in
- * `parts.tsx`, which must match applied values against array-valued
- * options the same way the transitions below do.
- */
-export function toEnumOptionValueArray(value: string | string[]): string[] {
-  return Array.isArray(value) ? value : [value];
+  /** Extra text matched by option search, such as a currency's full name. */
+  keywords?: readonly string[];
 }
 
 interface FilterDescriptorBase<TId extends string> {
   /** URL param key and state key, unique within the descriptor set. */
   id: TId;
   label: string;
+  /** Show a visual separator before this descriptor in the add-filter menu. */
+  addMenuSeparatorBefore?: boolean;
   /**
    * Consumer-owned mutual exclusion: applying this filter resets the
    * listed filters to their defaults.
@@ -117,6 +121,7 @@ export type DateFilterDatePickerConfig = {
 export interface DateFilterDescriptor<TId extends string>
   extends FilterDescriptorBase<TId> {
   type: "date";
+  operators?: never;
   /**
    * Starting position for the editor draft when the pill opens with no
    * committed value. Omitted, the editor opens empty. A function seeds a
@@ -153,6 +158,14 @@ export interface EnumFilterDescriptor<TId extends string>
   type: "enum";
   options: readonly EnumFilterOption[];
   isMulti?: boolean;
+  /**
+   * Optional operator choices shown in the applied filter pill, built from
+   * `FILTER_OPERATORS`. The first option is the default and is omitted from
+   * the URL.
+   */
+  operators?: readonly FilterOperatorOption[];
+  /** Show a search input above the options in the add menu and pill editor. */
+  searchable?: boolean;
 }
 
 interface StringFilterDescriptorBase<TId extends string>
@@ -160,6 +173,7 @@ interface StringFilterDescriptorBase<TId extends string>
   type: "string";
   /** Editor input placeholder. Omitted, the input shows no placeholder. */
   placeholder?: string;
+  operators?: never;
 }
 
 export type StringFilterDescriptor<TId extends string> =
@@ -193,6 +207,7 @@ interface DateFilterStateBase {
   isApplied: boolean;
   start: Date | null;
   end: Date | null;
+  operator?: FilterOperatorValue;
 }
 
 /**
@@ -338,12 +353,14 @@ export interface EnumFilterState {
   type: "enum";
   isApplied: boolean;
   appliedValues: string[];
+  operator?: FilterOperatorValue;
 }
 
 export interface StringFilterState {
   type: "string";
   isApplied: boolean;
   value: string | null;
+  operator?: FilterOperatorValue;
 }
 
 export type FilterState = DateFilterState | EnumFilterState | StringFilterState;
@@ -439,16 +456,27 @@ function getDateFilterStateValue(
     : state;
 }
 
-function getDefaultFilterStateValue(
+/**
+ * A filter's value-less state. Added filters (`isApplied`) start like this:
+ * string filters apply empty (the pill editor collects a value), date
+ * filters apply an open range, and enum filters apply empty (choosing a value
+ * goes through `applyEnumFilterOption`).
+ */
+function getEmptyFilterStateValue(
   descriptor: FilterDescriptor<string>,
+  isApplied: boolean,
 ): FilterState {
+  const operatorState = getOperatorState(descriptor);
   switch (descriptor.type) {
     case "date":
-      return getDateFilterStateValue(descriptor, false);
+      return {
+        ...getDateFilterStateValue(descriptor, isApplied),
+        ...operatorState,
+      };
     case "enum":
-      return { type: "enum", isApplied: false, appliedValues: [] };
+      return { type: "enum", isApplied, appliedValues: [], ...operatorState };
     case "string":
-      return { type: "string", isApplied: false, value: null };
+      return { type: "string", isApplied, value: null, ...operatorState };
     default: {
       const exhaustiveCheck: never = descriptor;
       throw new Error(`Unhandled filter type: ${String(exhaustiveCheck)}`);
@@ -459,8 +487,9 @@ function getDefaultFilterStateValue(
 export function getDefaultFilterState<
   TDescriptor extends FilterDescriptor<string>,
 >(descriptor: TDescriptor): FilterStateForDescriptor<TDescriptor> {
-  return getDefaultFilterStateValue(
+  return getEmptyFilterStateValue(
     descriptor,
+    false,
   ) as FilterStateForDescriptor<TDescriptor>;
 }
 
@@ -475,52 +504,14 @@ export function getDefaultFilterStates<
   ) as FilterStates<TDescriptors>;
 }
 
-/**
- * Initial state a filter gets when added without a value: string filters
- * apply empty (the pill editor collects a value), date filters
- * apply an open range, and enum filters apply empty (choosing a value goes
- * through `applyEnumFilterOption`).
- */
-function getAddedFilterStateValue(
-  descriptor: FilterDescriptor<string>,
-): FilterState {
-  switch (descriptor.type) {
-    case "date":
-      return getDateFilterStateValue(descriptor, true);
-    case "enum":
-      return { type: "enum", isApplied: true, appliedValues: [] };
-    case "string":
-      return { type: "string", isApplied: true, value: null };
-    default: {
-      const exhaustiveCheck: never = descriptor;
-      throw new Error(`Unhandled filter type: ${String(exhaustiveCheck)}`);
-    }
-  }
-}
-
+/** Initial state a filter gets when added without a value. */
 export function getAddedFilterState<
   TDescriptor extends FilterDescriptor<string>,
 >(descriptor: TDescriptor): FilterStateForDescriptor<TDescriptor> {
-  return getAddedFilterStateValue(
+  return getEmptyFilterStateValue(
     descriptor,
+    true,
   ) as FilterStateForDescriptor<TDescriptor>;
-}
-
-/**
- * Whether an option's value(s) are all present in an applied enum state —
- * the checked/selected binding for every value-choosing surface (add-menu
- * checked items, pill editor, external command surfaces).
- */
-export function isEnumFilterOptionApplied(
-  state: FilterState | undefined,
-  option: EnumFilterOption,
-): boolean {
-  if (state?.type !== "enum" || !state.isApplied) {
-    return false;
-  }
-  return toEnumOptionValueArray(option.value).every((value) =>
-    state.appliedValues.includes(value),
-  );
 }
 
 /**
@@ -536,8 +527,14 @@ export function applyEnumFilterOption(
   option: EnumFilterOption,
 ): EnumFilterState {
   const optionValues = toEnumOptionValueArray(option.value);
+  const operatorState = getOperatorState(descriptor, state?.operator);
   if (!descriptor.isMulti) {
-    return { type: "enum", isApplied: true, appliedValues: [...optionValues] };
+    return {
+      type: "enum",
+      isApplied: true,
+      appliedValues: [...optionValues],
+      ...operatorState,
+    };
   }
   const currentValues =
     state?.type === "enum" && state.isApplied ? state.appliedValues : [];
@@ -550,6 +547,7 @@ export function applyEnumFilterOption(
     appliedValues: isEnumFilterOptionApplied(state, option)
       ? withoutOption
       : [...withoutOption, ...optionValues],
+    ...operatorState,
   };
 }
 
@@ -607,9 +605,14 @@ function parseUrlDate(value: string): Date | null {
 }
 
 const DATE_FILTER_METADATA_SUFFIX = ".__origin";
+const FILTER_OPERATOR_METADATA_SUFFIX = ".__operator";
 
 function getDateFilterMetadataParam(id: string): string {
   return `${id}${DATE_FILTER_METADATA_SUFFIX}`;
+}
+
+function getFilterOperatorMetadataParam(id: string): string {
+  return `${id}${FILTER_OPERATOR_METADATA_SUFFIX}`;
 }
 
 export function validateFilterUrlKeyOwnership(
@@ -629,6 +632,11 @@ export function validateFilterUrlKeyOwnership(
 
   for (const descriptor of descriptors) {
     registerKey(descriptor.id, `descriptor key for filter "${descriptor.id}"`);
+    // Saving clears every filter's operator key, with or without operators.
+    registerKey(
+      getFilterOperatorMetadataParam(descriptor.id),
+      `operator metadata key for filter "${descriptor.id}"`,
+    );
     if (descriptor.type === "date" && descriptor.datePicker) {
       registerKey(
         getDateFilterMetadataParam(descriptor.id),
@@ -724,8 +732,15 @@ export function loadFilterStatesFromUrl<
       continue;
     }
     const paramValue = paramValues[0] ?? "";
+    const requestedOperator = searchParams.get(
+      getFilterOperatorMetadataParam(descriptor.id),
+    );
+    const operatorState = getOperatorState(descriptor, requestedOperator);
     if (paramValue === "") {
-      applyHydratedState(descriptor, getAddedFilterState(descriptor));
+      applyHydratedState(descriptor, {
+        ...getAddedFilterState(descriptor),
+        ...operatorState,
+      });
       continue;
     }
 
@@ -770,7 +785,12 @@ export function loadFilterStatesFromUrl<
         applyHydratedState(
           descriptor,
           appliedValues.length > 0
-            ? { type: "enum", isApplied: true, appliedValues }
+            ? {
+                type: "enum",
+                isApplied: true,
+                appliedValues,
+                ...operatorState,
+              }
             : getDefaultFilterState(descriptor),
         );
         break;
@@ -787,6 +807,7 @@ export function loadFilterStatesFromUrl<
                 type: "string",
                 isApplied: true,
                 value: value.trim() === "" ? null : value,
+                ...operatorState,
               },
         );
         break;
@@ -819,13 +840,9 @@ export function loadFilterStatesFromUrl<
                 start: fixedDraft.start,
                 end: fixedDraft.end,
                 presetId: parseDateFilterPresetId(descriptor, searchParams),
+                ...operatorState,
               })
-            : {
-                type: "date",
-                isApplied: true,
-                start,
-                end,
-              },
+            : { type: "date", isApplied: true, start, end, ...operatorState },
         );
         break;
       }
@@ -854,6 +871,7 @@ export function saveFilterStatesToUrl<
   validateFilterUrlKeyOwnership(descriptors);
   for (const descriptor of descriptors) {
     searchParams.delete(descriptor.id);
+    searchParams.delete(getFilterOperatorMetadataParam(descriptor.id));
     if (descriptor.type === "date" && descriptor.datePicker) {
       searchParams.delete(getDateFilterMetadataParam(descriptor.id));
     }
@@ -863,6 +881,10 @@ export function saveFilterStatesToUrl<
     const state = (states as Record<string, FilterState>)[descriptor.id];
     if (!state.isApplied) {
       continue;
+    }
+    const operator = resolveFilterOperator(descriptor, state.operator)?.value;
+    if (operator && operator !== descriptor.operators?.[0]?.value) {
+      searchParams.set(getFilterOperatorMetadataParam(descriptor.id), operator);
     }
 
     switch (state.type) {

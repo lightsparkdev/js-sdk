@@ -276,6 +276,25 @@ describe("createUrlBackedFiltersHook", () => {
     ).toThrow(/createdAt\.__origin/);
   });
 
+  it("rejects a filter id that collides with another filter's operator key", () => {
+    const useCollidingFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      history: "push",
+    });
+
+    expect(() =>
+      renderHook(() =>
+        useCollidingFilters({
+          descriptors: [
+            { id: "status", label: "Status", type: "string" },
+            { id: "status.__operator", label: "Operator", type: "string" },
+          ],
+          registerFilterActions: false,
+        }),
+      ),
+    ).toThrow(/status\.__operator/);
+  });
+
   it("accepts an ordering key distinct from DatePicker-owned URL keys", () => {
     currentSearch =
       "createdAt=2026-06-01T00%3A00%3A00.000Z%2C2026-06-01T00%3A00%3A00.000Z";
@@ -421,6 +440,109 @@ describe("createUrlBackedFiltersHook", () => {
     expect(updateCalls).toEqual([
       { search: "status=OPEN", history: "replace" },
     ]);
+  });
+
+  it("keeps an added empty filter out of the URL until it has a value", () => {
+    registry = createRegistry();
+    currentSearch = "";
+    updateCalls = [];
+    const useDiscardingFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      filterActionRegistry,
+      history: "push",
+      discardEmptyFilters: true,
+    });
+    const { result, rerender } = renderHook(() =>
+      useDiscardingFilters({
+        descriptors: ORDER_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[0], { openEditor: true });
+    });
+
+    expect(updateCalls).toEqual([]);
+    expect(result.current.appliedFilterIds).toEqual(["alpha"]);
+    expect(result.current.states.alpha).toMatchObject({
+      isApplied: true,
+      value: null,
+    });
+
+    act(() => {
+      result.current.updateFilter("alpha", {
+        ...result.current.states.alpha,
+        value: "late",
+      });
+    });
+    rerender();
+
+    expect(updateCalls).toEqual([{ search: "alpha=late", history: "push" }]);
+    expect(result.current.states.alpha).toMatchObject({ value: "late" });
+
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[1], { openEditor: true });
+    });
+    act(() => {
+      result.current.removeFilter("beta");
+    });
+
+    expect(updateCalls).toHaveLength(1);
+    expect(result.current.appliedFilterIds).toEqual(["alpha"]);
+  });
+
+  it("drops an added empty filter when Back or Forward changes the filters", () => {
+    registry = createRegistry();
+    currentSearch = "";
+    updateCalls = [];
+    const useDiscardingFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      filterActionRegistry,
+      history: "push",
+      discardEmptyFilters: true,
+    });
+    const { result, rerender } = renderHook(() =>
+      useDiscardingFilters({
+        descriptors: ORDER_DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    act(() => {
+      result.current.addFilter(ORDER_DESCRIPTORS[0], { openEditor: true });
+    });
+    expect(result.current.appliedFilterIds).toEqual(["alpha"]);
+
+    currentSearch = "beta=earlier";
+    rerender();
+    expect(result.current.appliedFilterIds).toEqual(["beta"]);
+
+    currentSearch = "";
+    rerender();
+    expect(result.current.appliedFilterIds).toEqual([]);
+  });
+
+  it("hides an empty filter loaded from an older link", () => {
+    registry = createRegistry();
+    currentSearch = "status=";
+    updateCalls = [];
+    const useDiscardingFilters = createUrlBackedFiltersHook({
+      useSearchParamsAdapter: useTestSearchParams,
+      filterActionRegistry,
+      history: "push",
+      discardEmptyFilters: true,
+    });
+    const { result } = renderHook(() =>
+      useDiscardingFilters({
+        descriptors: DESCRIPTORS,
+        registerFilterActions: false,
+      }),
+    );
+
+    expect(result.current.states.status.isApplied).toBe(false);
+    expect(result.current.appliedFilterIds).toEqual([]);
+    expect(updateCalls).toEqual([]);
   });
 
   it("clones latest committed parameters and preserves unrelated keys", () => {

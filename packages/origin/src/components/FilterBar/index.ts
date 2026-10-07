@@ -1,7 +1,8 @@
 export { FilterBar } from "./parts";
 
+export type { FilterBarConfig } from "./filterBarContext";
+
 export type {
-  FilterBarConfig,
   RootProps as FilterBarRootProps,
   PillProps as FilterBarPillProps,
   AddButtonProps as FilterBarAddButtonProps,
@@ -9,6 +10,12 @@ export type {
 } from "./parts";
 
 export { useFilters } from "./useFilters";
+
+export {
+  FILTER_OPERATORS,
+  type FilterOperatorOption,
+  type FilterOperatorValue,
+} from "./filterOperators";
 
 export type {
   AddFilterOptions,

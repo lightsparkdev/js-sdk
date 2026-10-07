@@ -412,3 +412,73 @@ describe("useFilters (controlled)", () => {
     expect(result.current.signature).toBe("reason=timeout");
   });
 });
+
+describe("useFilters empty-filter removal", () => {
+  const DESCRIPTORS = [
+    { type: "string", id: "reference", label: "Reference" },
+    { type: "string", id: "code", label: "Code" },
+  ] as const;
+
+  it("removes a filter whose editor closes without a value", () => {
+    const { result } = renderHook(() =>
+      useFilters({ descriptors: DESCRIPTORS, discardEmptyFilters: true }),
+    );
+
+    act(() => {
+      result.current.addFilter(DESCRIPTORS[0], { openEditor: true });
+    });
+    expect(result.current.appliedFilterIds).toEqual(["reference"]);
+
+    act(() => {
+      result.current.setEditorOpen("reference", false);
+    });
+    expect(result.current.appliedFilterIds).toEqual([]);
+  });
+
+  it("removes an empty filter when another filter's editor opens", () => {
+    const { result } = renderHook(() =>
+      useFilters({ descriptors: DESCRIPTORS, discardEmptyFilters: true }),
+    );
+
+    act(() => {
+      result.current.addFilter(DESCRIPTORS[0], { openEditor: true });
+    });
+    act(() => {
+      result.current.addFilter(DESCRIPTORS[1], { openEditor: true });
+    });
+
+    expect(result.current.appliedFilterIds).toEqual(["code"]);
+    expect(result.current.openEditorId).toBe("code");
+  });
+
+  it("keeps a filter restored from outside while its editor is open", () => {
+    const onStatesChange = vi.fn();
+    const defaults = getDefaultFilterStates(DESCRIPTORS);
+    const { result, rerender } = renderHook(
+      ({ states }) =>
+        useFilters({
+          descriptors: DESCRIPTORS,
+          discardEmptyFilters: true,
+          states,
+          onStatesChange,
+        }),
+      { initialProps: { states: defaults } },
+    );
+
+    act(() => {
+      result.current.addFilter(DESCRIPTORS[0], { openEditor: true });
+    });
+    rerender({
+      states: {
+        ...defaults,
+        reference: { type: "string", isApplied: true, value: "INV-42" },
+      },
+    });
+    onStatesChange.mockClear();
+    act(() => {
+      result.current.setEditorOpen("reference", false);
+    });
+
+    expect(onStatesChange).not.toHaveBeenCalled();
+  });
+});
