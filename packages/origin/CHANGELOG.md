@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.15.1
+
+### Patch Changes
+
+- 6359423: FilterBar: add an option search box for `searchable` enum filters (with `keywords`), "is" / "is not" `operators` for enum filters built from `FILTER_OPERATORS`, `addMenuSeparatorBefore` dividers, and an opt-in `discardEmptyFilters` that removes a filter left empty when its editor closes. With it, URL-backed filters also keep empty filters out of the URL until they have a value. Multi-select menus stay open while picking. Chip: `operator` accepts any React node, with `operatorLabel` naming it for screen readers.
+- 6bb6be2: Remove unused chart label callback parameters so the package compiles when consumers enable `noUnusedParameters`.
+
 ## 0.15.0
 
 ### Minor Changes
