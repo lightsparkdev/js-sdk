@@ -358,6 +358,49 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
     );
   }, [activeIndex, data]);
 
+  React.useLayoutEffect(() => {
+    if (
+      isHorizontal &&
+      (!interactiveProp || loading || width <= 0 || data.length === 0)
+    ) {
+      setActiveIndex(null);
+    }
+  }, [isHorizontal, interactiveProp, loading, width, data.length]);
+
+  // The active datum must be rendered before its tooltip can be measured.
+  React.useLayoutEffect(() => {
+    const tip = tooltipRef.current;
+    if (!isHorizontal || !tip) return;
+    if (activeIndex === null || activeIndex >= data.length) {
+      tip.style.display = "none";
+      return;
+    }
+
+    const positionTooltip = () => {
+      tip.style.display = "";
+      tip.style.transform = "none";
+      tip.style.left = `${Math.max(
+        0,
+        Math.min(
+          padLeft + plotWidth + PAD_RIGHT,
+          width - tip.offsetWidth - PAD_RIGHT,
+        ),
+      )}px`;
+      tip.style.top = `${Math.max(
+        0,
+        Math.min(
+          PAD_TOP + (activeIndex + 0.5) * slotSize,
+          height - tip.offsetHeight - PAD_TOP,
+        ),
+      )}px`;
+    };
+
+    positionTooltip();
+    const observer = new ResizeObserver(positionTooltip);
+    observer.observe(tip, { box: "border-box" });
+    return () => observer.disconnect();
+  });
+
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent<SVGSVGElement>) => {
       if (data.length === 0 || categoryLength <= 0) return;
@@ -372,29 +415,21 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
       setActiveIndex((prev) => (prev === idx ? prev : idx));
 
       const tip = tooltipRef.current;
-      if (tip) {
-        if (isHorizontal) {
-          const absY = PAD_TOP + (idx + 0.5) * slotSize;
-          tip.style.top = `${absY}px`;
-          tip.style.left = `${padLeft + plotWidth + 8}px`;
-          tip.style.transform = "none";
-        } else {
-          const absX = padLeft + (idx + 0.5) * slotSize;
-          const totalW = padLeft + plotWidth + padRight;
-          tip.style.display = "";
-          const tipW = tip.offsetWidth;
-          const fitsRight = absX + TOOLTIP_GAP + tipW <= totalW;
-          const fitsLeft = absX - TOOLTIP_GAP - tipW >= 0;
-          const preferRight = raw <= categoryLength / 2;
-          tip.style.left = `${absX}px`;
-          tip.style.top = `${PAD_TOP}px`;
-          if ((preferRight && fitsRight) || !fitsLeft) {
-            tip.style.transform = `translateX(${TOOLTIP_GAP}px)`;
-          } else {
-            tip.style.transform = `translateX(calc(-100% - ${TOOLTIP_GAP}px))`;
-          }
-        }
+      if (tip && !isHorizontal) {
+        const absX = padLeft + (idx + 0.5) * slotSize;
+        const totalW = padLeft + plotWidth + padRight;
         tip.style.display = "";
+        const tipW = tip.offsetWidth;
+        const fitsRight = absX + TOOLTIP_GAP + tipW <= totalW;
+        const fitsLeft = absX - TOOLTIP_GAP - tipW >= 0;
+        const preferRight = raw <= categoryLength / 2;
+        tip.style.left = `${absX}px`;
+        tip.style.top = `${PAD_TOP}px`;
+        if ((preferRight && fitsRight) || !fitsLeft) {
+          tip.style.transform = `translateX(${TOOLTIP_GAP}px)`;
+        } else {
+          tip.style.transform = `translateX(calc(-100% - ${TOOLTIP_GAP}px))`;
+        }
       }
     },
     [
@@ -494,28 +529,21 @@ export const Bar = React.forwardRef<HTMLDivElement, BarChartProps>(function Bar(
       e.preventDefault();
       setActiveIndex(next);
       const tip = tooltipRef.current;
-      if (tip) {
-        if (isHorizontal) {
-          tip.style.top = `${PAD_TOP + (next + 0.5) * slotSize}px`;
-          tip.style.left = `${padLeft + plotWidth + 8}px`;
-          tip.style.transform = "none";
-        } else {
-          const absX = padLeft + (next + 0.5) * slotSize;
-          const totalW = padLeft + plotWidth + padRight;
-          tip.style.display = "";
-          const tipW = tip.offsetWidth;
-          const fitsRight = absX + TOOLTIP_GAP + tipW <= totalW;
-          const fitsLeft = absX - TOOLTIP_GAP - tipW >= 0;
-          const preferRight = next < data.length / 2;
-          tip.style.left = `${absX}px`;
-          tip.style.top = `${PAD_TOP}px`;
-          if ((preferRight && fitsRight) || !fitsLeft) {
-            tip.style.transform = `translateX(${TOOLTIP_GAP}px)`;
-          } else {
-            tip.style.transform = `translateX(calc(-100% - ${TOOLTIP_GAP}px))`;
-          }
-        }
+      if (tip && !isHorizontal) {
+        const absX = padLeft + (next + 0.5) * slotSize;
+        const totalW = padLeft + plotWidth + padRight;
         tip.style.display = "";
+        const tipW = tip.offsetWidth;
+        const fitsRight = absX + TOOLTIP_GAP + tipW <= totalW;
+        const fitsLeft = absX - TOOLTIP_GAP - tipW >= 0;
+        const preferRight = next < data.length / 2;
+        tip.style.left = `${absX}px`;
+        tip.style.top = `${PAD_TOP}px`;
+        if ((preferRight && fitsRight) || !fitsLeft) {
+          tip.style.transform = `translateX(${TOOLTIP_GAP}px)`;
+        } else {
+          tip.style.transform = `translateX(calc(-100% - ${TOOLTIP_GAP}px))`;
+        }
       }
     },
     [

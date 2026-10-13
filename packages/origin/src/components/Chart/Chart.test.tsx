@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/experimental-ct-react";
+import { test, expect, type Locator } from "@playwright/experimental-ct-react";
 import AxeBuilder from "@axe-core/playwright";
 import {
   Sparkline,
@@ -25,6 +25,7 @@ import {
   SankeyBasic,
   FunnelBasic,
   BarBasic,
+  HorizontalBarInCard,
 } from "./Chart.test-stories";
 
 const axeConfig = {
@@ -599,6 +600,190 @@ test.describe("BarList ranked variant", () => {
     await mount(<BarListRanked />);
     const results = await new AxeBuilder({ page }).options(axeConfig).analyze();
     expect(results.violations).toEqual([]);
+  });
+});
+
+async function expectTooltipWithinChart(chart: Locator, tooltip: Locator) {
+  await expect(tooltip).toBeVisible();
+  await expect
+    .poll(async () => {
+      const chartBox = await chart.boundingBox();
+      const tooltipBox = await tooltip.boundingBox();
+      if (!chartBox || !tooltipBox)
+        throw new Error("Chart or tooltip not visible");
+      return Math.max(
+        chartBox.x - tooltipBox.x,
+        chartBox.y - tooltipBox.y,
+        tooltipBox.x + tooltipBox.width - chartBox.x - chartBox.width,
+        tooltipBox.y + tooltipBox.height - chartBox.y - chartBox.height,
+      );
+    })
+    .toBeLessThanOrEqual(0);
+}
+
+test.describe("Horizontal bar tooltip", () => {
+  for (const tooltipMode of [
+    "simple",
+    "compact",
+    "detailed",
+    "custom",
+  ] as const) {
+    test(`${tooltipMode} tooltip stays inside a clipped Card as rows change`, async ({
+      mount,
+      page,
+    }) => {
+      await mount(<HorizontalBarInCard tooltip={tooltipMode} />);
+      await expect(page.getByTestId("horizontal-bar-card")).toHaveCSS(
+        "overflow",
+        "clip",
+      );
+      const chart = page.getByTestId("horizontal-bar-chart");
+      const tooltip = chart.locator('> div[class*="tooltip"]');
+
+      await chart
+        .getByRole("img", { name: "Incoming: 12", exact: true })
+        .hover();
+      await expect(tooltip).toContainText("First");
+      await expectTooltipWithinChart(chart, tooltip);
+
+      await chart
+        .getByRole("img", { name: "Incoming: 120", exact: true })
+        .hover();
+      await expect(tooltip).toContainText("A much longer category label");
+      await expectTooltipWithinChart(chart, tooltip);
+    });
+  }
+
+  test("keyboard navigation keeps the first and last tooltips inside the chart", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<HorizontalBarInCard />);
+    const chart = page.getByTestId("horizontal-bar-chart");
+    const tooltip = chart.locator('> div[class*="tooltip"]');
+    const svg = chart.locator("svg");
+    await svg.focus();
+    await svg.press("Home");
+    await expect(tooltip).toContainText("First");
+    await expectTooltipWithinChart(chart, tooltip);
+
+    await svg.press("End");
+    await expect(tooltip).toContainText("A much longer category label");
+    await expectTooltipWithinChart(chart, tooltip);
+    await svg.press("Escape");
+    await expect(tooltip).toBeHidden();
+  });
+
+  test("an active tooltip stays inside the chart when its Card narrows", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<HorizontalBarInCard width={600} />);
+    const chart = page.getByTestId("horizontal-bar-chart");
+    const tooltip = chart.locator('> div[class*="tooltip"]');
+    const svg = chart.locator("svg");
+    await svg.focus();
+    await svg.press("End");
+    await expect(tooltip).toContainText("A much longer category label");
+    await expectTooltipWithinChart(chart, tooltip);
+
+    await component.update(<HorizontalBarInCard width={340} />);
+    await expect(chart).toHaveCSS("width", "298px");
+    await expect(tooltip).toContainText("A much longer category label");
+    await expectTooltipWithinChart(chart, tooltip);
+  });
+
+  for (const state of [
+    "loading",
+    "empty",
+    "zero-width",
+    "interaction disabled",
+  ] as const) {
+    test(`restoring the chart after ${state} keeps its tooltip hidden until interaction resumes`, async ({
+      mount,
+      page,
+    }) => {
+      const component = await mount(<HorizontalBarInCard />);
+      const chart = page.getByTestId("horizontal-bar-chart");
+      const tooltip = chart.locator('> div[class*="tooltip"]');
+      const firstBar = chart.getByRole("img", {
+        name: "Incoming: 12",
+        exact: true,
+      });
+      await firstBar.hover();
+      await expect(tooltip).toBeVisible();
+
+      await component.update(
+        <HorizontalBarInCard
+          loading={state === "loading"}
+          emptyData={state === "empty"}
+          width={state === "zero-width" ? 42 : 420}
+          interactive={state !== "interaction disabled"}
+        />,
+      );
+      if (state === "interaction disabled") {
+        await expect(tooltip).toHaveCount(0);
+      } else {
+        await expect(
+          page.getByTestId("horizontal-bar-card").locator("svg"),
+        ).toHaveCount(0);
+      }
+      await page.mouse.move(0, 0);
+
+      await component.update(<HorizontalBarInCard />);
+      await expect(firstBar).toBeVisible();
+      await expect(tooltip).toBeHidden();
+
+      await firstBar.hover();
+      await expect(tooltip).toContainText("First");
+      await expectTooltipWithinChart(chart, tooltip);
+    });
+  }
+
+  test("tooltip-free charts preserve active interaction while resizing and clear it on mouse leave", async ({
+    mount,
+    page,
+  }) => {
+    const component = await mount(<HorizontalBarInCard tooltip={false} />);
+    const chart = page.getByTestId("horizontal-bar-chart");
+    const status = page.getByRole("status");
+    await chart.getByRole("img", { name: "Incoming: 12", exact: true }).hover();
+    await expect(status).toContainText("First");
+
+    await component.update(<HorizontalBarInCard width={600} tooltip={false} />);
+    await expect(chart).toHaveCSS("width", "558px");
+    await expect(status).toContainText("First");
+
+    await page.mouse.move(0, 0);
+    await expect(status).toBeEmpty();
+    await component.update(<HorizontalBarInCard width={600} />);
+    await expect(chart.locator('> div[class*="tooltip"]')).toBeHidden();
+  });
+
+  test("a custom tooltip stays inside the chart when async details change its size", async ({
+    mount,
+    page,
+  }) => {
+    let releaseDetails!: () => void;
+    const detailsReady = new Promise<void>((resolve) => {
+      releaseDetails = resolve;
+    });
+    await page.route("**/tooltip-details", async (route) => {
+      await detailsReady;
+      await route.fulfill({ body: "Details loaded" });
+    });
+    await mount(<HorizontalBarInCard tooltip="growing" />);
+    const chart = page.getByTestId("horizontal-bar-chart");
+    const tooltip = chart.locator('> div[class*="tooltip"]');
+    await chart
+      .getByRole("img", { name: "Incoming: 120", exact: true })
+      .hover();
+    await expect(tooltip).toContainText("Loading");
+    await expectTooltipWithinChart(chart, tooltip);
+
+    releaseDetails();
+    await expect(tooltip).toContainText("Details loaded");
+    await expectTooltipWithinChart(chart, tooltip);
   });
 });
 

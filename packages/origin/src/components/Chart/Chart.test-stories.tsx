@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as Chart from "./";
+import { Card } from "../Card";
 
 const SAMPLE_DATA = [
   { date: "Mon", value: 120 },
@@ -374,6 +375,95 @@ export function BarBasic() {
       tooltip
       data-testid="bar-chart"
     />
+  );
+}
+
+function GrowingBarTooltip() {
+  const [expanded, setExpanded] = React.useState(false);
+
+  React.useEffect(() => {
+    let mounted = true;
+    void fetch("/tooltip-details").then(() => {
+      if (mounted) setExpanded(true);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <div style={{ width: expanded ? 220 : 80, height: expanded ? 120 : 20 }}>
+      {expanded ? "Details loaded" : "Loading"}
+    </div>
+  );
+}
+
+export function HorizontalBarInCard({
+  width = 420,
+  tooltip = "detailed",
+  loading = false,
+  emptyData = false,
+  interactive = true,
+}: {
+  width?: number;
+  tooltip?: "simple" | "compact" | "detailed" | "custom" | "growing" | false;
+  loading?: boolean;
+  emptyData?: boolean;
+  interactive?: boolean;
+}) {
+  return (
+    <Card.Root style={{ width }} data-testid="horizontal-bar-card">
+      <div style={{ padding: 20 }}>
+        <Chart.Bar
+          data={
+            emptyData
+              ? []
+              : [
+                  { name: "First", incoming: 12, outgoing: 8 },
+                  { name: "Second", incoming: 25, outgoing: 18 },
+                  { name: "Third", incoming: 40, outgoing: 24 },
+                  { name: "Fourth", incoming: 55, outgoing: 32 },
+                  { name: "Fifth", incoming: 70, outgoing: 48 },
+                  { name: "Sixth", incoming: 85, outgoing: 60 },
+                  {
+                    name: "A much longer category label",
+                    incoming: 120,
+                    outgoing: 80,
+                  },
+                ]
+          }
+          series={[
+            { key: "incoming", label: "Incoming" },
+            { key: "outgoing", label: "Outgoing" },
+          ]}
+          xKey="name"
+          orientation="horizontal"
+          height={180}
+          loading={loading}
+          interactive={interactive}
+          empty="No data"
+          grid
+          animate={false}
+          tooltip={
+            tooltip === "growing"
+              ? () => <GrowingBarTooltip />
+              : tooltip === "custom"
+              ? (datum) => (
+                  <div
+                    style={{
+                      width: 220,
+                      height: datum.name === "First" ? 40 : 120,
+                    }}
+                  >
+                    {String(datum.name)}
+                  </div>
+                )
+              : tooltip
+          }
+          data-testid="horizontal-bar-chart"
+        />
+      </div>
+    </Card.Root>
   );
 }
 
