@@ -1810,7 +1810,7 @@ function validateChangesetPolicy({ root, baseCommit, headCommit, exempt }) {
     )
   ) {
     throw new Error(
-      "Removing or moving a public workspace requires a reviewed exemption",
+      "Removing or moving a public workspace requires the js:no-changeset label",
     );
   }
   const missing = workspaces.filter(
@@ -1829,11 +1829,11 @@ function validateChangesetPolicy({ root, baseCommit, headCommit, exempt }) {
     throw new Error(
       `Add a new Changeset for ${missing
         .map(({ name }) => name)
-        .join(", ")}, or obtain an exact-head maintainer exemption`,
+        .join(", ")}, or apply js:no-changeset if no release is needed`,
     );
   process.stdout.write(
     `Validated ${notes.length} new or modified Changesets${
-      exempt ? " with reviewed exemption" : ""
+      exempt ? " with js:no-changeset exemption" : ""
     }\n`,
   );
 }

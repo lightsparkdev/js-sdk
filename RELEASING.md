@@ -27,9 +27,9 @@ have one parent and describe exactly that commit's public version changes.
 Changesets and candidate versions through Webdev's required `ci-gate`. Major
 version changes receive ordinary PR review; they do not require a separate
 approval environment or organization required-workflow rule. For a change that
-does not need release notes, apply `js:no-changeset`, obtain a maintain/admin
-approval of that exact head, then rerun the policy workflow. Malformed new notes
-still fail.
+does not need a release, apply `js:no-changeset`. The label is sufficient for the
+Changeset exemption; no separate maintainer approval is required. Malformed new
+notes and invalid release candidates still fail.
 
 Public packages are discovered from workspaces and restricted to `packages/*`,
 with `@lightsparkdev/*` names and public repository metadata. Internal workspaces
