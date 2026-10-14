@@ -6,7 +6,7 @@ import {
   within,
 } from "@testing-library/react";
 import { useState } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import * as DatePicker from "./";
 import { useRangeEndpointIntent } from "./useRangeEndpointIntent";
 
@@ -31,6 +31,10 @@ function ControlledRangeDraftHarness() {
     </DatePicker.Root>
   );
 }
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("DatePicker range ownership", () => {
   it("uses null teardown for legacy forwarded callback refs", () => {
