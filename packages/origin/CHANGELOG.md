@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.2
+
+### Patch Changes
+
+- fb5b9eb: - Keep horizontal `Chart.Bar` tooltips inside the chart so Cards and other containers with clipped overflow do not cut them off. Reposition tooltips when their content or the chart size changes.
+
 ## 0.15.1
 
 ### Patch Changes

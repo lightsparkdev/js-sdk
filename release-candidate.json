@@ -5,8 +5,8 @@
   "packages": [
     {
       "name": "@lightsparkdev/origin",
-      "previousVersion": "0.15.0",
-      "version": "0.15.1",
+      "previousVersion": "0.15.1",
+      "version": "0.15.2",
       "directory": "packages/origin"
     }
   ]
