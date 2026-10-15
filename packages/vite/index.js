@@ -375,6 +375,7 @@ export const buildConfig = ({
     "/umame/graphql": proxyOptions({ ws: true }),
     "/graphql/bridge": proxyOptions({ ws: true }),
     "^/umaauth/.*": proxyOptions(),
+    "/graphql/rfi": proxyOptions(),
     "/ui/logs": proxyOptions(),
     "/ui/event": proxyOptions(),
     "/grid-dashboard-api": proxyOptions(),
