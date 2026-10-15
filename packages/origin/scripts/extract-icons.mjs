@@ -148,6 +148,7 @@ const SECTIONS = [
       { name: "IconConnectors1" },
       { name: "IconConnectors2" },
       { name: "IconConsoleSparkle" },
+      { name: "IconCreditCard2" },
       { name: "IconCrossLarge" },
       { name: "IconCrossMedium" },
       { name: "IconCrossSmall" },

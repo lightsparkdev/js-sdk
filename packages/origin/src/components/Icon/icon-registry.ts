@@ -77,6 +77,7 @@ import { IconCoinsAddFilled } from "./icons/IconCoinsAddFilled";
 import { IconConnectors1 } from "./icons/IconConnectors1";
 import { IconConnectors2 } from "./icons/IconConnectors2";
 import { IconConsoleSparkle } from "./icons/IconConsoleSparkle";
+import { IconCreditCard2 } from "./icons/IconCreditCard2";
 import { IconCrossLarge } from "./icons/IconCrossLarge";
 import { IconCrossMedium } from "./icons/IconCrossMedium";
 import { IconCrossSmall } from "./icons/IconCrossSmall";
@@ -323,6 +324,7 @@ export const ICON_REGISTRY = {
   IconConnectors1,
   IconConnectors2,
   IconConsoleSparkle,
+  IconCreditCard2,
   IconCrossLarge,
   IconCrossMedium,
   IconCrossSmall,
