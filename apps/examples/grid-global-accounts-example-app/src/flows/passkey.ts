@@ -1,12 +1,11 @@
 // PASSKEY lifecycle: create (real registration), challenge, verify (assertion),
-// add (signed retry, session-stamped in production).
+// add (session-stamped signed retry).
 //
-// DOM-free operation functions. Attestation / assertion material is passed in
-// as plain values (the React layer captures it from the real WebAuthn ceremony
-// in production, or the seeded magic values in sandbox); this module talks to
-// Grid + Turnkey and emits log events through the injected `Reporter`.
+// DOM-free operation functions. Attestation material is passed in as plain
+// values (the React layer captures it from the real WebAuthn ceremony); this
+// module talks to Grid + Turnkey and emits log events through the injected
+// `Reporter`.
 
-import { SANDBOX_SIG, type Mode } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
@@ -159,7 +158,6 @@ export async function runPasskeyVerify(
 
 export interface PasskeyLoginParams {
   credId: string;
-  mode: Mode;
   /**
    * Raw WebAuthn credential id(s) for the assertion's allowCredentials
    * (production). Pass every registered passkey's raw id so the security key
@@ -168,8 +166,6 @@ export interface PasskeyLoginParams {
    */
   credentialIds?: string[];
   rpId?: string;
-  /** Sandbox-seeded assertion fields, used when not running a real ceremony. */
-  sandboxAssertion?: PasskeyAssertion;
 }
 
 export interface PasskeyLoginResult {
@@ -195,8 +191,7 @@ export async function signRealPasskey(
   return assertion;
 }
 
-// Guided log in: gen client key → /challenge → assertion (a real security-key
-// ceremony in production, the seeded sandbox assertion otherwise) → /verify.
+// Guided log in: gen client key → /challenge → security-key assertion → /verify.
 export async function loginPasskey(
   reporter: Reporter,
   auth: ApiAuth,
@@ -215,25 +210,18 @@ export async function loginPasskey(
     clientPublicKey,
   );
 
-  let assertion: PasskeyAssertion;
-  if (params.mode === "production") {
-    const real = await signRealPasskey(
-      reporter,
-      challenge,
-      params.credentialIds ?? [],
-      params.rpId,
-    );
-    assertion = {
-      credentialId: real.credentialId,
-      clientDataJson: real.clientDataJson,
-      authenticatorData: real.authenticatorData,
-      signature: real.signature,
-    };
-  } else {
-    if (!params.sandboxAssertion)
-      throw new Error("Sandbox assertion fields are required.");
-    assertion = params.sandboxAssertion;
-  }
+  const real = await signRealPasskey(
+    reporter,
+    challenge,
+    params.credentialIds ?? [],
+    params.rpId,
+  );
+  const assertion: PasskeyAssertion = {
+    credentialId: real.credentialId,
+    clientDataJson: real.clientDataJson,
+    authenticatorData: real.authenticatorData,
+    signature: real.signature,
+  };
 
   const data = await runPasskeyVerify(
     reporter,
@@ -253,16 +241,15 @@ export async function loginPasskey(
 // the challenge → assertion → verify ceremony directly against it (no create);
 // otherwise we register a new passkey first, then verify it into a session.
 //
-// `register` produces the attestation for the create leg (a real Touch ID
-// ceremony in production, the seeded magic attestation in sandbox). It is only
-// invoked when there is no existing credential, so callers don't pay for a
+// `register` produces the attestation for the create leg. It is only invoked
+// when there is no existing credential, so callers don't pay for a
 // registration prompt on an authenticate-with-existing sign-in.
 export interface PasskeySignInParams {
   accountId: string;
   nickname: string;
   existingCredId: string | null;
-  /** Login params reused for the verify ceremony (mode, rpId, sandbox seed, and
-   *  the raw `credentialIds` for the assertion). `credId` is filled in by
+  /** Login params reused for the verify ceremony (rpId and the raw
+   *  `credentialIds` for the assertion). `credId` is filled in by
    *  signInPasskey once the credential to use is known. */
   loginParams: Omit<PasskeyLoginParams, "credId">;
   /** Produce the attestation for the create leg. Only called when registering a
@@ -345,16 +332,12 @@ export async function addPasskeyRetry(
 ): Promise<unknown> {
   if (!requestId.trim())
     throw new Error("Request-Id is required — run the issue step first.");
-  // Sandbox accepts the magic value, but real Turnkey requires the
-  // CREATE_AUTHENTICATORS payload to be stamped by an authorized credential —
-  // the active session's signing key. Establish a session (e.g. OTP login or
-  // passkey verify) first so the session signing key is available.
-  let signature = SANDBOX_SIG;
-  if (auth.mode === "production") {
-    if (!payloadToSign)
-      throw new Error("Missing payloadToSign — run the issue step first.");
-    signature = await turnkeyStamp(payloadToSign);
-  }
+  // Turnkey requires the CREATE_AUTHENTICATORS payload to be stamped by an
+  // authorized credential — the active session's signing key. Establish a
+  // session (e.g. OTP login or passkey verify) first so the key is available.
+  if (!payloadToSign)
+    throw new Error("Missing payloadToSign — run the issue step first.");
+  const signature = await turnkeyStamp(payloadToSign);
   const { data } = await apiPost(
     auth,
     "/auth/credentials",

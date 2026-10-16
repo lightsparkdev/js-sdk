@@ -6,7 +6,6 @@ import {
   createExternalAccount,
   createQuote,
   executeQuote,
-  signPayload,
   type ExternalAccountParams,
 } from "../../flows/money";
 import { currencyCode, currencyDecimals } from "../../lib/format-money";
@@ -17,9 +16,8 @@ import type { AccountBalance } from "./WalletHome";
 /**
  * Fund — money-in. Registers an external US bank source account on the platform,
  * then quotes a transfer from that external source into the active customer's
- * internal account, signs the embedded-wallet payload, and executes. Sandbox
- * pre-fills the magic signature so Execute runs immediately; production stamps
- * with the live session key.
+ * internal account, and executes it. An external source needs no wallet
+ * signature.
  */
 export function Fund({
   accounts,
@@ -29,7 +27,6 @@ export function Fund({
   onDone: () => void;
 }) {
   const { activeCustomer, platformAuth, reporter } = useAppState();
-  const mode = platformAuth?.mode ?? "sandbox";
 
   const destinationAccountId =
     activeCustomer?.accountId ?? (accounts[0] ? String(accounts[0].id) : "");
@@ -77,22 +74,16 @@ export function Fund({
       if (!externalAccountId)
         throw new Error("External account create returned no id.");
 
-      // 2) Quote external -> customer's internal account, 3) sign, 4) execute.
+      // 2) Quote external -> customer's internal account, 3) execute.
       const quote = await createQuote(reporter, platformAuth, {
         sourceAccountId: externalAccountId,
         destinationAccountId,
         // Money-in: the entered amount is the customer's (receiving) amount.
         lockedCurrencySide: "RECEIVING",
         lockedCurrencyAmount: amountMinor,
-        mode,
       });
       if (!quote.quoteId) throw new Error("Quote returned no id.");
-      let signature = quote.signature;
-      if (!signature) {
-        const signed = await signPayload(mode, quote.payloadToSign ?? "");
-        signature = signed.signature;
-      }
-      await executeQuote(reporter, platformAuth, quote.quoteId, signature);
+      await executeQuote(reporter, platformAuth, quote.quoteId);
       setDone(`Funded ${amount} into ${destinationAccountId}.`);
       reporter.status("Funding complete.", "success");
       onDone();

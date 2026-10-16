@@ -4,7 +4,6 @@
 // public key and renders the returned data; this module only talks to Grid and
 // emits log events through the injected `Reporter`.
 
-import { SANDBOX_SIG } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
@@ -147,14 +146,11 @@ export async function addOauthRetry(
 ): Promise<unknown> {
   if (!requestId.trim())
     throw new Error("Request-Id is required — run the issue step first.");
-  // Real Turnkey requires the CREATE_OAUTH_PROVIDERS payload to be stamped by
-  // the active session's signing key; sandbox accepts the magic value.
-  let signature = SANDBOX_SIG;
-  if (auth.mode === "production") {
-    if (!payloadToSign)
-      throw new Error("Missing payloadToSign — run the issue step first.");
-    signature = await turnkeyStamp(payloadToSign);
-  }
+  // Turnkey requires the CREATE_OAUTH_PROVIDERS payload to be stamped by the
+  // active session's signing key.
+  if (!payloadToSign)
+    throw new Error("Missing payloadToSign — run the issue step first.");
+  const signature = await turnkeyStamp(payloadToSign);
   const { data } = await apiPost(
     auth,
     "/auth/credentials",

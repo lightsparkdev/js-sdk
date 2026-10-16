@@ -7,10 +7,9 @@
 
 import { generateP256KeyPair } from "@turnkey/crypto";
 
-import { SANDBOX_SIG } from "../config";
 import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
-import { buildWalletSignature, sealOtpBundle } from "../turnkey";
+import { buildWalletSignature, sealOtpBundle, turnkeyStamp } from "../turnkey";
 import { setSessionKeysFromTek } from "../session";
 import { setCtxCredential, setCtxSession } from "./context";
 
@@ -185,7 +184,11 @@ export async function addEmailOtpIssue(
   reporter: Reporter,
   auth: ApiAuth,
   accountId: string,
-): Promise<{ data: unknown; requestId: string | undefined }> {
+): Promise<{
+  data: unknown;
+  requestId: string | undefined;
+  payloadToSign: string | undefined;
+}> {
   const { data } = await apiPost(auth, "/auth/credentials", {
     type: "EMAIL_OTP",
     accountId,
@@ -197,7 +200,9 @@ export async function addEmailOtpIssue(
   });
   const d = data as Record<string, unknown>;
   const requestId = typeof d.requestId === "string" ? d.requestId : undefined;
-  return { data, requestId };
+  const payloadToSign =
+    typeof d.payloadToSign === "string" ? d.payloadToSign : undefined;
+  return { data, requestId, payloadToSign };
 }
 
 export async function addEmailOtpRetry(
@@ -205,14 +210,18 @@ export async function addEmailOtpRetry(
   auth: ApiAuth,
   accountId: string,
   requestId: string,
+  payloadToSign: string | undefined,
 ): Promise<unknown> {
   if (!requestId.trim())
     throw new Error("Request-Id is required — run the issue step first.");
+  if (!payloadToSign)
+    throw new Error("Missing payloadToSign — run the issue step first.");
+  const signature = await turnkeyStamp(payloadToSign);
   const { data } = await apiPost(
     auth,
     "/auth/credentials",
     { type: "EMAIL_OTP", accountId },
-    { "Grid-Wallet-Signature": SANDBOX_SIG, "Request-Id": requestId.trim() },
+    { "Grid-Wallet-Signature": signature, "Request-Id": requestId.trim() },
   );
   reporter.log({
     level: "response",

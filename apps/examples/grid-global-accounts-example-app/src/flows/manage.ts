@@ -3,9 +3,9 @@
 //
 // DOM-free operation functions. The endpoints are identical across credential
 // types, so these take the ids + platform `auth` directly. Each guided action
-// owns the whole issue → sign → retry chain in one call, pulling the signature
-// from the live session in production and from `SANDBOX_SIG` in sandbox; the
-// separate issue/retry functions remain for inspecting the 202 between legs.
+// owns the whole issue → sign → retry chain in one call, stamping the retry with
+// the live session key; the separate issue/retry functions remain for
+// inspecting the 202 between legs.
 
 import {
   decryptExportBundle,
@@ -13,7 +13,6 @@ import {
   hpkeDecrypt,
 } from "@turnkey/crypto";
 
-import { SANDBOX_SIG } from "../config";
 import { apiDelete, apiGet, apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { turnkeyStamp } from "../turnkey";
@@ -25,21 +24,6 @@ type IssueLeg = () => Promise<unknown>;
 type RetryLeg = (
   headers: Record<string, string>,
 ) => Promise<{ status: number; data: unknown }>;
-
-// Resolve the Grid-Wallet-Signature for a guided signed retry: the sandbox
-// magic value, or a real session stamp over the 202's payloadToSign in
-// production. Throws a clear error if production lacks a payload/session.
-async function guidedSignature(
-  auth: ApiAuth,
-  payloadToSign: string | undefined,
-): Promise<string> {
-  if (auth.mode !== "production") return SANDBOX_SIG;
-  if (!payloadToSign)
-    throw new Error(
-      "No payloadToSign in the 202 challenge — cannot stamp this retry.",
-    );
-  return turnkeyStamp(payloadToSign);
-}
 
 function payloadFrom(data: unknown): string | undefined {
   const v = (data as Record<string, unknown>)?.payloadToSign;
@@ -55,12 +39,10 @@ export interface GuidedRetryResult {
   retried: unknown;
 }
 
-// Run a guided issue → sign → retry chain: issue the 202, derive the signature
-// (session stamp in production, magic value in sandbox), then forward the
-// signed retry.
+// Run a guided issue → sign → retry chain: issue the 202, stamp its
+// payloadToSign with the session key, then forward the signed retry.
 async function runGuidedRetry(
   reporter: Reporter,
-  auth: ApiAuth,
   label: string,
   issue: IssueLeg,
   retry: RetryLeg,
@@ -74,7 +56,10 @@ async function runGuidedRetry(
   const requestId = requestIdFrom(issued);
   if (!requestId)
     throw new Error(`No requestId in the ${label} 202 challenge.`);
-  const signature = await guidedSignature(auth, payloadFrom(issued));
+  const payloadToSign = payloadFrom(issued);
+  if (!payloadToSign)
+    throw new Error(`No payloadToSign in the ${label} 202 challenge.`);
+  const signature = await turnkeyStamp(payloadToSign);
   const { data } = await retry({
     "Grid-Wallet-Signature": signature,
     "Request-Id": requestId,
@@ -93,7 +78,6 @@ export function deleteCredential(
   const path = `/auth/credentials/${encodeURIComponent(credId)}`;
   return runGuidedRetry(
     reporter,
-    auth,
     "Delete Credential",
     () => apiDelete(auth, path).then((r) => r.data),
     (headers) => apiDelete(auth, path, headers),
@@ -110,7 +94,6 @@ export function deleteSession(
   const path = `/auth/sessions/${encodeURIComponent(sessionId)}`;
   return runGuidedRetry(
     reporter,
-    auth,
     "Delete Session",
     () => apiDelete(auth, path).then((r) => r.data),
     (headers) => apiDelete(auth, path, headers),
@@ -198,7 +181,6 @@ export async function exportWallet(
   const body = { clientPublicKey: keyPair.publicKeyUncompressed };
   const result = await runGuidedRetry(
     reporter,
-    auth,
     "Wallet Export",
     () => apiPost(auth, path, body).then((r) => r.data),
     (headers) => apiPost(auth, path, body, headers),

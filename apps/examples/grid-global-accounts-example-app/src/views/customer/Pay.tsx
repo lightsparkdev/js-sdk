@@ -35,8 +35,7 @@ interface PendingQuote {
  * checks. On entry we list the customer's USD external accounts and let them
  * pick one; "Add USD bank account" registers a new one and selects it. Then:
  * amount → quote (SENDING-locked) → review → sign the embedded-wallet payload →
- * execute. Signature is the magic value in sandbox, a live session stamp in
- * production.
+ * execute. The signature is a live session stamp.
  */
 export function Pay({
   accounts,
@@ -46,7 +45,6 @@ export function Pay({
   onDone: () => void;
 }) {
   const { activeCustomer, platformAuth, reporter } = useAppState();
-  const mode = platformAuth?.mode ?? "sandbox";
   const customerId = activeCustomer?.id ?? "";
 
   const sourceAccountId =
@@ -153,7 +151,6 @@ export function Pay({
         // Money-out: the entered amount is what leaves the wallet (sending).
         lockedCurrencySide: "SENDING",
         lockedCurrencyAmount: amountMinor,
-        mode,
       });
       if (!quote.quoteId) throw new Error("Quote returned no id.");
       const destinationLabel =
@@ -174,14 +171,9 @@ export function Pay({
     setBusy(true);
     setError(null);
     try {
-      let signature = pending.quote.signature;
-      if (!signature) {
-        const signed = await signPayload(
-          mode,
-          pending.quote.payloadToSign ?? "",
-        );
-        signature = signed.signature;
-      }
+      const { signature } = await signPayload(
+        pending.quote.payloadToSign ?? "",
+      );
       await executeQuote(
         reporter,
         platformAuth,
@@ -256,9 +248,7 @@ export function Pay({
               </QuoteRow>
               <QuoteRow>
                 <QuoteLabel>Signature</QuoteLabel>
-                <QuoteValue>
-                  {mode === "sandbox" ? "Magic (sandbox)" : "Session-stamped"}
-                </QuoteValue>
+                <QuoteValue>Session-stamped</QuoteValue>
               </QuoteRow>
             </QuoteCard>
             <Actions>

@@ -1,10 +1,8 @@
 // WebAuthn ceremony helpers (real passkeys).
 //
-// The sandbox flows accept magic placeholder strings, but a real Turnkey
-// sub-org needs a genuine WebAuthn credential. These helpers drive the
-// browser's authenticator and base64url-encode the results into the same
-// fields the sandbox flow uses, so Create / Add / Verify work unchanged
-// against production Turnkey.
+// These helpers drive the browser's authenticator and base64url-encode the
+// results into the fields Create / Add / Verify send. Sandbox verifies them the
+// same way production does.
 //
 // AUTHENTICATOR: we target a ROAMING security key (e.g. a YubiKey), not the
 // platform authenticator (Touch ID / Windows Hello). Registration asks the

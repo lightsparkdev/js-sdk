@@ -5,7 +5,6 @@
 // request bodies, talks to Grid + Turnkey, and emits log events through the
 // injected `Reporter`.
 
-import { SANDBOX_SIG, type Mode } from "../config";
 import { apiGet, apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { turnkeyStamp } from "../turnkey";
@@ -202,7 +201,6 @@ export interface CreateQuoteParams {
   destinationAccountId: string;
   lockedCurrencySide: string;
   lockedCurrencyAmount: number;
-  mode: Mode;
 }
 
 export interface CreateQuoteResult {
@@ -210,8 +208,6 @@ export interface CreateQuoteResult {
   quoteId: string | undefined;
   /** payloadToSign from the EMBEDDED_WALLET payment instruction, if present. */
   payloadToSign: string | undefined;
-  /** Pre-filled signature: the magic value in sandbox, blank in production. */
-  signature: string;
 }
 
 export async function createQuote(
@@ -251,11 +247,7 @@ export async function createQuote(
     }
   }
 
-  // In sandbox mode, pre-fill the magic signature so the user can Execute
-  // immediately. In production, leave blank — `signPayload` decrypts the
-  // session bundle and stamps the payload.
-  const signature = params.mode === "sandbox" ? SANDBOX_SIG : "";
-  return { data, quoteId, payloadToSign, signature };
+  return { data, quoteId, payloadToSign };
 }
 
 export interface SignPayloadResult {
@@ -264,15 +256,8 @@ export interface SignPayloadResult {
 }
 
 export async function signPayload(
-  mode: Mode,
   payloadToSign: string,
 ): Promise<SignPayloadResult> {
-  if (mode === "sandbox") {
-    return {
-      signature: SANDBOX_SIG,
-      message: "Mode: sandbox — filled magic signature.",
-    };
-  }
   const payload = payloadToSign.trim();
   if (!payload)
     throw new Error(
@@ -286,17 +271,17 @@ export async function executeQuote(
   reporter: Reporter,
   auth: ApiAuth,
   quoteId: string,
-  signature: string,
+  /** Required only when the quote's source is an embedded wallet. */
+  signature?: string,
 ): Promise<unknown> {
   const id = quoteId.trim();
-  const sig = signature.trim();
-  if (!id || !sig)
-    throw new Error("Quote ID and Grid-Wallet-Signature are required.");
+  if (!id) throw new Error("Quote ID is required.");
+  const sig = signature?.trim();
   const { data } = await apiPost(
     auth,
     `/quotes/${encodeURIComponent(id)}/execute`,
     {},
-    { "Grid-Wallet-Signature": sig },
+    sig ? { "Grid-Wallet-Signature": sig } : {},
   );
   reporter.log({ level: "response", label: "Execute Quote", detail: data });
   return data;

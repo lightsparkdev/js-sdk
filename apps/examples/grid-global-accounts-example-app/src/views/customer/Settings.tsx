@@ -10,7 +10,6 @@ import {
   addPasskeyIssue,
   addPasskeyRetry,
   registerRealPasskey,
-  type PasskeyAttestation,
 } from "../../flows/passkey";
 import {
   deleteCredential,
@@ -39,12 +38,11 @@ interface Session {
 /**
  * Settings — manage the active customer's wallet credentials & sessions, plus
  * wallet export. Every action runs the real guided flow in `flows/manage`
- * (issue 202 -> sign -> retry) or the credential add flows; in sandbox the
- * magic signature/attestation is used, in production a live session stamp.
+ * (issue 202 -> sign -> retry) or the credential add flows, signing each retry
+ * with a live session stamp.
  */
 export function Settings({ accounts }: { accounts: AccountBalance[] }) {
   const { activeCustomer, platformAuth, reporter, signOut } = useAppState();
-  const mode = platformAuth?.mode ?? "sandbox";
   const accountId =
     activeCustomer?.accountId ?? (accounts[0] ? String(accounts[0].id) : "");
 
@@ -124,25 +122,12 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
     }
   }
 
-  function sandboxPasskeyAttestation(): PasskeyAttestation {
-    return {
-      challenge: sandboxMagicFor("passkey-create-challenge") ?? "",
-      credentialId: sandboxMagicFor("passkey-create-cred-id-raw") ?? "",
-      clientDataJson: sandboxMagicFor("passkey-create-client-data-json") ?? "",
-      attestationObject:
-        sandboxMagicFor("passkey-create-attestation-object") ?? "",
-    };
-  }
-
   async function addPasskey() {
     await run(
       "add-passkey",
       async () => {
         const nickname = "Security key (YubiKey)";
-        const attestation =
-          mode === "production"
-            ? await registerRealPasskey(reporter, nickname)
-            : sandboxPasskeyAttestation();
+        const attestation = await registerRealPasskey(reporter, nickname);
         const { requestId, payloadToSign } = await addPasskeyIssue(
           reporter,
           platformAuth!,

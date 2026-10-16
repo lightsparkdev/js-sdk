@@ -35,7 +35,6 @@ import {
   addPasskeyRetry,
   registerRealPasskey,
   signInPasskey,
-  type PasskeyAttestation,
 } from "../../flows/passkey";
 import { listCredentials } from "../../flows/manage";
 import { getRawCredentialId, getRawCredentialIds } from "../../passkey-store";
@@ -653,8 +652,6 @@ function PasskeySignIn({
 }) {
   const { busy, error, setError, run, reporter, platformAuth } =
     useLoginAction();
-  const mode = platformAuth?.mode ?? "sandbox";
-  const sandbox = mode !== "production";
   const [rpId, setRpId] = useState("");
 
   // Raw WebAuthn credential id for THIS passkey, if we registered it on this
@@ -664,14 +661,13 @@ function PasskeySignIn({
   // allowCredentials and lets the key present a discoverable credential.
   const ownRawId = getRawCredentialId(credential.id);
   const knownRawIds = ownRawId ? [ownRawId] : getRawCredentialIds();
-  const rawIdKnown = !sandbox && knownRawIds.length > 0;
+  const rawIdKnown = knownRawIds.length > 0;
 
   async function submit() {
     await run(async () => {
       if (!accountId) throw new Error("No wallet account to sign in to.");
-      // Authenticate against THIS existing passkey via the WebAuthn assertion
-      // (security key in prod, seeded assertion in sandbox). existingCredId set
-      // → `register` is never invoked.
+      // Authenticate against THIS existing passkey via the WebAuthn assertion.
+      // existingCredId set → `register` is never invoked.
       const data = await signInPasskey(reporter, platformAuth!, {
         accountId,
         nickname: credential.nickname || "Security key",
@@ -681,23 +677,9 @@ function PasskeySignIn({
             new Error("Passkey already exists — registration not needed."),
           ),
         loginParams: {
-          mode,
           // Target the security key by its raw WebAuthn id(s) over USB/NFC.
-          credentialIds: sandbox
-            ? [sandboxMagicFor("passkey-create-cred-id-raw") ?? ""]
-            : knownRawIds,
+          credentialIds: knownRawIds,
           rpId: rpId || undefined,
-          sandboxAssertion: sandbox
-            ? {
-                credentialId:
-                  sandboxMagicFor("passkey-create-cred-id-raw") ?? "",
-                clientDataJson:
-                  sandboxMagicFor("passkey-verify-client-data-json") ?? "",
-                authenticatorData:
-                  sandboxMagicFor("passkey-verify-auth-data") ?? "",
-                signature: sandboxMagicFor("passkey-verify-signature") ?? "",
-              }
-            : undefined,
         },
       });
       await onChanged();
@@ -721,31 +703,28 @@ function PasskeySignIn({
         />
       )}
       <Lede>
-        {sandbox
-          ? "Sandbox uses a seeded assertion — no authenticator prompt."
-          : "Insert your security key (YubiKey) and sign the session challenge. We target the key over USB/NFC, not the platform passkey."}
+        Insert your security key (YubiKey) and sign the session challenge. We
+        target the key over USB/NFC, not the platform passkey.
       </Lede>
-      {!sandbox && !rawIdKnown && (
+      {!rawIdKnown && (
         <Alert
           variant="warning"
           title="Security-key id not stored locally"
           description="This passkey wasn't registered in this browser, so we don't have its WebAuthn id. Your key will be asked to present a discoverable credential instead — insert it and follow the prompt."
         />
       )}
-      {!sandbox && (
-        <Field.Root>
-          <Field.Label>Relying-party ID</Field.Label>
-          <Input
-            value={rpId}
-            placeholder="localhost"
-            autoComplete="off"
-            onChange={(e) => setRpId(e.target.value)}
-          />
-          <Field.Description>
-            Defaults to the page hostname; must match the sub-org's RP ID.
-          </Field.Description>
-        </Field.Root>
-      )}
+      <Field.Root>
+        <Field.Label>Relying-party ID</Field.Label>
+        <Input
+          value={rpId}
+          placeholder="localhost"
+          autoComplete="off"
+          onChange={(e) => setRpId(e.target.value)}
+        />
+        <Field.Description>
+          Defaults to the page hostname; must match the sub-org's RP ID.
+        </Field.Description>
+      </Field.Root>
       <Button type="submit" variant="filled" loading={busy}>
         Sign in with security key
       </Button>
@@ -801,25 +780,12 @@ function AddMethods({
     }
   }
 
-  function sandboxPasskeyAttestation(): PasskeyAttestation {
-    return {
-      challenge: sandboxMagicFor("passkey-create-challenge") ?? "",
-      credentialId: sandboxMagicFor("passkey-create-cred-id-raw") ?? "",
-      clientDataJson: sandboxMagicFor("passkey-create-client-data-json") ?? "",
-      attestationObject:
-        sandboxMagicFor("passkey-create-attestation-object") ?? "",
-    };
-  }
-
   async function addPasskey() {
     await add(
       "add-passkey",
       async () => {
         const nickname = "Security key (YubiKey)";
-        const attestation =
-          mode === "production"
-            ? await registerRealPasskey(reporter, nickname)
-            : sandboxPasskeyAttestation();
+        const attestation = await registerRealPasskey(reporter, nickname);
         const { requestId, payloadToSign } = await addPasskeyIssue(
           reporter,
           platformAuth!,
@@ -872,14 +838,20 @@ function AddMethods({
     await add(
       "add-email-otp",
       async () => {
-        const { requestId } = await addEmailOtpIssue(
+        const { requestId, payloadToSign } = await addEmailOtpIssue(
           reporter,
           platformAuth!,
           accountId!,
         );
         if (!requestId)
           throw new Error("Add Email OTP: no requestId in the 202.");
-        return addEmailOtpRetry(reporter, platformAuth!, accountId!, requestId);
+        return addEmailOtpRetry(
+          reporter,
+          platformAuth!,
+          accountId!,
+          requestId,
+          payloadToSign,
+        );
       },
       "Email OTP method added — sign in with it above.",
     );
@@ -896,7 +868,7 @@ function AddMethods({
           prompts for a roaming hardware key (YubiKey) over USB/NFC, not the
           platform passkey. Security keys and OAuth identities can be added more
           than once.
-          {sandbox && " Sandbox uses seeded ceremony material."}
+          {sandbox && " Sandbox adds OAuth with a seeded token."}
         </SectionHint>
       </SectionHead>
 
