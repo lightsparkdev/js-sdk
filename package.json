@@ -20,7 +20,6 @@
     "deps:check": "manypkg check",
     "deps:fix": "manypkg fix",
     "dev": "turbo run dev --concurrency 14",
-    "docs": "turbo run docs",
     "format": "turbo run format",
     "format:fix": "turbo run format:fix",
     "gql-codegen": "turbo run gql-codegen",

@@ -46,10 +46,6 @@
       "cache": false,
       "persistent": true
     },
-    "docs": {
-      "dependsOn": ["^build"],
-      "outputs": ["docs/**"]
-    },
     "format": {
       "dependsOn": ["gql-codegen"]
     },
