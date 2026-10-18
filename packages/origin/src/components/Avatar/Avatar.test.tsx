@@ -17,15 +17,6 @@ test.describe("Avatar", () => {
       await expect(avatar).toBeVisible();
       await expect(avatar).toContainText("CS");
     });
-
-    test("defaults to size 32 and squircle variant", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<DefaultAvatar />);
-      const avatar = page.locator("span").first();
-      await expect(avatar).toBeVisible();
-    });
   });
 
   test.describe("with image", () => {

@@ -184,10 +184,13 @@ test.describe("NavigationMenu", () => {
       const component = await mount(<ActionIconVariant />);
 
       const actionIcon = component.getByTestId("settings-action");
+      const iconBefore = await actionIcon.locator("svg").innerHTML();
       await actionIcon.click();
 
-      // Icon should change after click (check icon changed by verifying component updated)
-      await expect(actionIcon).toBeVisible();
+      await expect(actionIcon.locator("svg")).not.toHaveJSProperty(
+        "innerHTML",
+        iconBefore,
+      );
     });
 
     test("active action icon has data-active attribute", async ({ mount }) => {

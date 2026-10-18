@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicMenu,
   LongListMenu,
-  MenuWithIcons,
   MenuWithShortcuts,
   MenuWithCheckboxItems,
   MenuWithRadioItems,
@@ -203,18 +202,6 @@ test.describe("Menu", () => {
     // Enter to select
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menu")).not.toBeVisible();
-  });
-
-  test("renders leading and trailing icons", async ({ mount, page }) => {
-    await mount(<MenuWithIcons />);
-
-    await page.getByRole("button", { name: "Actions" }).click();
-    await expect(page.getByRole("menu")).toBeVisible();
-
-    // Items should be visible with their content
-    await expect(page.getByRole("menuitem", { name: "Cut" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Copy" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Paste" })).toBeVisible();
   });
 
   test("renders shortcut hints", async ({ mount, page }) => {

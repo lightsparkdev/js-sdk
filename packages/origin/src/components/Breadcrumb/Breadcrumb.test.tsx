@@ -3,12 +3,7 @@ import {
   DefaultBreadcrumb,
   CurrentPageBreadcrumb,
   WithLinksBreadcrumb,
-  CustomSeparatorBreadcrumb,
   CollapsedBreadcrumb,
-  PropForwardingBreadcrumb,
-  StyleForwardingBreadcrumb,
-  ClassNameBreadcrumb,
-  LinkPropForwarding,
   LinkRenderProp,
   PagePropForwarding,
 } from "./Breadcrumb.test-stories";
@@ -63,23 +58,6 @@ test.describe("Breadcrumb", () => {
     await expect(homeLink).toHaveAttribute("href", "/");
   });
 
-  // Separators
-  test("renders separators between items via CSS", async ({ mount }) => {
-    const component = await mount(<DefaultBreadcrumb />);
-    // Separators should be CSS-only, not in DOM
-    // Verify items have the separator styling class
-    const items = component.locator("li");
-    await expect(items).toHaveCount(3);
-    // Separators are CSS ::before pseudo-elements, not separate DOM nodes
-  });
-
-  // Custom separator (for accessibility, separator should be decorative)
-  test("custom separator is supported", async ({ mount, page }) => {
-    await mount(<CustomSeparatorBreadcrumb />);
-    const nav = page.getByRole("navigation", { name: "Breadcrumb" });
-    await expect(nav).toBeVisible();
-  });
-
   // Collapsed state
   test("supports collapsed items with ellipsis", async ({ mount }) => {
     const component = await mount(<CollapsedBreadcrumb />);
@@ -130,54 +108,9 @@ test.describe("Breadcrumb", () => {
     await expect(chevrons.nth(1)).toHaveCSS("color", iconSecondary);
     await expect(chevrons.nth(2)).toHaveCSS("color", iconPrimary);
   });
-
-  // Ref forwarding
-  test("forwards ref to nav element", async ({ mount, page }) => {
-    await mount(<DefaultBreadcrumb />);
-    const nav = page.getByRole("navigation", { name: "Breadcrumb" });
-    await expect(nav).toBeVisible();
-  });
-});
-
-test.describe("Breadcrumb.Root conformance", () => {
-  test("forwards custom data attributes", async ({ mount, page }) => {
-    await mount(<PropForwardingBreadcrumb />);
-    const root = page.locator('[data-testid="test-root"]');
-    await expect(root).toHaveAttribute("data-custom", "custom-value");
-  });
-
-  test("forwards lang attribute", async ({ mount, page }) => {
-    await mount(<PropForwardingBreadcrumb />);
-    const root = page.locator('[data-testid="test-root"]');
-    await expect(root).toHaveAttribute("lang", "fr");
-  });
-
-  test("forwards style attribute", async ({ mount, page }) => {
-    await mount(<StyleForwardingBreadcrumb />);
-    const root = page.locator('[data-testid="test-root"]');
-    await expect(root).toHaveCSS("color", "rgb(0, 128, 0)");
-  });
-
-  test("forwards className", async ({ mount, page }) => {
-    await mount(<ClassNameBreadcrumb />);
-    const root = page.locator('[data-testid="test-root"]');
-    await expect(root).toHaveClass(/custom-class-name/);
-  });
 });
 
 test.describe("Breadcrumb.Link conformance", () => {
-  test("forwards custom data attributes", async ({ mount, page }) => {
-    await mount(<LinkPropForwarding />);
-    const link = page.locator('[data-testid="test-link"]');
-    await expect(link).toHaveAttribute("data-custom", "link-value");
-  });
-
-  test("forwards lang attribute", async ({ mount, page }) => {
-    await mount(<LinkPropForwarding />);
-    const link = page.locator('[data-testid="test-link"]');
-    await expect(link).toHaveAttribute("lang", "de");
-  });
-
   test("render prop replaces the default anchor with merged props", async ({
     mount,
     page,

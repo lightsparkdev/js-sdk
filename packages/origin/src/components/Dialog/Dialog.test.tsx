@@ -128,21 +128,6 @@ test.describe("Dialog", () => {
     await expect(page.getByText("Test description text.")).toBeVisible();
   });
 
-  test("renders content area", async ({ mount, page }) => {
-    await mount(<TestDialog />);
-
-    await expect(page.getByRole("dialog")).toBeVisible();
-    await expect(page.getByText("Test content area.")).toBeVisible();
-  });
-
-  test("renders footer with action buttons", async ({ mount, page }) => {
-    await mount(<TestDialog />);
-
-    await expect(page.getByRole("dialog")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Confirm" })).toBeVisible();
-  });
-
   test("renders close button", async ({ mount, page }) => {
     await mount(<TestDialog />);
 

@@ -102,13 +102,6 @@ test.describe("Chart rendering", () => {
     expect(count).toBeGreaterThanOrEqual(4);
   });
 
-  test("sparkline renders paths", async ({ mount, page }) => {
-    await mount(<Sparkline />);
-    const paths = page.locator('[data-testid="chart"] svg path');
-    const count = await paths.count();
-    expect(count).toBeGreaterThanOrEqual(1);
-  });
-
   test("empty data renders container but no SVG paths", async ({
     mount,
     page,

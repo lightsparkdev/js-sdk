@@ -60,32 +60,6 @@ export function LongListMenu() {
   );
 }
 
-export function MenuWithIcons() {
-  return (
-    <Menu.Root>
-      <Menu.Trigger render={<Button variant="outline" />}>Actions</Menu.Trigger>
-      <Menu.Portal>
-        <Menu.Positioner>
-          <Menu.Popup>
-            <Menu.Item>
-              <CentralIcon name="IconCut" size={16} />
-              Cut
-            </Menu.Item>
-            <Menu.Item>
-              <CentralIcon name="IconSquareBehindSquare1" size={16} />
-              Copy
-            </Menu.Item>
-            <Menu.Item>
-              <CentralIcon name="IconClipboard2" size={16} />
-              Paste
-            </Menu.Item>
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
-  );
-}
-
 export function MenuWithShortcuts() {
   return (
     <Menu.Root>

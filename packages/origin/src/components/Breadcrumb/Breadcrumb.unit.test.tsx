@@ -49,13 +49,6 @@ describe("Breadcrumb.Root conformance", () => {
       const element = screen.getByTestId("test-root");
       expect(element).toHaveClass("custom-class");
     });
-
-    it("merges with internal className", () => {
-      render(renderWithProps({ className: "custom-class" }));
-      const element = screen.getByTestId("test-root");
-      // Should have both internal and custom classes
-      expect(element.className).toContain("custom-class");
-    });
   });
 
   describe("style", () => {
@@ -319,27 +312,6 @@ describe("Breadcrumb context", () => {
 
     // The separator should be rendered via context
     const separators = screen.getAllByText(">>");
-    expect(separators.length).toBeGreaterThan(0);
-  });
-});
-
-describe("Breadcrumb separator", () => {
-  it("supports custom separator via List prop", () => {
-    render(
-      <Breadcrumb.Root>
-        <Breadcrumb.List separator="/">
-          <Breadcrumb.Item>
-            <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <Breadcrumb.Page>Products</Breadcrumb.Page>
-          </Breadcrumb.Item>
-        </Breadcrumb.List>
-      </Breadcrumb.Root>,
-    );
-
-    // The separator should be rendered
-    const separators = screen.getAllByText("/");
     expect(separators.length).toBeGreaterThan(0);
   });
 });

@@ -74,43 +74,6 @@ export function LongListContextMenu() {
   );
 }
 
-// Context menu with icons
-export function ContextMenuWithIcons() {
-  return (
-    <ContextMenu.Root>
-      <ContextMenu.Trigger>
-        <div
-          style={{
-            padding: "40px",
-            border: "1px dashed #ccc",
-            borderRadius: "8px",
-          }}
-        >
-          Right-click here
-        </div>
-      </ContextMenu.Trigger>
-      <ContextMenu.Portal>
-        <ContextMenu.Positioner>
-          <ContextMenu.Popup>
-            <ContextMenu.Item>
-              <CentralIcon name="IconPencil" size={16} />
-              Edit
-            </ContextMenu.Item>
-            <ContextMenu.Item>
-              <CentralIcon name="IconClipboard2" size={16} />
-              Copy
-            </ContextMenu.Item>
-            <ContextMenu.Item>
-              <CentralIcon name="IconTrashCanSimple" size={16} />
-              Delete
-            </ContextMenu.Item>
-          </ContextMenu.Popup>
-        </ContextMenu.Positioner>
-      </ContextMenu.Portal>
-    </ContextMenu.Root>
-  );
-}
-
 // Context menu with checkbox items
 export function ContextMenuWithCheckboxItems() {
   const [showMinimap, setShowMinimap] = React.useState(true);

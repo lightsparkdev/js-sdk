@@ -140,16 +140,4 @@ test.describe("Popover", () => {
     await expect(popup).toHaveCSS("border-radius", "6px");
     await expect(popup).toHaveCSS("overflow", "clip");
   });
-
-  test("applies default sideOffset", async ({ mount, page }) => {
-    await mount(<TestPopoverDefault />);
-
-    const positioner = page.getByTestId("positioner");
-    await expect(positioner).toBeVisible();
-
-    // The positioner should have a CSS variable for anchor gap set by Base UI
-    // which reflects the sideOffset. We verify it renders without errors.
-    const popup = page.getByTestId("popup");
-    await expect(popup).toBeVisible();
-  });
 });

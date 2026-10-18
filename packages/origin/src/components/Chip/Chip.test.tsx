@@ -233,15 +233,6 @@ test.describe("Chip", () => {
       await expect(dismissButton).toBeFocused();
     });
 
-    test("dismiss button is not focusable when disabled", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<DisabledChip />);
-      const dismissButton = page.getByRole("button", { name: /remove/i });
-      await expect(dismissButton).toBeDisabled();
-    });
-
     test("filter trigger is not focusable when the chip is disabled", async ({
       mount,
       page,

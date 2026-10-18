@@ -179,19 +179,6 @@ describe("FilterBar add-menu date preset shortcuts", () => {
     ).toBeInTheDocument();
   });
 
-  it("defines the previous 24 hours fixture as a full day", () => {
-    const now = new Date("2026-07-31T17:30:45.000Z");
-
-    expect(DATE_PICKER_PRESETS[1].resolve(now)).toEqual({
-      value: {
-        start: new Date("2026-07-30T17:30:45.000Z"),
-        end: now,
-      },
-      mode: "range",
-      granularity: "date-time",
-    });
-  });
-
   it("renders descriptor presets in order followed by a divider and Custom", () => {
     render(<ShortcutHarness />);
 

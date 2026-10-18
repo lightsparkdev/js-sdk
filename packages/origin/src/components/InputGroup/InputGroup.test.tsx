@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import AxeBuilder from "@axe-core/playwright";
+import { resolveTokenColor } from "@test-utils/resolveTokenColor";
 import {
   Default,
   TrailingAddon,
@@ -260,13 +261,6 @@ test.describe("InputGroup", () => {
       await input.fill("Hello");
       await expect(value).toHaveText("Hello");
     });
-
-    test("button is clickable", async ({ mount, page }) => {
-      await mount(<WithButton />);
-      const button = page.getByRole("button", { name: "Search" });
-      // Verify the button exists and can be interacted with
-      await expect(button).toBeEnabled();
-    });
   });
 
   // ---------------------------------------------------------------------------
@@ -356,15 +350,17 @@ test.describe("InputGroup", () => {
       const input = page.getByPlaceholder("Search...");
       const root = page.locator("[data-input-group]");
 
+      const borderControl = await resolveTokenColor(page, "--border-control");
+      await expect(root).toHaveCSS("border-color", borderControl);
+
       await input.focus();
 
-      // Should have focus ring (border-color change from secondary token)
-      const borderColor = await root.evaluate(
-        (el) => getComputedStyle(el).borderColor,
+      const borderSecondary = await resolveTokenColor(
+        page,
+        "--border-secondary",
       );
-      // The exact color depends on --border-secondary token
-      // Just verify it changed from the default --border-primary
-      expect(borderColor).toBeTruthy();
+      await expect(root).toHaveCSS("border-color", borderSecondary);
+      expect(borderSecondary).not.toBe(borderControl);
     });
   });
 
@@ -377,15 +373,10 @@ test.describe("InputGroup", () => {
       page,
     }) => {
       await mount(<WithField />);
-      const input = page.getByPlaceholder("you@example.com");
-
-      // Base UI Field wires aria-labelledby or id/htmlFor automatically
-      const ariaLabelledBy = await input.getAttribute("aria-labelledby");
-      const id = await input.getAttribute("id");
-
-      // Either aria-labelledby is set, or the label's htmlFor matches input id
-      const hasLabelAssociation = ariaLabelledBy !== null || id !== null;
-      expect(hasLabelAssociation).toBe(true);
+      await expect(page.getByLabel("Email")).toHaveAttribute(
+        "placeholder",
+        "you@example.com",
+      );
     });
 
     test("description is visible with Field", async ({ mount, page }) => {

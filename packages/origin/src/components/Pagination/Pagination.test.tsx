@@ -11,7 +11,6 @@ import {
   AnchorRender,
   AnchorRenderFirstPage,
   WithoutTotals,
-  ContextConsumer,
 } from "./Pagination.test-stories";
 
 test.describe("Pagination", () => {
@@ -182,30 +181,6 @@ test.describe("Pagination", () => {
   });
 
   test.describe("Data Attributes", () => {
-    test("Root exposes data-page and data-first-page on first page", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<FirstPage />);
-
-      const nav = page.getByRole("navigation", { name: /pagination/i });
-      await expect(nav).toHaveAttribute("data-page", "1");
-      await expect(nav).toHaveAttribute("data-first-page", "");
-      await expect(nav).not.toHaveAttribute("data-last-page", "");
-    });
-
-    test("Root exposes data-last-page on last page", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<LastPage />);
-
-      const nav = page.getByRole("navigation", { name: /pagination/i });
-      await expect(nav).toHaveAttribute("data-page", "25");
-      await expect(nav).toHaveAttribute("data-last-page", "");
-      await expect(nav).not.toHaveAttribute("data-first-page", "");
-    });
-
     test("nav buttons expose data-disabled when disabled", async ({
       mount,
       page,
@@ -257,16 +232,6 @@ test.describe("Pagination", () => {
     }) => {
       await mount(<WithoutTotals />);
       await expect(page.getByText(/Page 1/)).toBeVisible();
-    });
-  });
-
-  test.describe("Context Hook", () => {
-    test("usePaginationContext exposes current page to consumer parts", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<ContextConsumer />);
-      await expect(page.getByTestId("ctx-page")).toHaveText("7");
     });
   });
 

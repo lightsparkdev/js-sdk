@@ -16,12 +16,6 @@ test.describe("Separator", () => {
       await expect(separator).toBeVisible();
       await expect(separator).toHaveAttribute("aria-orientation", "horizontal");
     });
-
-    test("renders with default 1px stroke", async ({ mount, page }) => {
-      await mount(<DefaultSeparator />);
-      const separator = page.getByRole("separator");
-      await expect(separator).toBeVisible();
-    });
   });
 
   test.describe("variants", () => {
@@ -42,23 +36,6 @@ test.describe("Separator", () => {
       await mount(<VerticalHairlineSeparator />);
       const separator = page.getByRole("separator");
       await expect(separator).toBeVisible();
-      await expect(separator).toHaveAttribute("aria-orientation", "vertical");
-    });
-  });
-
-  test.describe("accessibility", () => {
-    test("has separator role", async ({ mount, page }) => {
-      await mount(<DefaultSeparator />);
-      const separator = page.getByRole("separator");
-      await expect(separator).toBeVisible();
-    });
-
-    test("vertical separator has correct aria-orientation", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<VerticalSeparator />);
-      const separator = page.getByRole("separator");
       await expect(separator).toHaveAttribute("aria-orientation", "vertical");
     });
   });

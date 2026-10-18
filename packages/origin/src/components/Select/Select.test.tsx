@@ -19,13 +19,6 @@ import {
 } from "./Select.test-stories";
 
 test.describe("Select", () => {
-  test("renders trigger", async ({ mount, page }) => {
-    await mount(<DefaultSelect />);
-
-    const trigger = page.getByRole("combobox");
-    await expect(trigger).toBeVisible();
-  });
-
   test("opens popup on click", async ({ mount, page }) => {
     await mount(<DefaultSelect />);
 

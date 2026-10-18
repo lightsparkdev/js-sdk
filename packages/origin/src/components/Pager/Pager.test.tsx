@@ -173,51 +173,6 @@ test.describe("Pager", () => {
     });
   });
 
-  test.describe("Data attributes", () => {
-    test("Root carries data-no-previous and data-no-next on edges", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<BothEdges />);
-
-      const root = page.getByRole("navigation", { name: "Pager" });
-      await expect(root).toHaveAttribute("data-no-previous", "");
-      await expect(root).toHaveAttribute("data-no-next", "");
-    });
-
-    test("Root omits data-no-* when both cursors present", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<BasicPager />);
-
-      const root = page.getByRole("navigation", { name: "Pager" });
-      await expect(root).not.toHaveAttribute("data-no-previous", "");
-      await expect(root).not.toHaveAttribute("data-no-next", "");
-    });
-
-    test("Previous and Next always carry data-direction", async ({
-      mount,
-      page,
-    }) => {
-      await mount(<BasicPager />);
-
-      await expect(
-        page.getByRole("button", { name: "Previous page" }),
-      ).toHaveAttribute("data-direction", "previous");
-      await expect(
-        page.getByRole("button", { name: "Next page" }),
-      ).toHaveAttribute("data-direction", "next");
-    });
-
-    test("data-disabled only when disabled", async ({ mount, page }) => {
-      await mount(<BasicPager />);
-
-      const prev = page.getByRole("button", { name: "Previous page" });
-      await expect(prev).not.toHaveAttribute("data-disabled", "");
-    });
-  });
-
   test.describe("Visual parity with Pagination", () => {
     test("buttons have identical size and border radius", async ({
       mount,

@@ -143,15 +143,6 @@ export function FieldWithValidation() {
   );
 }
 
-export function FieldWithName() {
-  return (
-    <Field.Root name="user-email">
-      <Field.Label>Email</Field.Label>
-      <Input placeholder="Enter your email" />
-    </Field.Root>
-  );
-}
-
 export function FieldWithRenderedRoot() {
   return (
     <Field.Root

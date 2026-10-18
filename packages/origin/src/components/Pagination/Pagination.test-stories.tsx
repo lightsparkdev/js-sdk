@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Pagination, usePaginationContext } from "./Pagination";
+import { Pagination } from "./Pagination";
 import { Select } from "../Select";
 
 // Basic pagination with all parts
@@ -224,19 +224,6 @@ export function WithoutTotals() {
       </Pagination.Root>
       <p data-testid="current-page">Current page: {page}</p>
     </div>
-  );
-}
-
-function CurrentPageBadge() {
-  const { page } = usePaginationContext();
-  return <span data-testid="ctx-page">{page}</span>;
-}
-
-export function ContextConsumer() {
-  return (
-    <Pagination.Root page={7} totalItems={500} pageSize={25}>
-      <CurrentPageBadge />
-    </Pagination.Root>
   );
 }
 

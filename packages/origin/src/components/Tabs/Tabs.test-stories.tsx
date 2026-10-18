@@ -14,17 +14,6 @@ export const TestTabs = () => (
   </Tabs.Root>
 );
 
-export const TestTabsMinimal = () => (
-  <Tabs.Root defaultValue="tab1">
-    <Tabs.List variant="minimal">
-      <Tabs.Tab value="tab1">First Tab</Tabs.Tab>
-      <Tabs.Tab value="tab2">Second Tab</Tabs.Tab>
-    </Tabs.List>
-    <Tabs.Panel value="tab1">First panel content</Tabs.Panel>
-    <Tabs.Panel value="tab2">Second panel content</Tabs.Panel>
-  </Tabs.Root>
-);
-
 export const TestTabsDefaultValue = () => (
   <Tabs.Root defaultValue="tab2">
     <Tabs.List>

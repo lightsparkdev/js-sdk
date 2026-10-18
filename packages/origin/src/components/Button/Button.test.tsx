@@ -196,26 +196,6 @@ test.describe("Button", () => {
     expect(parseFloat(opacity)).toBeCloseTo(0.15, 2);
   });
 
-  test("can be activated with Enter key", async ({ mount, page }) => {
-    await mount(<FilledButton />);
-
-    const button = page.getByRole("button");
-    await button.focus();
-    await page.keyboard.press("Enter");
-
-    await expect(button).toBeFocused();
-  });
-
-  test("can be activated with Space key", async ({ mount, page }) => {
-    await mount(<FilledButton />);
-
-    const button = page.getByRole("button");
-    await button.focus();
-    await page.keyboard.press("Space");
-
-    await expect(button).toBeFocused();
-  });
-
   test("disabled button cannot be focused", async ({ mount, page }) => {
     await mount(<DisabledButton />);
 
@@ -235,13 +215,6 @@ test.describe("Button", () => {
 
     const loader = page.getByRole("status", { name: "Loading" });
     await expect(loader).toBeVisible();
-  });
-
-  test("sizes render correctly", async ({ mount, page }) => {
-    await mount(<AllSizes />);
-
-    await expect(page.getByRole("button", { name: "Compact" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Default" })).toBeVisible();
   });
 
   test("compact size has correct height", async ({ mount, page }) => {

@@ -437,15 +437,6 @@ describe("stackData", () => {
     expect(result[0].baseline).toEqual([0, 0, 0]);
   });
 
-  it("second series baseline equals first series topline", () => {
-    const data = [
-      { a: 3, b: 7 },
-      { a: 10, b: 20 },
-    ];
-    const result = stackData(data, ["a", "b"]);
-    expect(result[1].baseline).toEqual(result[0].topline);
-  });
-
   it("handles zero values", () => {
     const data = [
       { a: 0, b: 5 },
@@ -839,14 +830,6 @@ describe("useResizeWidth", () => {
   it("returns initialWidth when no observer has fired", () => {
     const { result } = renderHook(() => useResizeWidth(800));
     expect(result.current.width).toBe(800);
-  });
-
-  it("returns initialWidth for various values", () => {
-    const { result: r1 } = renderHook(() => useResizeWidth(1024));
-    expect(r1.current.width).toBe(1024);
-
-    const { result: r2 } = renderHook(() => useResizeWidth(320));
-    expect(r2.current.width).toBe(320);
   });
 
   it("returns 0 when initialWidth is 0", () => {

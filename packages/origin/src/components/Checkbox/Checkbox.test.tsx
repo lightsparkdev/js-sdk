@@ -202,6 +202,10 @@ test.describe("Checkbox", () => {
 
     const checkbox = page.getByRole("checkbox", { name: "With Name" });
     await expect(checkbox).toBeChecked();
+    await expect(page.locator('input[type="checkbox"]')).toHaveAttribute(
+      "name",
+      "test-checkbox",
+    );
   });
 
   // A drawer's swipe-to-dismiss gesture captures the pointer, which drops the

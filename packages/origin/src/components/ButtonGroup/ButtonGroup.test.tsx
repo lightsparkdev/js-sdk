@@ -59,12 +59,6 @@ test.describe("ButtonGroup", () => {
       expect(results.violations).toEqual([]);
     });
 
-    test('renders with role="group"', async ({ mount, page }) => {
-      await mount(<HorizontalOutline />);
-      const group = page.getByRole("group");
-      await expect(group).toBeVisible();
-    });
-
     test("forwards aria-label", async ({ mount, page }) => {
       await mount(<WithLabel />);
       const group = page.getByRole("group", { name: "Actions" });

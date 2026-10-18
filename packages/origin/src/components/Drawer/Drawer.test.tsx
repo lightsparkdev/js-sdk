@@ -142,12 +142,6 @@ test.describe("Drawer", () => {
   });
 
   test.describe("Non-modal", () => {
-    test("renders without backdrop", async ({ mount, page }) => {
-      await mount(<TestNonModal />);
-      const popup = page.getByTestId("popup");
-      await expect(popup).toBeVisible();
-    });
-
     test("allows clicks on background content", async ({ mount, page }) => {
       await mount(<TestNonModal />);
       const popup = page.getByTestId("popup");

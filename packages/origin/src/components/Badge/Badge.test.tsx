@@ -17,12 +17,6 @@ test.describe("Badge", () => {
       await expect(badge).toBeVisible();
       await expect(badge).toContainText("Test Label");
     });
-
-    test("defaults to gray variant", async ({ mount, page }) => {
-      await mount(<DefaultBadge />);
-      const badge = page.locator("span").first();
-      await expect(badge).toBeVisible();
-    });
   });
 
   test.describe("variants", () => {

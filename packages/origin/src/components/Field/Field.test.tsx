@@ -10,7 +10,6 @@ import {
   FieldWithoutDescription,
   ControlledField,
   FieldWithValidation,
-  FieldWithName,
   FieldWithRenderedRoot,
   FieldWithStatefulRootClassName,
 } from "./Field.test-stories";
@@ -263,15 +262,6 @@ test.describe("Field", () => {
       const input = page.getByPlaceholder("Enter your email");
       await page.keyboard.press("Tab");
       await expect(input).not.toBeFocused();
-    });
-  });
-
-  test.describe("form integration", () => {
-    test("field with name attribute", async ({ mount, page }) => {
-      await mount(<FieldWithName />);
-
-      const input = page.getByPlaceholder("Enter your email");
-      await expect(input).toBeVisible();
     });
   });
 

@@ -1,7 +1,6 @@
 import { test, expect } from "@playwright/experimental-ct-react";
 import {
   TestTabs,
-  TestTabsMinimal,
   TestTabsDefaultValue,
   TestTabsDisabled,
   TestTabsControlled,
@@ -116,20 +115,6 @@ test.describe("Tabs", () => {
       await firstTab.focus();
       await page.keyboard.press("ArrowLeft");
       await expect(thirdTab).toBeFocused();
-    });
-  });
-
-  test.describe("variant prop", () => {
-    test("default variant renders with background", async ({ mount }) => {
-      const component = await mount(<TestTabs />);
-      const tabList = component.getByRole("tablist");
-      await expect(tabList).toBeVisible();
-    });
-
-    test("minimal variant renders without background", async ({ mount }) => {
-      const component = await mount(<TestTabsMinimal />);
-      const tabList = component.getByRole("tablist");
-      await expect(tabList).toBeVisible();
     });
   });
 

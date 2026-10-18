@@ -17,12 +17,6 @@ test.describe("ActionBar", () => {
       await expect(page.getByRole("button", { name: "Export" })).toBeVisible();
     });
 
-    test("renders label text correctly", async ({ mount, page }) => {
-      await mount(<DefaultActionBar />);
-      const label = page.getByTestId("action-bar-label");
-      await expect(label).toContainText("4 transactions selected");
-    });
-
     test("renders single button action bar", async ({ mount, page }) => {
       await mount(<ActionBarSingleButton />);
       const actionBar = page.getByTestId("action-bar");
@@ -33,12 +27,6 @@ test.describe("ActionBar", () => {
   });
 
   test.describe("accessibility", () => {
-    test("has group role", async ({ mount, page }) => {
-      await mount(<DefaultActionBar />);
-      const group = page.getByRole("group");
-      await expect(group).toBeVisible();
-    });
-
     test("has aria-label for screen readers", async ({ mount, page }) => {
       await mount(<DefaultActionBar />);
       const group = page.getByRole("group", { name: "Selection actions" });

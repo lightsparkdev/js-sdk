@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   BasicContextMenu,
   LongListContextMenu,
-  ContextMenuWithIcons,
   ContextMenuWithCheckboxItems,
   ContextMenuWithRadioItems,
   ContextMenuWithSeparator,
@@ -130,18 +129,6 @@ test.describe("ContextMenu", () => {
     // Enter activates item and closes menu
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menu")).not.toBeVisible();
-  });
-
-  test("renders with icons", async ({ mount, page }) => {
-    await mount(<ContextMenuWithIcons />);
-
-    await page.getByText("Right-click here").click({ button: "right" });
-    await expect(page.getByRole("menu")).toBeVisible();
-
-    // Items with icons should be present
-    await expect(page.getByRole("menuitem", { name: "Edit" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Copy" })).toBeVisible();
-    await expect(page.getByRole("menuitem", { name: "Delete" })).toBeVisible();
   });
 
   test("checkbox items toggle state", async ({ mount, page }) => {

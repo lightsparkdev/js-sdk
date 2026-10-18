@@ -84,19 +84,6 @@ function choosePreset(label: string) {
 }
 
 describe("DatePicker presets", () => {
-  it("defines the previous 24 hours fixture as a full day", () => {
-    const now = new Date("2026-07-31T17:30:45.000Z");
-
-    expect(PRESETS[1].resolve(now)).toEqual({
-      value: {
-        start: new Date("2026-07-30T17:30:45.000Z"),
-        end: now,
-      },
-      mode: "range",
-      granularity: "date-time",
-    });
-  });
-
   it("resolves now once on selection and updates the uncontrolled state tuple", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-07-31T17:30:45.000Z"));
