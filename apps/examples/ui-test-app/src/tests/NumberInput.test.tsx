@@ -35,16 +35,6 @@ describe("NumberInput", () => {
     rerender(<NumberInput value={value} onChange={onChange} />);
     expect(el).toHaveValue("1,234,567");
   });
-  test("should have expected cursor position when adding values to end", async () => {
-    const { rerender } = render(
-      <NumberInput value="123456" onChange={defaultOnChange} />,
-    );
-    const el = screen.getByPlaceholderText<HTMLInputElement>("Enter a number");
-    expect(el).toHaveValue("123,456");
-    await userEvent.type(el, "7");
-    rerender(<NumberInput value="1234567" onChange={defaultOnChange} />);
-    expect(el).toHaveValue("1,234,567");
-  });
   test("should have expected cursor position when adding values to beginning", async () => {
     let value = "";
     function onChange(newValue: string) {

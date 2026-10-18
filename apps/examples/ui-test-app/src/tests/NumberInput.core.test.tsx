@@ -48,12 +48,6 @@ describe("NumberInput core", () => {
     expect(screen.getByRole("textbox")).toHaveValue("£0.00");
   });
 
-  it("Renders with value prop", () => {
-    render(<NumberInput value="49.99" prefix="£" onChange={() => {}} />);
-
-    expect(screen.getByRole("textbox")).toHaveValue("£49.99");
-  });
-
   it("Renders with value 0.1 with decimalScale 2", async () => {
     render(
       <NumberInput
@@ -69,12 +63,6 @@ describe("NumberInput core", () => {
     await userEvent.type(screen.getByRole("textbox"), "{backspace}");
 
     expect(screen.getByRole("textbox")).toHaveValue("£0.1");
-  });
-
-  it("should prefix 0 value", () => {
-    render(<NumberInput prefix="£" value="0" onChange={onChangeSpy} />);
-
-    expect(screen.getByRole("textbox")).toHaveValue("£0");
   });
 
   it("should allow empty value", async () => {

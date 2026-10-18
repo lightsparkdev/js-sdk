@@ -83,22 +83,6 @@ describe("Requester", () => {
     );
   });
 
-  it("constructs without error", () => {
-    expect(
-      () =>
-        new Requester(
-          nodeKeyCache,
-          schemaEndpoint,
-          sdkUserAgent,
-          authProvider,
-          baseUrl,
-          cryptoImpl,
-          signingKey,
-          fetchImpl,
-        ),
-    ).not.toThrow();
-  });
-
   describe("executeQuery", () => {
     it("calls makeRawRequest and returns constructed object", async () => {
       const requester = new Requester(

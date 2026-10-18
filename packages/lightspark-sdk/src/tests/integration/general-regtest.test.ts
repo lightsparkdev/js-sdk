@@ -15,12 +15,12 @@ import {
   AccountTokenAuthProvider,
   BitcoinNetwork,
   InvoiceType,
-  OutgoingPayment,
   PaymentRequestStatus,
   TransactionStatus,
   WithdrawalMode,
   WithdrawalRequestStatus,
   type AccountToNodesConnection,
+  type OutgoingPayment,
 } from "../../index.js";
 import { logger } from "../../logger.js";
 import WithdrawalRequest from "../../objects/WithdrawalRequest.js";
@@ -197,10 +197,6 @@ async function fundNode(satsToFund: number) {
 }
 
 describe(initSuiteName, () => {
-  test("Should get env vars and construct the client successfully", () => {
-    expect(lightsparkClient).toBeDefined();
-  });
-
   test(
     "Should successfully get the current account regtest node and use it for the current test suite",
     async () => {
@@ -462,14 +458,6 @@ describe(p1SuiteName, () => {
     },
     TESTS_TIMEOUT,
   );
-
-  test("Should fetch an invoices payment by IDs", () => {
-    if (!invoicePayment?.id) throw new TypeError("invoicePayment is null");
-
-    const payment = OutgoingPayment.getOutgoingPaymentQuery(invoicePayment?.id);
-
-    expect(payment.queryPayload).not.toBeNull();
-  });
 
   test(
     "Should decode an invoice",

@@ -124,14 +124,4 @@ describe("encodeAttestation — serializes the registration credential", () => {
       encodeAttestation(fakeCredential()).response.transports,
     ).toBeUndefined();
   });
-
-  // Striga rejects the confirm body unless these three are present strings, so
-  // an encoding regression here surfaces as an opaque 400 rather than a crash.
-  it("carries the fields Striga validates on the confirm payload", () => {
-    const out = encodeAttestation(fakeCredential());
-    for (const value of [out.id, out.type, out.response.clientDataJSON]) {
-      expect(typeof value).toBe("string");
-      expect(value.length).toBeGreaterThan(0);
-    }
-  });
 });

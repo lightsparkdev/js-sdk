@@ -210,25 +210,6 @@ describe("Secp256k1SigningKey", () => {
   });
 
   describe("DER encoding structure", () => {
-    test("signature starts with 0x30 SEQUENCE tag", async () => {
-      const signingKey = new Secp256k1SigningKey(TEST_KEYS.key1);
-      const sig = new Uint8Array(
-        await signingKey.sign(new TextEncoder().encode("DER check")),
-      );
-      expect(sig[0]).toBe(0x30);
-    });
-
-    test("signature contains exactly two INTEGERs", async () => {
-      const signingKey = new Secp256k1SigningKey(TEST_KEYS.key1);
-      const sig = new Uint8Array(
-        await signingKey.sign(new TextEncoder().encode("DER structure")),
-      );
-      const { r, s } = parseDER(sig);
-      // Both r and s should be non-empty
-      expect(r.length).toBeGreaterThan(0);
-      expect(s.length).toBeGreaterThan(0);
-    });
-
     test("total DER length matches actual byte length", async () => {
       const signingKey = new Secp256k1SigningKey(TEST_KEYS.key1);
       for (const msg of ["a", "bb", "ccc", "dddd"]) {

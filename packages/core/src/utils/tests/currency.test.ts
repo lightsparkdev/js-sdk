@@ -419,15 +419,6 @@ describe("formatCurrencyStr", () => {
     ).toBe("100,000 sats");
   });
 
-  it("should return the expected currency string with appendUnits plural and lowercase", () => {
-    expect(
-      formatCurrencyStr(
-        { value: 100000, unit: CurrencyUnit.Satoshi },
-        { appendUnits: { plural: true, lowercase: true } },
-      ),
-    ).toBe("100,000 sats");
-  });
-
   it("should return the expected currency string with appendUnits plural and lowercase with value < 2", () => {
     expect(
       formatCurrencyStr(
