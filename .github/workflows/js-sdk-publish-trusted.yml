@@ -145,14 +145,18 @@ jobs:
       - name: "Summarize release plan"
         env:
           RELEASE_PLAN: ${{ steps.plan.outputs.plan }}
+          INPUTS_SOURCE_COMMIT: ${{ inputs.source_commit }}
+          STEPS_AUTHORIZATION_OUTPUTS_RELEASE_BRANCH: ${{ steps.authorization.outputs.release_branch }}
+          INPUTS_RELEASE_COMMIT: ${{ inputs.release_commit }}
+          INPUTS_PREPARATION_RUN_ID: ${{ inputs.preparation_run_id }}
         run: |
           {
             echo '## Public JS SDK release plan'
             echo
-            echo "- Source commit: \`${{ inputs.source_commit }}\`"
-            echo "- Release branch: \`${{ steps.authorization.outputs.release_branch }}\`"
-            echo "- Release commit: \`${{ inputs.release_commit }}\`"
-            echo "- Preparation run: \`${{ inputs.preparation_run_id }}\`"
+            echo "- Source commit: \`${INPUTS_SOURCE_COMMIT}\`"
+            echo "- Release branch: \`${STEPS_AUTHORIZATION_OUTPUTS_RELEASE_BRANCH}\`"
+            echo "- Release commit: \`${INPUTS_RELEASE_COMMIT}\`"
+            echo "- Preparation run: \`${INPUTS_PREPARATION_RUN_ID}\`"
             echo
             echo '```json'
             echo "$RELEASE_PLAN" | jq .
@@ -353,14 +357,17 @@ jobs:
         env:
           RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          INPUTS_SOURCE_COMMIT: ${{ inputs.source_commit }}
+          NEEDS_PLAN_OUTPUTS_RELEASE_BRANCH: ${{ needs.plan.outputs.release_branch }}
+          NEEDS_PLAN_OUTPUTS_COMMIT: ${{ needs.plan.outputs.commit }}
         run: |
           {
             echo '## Release result'
             echo
             echo "$RELEASE_PLAN" | jq -r '.finalizationPackages[] | "- Released `\(.name)@\(.version)`"'
             echo
-            echo "- Candidate source commit: \`${{ inputs.source_commit }}\`"
-            echo "- Release branch: \`${{ needs.plan.outputs.release_branch }}\`"
-            echo "- Public release commit: \`${{ needs.plan.outputs.commit }}\`"
+            echo "- Candidate source commit: \`${INPUTS_SOURCE_COMMIT}\`"
+            echo "- Release branch: \`${NEEDS_PLAN_OUTPUTS_RELEASE_BRANCH}\`"
+            echo "- Public release commit: \`${NEEDS_PLAN_OUTPUTS_COMMIT}\`"
             echo "- Workflow run: $RUN_URL"
           } >> "$GITHUB_STEP_SUMMARY"
