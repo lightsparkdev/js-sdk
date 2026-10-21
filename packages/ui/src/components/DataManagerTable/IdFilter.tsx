@@ -72,8 +72,9 @@ const onValidate = (state: IdFilterState, isMulti?: boolean) => {
   let updatedAppliedValues: string[] = [];
   if (isMulti) {
     updatedAppliedValues =
-      state.appliedValues?.filter((appliedValue) => appliedValue !== value) ||
-      [];
+      state.appliedValues?.filter(
+        (appliedValue) => appliedValue !== normalizedValue,
+      ) || [];
   }
   updatedAppliedValues.push(normalizedValue);
 

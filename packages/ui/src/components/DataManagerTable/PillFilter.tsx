@@ -34,7 +34,11 @@ import { type Dates } from "./DateWidget.js";
 import { isEnumFilterState } from "./EnumFilter.js";
 import { type FilterState } from "./Filter.js";
 import { FilterType, type Filter } from "./filters.js";
-import { isIdFilterState } from "./IdFilter.js";
+import {
+  DEFAULT_ERROR_MESSAGE,
+  isIdFilterState,
+  type IdFilterState,
+} from "./IdFilter.js";
 import {
   getDefaultInputObjectFilterState,
   InputObjectFilter,
@@ -216,6 +220,7 @@ function FilterDropdown<T extends Record<string, unknown>>({
   customComponents?: PillFilterCustomComponents | undefined;
 }) {
   const [stringFilterValue, setStringFilterValue] = useState("");
+  const [stringFilterError, setStringFilterError] = useState<string>();
   const [dates, setDates] = useState<Dates>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [currencyState, setCurrencyState] = useState<CurrencyFilterState>(
@@ -293,6 +298,24 @@ function FilterDropdown<T extends Record<string, unknown>>({
       const value = stringFilterValue.trim();
       if (!value) return;
 
+      if (isIdFilterState(state) && state.onValidate) {
+        const candidate: IdFilterState = { ...state, value };
+        const validated = state.onValidate(candidate, filter.isMulti);
+        if (!validated) {
+          setStringFilterError(filter.errorMessage || DEFAULT_ERROR_MESSAGE);
+          return;
+        }
+        // Clear the value so the table's re-validation on apply is a no-op.
+        const appliedState: IdFilterState = {
+          ...(validated as IdFilterState),
+          value: "",
+          isApplied: true,
+        };
+        onUpdateFilter(appliedState);
+        setIsOpen(false);
+        return;
+      }
+
       let updatedAppliedValues: string[];
       if (filter.isMulti) {
         updatedAppliedValues = state.appliedValues
@@ -346,8 +369,10 @@ function FilterDropdown<T extends Record<string, unknown>>({
             <TextInputComponent
               placeholder="Enter value"
               value={stringFilterValue}
+              error={stringFilterError}
               onChange={(value) => {
                 setStringFilterValue(value);
+                setStringFilterError(undefined);
               }}
               onKeyDown={(keyValue, event) => {
                 if (keyValue === "Enter") {
