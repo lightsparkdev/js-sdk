@@ -2,7 +2,17 @@ import { jest } from "@jest/globals";
 import { LightsparkClient } from "@lightsparkdev/lightspark-sdk";
 import supertest from "supertest";
 import { createRequire } from "node:module";
-import { app } from "./src/index.js";
+// Route tests must not depend on a developer's ~/.lightsparkapienv file.
+jest.unstable_mockModule("@lightsparkdev/lightspark-sdk/env", () => ({
+  getCredentialsFromEnvOrThrow: () => ({
+    apiTokenClientId: "test-client",
+    apiTokenClientSecret: "test-secret",
+    bitcoinNetwork: "REGTEST",
+    testNodePassword: "test-password",
+    baseUrl: "api.example.com",
+  }),
+}));
+const { app } = await import("./src/index.js");
 
 const require = createRequire(import.meta.url);
 const settings = require("../settings.json") as {
