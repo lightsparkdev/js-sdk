@@ -60,6 +60,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: "Select release candidate"
         id: candidate
@@ -254,6 +255,7 @@ jobs:
           fetch-depth: 0
           path: release
           token: ${{ steps.release-app.outputs.token }}
+          persist-credentials: true
 
       - name: "Download generated lockfile"
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0

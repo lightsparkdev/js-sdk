@@ -108,6 +108,7 @@ jobs:
           ref: ${{ inputs.release_commit }}
           fetch-depth: 0
           path: release
+          persist-credentials: false
 
       - name: "Verify immutable release ref"
         working-directory: release
@@ -183,6 +184,7 @@ jobs:
           ref: ${{ needs.plan.outputs.commit }}
           fetch-depth: 0
           path: release
+          persist-credentials: false
 
       - name: "Verify authorized public lockfile"
         env:
@@ -255,6 +257,7 @@ jobs:
           ref: ${{ needs.plan.outputs.commit }}
           fetch-depth: 0
           path: release
+          persist-credentials: false
 
       - name: "Require unchanged release branch"
         working-directory: release
@@ -346,6 +349,10 @@ jobs:
           steps.publish-packages.outcome == 'failure')
         env:
           GH_TOKEN: ${{ github.token }}
+          # Only finalize pushes tags, so only this step gets git credentials.
+          GIT_CONFIG_COUNT: "1"
+          GIT_CONFIG_KEY_0: "credential.https://github.com.helper"
+          GIT_CONFIG_VALUE_0: "!gh auth git-credential"
           SDK_RELEASE_PLAN: ${{ needs.plan.outputs.plan }}
         run: >-
           node scripts/sdk-release.cjs finalize
