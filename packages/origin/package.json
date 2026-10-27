@@ -96,7 +96,7 @@
     "eslint": "^10.0.0",
     "jsdom": "^29.1.1",
     "match-sorter": "^8.2.0",
-    "next": "^15.5.25",
+    "next": "^15.5.28",
     "nodemon": "^3.1.14",
     "prettier": "3.0.3",
     "publint": "^0.3.9",
