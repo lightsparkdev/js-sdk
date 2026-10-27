@@ -102,7 +102,7 @@ export function sealOtpBundle(
 
 // Build the `Grid-Wallet-Signature` stamp over the verificationToken using a
 // specific keypair (the V3 TEK), not the session key — base64url(JSON({
-// publicKey, scheme, signature})), the shape `parse_api_key_stamp` expects.
+// publicKey, scheme, signature})), the shape `TurnkeyApiStamp.from_header` expects.
 export async function buildWalletSignature(
   publicKeyHex: string,
   privateKeyHex: string,
