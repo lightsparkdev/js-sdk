@@ -30,6 +30,7 @@ import {
   runOauthVerify,
   signInOauth,
 } from "../../flows/oauth";
+import { SANDBOX_OIDC_IDENTITY, sandboxOidcToken } from "../../sandbox-oidc";
 import {
   addPasskeyIssue,
   addPasskeyRetry,
@@ -578,9 +579,7 @@ function OauthSignIn({
   const { busy, error, setError, run, reporter, platformAuth } =
     useLoginAction();
   const sandbox = platformAuth?.mode !== "production";
-  const [oidc, setOidc] = useState(
-    sandbox ? sandboxMagicFor("oauth-verify-oidc") ?? "" : "",
-  );
+  const [oidc, setOidc] = useState("");
 
   async function submit() {
     await run(async () => {
@@ -590,7 +589,10 @@ function OauthSignIn({
         reporter,
         platformAuth!,
         accountId,
-        oidc,
+        sandbox
+          ? (clientPublicKey) =>
+              sandboxOidcToken(SANDBOX_OIDC_IDENTITY, clientPublicKey)
+          : oidc,
         credential.id,
       );
       await onChanged();
@@ -615,24 +617,29 @@ function OauthSignIn({
             onClose={() => setError(null)}
           />
         )}
-        <Lede>
-          Or paste the provider's OpenID Connect ID token; Grid verifies it
-          against this credential and issues a session.
-        </Lede>
-        <Field.Root>
-          <Field.Label>OIDC ID token</Field.Label>
-          <Input
-            value={oidc}
-            placeholder="eyJhbGciOiJSUzI1Ni…"
-            autoComplete="off"
-            onChange={(e) => setOidc(e.target.value)}
-          />
-          {sandbox && (
-            <Field.Description>
-              Pre-filled with a sandbox magic token.
-            </Field.Description>
-          )}
-        </Field.Root>
+        {sandbox ? (
+          <Lede>
+            Sandbox signs in as the fixed sandbox identity with a freshly minted
+            OIDC token; Grid verifies it against this credential and issues a
+            session.
+          </Lede>
+        ) : (
+          <>
+            <Lede>
+              Or paste the provider's OpenID Connect ID token; Grid verifies it
+              against this credential and issues a session.
+            </Lede>
+            <Field.Root>
+              <Field.Label>OIDC ID token</Field.Label>
+              <Input
+                value={oidc}
+                placeholder="eyJhbGciOiJSUzI1Ni…"
+                autoComplete="off"
+                onChange={(e) => setOidc(e.target.value)}
+              />
+            </Field.Root>
+          </>
+        )}
         <Button type="submit" variant="filled" loading={busy}>
           Sign in with OAuth
         </Button>
@@ -813,7 +820,9 @@ function AddMethods({
     await add(
       "add-oauth",
       async () => {
-        const oidc = sandboxMagicFor("oauth-add-oidc") ?? "";
+        const oidc = sandbox
+          ? await sandboxOidcToken(SANDBOX_OIDC_IDENTITY)
+          : "";
         const { requestId, payloadToSign } = await addOauthIssue(
           reporter,
           platformAuth!,

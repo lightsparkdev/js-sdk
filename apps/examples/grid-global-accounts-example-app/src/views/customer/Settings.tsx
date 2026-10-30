@@ -2,10 +2,10 @@ import styled from "@emotion/styled";
 import { Alert, Badge, Button, Card } from "@lightsparkdev/origin";
 import { useCallback, useEffect, useState } from "react";
 
-import { sandboxMagicFor } from "../../mode";
 import { GOOGLE_OAUTH_CLIENT_ID } from "../../config";
 import { requestGoogleIdToken } from "../../google-identity";
 import { addOauthIssue, addOauthRetry } from "../../flows/oauth";
+import { SANDBOX_OIDC_IDENTITY, sandboxOidcToken } from "../../sandbox-oidc";
 import {
   addPasskeyIssue,
   addPasskeyRetry,
@@ -155,7 +155,10 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
     await run(
       "add-oauth",
       async () => {
-        const oidc = sandboxMagicFor("oauth-add-oidc") ?? "";
+        const oidc =
+          platformAuth?.mode !== "production"
+            ? await sandboxOidcToken(SANDBOX_OIDC_IDENTITY)
+            : "";
         const { requestId, payloadToSign } = await addOauthIssue(
           reporter,
           platformAuth!,

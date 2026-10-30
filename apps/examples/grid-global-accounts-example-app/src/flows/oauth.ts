@@ -8,8 +8,21 @@ import { apiPost, type ApiAuth } from "../api-client";
 import type { Reporter } from "../lib/reporter";
 import { generateClientKeyPair, turnkeyStamp } from "../turnkey";
 import { setSessionKeysFromVerify } from "../session";
-import { loginClientPublicKey } from "../login-key-encoding";
 import { setCtxCredential, setCtxSession } from "./context";
+
+// A verify token must carry a nonce bound to the client public key, which the
+// login flow generates. A caller that mints its own token (sandbox) passes a
+// function and receives that key; a create token gets none.
+export type OidcTokenSource =
+  | string
+  | ((clientPublicKey?: string) => Promise<string>);
+
+async function resolveOidcToken(
+  oidc: OidcTokenSource,
+  clientPublicKey?: string,
+): Promise<string> {
+  return typeof oidc === "string" ? oidc : oidc(clientPublicKey);
+}
 
 // Run /verify with the OIDC token + client public key, adopting whichever
 // session signing key the response carries. Shared by the guided login and the
@@ -52,20 +65,20 @@ export async function loginOauth(
   reporter: Reporter,
   auth: ApiAuth,
   credId: string,
-  oidc: string,
+  oidc: OidcTokenSource,
 ): Promise<OauthLoginResult> {
-  if (!oidc.trim()) throw new Error("OIDC token is required.");
+  if (typeof oidc === "string" && !oidc.trim())
+    throw new Error("OIDC token is required.");
   const kp = generateClientKeyPair();
-  // Encoding of the key Grid registers as the OAUTH_LOGIN session API key, per
-  // the legacy-vs-modern toggle. Modern (compressed) is the default: Turnkey
-  // stores/matches session API keys compressed, so the uncompressed legacy key
-  // takes the server HPKE-bundle path instead.
-  const clientPublicKey = loginClientPublicKey(kp);
+  // OAuth verify accepts only the compressed key, whatever the legacy/modern
+  // toggle says: Grid registers it as the OAUTH_LOGIN session API key and the
+  // token's nonce binds to this encoding.
+  const clientPublicKey = kp.publicKey;
   const data = await runOauthVerify(
     reporter,
     auth,
     credId,
-    oidc,
+    await resolveOidcToken(oidc, clientPublicKey),
     clientPublicKey,
   );
   return { data, clientPublicKey };
@@ -81,12 +94,17 @@ export async function signInOauth(
   reporter: Reporter,
   auth: ApiAuth,
   accountId: string,
-  oidc: string,
+  oidc: OidcTokenSource,
   existingCredId: string | null,
 ): Promise<unknown> {
   let credId = existingCredId;
   if (!credId) {
-    const cred = await createOauthCredential(reporter, auth, accountId, oidc);
+    const cred = await createOauthCredential(
+      reporter,
+      auth,
+      accountId,
+      await resolveOidcToken(oidc),
+    );
     credId = (cred as { id?: string }).id ?? null;
     if (!credId) throw new Error("Create credential returned no id.");
   }

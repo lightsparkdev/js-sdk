@@ -34,19 +34,11 @@ export const LOGIN_KEY_ENCODING_STORAGE_KEY =
 
 // ----- Sandbox magic values -----
 //
-// The single source of truth for every fake "looks-real" field. Keyed by input
-// element id → the magic value the sandbox backend accepts. In sandbox mode
-// these are seeded into the fields (and the field gets a "magic" pill) by
-// `mode.ts`; in production mode the same fields are hidden so nothing fake is
-// ever on screen. This replaces the scattered `value="sandbox-..."` attributes
-// that made fake data indistinguishable from real values.
+// The fixed values the sandbox backend accepts, keyed by input element id. In
+// sandbox mode these are seeded into the fields by `mode.ts`; in production
+// mode the same fields are hidden so nothing fake is ever on screen. The OTP
+// code is the only one left: sandbox verifies signatures, passkey assertions
+// and OIDC tokens for real, and `sandbox-oidc.ts` mints the latter.
 export const SANDBOX_MAGIC: Record<string, string> = {
-  // EMAIL_OTP — sandbox always accepts the fixed code.
   "email_otp-v3-code": "000000",
-  // OAUTH — magic OIDC tokens (verify input + JWT-shaped create/add identities).
-  "oauth-verify-oidc": "sandbox-valid-oidc-token",
-  "oauth-create-oidc":
-    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJzdWIiOiJzYW5kYm94LXVzZXItMSJ9.sig",
-  "oauth-add-oidc":
-    "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwic3ViIjoic2FuZGJveC11c2VyLTIifQ.sig",
 };
