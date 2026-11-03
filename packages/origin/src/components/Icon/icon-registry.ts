@@ -166,6 +166,7 @@ import { IconSearchlinesSparkle } from "./icons/IconSearchlinesSparkle";
 import { IconSecretPhrase } from "./icons/IconSecretPhrase";
 import { IconSettingsGear1 } from "./icons/IconSettingsGear1";
 import { IconSettingsGear2 } from "./icons/IconSettingsGear2";
+import { IconShareOs } from "./icons/IconShareOs";
 import { IconShield } from "./icons/IconShield";
 import { IconShield2 } from "./icons/IconShield2";
 import { IconShieldKeyhole } from "./icons/IconShieldKeyhole";
@@ -413,6 +414,7 @@ export const ICON_REGISTRY = {
   IconSecretPhrase,
   IconSettingsGear1,
   IconSettingsGear2,
+  IconShareOs,
   IconShield,
   IconShield2,
   IconShieldKeyhole,

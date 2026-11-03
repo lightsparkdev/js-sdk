@@ -111,7 +111,7 @@ Compound components: Accordion, AlertDialog, Autocomplete, Breadcrumb, Card, Che
 </Button>
 ```
 
-Simple components: ActionBar, Alert, Avatar, Badge, Button, ButtonGroup, Chip, ChipFilter, Form, Input, Item, Loader, Logo, Separator, Shortcut, Switch, Textarea, Toggle, ToggleGroup, VisuallyHidden.
+Simple components: ActionBar, Alert, Avatar, Badge, Button, ButtonGroup, Chip, ChipFilter, FileUpload, Form, Input, Item, Loader, Logo, Separator, Shortcut, Switch, Textarea, Toggle, ToggleGroup, VisuallyHidden.
 
 ### Chart (namespace export)
 

@@ -348,6 +348,13 @@ export type {
   ChipFilterTriggerProps,
 } from "./components/Chip";
 
+export { FileUpload, rejectionMessage } from "./components/FileUpload";
+export type {
+  FileUploadProps,
+  FileUploadRejection,
+  FileUploadRejectionReason,
+} from "./components/FileUpload";
+
 export { Form } from "./components/Form";
 export type { FormProps } from "./components/Form";
 

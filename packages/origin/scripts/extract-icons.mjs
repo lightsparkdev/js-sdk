@@ -249,6 +249,7 @@ const SECTIONS = [
       { name: "IconSecretPhrase" },
       { name: "IconSettingsGear1" },
       { name: "IconSettingsGear2" },
+      { name: "IconShareOs" },
       { name: "IconShield" },
       { name: "IconShield2" },
       { name: "IconShieldKeyhole" },

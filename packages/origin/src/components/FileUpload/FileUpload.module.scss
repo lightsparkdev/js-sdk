@@ -1,0 +1,151 @@
+@use "../../tokens/text-styles" as *;
+@use "../../tokens/mixins" as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+.dropzone {
+  @include button-reset;
+  @include surface-with-hover(transparent);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  border: var(--stroke-sm) dashed var(--border-control);
+  @include smooth-corners(var(--corner-radius-md));
+  color: var(--text-secondary);
+  text-align: center;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+
+  // Children never become drag targets, so dragleave fires only when the
+  // pointer leaves the drop area itself.
+  > * {
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    @include input-focus;
+  }
+
+  &[data-drag-over] {
+    border-style: solid;
+    border-color: var(--border-secondary);
+    background: linear-gradient(var(--surface-hover), var(--surface-hover)),
+      var(--surface-control);
+    color: var(--text-primary);
+
+    .icon {
+      color: var(--icon-primary);
+    }
+  }
+
+  &[data-invalid] {
+    @include input-critical;
+  }
+
+  &[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+// A translucent fill keeps the avatar visible on the drop area's hover and
+// drag-over backgrounds.
+.dropzone .iconAvatar {
+  flex-shrink: 0;
+  background-color: var(--surface-alpha-secondary);
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--icon-secondary);
+}
+
+.prompt {
+  @include body-sm;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4xs);
+}
+
+.promptTitle {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-book);
+}
+
+.promptHint {
+  color: var(--text-secondary);
+}
+
+// Matches the dialog close button: a quiet icon that darkens on hover.
+.item .remove {
+  color: var(--icon-secondary);
+
+  @media (hover: hover) {
+    &:hover:not([data-disabled]) {
+      color: var(--icon-primary);
+    }
+  }
+}
+
+.input,
+.status {
+  @include visually-hidden;
+}
+
+.root[data-disabled] .list {
+  opacity: 0.5;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: var(--spacing-3xs) var(--spacing-3xs) var(--spacing-3xs)
+    var(--spacing-sm);
+  border: var(--stroke-sm) solid var(--border-primary);
+  @include smooth-corners(var(--corner-radius-sm));
+}
+
+.itemIcon {
+  flex-shrink: 0;
+  color: var(--icon-secondary);
+}
+
+.itemName {
+  @include body-sm;
+
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
