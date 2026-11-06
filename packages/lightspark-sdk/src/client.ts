@@ -1133,8 +1133,8 @@ class LightsparkClient {
         }
         return response;
       },
-      pollIntervalMs,
       pollMaxTimeouts,
+      pollIntervalMs,
       pollIgnoreErrors,
       () =>
         new LightsparkException(
