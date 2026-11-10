@@ -9,8 +9,8 @@
     "apps/private/settings.json"
   ],
   "globalEnv": [
-    /* CI sets this to a hash of workflow/action files that affect Turbo
-       execution. It is an extra global cache-key input, not a replacement for
+    /* CI sets this to a hash of the dependency-install actions and mise
+       config. It is an extra global cache-key input, not a replacement for
        task-specific file inputs such as schemas, scripts, or config files. */
     "TURBO_EXTERNAL_INPUTS_HASH",
     /* Prevent artifacts produced under different Node runtimes from sharing a
