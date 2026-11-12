@@ -1,4 +1,5 @@
 export { Arbitrum } from "./Arbitrum.js";
+export { Avalanche } from "./Avalanche.js";
 export { Base } from "./Base.js";
 export { ChainIcon, type Chain } from "./ChainIcon.js";
 export { Ethereum } from "./Ethereum.js";

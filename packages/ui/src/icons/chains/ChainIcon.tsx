@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import { Arbitrum } from "./Arbitrum.js";
+import { Avalanche } from "./Avalanche.js";
 import { Base } from "./Base.js";
 import { Ethereum } from "./Ethereum.js";
 import { Polygon } from "./Polygon.js";
@@ -11,6 +12,7 @@ export type Chain =
   | "ethereum"
   | "base"
   | "polygon"
+  | "avalanche"
   | "arbitrum"
   | "tron";
 
@@ -22,6 +24,7 @@ const CHAIN_COMPONENTS: Record<
   ethereum: Ethereum,
   base: Base,
   polygon: Polygon,
+  avalanche: Avalanche,
   arbitrum: Arbitrum,
   tron: Tron,
 };
