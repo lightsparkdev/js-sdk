@@ -3,6 +3,7 @@ export { Avalanche } from "./Avalanche.js";
 export { Base } from "./Base.js";
 export { ChainIcon, type Chain } from "./ChainIcon.js";
 export { Ethereum } from "./Ethereum.js";
+export { Optimism } from "./Optimism.js";
 export { Polygon } from "./Polygon.js";
 export { Solana } from "./Solana.js";
 export { Tron } from "./Tron.js";

@@ -3,6 +3,7 @@ import { Arbitrum } from "./Arbitrum.js";
 import { Avalanche } from "./Avalanche.js";
 import { Base } from "./Base.js";
 import { Ethereum } from "./Ethereum.js";
+import { Optimism } from "./Optimism.js";
 import { Polygon } from "./Polygon.js";
 import { Solana } from "./Solana.js";
 import { Tron } from "./Tron.js";
@@ -14,6 +15,7 @@ export type Chain =
   | "polygon"
   | "avalanche"
   | "arbitrum"
+  | "optimism"
   | "tron";
 
 const CHAIN_COMPONENTS: Record<
@@ -26,6 +28,7 @@ const CHAIN_COMPONENTS: Record<
   polygon: Polygon,
   avalanche: Avalanche,
   arbitrum: Arbitrum,
+  optimism: Optimism,
   tron: Tron,
 };
 

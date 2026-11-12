@@ -108,6 +108,7 @@ export { NetworkAvalanche } from "./NetworkAvalanche.js";
 export { NetworkBase } from "./NetworkBase.js";
 export { NetworkEthereum } from "./NetworkEthereum.js";
 export { NetworkLightning } from "./NetworkLightning.js";
+export { NetworkOptimism } from "./NetworkOptimism.js";
 export { NetworkPolygon } from "./NetworkPolygon.js";
 export { NetworkSolana } from "./NetworkSolana.js";
 export { NetworkSpark } from "./NetworkSpark.js";
