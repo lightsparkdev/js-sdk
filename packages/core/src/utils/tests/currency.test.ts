@@ -383,6 +383,16 @@ describe("formatCurrencyStr", () => {
     expect(currencyMap.formatted.TRY).toBe("₺123.45");
   });
 
+  it("should format Korean won as whole units", () => {
+    const currencyMap = mapCurrencyAmount({
+      value: 12_345,
+      unit: CurrencyUnit.Krw,
+    });
+
+    expect(currencyMap.KRW).toBe(12_345);
+    expect(currencyMap.formatted.KRW).toBe("₩12,345");
+  });
+
   it("should return the expected currency string with precision 1", () => {
     expect(
       formatCurrencyStr(
