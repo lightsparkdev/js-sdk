@@ -33,6 +33,7 @@ import {
 import { ExternalAccountsPanel } from "./grid/ExternalAccountsPanel";
 import { PlatformAccountsPanel } from "./grid/PlatformAccountsPanel";
 import { RatesAndFeesPanel } from "./grid/RatesAndFeesPanel";
+import { RuleBasedAccountsPanel } from "./grid/RuleBasedAccountsPanel";
 import { ReceiverLookupPanel } from "./grid/ReceiverLookupPanel";
 import { TransactionsPanel } from "./grid/TransactionsPanel";
 import { VerificationsPanel } from "./grid/VerificationsPanel";
@@ -89,8 +90,12 @@ export function App() {
   }, []);
 
   const call = useCallback(
-    <T,>(method: HttpMethod, path: string, body?: unknown) =>
-      callGrid<T>(method, path, body, appendLog),
+    <T,>(
+      method: HttpMethod,
+      path: string,
+      body?: unknown,
+      headers?: Record<string, string>,
+    ) => callGrid<T>(method, path, body, appendLog, headers),
     [appendLog],
   );
 
@@ -649,6 +654,13 @@ export function App() {
           {page === "accounts" && (
             <>
               <ExternalAccountsPanel call={call} customerId={activeCustomer} />
+              {/* Remounted per customer so a late response cannot leak across. */}
+              <RuleBasedAccountsPanel
+                key={activeCustomer}
+                call={call}
+                connection={creds.base_url ?? ""}
+                customerId={activeCustomer}
+              />
               <ReceiverLookupPanel
                 call={call}
                 customerId={activeCustomer}

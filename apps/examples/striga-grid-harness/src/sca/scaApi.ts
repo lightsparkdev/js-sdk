@@ -12,6 +12,7 @@ export type CallFn = <T>(
   method: HttpMethod,
   path: string,
   body?: unknown,
+  headers?: Record<string, string>,
 ) => Promise<CallResult<T>>;
 
 export interface ScaPanelProps {

@@ -115,9 +115,10 @@ export async function callGrid<T = unknown>(
   path: string,
   body: unknown | undefined,
   onLog: (entry: LogEntry) => void,
+  headers: Record<string, string> = {},
 ): Promise<CallResult<T>> {
   const ts = nowTs();
-  const init: RequestInit = { method, headers: {} };
+  const init: RequestInit = { method, headers: { ...headers } };
   let requestBody: string | undefined;
   if (body !== undefined && body !== null) {
     requestBody =
