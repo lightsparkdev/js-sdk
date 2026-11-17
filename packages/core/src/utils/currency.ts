@@ -66,6 +66,7 @@ export const CurrencyUnit = {
   ILS: "ILS",
   TRY: "TRY",
   KRW: "KRW",
+  AUD: "AUD",
   USDT: "USDT",
   USDC: "USDC",
   USDB: "USDB",
@@ -104,6 +105,7 @@ export const CurrencyUnit = {
   Ils: "ILS",
   Try: "TRY",
   Krw: "KRW",
+  Aud: "AUD",
   Usdt: "USDT",
   Usdc: "USDC",
   Usdb: "USDB",
@@ -180,6 +182,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.ILS]: (v: number) => v,
   [CurrencyUnit.TRY]: (v: number) => v,
   [CurrencyUnit.KRW]: (v: number) => v,
+  [CurrencyUnit.AUD]: (v: number) => v,
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
   [CurrencyUnit.USDB]: (v: number) => v,
@@ -255,6 +258,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toBitcoinConversion,
     [CurrencyUnit.TRY]: toBitcoinConversion,
     [CurrencyUnit.KRW]: toBitcoinConversion,
+    [CurrencyUnit.AUD]: toBitcoinConversion,
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
     [CurrencyUnit.USDB]: toBitcoinConversion,
@@ -314,6 +318,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toMicrobitcoinConversion,
     [CurrencyUnit.TRY]: toMicrobitcoinConversion,
     [CurrencyUnit.KRW]: toMicrobitcoinConversion,
+    [CurrencyUnit.AUD]: toMicrobitcoinConversion,
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
     [CurrencyUnit.USDB]: toMicrobitcoinConversion,
@@ -373,6 +378,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toMillibitcoinConversion,
     [CurrencyUnit.TRY]: toMillibitcoinConversion,
     [CurrencyUnit.KRW]: toMillibitcoinConversion,
+    [CurrencyUnit.AUD]: toMillibitcoinConversion,
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
     [CurrencyUnit.USDB]: toMillibitcoinConversion,
@@ -432,6 +438,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toMillisatoshiConversion,
     [CurrencyUnit.TRY]: toMillisatoshiConversion,
     [CurrencyUnit.KRW]: toMillisatoshiConversion,
+    [CurrencyUnit.AUD]: toMillisatoshiConversion,
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
     [CurrencyUnit.USDB]: toMillisatoshiConversion,
@@ -491,6 +498,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toNanobitcoinConversion,
     [CurrencyUnit.TRY]: toNanobitcoinConversion,
     [CurrencyUnit.KRW]: toNanobitcoinConversion,
+    [CurrencyUnit.AUD]: toNanobitcoinConversion,
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
     [CurrencyUnit.USDB]: toNanobitcoinConversion,
@@ -550,6 +558,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.ILS]: toSatoshiConversion,
     [CurrencyUnit.TRY]: toSatoshiConversion,
     [CurrencyUnit.KRW]: toSatoshiConversion,
+    [CurrencyUnit.AUD]: toSatoshiConversion,
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
     [CurrencyUnit.USDB]: toSatoshiConversion,
@@ -602,6 +611,7 @@ const CONVERSION_MAP = {
   [CurrencyUnit.ILS]: standardUnitConversionObj,
   [CurrencyUnit.TRY]: standardUnitConversionObj,
   [CurrencyUnit.KRW]: standardUnitConversionObj,
+  [CurrencyUnit.AUD]: standardUnitConversionObj,
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
   [CurrencyUnit.USDB]: standardUnitConversionObj,
@@ -714,6 +724,7 @@ export type CurrencyMap = {
   [CurrencyUnit.ILS]: number;
   [CurrencyUnit.TRY]: number;
   [CurrencyUnit.KRW]: number;
+  [CurrencyUnit.AUD]: number;
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.USDB]: number;
@@ -776,6 +787,7 @@ export type CurrencyMap = {
     [CurrencyUnit.ILS]: string;
     [CurrencyUnit.TRY]: string;
     [CurrencyUnit.KRW]: string;
+    [CurrencyUnit.AUD]: string;
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.USDB]: string;
@@ -1019,6 +1031,7 @@ function convertCurrencyAmountValues(
     ils: CurrencyUnit.ILS,
     try: CurrencyUnit.TRY,
     krw: CurrencyUnit.KRW,
+    aud: CurrencyUnit.AUD,
     mibtc: CurrencyUnit.MICROBITCOIN,
     mlbtc: CurrencyUnit.MILLIBITCOIN,
     nbtc: CurrencyUnit.NANOBITCOIN,
@@ -1126,6 +1139,7 @@ export function mapCurrencyAmount(
     ils,
     try: tryAmount,
     krw,
+    aud,
     usdt,
     usdc,
     usdb,
@@ -1183,6 +1197,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.ILS]: ils,
     [CurrencyUnit.TRY]: tryAmount,
     [CurrencyUnit.KRW]: krw,
+    [CurrencyUnit.AUD]: aud,
     [CurrencyUnit.MICROBITCOIN]: mibtc,
     [CurrencyUnit.MILLIBITCOIN]: mlbtc,
     [CurrencyUnit.NANOBITCOIN]: nbtc,
@@ -1407,6 +1422,10 @@ export function mapCurrencyAmount(
         value: krw,
         unit: CurrencyUnit.KRW,
       }),
+      [CurrencyUnit.AUD]: formatCurrencyStr({
+        value: aud,
+        unit: CurrencyUnit.AUD,
+      }),
       [CurrencyUnit.USDT]: formatCurrencyStr({
         value: usdt,
         unit: CurrencyUnit.USDT,
@@ -1589,6 +1608,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "TRY";
     case CurrencyUnit.KRW:
       return "KRW";
+    case CurrencyUnit.AUD:
+      return "AUD";
   }
   return "Unsupported CurrencyUnit";
 };
@@ -1680,6 +1701,7 @@ export function formatCurrencyStr(
       CurrencyUnit.CHF,
       CurrencyUnit.ILS,
       CurrencyUnit.TRY,
+      CurrencyUnit.AUD,
       CurrencyUnit.HKD,
       CurrencyUnit.SGD,
     ] as string[];

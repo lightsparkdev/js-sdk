@@ -393,6 +393,17 @@ describe("formatCurrencyStr", () => {
     expect(currencyMap.formatted.KRW).toBe("₩12,345");
   });
 
+  it("should format Australian dollars from minor units", () => {
+    const currencyMap = mapCurrencyAmount({
+      value: 12_345,
+      unit: CurrencyUnit.Aud,
+    });
+
+    expect(currencyMap.AUD).toBe(12_345);
+    // Fiat amounts use the narrow symbol, as CAD and HKD do.
+    expect(currencyMap.formatted.AUD).toBe("$123.45");
+  });
+
   it("should return the expected currency string with precision 1", () => {
     expect(
       formatCurrencyStr(
