@@ -2,8 +2,7 @@
 
 This repository contains all of the Lightspark Javascript/Typescript SDKs. The SDKs are organized into the following packages:
 
-- [lightspark-sdk](./packages/lightspark-sdk/README.md): A high-level management SDK that can be used from a node or browser environment. It's used to manage accounts, nodes, wallets, etc. and should be authenticated via API token or OAuth.
-- [oauth](./packages/oauth/README.md): A client-side OAuth library, which can be used from a browser or React Native environment. This library currently only authenticates lightspark administrator accounts, not wallet users. _Note_: This package is currently in unpublished beta, and is subject to change.
+- [lightspark-sdk](./packages/lightspark-sdk/README.md): A high-level management SDK that can be used from a node or browser environment. It's used to manage accounts, nodes, wallets, etc. and should be authenticated via an API token.
 
 ## Running the SDKs and examples
 

@@ -27,7 +27,7 @@ const lightsparkClient = new LightsparkClient(
 );
 ```
 
-If you want to use the client in a browser environment, you'll need to use a different authentication provider. The `OAuthProvider` can be used to authenticate with the user's Lightspark account. It will open a popup window to the Lightspark login page, and then exchange the authorization code for an access token.
+For a browser application, make authenticated Lightspark API requests through your backend using the API-token setup above.
 
 You can then use the client to make API calls. For example, to create an invoice:
 
