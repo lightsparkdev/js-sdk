@@ -21,6 +21,7 @@ import {
 import { getSessionId } from "../../session";
 import { useAppState } from "../../state/store";
 import { DismissibleAlert } from "../../components/DismissibleAlert";
+import { formatDateTime } from "../../lib/format-date-time";
 import type { AccountBalance } from "./WalletHome";
 
 interface Credential {
@@ -375,7 +376,7 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
                     <RowText>
                       <RowId title={s.id}>{s.id}</RowId>
                       {s.expiresAt && (
-                        <RowSub>Expires {formatDate(s.expiresAt)}</RowSub>
+                        <RowSub>Expires {formatDateTime(s.expiresAt)}</RowSub>
                       )}
                     </RowText>
                   </RowLeft>
@@ -454,11 +455,6 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
       </Card.Root>
     </Stack>
   );
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString();
 }
 
 const Stack = styled.div`

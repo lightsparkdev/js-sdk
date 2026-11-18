@@ -12,14 +12,15 @@
 // Pure + DOM-free so it can be unit-tested at the flow boundary without touching
 // real Turnkey.
 
-/** The three sign-in methods the wallet supports. */
-export type Method = "email_otp" | "oauth" | "passkey";
+/** The sign-in methods the wallet supports. */
+export type Method = "email_otp" | "oauth" | "passkey" | "evm_wallet";
 
 /** The credential `type` strings the Grid API returns for each method. */
 const TYPE_FOR_METHOD: Record<Method, string> = {
   email_otp: "EMAIL_OTP",
   oauth: "OAUTH",
   passkey: "PASSKEY",
+  evm_wallet: "EVM_WALLET",
 };
 
 /** Reverse of `TYPE_FOR_METHOD`: the credential's API `type` → its `Method`. */
@@ -27,6 +28,7 @@ const METHOD_FOR_TYPE: Record<string, Method> = {
   EMAIL_OTP: "email_otp",
   OAUTH: "oauth",
   PASSKEY: "passkey",
+  EVM_WALLET: "evm_wallet",
 };
 
 /**

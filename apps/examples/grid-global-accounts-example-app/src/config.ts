@@ -21,6 +21,10 @@ export const TURNKEY_STAMP_SCHEME = "SIGNATURE_SCHEME_TK_API_P256";
 export const GOOGLE_OAUTH_CLIENT_ID: string =
   import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
+// Privy app ID for the EVM wallet sign-in (public — no secret). Supply your own
+// via VITE_PRIVY_APP_ID; empty hides the EVM wallet actions.
+export const PRIVY_APP_ID: string = import.meta.env.VITE_PRIVY_APP_ID ?? "";
+
 // `localStorage` key for the persisted mode so a reload keeps the chosen mode
 // instead of silently reverting to sandbox.
 export const MODE_STORAGE_KEY = "gga-example-app-mode";

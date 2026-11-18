@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import settings from "../settings.json";
 
@@ -11,6 +12,13 @@ const PROD_GRID_URL = process.env.GRID_URL ?? "https://api.lightspark.com";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@solana-program/system": fileURLToPath(
+        new URL("./src/stubs/solana-program-system.ts", import.meta.url),
+      ),
+    },
+  },
   build: {
     /* Lightning CSS mangles @font-face unicode-range values; see the pin in
        @lightsparkdev/vite buildConfig. */

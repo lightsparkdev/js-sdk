@@ -38,6 +38,14 @@ import {
   signInPasskey,
 } from "../../flows/passkey";
 import { listCredentials } from "../../flows/manage";
+import {
+  createEvmWalletFirstCredential,
+  loginEvmWallet,
+} from "../../flows/evm-wallet";
+import {
+  connectWalletFor,
+  useEvmWallet,
+} from "../../components/EvmWalletProvider";
 import { getRawCredentialId, getRawCredentialIds } from "../../passkey-store";
 import { sendOtpChallenge, verifyOtpStep } from "../../flows/otp-step";
 import {
@@ -52,12 +60,14 @@ const METHOD_LABEL: Record<Method, string> = {
   email_otp: "Email OTP",
   oauth: "OAuth",
   passkey: "Security key",
+  evm_wallet: "EVM wallet",
 };
 
-const METHOD_BADGE: Record<Method, "blue" | "purple" | "green"> = {
+const METHOD_BADGE: Record<Method, "blue" | "purple" | "green" | "sky"> = {
   email_otp: "blue",
   oauth: "purple",
   passkey: "green",
+  evm_wallet: "sky",
 };
 
 /** What the login view knows about an account's existing credentials. */
@@ -231,6 +241,13 @@ export function Login() {
           </Note>
         )}
 
+        {empty && (
+          <EvmFirstCredential
+            accountId={accountId}
+            onChanged={refreshCredentials}
+          />
+        )}
+
         {/* 3. Add a sign-in method. */}
         <AddMethods
           accountId={accountId}
@@ -360,6 +377,13 @@ function CredentialRow({
         )}
         {method === "passkey" && (
           <PasskeySignIn
+            accountId={accountId}
+            credential={credential}
+            onChanged={onChanged}
+          />
+        )}
+        {method === "evm_wallet" && (
+          <EvmWalletSignIn
             accountId={accountId}
             credential={credential}
             onChanged={onChanged}
@@ -736,6 +760,169 @@ function PasskeySignIn({
         Sign in with security key
       </Button>
     </Form>
+  );
+}
+
+function PrivyUnsetHint() {
+  return (
+    <MutedRow>
+      Set <Mono>VITE_PRIVY_APP_ID</Mono> to sign in with a Privy EVM wallet.
+    </MutedRow>
+  );
+}
+
+/** Sign in on an EVM wallet credential: Grid's session request is signed with
+ *  `personal_sign` by the Privy wallet at the credential's address. */
+function EvmWalletSignIn({
+  accountId,
+  credential,
+  onChanged,
+}: {
+  accountId: string | null;
+  credential: ExistingCredential;
+  onChanged: () => Promise<void> | void;
+}) {
+  const wallet = useEvmWallet();
+  const { busy, error, setError, run, reporter, platformAuth } =
+    useLoginAction();
+
+  if (!wallet) return <PrivyUnsetHint />;
+
+  async function submit() {
+    if (!wallet) return;
+    await run(async () => {
+      if (!accountId) throw new Error("No wallet account to sign in to.");
+      if (!credential.nickname)
+        throw new Error("This EVM wallet credential has no address.");
+      const signer = await connectWalletFor(wallet, credential.nickname);
+      const session = await loginEvmWallet(
+        reporter,
+        platformAuth!,
+        accountId,
+        credential.id,
+        signer,
+      );
+      await onChanged();
+      return session;
+    });
+  }
+
+  return (
+    <Form
+      onSubmit={(e) => {
+        e.preventDefault();
+        void submit();
+      }}
+    >
+      {error && (
+        <DismissibleAlert
+          variant="critical"
+          title="Couldn't sign in"
+          description={error}
+          onClose={() => setError(null)}
+        />
+      )}
+      <Lede>
+        The Privy wallet at this address signs Grid's session request. If Privy
+        is signed in as someone else, its login opens for this wallet's owner.
+      </Lede>
+      <Button type="submit" variant="filled" loading={busy}>
+        Sign in with EVM wallet
+      </Button>
+    </Form>
+  );
+}
+
+/** The account's first credential under `AT_FIRST_CREDENTIAL`: the Privy
+ *  wallet's ownership proof creates the wallet, then the wallet signs in. */
+function EvmFirstCredential({
+  accountId,
+  onChanged,
+}: {
+  accountId: string | null;
+  onChanged: () => Promise<void> | void;
+}) {
+  const wallet = useEvmWallet();
+  const { reporter, platformAuth, setSession, activeCustomer } = useAppState();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit() {
+    if (!wallet || !platformAuth || !accountId) return;
+    setBusy(true);
+    setError(null);
+    let signIn: () => Promise<unknown>;
+    try {
+      const signer = await wallet.connect();
+      const credId = await createEvmWalletFirstCredential(
+        reporter,
+        platformAuth,
+        accountId,
+        signer,
+      );
+      signIn = () =>
+        loginEvmWallet(reporter, platformAuth, accountId, credId, signer);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      reporter.status("Couldn't create the wallet.", "error");
+      setBusy(false);
+      return;
+    }
+    // The refreshed list replaces this section with the new credential's row,
+    // so a sign-in that fails below is retried there, not by creating again.
+    await onChanged();
+    try {
+      setSession(await signIn());
+      reporter.status(
+        `Signed in as ${activeCustomer?.name ?? "customer"}.`,
+        "success",
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      reporter.status(
+        `Wallet created, but sign-in failed: ${message} Sign in with the new EVM wallet below.`,
+        "error",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Section>
+      <SectionHead>
+        <SectionTitle>Create the wallet with an EVM wallet</SectionTitle>
+        <SectionHint>
+          On a PENDING account (platform walletProvisioning
+          AT_FIRST_CREDENTIAL), the Privy wallet signs an ownership message and
+          that creates the wallet with it as the only credential. It then signs
+          a session request to sign in.
+        </SectionHint>
+      </SectionHead>
+      {error && (
+        <DismissibleAlert
+          variant="critical"
+          title="Couldn't create the wallet"
+          description={error}
+          onClose={() => setError(null)}
+        />
+      )}
+      {wallet ? (
+        <AddRow>
+          <Button
+            variant="filled"
+            size="compact"
+            disabled={!accountId}
+            loading={busy}
+            onClick={() => void submit()}
+          >
+            Create wallet with EVM wallet
+          </Button>
+        </AddRow>
+      ) : (
+        <PrivyUnsetHint />
+      )}
+    </Section>
   );
 }
 

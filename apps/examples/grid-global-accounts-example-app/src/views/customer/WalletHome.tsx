@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { RawExpander } from "../../components/RawExpander";
 import { fetchBalance } from "../../flows/customer";
+import { formatDateTime } from "../../lib/format-date-time";
 import { currencyCode, formatMoney } from "../../lib/format-money";
 import { useAppState } from "../../state/store";
 import { Activity } from "./Activity";
@@ -45,7 +46,9 @@ export interface AccountBalance {
  * the live session established at login.
  */
 export function WalletHome() {
-  const { activeCustomer, platformAuth, reporter, signOut } = useAppState();
+  const { activeCustomer, platformAuth, reporter, session, signOut } =
+    useAppState();
+  const { expiresAt } = (session ?? {}) as { expiresAt?: unknown };
   const [section, setSection] = useState<Section>("wallet");
   const [accounts, setAccounts] = useState<AccountBalance[]>([]);
   const [rawBalance, setRawBalance] = useState<unknown>(null);
@@ -147,6 +150,11 @@ export function WalletHome() {
               Pay
             </Button>
             <Spacer />
+            {typeof expiresAt === "string" && (
+              <SessionExpiry>
+                Session expires {formatDateTime(expiresAt)}
+              </SessionExpiry>
+            )}
             <Button variant="ghost" size="compact" onClick={() => signOut()}>
               Sign out
             </Button>
@@ -305,6 +313,11 @@ const FooterRow = styled.div`
   align-items: center;
   gap: var(--spacing-sm, 12px);
   width: 100%;
+`;
+
+const SessionExpiry = styled.span`
+  font-size: var(--font-size-xs, 11px);
+  color: var(--text-tertiary, #8a8a8a);
 `;
 
 const Spacer = styled.div`

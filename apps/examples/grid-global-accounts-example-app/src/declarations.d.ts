@@ -16,6 +16,7 @@ declare module "*.module.css" {
 
 interface ImportMetaEnv {
   readonly VITE_GOOGLE_CLIENT_ID?: string;
+  readonly VITE_PRIVY_APP_ID?: string;
 }
 
 interface ImportMeta {

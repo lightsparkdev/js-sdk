@@ -21,10 +21,12 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@lightsparkdev/origin": "*",
+    "@privy-io/react-auth": "3.51.2",
     "@turnkey/api-key-stamper": "^0.6.5",
     "@turnkey/crypto": "^2.11.0",
     "@turnkey/encoding": "^0.6.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "viem": "2.57.8"
   }
 }

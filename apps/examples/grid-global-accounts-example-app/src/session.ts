@@ -147,12 +147,19 @@ export function setSessionKeysFromTek(tek: {
 }): void {
   const ctx = active();
   if (!ctx) return;
+  cacheTek(ctx, tek);
+  notify();
+}
+
+function cacheTek(
+  ctx: SessionContext,
+  tek: { publicKey: string; privateKey: string },
+): void {
   ctx.cachedSessionKeys = {
     apiPublicKey: tek.publicKey,
     apiPrivateKey: tek.privateKey,
   };
   ctx.model = "otp-tek";
-  notify();
 }
 
 // Adopt the signing key from a passkey/oauth Verify response, whichever session
@@ -285,4 +292,30 @@ export function getCredentialId(): string {
 }
 export function getSessionId(): string {
   return (active()?.sessionId ?? "").trim();
+}
+
+// ----- Writes for the account a flow ran for -----
+//
+// A sign-in waits on wallet prompts and several Grid calls, and the operator can
+// switch customers meanwhile. Its results belong to the account it started on,
+// not to whichever customer is active when it finishes.
+
+export function setCredentialIdFor(accountId: string, id: string): void {
+  const ctx = contexts.get(accountId);
+  if (!ctx) return;
+  ctx.credentialId = id;
+  notify();
+}
+
+/** Record a client-held-key session on `accountId`: its id and signing key. */
+export function adoptSessionFor(
+  accountId: string,
+  sessionId: string,
+  sessionKey: { publicKey: string; privateKey: string },
+): void {
+  const ctx = contexts.get(accountId);
+  if (!ctx) return;
+  ctx.sessionId = sessionId;
+  cacheTek(ctx, sessionKey);
+  notify();
 }
