@@ -51,8 +51,11 @@
     "@manypkg/cli": "^0.24.0",
     "@octokit/auth-action": "^4.0.1",
     "@types/prismjs": "^1.26.0",
+    "bun": "1.4.4",
     "human-id": "^4.1.1",
     "octokit": "^4.0.2",
+    "prettier": "3.10.1",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "prismjs": "^1.29.0",
     "ts-prune": "^0.10.3",
     "turbo": "^2.10.3"
