@@ -86,9 +86,9 @@ export const RoutingTransactionFromJson = (obj: any): RoutingTransaction => {
       ? RichTextFromJson(obj["routing_transaction_failure_message"])
       : undefined,
     failureReason: !!obj["routing_transaction_failure_reason"]
-      ? RoutingTransactionFailureReason[
+      ? (RoutingTransactionFailureReason[
           obj["routing_transaction_failure_reason"]
-        ] ?? RoutingTransactionFailureReason.FUTURE_VALUE
+        ] ?? RoutingTransactionFailureReason.FUTURE_VALUE)
       : null,
   } as RoutingTransaction;
 };

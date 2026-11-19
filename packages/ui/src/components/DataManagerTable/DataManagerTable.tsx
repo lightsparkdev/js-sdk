@@ -110,8 +110,7 @@ interface FilterOptions<
   initialQueryVariables: QueryVariablesType;
   initialFilterStates?: DataManagerTableState<T> | undefined;
   onAppliedFilterStatesChange?:
-    | ((filterStates: DataManagerTableState<T>) => void)
-    | undefined;
+    ((filterStates: DataManagerTableState<T>) => void) | undefined;
   /**
    * Called when a filter state changes.
    * Use setFilterStates to modify other filters (e.g., for mutual exclusivity).
@@ -130,8 +129,9 @@ interface ShowMoreOptions<QueryVariablesType, QueryResultType> {
   pageSizeVariables?: string[] | undefined;
 }
 
-interface CustomDataManagerTableComponents<T extends Record<string, unknown>>
-  extends CustomTableComponents {
+interface CustomDataManagerTableComponents<
+  T extends Record<string, unknown>,
+> extends CustomTableComponents {
   filterContainerComponent?: React.ComponentType<
     React.ComponentProps<typeof DataManagerTableFilterContainer>
   >;
@@ -162,12 +162,10 @@ export type DataManagerTableProps<
   loading?: boolean | undefined;
   // If provided, the show more button will be displayed at the bottom of the table.
   showMoreOptions?:
-    | ShowMoreOptions<QueryVariablesType, QueryResultType>
-    | undefined;
+    ShowMoreOptions<QueryVariablesType, QueryResultType> | undefined;
   // If provided, will show filter options.
   filterOptions?:
-    | FilterOptions<T, QueryVariablesType, QueryResultType>
-    | undefined;
+    FilterOptions<T, QueryVariablesType, QueryResultType> | undefined;
   clipboardCallbacks?: Parameters<typeof useClipboard>[0] | undefined;
   header?: ReactElement;
   cardPageFullWidth?: boolean | undefined;
@@ -311,8 +309,8 @@ function saveFiltersToURL<T extends Record<string, unknown>>(
             minValue !== undefined && maxValue !== undefined
               ? `${minValue}-${maxValue}`
               : minValue !== undefined
-              ? `>${minValue}`
-              : `<${maxValue}`;
+                ? `>${minValue}`
+                : `<${maxValue}`;
           searchParams.set(urlKey, currencyValue);
         }
       } else if (filter.type === FilterType.NUMBER) {
@@ -377,8 +375,8 @@ function loadFiltersFromURL<T extends Record<string, unknown>>(
         const appliedValues = filter.isMulti
           ? candidateValues.filter((value) => allowedValues.has(value))
           : matchingScalarOption
-          ? ensureArray(matchingScalarOption.value)
-          : [];
+            ? ensureArray(matchingScalarOption.value)
+            : [];
         if (appliedValues.length) {
           newFilterStates[filter.accessorKey] = {
             ...enumFilter,
@@ -665,8 +663,8 @@ export function DataManagerTable<
   const [showFilterEditor, setShowFilterEditor] = useState<boolean>(false);
   const [filterStates, setFilterStates] = useState<DataManagerTableState<T>>(
     props.filterOptions
-      ? props.filterOptions.initialFilterStates ??
-          initialFilterState(props.filterOptions.filters)
+      ? (props.filterOptions.initialFilterStates ??
+          initialFilterState(props.filterOptions.filters))
       : ({} as DataManagerTableState<T>),
   );
   const [numFiltersApplied, setNumFiltersApplied] = useState<number>(() =>
@@ -1795,8 +1793,7 @@ function getPillDropdownItems<
   pageSize: number;
   setShowFilterEditor: Dispatch<SetStateAction<boolean>>;
   customDropdownComponent?:
-    | React.ComponentType<React.ComponentProps<typeof Dropdown>>
-    | undefined;
+    React.ComponentType<React.ComponentProps<typeof Dropdown>> | undefined;
   onFilterStateChange?: FilterOptions<
     T,
     QueryVariablesType,
@@ -1896,8 +1893,8 @@ function getPillDropdownItems<
                   ),
                 ]
               : state.appliedValues
-              ? [...state.appliedValues]
-              : [];
+                ? [...state.appliedValues]
+                : [];
 
           beginFilterState(filter, {
             ...getDefaultFilterState<T>(filter),
@@ -1915,8 +1912,8 @@ function getPillDropdownItems<
                   ),
                 ]
               : state.appliedValues
-              ? [...state.appliedValues]
-              : [];
+                ? [...state.appliedValues]
+                : [];
 
           beginFilterState(filter, {
             ...getDefaultFilterState<T>(filter),

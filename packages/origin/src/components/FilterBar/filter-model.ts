@@ -118,8 +118,9 @@ export type DateFilterDatePickerConfig = {
   }[DatePickerGranularity];
 }[DatePickerMode];
 
-export interface DateFilterDescriptor<TId extends string>
-  extends FilterDescriptorBase<TId> {
+export interface DateFilterDescriptor<
+  TId extends string,
+> extends FilterDescriptorBase<TId> {
   type: "date";
   operators?: never;
   /**
@@ -153,8 +154,9 @@ export function getDateFilterDefaultRange(
   return descriptor.defaultRange?.() ?? null;
 }
 
-export interface EnumFilterDescriptor<TId extends string>
-  extends FilterDescriptorBase<TId> {
+export interface EnumFilterDescriptor<
+  TId extends string,
+> extends FilterDescriptorBase<TId> {
   type: "enum";
   options: readonly EnumFilterOption[];
   isMulti?: boolean;
@@ -168,8 +170,9 @@ export interface EnumFilterDescriptor<TId extends string>
   searchable?: boolean;
 }
 
-interface StringFilterDescriptorBase<TId extends string>
-  extends FilterDescriptorBase<TId> {
+interface StringFilterDescriptorBase<
+  TId extends string,
+> extends FilterDescriptorBase<TId> {
   type: "string";
   /** Editor input placeholder. Omitted, the input shows no placeholder. */
   placeholder?: string;
@@ -368,13 +371,14 @@ export type FilterState = DateFilterState | EnumFilterState | StringFilterState;
 /** The state variant implied by one descriptor's discriminant. */
 export type FilterStateForDescriptor<
   TDescriptor extends FilterDescriptor<string>,
-> = TDescriptor extends DateFilterDescriptor<string>
-  ? DateFilterState
-  : TDescriptor extends EnumFilterDescriptor<string>
-  ? EnumFilterState
-  : TDescriptor extends StringFilterDescriptor<string>
-  ? StringFilterState
-  : never;
+> =
+  TDescriptor extends DateFilterDescriptor<string>
+    ? DateFilterState
+    : TDescriptor extends EnumFilterDescriptor<string>
+      ? EnumFilterState
+      : TDescriptor extends StringFilterDescriptor<string>
+        ? StringFilterState
+        : never;
 
 export type FilterId<TDescriptors extends FilterDescriptorTuple> =
   TDescriptors[number]["id"];
@@ -397,7 +401,9 @@ export type FilterStateForId<
  * the readonly descriptor tuple itself, not only its id union.
  */
 export type FilterStates<TDescriptors extends FilterDescriptorTuple> = {
-  [TDescriptor in TDescriptors[number] as TDescriptor["id"]]: FilterStateForDescriptor<TDescriptor>;
+  [
+    TDescriptor in TDescriptors[number] as TDescriptor["id"]
+  ]: FilterStateForDescriptor<TDescriptor>;
 };
 
 /**
@@ -780,8 +786,8 @@ export function loadFilterStatesFromUrl<
         const appliedValues = descriptor.isMulti
           ? requestedValues.filter((value) => knownValues.has(value))
           : exclusiveOption
-          ? toEnumOptionValueArray(exclusiveOption.value)
-          : [];
+            ? toEnumOptionValueArray(exclusiveOption.value)
+            : [];
         applyHydratedState(
           descriptor,
           appliedValues.length > 0

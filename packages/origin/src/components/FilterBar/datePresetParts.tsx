@@ -131,7 +131,7 @@ export function DateValueEditorContent({
             onPresetIdChange: editPreset,
             value:
               datePickerConfig.mode === "single"
-                ? draft.start ?? draft.end
+                ? (draft.start ?? draft.end)
                 : null,
             ...(datePickerConfig.mode === "single"
               ? { onValueChange: editValue }

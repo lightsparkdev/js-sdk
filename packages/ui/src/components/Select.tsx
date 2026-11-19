@@ -157,8 +157,8 @@ export function Select<
             color: props.isFocused
               ? getColor(theme, defaultTextInputTypography.color)
               : props.isDisabled
-              ? textInputPlaceholderColor({ theme })
-              : getColor(theme, defaultTextInputTypography.color),
+                ? textInputPlaceholderColor({ theme })
+                : getColor(theme, defaultTextInputTypography.color),
             fontWeight: 600,
             cursor: "pointer",
             backgroundColor: props.isFocused

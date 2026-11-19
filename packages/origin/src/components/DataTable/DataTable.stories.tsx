@@ -48,8 +48,8 @@ const COLUMNS: readonly DataTableColumn<PaymentRow>[] = [
           row.status === "Settled"
             ? "green"
             : row.status === "Pending"
-            ? "yellow"
-            : "red"
+              ? "yellow"
+              : "red"
         }
       >
         {row.status}

@@ -31,8 +31,7 @@ type SelectionTransition =
     };
 
 type CommittedSelection =
-  | { mode: "single"; value: Date }
-  | { mode: "range"; value: DateRange };
+  { mode: "single"; value: Date } | { mode: "range"; value: DateRange };
 
 interface DatePickerMetadata {
   controlledSelectionIdentity: string;
@@ -182,16 +181,16 @@ function getControlledSelectionIdentity({
     value === undefined
       ? "uncontrolled"
       : value instanceof Date
-      ? ["single", getDateIdentity(value)]
-      : value === null
-      ? null
-      : ["range", getDateIdentity(value.start), getDateIdentity(value.end)];
+        ? ["single", getDateIdentity(value)]
+        : value === null
+          ? null
+          : ["range", getDateIdentity(value.start), getDateIdentity(value.end)];
   const rangeDraftIdentity =
     rangeDraft === undefined
       ? "uncontrolled"
       : rangeDraft === null
-      ? null
-      : [getDateIdentity(rangeDraft.start), getDateIdentity(rangeDraft.end)];
+        ? null
+        : [getDateIdentity(rangeDraft.start), getDateIdentity(rangeDraft.end)];
   const presetIdentity =
     presetId === undefined ? ["uncontrolled"] : ["controlled", presetId];
   return JSON.stringify([valueIdentity, rangeDraftIdentity, presetIdentity]);
@@ -230,8 +229,7 @@ interface UseDatePickerControllerOptions {
   granularity: DatePickerGranularity | undefined;
   defaultGranularity: DatePickerGranularity | undefined;
   onGranularityChange:
-    | ((granularity: DatePickerGranularity) => void)
-    | undefined;
+    ((granularity: DatePickerGranularity) => void) | undefined;
   presets: readonly DatePickerPreset[];
   presetId: string | null | undefined;
   defaultPresetId: string | null;
@@ -293,9 +291,9 @@ export function useDatePickerController({
   const selectedPreset =
     selectedPresetId === null
       ? null
-      : presets.find(
+      : (presets.find(
           (preset) => preset.id === selectedPresetId && !preset.disabled,
-        ) ?? null;
+        ) ?? null);
   const [currentPresetResolution, setCurrentPresetResolution] =
     React.useState<CurrentPresetResolution | null>(null);
   const initialDefaultPresetIdRef = React.useRef(

@@ -9,12 +9,7 @@ import { useTrackedCallback } from "../Analytics/useTrackedCallback";
 import styles from "./Button.module.scss";
 
 export type ButtonVariant =
-  | "filled"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "critical"
-  | "link";
+  "filled" | "secondary" | "outline" | "ghost" | "critical" | "link";
 export type ButtonSize = "default" | "compact" | "dense";
 
 type ButtonVisualProps = {

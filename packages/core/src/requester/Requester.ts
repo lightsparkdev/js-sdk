@@ -242,8 +242,7 @@ class Requester {
         const firstError = responseJson.errors[0];
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         firstErrorName = firstError["extensions"]?.["error_name"] as
-          | string
-          | undefined;
+          string | undefined;
       }
       throw new LightsparkException(
         "RequestFailed",

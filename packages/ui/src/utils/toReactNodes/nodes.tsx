@@ -69,11 +69,11 @@ export function isTextNode(node: unknown): node is TextNode {
   return Boolean(
     /* Exclude other nodes by ensuring only text node properties: */
     node &&
-      isObject(node) &&
-      /* text is required: */
-      "text" in node &&
-      /* ensure the rest of the keys are allowed: */
-      Object.keys(node).every((key) => allowedKeys.includes(key)),
+    isObject(node) &&
+    /* text is required: */
+    "text" in node &&
+    /* ensure the rest of the keys are allowed: */
+    Object.keys(node).every((key) => allowedKeys.includes(key)),
   );
 }
 
@@ -120,10 +120,7 @@ export type SerializableTextNode = {
  * and objects that are normally allowed for ToReactNodes, instead we'll map serializable data to
  * more limited functionality */
 export type SerializableToReactNodesArg =
-  | string
-  | SerializableLinkNode
-  | SerializableTextNode;
+  string | SerializableLinkNode | SerializableTextNode;
 
 export type SerializableToReactNodesArgs =
-  | SerializableToReactNodesArg
-  | SerializableToReactNodesArg[];
+  SerializableToReactNodesArg | SerializableToReactNodesArg[];

@@ -23,7 +23,7 @@ export function useResizeWidth(initialWidth?: number) {
     return () => observerRef.current?.disconnect();
   }, []);
 
-  const width = measuredWidth !== null ? measuredWidth : initialWidth ?? 0;
+  const width = measuredWidth !== null ? measuredWidth : (initialWidth ?? 0);
   return { width, attachRef };
 }
 
@@ -36,8 +36,7 @@ export interface ChartInteractionOptions {
   interpolatorsRef: React.RefObject<CurveInterpolator[]>;
   data: ChartDatum[];
   onActiveChange?:
-    | ((index: number | null, datum: ChartDatum | null) => void)
-    | undefined;
+    ((index: number | null, datum: ChartDatum | null) => void) | undefined;
   onActivate?: ((index: number, datum: ChartDatum) => void) | undefined;
 }
 

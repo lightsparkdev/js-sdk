@@ -17,9 +17,8 @@ jest.unstable_mockModule("@wojtekmaj/react-datetimerange-picker", () => ({
   default: () => null,
 }));
 
-const { DataManagerTable } = await import(
-  "@lightsparkdev/ui/components/DataManagerTable/DataManagerTable"
-);
+const { DataManagerTable } =
+  await import("@lightsparkdev/ui/components/DataManagerTable/DataManagerTable");
 
 type Row = {
   id: string;

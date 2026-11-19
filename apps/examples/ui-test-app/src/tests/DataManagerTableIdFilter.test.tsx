@@ -19,12 +19,10 @@ jest.unstable_mockModule("@wojtekmaj/react-datetimerange-picker", () => ({
   default: () => null,
 }));
 
-const { DataManagerTable } = await import(
-  "@lightsparkdev/ui/components/DataManagerTable/DataManagerTable"
-);
-const { FilterType } = await import(
-  "@lightsparkdev/ui/components/DataManagerTable/filters"
-);
+const { DataManagerTable } =
+  await import("@lightsparkdev/ui/components/DataManagerTable/DataManagerTable");
+const { FilterType } =
+  await import("@lightsparkdev/ui/components/DataManagerTable/filters");
 
 type Row = { id: string };
 type Variables = { ids: string[] | null };
@@ -74,7 +72,7 @@ describe("DataManagerTable ID filter", () => {
                 appliedValues?: string[];
               };
               return {
-                ids: state.isApplied ? state.appliedValues ?? null : null,
+                ids: state.isApplied ? (state.appliedValues ?? null) : null,
               };
             },
             initialQueryVariables: { ids: null },

@@ -6,8 +6,10 @@ import styles from "./Item.module.scss";
 
 export type ItemSize = "default" | "compact";
 
-export interface ItemProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {
+export interface ItemProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "title"
+> {
   title: string;
   label?: React.ReactNode;
   description?: string;

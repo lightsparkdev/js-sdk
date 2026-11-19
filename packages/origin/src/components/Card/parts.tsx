@@ -64,8 +64,7 @@ export const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
 );
 
 // BackButton
-export interface BackButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface BackButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export const BackButton = React.forwardRef<HTMLButtonElement, BackButtonProps>(
   function BackButton({ className, ...props }, ref) {
@@ -114,8 +113,7 @@ export const Title = React.forwardRef<HTMLHeadingElement, TitleProps>(
 );
 
 // Subtitle
-export interface SubtitleProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {
+export interface SubtitleProps extends React.HTMLAttributes<HTMLParagraphElement> {
   children?: React.ReactNode;
 }
 

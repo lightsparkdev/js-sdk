@@ -280,7 +280,7 @@ export function Root(props: RootProps) {
       lastOpenViewRef.current = liveView;
     }
   });
-  const view = isOpen ? liveView : lastOpenViewRef.current ?? liveView;
+  const view = isOpen ? liveView : (lastOpenViewRef.current ?? liveView);
 
   const handleOpenChangeComplete = React.useCallback((nextOpen: boolean) => {
     if (!nextOpen) {
@@ -382,8 +382,8 @@ export function Root(props: RootProps) {
                       {view.empty !== undefined
                         ? view.empty
                         : view.query
-                        ? `No results found for "${view.query}"`
-                        : "No results."}
+                          ? `No results found for "${view.query}"`
+                          : "No results."}
                     </div>
                   ) : null}
                 </Autocomplete.Empty>

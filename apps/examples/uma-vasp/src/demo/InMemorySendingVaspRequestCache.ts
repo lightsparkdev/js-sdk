@@ -10,9 +10,7 @@ import SendingVaspRequestCache, {
  * A simple in-memory cache for data that needs to be remembered between calls to VASP1. In practice, this would be
  * stored in a database or other persistent storage.
  */
-export default class InMemorySendingVaspRequestCache
-  implements SendingVaspRequestCache
-{
+export default class InMemorySendingVaspRequestCache implements SendingVaspRequestCache {
   /**
    * This is a map of the UMA request UUID to the LnurlpResponse from that initial Lnurlp request.
    * This is used to cache the LnurlpResponse so that we can use it to generate the UMA payreq without the client

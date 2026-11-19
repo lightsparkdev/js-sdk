@@ -463,9 +463,7 @@ export const BarList: Story = {
 
 const uptimeData = Array.from({ length: 90 }, (_, i) => ({
   status: (i % 17 === 0 ? "down" : i % 11 === 0 ? "degraded" : "up") as
-    | "up"
-    | "down"
-    | "degraded",
+    "up" | "down" | "degraded",
   label: `Day ${i + 1}`,
 }));
 

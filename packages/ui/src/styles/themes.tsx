@@ -1025,9 +1025,9 @@ export function isThemeColorKey(key: unknown): key is ThemeColorKey {
 export function isThemeOrColorKey(key: unknown): key is ThemeOrColorKey {
   return Boolean(
     typeof key === "string" &&
-      (isThemeColorKey(key) ||
-        isColorKey(key) ||
-        (Array.isArray(key) && key.length === 2 && isThemeColorKey(key[1]))),
+    (isThemeColorKey(key) ||
+      isColorKey(key) ||
+      (Array.isArray(key) && key.length === 2 && isThemeColorKey(key[1]))),
   );
 }
 
@@ -1060,8 +1060,7 @@ export function getFontColor(
 
 export type BackgroundColorKey = ThemeOrColorKey | "transparent";
 export type BackgroundColorKeyArg =
-  | BackgroundColorKey
-  | [BackgroundColorKey, BackgroundColorKey];
+  BackgroundColorKey | [BackgroundColorKey, BackgroundColorKey];
 
 export function isBackgroundColorKey(key: unknown): key is BackgroundColorKey {
   return key === "transparent" || isThemeOrColorKey(key);

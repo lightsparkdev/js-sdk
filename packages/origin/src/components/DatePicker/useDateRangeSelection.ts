@@ -72,7 +72,7 @@ export function useDateRangeSelection({
     mode === "range"
       ? rangeDraft !== undefined
         ? rangeDraft
-        : internalRangeDraft ?? committedRangeValue
+        : (internalRangeDraft ?? committedRangeValue)
       : null;
 
   const emitRange = React.useCallback(
@@ -81,8 +81,8 @@ export function useDateRangeSelection({
         draft.start && !draft.end
           ? draft.start
           : draft.end && !draft.start
-          ? draft.end
-          : null;
+            ? draft.end
+            : null;
       const compatibleDraft =
         !usesRangeDraftApi && onlyBound
           ? { start: new Date(onlyBound), end: new Date(onlyBound) }

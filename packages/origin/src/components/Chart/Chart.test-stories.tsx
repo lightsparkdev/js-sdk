@@ -448,17 +448,17 @@ export function HorizontalBarInCard({
             tooltip === "growing"
               ? () => <GrowingBarTooltip />
               : tooltip === "custom"
-              ? (datum) => (
-                  <div
-                    style={{
-                      width: 220,
-                      height: datum.name === "First" ? 40 : 120,
-                    }}
-                  >
-                    {String(datum.name)}
-                  </div>
-                )
-              : tooltip
+                ? (datum) => (
+                    <div
+                      style={{
+                        width: 220,
+                        height: datum.name === "First" ? 40 : 120,
+                      }}
+                    >
+                      {String(datum.name)}
+                    </div>
+                  )
+                : tooltip
           }
           data-testid="horizontal-bar-chart"
         />

@@ -106,8 +106,7 @@ function getWeekdayLabels(locale: string): { narrow: string; long: string }[] {
   return result;
 }
 
-export interface DatePickerNavigationProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface DatePickerNavigationProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const Navigation = React.forwardRef<
   HTMLDivElement,
@@ -183,11 +182,10 @@ export const Navigation = React.forwardRef<
   );
 });
 
-export interface DatePickerGridProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<"table">,
-    "onKeyDown" | "onMouseLeave"
-  > {
+export interface DatePickerGridProps extends Omit<
+  React.ComponentPropsWithoutRef<"table">,
+  "onKeyDown" | "onMouseLeave"
+> {
   /** Custom render function for day cell content. */
   renderDay?: (date: Date, state: DayCellState) => React.ReactNode;
   onKeyDown?: (

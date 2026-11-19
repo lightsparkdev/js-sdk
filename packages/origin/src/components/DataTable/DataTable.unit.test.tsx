@@ -422,9 +422,8 @@ describe("DataTable.Content", () => {
   it("keeps table and activated-row labels consumer-required", () => {
     type Props = DataTableContentProps<Row>;
     type Root = DataTableRootProps;
-    type IsRequired<TKey extends keyof Props> = {} extends Pick<Props, TKey>
-      ? false
-      : true;
+    type IsRequired<TKey extends keyof Props> =
+      {} extends Pick<Props, TKey> ? false : true;
     type ActivatedProps = Extract<
       Props,
       { onRowActivate: NonNullable<Props["onRowActivate"]> }

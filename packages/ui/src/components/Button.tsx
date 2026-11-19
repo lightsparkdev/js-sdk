@@ -157,8 +157,8 @@ function resolveProps(props: ButtonProps, theme: Theme) {
   const defaultKind = isSingleCharRoundButton
     ? "roundSingleChar"
     : isRoundIconButton
-    ? "roundIcon"
-    : "secondary";
+      ? "roundIcon"
+      : "secondary";
 
   const {
     kind = defaultKind,
@@ -517,9 +517,9 @@ const buttonStyle = ({
       box-sizing: content-box;
       border: 1px solid;
       border-color: ${borderColor};
-      border-radius: ${typeof borderRadius === "number"
-        ? `${borderRadius}px`
-        : borderRadius};
+      border-radius: ${
+        typeof borderRadius === "number" ? `${borderRadius}px` : borderRadius
+      };
       padding: ${paddingY}px ${paddingX}px;
       transition:
         background-color 0.2s ease-out,

@@ -182,8 +182,8 @@ export const globalComponentStyles = ({ theme }: ThemeProp) => css`
   }
 
   code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-      monospace;
+    font-family:
+      source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
   }
 
   a {

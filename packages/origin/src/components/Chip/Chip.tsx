@@ -66,8 +66,10 @@ export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   className?: string;
 }
 
-export interface ChipFilterProps
-  extends Omit<ChipProps, "children" | "variant"> {
+export interface ChipFilterProps extends Omit<
+  ChipProps,
+  "children" | "variant"
+> {
   /** Property name */
   property: string;
   /** Operator content */
@@ -168,8 +170,8 @@ function toPlainText(
   return typeof node === "string"
     ? node
     : typeof node === "number" || typeof node === "bigint"
-    ? String(node)
-    : fallback;
+      ? String(node)
+      : fallback;
 }
 
 const ChipFilterRoot = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
@@ -269,8 +271,7 @@ const ChipFilterRoot = React.forwardRef<HTMLSpanElement, ChipFilterProps>(
   },
 );
 
-export interface ChipFilterTriggerProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface ChipFilterTriggerProps extends React.ComponentPropsWithoutRef<"button"> {
   /** Override the rendered element. Defaults to `<button>`. */
   render?: useRender.RenderProp;
 }

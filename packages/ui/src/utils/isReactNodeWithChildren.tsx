@@ -9,10 +9,10 @@ export function isReactNodeWithChildren(
 ): node is ReactNodeWithChildren {
   return Boolean(
     node &&
-      isValidElement(node) &&
-      typeof node.props === "object" &&
-      node.props !== null &&
-      "children" in node.props &&
-      node.props.children !== undefined,
+    isValidElement(node) &&
+    typeof node.props === "object" &&
+    node.props !== null &&
+    "children" in node.props &&
+    node.props.children !== undefined,
   );
 }

@@ -46,8 +46,7 @@ export type { Series, TooltipProp, ReferenceLine, ReferenceBand };
 const clickIndexMeta = (index: number) => ({ index });
 
 export interface LineChartProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    XAxisLabelProps {
+  extends React.ComponentPropsWithoutRef<"div">, XAxisLabelProps {
   /**
    * Array of data objects. Each object should contain keys matching `dataKey` or `series[].key`.
    */
@@ -911,8 +910,8 @@ export const Line = React.forwardRef<HTMLDivElement, LineChartProps>(
                         labelIndex === 0
                           ? "start"
                           : labelIndex === data.length - 1
-                          ? "end"
-                          : "middle"
+                            ? "end"
+                            : "middle"
                       }
                       dominantBaseline="auto"
                     >

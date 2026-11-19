@@ -42,8 +42,7 @@ import styles from "./Chart.module.scss";
 const clickIndexMeta = (index: number) => ({ index });
 
 export interface StackedAreaChartProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    XAxisLabelProps {
+  extends React.ComponentPropsWithoutRef<"div">, XAxisLabelProps {
   data: ChartDatum[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -569,8 +568,8 @@ export const StackedArea = React.forwardRef<
                       labelIndex === 0
                         ? "start"
                         : labelIndex === data.length - 1
-                        ? "end"
-                        : "middle"
+                          ? "end"
+                          : "middle"
                     }
                     dominantBaseline="auto"
                   >

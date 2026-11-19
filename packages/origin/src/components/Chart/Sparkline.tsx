@@ -9,11 +9,10 @@ import { SERIES_COLORS } from "./types";
 import { Line, type LineChartProps } from "./LineChart";
 import styles from "./Chart.module.scss";
 
-export interface SparklineProps
-  extends Omit<
-    LineChartProps,
-    "grid" | "tooltip" | "interactive" | "xKey" | "animate"
-  > {
+export interface SparklineProps extends Omit<
+  LineChartProps,
+  "grid" | "tooltip" | "interactive" | "xKey" | "animate"
+> {
   /** Render as a line (default) or micro bar chart. */
   variant?: "line" | "bar";
 }

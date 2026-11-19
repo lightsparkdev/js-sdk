@@ -264,7 +264,7 @@ export const ChannelFromJson = (obj: any): Channel => {
       ? CurrencyAmountFromJson(obj["channel_total_balance"])
       : undefined,
     !!obj["channel_status"]
-      ? ChannelStatus[obj["channel_status"]] ?? ChannelStatus.FUTURE_VALUE
+      ? (ChannelStatus[obj["channel_status"]] ?? ChannelStatus.FUTURE_VALUE)
       : null,
     obj["channel_estimated_force_closure_wait_minutes"],
     !!obj["channel_commit_fee"]

@@ -1740,11 +1740,11 @@ export function formatCurrencyStr(
   const symbol = !showBtcSymbol
     ? ""
     : unit === CurrencyUnit.BITCOIN
-    ? ""
-    : unit === CurrencyUnit.SATOSHI ||
-      unit === abbrCurrencyUnit(CurrencyUnit.SATOSHI)
-    ? ""
-    : "";
+      ? ""
+      : unit === CurrencyUnit.SATOSHI ||
+          unit === abbrCurrencyUnit(CurrencyUnit.SATOSHI)
+        ? ""
+        : "";
 
   const currentLocale = getCurrentLocale();
 

@@ -23,8 +23,10 @@ export const typographyStyles = ({
     /* Tokens have text-decoration set, override with !important if underline specified: */
     ${underline ? "text-decoration: underline !important;" : ""}
 
-    ${hideOverflow
-      ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;"
-      : ""}
+    ${
+      hideOverflow
+        ? "overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;"
+        : ""
+    }
   `;
 };

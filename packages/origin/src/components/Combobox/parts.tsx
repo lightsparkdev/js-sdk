@@ -9,8 +9,10 @@ import clsx from "clsx";
 import styles from "./Combobox.module.scss";
 import chipStyles from "../Chip/Chip.module.scss";
 
-export interface RootProps<Value, Multiple extends boolean | undefined = false>
-  extends BaseCombobox.Root.Props<Value, Multiple> {
+export interface RootProps<
+  Value,
+  Multiple extends boolean | undefined = false,
+> extends BaseCombobox.Root.Props<Value, Multiple> {
   autoHighlight?: boolean;
   analyticsName?: string;
 }
@@ -99,8 +101,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-export interface ActionButtonsProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface ActionButtonsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 /**
  * Combobox.ActionButtons - Container for Clear and Trigger buttons.
@@ -143,8 +144,10 @@ export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
 
 export type ClearVisibility = "always" | "active";
 
-export interface ClearProps
-  extends Omit<BaseCombobox.Clear.Props, "keepMounted"> {
+export interface ClearProps extends Omit<
+  BaseCombobox.Clear.Props,
+  "keepMounted"
+> {
   /**
    * Controls when Origin shows the clear affordance. Base UI still owns the
    * clear behavior and whether a value is currently clearable. Defaults to
@@ -336,8 +339,7 @@ export const ItemIndicator = React.forwardRef<
   );
 });
 
-export interface ItemCheckboxProps
-  extends React.HTMLAttributes<HTMLSpanElement> {
+export interface ItemCheckboxProps extends React.HTMLAttributes<HTMLSpanElement> {
   /**
    * Whether the checkbox is checked.
    * If not provided, inherits from parent Item's selected state.

@@ -28,8 +28,7 @@ function useBreadcrumbContext() {
   return context;
 }
 
-export interface BreadcrumbRootProps
-  extends React.ComponentPropsWithoutRef<"nav"> {
+export interface BreadcrumbRootProps extends React.ComponentPropsWithoutRef<"nav"> {
   children?: React.ReactNode;
 }
 
@@ -55,8 +54,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbRoot.displayName = "BreadcrumbRoot";
 }
 
-export interface BreadcrumbListProps
-  extends React.ComponentPropsWithoutRef<"ol"> {
+export interface BreadcrumbListProps extends React.ComponentPropsWithoutRef<"ol"> {
   separator?: React.ReactNode;
 }
 
@@ -88,8 +86,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbList.displayName = "BreadcrumbList";
 }
 
-export interface BreadcrumbItemProps
-  extends React.ComponentPropsWithoutRef<"li"> {
+export interface BreadcrumbItemProps extends React.ComponentPropsWithoutRef<"li"> {
   children?: React.ReactNode;
 }
 
@@ -118,8 +115,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbItem.displayName = "BreadcrumbItem";
 }
 
-export interface BreadcrumbLinkProps
-  extends React.ComponentPropsWithoutRef<"a"> {
+export interface BreadcrumbLinkProps extends React.ComponentPropsWithoutRef<"a"> {
   /**
    * Replaces the default `a` element, e.g. with a router-aware link
    * component. Props are merged per Base UI `useRender` semantics.
@@ -148,8 +144,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbLink.displayName = "BreadcrumbLink";
 }
 
-export interface BreadcrumbPageProps
-  extends React.ComponentPropsWithoutRef<"span"> {
+export interface BreadcrumbPageProps extends React.ComponentPropsWithoutRef<"span"> {
   children?: React.ReactNode;
 }
 
@@ -178,8 +173,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbPage.displayName = "BreadcrumbPage";
 }
 
-export interface BreadcrumbEllipsisProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface BreadcrumbEllipsisProps extends React.ComponentPropsWithoutRef<"button"> {
   onExpand?: () => void;
 }
 
@@ -212,8 +206,7 @@ if (process.env.NODE_ENV !== "production") {
   BreadcrumbEllipsis.displayName = "BreadcrumbEllipsis";
 }
 
-export interface BreadcrumbSeparatorProps
-  extends React.ComponentPropsWithoutRef<"span"> {
+export interface BreadcrumbSeparatorProps extends React.ComponentPropsWithoutRef<"span"> {
   children?: React.ReactNode;
 }
 

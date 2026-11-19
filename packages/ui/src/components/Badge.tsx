@@ -46,10 +46,10 @@ export function Badge({
       (kind === "danger"
         ? "danger"
         : kind === "success"
-        ? "white"
-        : kind === "warning"
-        ? "warningText"
-        : "text"),
+          ? "white"
+          : kind === "warning"
+            ? "warningText"
+            : "text"),
   } as const;
 
   const nodesWithTypography = setDefaultReactNodesTypography(contentProp, {
@@ -68,12 +68,12 @@ export function Badge({
             icon.color
               ? icon.color
               : kind === "danger"
-              ? "danger"
-              : kind === "success"
-              ? "success"
-              : kind === "warning"
-              ? "warningText"
-              : undefined
+                ? "danger"
+                : kind === "success"
+                  ? "success"
+                  : kind === "warning"
+                    ? "warningText"
+                    : undefined
           }
         />
       ) : null}

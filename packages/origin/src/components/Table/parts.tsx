@@ -57,8 +57,7 @@ export const Root = React.forwardRef<HTMLTableElement, RootProps>(function Root(
 // Header
 // ============================================================================
 
-export interface HeaderProps
-  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export interface HeaderProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
 export const Header = React.forwardRef<HTMLTableSectionElement, HeaderProps>(
   function Header({ className, ...props }, ref) {
@@ -70,8 +69,7 @@ export const Header = React.forwardRef<HTMLTableSectionElement, HeaderProps>(
 // HeaderRow
 // ============================================================================
 
-export interface HeaderRowProps
-  extends React.HTMLAttributes<HTMLTableRowElement> {}
+export interface HeaderRowProps extends React.HTMLAttributes<HTMLTableRowElement> {}
 
 export const HeaderRow = React.forwardRef<HTMLTableRowElement, HeaderRowProps>(
   function HeaderRow({ className, ...props }, ref) {
@@ -83,8 +81,7 @@ export const HeaderRow = React.forwardRef<HTMLTableRowElement, HeaderRowProps>(
 // HeaderCell
 // ============================================================================
 
-export interface HeaderCellProps
-  extends React.ThHTMLAttributes<HTMLTableCellElement> {
+export interface HeaderCellProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   /** Cell variant */
   variant?: "default" | "checkbox";
   /** Text alignment */
@@ -179,17 +176,17 @@ export const HeaderCell = React.forwardRef<
       tabIndex={
         loading
           ? undefined
-          : nativeTabIndex ?? (sortableEnabled ? 0 : undefined)
+          : (nativeTabIndex ?? (sortableEnabled ? 0 : undefined))
       }
       onClick={
         loading
           ? undefined
-          : nativeOnClick ?? (sortableEnabled ? trackedSort : undefined)
+          : (nativeOnClick ?? (sortableEnabled ? trackedSort : undefined))
       }
       onKeyDown={
         loading
           ? undefined
-          : nativeOnKeyDown ?? (sortableEnabled ? handleKeyDown : undefined)
+          : (nativeOnKeyDown ?? (sortableEnabled ? handleKeyDown : undefined))
       }
       aria-label={
         nativeAriaLabel ??
@@ -198,14 +195,14 @@ export const HeaderCell = React.forwardRef<
       aria-sort={
         loading
           ? undefined
-          : nativeAriaSort ??
+          : (nativeAriaSort ??
             (!sortableEnabled
               ? undefined
               : sortDirection === "asc"
-              ? "ascending"
-              : sortDirection === "desc"
-              ? "descending"
-              : "none")
+                ? "ascending"
+                : sortDirection === "desc"
+                  ? "descending"
+                  : "none"))
       }
     >
       {loading ? (
@@ -228,8 +225,7 @@ export const HeaderCell = React.forwardRef<
 // Body
 // ============================================================================
 
-export interface BodyProps
-  extends React.HTMLAttributes<HTMLTableSectionElement> {}
+export interface BodyProps extends React.HTMLAttributes<HTMLTableSectionElement> {}
 
 export const Body = React.forwardRef<HTMLTableSectionElement, BodyProps>(
   function Body({ className, ...props }, ref) {
@@ -407,8 +403,7 @@ export const Row = React.forwardRef<HTMLTableRowElement, RowProps>(function Row(
 // Cell
 // ============================================================================
 
-export interface CellProps
-  extends React.TdHTMLAttributes<HTMLTableCellElement> {
+export interface CellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   /** Cell variant */
   variant?: "default" | "checkbox";
   /** Text alignment */
@@ -621,8 +616,7 @@ export const Footer = React.forwardRef<HTMLDivElement, FooterProps>(
 // ResizeHandle
 // ============================================================================
 
-export interface ResizeHandleProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface ResizeHandleProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Whether currently resizing */
   isResizing?: boolean;
 }
@@ -648,8 +642,7 @@ export const ResizeHandle = React.forwardRef<HTMLDivElement, ResizeHandleProps>(
 // CheckboxWrapper (show on hover or when selected)
 // ============================================================================
 
-export interface CheckboxWrapperProps
-  extends React.HTMLAttributes<HTMLSpanElement> {}
+export interface CheckboxWrapperProps extends React.HTMLAttributes<HTMLSpanElement> {}
 
 export const CheckboxWrapper = React.forwardRef<
   HTMLSpanElement,

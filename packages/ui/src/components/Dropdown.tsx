@@ -90,8 +90,7 @@ type DropdownBorderRadius = 6 | 8 | 12;
 type CommonSimpleDropdownButton = {
   id?: string;
   getCSS?:
-    | (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation)
-    | undefined;
+    (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation) | undefined;
 };
 
 export type SimpleDropdownButton =
@@ -484,8 +483,7 @@ type DropdownItemProps = {
   dropdownButtonHeight: number;
   onClick?: () => void;
   getDropdownCss?:
-    | (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation)
-    | undefined;
+    (({ isOpen, theme }: DropdownGetProps) => CSSInterpolation) | undefined;
   getCSS?: ({ dropdownItem, theme }: DropdownItemGetProps) => CSSInterpolation;
 };
 

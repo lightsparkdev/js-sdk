@@ -51,8 +51,8 @@ export const RequestWithdrawalInputFromJson = (
       WithdrawalMode.FUTURE_VALUE,
     idempotencyKey: obj["request_withdrawal_input_idempotency_key"],
     feeTarget: !!obj["request_withdrawal_input_fee_target"]
-      ? OnChainFeeTarget[obj["request_withdrawal_input_fee_target"]] ??
-        OnChainFeeTarget.FUTURE_VALUE
+      ? (OnChainFeeTarget[obj["request_withdrawal_input_fee_target"]] ??
+        OnChainFeeTarget.FUTURE_VALUE)
       : null,
     satsPerVbyte: obj["request_withdrawal_input_sats_per_vbyte"],
   } as RequestWithdrawalInput;

@@ -107,8 +107,8 @@ export const AutoSentinel: Story = {
               loading
                 ? "Loading more results"
                 : !hasMore
-                ? "End of results"
-                : ""
+                  ? "End of results"
+                  : ""
             }
           </LoadMore.Status>
         </LoadMore.Root>
@@ -153,8 +153,8 @@ export const SentinelWithFallbackTrigger: Story = {
               loading
                 ? "Loading more results"
                 : !hasMore
-                ? "End of results"
-                : ""
+                  ? "End of results"
+                  : ""
             }
           </LoadMore.Status>
         </LoadMore.Root>

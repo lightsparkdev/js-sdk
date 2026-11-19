@@ -40,8 +40,8 @@ export const CreateInvoiceInputFromJson = (obj: any): CreateInvoiceInput => {
     amountMsats: obj["create_invoice_input_amount_msats"],
     memo: obj["create_invoice_input_memo"],
     invoiceType: !!obj["create_invoice_input_invoice_type"]
-      ? InvoiceType[obj["create_invoice_input_invoice_type"]] ??
-        InvoiceType.FUTURE_VALUE
+      ? (InvoiceType[obj["create_invoice_input_invoice_type"]] ??
+        InvoiceType.FUTURE_VALUE)
       : null,
     expirySecs: obj["create_invoice_input_expiry_secs"],
     paymentHash: obj["create_invoice_input_payment_hash"],

@@ -442,8 +442,8 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
             y < PAD.top + 32
               ? Math.max(0, (y - PAD.top) / 32)
               : y > PAD.top + chartH - 32
-              ? Math.max(0, (PAD.top + chartH - y) / 32)
-              : 1;
+                ? Math.max(0, (PAD.top + chartH - y) / 32)
+                : 1;
           targets.set(Math.round(v * 1000), edgeFade);
         }
 
@@ -619,8 +619,8 @@ export const Live = React.forwardRef<HTMLDivElement, LiveChartProps>(
           dist < 5
             ? 0
             : dist >= fadeStart
-            ? st.scrubAmount
-            : ((dist - 5) / (fadeStart - 5)) * st.scrubAmount;
+              ? st.scrubAmount
+              : ((dist - 5) / (fadeStart - 5)) * st.scrubAmount;
 
         if (opacity > 0.01) {
           const clampedX = Math.max(padLeft, Math.min(toX(now), hoverX));

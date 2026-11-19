@@ -33,8 +33,7 @@ export const ActionBar = React.forwardRef<HTMLDivElement, ActionBarProps>(
   },
 );
 
-export interface ActionBarLabelProps
-  extends React.HTMLAttributes<HTMLSpanElement> {
+export interface ActionBarLabelProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** The label text */
   children: React.ReactNode;
   /** Additional class name */
@@ -64,8 +63,7 @@ export const ActionBarLabel = React.forwardRef<
   );
 });
 
-export interface ActionBarActionsProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface ActionBarActionsProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Action buttons */
   children: React.ReactNode;
   /** Additional class name */

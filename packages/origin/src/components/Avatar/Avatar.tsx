@@ -8,18 +8,13 @@ import styles from "./Avatar.module.scss";
 export type AvatarSize = "16" | "20" | "24" | "32" | "40" | "48";
 export type AvatarVariant = "squircle" | "circle";
 export type AvatarColor =
-  | "blue"
-  | "purple"
-  | "sky"
-  | "pink"
-  | "green"
-  | "yellow"
-  | "red"
-  | "gray";
+  "blue" | "purple" | "sky" | "pink" | "green" | "yellow" | "red" | "gray";
 
 // Root - Container for avatar
-export interface AvatarRootProps
-  extends Omit<BaseAvatar.Root.Props, "className"> {
+export interface AvatarRootProps extends Omit<
+  BaseAvatar.Root.Props,
+  "className"
+> {
   /** Size of the avatar in pixels */
   size?: AvatarSize;
   /** Shape variant */
@@ -57,8 +52,10 @@ export const AvatarRoot = React.forwardRef<HTMLSpanElement, AvatarRootProps>(
 );
 
 // Image - The avatar image
-export interface AvatarImageProps
-  extends Omit<BaseAvatar.Image.Props, "className"> {
+export interface AvatarImageProps extends Omit<
+  BaseAvatar.Image.Props,
+  "className"
+> {
   /** Additional class name */
   className?: string;
 }
@@ -78,8 +75,10 @@ export const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
 );
 
 // Fallback - Displayed when image fails or is absent
-export interface AvatarFallbackProps
-  extends Omit<BaseAvatar.Fallback.Props, "className"> {
+export interface AvatarFallbackProps extends Omit<
+  BaseAvatar.Fallback.Props,
+  "className"
+> {
   /** Additional class name */
   className?: string;
 }

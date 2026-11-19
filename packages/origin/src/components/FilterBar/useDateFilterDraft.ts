@@ -69,7 +69,7 @@ function getDateFilterDraft(
   return normalizeDateFilterPresetIdentity(descriptor, {
     start: bounds.start,
     end: bounds.end,
-    presetId: descriptor.datePicker ? state.presetId ?? null : null,
+    presetId: descriptor.datePicker ? (state.presetId ?? null) : null,
   });
 }
 
@@ -85,7 +85,7 @@ function getCommittedDraft(
   return {
     start: draft.start?.getTime() ?? null,
     end: draft.end?.getTime() ?? null,
-    presetId: descriptor.datePicker ? state.presetId ?? null : null,
+    presetId: descriptor.datePicker ? (state.presetId ?? null) : null,
   };
 }
 

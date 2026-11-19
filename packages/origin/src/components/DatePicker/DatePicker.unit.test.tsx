@@ -40,8 +40,7 @@ describe("DatePicker range ownership", () => {
   it("uses null teardown for legacy forwarded callback refs", () => {
     const legacyRef = vi.fn();
     let setRootRef:
-      | ReturnType<typeof useRangeEndpointIntent>["setRootRef"]
-      | undefined;
+      ReturnType<typeof useRangeEndpointIntent>["setRootRef"] | undefined;
 
     function Harness() {
       setRootRef = useRangeEndpointIntent(legacyRef, undefined).setRootRef;

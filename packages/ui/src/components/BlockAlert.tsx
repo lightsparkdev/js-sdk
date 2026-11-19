@@ -12,8 +12,8 @@ export function BlockAlert({ text, type = "info" }: BlockAlertProps) {
     type === "info"
       ? "Info"
       : type === "success"
-      ? "CircleCheckOutline"
-      : "ExclamationPoint";
+        ? "CircleCheckOutline"
+        : "ExclamationPoint";
   const iconColor =
     type === "info" ? "info" : type === "success" ? "success" : "danger";
 
@@ -46,13 +46,13 @@ const StyledBlockAlert = styled.div<StyledBlockAlertProps>`
     type === "info"
       ? theme.info
       : type === "success"
-      ? theme.success
-      : theme.danger};
+        ? theme.success
+        : theme.danger};
 
   background-color: ${({ type, theme }) =>
     type === "info"
       ? hexToRGBAStr(theme.info, 0.1)
       : type === "success"
-      ? hexToRGBAStr(theme.success, 0.1)
-      : hexToRGBAStr(theme.danger, 0.1)};
+        ? hexToRGBAStr(theme.success, 0.1)
+        : hexToRGBAStr(theme.danger, 0.1)};
 `;

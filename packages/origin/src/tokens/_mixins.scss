@@ -65,8 +65,8 @@
 
   @media (hover: hover) {
     &:hover:not([data-disabled]):not(:disabled) {
-      background: linear-gradient(var(--surface-hover), var(--surface-hover)),
-        $base;
+      background:
+        linear-gradient(var(--surface-hover), var(--surface-hover)), $base;
     }
   }
 }

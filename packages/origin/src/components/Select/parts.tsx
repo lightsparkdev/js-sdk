@@ -100,8 +100,10 @@ export const Icon = React.forwardRef<HTMLSpanElement, IconProps>(function Icon(
 });
 
 // HybridIcon - icon for hybrid variant with its own hover/focus container
-export interface HybridIconProps
-  extends Omit<BaseSelect.Icon.Props, "children"> {
+export interface HybridIconProps extends Omit<
+  BaseSelect.Icon.Props,
+  "children"
+> {
   children?: React.ReactNode;
 }
 
@@ -237,8 +239,10 @@ export const ItemFlag = React.forwardRef<HTMLSpanElement, ItemFlagProps>(
 );
 
 // ItemIndicator - renders selection dot (visibility handled via CSS on parent [data-selected])
-export interface ItemIndicatorProps
-  extends Omit<BaseSelect.ItemIndicator.Props, "children"> {
+export interface ItemIndicatorProps extends Omit<
+  BaseSelect.ItemIndicator.Props,
+  "children"
+> {
   children?: React.ReactNode;
 }
 

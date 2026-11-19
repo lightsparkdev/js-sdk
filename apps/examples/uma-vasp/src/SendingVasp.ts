@@ -1181,9 +1181,9 @@ export default class SendingVasp {
     isUma: boolean,
   ): PayerProfile {
     return {
-      name: requiredPayerData.name?.mandatory ? user.name ?? "" : undefined,
+      name: requiredPayerData.name?.mandatory ? (user.name ?? "") : undefined,
       email: requiredPayerData.email?.mandatory
-        ? user.emailAddress ?? ""
+        ? (user.emailAddress ?? "")
         : undefined,
       identifier:
         isUma || !!requiredPayerData.identifier

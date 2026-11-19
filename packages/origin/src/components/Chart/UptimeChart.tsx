@@ -12,8 +12,7 @@ export interface UptimePoint {
   label?: string;
 }
 
-export interface UptimeChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface UptimeChartProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Array of status points, ordered chronologically. */
   data: UptimePoint[];
   /** Height of the status bars in px. */

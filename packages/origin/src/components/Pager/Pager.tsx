@@ -46,8 +46,10 @@ export type PagerButtonState = {
   direction: "previous" | "next";
 };
 
-export interface PagerRootProps
-  extends Omit<React.ComponentPropsWithoutRef<"nav">, "onChange"> {
+export interface PagerRootProps extends Omit<
+  React.ComponentPropsWithoutRef<"nav">,
+  "onChange"
+> {
   /** Whether a previous page exists. Drives `Pager.Previous` disabled state. */
   hasPrevious: boolean;
   /** Whether a next page exists. Drives `Pager.Next` disabled state. */
@@ -140,8 +142,7 @@ const PagerRoot = React.forwardRef<HTMLElement, PagerRootProps>(
 );
 PagerRoot.displayName = "Pager";
 
-export interface PagerNavigationProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface PagerNavigationProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Override the rendered element. Defaults to `<div>`. */
   render?: useRender.RenderProp<PagerNavigationState>;
 }
@@ -173,8 +174,10 @@ const PagerNavigation = React.forwardRef<HTMLDivElement, PagerNavigationProps>(
 );
 PagerNavigation.displayName = "Pager.Navigation";
 
-export interface PagerPreviousProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "children"> {
+export interface PagerPreviousProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children"
+> {
   /** Override the rendered element. Defaults to `<button>`. */
   render?: useRender.RenderProp<PagerButtonState>;
   /** Custom button content. Defaults to a left chevron icon. */
@@ -226,8 +229,10 @@ const PagerPrevious = React.forwardRef<HTMLButtonElement, PagerPreviousProps>(
 );
 PagerPrevious.displayName = "Pager.Previous";
 
-export interface PagerNextProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "children"> {
+export interface PagerNextProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children"
+> {
   /** Override the rendered element. Defaults to `<button>`. */
   render?: useRender.RenderProp<PagerButtonState>;
   /** Custom button content. Defaults to a right chevron icon. */
@@ -279,8 +284,7 @@ const PagerNext = React.forwardRef<HTMLButtonElement, PagerNextProps>(
 );
 PagerNext.displayName = "Pager.Next";
 
-export interface PagerStatusProps
-  extends React.ComponentPropsWithoutRef<"span"> {
+export interface PagerStatusProps extends React.ComponentPropsWithoutRef<"span"> {
   /** Override the rendered element. Defaults to `<span>`. */
   render?: useRender.RenderProp<PagerRootState>;
   /** Status text. The live region stays mounted even when empty so updates are announced. */

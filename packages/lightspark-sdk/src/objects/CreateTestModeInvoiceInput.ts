@@ -27,8 +27,8 @@ export const CreateTestModeInvoiceInputFromJson = (
     amountMsats: obj["create_test_mode_invoice_input_amount_msats"],
     memo: obj["create_test_mode_invoice_input_memo"],
     invoiceType: !!obj["create_test_mode_invoice_input_invoice_type"]
-      ? InvoiceType[obj["create_test_mode_invoice_input_invoice_type"]] ??
-        InvoiceType.FUTURE_VALUE
+      ? (InvoiceType[obj["create_test_mode_invoice_input_invoice_type"]] ??
+        InvoiceType.FUTURE_VALUE)
       : null,
   } as CreateTestModeInvoiceInput;
 };

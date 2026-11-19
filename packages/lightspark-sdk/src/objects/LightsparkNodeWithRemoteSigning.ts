@@ -421,9 +421,9 @@ export const LightsparkNodeWithRemoteSigningFromJson = (
     obj["lightspark_node_with_remote_signing_conductivity"],
     obj["lightspark_node_with_remote_signing_public_key"],
     !!obj["lightspark_node_with_remote_signing_status"]
-      ? LightsparkNodeStatus[
+      ? (LightsparkNodeStatus[
           obj["lightspark_node_with_remote_signing_status"]
-        ] ?? LightsparkNodeStatus.FUTURE_VALUE
+        ] ?? LightsparkNodeStatus.FUTURE_VALUE)
       : null,
     !!obj["lightspark_node_with_remote_signing_total_balance"]
       ? CurrencyAmountFromJson(

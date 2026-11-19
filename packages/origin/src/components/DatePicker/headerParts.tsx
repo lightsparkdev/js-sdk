@@ -488,13 +488,13 @@ function HeaderAutoLayout() {
   const isRange = context.mode === "range";
   const includesTime = context.includeTime;
   const startDate = isRange
-    ? context.rangeValue?.start ?? null
+    ? (context.rangeValue?.start ?? null)
     : context.singleValue;
   const legendLabel = isRange
     ? labels.dateRange
     : includesTime
-    ? labels.dateAndTime
-    : labels.date;
+      ? labels.dateAndTime
+      : labels.date;
 
   return (
     <Fieldset.Root
@@ -555,8 +555,7 @@ function HeaderAutoLayout() {
   );
 }
 
-export interface DatePickerHeaderProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface DatePickerHeaderProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const Header = React.forwardRef<HTMLDivElement, DatePickerHeaderProps>(
   function DatePickerHeader({ className, children, ...props }, forwardedRef) {

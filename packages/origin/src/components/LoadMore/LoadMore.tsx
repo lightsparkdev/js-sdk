@@ -68,8 +68,10 @@ type TriggerRenderState = {
 
 type TriggerRenderProp = useRender.RenderProp<TriggerRenderState>;
 
-export interface LoadMoreTriggerProps
-  extends Omit<ButtonProps, "onClick" | "disabled" | "loading" | "render"> {
+export interface LoadMoreTriggerProps extends Omit<
+  ButtonProps,
+  "onClick" | "disabled" | "loading" | "render"
+> {
   /**
    * Override the auto-derived disabled state (`!hasMore || loading`). Pass
    * `false` to force-enable; pass `true` to force-disable.
@@ -172,8 +174,7 @@ export const LoadMoreTrigger = React.forwardRef<
   );
 });
 
-export interface LoadMoreSentinelProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface LoadMoreSentinelProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
    * IntersectionObserver root. Defaults to the viewport. Pass a scroll
    * container to scope observations to a scrolling region.
@@ -330,8 +331,10 @@ function RenderSentinel({
 
 type StatusRenderState = { loading: boolean; hasMore: boolean };
 
-export interface LoadMoreStatusProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+export interface LoadMoreStatusProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   /**
    * Either static content, or a render function that receives the current
    * load state and returns the announcement text.

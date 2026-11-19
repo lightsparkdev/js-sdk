@@ -46,8 +46,9 @@ import {
 import { resolveFilterOperator } from "./filterOperators";
 import { type FiltersModel, type UpdateFilter } from "./useFilters";
 
-export interface RootProps<TDescriptors extends FilterDescriptorTuple>
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
+export interface RootProps<
+  TDescriptors extends FilterDescriptorTuple,
+> extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
   model: FiltersModel<TDescriptors>;
   /** Cohesive overrides for generic filter-bar chrome. */
   config?: Partial<FilterBarConfig>;
@@ -224,8 +225,10 @@ function OperatorEditor({
             <Menu.RadioGroup
               value={selectedValue}
               onValueChange={(value: string) => {
-                const operator = resolveFilterOperator(descriptor, value)
-                  ?.value;
+                const operator = resolveFilterOperator(
+                  descriptor,
+                  value,
+                )?.value;
                 if (operator !== undefined) {
                   model.updateFilter(descriptor.id, { ...state, operator });
                 }

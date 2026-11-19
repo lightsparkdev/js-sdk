@@ -81,8 +81,7 @@ const DEFAULT_LABELS: Required<DatePickerLabels> = {
   requiredDateRange: "Select a date range",
 };
 
-export interface DatePickerRootProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface DatePickerRootProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Imperative validation actions for composed Apply boundaries. */
   actionsRef?: React.RefObject<DatePickerActions | null>;
   /** Controlled selection mode. */
@@ -398,7 +397,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
       const selectedDate =
         mode === "single"
           ? singleValue
-          : rangeValue?.start ?? rangeValue?.end ?? null;
+          : (rangeValue?.start ?? rangeValue?.end ?? null);
       if (
         selectedDate &&
         isVisible(selectedDate) &&
@@ -521,7 +520,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
             start:
               rangeEndpointIntent === "end" && pendingStart
                 ? applyTime(pendingStart, rangeValue?.start ?? null)
-                : rangeValue?.start ?? null,
+                : (rangeValue?.start ?? null),
             end: rangeValue?.end ?? null,
           };
           const update = replaceRangeEndpoint({
@@ -737,7 +736,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
     const rangePreviewAnchor =
       pendingStart ??
       (usesRangeDraftApi && rangeValue && (!rangeValue.start || !rangeValue.end)
-        ? rangeValue.start ?? rangeValue.end
+        ? (rangeValue.start ?? rangeValue.end)
         : null);
 
     const contextValue = React.useMemo<DatePickerContextValue>(
@@ -849,8 +848,7 @@ export const Root = React.forwardRef<HTMLDivElement, DatePickerRootProps>(
   },
 );
 
-export interface DatePickerControlsProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface DatePickerControlsProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const Controls = React.forwardRef<
   HTMLDivElement,
@@ -867,8 +865,7 @@ export const Controls = React.forwardRef<
   );
 });
 
-export interface DatePickerControlItemProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface DatePickerControlItemProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Text label for the control. */
   label: string;
 }
@@ -892,8 +889,7 @@ export const ControlItem = React.forwardRef<
   );
 });
 
-export interface DatePickerFooterProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface DatePickerFooterProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const Footer = React.forwardRef<HTMLDivElement, DatePickerFooterProps>(
   function DatePickerFooter({ className, children, ...props }, forwardedRef) {

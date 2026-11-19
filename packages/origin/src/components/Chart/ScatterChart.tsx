@@ -45,8 +45,7 @@ export interface ScatterSeries {
 }
 
 export interface ScatterChartProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    XAxisLabelProps {
+  extends React.ComponentPropsWithoutRef<"div">, XAxisLabelProps {
   data: ScatterSeries[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before

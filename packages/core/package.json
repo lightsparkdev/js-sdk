@@ -85,7 +85,7 @@
     "lodash-es": "^4.17.21",
     "madge": "^6.1.0",
     "nodemon": "^3.1.14",
-    "prettier": "3.0.3",
+    "prettier": "3.10.1",
     "prettier-plugin-organize-imports": "^3.2.4",
     "publint": "^0.3.9",
     "ts-jest": "^29.1.1",

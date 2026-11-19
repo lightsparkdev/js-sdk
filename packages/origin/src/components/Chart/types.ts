@@ -1,13 +1,7 @@
 import type * as React from "react";
 
 export type ChartDatumValue =
-  | string
-  | number
-  | boolean
-  | bigint
-  | Date
-  | null
-  | undefined;
+  string | number | boolean | bigint | Date | null | undefined;
 
 export type ChartDatum = Record<string, ChartDatumValue>;
 

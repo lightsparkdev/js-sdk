@@ -62,11 +62,9 @@ dayjs.extend(utc);
 
 export interface PillFilterCustomComponents {
   customDropdown?:
-    | React.ComponentType<React.ComponentProps<typeof Dropdown>>
-    | undefined;
+    React.ComponentType<React.ComponentProps<typeof Dropdown>> | undefined;
   customTextInput?:
-    | React.ComponentType<React.ComponentProps<typeof TextInput>>
-    | undefined;
+    React.ComponentType<React.ComponentProps<typeof TextInput>> | undefined;
   customCalendarCss?: CSSInterpolation | undefined;
 }
 

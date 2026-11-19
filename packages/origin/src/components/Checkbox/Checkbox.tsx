@@ -29,8 +29,10 @@ function useCheckboxGroupContext() {
   return React.useContext(CheckboxGroupContext);
 }
 
-export interface CheckboxGroupProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue"> {
+export interface CheckboxGroupProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "defaultValue"
+> {
   value?: string[];
   defaultValue?: string[];
   onValueChange?: (value: string[], eventDetails: { reason: "none" }) => void;

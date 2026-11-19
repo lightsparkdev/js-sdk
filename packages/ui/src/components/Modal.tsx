@@ -64,8 +64,7 @@ function isSubmitLinkWithHref(
 }
 
 type TopContent =
-  | ComponentProps<typeof IconWithCircleBackground>
-  | React.ReactNode;
+  ComponentProps<typeof IconWithCircleBackground> | React.ReactNode;
 
 type ModalProps = {
   visible: boolean;

@@ -132,8 +132,8 @@ export function KybOriginFormCompositionBoundary() {
     const firstInvalidInput = nextErrors.legalName
       ? legalNameInputRef.current
       : nextErrors.registrationCountry
-      ? registrationCountryInputRef.current
-      : null;
+        ? registrationCountryInputRef.current
+        : null;
     firstInvalidInput?.focus();
   };
 

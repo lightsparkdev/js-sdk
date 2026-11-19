@@ -56,8 +56,8 @@ function RoutePanel() {
         {route === "/route-a"
           ? "Route A"
           : route === "/route-b"
-          ? "Route B"
-          : "Route C"}
+            ? "Route B"
+            : "Route C"}
       </div>
     </div>
   );

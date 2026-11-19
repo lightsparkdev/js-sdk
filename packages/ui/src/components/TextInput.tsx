@@ -115,8 +115,7 @@ export type TextInputProps = {
   onInput?: (newValue: string, event: FormEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
   onFocus?:
-    | ((event: FocusEvent<HTMLInputElement, Element>) => void)
-    | undefined;
+    ((event: FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
   onKeyDown?: (
     keyValue: string,
@@ -132,11 +131,7 @@ export type TextInputProps = {
   onClickIcon?: () => void;
   testId?: string;
   autoComplete?:
-    | "off"
-    | "new-password"
-    | "current-password"
-    | "username"
-    | undefined;
+    "off" | "new-password" | "current-password" | "username" | undefined;
   onBeforeInput?: (e: CompositionEvent) => void;
   pattern?: string;
   inputMode?: "numeric" | "decimal" | undefined;
@@ -222,8 +217,8 @@ export function TextInput(textInputProps: TextInputProps) {
     props.icon?.offset === "large"
       ? 14
       : props.icon?.offset === "medium"
-      ? 8
-      : 4;
+        ? 8
+        : 4;
 
   const leftIconOffset = iconCenterOffset - iconWidth / 2;
   let paddingLeftPx: number | undefined;

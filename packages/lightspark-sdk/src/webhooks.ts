@@ -90,9 +90,8 @@ export class RemoteSigningWebhookHandler {
 
     const decision = await this.validator.should_sign(event);
 
-    const { wasm_handle_remote_signing_webhook_event } = await import(
-      "@lightsparkdev/crypto-wasm"
-    );
+    const { wasm_handle_remote_signing_webhook_event } =
+      await import("@lightsparkdev/crypto-wasm");
 
     const response = wasm_handle_remote_signing_webhook_event(
       data,

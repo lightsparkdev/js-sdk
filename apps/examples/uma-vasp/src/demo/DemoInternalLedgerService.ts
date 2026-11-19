@@ -7,9 +7,7 @@ import InternalLedgerService from "../InternalLedgerService.js";
 import UmaConfig from "../UmaConfig.js";
 import UserService from "../UserService.js";
 
-export default class DemoInternalLedgerService
-  implements InternalLedgerService
-{
+export default class DemoInternalLedgerService implements InternalLedgerService {
   private readonly pendingOutgoingTransactionsByUserId: Map<
     string,
     Map<string, number>

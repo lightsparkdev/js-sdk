@@ -87,9 +87,9 @@ export const UmaInvitationFromJson = (obj: any): UmaInvitation => {
     incentivesIneligibilityReason: !!obj[
       "uma_invitation_incentives_ineligibility_reason"
     ]
-      ? IncentivesIneligibilityReason[
+      ? (IncentivesIneligibilityReason[
           obj["uma_invitation_incentives_ineligibility_reason"]
-        ] ?? IncentivesIneligibilityReason.FUTURE_VALUE
+        ] ?? IncentivesIneligibilityReason.FUTURE_VALUE)
       : null,
     paymentAmount: !!obj["uma_invitation_payment_amount"]
       ? UmaCurrencyAmountFromJson(obj["uma_invitation_payment_amount"])

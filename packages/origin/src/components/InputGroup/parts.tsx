@@ -115,8 +115,8 @@ export const Cap = React.forwardRef<HTMLDivElement, CapProps>(function Cap(
     ariaHidden !== undefined
       ? ariaHidden
       : hasInteractiveContent
-      ? undefined
-      : "true";
+        ? undefined
+        : "true";
   const { disabled } = useInputGroupContext();
 
   const handleClick = React.useCallback(
@@ -221,8 +221,7 @@ if (process.env.NODE_ENV !== "production") {
   Button.displayName = "InputGroup.Button";
 }
 
-export interface SelectTriggerProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface SelectTriggerProps extends React.ComponentPropsWithoutRef<"button"> {
   variant?: "ghost" | "outline";
   invalid?: boolean;
 }

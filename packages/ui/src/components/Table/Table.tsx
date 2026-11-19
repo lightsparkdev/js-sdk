@@ -52,11 +52,7 @@ import { type PartialSimpleTypographyProps } from "../typography/types.js";
 export type TableColumnHeaderInfo = string | { name: string; tooltip?: string };
 
 export type TableCell =
-  | string
-  | LinkCell
-  | ClipboardCell
-  | MultilineCell
-  | ReactNode;
+  string | LinkCell | ClipboardCell | MultilineCell | ReactNode;
 
 type ObjectCell = {
   text: string;
@@ -638,10 +634,10 @@ export function Table<T extends Record<string, unknown>>({
                       sortDirection === "asc"
                         ? "ascending"
                         : sortDirection === "desc"
-                        ? "descending"
-                        : canSort
-                        ? "none"
-                        : undefined
+                          ? "descending"
+                          : canSort
+                            ? "none"
+                            : undefined
                     }
                     data-sortable={canSort ? "true" : undefined}
                     data-sorted={sortDirection || undefined}
@@ -680,8 +676,8 @@ export function Table<T extends Record<string, unknown>>({
                                 sortDirection === "asc"
                                   ? "ChevronUp"
                                   : sortDirection === "desc"
-                                  ? "ChevronDown"
-                                  : "Sort"
+                                    ? "ChevronDown"
+                                    : "Sort"
                               }
                               width={12}
                             />

@@ -429,8 +429,8 @@ export const LightsparkNodeWithOSKFromJson = (
     obj["lightspark_node_with_o_s_k_conductivity"],
     obj["lightspark_node_with_o_s_k_public_key"],
     !!obj["lightspark_node_with_o_s_k_status"]
-      ? LightsparkNodeStatus[obj["lightspark_node_with_o_s_k_status"]] ??
-        LightsparkNodeStatus.FUTURE_VALUE
+      ? (LightsparkNodeStatus[obj["lightspark_node_with_o_s_k_status"]] ??
+          LightsparkNodeStatus.FUTURE_VALUE)
       : null,
     !!obj["lightspark_node_with_o_s_k_total_balance"]
       ? CurrencyAmountFromJson(obj["lightspark_node_with_o_s_k_total_balance"])

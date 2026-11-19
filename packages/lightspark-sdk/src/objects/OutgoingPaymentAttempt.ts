@@ -190,8 +190,8 @@ export const OutgoingPaymentAttemptFromJson = (
     obj["outgoing_payment_attempt_outgoing_payment"].id,
     "OutgoingPaymentAttempt",
     !!obj["outgoing_payment_attempt_failure_code"]
-      ? HtlcAttemptFailureCode[obj["outgoing_payment_attempt_failure_code"]] ??
-        HtlcAttemptFailureCode.FUTURE_VALUE
+      ? (HtlcAttemptFailureCode[obj["outgoing_payment_attempt_failure_code"]] ??
+          HtlcAttemptFailureCode.FUTURE_VALUE)
       : null,
     obj["outgoing_payment_attempt_failure_source_index"],
     obj["outgoing_payment_attempt_resolved_at"],

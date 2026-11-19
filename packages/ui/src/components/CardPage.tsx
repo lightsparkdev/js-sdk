@@ -313,11 +313,11 @@ const CardPageContainer = styled.div<{
             opacity: 0;
           `)
         : wasExpanded
-        ? bp.minSm(`
+          ? bp.minSm(`
             width: 50%;
             animation: leftSideExpand ${expandTiming};
           `)
-        : ""}
+          : ""}
   }
 
   & > ${CardPageRightContent} {
@@ -336,11 +336,11 @@ const CardPageContainer = styled.div<{
             }
           `)
         : wasExpanded
-        ? bp.minSm(`
+          ? bp.minSm(`
             width: 50%;
             animation: rightSideCollapse ${expandTiming};
           `)
-        : ""}
+          : ""}
   }
 `;
 

@@ -16,8 +16,7 @@ export interface FunnelStage {
   color?: string;
 }
 
-export interface FunnelChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface FunnelChartProps extends React.ComponentPropsWithoutRef<"div"> {
   data: FunnelStage[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before
@@ -137,8 +136,8 @@ export const Funnel = React.forwardRef<HTMLDivElement, FunnelChartProps>(
         const rH = isLast
           ? lH
           : maxValue > 0
-          ? (data[i + 1].value / maxValue) * plotHeight
-          : 0;
+            ? (data[i + 1].value / maxValue) * plotHeight
+            : 0;
 
         const x0 = rd(PAD + i * stageWidth);
         const x1 = rd(x0 + stageWidth);

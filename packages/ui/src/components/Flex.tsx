@@ -30,12 +30,7 @@ type FlexProps = {
   disabled?: boolean | undefined;
   overflow?: "hidden" | "visible" | "scroll" | "auto" | undefined;
   whiteSpace?:
-    | "nowrap"
-    | "normal"
-    | "pre"
-    | "pre-wrap"
-    | "pre-line"
-    | undefined;
+    "nowrap" | "normal" | "pre" | "pre-wrap" | "pre-line" | undefined;
   height?: number | "auto" | "100%" | undefined;
   width?: number | "auto" | "50%" | "100%" | undefined;
   mt?: number | "auto" | undefined;

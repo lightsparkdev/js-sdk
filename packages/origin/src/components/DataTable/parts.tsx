@@ -409,15 +409,16 @@ export type DataTableAccessorColumn<TRow> = {
  * A display-only column for actions or derived content. A stable id and
  * renderer are both required because there is no row property to read.
  */
-export interface DataTableDisplayColumn<TRow>
-  extends Omit<DataTableColumnBase<TRow>, "cell"> {
+export interface DataTableDisplayColumn<TRow> extends Omit<
+  DataTableColumnBase<TRow>,
+  "cell"
+> {
   id: string;
   cell: (row: TRow) => React.ReactNode;
 }
 
 export type DataTableColumn<TRow> =
-  | DataTableAccessorColumn<TRow>
-  | DataTableDisplayColumn<TRow>;
+  DataTableAccessorColumn<TRow> | DataTableDisplayColumn<TRow>;
 
 interface ContentBaseProps<TRow> {
   columns: readonly DataTableColumn<TRow>[];

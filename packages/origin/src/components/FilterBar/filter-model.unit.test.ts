@@ -17,11 +17,7 @@ import {
 import { isEnumFilterOptionApplied } from "./enumOptions";
 
 type TestFilterKey =
-  | "createdAt"
-  | "type"
-  | "sendReason"
-  | "receiveReason"
-  | "code";
+  "createdAt" | "type" | "sendReason" | "receiveReason" | "code";
 
 const DESCRIPTORS = [
   { type: "date", label: "Date", id: "createdAt" },

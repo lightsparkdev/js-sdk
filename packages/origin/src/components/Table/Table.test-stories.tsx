@@ -1030,8 +1030,7 @@ export function ColumnSizingTable() {
           <Table.HeaderRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => {
               const meta = header.column.columnDef.meta as
-                | { sizing?: string; align?: "left" | "right" }
-                | undefined;
+                { sizing?: string; align?: "left" | "right" } | undefined;
               return (
                 <Table.HeaderCell
                   key={header.id}
@@ -1059,8 +1058,7 @@ export function ColumnSizingTable() {
           <Table.Row key={row.id}>
             {row.getVisibleCells().map((cell) => {
               const meta = cell.column.columnDef.meta as
-                | { sizing?: string; align?: "left" | "right" }
-                | undefined;
+                { sizing?: string; align?: "left" | "right" } | undefined;
               return (
                 <Table.Cell
                   key={cell.id}

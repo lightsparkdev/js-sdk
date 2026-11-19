@@ -224,8 +224,8 @@ export const OutgoingPaymentFromJson = (obj: any): OutgoingPayment => {
       ? PaymentRequestDataFromJson(obj["outgoing_payment_payment_request_data"])
       : undefined,
     !!obj["outgoing_payment_failure_reason"]
-      ? PaymentFailureReason[obj["outgoing_payment_failure_reason"]] ??
-        PaymentFailureReason.FUTURE_VALUE
+      ? (PaymentFailureReason[obj["outgoing_payment_failure_reason"]] ??
+          PaymentFailureReason.FUTURE_VALUE)
       : null,
     !!obj["outgoing_payment_failure_message"]
       ? RichTextFromJson(obj["outgoing_payment_failure_message"])

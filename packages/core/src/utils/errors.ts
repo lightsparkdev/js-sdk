@@ -4,11 +4,11 @@ import { type JSONType } from "./types.js";
 export const isError = (e: unknown): e is Error => {
   return Boolean(
     typeof e === "object" &&
-      e !== null &&
-      "name" in e &&
-      typeof e.name === "string" &&
-      "message" in e &&
-      typeof e.message === "string",
+    e !== null &&
+    "name" in e &&
+    typeof e.name === "string" &&
+    "message" in e &&
+    typeof e.message === "string",
   );
 };
 
@@ -19,9 +19,9 @@ type ErrorWithMessage = {
 export const isErrorWithMessage = (e: unknown): e is ErrorWithMessage => {
   return Boolean(
     typeof e === "object" &&
-      e !== null &&
-      "message" in e &&
-      typeof e.message === "string",
+    e !== null &&
+    "message" in e &&
+    typeof e.message === "string",
   );
 };
 

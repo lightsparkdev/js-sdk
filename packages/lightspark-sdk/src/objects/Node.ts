@@ -117,8 +117,8 @@ export const NodeFromJson = (obj: any): Node => {
       obj["lightspark_node_with_o_s_k_conductivity"],
       obj["lightspark_node_with_o_s_k_public_key"],
       !!obj["lightspark_node_with_o_s_k_status"]
-        ? LightsparkNodeStatus[obj["lightspark_node_with_o_s_k_status"]] ??
-          LightsparkNodeStatus.FUTURE_VALUE
+        ? (LightsparkNodeStatus[obj["lightspark_node_with_o_s_k_status"]] ??
+            LightsparkNodeStatus.FUTURE_VALUE)
         : null,
       !!obj["lightspark_node_with_o_s_k_total_balance"]
         ? CurrencyAmountFromJson(
@@ -172,9 +172,9 @@ export const NodeFromJson = (obj: any): Node => {
       obj["lightspark_node_with_remote_signing_conductivity"],
       obj["lightspark_node_with_remote_signing_public_key"],
       !!obj["lightspark_node_with_remote_signing_status"]
-        ? LightsparkNodeStatus[
+        ? (LightsparkNodeStatus[
             obj["lightspark_node_with_remote_signing_status"]
-          ] ?? LightsparkNodeStatus.FUTURE_VALUE
+          ] ?? LightsparkNodeStatus.FUTURE_VALUE)
         : null,
       !!obj["lightspark_node_with_remote_signing_total_balance"]
         ? CurrencyAmountFromJson(

@@ -43,9 +43,9 @@ export const PayTestModeInvoiceInputFromJson = (
     timeoutSecs: obj["pay_test_mode_invoice_input_timeout_secs"],
     maximumFeesMsats: obj["pay_test_mode_invoice_input_maximum_fees_msats"],
     failureReason: !!obj["pay_test_mode_invoice_input_failure_reason"]
-      ? PaymentFailureReason[
+      ? (PaymentFailureReason[
           obj["pay_test_mode_invoice_input_failure_reason"]
-        ] ?? PaymentFailureReason.FUTURE_VALUE
+        ] ?? PaymentFailureReason.FUTURE_VALUE)
       : null,
     amountMsats: obj["pay_test_mode_invoice_input_amount_msats"],
     idempotencyKey: obj["pay_test_mode_invoice_input_idempotency_key"],

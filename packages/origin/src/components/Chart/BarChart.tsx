@@ -43,8 +43,7 @@ const EMPTY_TICKS = { min: 0, max: 1, ticks: [0, 1] } as const;
 const clickIndexMeta = (index: number) => ({ index });
 
 export interface BarChartProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    XAxisLabelProps {
+  extends React.ComponentPropsWithoutRef<"div">, XAxisLabelProps {
   data: ChartDatum[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before

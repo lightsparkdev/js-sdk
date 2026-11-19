@@ -40,8 +40,7 @@ export type ToastsProps = {
   maxVisible?: number;
   typography?: PartialSimpleTypographyProps | undefined;
   onClickContentNode?:
-    | ((node: ToReactNodesArg, toastId: string) => void)
-    | undefined;
+    ((node: ToReactNodesArg, toastId: string) => void) | undefined;
 };
 
 type TimeoutRef = ReturnType<typeof setTimeout> | null;
@@ -252,10 +251,10 @@ export function Toasts({
                   toast.type === "error"
                     ? colors.red50
                     : toast.type === "success"
-                    ? colors.green37
-                    : toast.type === "black"
-                    ? colors.black
-                    : undefined
+                      ? colors.green37
+                      : toast.type === "black"
+                        ? colors.black
+                        : undefined
                 }
                 isActive={toast.isActive}
                 isHiding={toast.isHiding}
@@ -325,8 +324,8 @@ const StyledToast = styled.div<{
   font-weight: 500;
   background-color: ${({ isCurrent, movingToCurrent, backgroundColor }) =>
     isCurrent || movingToCurrent
-      ? backgroundColor ?? colors.blue43
-      : backgroundColor ?? themeOr("#2A50B2", colors.blue43)};
+      ? (backgroundColor ?? colors.blue43)
+      : (backgroundColor ?? themeOr("#2A50B2", colors.blue43))};
   color: rgba(255, 255, 255, 0);
   padding: 16px 24px;
   ${({ duration }) => !duration && "padding-right: 50px;"}

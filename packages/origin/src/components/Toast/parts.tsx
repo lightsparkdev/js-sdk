@@ -23,11 +23,7 @@ export type ToastLayout = "default" | "compact" | "pill";
 export type ToastPlacement = "bottom" | "top";
 
 export type ToastVariant =
-  | "default"
-  | "info"
-  | "success"
-  | "warning"
-  | "invalid";
+  "default" | "info" | "success" | "warning" | "invalid";
 
 type SemanticToastVariant = Exclude<ToastVariant, "default">;
 

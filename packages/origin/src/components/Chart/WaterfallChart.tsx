@@ -34,8 +34,7 @@ export interface WaterfallSegment {
 }
 
 export interface WaterfallChartProps
-  extends React.ComponentPropsWithoutRef<"div">,
-    XAxisLabelProps {
+  extends React.ComponentPropsWithoutRef<"div">, XAxisLabelProps {
   data: WaterfallSegment[];
   /**
    * Pre-measurement width in pixels. Used as a fallback before

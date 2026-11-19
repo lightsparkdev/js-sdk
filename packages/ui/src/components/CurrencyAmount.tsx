@@ -81,12 +81,12 @@ export function CurrencyAmount({
     showUnits === false
       ? undefined
       : showUnits === true
-      ? ({
-          plural: false,
-          lowercase: false,
-          showForCurrentLocaleUnit: false,
-        } as const)
-      : showUnits;
+        ? ({
+            plural: false,
+            lowercase: false,
+            showForCurrentLocaleUnit: false,
+          } as const)
+        : showUnits;
 
   /* There are just a few ways that CurrencyAmounts need to be formatted
      throughout the UI. In general the default should always be used: */

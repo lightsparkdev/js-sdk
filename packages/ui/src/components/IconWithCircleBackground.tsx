@@ -100,10 +100,10 @@ const StyledIconWithCircleBackground = styled.div<StyledIconWithCircleBackground
     darkBg
       ? `linear-gradient(291.4deg, #1C243F 0%, #21283A 100%)`
       : noBg
-      ? "transparent"
-      : bgColor
-      ? getColor(theme, bgColor)
-      : getColor(theme, "grayBlue94")};
+        ? "transparent"
+        : bgColor
+          ? getColor(theme, bgColor)
+          : getColor(theme, "grayBlue94")};
 
   &:hover {
     ${({ theme, hoverActiveBg }) =>

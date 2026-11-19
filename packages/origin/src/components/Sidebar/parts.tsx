@@ -138,8 +138,8 @@ export const Root = React.forwardRef<HTMLElement, RootProps>(function Root(
   const collapsed = context
     ? context.collapsed
     : isControlled
-    ? collapsedProp
-    : internalCollapsed;
+      ? collapsedProp
+      : internalCollapsed;
 
   const handleCollapsedChange = React.useCallback(
     (value: boolean) => {
@@ -203,8 +203,10 @@ export const Root = React.forwardRef<HTMLElement, RootProps>(function Root(
   );
 });
 
-export interface TriggerProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "children"> {
+export interface TriggerProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children"
+> {
   expandedIcon?: React.ReactNode;
   collapsedIcon?: React.ReactNode;
   label?: string;
@@ -226,8 +228,8 @@ export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
     );
 
     const icon = collapsed
-      ? collapsedIcon ?? defaultCollapsedIcon
-      : expandedIcon ?? defaultExpandedIcon;
+      ? (collapsedIcon ?? defaultCollapsedIcon)
+      : (expandedIcon ?? defaultExpandedIcon);
 
     return (
       <button
@@ -300,8 +302,7 @@ export const Group = React.forwardRef<HTMLDivElement, GroupProps>(
   },
 );
 
-export interface GroupLabelProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface GroupLabelProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const GroupLabel = React.forwardRef<HTMLDivElement, GroupLabelProps>(
   function GroupLabel({ className, children, ...props }, ref) {
@@ -420,8 +421,7 @@ export const Item = React.forwardRef<HTMLButtonElement, ItemProps>(
   },
 );
 
-export interface ExpandableItemProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface ExpandableItemProps extends React.ComponentPropsWithoutRef<"div"> {
   icon?: React.ReactNode;
   label: string;
   active?: boolean;
@@ -522,8 +522,7 @@ export const ExpandableItem = React.forwardRef<
   );
 });
 
-export interface SubmenuItemProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface SubmenuItemProps extends React.ComponentPropsWithoutRef<"button"> {
   icon?: React.ReactNode;
   active?: boolean;
   render?: React.ReactElement;
@@ -576,8 +575,10 @@ export const SubmenuItem = React.forwardRef<
   );
 });
 
-export interface DrilldownItemProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "onClick"> {
+export interface DrilldownItemProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "onClick"
+> {
   icon?: React.ReactNode;
   active?: boolean;
   disabled?: boolean;

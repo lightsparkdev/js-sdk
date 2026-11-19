@@ -84,8 +84,10 @@ export const Root = React.forwardRef<HTMLDivElement, RootProps>(function Root(
 });
 
 // CountrySelect - wraps Base UI Select
-export interface CountrySelectProps<Value>
-  extends Omit<SelectRootProps<Value, false>, "multiple"> {}
+export interface CountrySelectProps<Value> extends Omit<
+  SelectRootProps<Value, false>,
+  "multiple"
+> {}
 
 export function CountrySelect<Value>({
   children,
@@ -137,8 +139,10 @@ export const CountryTrigger = React.forwardRef<
 });
 
 // CountryValue - renders the selected country
-export interface CountryValueProps<Value>
-  extends Omit<BaseSelect.Value.Props, "children"> {
+export interface CountryValueProps<Value> extends Omit<
+  BaseSelect.Value.Props,
+  "children"
+> {
   children: (value: Value) => React.ReactNode;
 }
 
@@ -158,8 +162,7 @@ export function CountryValue<Value>({
 }
 
 // CountryFlag - flag wrapper (auto-sizes: 18px in trigger, 22px in items via CSS)
-export interface CountryFlagProps
-  extends React.HTMLAttributes<HTMLSpanElement> {}
+export interface CountryFlagProps extends React.HTMLAttributes<HTMLSpanElement> {}
 
 export const CountryFlag = React.forwardRef<HTMLSpanElement, CountryFlagProps>(
   function CountryFlag({ className, ...props }, ref) {
@@ -170,8 +173,10 @@ export const CountryFlag = React.forwardRef<HTMLSpanElement, CountryFlagProps>(
 );
 
 // CountryIcon
-export interface CountryIconProps
-  extends Omit<BaseSelect.Icon.Props, "children"> {
+export interface CountryIconProps extends Omit<
+  BaseSelect.Icon.Props,
+  "children"
+> {
   children?: React.ReactNode;
 }
 
@@ -190,8 +195,10 @@ export const CountryIcon = React.forwardRef<HTMLSpanElement, CountryIconProps>(
 );
 
 // CountryListbox - merged Portal + Positioner + Popup + List
-export interface CountryListboxProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
+export interface CountryListboxProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "children"
+> {
   children: React.ReactNode;
   /** Offset from the anchor element */
   sideOffset?: number;
@@ -281,8 +288,10 @@ export const CountryItemText = React.forwardRef<
 });
 
 // CountryItemIndicator
-export interface CountryItemIndicatorProps
-  extends Omit<BaseSelect.ItemIndicator.Props, "children"> {
+export interface CountryItemIndicatorProps extends Omit<
+  BaseSelect.ItemIndicator.Props,
+  "children"
+> {
   children?: React.ReactNode;
 }
 
@@ -316,8 +325,7 @@ export const CountryItemIndicator = React.forwardRef<
 // Unlike CountrySelect, this part serializes nothing into form data; consumers
 // that need the locked country in native form submissions should add their own
 // hidden input.
-export interface LockedCountryProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface LockedCountryProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export const LockedCountry = React.forwardRef<
   HTMLDivElement,

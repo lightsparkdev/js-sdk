@@ -4101,12 +4101,12 @@ export default function Home() {
               status: (i === 12
                 ? "down"
                 : i === 34
-                ? "degraded"
-                : i === 67
-                ? "down"
-                : i === 45
-                ? "degraded"
-                : "up") as "up" | "down" | "degraded",
+                  ? "degraded"
+                  : i === 67
+                    ? "down"
+                    : i === 45
+                      ? "degraded"
+                      : "up") as "up" | "down" | "degraded",
               label: `Day ${i + 1}`,
             }))}
             label="90 days — 97.8% uptime"

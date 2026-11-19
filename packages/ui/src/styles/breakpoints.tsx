@@ -37,8 +37,8 @@ const breakpointFn = (mq: string) => (style: string) =>
 type CurrentBreakpointReturnType<T> = T extends string
   ? boolean
   : T extends undefined
-  ? BreakpointRanges
-  : never;
+    ? BreakpointRanges
+    : never;
 
 // https://bit.ly/3vb3jJR
 type CurrentBreakpointType = <T extends string | undefined = undefined>(

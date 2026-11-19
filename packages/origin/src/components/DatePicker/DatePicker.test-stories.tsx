@@ -429,10 +429,10 @@ export function TestModeSwitch() {
         {value instanceof Date
           ? value.toISOString().split("T")[0]
           : value && !(value instanceof Date)
-          ? `${value.start.toISOString().split("T")[0]}|${
-              value.end.toISOString().split("T")[0]
-            }`
-          : "none"}
+            ? `${value.start.toISOString().split("T")[0]}|${
+                value.end.toISOString().split("T")[0]
+              }`
+            : "none"}
       </div>
     </DatePicker.Root>
   );

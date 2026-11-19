@@ -16,8 +16,7 @@ const SIGNING_KEY_PATH = "m/5";
  * Args for creating a new SigningKeyLoader. Must be one of the sub types.
  */
 export type SigningKeyLoaderArgs =
-  | NodeIdAndPasswordSigningKeyLoaderArgs
-  | MasterSeedSigningKeyLoaderArgs;
+  NodeIdAndPasswordSigningKeyLoaderArgs | MasterSeedSigningKeyLoaderArgs;
 
 /**
  * Args for creating a new SigningKeyLoader from a node ID and password.
@@ -34,8 +33,7 @@ export interface NodeIdAndPasswordSigningKeyLoaderArgs {
  * Internal version of NodeIdAndPasswordSigningKeyLoaderArgs that includes the
  * node ID.
  */
-interface NodeIdAndPasswordSigningKeyLoaderArgsInternal
-  extends NodeIdAndPasswordSigningKeyLoaderArgs {
+interface NodeIdAndPasswordSigningKeyLoaderArgsInternal extends NodeIdAndPasswordSigningKeyLoaderArgs {
   nodeId: string;
 }
 
@@ -160,9 +158,8 @@ export class MasterSeedSigningKeyLoader implements SigningKeyLoader {
       );
     }
 
-    const { LightsparkSigner, Network } = await import(
-      "@lightsparkdev/crypto-wasm"
-    );
+    const { LightsparkSigner, Network } =
+      await import("@lightsparkdev/crypto-wasm");
 
     let cryptoLibNetwork;
     switch (this.network) {

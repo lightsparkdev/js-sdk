@@ -10,8 +10,9 @@ interface FilterBase<T extends Record<string, unknown>> {
   errorMessage?: string;
 }
 
-export interface DateFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface DateFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.DATE;
   startQueryVariable?: string;
   endQueryVariable?: string;
@@ -22,8 +23,9 @@ export interface EnumFilterValue {
   value: string | string[];
 }
 
-export interface EnumFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface EnumFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.ENUM;
   enumValues: EnumFilterValue[];
   queryVariable: string;
@@ -33,8 +35,9 @@ export interface EnumFilter<T extends Record<string, unknown>>
   isMulti?: boolean;
 }
 
-export interface StringFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface StringFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.STRING;
   queryVariable: string;
   /**
@@ -43,8 +46,9 @@ export interface StringFilter<T extends Record<string, unknown>>
   isMulti?: boolean;
 }
 
-export interface IdFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface IdFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.ID;
   allowedEntities?: string[];
   queryVariable: string;
@@ -55,21 +59,24 @@ export interface IdFilter<T extends Record<string, unknown>>
   isMulti?: boolean;
 }
 
-export interface BooleanFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface BooleanFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.BOOLEAN;
   queryVariable: string;
 }
 
-export interface CurrencyFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface CurrencyFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.CURRENCY;
   minQueryVariable?: string;
   maxQueryVariable?: string;
 }
 
-export interface NumberFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface NumberFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.NUMBER;
   queryVariable: string;
   valueType: "integer" | "float" | "decimal";
@@ -91,8 +98,8 @@ export function isValidNumberFilterValue(
     filter.valueType === "integer"
       ? /^-?\d+$/
       : filter.valueType === "float"
-      ? /^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/
-      : /^-?(?:\d+\.?\d*|\.\d+)$/;
+        ? /^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/
+        : /^-?(?:\d+\.?\d*|\.\d+)$/;
   if (!pattern.test(trimmed)) return false;
 
   const numericValue = Number(trimmed);
@@ -110,8 +117,9 @@ export interface InputObjectFilterField {
   isMulti?: boolean;
 }
 
-export interface InputObjectFilter<T extends Record<string, unknown>>
-  extends FilterBase<T> {
+export interface InputObjectFilter<
+  T extends Record<string, unknown>,
+> extends FilterBase<T> {
   type: FilterType.INPUT_OBJECT;
   queryVariable: string;
   fields: InputObjectFilterField[];

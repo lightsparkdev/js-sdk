@@ -28,8 +28,10 @@ function useRadioGroupContext() {
   return context;
 }
 
-export interface RadioGroupProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "defaultValue"> {
+export interface RadioGroupProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "defaultValue"
+> {
   value?: unknown;
   defaultValue?: unknown;
   onValueChange?: (value: unknown) => void;

@@ -178,8 +178,7 @@ export const Action = React.forwardRef<HTMLButtonElement, ActionProps>(
  * ActionIcon (Icon-only button for actions)
  * -----------------------------------------------------------------------------------------------*/
 
-export interface ActionIconProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface ActionIconProps extends React.ComponentPropsWithoutRef<"button"> {
   /** Whether the action is currently active */
   active?: boolean;
 }
@@ -390,8 +389,7 @@ export const Group = React.forwardRef<HTMLDivElement, GroupProps>(
  * GroupLabel
  * -----------------------------------------------------------------------------------------------*/
 
-export interface GroupLabelProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface GroupLabelProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const GroupLabel = React.forwardRef<HTMLDivElement, GroupLabelProps>(
   function GroupLabel(props, forwardedRef) {

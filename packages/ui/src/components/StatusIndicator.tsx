@@ -2,11 +2,7 @@ import styled from "@emotion/styled";
 import { pxToRems } from "../styles/utils.js";
 
 export type StatusIndicatorColors =
-  | "success"
-  | "warning"
-  | "danger"
-  | "text"
-  | "c4Neutral";
+  "success" | "warning" | "danger" | "text" | "c4Neutral";
 export type StatusIndicatorProps = {
   color?: StatusIndicatorColors;
   text: string;

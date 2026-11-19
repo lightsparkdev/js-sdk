@@ -131,8 +131,10 @@ export const Close = React.forwardRef<HTMLButtonElement, CloseProps>(
   },
 );
 
-export interface CloseButtonProps
-  extends Omit<BaseDialog.Close.Props, "children"> {}
+export interface CloseButtonProps extends Omit<
+  BaseDialog.Close.Props,
+  "children"
+> {}
 export const CloseButton = React.forwardRef<
   HTMLButtonElement,
   CloseButtonProps

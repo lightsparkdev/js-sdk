@@ -16,8 +16,7 @@ interface CreateNodeWalletAddressOutput {
    * multisig address.
    **/
   multisigWalletAddressValidationParameters?:
-    | MultiSigAddressValidationParameters
-    | undefined;
+    MultiSigAddressValidationParameters | undefined;
 }
 
 export const CreateNodeWalletAddressOutputFromJson = (

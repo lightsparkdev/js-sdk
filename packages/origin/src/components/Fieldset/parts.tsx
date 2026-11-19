@@ -83,8 +83,7 @@ export const FieldsetLegend = React.forwardRef<
   );
 });
 
-export interface FieldsetErrorProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface FieldsetErrorProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 export const FieldsetError = React.forwardRef<
   HTMLDivElement,

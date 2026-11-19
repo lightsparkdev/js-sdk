@@ -65,8 +65,7 @@ type CardFormProps = {
   titleSize?: TokenSizeKey;
   titleMarginLeft?: number | undefined;
   titleRightIcon?:
-    | ComponentProps<typeof TextIconAligner>["rightIcon"]
-    | undefined;
+    ComponentProps<typeof TextIconAligner>["rightIcon"] | undefined;
   afterTitleMargin?: 24 | 40 | undefined;
   description?: ToReactNodesArgs | undefined;
   full?: boolean;
@@ -585,26 +584,32 @@ const formInset = ({
     width: ${wide ? 700 : 408}px;
   `)}
 
-  ${graphicHeader || smDontAdjustWidth
-    ? `width: 100%;`
-    : standardContentInset.smCSS}
+  ${
+    graphicHeader || smDontAdjustWidth
+      ? `width: 100%;`
+      : standardContentInset.smCSS
+  }
 
   & ${CardFormFullWidth}, & ${CardFormFullTopContent} {
-    ${smDontAdjustWidth
-      ? ""
-      : bp.sm(`
+    ${
+      smDontAdjustWidth
+        ? ""
+        : bp.sm(`
       padding-right: ${standardContentInset.smPx}px;
       padding-left: ${standardContentInset.smPx}px;
       margin-left: -${standardContentInset.smPx}px;
-    `)}
+    `)
+    }
 
-    ${smDontAdjustWidth
-      ? ""
-      : bp.minSm(`
+    ${
+      smDontAdjustWidth
+        ? ""
+        : bp.minSm(`
       padding-right: ${paddingX}px;
       padding-left: ${paddingX}px;
       margin-left: -${paddingX}px;
-    `)}
+    `)
+    }
   }
 
   & ${CardFormFullTopContent} {
@@ -657,28 +662,32 @@ const StyledCardFormStyle = ({
   smDontAdjustWidth = false,
 }: StyledCardFormStyleProps & { theme: Theme }) => {
   return css`
-    ${graphicHeader
-      ? formInset({
-          wide,
-          paddingX,
-          paddingTop,
-          paddingBottom,
-          graphicHeader,
-          smDontAdjustWidth,
-        })
-      : formInset({
-          wide,
-          paddingX,
-          paddingTop,
-          paddingBottom,
-          smDontAdjustWidth,
-        })}
+    ${
+      graphicHeader
+        ? formInset({
+            wide,
+            paddingX,
+            paddingTop,
+            paddingBottom,
+            graphicHeader,
+            smDontAdjustWidth,
+          })
+        : formInset({
+            wide,
+            paddingX,
+            paddingTop,
+            paddingBottom,
+            smDontAdjustWidth,
+          })
+    }
 
-    ${shadow === "soft"
-      ? standardCardShadow
-      : shadow === "hard"
-      ? standardCardShadowHard
-      : ""}
+    ${
+      shadow === "soft"
+        ? standardCardShadow
+        : shadow === "hard"
+          ? standardCardShadowHard
+          : ""
+    }
 
     position: relative;
     height: 100%;
@@ -713,11 +722,13 @@ const StyledCardFormStyle = ({
       text-align: ${textAlign};
     }
 
-    ${forceMarginAfterSubtitle
-      ? `${CardFormSubtitle.toString()} + * {
+    ${
+      forceMarginAfterSubtitle
+        ? `${CardFormSubtitle.toString()} + * {
       margin-top: 40px !important;
     }`
-      : ""}
+        : ""
+    }
 
     ${CardFormButtonRow}, ${StyledButtonRowButton} {
       ${ButtonSelector()} {
@@ -762,9 +773,11 @@ const StyledCardFormStyle = ({
       }
 
       & > ${ButtonSelector()}, & > ${select(CardFormNearButtonColumn)} {
-        ${formButtonTopMargin !== undefined
-          ? `margin-top: ${formButtonTopMargin}px;`
-          : formButtonTopMarginStyle}
+        ${
+          formButtonTopMargin !== undefined
+            ? `margin-top: ${formButtonTopMargin}px;`
+            : formButtonTopMarginStyle
+        }
       }
     }
   `;

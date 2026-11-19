@@ -334,8 +334,8 @@ export default function useFields<
               typeof value === "string"
                 ? value
                 : Array.isArray(value) && typeof value[0] === "string"
-                ? value[0]
-                : "";
+                  ? value[0]
+                  : "";
             return {
               ...acc,
               [key]: formatValue(key, val),

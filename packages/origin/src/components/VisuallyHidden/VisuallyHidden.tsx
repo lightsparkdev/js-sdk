@@ -2,8 +2,10 @@
 
 import * as React from "react";
 
-export interface VisuallyHiddenProps
-  extends Omit<React.ComponentPropsWithoutRef<"span">, "style"> {
+export interface VisuallyHiddenProps extends Omit<
+  React.ComponentPropsWithoutRef<"span">,
+  "style"
+> {
   /**
    * The element type to render.
    * @default 'span'

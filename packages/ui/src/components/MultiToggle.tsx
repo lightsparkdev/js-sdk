@@ -4,8 +4,7 @@ import { getColor, type ThemeOrColorKey } from "../styles/themes.js";
 import { Icon } from "./Icon/Icon.js";
 
 type MultiToggleOption<T extends string> =
-  | { key: T; text: string }
-  | ({ key: T } & ComponentProps<typeof Icon>);
+  { key: T; text: string } | ({ key: T } & ComponentProps<typeof Icon>);
 
 type MultiToggleProps<T extends string> = {
   options: MultiToggleOption<T>[];

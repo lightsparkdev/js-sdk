@@ -32,8 +32,7 @@ export interface PieChartProps extends React.ComponentPropsWithoutRef<"div"> {
    * or a render function to display custom content in the donut center.
    */
   tooltip?:
-    | boolean
-    | ((segment: PieSegment, percentage: number) => React.ReactNode);
+    boolean | ((segment: PieSegment, percentage: number) => React.ReactNode);
   /** Show a loading skeleton. */
   loading?: boolean;
   /** Content rendered when `data` is empty. */
@@ -140,7 +139,7 @@ export const Pie = React.forwardRef<HTMLDivElement, PieChartProps>(function Pie(
   }, [onActiveChange]);
 
   React.useEffect(() => {
-    const segment = activeIndex !== null ? data[activeIndex] ?? null : null;
+    const segment = activeIndex !== null ? (data[activeIndex] ?? null) : null;
     onActiveChangeRef.current?.(activeIndex, segment);
   }, [activeIndex, data]);
 

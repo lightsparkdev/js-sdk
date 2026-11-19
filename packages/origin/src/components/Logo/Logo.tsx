@@ -8,8 +8,10 @@ type Brand = "lightspark" | "grid";
 type Variant = "logo" | "logomark" | "wordmark";
 type Weight = "regular" | "light";
 
-export interface LogoProps
-  extends Omit<React.SVGProps<SVGSVGElement>, "children" | "color"> {
+export interface LogoProps extends Omit<
+  React.SVGProps<SVGSVGElement>,
+  "children" | "color"
+> {
   /** Brand. Grid only supports logo and logomark variants, no weight options. */
   brand?: Brand;
   /** Logo variant. Note: Grid brand does not support wordmark. */

@@ -44,8 +44,10 @@ type PaginationRootState = {
   lastPage: boolean | undefined;
 };
 
-export interface PaginationRootProps
-  extends Omit<React.ComponentPropsWithoutRef<"nav">, "children"> {
+export interface PaginationRootProps extends Omit<
+  React.ComponentPropsWithoutRef<"nav">,
+  "children"
+> {
   /** Current page number (1-indexed). */
   page: number;
   /**
@@ -99,8 +101,8 @@ const PaginationRoot = React.forwardRef<HTMLElement, PaginationRootProps>(
       totalItems === undefined
         ? undefined
         : totalItems === 0
-        ? 0
-        : (page - 1) * pageSize + 1;
+          ? 0
+          : (page - 1) * pageSize + 1;
     const endItem =
       totalItems === undefined
         ? undefined
@@ -159,8 +161,7 @@ const PaginationRoot = React.forwardRef<HTMLElement, PaginationRootProps>(
   },
 );
 
-export interface PaginationLabelProps
-  extends React.ComponentPropsWithoutRef<"span"> {
+export interface PaginationLabelProps extends React.ComponentPropsWithoutRef<"span"> {
   render?: useRender.RenderProp<Record<string, never>>;
 }
 
@@ -186,8 +187,10 @@ const PaginationLabel = React.forwardRef<HTMLSpanElement, PaginationLabelProps>(
   },
 );
 
-export interface PaginationRangeProps
-  extends Omit<React.ComponentPropsWithoutRef<"span">, "children"> {
+export interface PaginationRangeProps extends Omit<
+  React.ComponentPropsWithoutRef<"span">,
+  "children"
+> {
   /**
    * Custom render function for the range text. Receives the derived range from
    * context. When `Pagination.Root` is used without `totalItems`, all three
@@ -264,8 +267,7 @@ const PaginationRange = React.forwardRef<HTMLSpanElement, PaginationRangeProps>(
   },
 );
 
-export interface PaginationNavigationProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface PaginationNavigationProps extends React.ComponentPropsWithoutRef<"div"> {
   render?: useRender.RenderProp<Record<string, never>>;
 }
 
@@ -291,8 +293,10 @@ const PaginationNavigation = React.forwardRef<
 
 type NavButtonState = { disabled: boolean };
 
-export interface PaginationPreviousProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "children"> {
+export interface PaginationPreviousProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children"
+> {
   render?: useRender.RenderProp<NavButtonState>;
   children?: React.ReactNode;
 }
@@ -338,8 +342,10 @@ const PaginationPrevious = React.forwardRef<
   });
 });
 
-export interface PaginationNextProps
-  extends Omit<React.ComponentPropsWithoutRef<"button">, "children"> {
+export interface PaginationNextProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children"
+> {
   render?: useRender.RenderProp<NavButtonState>;
   children?: React.ReactNode;
 }

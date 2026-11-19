@@ -112,8 +112,4 @@ export interface IsBeforeData extends CustomDateRangeDataBase {
 }
 
 export type CustomDateRangeData =
-  | IsInTheLastData
-  | IsEqualToData
-  | IsBetweenData
-  | IsAfterData
-  | IsBeforeData;
+  IsInTheLastData | IsEqualToData | IsBetweenData | IsAfterData | IsBeforeData;

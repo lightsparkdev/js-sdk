@@ -9,8 +9,10 @@ import { useDatePickerContext } from "./datePickerContext";
 
 const CUSTOM_PRESET_VALUE_PREFIX = "__origin-date-picker-custom__";
 
-export interface DatePickerPresetSelectProps
-  extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {}
+export interface DatePickerPresetSelectProps extends Omit<
+  React.ComponentPropsWithoutRef<"div">,
+  "children"
+> {}
 
 export const PresetSelect = React.forwardRef<
   HTMLDivElement,

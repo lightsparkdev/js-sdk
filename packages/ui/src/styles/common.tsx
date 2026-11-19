@@ -115,20 +115,24 @@ export const delta = ({
   delta?: number;
   invertSuccessColor?: boolean;
 }>) => css`
-  color: ${delta >= 0
-    ? invertSuccessColor
-      ? theme.danger
-      : theme.success
-    : invertSuccessColor
-    ? theme.success
-    : theme.danger};
-  border-color: ${delta >= 0
-    ? invertSuccessColor
-      ? theme.danger
-      : theme.success
-    : invertSuccessColor
-    ? theme.success
-    : theme.danger};
+  color: ${
+    delta >= 0
+      ? invertSuccessColor
+        ? theme.danger
+        : theme.success
+      : invertSuccessColor
+        ? theme.success
+        : theme.danger
+  };
+  border-color: ${
+    delta >= 0
+      ? invertSuccessColor
+        ? theme.danger
+        : theme.success
+      : invertSuccessColor
+        ? theme.success
+        : theme.danger
+  };
 `;
 
 export const subtext = ({ theme }: ThemeProp) => css`

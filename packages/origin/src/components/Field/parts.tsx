@@ -5,8 +5,9 @@ import { Field as BaseField } from "@base-ui/react/field";
 import clsx from "clsx";
 import styles from "./Field.module.scss";
 
-export interface FieldRootProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Root> {}
+export interface FieldRootProps extends React.ComponentPropsWithoutRef<
+  typeof BaseField.Root
+> {}
 
 export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
   function FieldRoot(props, ref) {
@@ -28,8 +29,9 @@ export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
   },
 );
 
-export interface FieldLabelProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Label> {
+export interface FieldLabelProps extends React.ComponentPropsWithoutRef<
+  typeof BaseField.Label
+> {
   /**
    * The size variant of the label.
    * @default 'sm'
@@ -51,8 +53,7 @@ export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
   },
 );
 
-export interface FieldLabelSuffixProps
-  extends React.ComponentPropsWithoutRef<"span"> {}
+export interface FieldLabelSuffixProps extends React.ComponentPropsWithoutRef<"span"> {}
 
 /**
  * Trailing content for Field.Label, such as "(optional)". Carries the
@@ -74,8 +75,9 @@ export const FieldLabelSuffix = React.forwardRef<
   );
 });
 
-export interface FieldDescriptionProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Description> {}
+export interface FieldDescriptionProps extends React.ComponentPropsWithoutRef<
+  typeof BaseField.Description
+> {}
 
 export const FieldDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -92,8 +94,9 @@ export const FieldDescription = React.forwardRef<
   );
 });
 
-export interface FieldErrorProps
-  extends React.ComponentPropsWithoutRef<typeof BaseField.Error> {
+export interface FieldErrorProps extends React.ComponentPropsWithoutRef<
+  typeof BaseField.Error
+> {
   /**
    * Determines when to show the error.
    * Set to `true` for external validity control via Field.Root's `invalid` prop.

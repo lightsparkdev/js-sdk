@@ -38,8 +38,10 @@ export const Group = React.forwardRef<HTMLDivElement, GroupProps>(
   },
 );
 
-export interface LinkProps
-  extends Omit<React.ComponentPropsWithoutRef<"a">, "href"> {
+export interface LinkProps extends Omit<
+  React.ComponentPropsWithoutRef<"a">,
+  "href"
+> {
   active?: boolean;
   render: React.ReactElement;
 }

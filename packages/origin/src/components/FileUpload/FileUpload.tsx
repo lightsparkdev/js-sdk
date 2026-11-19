@@ -14,11 +14,10 @@ import {
 } from "./utils";
 import styles from "./FileUpload.module.scss";
 
-export interface FileUploadProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<"button">,
-    "children" | "defaultValue" | "name" | "onChange" | "type" | "value"
-  > {
+export interface FileUploadProps extends Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "children" | "defaultValue" | "name" | "onChange" | "type" | "value"
+> {
   /** Chosen files. Pair with `onFilesChange` to control the list. */
   files?: File[];
   /** Initial files when uncontrolled. */
@@ -102,7 +101,7 @@ export const FileUpload = React.forwardRef<HTMLButtonElement, FileUploadProps>(
       const result = selectFiles(files, incoming, {
         accept,
         maxSize,
-        maxFiles: multiple ? maxFiles ?? Infinity : 1,
+        maxFiles: multiple ? (maxFiles ?? Infinity) : 1,
         multiple,
       });
       if (result.added > 0) commit(result.files);

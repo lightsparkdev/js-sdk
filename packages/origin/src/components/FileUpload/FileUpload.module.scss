@@ -42,7 +42,8 @@
   &[data-drag-over] {
     border-style: solid;
     border-color: var(--border-secondary);
-    background: linear-gradient(var(--surface-hover), var(--surface-hover)),
+    background:
+      linear-gradient(var(--surface-hover), var(--surface-hover)),
       var(--surface-control);
     color: var(--text-primary);
 

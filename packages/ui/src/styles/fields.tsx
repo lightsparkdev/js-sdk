@@ -45,11 +45,13 @@ export const inputBlockStyle = ({
   position: relative;
   cursor: pointer;
   padding: 52.5px;
-  ${hasError
-    ? `border-style: solid; border-color: ${theme.danger}; border-width: 2px;`
-    : hasValue
-    ? `border-style: solid; border-color: ${theme.info};`
-    : `border-style: dashed;`}
+  ${
+    hasError
+      ? `border-style: solid; border-color: ${theme.danger}; border-width: 2px;`
+      : hasValue
+        ? `border-style: solid; border-color: ${theme.info};`
+        : `border-style: dashed;`
+  }
 `;
 
 export const textInputPlaceholderColor = ({ theme }: ThemeProp) =>
@@ -180,22 +182,26 @@ export const textInputStyle = ({
   z-index: ${z.textInput};
   font-family: ${theme.typography?.cssFontFamilies.main};
   padding: ${textInputPaddingPx - (hasError ? 1 : 0)}px;
-  ${paddingLeftPx
-    ? `padding-left: ${paddingLeftPx - (hasError ? 1 : 0)}px;`
-    : ""}
-  ${paddingRightPx
-    ? `padding-right: ${paddingRightPx - (hasError ? 1 : 0)}px;`
-    : ""}
+  ${
+    paddingLeftPx
+      ? `padding-left: ${paddingLeftPx - (hasError ? 1 : 0)}px;`
+      : ""
+  }
+  ${
+    paddingRightPx
+      ? `padding-right: ${paddingRightPx - (hasError ? 1 : 0)}px;`
+      : ""
+  }
   ${paddingTopPx ? `padding-top: ${paddingTopPx - (hasError ? 1 : 0)}px;` : ""}
-  ${paddingBottomPx
-    ? `padding-bottom: ${paddingBottomPx - (hasError ? 1 : 0)}px;`
-    : ""}
+  ${
+    paddingBottomPx
+      ? `padding-bottom: ${paddingBottomPx - (hasError ? 1 : 0)}px;`
+      : ""
+  }
   border-style: solid;
-  border-width: ${hasError
-    ? "2"
-    : borderWidth !== undefined
-    ? borderWidth
-    : "1"}px;
+  border-width: ${
+    hasError ? "2" : borderWidth !== undefined ? borderWidth : "1"
+  }px;
   border-color: ${hasError ? theme.danger : textInputBorderColor({ theme })};
   line-height: 22px;
   outline: none;
@@ -224,16 +230,18 @@ export const textInputStyle = ({
     })}
   }
 
-  ${active &&
-  textInputActiveStyles({
-    theme,
-    paddingLeftPx,
-    paddingRightPx,
-    paddingTopPx,
-    paddingBottomPx,
-    activeOutline,
-    activeOutlineColor,
-  })}
+  ${
+    active &&
+    textInputActiveStyles({
+      theme,
+      paddingLeftPx,
+      paddingRightPx,
+      paddingTopPx,
+      paddingBottomPx,
+      activeOutline,
+      activeOutlineColor,
+    })
+  }
 
   &::placeholder {
     color: ${textInputPlaceholderColor({ theme })};
@@ -260,8 +268,10 @@ export const aboveFieldError = ({
   background-color: ${theme.bg};
   position: relative;
   z-index: ${z.fieldError + 1};
-  ${hasError &&
-  "box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1);"}
+  ${
+    hasError &&
+    "box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 1px 4px rgba(0, 0, 0, 0.1);"
+  }
 `;
 
 const inputSubtextSeconds = 0.25;

@@ -130,8 +130,8 @@ export function StatusAnnouncements({
           loading
             ? "Loading more results"
             : !hasMore
-            ? "End of results"
-            : "More available"
+              ? "End of results"
+              : "More available"
         }
       </LoadMore.Status>
     </LoadMore.Root>

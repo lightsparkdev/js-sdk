@@ -6,8 +6,7 @@ import styles from "./Skeleton.module.scss";
 
 const GroupContext = React.createContext(false);
 
-export interface SkeletonGroupProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export interface SkeletonGroupProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 const SkeletonGroup = React.forwardRef<HTMLDivElement, SkeletonGroupProps>(
   function SkeletonGroup(props, forwardedRef) {

@@ -83,6 +83,7 @@
     0px,
     calc(var(--drawer-frontmost-height, var(--drawer-height)) - var(--bleed))
   );
+  // prettier-ignore
   --translate-y: calc(
     var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px) - var(
         --stack-peek-offset

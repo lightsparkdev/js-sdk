@@ -20,8 +20,7 @@ import styles from "./Chart.module.scss";
 export type { SankeyData, LayoutNode, LayoutLink } from "./sankeyLayout";
 export type { SankeyNode, SankeyLink } from "./sankeyLayout";
 
-export interface SankeyChartProps
-  extends React.ComponentPropsWithoutRef<"div"> {
+export interface SankeyChartProps extends React.ComponentPropsWithoutRef<"div"> {
   data: SankeyData;
   /**
    * Pre-measurement width in pixels. Used as a fallback before

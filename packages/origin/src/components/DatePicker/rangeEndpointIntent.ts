@@ -38,14 +38,14 @@ export function replaceRangeEndpoint({
       endpoint === "start"
         ? nextDate
         : current.start
-        ? new Date(current.start)
-        : null,
+          ? new Date(current.start)
+          : null,
     end:
       endpoint === "end"
         ? nextDate
         : current.end
-        ? new Date(current.end)
-        : null,
+          ? new Date(current.end)
+          : null,
   };
   const preferredRoleTimes =
     current.start && current.end
