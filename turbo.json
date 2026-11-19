@@ -17,6 +17,7 @@
        hash. Webdev intentionally has both Node 20 and Node 24 CI callers. */
     "TURBO_RUNTIME_NODE_VERSION"
   ],
+  "globalPassThroughEnv": ["NEXT_TELEMETRY_DISABLED"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
