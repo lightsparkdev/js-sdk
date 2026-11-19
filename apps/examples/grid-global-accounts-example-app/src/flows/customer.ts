@@ -41,6 +41,14 @@ export async function createCustomer(
       legalName: fullName,
       taxId: "12-3456789",
       incorporatedOn: "2020-01-01",
+      country: "US",
+    },
+    address: {
+      line1: "100 Test St",
+      city: "Wilmington",
+      state: "DE",
+      postalCode: "19801",
+      country: "US",
     },
   };
   if (email) body.email = email;
