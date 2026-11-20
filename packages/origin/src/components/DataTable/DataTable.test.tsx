@@ -10,7 +10,7 @@
  * the focused DataTable pagination unit tests.
  */
 
-import { test, expect } from "@playwright/experimental-ct-react";
+import { test, expect, type Locator } from "@playwright/experimental-ct-react";
 import AxeBuilder from "@axe-core/playwright";
 import {
   AutoSizing,
@@ -26,6 +26,7 @@ import {
   LoadingTransition,
   LoadingWithRows,
   LowerBound,
+  PaginationInClippedCard,
   RowActivate,
   RowActivateWithControls,
   SinglePage,
@@ -745,6 +746,54 @@ test.describe("DataTable", () => {
     ).toBeVisible();
     await expect(page.getByRole("cell", { name: "Item 25" })).toBeVisible();
   });
+
+  for (const { name, width, wraps } of [
+    { name: "narrow", width: 320, wraps: true },
+    { name: "wide", width: 900, wraps: false },
+  ]) {
+    test(`keeps every pager control inside a ${name} clipped card`, async ({
+      mount,
+      page,
+    }) => {
+      await mount(<PaginationInClippedCard width={width} />);
+
+      const box = async (locator: Locator) => (await locator.boundingBox())!;
+      const card = await box(page.getByTestId("clipped-card"));
+      const [label, select, range, previous, next] = await Promise.all([
+        box(page.getByText("Rows per page", { exact: true })),
+        box(page.getByRole("combobox", { name: "Rows per page" })),
+        box(page.getByText("Viewing 1-10 of 25 results")),
+        box(page.getByRole("button", { name: "Previous page" })),
+        box(page.getByRole("button", { name: "Next page" })),
+      ]);
+      for (const control of [label, select, range, previous, next]) {
+        expect(control.x).toBeGreaterThanOrEqual(card.x);
+        expect(control.x + control.width).toBeLessThanOrEqual(
+          card.x + card.width,
+        );
+      }
+
+      // Narrow: the page-size field on one line, the range and buttons on
+      // the next. Wide: all of them on one line.
+      const lines = wraps
+        ? [
+            [label, select],
+            [range, previous, next],
+          ]
+        : [[label, select, range, previous, next]];
+      for (const line of lines) {
+        const middle = line[0]!.y + line[0]!.height / 2;
+        for (const control of line) {
+          expect(
+            Math.abs(control.y + control.height / 2 - middle),
+          ).toBeLessThan(2);
+        }
+      }
+      if (wraps) {
+        expect(label.y + label.height).toBeLessThanOrEqual(range.y);
+      }
+    });
+  }
 
   test("renders lower-bound counts without clamping later pages", async ({
     mount,

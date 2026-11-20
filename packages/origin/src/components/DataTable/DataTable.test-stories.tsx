@@ -498,6 +498,15 @@ export function WithPagination() {
   );
 }
 
+/** Pagination inside a fixed-width card that clips overflow, like a page shell. */
+export function PaginationInClippedCard({ width }: { width: number }) {
+  return (
+    <div data-testid="clipped-card" style={{ width, overflow: "clip" }}>
+      <WithPagination />
+    </div>
+  );
+}
+
 /**
  * A lower-bound count stays provider-neutral and never clamps later pages.
  */
