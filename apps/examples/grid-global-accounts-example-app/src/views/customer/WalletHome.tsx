@@ -48,7 +48,10 @@ export interface AccountBalance {
 export function WalletHome() {
   const { activeCustomer, platformAuth, reporter, session, signOut } =
     useAppState();
-  const { expiresAt } = (session ?? {}) as { expiresAt?: unknown };
+  const { expiresAt, adminReference } = (session ?? {}) as {
+    expiresAt?: unknown;
+    adminReference?: unknown;
+  };
   const [section, setSection] = useState<Section>("wallet");
   const [accounts, setAccounts] = useState<AccountBalance[]>([]);
   const [rawBalance, setRawBalance] = useState<unknown>(null);
@@ -150,6 +153,9 @@ export function WalletHome() {
               Pay
             </Button>
             <Spacer />
+            {typeof adminReference === "string" && (
+              <Badge variant="gray">Admin · {adminReference}</Badge>
+            )}
             {typeof expiresAt === "string" && (
               <SessionExpiry>
                 Session expires {formatDateTime(expiresAt)}

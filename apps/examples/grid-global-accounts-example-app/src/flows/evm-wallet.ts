@@ -1,18 +1,26 @@
-// EVM_WALLET lifecycle: the account's first credential and sign-in.
+// EVM_WALLET lifecycle: first credential, sign-in, add from a live session, and
+// adding another owner as an administrator.
 //
 // DOM-free operation functions. The wallet only signs Grid's messages with
-// `personal_sign`; the session it opens signs with a client-held P-256 key, as
-// for the other credential types.
+// `personal_sign`; every approval Grid asks of an existing credential is
+// stamped with the active P-256 session key, as for the other credential types.
 
 import { generateP256KeyPair } from "@turnkey/crypto";
 
 import { apiPost, type ApiAuth } from "../api-client";
-import type { EvmSigner } from "../evm-wallet";
+import {
+  adminReferenceFor,
+  OWNER_KEY_MESSAGE,
+  recoverCompressedPublicKey,
+  type EvmSigner,
+} from "../evm-wallet";
 import type { Reporter } from "../lib/reporter";
 import { adoptSessionFor, setCredentialIdFor } from "../session";
 import { assertStampLoginPayload } from "../stamp-login-payload";
+import { turnkeyStamp } from "../turnkey";
 
 const CREDENTIALS_PATH = "/auth/credentials";
+const ADMIN_CREDENTIALS_PATH = "/auth/admin-credentials";
 
 const SETTLE_FIRST_DELAY_MS = 500;
 const SETTLE_MAX_DELAY_MS = 8_000;
@@ -91,6 +99,25 @@ async function postUntilSettled(
   }
 }
 
+// Stamp a 202's payloadToSign with the active session key and send the signed
+// retry. Grid only accepts P-256 stamps in Grid-Wallet-Signature, so the
+// session key signs approvals even for an EVM wallet's account.
+async function approveWithSession(
+  reporter: Reporter,
+  label: string,
+  auth: ApiAuth,
+  path: string,
+  body: Record<string, unknown>,
+  challenge: unknown,
+): Promise<ApiResponse> {
+  const { payloadToSign, requestId } = challengeFrom(label, challenge);
+  const signature = await turnkeyStamp(payloadToSign);
+  return postUntilSettled(reporter, label, auth, path, body, {
+    "Grid-Wallet-Signature": signature,
+    "Request-Id": requestId,
+  });
+}
+
 // ----- Registration: ownership challenge + proof -----
 
 // The first two calls of every EVM_WALLET registration. The proof's response
@@ -139,6 +166,32 @@ export async function createEvmWalletFirstCredential(
   return credId;
 }
 
+/** Add an EVM wallet to an account with a wallet: ownership proof, then session approval. */
+export async function addEvmWallet(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  signer: EvmSigner,
+): Promise<unknown> {
+  const { body, proof } = await proveOwnership(
+    reporter,
+    auth,
+    accountId,
+    signer,
+  );
+  expectStatus("EVM_WALLET ownership proof", proof, 202);
+  const approval = await approveWithSession(
+    reporter,
+    "EVM_WALLET Add (approval)",
+    auth,
+    CREDENTIALS_PATH,
+    body,
+    proof.data,
+  );
+  expectStatus("EVM_WALLET Add (approval)", approval, 201);
+  return approval.data;
+}
+
 // ----- Sign-in -----
 
 /**
@@ -182,4 +235,54 @@ export async function loginEvmWallet(
     sessionKey,
   );
   return verify.data;
+}
+
+// ----- Another owner (administrator) -----
+
+/**
+ * Add `newOwner`'s wallet as an administrator credential. The wallet signs a
+ * fixed message so its public key can be recovered. Both approvals are
+ * stamped with the active session key: the first creates the administrator's
+ * wallet user and the second grants it signing authority.
+ */
+export async function addEvmAdministrator(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  newOwner: EvmSigner,
+): Promise<unknown> {
+  const keySignature = await newOwner.signMessage(OWNER_KEY_MESSAGE);
+  const publicKey = await recoverCompressedPublicKey(
+    OWNER_KEY_MESSAGE,
+    keySignature,
+    newOwner.address,
+  );
+  const body = {
+    type: "EVM_WALLET",
+    accountId,
+    adminReference: adminReferenceFor(newOwner.address),
+    publicKey,
+  };
+  const createUser = await apiPost(auth, ADMIN_CREDENTIALS_PATH, body);
+  logResponse(reporter, "Admin EVM_WALLET (issue)", createUser);
+  expectStatus("Admin EVM_WALLET (issue)", createUser, 202);
+  const grant = await approveWithSession(
+    reporter,
+    "Admin EVM_WALLET (create user)",
+    auth,
+    ADMIN_CREDENTIALS_PATH,
+    body,
+    createUser.data,
+  );
+  expectStatus("Admin EVM_WALLET (create user)", grant, 202);
+  const added = await approveWithSession(
+    reporter,
+    "Admin EVM_WALLET (grant authority)",
+    auth,
+    ADMIN_CREDENTIALS_PATH,
+    body,
+    grant.data,
+  );
+  expectStatus("Admin EVM_WALLET (grant authority)", added, 201);
+  return added.data;
 }

@@ -356,6 +356,9 @@ function CredentialRow({
               <RowId title={credential.id}>{credential.id}</RowId>
             )}
           </RowText>
+          {credential.adminReference && (
+            <Badge variant="gray">Admin · {credential.adminReference}</Badge>
+          )}
         </RowHeadLeft>
         {credential.status && (
           <Badge variant={credential.status === "ACTIVE" ? "green" : "gray"}>

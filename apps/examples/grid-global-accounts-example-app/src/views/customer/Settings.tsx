@@ -12,12 +12,15 @@ import {
   registerRealPasskey,
 } from "../../flows/passkey";
 import {
+  deleteAdministrator,
   deleteCredential,
   deleteSession,
   exportWallet,
   listCredentials,
   listSessions,
 } from "../../flows/manage";
+import { addEvmAdministrator, addEvmWallet } from "../../flows/evm-wallet";
+import { useEvmWallet } from "../../components/EvmWalletProvider";
 import { getSessionId } from "../../session";
 import { useAppState } from "../../state/store";
 import { DismissibleAlert } from "../../components/DismissibleAlert";
@@ -29,11 +32,13 @@ interface Credential {
   type?: string;
   nickname?: string;
   status?: string;
+  adminReference?: string;
 }
 interface Session {
   id: string;
   status?: string;
   expiresAt?: string;
+  adminReference?: string;
 }
 
 /**
@@ -43,7 +48,9 @@ interface Session {
  * with a live session stamp.
  */
 export function Settings({ accounts }: { accounts: AccountBalance[] }) {
-  const { activeCustomer, platformAuth, reporter, signOut } = useAppState();
+  const { activeCustomer, platformAuth, reporter, session, signOut } =
+    useAppState();
+  const evmWallet = useEvmWallet();
   const accountId =
     activeCustomer?.accountId ?? (accounts[0] ? String(accounts[0].id) : "");
 
@@ -207,6 +214,59 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
     );
   }
 
+  // Grid removes an administrator as a whole: every credential and session
+  // carrying their adminReference, so this session too when it is theirs.
+  async function removeAdministrator(adminReference: string) {
+    if (
+      !window.confirm(
+        `Remove administrator ${adminReference}? This revokes all of their credentials and sessions.`,
+      )
+    )
+      return;
+    const ownSession =
+      (session as { adminReference?: unknown } | null)?.adminReference ===
+      adminReference;
+    await run(
+      `del-admin-${adminReference}`,
+      () =>
+        deleteAdministrator(reporter, platformAuth!, accountId, adminReference),
+      "Administrator removed.",
+      ownSession ? signOut : undefined,
+    );
+  }
+
+  async function addEvmWalletCredential() {
+    if (!evmWallet) return;
+    await run(
+      "add-evm-wallet",
+      async () =>
+        addEvmWallet(
+          reporter,
+          platformAuth!,
+          accountId,
+          await evmWallet.connect(),
+        ),
+      "EVM wallet added.",
+    );
+  }
+
+  // The new owner is whoever logs in to Privy next, so Privy logs its current
+  // user out first.
+  async function addEvmOwner() {
+    if (!evmWallet) return;
+    await run(
+      "add-evm-owner",
+      async () =>
+        addEvmAdministrator(
+          reporter,
+          platformAuth!,
+          accountId,
+          await evmWallet.switchUser(),
+        ),
+      "Owner added — they can sign in with their EVM wallet.",
+    );
+  }
+
   // Export runs its own handler (not the generic `run`) so it can capture the
   // recovered mnemonic and reveal it in the card.
   async function exportAndReveal() {
@@ -314,6 +374,26 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
                   Add OAuth with Google
                 </Button>
               )}
+              {evmWallet && (
+                <Button
+                  variant="outline"
+                  size="compact"
+                  loading={busy === "add-evm-wallet"}
+                  onClick={() => void addEvmWalletCredential()}
+                >
+                  Add EVM wallet
+                </Button>
+              )}
+              {evmWallet && (
+                <Button
+                  variant="outline"
+                  size="compact"
+                  loading={busy === "add-evm-owner"}
+                  onClick={() => void addEvmOwner()}
+                >
+                  Add owner (EVM wallet)
+                </Button>
+              )}
             </Actions>
           </HeaderLayout>
         </Card.Header>
@@ -329,22 +409,39 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
                     <RowText>
                       <RowName>{c.nickname || c.type || "Credential"}</RowName>
                       <RowId title={c.id}>{c.id}</RowId>
+                      {c.adminReference && (
+                        <RowSub>Admin · {c.adminReference}</RowSub>
+                      )}
                     </RowText>
                   </RowLeft>
-                  <Button
-                    variant="ghost"
-                    size="compact"
-                    loading={busy === `del-cred-${c.id}`}
-                    onClick={() =>
-                      void run(
-                        `del-cred-${c.id}`,
-                        () => deleteCredential(reporter, platformAuth!, c.id),
-                        "Credential removed.",
-                      )
-                    }
-                  >
-                    Remove
-                  </Button>
+                  {c.adminReference ? (
+                    <Button
+                      variant="ghost"
+                      size="compact"
+                      loading={busy === `del-admin-${c.adminReference}`}
+                      onClick={() =>
+                        c.adminReference &&
+                        void removeAdministrator(c.adminReference)
+                      }
+                    >
+                      Remove administrator
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="compact"
+                      loading={busy === `del-cred-${c.id}`}
+                      onClick={() =>
+                        void run(
+                          `del-cred-${c.id}`,
+                          () => deleteCredential(reporter, platformAuth!, c.id),
+                          "Credential removed.",
+                        )
+                      }
+                    >
+                      Remove
+                    </Button>
+                  )}
                 </Row>
               ))}
             </List>
@@ -377,6 +474,9 @@ export function Settings({ accounts }: { accounts: AccountBalance[] }) {
                       <RowId title={s.id}>{s.id}</RowId>
                       {s.expiresAt && (
                         <RowSub>Expires {formatDateTime(s.expiresAt)}</RowSub>
+                      )}
+                      {s.adminReference && (
+                        <RowSub>Admin · {s.adminReference}</RowSub>
                       )}
                     </RowText>
                   </RowLeft>

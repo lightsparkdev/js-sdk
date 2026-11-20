@@ -15,8 +15,14 @@ import {
   getSessionId,
   resolveSessionKeys,
   setActiveSessionAccount,
+  setSessionKeysFromTek,
 } from "../../session";
-import { createEvmWalletFirstCredential, loginEvmWallet } from "../evm-wallet";
+import {
+  addEvmAdministrator,
+  addEvmWallet,
+  createEvmWalletFirstCredential,
+  loginEvmWallet,
+} from "../evm-wallet";
 
 // Mock only the HTTP boundary; wallets, session keys and stamps are real.
 vi.mock("../../api-client", () => ({
@@ -50,6 +56,11 @@ const PROCESSING = { status: 200, data: { status: "PROCESSING" } };
 function call(i: number) {
   const [, path, body, headers] = mockPost.mock.calls[i];
   return { path, body, headers: headers ?? {} };
+}
+
+function stampPublicKey(stamp: string): string {
+  const json = atob(stamp.replace(/-/g, "+").replace(/_/g, "/"));
+  return (JSON.parse(json) as { publicKey: string }).publicKey;
 }
 
 beforeEach(() => {
@@ -214,5 +225,72 @@ describe("EVM wallet sign-in", () => {
     expect(resolveSessionKeys()?.apiPublicKey).toBe(
       (call(0).body as { clientPublicKey: string }).clientPublicKey,
     );
+  });
+});
+
+describe("adding EVM credentials from a live session", () => {
+  it("approves an EVM wallet add with the session's P-256 key", async () => {
+    const sessionKey = generateP256KeyPair();
+    setSessionKeysFromTek(sessionKey);
+    const wallet = privateKeyToAccount(generatePrivateKey());
+    const { reporter } = createCollectingReporter();
+    mockPost
+      .mockResolvedValueOnce(challenge(202, "link", "Request:own"))
+      .mockResolvedValueOnce(challenge(202, "approve add", "Request:approve"))
+      .mockResolvedValueOnce(PROCESSING)
+      .mockResolvedValueOnce({ status: 201, data: { id: "AuthMethod:evm2" } });
+
+    const added = await addEvmWallet(
+      reporter,
+      auth,
+      ACCOUNT,
+      signerFor(wallet),
+    );
+
+    expect(added).toEqual({ id: "AuthMethod:evm2" });
+    const approval = call(2);
+    expect(approval.body).toEqual(call(0).body);
+    expect(approval.headers["Request-Id"]).toBe("Request:approve");
+    expect(stampPublicKey(approval.headers["Grid-Wallet-Signature"])).toBe(
+      sessionKey.publicKey,
+    );
+    expect(approval.headers["Grid-Wallet-Ownership-Signature"]).toBeUndefined();
+    expect(call(3)).toEqual(approval);
+  });
+
+  it("adds another owner by the public key recovered from their wallet", async () => {
+    const sessionKey = generateP256KeyPair();
+    setSessionKeysFromTek(sessionKey);
+    const newOwner = privateKeyToAccount(generatePrivateKey());
+    const { reporter } = createCollectingReporter();
+    mockPost
+      .mockResolvedValueOnce(challenge(202, "create user", "Request:user"))
+      .mockResolvedValueOnce(challenge(202, "grant", "Request:grant"))
+      .mockResolvedValueOnce({
+        status: 201,
+        data: { id: "AuthMethod:admin", adminReference: "member_x" },
+      });
+
+    await addEvmAdministrator(reporter, auth, ACCOUNT, signerFor(newOwner));
+
+    const { body } = call(0);
+    const { publicKey, adminReference } = body as {
+      publicKey: string;
+      adminReference: string;
+    };
+    expect(call(0).path).toBe("/auth/admin-credentials");
+    expect(publicKey.slice(4)).toBe(newOwner.publicKey.slice(4, 68));
+    expect(publicKey).toMatch(/^0x0[23]/);
+    expect(adminReference).toMatch(/^member_/);
+    for (const [i, requestId] of [
+      [1, "Request:user"],
+      [2, "Request:grant"],
+    ] as const) {
+      expect(call(i).body).toEqual(body);
+      expect(call(i).headers["Request-Id"]).toBe(requestId);
+      expect(stampPublicKey(call(i).headers["Grid-Wallet-Signature"])).toBe(
+        sessionKey.publicKey,
+      );
+    }
   });
 });

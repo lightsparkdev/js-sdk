@@ -1,5 +1,5 @@
-// Manage flows: delete credential / session / export (guided issue → sign →
-// retry), plus list credentials / sessions.
+// Manage flows: delete credential / administrator / session / export (guided
+// issue → sign → retry), plus list credentials / sessions.
 //
 // DOM-free operation functions. The endpoints are identical across credential
 // types, so these take the ids + platform `auth` directly. Each guided action
@@ -79,6 +79,27 @@ export function deleteCredential(
   return runGuidedRetry(
     reporter,
     "Delete Credential",
+    () => apiDelete(auth, path).then((r) => r.data),
+    (headers) => apiDelete(auth, path, headers),
+  );
+}
+
+// ----- Remove an administrator -----
+
+// An administrator's credentials are removed only together, by their
+// `adminReference`: `DELETE /auth/credentials/{id}` refuses them.
+export function deleteAdministrator(
+  reporter: Reporter,
+  auth: ApiAuth,
+  accountId: string,
+  adminReference: string,
+): Promise<GuidedRetryResult> {
+  const path = `/auth/admin-credentials/${encodeURIComponent(
+    adminReference,
+  )}?accountId=${encodeURIComponent(accountId)}`;
+  return runGuidedRetry(
+    reporter,
+    "Remove Administrator",
     () => apiDelete(auth, path).then((r) => r.data),
     (headers) => apiDelete(auth, path, headers),
   );

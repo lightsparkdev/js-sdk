@@ -58,6 +58,8 @@ export interface ExistingCredential {
   type?: string;
   nickname?: string;
   status?: string;
+  /** Set on an administrator's credential; the owner's carry none. */
+  adminReference?: string;
 }
 
 /** The decision for a single method: authenticate with an existing credential
