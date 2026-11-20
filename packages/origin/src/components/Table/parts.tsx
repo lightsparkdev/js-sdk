@@ -272,11 +272,16 @@ const INTERACTIVE_ROW_DESCENDANT_SELECTOR = [
   '[role="treeitem"]',
 ].join(",");
 
-function isInteractiveRowDescendant(
+function isClickFromNestedControl(
   event: React.MouseEvent<HTMLTableRowElement>,
 ): boolean {
   if (!(event.target instanceof Element)) {
     return false;
+  }
+  // React bubbles clicks from portaled content, such as a cell's open menu,
+  // through the row even though the row doesn't contain it in the DOM.
+  if (!event.currentTarget.contains(event.target)) {
+    return true;
   }
   const interactiveTarget = event.target.closest(
     INTERACTIVE_ROW_DESCENDANT_SELECTOR,
@@ -354,7 +359,7 @@ export const Row = React.forwardRef<HTMLTableRowElement, RowProps>(function Row(
     if (!onActivate) return onClick;
     return (event: React.MouseEvent<HTMLTableRowElement>) => {
       onClick?.(event);
-      if (event.defaultPrevented || isInteractiveRowDescendant(event)) {
+      if (event.defaultPrevented || isClickFromNestedControl(event)) {
         return;
       }
       onActivate(toRowActivationEvent(event));

@@ -920,6 +920,7 @@ function CursorTablePaginationView({
 }) {
   return (
     <OriginPager.Root
+      className={styles.pager}
       aria-label={model.ariaLabel}
       hasNext={model.canGoNext}
       hasPrevious={model.canGoPrevious}

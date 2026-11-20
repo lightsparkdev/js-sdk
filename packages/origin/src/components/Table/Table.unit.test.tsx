@@ -1,6 +1,7 @@
 import { describe, it, expect, expectTypeOf, vi } from "vitest";
 import * as React from "react";
 import { render, fireEvent } from "@testing-library/react";
+import { createPortal } from "react-dom";
 import { Table } from "./index";
 
 describe("Table.Root caption", () => {
@@ -206,6 +207,25 @@ describe("Table.Row activation", () => {
     fireEvent.click(container.querySelector("button")!);
 
     expect(onClick).toHaveBeenCalledOnce();
+    expect(onActivate).not.toHaveBeenCalled();
+  });
+
+  it("does not activate for clicks in portaled content such as a cell's menu", () => {
+    const onActivate = vi.fn();
+    const { getByText } = render(
+      <table>
+        <tbody>
+          <Table.Row activationLabel="Activate row" onActivate={onActivate}>
+            <Table.Cell>
+              {createPortal(<div>Menu item</div>, document.body)}
+            </Table.Cell>
+          </Table.Row>
+        </tbody>
+      </table>,
+    );
+
+    fireEvent.click(getByText("Menu item"));
+
     expect(onActivate).not.toHaveBeenCalled();
   });
 
