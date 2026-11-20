@@ -13,7 +13,7 @@ COPY packages/eslint-config/package.json ./packages/eslint-config/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
 COPY .yarn/releases ./.yarn/releases
 
-RUN corepack enable
+RUN npm install -g corepack@0.36.0 && corepack enable
 RUN corepack prepare --activate
 
 # Install the dependencies
