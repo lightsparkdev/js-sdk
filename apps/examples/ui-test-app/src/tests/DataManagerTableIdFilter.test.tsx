@@ -92,15 +92,7 @@ describe("DataManagerTable ID filter", () => {
     return refetch;
   }
 
-  test("applies an ID with an allowed entity prefix", async () => {
-    const refetch = await applyPillFilter(`Node:${UUID}`);
-
-    await waitFor(() => {
-      expect(refetch).toHaveBeenLastCalledWith({ ids: [UUID] });
-    });
-  });
-
-  test("does not duplicate a reapplied ID", async () => {
+  test("applies an allowed entity prefix and keeps the ID unique when reapplied", async () => {
     const user = userEvent.setup({
       pointerEventsCheck: PointerEventsCheckLevel.Never,
     });
