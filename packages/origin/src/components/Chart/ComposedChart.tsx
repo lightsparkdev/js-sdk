@@ -279,8 +279,9 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
         const groups: Point[][] = [];
         let currentGroup: Point[] = [];
         for (let i = 0; i < data.length; i++) {
-          const v = Number(data[i][s.key]);
-          if (isNaN(v)) {
+          const value = data[i][s.key];
+          const v = Number(value);
+          if (value == null || !Number.isFinite(v)) {
             if (!connectNulls && currentGroup.length > 0) {
               groups.push(currentGroup);
               currentGroup = [];
@@ -659,6 +660,21 @@ export const Composed = React.forwardRef<HTMLDivElement, ComposedChartProps>(
                       />
                     );
                   })}
+
+                  {lineGroups.flatMap((groups, i) =>
+                    groups
+                      .filter((group) => group.length === 1)
+                      .map(([point]) => (
+                        <circle
+                          key={`${lineSeries[i].key}-${point.x}`}
+                          cx={point.x}
+                          cy={point.y}
+                          r={3}
+                          fill={lineSeries[i].color}
+                          aria-hidden="true"
+                        />
+                      )),
+                  )}
 
                   {interactive && (
                     <>
