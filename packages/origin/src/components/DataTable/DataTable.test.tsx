@@ -179,6 +179,7 @@ test.describe("DataTable", () => {
     await page.keyboard.press("Enter");
     const disclosurePopup = page.getByLabel("Full cell value");
     await expect(disclosurePopup).toBeVisible();
+    await expect(disclosurePopup).toHaveCSS("opacity", "1");
     const disclosureAxeResults = await new AxeBuilder({ page })
       .options(axeConfig)
       .analyze();
