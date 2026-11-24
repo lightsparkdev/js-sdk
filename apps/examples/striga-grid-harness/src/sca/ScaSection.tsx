@@ -17,12 +17,16 @@ export function ScaSection({
   quoteId,
   scaChallenge,
   onScaChallenge,
+  authorizeResult,
+  onAuthorizeResult,
 }: {
   call: CallFn;
   customerId: string;
   quoteId: string | null;
   scaChallenge: ScaChallengeView | null;
   onScaChallenge: (next: ScaChallengeView | null) => void;
+  authorizeResult: string | null;
+  onAuthorizeResult: (next: string | null) => void;
 }) {
   if (!customerId) {
     return (
@@ -43,6 +47,8 @@ export function ScaSection({
         quoteId={quoteId}
         challenge={scaChallenge}
         onChallenge={onScaChallenge}
+        result={authorizeResult}
+        onResult={onAuthorizeResult}
       />
       <LoginPanel {...props} />
       <SecurityEventPanel {...props} />

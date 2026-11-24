@@ -40,6 +40,7 @@ import { VerificationsPanel } from "./grid/VerificationsPanel";
 import { WalletOwnershipPanel } from "./grid/WalletOwnershipPanel";
 import type { ScaChallengeView } from "./sca/scaApi";
 import { normalizeOtpCode, OtpCodeField } from "./sca/otpCode";
+import { PerTxAuthorizePanel } from "./sca/PerTxAuthorizePanel";
 import { ScaSection } from "./sca/ScaSection";
 import { CopyableId, EnumSelect } from "./sca/ui";
 import { SettingsPanel } from "./SettingsPanel";
@@ -71,6 +72,10 @@ export function App() {
   const [scaChallenge, setScaChallenge] = useState<ScaChallengeView | null>(
     null,
   );
+  const [authorizeQuoteId, setAuthorizeQuoteId] = useState<string | null>(null);
+  const [authorizeResult, setAuthorizeResult] = useState<string | null>(null);
+  const quoteIdRef = useRef(quoteId);
+  quoteIdRef.current = quoteId;
   const [fundAccount, setFundAccount] = useState("");
   const [fundBody, setFundBody] = useState("");
   const [transferBody, setTransferBody] = useState("");
@@ -210,7 +215,12 @@ export function App() {
     );
     const j = r.json;
     const id = j && (j.id || j.quoteId || j.quote_id);
-    if (id) setQuoteId(id);
+    if (id) {
+      quoteIdRef.current = id;
+      setQuoteId(id);
+      setScaChallenge(null);
+      setAuthorizeResult(null);
+    }
   }, [call, quoteBody]);
 
   const executeQuote = useCallback(async () => {
@@ -223,7 +233,13 @@ export function App() {
       gridPath(`/quotes/${encodeURIComponent(quoteId)}/execute`),
       { scaFactor },
     );
-    setScaChallenge(r.json?.scaChallenge ?? null);
+    // The quote may have been replaced while execute was in flight.
+    if (quoteIdRef.current !== quoteId) return;
+    const challenge = r.json?.scaChallenge ?? null;
+    setScaChallenge(challenge);
+    setAuthorizeResult(null);
+    // Keep the inline panel up after the challenge clears so its result shows.
+    if (challenge) setAuthorizeQuoteId(quoteId);
     void refreshState();
   }, [call, quoteId, scaFactor, refreshState]);
 
@@ -547,6 +563,19 @@ export function App() {
                 </Note>
               </Panel>
 
+              {quoteId && authorizeQuoteId === quoteId && (
+                <PerTxAuthorizePanel
+                  call={call}
+                  customerId={activeCustomer}
+                  quoteId={quoteId}
+                  challenge={scaChallenge}
+                  onChallenge={setScaChallenge}
+                  result={authorizeResult}
+                  onResult={setAuthorizeResult}
+                  subtitle="Authorize the quote you just executed. The SCA page shows the same challenge."
+                />
+              )}
+
               <Panel
                 title="Transfers"
                 subtitle="Same-currency transfer out to / in from an external account."
@@ -693,6 +722,8 @@ export function App() {
               quoteId={quoteId}
               scaChallenge={scaChallenge}
               onScaChallenge={setScaChallenge}
+              authorizeResult={authorizeResult}
+              onAuthorizeResult={setAuthorizeResult}
             />
           )}
 

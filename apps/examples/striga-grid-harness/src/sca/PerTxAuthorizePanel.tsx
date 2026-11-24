@@ -8,7 +8,7 @@
 // factor before executing — SMS_OTP is the default and TOTP is rejected here.
 
 import { Button } from "@lightsparkdev/origin";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { normalizeOtpCode, OtpCodeField } from "./otpCode";
 import { signLoginPasskey } from "./passkeyLogin";
@@ -25,15 +25,25 @@ export function PerTxAuthorizePanel({
   quoteId,
   challenge,
   onChallenge,
+  result,
+  onResult,
+  subtitle = "Satisfies the challenge from the Send page's execute. Choose the factor there before executing.",
 }: ScaPanelProps & {
   quoteId: string | null;
   challenge: ScaChallengeView | null;
   onChallenge: (next: ScaChallengeView | null) => void;
+  result?: string | null;
+  onResult?: (next: string | null) => void;
+  subtitle?: string;
 }) {
-  const [status, setStatus] = useState<string | null>(null);
+  const [localStatus, setLocalStatus] = useState<string | null>(null);
+  const status = onResult ? (result ?? null) : localStatus;
+  const setStatus = onResult ?? setLocalStatus;
   const [code, setCode] = useState("123456");
 
   const isPasskey = challenge?.factor === "PASSKEY";
+  const currentQuote = useRef(quoteId);
+  currentQuote.current = quoteId;
 
   const authorize = useCallback(async () => {
     if (!quoteId || !challenge) return;
@@ -63,15 +73,17 @@ export function PerTxAuthorizePanel({
       quotePath(quoteId, "/authorize"),
       body,
     );
+    if (currentQuote.current !== quoteId) return;
     // A two-leg movement re-pauses with the next leg's challenge; replacing it
-    // here keeps the panel pointed at whatever still needs authorizing.
-    onChallenge(r.json?.scaChallenge ?? null);
+    // here keeps the panel pointed at whatever still needs authorizing. A wrong
+    // code leaves the challenge open, so a rejection keeps it for a retry.
+    if (r.ok) onChallenge(r.json?.scaChallenge ?? null);
     setStatus(
       r.ok
         ? `authorized · quote ${r.json?.status ?? "?"}`
         : "rejected — see log",
     );
-  }, [call, quoteId, challenge, code, onChallenge]);
+  }, [call, quoteId, challenge, code, onChallenge, setStatus]);
 
   const resend = useCallback(async () => {
     if (!quoteId) return;
@@ -79,10 +91,7 @@ export function PerTxAuthorizePanel({
   }, [call, quoteId]);
 
   return (
-    <Panel
-      title="Per-transaction authorize"
-      subtitle="Satisfies the challenge from the Send page's execute. Choose the factor there before executing."
-    >
+    <Panel title="Per-transaction authorize" subtitle={subtitle}>
       {!challenge && (
         <Note>
           No pending challenge. Execute a quote on the Send page — pick
