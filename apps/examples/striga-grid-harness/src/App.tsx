@@ -82,6 +82,20 @@ export function App() {
   const [authorizeResult, setAuthorizeResult] = useState<string | null>(null);
   const quoteIdRef = useRef(quoteId);
   quoteIdRef.current = quoteId;
+  // Authorize responses can outlive the quote they were sent for; only the
+  // current quote may update the shared challenge and result.
+  const applyChallenge = useCallback(
+    (next: ScaChallengeView | null, forQuoteId: string) => {
+      if (forQuoteId === quoteIdRef.current) setScaChallenge(next);
+    },
+    [],
+  );
+  const applyAuthorizeResult = useCallback(
+    (next: string | null, forQuoteId: string | null) => {
+      if (forQuoteId === quoteIdRef.current) setAuthorizeResult(next);
+    },
+    [],
+  );
   const [fundAccount, setFundAccount] = useState("");
   const [fundBody, setFundBody] = useState("");
   const [transferBody, setTransferBody] = useState("");
@@ -603,9 +617,9 @@ export function App() {
                   customerId={activeCustomer}
                   quoteId={quoteId}
                   challenge={scaChallenge}
-                  onChallenge={setScaChallenge}
+                  onChallenge={applyChallenge}
                   result={authorizeResult}
-                  onResult={setAuthorizeResult}
+                  onResult={applyAuthorizeResult}
                   subtitle="Authorize the quote you just executed. The SCA page shows the same challenge."
                 />
               )}
@@ -755,9 +769,9 @@ export function App() {
               customerId={activeCustomer}
               quoteId={quoteId}
               scaChallenge={scaChallenge}
-              onScaChallenge={setScaChallenge}
+              onScaChallenge={applyChallenge}
               authorizeResult={authorizeResult}
-              onAuthorizeResult={setAuthorizeResult}
+              onAuthorizeResult={applyAuthorizeResult}
             />
           )}
 

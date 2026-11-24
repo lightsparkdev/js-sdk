@@ -24,9 +24,9 @@ export function ScaSection({
   customerId: string;
   quoteId: string | null;
   scaChallenge: ScaChallengeView | null;
-  onScaChallenge: (next: ScaChallengeView | null) => void;
+  onScaChallenge: (next: ScaChallengeView | null, forQuoteId: string) => void;
   authorizeResult: string | null;
-  onAuthorizeResult: (next: string | null) => void;
+  onAuthorizeResult: (next: string | null, forQuoteId: string | null) => void;
 }) {
   if (!customerId) {
     return (
