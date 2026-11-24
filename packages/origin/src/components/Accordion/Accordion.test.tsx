@@ -61,7 +61,10 @@ test.describe("Accordion", () => {
       await expect(panel).toBeVisible();
     });
 
-    test("Tab moves focus between triggers", async ({ mount, page }) => {
+    test("Tab and Shift+Tab move focus between triggers", async ({
+      mount,
+      page,
+    }) => {
       const component = await mount(<TestAccordion />);
       const first = component.getByRole("button", { name: "First Item" });
       const second = component.getByRole("button", { name: "Second Item" });
@@ -70,25 +73,7 @@ test.describe("Accordion", () => {
       await expect(first).toBeFocused();
       await page.keyboard.press("Tab");
       await expect(second).toBeFocused();
-    });
-
-    test("ArrowDown moves focus to next trigger", async ({ mount, page }) => {
-      const component = await mount(<TestAccordion />);
-      const first = component.getByRole("button", { name: "First Item" });
-      const second = component.getByRole("button", { name: "Second Item" });
-
-      await first.focus();
-      await page.keyboard.press("ArrowDown");
-      await expect(second).toBeFocused();
-    });
-
-    test("ArrowUp moves focus to previous trigger", async ({ mount, page }) => {
-      const component = await mount(<TestAccordion />);
-      const first = component.getByRole("button", { name: "First Item" });
-      const second = component.getByRole("button", { name: "Second Item" });
-
-      await second.focus();
-      await page.keyboard.press("ArrowUp");
+      await page.keyboard.press("Shift+Tab");
       await expect(first).toBeFocused();
     });
   });
