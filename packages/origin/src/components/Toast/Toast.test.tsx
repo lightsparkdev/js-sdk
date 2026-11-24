@@ -396,15 +396,16 @@ test.describe("Toast", () => {
     const toast = page.getByRole("dialog");
     const icon = page.getByTestId("semantic-icon");
     const title = page.getByRole("heading", { name: "Info toast" });
-    const [toastBounds, iconBounds, titleBounds] = await Promise.all([
-      getVerticalBounds(toast),
-      getVerticalBounds(icon),
-      getVerticalBounds(title),
-    ]);
-    const toastCenter = toastBounds.top + toastBounds.height / 2;
-
-    expect(iconBounds.top + iconBounds.height / 2).toBe(toastCenter);
-    expect(titleBounds.top + titleBounds.height / 2).toBe(toastCenter);
+    const parts = toast.or(icon).or(title);
+    await expect(parts).toHaveCount(3);
+    const [toastCenter, ...contentCenters] = await parts.evaluateAll(
+      (elements) =>
+        elements.map((element) => {
+          const { top, height } = element.getBoundingClientRect();
+          return top + height / 2;
+        }),
+    );
+    expect(contentCenters).toEqual([toastCenter, toastCenter]);
   });
 
   test("renders the success semantic icon", async ({ mount, page }) => {
@@ -545,9 +546,13 @@ test.describe("Toast", () => {
     const middle = await addStackToast(page, 2);
     const newest = await addStackToast(page, 3);
     const viewport = page.getByRole("region", { name: "Notifications" });
-    const collapsedWidth = (await getLayoutSize(newest)).width;
+    const collapsed = await getVerticalBounds(newest);
 
-    await newest.hover();
+    // The pill shrinks toward its right edge when the pointer expands the stack.
+    await page.mouse.move(
+      collapsed.right - collapsed.height / 2,
+      collapsed.top + collapsed.height / 2,
+    );
     await expect(viewport).toHaveAttribute("data-expanded", "");
     await expect(oldest).toHaveAttribute("data-expanded", "");
     await expect(oldest).toHaveCSS("pointer-events", "auto");
@@ -570,7 +575,7 @@ test.describe("Toast", () => {
     expect(expandedOldest.height).toBeGreaterThan(36);
     expect(expandedMiddle.height).toBe(36);
     expect(expandedNewest.height).toBe(36);
-    expect(expandedNewest.width).toBeLessThan(collapsedWidth);
+    expect(expandedNewest.width).toBeLessThan(collapsed.width);
     expect(expandedOldest.bottom).toBeLessThanOrEqual(expandedMiddle.top);
     expect(expandedMiddle.bottom).toBeLessThanOrEqual(expandedNewest.top);
   });
