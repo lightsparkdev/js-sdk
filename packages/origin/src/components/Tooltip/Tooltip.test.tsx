@@ -80,16 +80,17 @@ test.describe("Tooltip", () => {
     await expect(popup).toBeHidden({ timeout: 2000 });
   });
 
-  test("respects delay", async ({ mount, page }) => {
+  test("opens after the configured hover delay", async ({ mount, page }) => {
+    await page.clock.install({ time: new Date("2026-01-01T12:00:00Z") });
+    await page.clock.pauseAt(new Date("2026-01-01T12:01:00Z"));
     await mount(<TestTooltipDelay />);
 
-    const trigger = page.getByTestId("trigger");
     const popup = page.getByTestId("popup");
+    await page.getByTestId("trigger").hover();
 
-    await trigger.hover();
-    await expect(popup).not.toBeVisible();
-
-    await page.waitForTimeout(150);
+    await page.clock.runFor(99);
+    await expect(popup).toBeHidden();
+    await page.clock.runFor(1);
     await expect(popup).toBeVisible();
   });
 
