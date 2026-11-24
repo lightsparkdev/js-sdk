@@ -33,8 +33,14 @@ import {
 import { ExternalAccountsPanel } from "./grid/ExternalAccountsPanel";
 import { PlatformAccountsPanel } from "./grid/PlatformAccountsPanel";
 import { RatesAndFeesPanel } from "./grid/RatesAndFeesPanel";
+import { gatherPages } from "./grid/ruleBasedAccounts";
 import { RuleBasedAccountsPanel } from "./grid/RuleBasedAccountsPanel";
 import { ReceiverLookupPanel } from "./grid/ReceiverLookupPanel";
+import {
+  applyQuoteAccounts,
+  pickQuoteAccounts,
+  type QuoteAccounts,
+} from "./grid/quoteAccounts";
 import { TransactionsPanel } from "./grid/TransactionsPanel";
 import { VerificationsPanel } from "./grid/VerificationsPanel";
 import { WalletOwnershipPanel } from "./grid/WalletOwnershipPanel";
@@ -113,6 +119,10 @@ export function App() {
   // latest value without re-subscribing on every change.
   const activeCustomerRef = useRef(activeCustomer);
   activeCustomerRef.current = activeCustomer;
+  const quotePickRef = useRef<QuoteAccounts | null>(null);
+  const quoteBodyRef = useRef(quoteBody);
+  const refreshSeqRef = useRef(0);
+  quoteBodyRef.current = quoteBody;
 
   const addCustomerId = useCallback((id: string) => {
     setCustomerIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -128,33 +138,57 @@ export function App() {
         setStateNote("no active customer");
         return;
       }
-      const r = await call(
-        "GET",
-        gridPath("/customers/internal-accounts?customerId=") +
-          encodeURIComponent(cid),
+      const seq = ++refreshSeqRef.current;
+      const base =
+        gridPath("/customers/internal-accounts?limit=100&customerId=") +
+        encodeURIComponent(cid);
+      const r = await gatherPages((cursor) =>
+        call(
+          "GET",
+          cursor ? `${base}&cursor=${encodeURIComponent(cursor)}` : base,
+        ),
       );
+      if (seq !== refreshSeqRef.current || cid !== activeCustomerRef.current) {
+        return;
+      }
       setAccounts(parseAccounts(r.json));
       setStateNote(`updated ${nowTs()} · customer ${cid}`);
+      const pick = r.ok ? pickQuoteAccounts(r.json) : null;
+      const next =
+        pick &&
+        applyQuoteAccounts(quoteBodyRef.current, pick, quotePickRef.current);
+      if (pick && next) {
+        quotePickRef.current = pick;
+        quoteBodyRef.current = next;
+        setQuoteBody(next);
+        setQuoteSource(pick.source);
+      }
     },
     [call],
   );
 
-  const applyPrefill = useCallback(
-    (next: HarnessCreds) =>
-      prefill(next, {
-        setCreateBody,
-        setQuoteSource,
-        setQuoteBody,
-        setFundAccount,
-        setFundBody,
-        setTransferBody,
-        setTransferInBody,
-        setCustomerUpdateBody,
-        setSandboxSendBody,
-        setUmaReceiveBody,
-      }),
-    [],
-  );
+  const applyPrefill = useCallback((next: HarnessCreds) => {
+    // Seeded ids are a starting guess; the next balance refresh may flip them.
+    quotePickRef.current = {
+      source: next.accounts?.EUR ?? "",
+      destination: next.accounts?.BITCOIN ?? "",
+    };
+    prefill(next, {
+      setCreateBody,
+      setQuoteSource,
+      setQuoteBody: (body) => {
+        quoteBodyRef.current = body;
+        setQuoteBody(body);
+      },
+      setFundAccount,
+      setFundBody,
+      setTransferBody,
+      setTransferInBody,
+      setCustomerUpdateBody,
+      setSandboxSendBody,
+      setUmaReceiveBody,
+    });
+  }, []);
 
   /* ---- Bootstrap ---- */
   useEffect(() => {
@@ -509,7 +543,7 @@ export function App() {
             <>
               <Panel
                 title="Quotes + execute"
-                subtitle="Create a quote, then execute it."
+                subtitle="Create a quote, then execute it. Refreshing balances fills the body with the active internal accounts: larger balance sends."
               >
                 <Field.Root>
                   <Field.Label>Source account id</Field.Label>
