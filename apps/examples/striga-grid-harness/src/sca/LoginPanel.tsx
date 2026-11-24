@@ -1,5 +1,5 @@
 // SCA session login (180-day exemption). Start issues a challenge for the chosen
-// factor; complete submits the proof. SMS_OTP/TOTP use the sandbox code; the
+// factor; complete submits the proof. SMS_OTP/TOTP submit the typed code; the
 // SMS_OTP challengeId from start is echoed back on complete automatically.
 // PASSKEY drives a real WebAuthn ceremony: start returns request options + the
 // allowed origin, complete submits the signed assertion.
@@ -10,6 +10,7 @@
 import { Button, Field, Input } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
+import { normalizeOtpCode, OtpCodeField } from "./otpCode";
 import { type LoginPasskeyOptions, signLoginPasskey } from "./passkeyLogin";
 import {
   DEFAULT_END_USER_IP,
@@ -25,7 +26,8 @@ interface LoginStartResponse {
   allowedOrigins?: string[];
 }
 
-export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
+export function LoginPanel({ call, customerId }: ScaPanelProps) {
+  const [code, setCode] = useState("123456");
   const [factor, setFactor] = useState<string>("SMS_OTP");
   const [challengeId, setChallengeId] = useState<string | null>(null);
   const [passkeyOptions, setPasskeyOptions] =
@@ -66,7 +68,7 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
       }
       body.origin = allowedOrigins?.[0] ?? location.origin;
     } else {
-      body.code = code;
+      body.code = normalizeOtpCode(code);
       if (challengeId) body.challengeId = challengeId;
     }
     const r = await call<{ status?: string }>(
@@ -106,12 +108,17 @@ export function LoginPanel({ call, customerId, code }: ScaPanelProps) {
           onChange={(e) => setEndUserIp(e.target.value)}
         />
       </Field.Root>
+      {factor !== "PASSKEY" && (
+        <OtpCodeField
+          label={factor === "TOTP" ? "Authenticator code" : "SMS code"}
+          value={code}
+          onChange={setCode}
+        />
+      )}
       <ButtonRow>
         <Button onClick={() => void start()}>Login start</Button>
         <Button variant="secondary" onClick={() => void complete()}>
-          {factor === "PASSKEY"
-            ? "Login complete (passkey)"
-            : `Login complete (${code})`}
+          {factor === "PASSKEY" ? "Login complete (passkey)" : "Login complete"}
         </Button>
       </ButtonRow>
       {challengeId && (

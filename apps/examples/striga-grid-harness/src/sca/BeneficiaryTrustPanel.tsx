@@ -5,10 +5,12 @@
 import { Button, Field, Input } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
+import { normalizeOtpCode, OtpCodeField } from "./otpCode";
 import { externalAccountPath, type ScaPanelProps } from "./scaApi";
 import { ButtonRow, CopyableId, Mono, Note, Panel } from "./ui";
 
-export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
+export function BeneficiaryTrustPanel({ call }: ScaPanelProps) {
+  const [code, setCode] = useState("123456");
   const [externalAccountId, setExternalAccountId] = useState("");
   const [challengeId, setChallengeId] = useState<string | null>(null);
   const [trusted, setTrusted] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
     async (verb: "trust" | "untrust") => {
       const id = externalAccountId.trim();
       if (!id) return;
-      const body: Record<string, unknown> = { code };
+      const body: Record<string, unknown> = { code: normalizeOtpCode(code) };
       if (challengeId) body.challengeId = challengeId;
       const r = await call<{ trusted?: boolean }>(
         "POST",
@@ -55,10 +57,11 @@ export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
           onChange={(e) => setExternalAccountId(e.target.value)}
         />
       </Field.Root>
+      <OtpCodeField value={code} onChange={setCode} />
       <ButtonRow>
         <Button onClick={() => void startCall("trust")}>Trust start</Button>
         <Button variant="secondary" onClick={() => void confirmCall("trust")}>
-          Trust confirm ({code})
+          Trust confirm
         </Button>
       </ButtonRow>
       <ButtonRow>
@@ -66,7 +69,7 @@ export function BeneficiaryTrustPanel({ call, code }: ScaPanelProps) {
           Untrust start
         </Button>
         <Button variant="outline" onClick={() => void confirmCall("untrust")}>
-          Untrust confirm ({code})
+          Untrust confirm
         </Button>
       </ButtonRow>
       {challengeId && (

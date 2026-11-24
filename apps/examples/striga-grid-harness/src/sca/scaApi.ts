@@ -18,7 +18,6 @@ export type CallFn = <T>(
 export interface ScaPanelProps {
   call: CallFn;
   customerId: string;
-  code: string;
 }
 
 // <prefix>/sca<suffix>?customerId=<id>. `suffix` starts with "/".

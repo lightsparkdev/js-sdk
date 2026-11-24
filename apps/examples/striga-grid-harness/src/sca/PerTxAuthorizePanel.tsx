@@ -10,6 +10,7 @@
 import { Button } from "@lightsparkdev/origin";
 import { useCallback, useState } from "react";
 
+import { normalizeOtpCode, OtpCodeField } from "./otpCode";
 import { signLoginPasskey } from "./passkeyLogin";
 import { quotePath, type ScaChallengeView, type ScaPanelProps } from "./scaApi";
 import { ButtonRow, CopyableId, Mono, Note, Panel } from "./ui";
@@ -21,7 +22,6 @@ interface AuthorizeResponse {
 
 export function PerTxAuthorizePanel({
   call,
-  code,
   quoteId,
   challenge,
   onChallenge,
@@ -31,6 +31,7 @@ export function PerTxAuthorizePanel({
   onChallenge: (next: ScaChallengeView | null) => void;
 }) {
   const [status, setStatus] = useState<string | null>(null);
+  const [code, setCode] = useState("123456");
 
   const isPasskey = challenge?.factor === "PASSKEY";
 
@@ -55,7 +56,7 @@ export function PerTxAuthorizePanel({
       // wherever the ceremony ran; it must match the options' relying party.
       body.origin = location.origin;
     } else {
-      body.code = code;
+      body.code = normalizeOtpCode(code);
     }
     const r = await call<AuthorizeResponse>(
       "POST",
@@ -105,9 +106,12 @@ export function PerTxAuthorizePanel({
           )}
         </Note>
       )}
+      {challenge && !isPasskey && (
+        <OtpCodeField value={code} onChange={setCode} />
+      )}
       <ButtonRow>
         <Button disabled={!challenge} onClick={() => void authorize()}>
-          {isPasskey ? "Authorize (passkey)" : `Authorize (${code})`}
+          {isPasskey ? "Authorize (passkey)" : "Authorize"}
         </Button>
         <Button
           variant="secondary"

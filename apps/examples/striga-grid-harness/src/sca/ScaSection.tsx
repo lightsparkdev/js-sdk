@@ -1,11 +1,7 @@
 // SCA (Striga EU) — the six SCA surfaces, grouped under one header in the left
-// column. All target the active customer. The shared OTP code (sandbox default
-// 123456) is owned here and threaded into every panel's confirm step.
+// column. All target the active customer.
 
 import styled from "@emotion/styled";
-import { Field, Input } from "@lightsparkdev/origin";
-import { useState } from "react";
-
 import { BeneficiaryTrustPanel } from "./BeneficiaryTrustPanel";
 import { FactorsPanel } from "./FactorsPanel";
 import { LoginPanel } from "./LoginPanel";
@@ -28,8 +24,6 @@ export function ScaSection({
   scaChallenge: ScaChallengeView | null;
   onScaChallenge: (next: ScaChallengeView | null) => void;
 }) {
-  const [code, setCode] = useState("123456");
-
   if (!customerId) {
     return (
       <Group>
@@ -39,16 +33,10 @@ export function ScaSection({
     );
   }
 
-  const props = { call, customerId, code };
+  const props = { call, customerId };
   return (
     <Group>
       <Header>SCA (Striga EU)</Header>
-      <Field.Root>
-        <Field.Label>
-          Sandbox OTP code (shared by all confirm steps)
-        </Field.Label>
-        <Input value={code} onChange={(e) => setCode(e.target.value)} />
-      </Field.Root>
       <FactorsPanel {...props} />
       <PerTxAuthorizePanel
         {...props}

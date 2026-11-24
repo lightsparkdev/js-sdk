@@ -38,6 +38,7 @@ import { ReceiverLookupPanel } from "./grid/ReceiverLookupPanel";
 import { TransactionsPanel } from "./grid/TransactionsPanel";
 import { VerificationsPanel } from "./grid/VerificationsPanel";
 import type { ScaChallengeView } from "./sca/scaApi";
+import { normalizeOtpCode, OtpCodeField } from "./sca/otpCode";
 import { ScaSection } from "./sca/ScaSection";
 import { CopyableId, EnumSelect } from "./sca/ui";
 import { SettingsPanel } from "./SettingsPanel";
@@ -294,12 +295,12 @@ export function App() {
       verifyEmail: () => void call("POST", custPath("/verify-email")),
       confirmEmail: () =>
         void call("POST", custPath("/verify-email/confirm"), {
-          code: confirmCode.trim(),
+          code: normalizeOtpCode(confirmCode),
         }),
       verifyPhone: () => void call("POST", custPath("/verify-phone")),
       confirmPhone: () =>
         void call("POST", custPath("/verify-phone/confirm"), {
-          code: confirmCode.trim(),
+          code: normalizeOtpCode(confirmCode),
         }),
     }),
     [call, custPath, confirmCode],
@@ -473,15 +474,11 @@ export function App() {
                     verify-phone/confirm
                   </Button>
                 </ButtonRow>
-                <Field.Root>
-                  <Field.Label>
-                    Confirm code (used by both confirm calls)
-                  </Field.Label>
-                  <Input
-                    value={confirmCode}
-                    onChange={(e) => setConfirmCode(e.target.value)}
-                  />
-                </Field.Root>
+                <OtpCodeField
+                  label="Confirm code (used by both confirm calls)"
+                  value={confirmCode}
+                  onChange={setConfirmCode}
+                />
               </Panel>
 
               <VerificationsPanel call={call} customerId={activeCustomer} />

@@ -2,6 +2,7 @@ import { Button, Field } from "@lightsparkdev/origin";
 import { useState } from "react";
 
 import { gridPath } from "../api";
+import { normalizeOtpCode, OtpCodeField } from "../sca/otpCode";
 import { ButtonRow, CopyableId, EnumSelect, Note, Panel } from "../sca/ui";
 import { TextField, type CallFn } from "./common";
 import {
@@ -108,7 +109,7 @@ export function RuleBasedAccountsPanel({
 
   const authorize = async () => {
     const r = await call("POST", accountPath("/authorize"), {
-      code: code.trim(),
+      code: normalizeOtpCode(code),
     });
     report(r);
     if (r.ok) showAccount(r.json);
@@ -241,7 +242,7 @@ export function RuleBasedAccountsPanel({
           Inspect
         </Button>
       </ButtonRow>
-      <TextField label="SCA code" value={code} onChange={setCode} />
+      <OtpCodeField value={code} onChange={setCode} />
       <ButtonRow>
         <Button disabled={!hasAccount} onClick={() => void authorize()}>
           Authorize

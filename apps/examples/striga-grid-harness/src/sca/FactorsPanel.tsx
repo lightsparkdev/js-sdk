@@ -13,6 +13,7 @@ import {
   createEnrollmentPasskey,
   type EnrollPasskeyOptions,
 } from "./passkeyEnroll";
+import { normalizeOtpCode } from "./otpCode";
 import { scaPath, type ScaPanelProps } from "./scaApi";
 import { computeTotp } from "./totp";
 import { ButtonRow, CopyableId, Mono, Note, Panel, Pre } from "./ui";
@@ -28,7 +29,8 @@ interface FactorView {
   name?: string;
 }
 
-export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
+export function FactorsPanel({ call, customerId }: ScaPanelProps) {
+  const [totpCode, setTotpCode] = useState("");
   const [factors, setFactors] = useState<FactorView[] | null>(null);
   const [totpSecret, setTotpSecret] = useState("");
   const [totpB32, setTotpB32] = useState("");
@@ -61,12 +63,14 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
     setTotpB32(r.json?.secretBase32Encoded ?? "");
     setTotpUri(r.json?.totpUri ?? "");
     setRecoveryCodes(null);
+    setTotpCode("");
   }, [call, customerId]);
 
-  // TOTP confirm needs the real time-based code (the sandbox rejects 123456),
-  // so derive it from the enroll-start secret; the shared code is the fallback.
+  // TOTP confirm needs the real time-based code (the sandbox rejects 123456).
+  // A blank field derives it from the enroll-start secret.
   const confirmTotp = useCallback(async () => {
-    const otp = totpB32 ? await computeTotp(totpB32) : code;
+    const typed = normalizeOtpCode(totpCode);
+    const otp = typed || (totpB32 ? await computeTotp(totpB32) : "");
     const r = await call<{ recoveryCodes?: string[] }>(
       "POST",
       scaPath("/factors/confirm", customerId),
@@ -74,7 +78,7 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
     );
     setRecoveryCodes(r.json?.recoveryCodes ?? null);
     void listFactors();
-  }, [call, customerId, totpSecret, totpB32, code, listFactors]);
+  }, [call, customerId, totpSecret, totpB32, totpCode, listFactors]);
 
   const enrollPasskey = useCallback(async () => {
     const r = await call<PasskeyStartResponse>(
@@ -133,6 +137,17 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
       </ButtonRow>
       <FactorTable factors={factors} />
 
+      <Field.Root>
+        <Field.Label>
+          Authenticator code (blank = computed from the enroll secret)
+        </Field.Label>
+        <Input
+          value={totpCode}
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          onChange={(e) => setTotpCode(e.target.value)}
+        />
+      </Field.Root>
       <ButtonRow>
         <Button onClick={() => void enrollTotp()}>Enroll TOTP</Button>
         <Button
@@ -140,7 +155,7 @@ export function FactorsPanel({ call, customerId, code }: ScaPanelProps) {
           disabled={!totpSecret}
           onClick={() => void confirmTotp()}
         >
-          Confirm TOTP (auto)
+          {totpCode.trim() ? "Confirm TOTP" : "Confirm TOTP (auto)"}
         </Button>
       </ButtonRow>
       {totpUri && (
