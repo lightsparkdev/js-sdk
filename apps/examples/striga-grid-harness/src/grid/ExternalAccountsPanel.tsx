@@ -37,6 +37,7 @@ function cryptoTemplate(customerId: string): string {
     {
       customerId,
       currency: "USDC",
+      ownershipType: "FIRST_PARTY",
       accountInfo: {
         accountType: "SOLANA_WALLET",
         address: "<solana-address>",
@@ -50,9 +51,11 @@ function cryptoTemplate(customerId: string): string {
 export function ExternalAccountsPanel({
   call,
   customerId,
+  onAccountId,
 }: {
   call: CallFn;
   customerId: string;
+  onAccountId?: (customerId: string, id: string) => void;
 }) {
   const [body, setBody] = useState(() => eurTemplate(customerId));
   const [externalAccountId, setExternalAccountId] = useState("");
@@ -64,13 +67,19 @@ export function ExternalAccountsPanel({
   }, [customerId]);
 
   const create = async () => {
+    const payload = parseJsonField(body);
+    const sentFor = (payload as { customerId?: unknown } | null)?.customerId;
+    const forCustomer = typeof sentFor === "string" ? sentFor : customerId;
     const r = await call(
       "POST",
       gridPath("/customers/external-accounts"),
-      parseJsonField(body),
+      payload,
     );
     const id = pickId(r.json);
-    if (id) setExternalAccountId(id);
+    if (id) {
+      setExternalAccountId(id);
+      onAccountId?.(forCustomer, id);
+    }
   };
 
   const list = () =>

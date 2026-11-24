@@ -37,6 +37,7 @@ import { RuleBasedAccountsPanel } from "./grid/RuleBasedAccountsPanel";
 import { ReceiverLookupPanel } from "./grid/ReceiverLookupPanel";
 import { TransactionsPanel } from "./grid/TransactionsPanel";
 import { VerificationsPanel } from "./grid/VerificationsPanel";
+import { WalletOwnershipPanel } from "./grid/WalletOwnershipPanel";
 import type { ScaChallengeView } from "./sca/scaApi";
 import { normalizeOtpCode, OtpCodeField } from "./sca/otpCode";
 import { ScaSection } from "./sca/ScaSection";
@@ -79,6 +80,9 @@ export function App() {
   const [umaReceiveBody, setUmaReceiveBody] = useState("");
   const [confirmCode, setConfirmCode] = useState("123456");
   const [page, setPage] = useState<PageId>("connection");
+  const [walletAccountIds, setWalletAccountIds] = useState<
+    Record<string, string>
+  >({});
 
   const [accounts, setAccounts] = useState<AccountRow[] | null>(null);
   const [stateNote, setStateNote] = useState("");
@@ -650,7 +654,18 @@ export function App() {
 
           {page === "accounts" && (
             <>
-              <ExternalAccountsPanel call={call} customerId={activeCustomer} />
+              <ExternalAccountsPanel
+                call={call}
+                customerId={activeCustomer}
+                onAccountId={(customerId, id) =>
+                  setWalletAccountIds((prev) => ({ ...prev, [customerId]: id }))
+                }
+              />
+              <WalletOwnershipPanel
+                key={`wallet-${activeCustomer}`}
+                call={call}
+                externalAccountId={walletAccountIds[activeCustomer] ?? ""}
+              />
               {/* Remounted per customer so a late response cannot leak across. */}
               <RuleBasedAccountsPanel
                 key={activeCustomer}
