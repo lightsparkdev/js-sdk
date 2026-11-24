@@ -37,7 +37,7 @@ test.describe("ContextMenu", () => {
     await page.getByText("Right-click long list").click({ button: "right" });
 
     const popup = page.getByTestId("long-context-menu-popup");
-    await expect(popup).toBeVisible();
+    await expect(popup).toBeFocused();
 
     const popupState = await popup.evaluate((element) => {
       const styles = window.getComputedStyle(element);
@@ -117,7 +117,7 @@ test.describe("ContextMenu", () => {
     await mount(<BasicContextMenu />);
 
     await page.getByText("Right-click here").click({ button: "right" });
-    await expect(page.getByRole("menu")).toBeVisible();
+    await expect(page.getByRole("menu")).toBeFocused();
 
     // Arrow down moves through items
     await page.keyboard.press("ArrowDown");
