@@ -94,7 +94,8 @@ export function CreateCustomer({ onCreated }: { onCreated?: () => void }) {
             <Dialog.Title>Create customer</Dialog.Title>
             <Dialog.Description>
               Provisions a business customer and a USDB internal account on the
-              connected platform.
+              connected platform. The business details (tax ID, address,
+              incorporation date) are placeholder test data.
             </Dialog.Description>
           </Dialog.Header>
           <Dialog.Content>

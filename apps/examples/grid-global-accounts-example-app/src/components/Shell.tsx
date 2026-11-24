@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
-import { Badge, Logo } from "@lightsparkdev/origin";
+import { Alert, Badge, Logo } from "@lightsparkdev/origin";
 import { type ReactNode } from "react";
 
+import { GRID_IS_PRODUCTION } from "../config";
 import { useAppState } from "../state/store";
 import { ContextChip } from "./ContextChip";
 import { DebugDrawer } from "./DebugDrawer";
@@ -18,28 +19,37 @@ export function Shell({ children }: { children: ReactNode }) {
 
   return (
     <Page data-debug={debugOn || undefined}>
-      <TopBar>
-        <Brand>
-          <Logo brand="grid" variant="logo" height={20} aria-label="Grid" />
-          <BrandDivider aria-hidden />
-          <BrandLabel>Global Accounts</BrandLabel>
-        </Brand>
+      <Chrome>
+        {GRID_IS_PRODUCTION && (
+          <Alert
+            variant="critical"
+            title="Connected to PRODUCTION Grid."
+            description="This creates real customers and wallets with placeholder data. Use a sandbox platform and the dev environment for testing."
+          />
+        )}
+        <TopBar>
+          <Brand>
+            <Logo brand="grid" variant="logo" height={20} aria-label="Grid" />
+            <BrandDivider aria-hidden />
+            <BrandLabel>Global Accounts</BrandLabel>
+          </Brand>
 
-        <SwitcherSlot>
-          <PersonaSwitcher />
-        </SwitcherSlot>
+          <SwitcherSlot>
+            <PersonaSwitcher />
+          </SwitcherSlot>
 
-        <Controls>
-          <ContextChip />
-          <PersonaBadge
-            variant={persona === "platform" ? "purple" : "blue"}
-            vibrant
-          >
-            {persona === "platform" ? "Platform" : "Customer"}
-          </PersonaBadge>
-          <DebugToggle />
-        </Controls>
-      </TopBar>
+          <Controls>
+            <ContextChip />
+            <PersonaBadge
+              variant={persona === "platform" ? "purple" : "blue"}
+              vibrant
+            >
+              {persona === "platform" ? "Platform" : "Customer"}
+            </PersonaBadge>
+            <DebugToggle />
+          </Controls>
+        </TopBar>
+      </Chrome>
 
       <Content data-debug={debugOn || undefined}>
         <Column>{children}</Column>
@@ -60,10 +70,13 @@ const Page = styled.div`
   font-family: var(--font-family-sans);
 `;
 
-const TopBar = styled.header`
+const Chrome = styled.div`
   position: sticky;
   top: 0;
   z-index: 10;
+`;
+
+const TopBar = styled.header`
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;

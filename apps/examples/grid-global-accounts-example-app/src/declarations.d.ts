@@ -22,3 +22,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Set by vite.config from the proxy target: true when it is production Grid. */
+declare const __GRID_IS_PRODUCTION__: boolean;

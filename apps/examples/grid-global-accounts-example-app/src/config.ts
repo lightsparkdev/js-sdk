@@ -13,6 +13,9 @@ export type LoginKeyEncoding = "modern" | "legacy";
 // backend. Credentials are entered manually in the UI — never embedded.
 export const API_BASE = "/api";
 
+// True when the Vite proxy targets production Grid (see vite.config.ts).
+export const GRID_IS_PRODUCTION: boolean = __GRID_IS_PRODUCTION__;
+
 // Turnkey API stamp scheme — must match what `@turnkey/api-key-stamper` emits.
 export const TURNKEY_STAMP_SCHEME = "SIGNATURE_SCHEME_TK_API_P256";
 
