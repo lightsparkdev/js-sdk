@@ -21,18 +21,6 @@ test.describe("Autocomplete", () => {
       await expect(input).toBeVisible();
     });
 
-    test("opens popup on click", async ({ mount, page }) => {
-      const component = await mount(<BasicAutocomplete />);
-      const input = component.getByPlaceholder("Search fruits...");
-
-      // Focus and trigger popup by pressing a key (click alone may not trigger in test env)
-      await input.focus();
-      await input.press("ArrowDown");
-      // Wait for options to be visible (indicates popup is rendered)
-      await expect(page.getByRole("option", { name: "Apple" })).toBeVisible();
-      await expect(page.getByRole("listbox")).toBeVisible();
-    });
-
     test("keeps long-list scrolling on the list", async ({ mount, page }) => {
       const component = await mount(<LongListAutocomplete />);
       const input = component.getByPlaceholder("Search fruits...");
@@ -175,7 +163,10 @@ test.describe("Autocomplete", () => {
       await expect(input).toHaveValue("Banana");
     });
 
-    test("closes popup on Escape", async ({ mount, page }) => {
+    test("opens with ArrowDown and closes with Escape", async ({
+      mount,
+      page,
+    }) => {
       const component = await mount(<BasicAutocomplete />);
       const input = component.getByPlaceholder("Search fruits...");
 

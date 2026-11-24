@@ -13,19 +13,13 @@ import {
 
 test.describe("Switch", () => {
   test.describe("default behavior", () => {
-    test("renders unchecked by default", async ({ mount }) => {
-      const component = await mount(<DefaultSwitch />);
-      const switchEl = component.locator("span").first();
-      await expect(switchEl).not.toHaveAttribute("data-checked", "");
-    });
-
     test("renders checked when defaultChecked", async ({ mount }) => {
       const component = await mount(<CheckedSwitch />);
       const switchEl = component.locator("span").first();
       await expect(switchEl).toHaveAttribute("data-checked", "");
     });
 
-    test("toggles on click", async ({ mount }) => {
+    test("starts unchecked and toggles on click", async ({ mount }) => {
       const component = await mount(<DefaultSwitch />);
       const switchEl = component.locator("span").first();
 

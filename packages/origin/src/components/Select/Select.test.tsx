@@ -360,17 +360,6 @@ test.describe("Select Hybrid Variant", () => {
     await expect(trigger).toContainText("production");
   });
 
-  test("hybrid icon click opens popup", async ({ mount, page }) => {
-    await mount(<HybridSelectControlled />);
-
-    // Click on the icon button to open
-    const icon = page.getByTestId("hybrid-icon");
-    await icon.click();
-
-    const listbox = page.getByRole("listbox");
-    await expect(listbox).toBeVisible();
-  });
-
   test("hybrid label click does not open popup", async ({ mount, page }) => {
     await mount(<HybridSelectControlled />);
 
@@ -405,7 +394,7 @@ test.describe("Select Hybrid Variant", () => {
     await expect(page.getByTestId("selected-env")).toHaveText("staging");
   });
 
-  test("hybrid trigger selects an option via icon click", async ({
+  test("opens the hybrid popup with the icon and selects an option", async ({
     mount,
     page,
   }) => {

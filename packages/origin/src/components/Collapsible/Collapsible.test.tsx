@@ -29,16 +29,9 @@ test.describe("Collapsible", () => {
       await expect(panel).toBeHidden();
     });
 
-    test("opens panel on click", async ({ mount }) => {
-      const component = await mount(<TestDefault />);
-      const trigger = component.getByRole("button", { name: "Toggle content" });
-      const panel = component.getByText("Panel content");
-
-      await trigger.click();
-      await expect(panel).toBeVisible();
-    });
-
-    test("closes panel on second click", async ({ mount }) => {
+    test("opens the panel on click and closes it on the next click", async ({
+      mount,
+    }) => {
       const component = await mount(<TestDefault />);
       const trigger = component.getByRole("button", { name: "Toggle content" });
       const panel = component.getByText("Panel content");

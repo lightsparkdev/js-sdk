@@ -198,21 +198,10 @@ test.describe("Chart tooltip", () => {
     await expect(tooltip).toHaveCSS("display", "none");
   });
 
-  test("tooltip appears on hover", async ({ mount, page }) => {
-    await mount(<FullChart />);
-    const svg = page.locator('[data-testid="chart"] svg');
-    const box = await svg.boundingBox();
-    if (!box) throw new Error("SVG not visible");
-
-    // Hover in the middle of the chart
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-
-    const tooltip = page.locator('[data-testid="chart"] > div');
-    // Wait for tooltip to become visible
-    await expect(tooltip).toBeVisible({ timeout: 2000 });
-  });
-
-  test("tooltip shows series labels", async ({ mount, page }) => {
+  test("shows the tooltip and series labels on hover", async ({
+    mount,
+    page,
+  }) => {
     await mount(<FullChart />);
     const svg = page.locator('[data-testid="chart"] svg');
     const box = await svg.boundingBox();

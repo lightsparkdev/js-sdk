@@ -33,14 +33,6 @@ test.describe("Combobox", () => {
       expect(results.violations).toEqual([]);
     });
 
-    test("opens popup on input click", async ({ mount, page }) => {
-      const component = await mount(<TestCombobox />);
-      const input = component.getByPlaceholder("Select a fruit...");
-
-      await input.click();
-      await expect(page.getByRole("listbox")).toBeVisible();
-    });
-
     test("closes popup on item selection", async ({ mount, page }) => {
       const component = await mount(<TestCombobox />);
       const input = component.getByPlaceholder("Select a fruit...");
@@ -183,7 +175,10 @@ test.describe("Combobox", () => {
       await expect(highlighted).toContainText("Apple");
     });
 
-    test("Escape closes popup", async ({ mount, page }) => {
+    test("opens on input click and closes on Escape", async ({
+      mount,
+      page,
+    }) => {
       const component = await mount(<TestCombobox />);
       const input = component.getByPlaceholder("Select a fruit...");
 
