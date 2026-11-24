@@ -90,6 +90,7 @@ export const buildConfig = ({
   chunks = { "/node_modules/": "vendor" },
   proxyTarget = "http://127.0.0.1:5000",
   preview = {},
+  reactExclude,
 }) => {
   /* Remote proxy support: when VITE_PROXY_TARGET points to a deployed environment
      (e.g. dev.dev.sparkinfra.net), the ALB requires session cookies to pass through.
@@ -523,6 +524,7 @@ export const buildConfig = ({
         },
       },
       react({
+        ...(reactExclude ? { exclude: reactExclude } : {}),
         jsxImportSource: "@emotion/react",
         babel: {
           plugins: ["@emotion/babel-plugin"],
