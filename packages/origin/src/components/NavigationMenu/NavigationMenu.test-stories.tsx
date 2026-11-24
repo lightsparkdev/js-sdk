@@ -267,12 +267,8 @@ export function ActionIconVariant() {
           <NavigationMenu.ActionIcon
             aria-label="Settings"
             onClick={() => setClicked(true)}
-            data-testid="settings-action"
           >
-            <CentralIcon
-              name={clicked ? "IconCheck1" : "IconSettingsGear1"}
-              size={20}
-            />
+            <CentralIcon name="IconSettingsGear1" size={20} />
           </NavigationMenu.ActionIcon>
         </NavigationMenu.Item>
         <NavigationMenu.Item>
@@ -281,6 +277,9 @@ export function ActionIconVariant() {
           </NavigationMenu.ActionIcon>
         </NavigationMenu.Item>
       </NavigationMenu.List>
+      <output aria-label="Settings action">
+        {clicked ? "Opened" : "Idle"}
+      </output>
     </NavigationMenu.Root>
   );
 }

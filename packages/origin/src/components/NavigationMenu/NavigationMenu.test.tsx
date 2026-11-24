@@ -180,17 +180,12 @@ test.describe("NavigationMenu", () => {
       await expect(actionIcon).toBeVisible();
     });
 
-    test("handles click events", async ({ mount }) => {
+    test("runs the settings action when clicked", async ({ mount }) => {
       const component = await mount(<ActionIconVariant />);
-
-      const actionIcon = component.getByTestId("settings-action");
-      const iconBefore = await actionIcon.locator("svg").innerHTML();
-      await actionIcon.click();
-
-      await expect(actionIcon.locator("svg")).not.toHaveJSProperty(
-        "innerHTML",
-        iconBefore,
-      );
+      const result = component.getByLabel("Settings action");
+      await expect(result).toHaveText("Idle");
+      await component.getByRole("button", { name: "Settings" }).click();
+      await expect(result).toHaveText("Opened");
     });
 
     test("active action icon has data-active attribute", async ({ mount }) => {
