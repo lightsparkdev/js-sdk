@@ -112,8 +112,10 @@ test.describe("SegmentedNav", () => {
   }) => {
     await mount(<DefaultSegmentedNav />);
 
+    const overview = page.getByRole("link", { name: "Overview" });
+    await expect(overview).toBeVisible();
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Overview" })).toBeFocused();
+    await expect(overview).toBeFocused();
   });
 
   test("preserves custom click handling on the rendered link", async ({
@@ -132,8 +134,10 @@ test.describe("SegmentedNav", () => {
   }) => {
     await mount(<GroupedSegmentedNav />);
 
+    const overview = page.getByRole("link", { name: "Overview" });
+    await expect(overview).toBeVisible();
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Overview" })).toBeFocused();
+    await expect(overview).toBeFocused();
   });
 
   test("renders the grouped separator edge to edge within the segmented row", async ({

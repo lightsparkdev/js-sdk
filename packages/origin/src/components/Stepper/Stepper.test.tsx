@@ -120,12 +120,16 @@ test.describe("Stepper", () => {
     });
 
     test("triggers are not tab stops", async ({ mount, page }) => {
-      const component = await mount(<NonInteractiveStepper />);
-      await page.keyboard.press("Tab");
-      const focusedTriggers = component.locator(
-        '[aria-current="step"]:focus, div:focus',
+      await mount(
+        <div>
+          <NonInteractiveStepper />
+          <button>Continue</button>
+        </div>,
       );
-      await expect(focusedTriggers).toHaveCount(0);
+      const nextButton = page.getByRole("button", { name: "Continue" });
+      await expect(nextButton).toBeVisible();
+      await page.keyboard.press("Tab");
+      await expect(nextButton).toBeFocused();
     });
   });
 

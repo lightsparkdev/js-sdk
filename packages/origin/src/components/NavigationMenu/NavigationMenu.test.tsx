@@ -95,21 +95,13 @@ test.describe("NavigationMenu", () => {
   });
 
   test.describe("Keyboard Navigation", () => {
-    test("trigger can be focused with Tab", async ({ mount, page }) => {
+    test("opens the dropdown with Tab and Enter", async ({ mount, page }) => {
       const component = await mount(<WithDropdown />);
-
-      await page.keyboard.press("Tab");
       const trigger = component.getByRole("button", { name: "Products" });
-      await expect(trigger).toBeFocused();
-    });
-
-    test("Enter key opens dropdown", async ({ mount, page }) => {
-      await mount(<WithDropdown />);
-
+      await expect(trigger).toBeVisible();
       await page.keyboard.press("Tab");
+      await expect(trigger).toBeFocused();
       await page.keyboard.press("Enter");
-
-      // Portal renders outside component, use page locator
       await expect(page.getByText("Dashboard")).toBeVisible();
     });
 
@@ -163,7 +155,7 @@ test.describe("NavigationMenu", () => {
     test("action can be focused with Tab", async ({ mount, page }) => {
       const component = await mount(<ActionVariant />);
 
-      // Tab past the link to the action
+      await expect(component.getByRole("link", { name: "Home" })).toBeVisible();
       await page.keyboard.press("Tab");
       await page.keyboard.press("Tab");
 
