@@ -385,13 +385,26 @@ export function CommandWithIcons() {
 
 // Command with disabled items
 export function CommandWithDisabledItems() {
+  const [selections, setSelections] = React.useState<string[]>([]);
   const items: CommandItem[] = [
     { id: "1", label: "Enabled Item" },
     { id: "2", label: "Disabled Item", disabled: true },
     { id: "3", label: "Another Item" },
   ];
 
-  return <Command.Root items={items} defaultOpen />;
+  return (
+    <>
+      <Command.Root
+        defaultOpen
+        items={items.map((item) => ({
+          ...item,
+          onSelect: () =>
+            setSelections((previous) => [...previous, item.label]),
+        }))}
+      />
+      <output aria-label="Selected commands">{selections.join(", ")}</output>
+    </>
+  );
 }
 
 // Controlled command

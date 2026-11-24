@@ -183,26 +183,31 @@ test.describe("Command", () => {
       await expect(disabledItem).toHaveAttribute("data-disabled");
     });
 
-    test("skips disabled items during keyboard navigation", async ({
+    test("activates only the enabled command during keyboard navigation", async ({
       mount,
       page,
     }) => {
       await mount(<CommandWithDisabledItems />);
-      const input = page.getByPlaceholder("Run a command or search");
+      const input = page.getByRole("combobox");
       await input.focus();
+      await expect(
+        page.getByRole("option", { name: "Enabled Item" }),
+      ).toHaveAttribute("data-highlighted", "");
 
-      // Wait for auto-highlight
-      await page.waitForTimeout(200);
+      await input.press("ArrowDown");
+      await expect(
+        page.getByRole("option", { name: "Disabled Item" }),
+      ).toHaveAttribute("data-highlighted", "");
+      await input.press("Enter");
 
-      // First item (Enabled Item) is auto-highlighted, ArrowDown twice should skip disabled
-      await page.keyboard.press("ArrowDown");
-      await page.waitForTimeout(100);
-      await page.keyboard.press("ArrowDown");
-      await page.waitForTimeout(100);
-
-      // Should have skipped the disabled item and gone to Another Item
-      const anotherItem = page.getByRole("option", { name: "Another Item" });
-      await expect(anotherItem).toHaveAttribute("data-highlighted");
+      await input.press("ArrowDown");
+      await expect(
+        page.getByRole("option", { name: "Another Item" }),
+      ).toHaveAttribute("data-highlighted", "");
+      await input.press("Enter");
+      await expect(page.getByLabel("Selected commands")).toHaveText(
+        "Another Item",
+      );
     });
   });
 
@@ -253,8 +258,6 @@ test.describe("Command", () => {
   test.describe("keyboard navigation", () => {
     test("auto-highlights first item", async ({ mount, page }) => {
       await mount(<BasicCommand />);
-      // Wait for auto-highlight
-      await page.waitForTimeout(50);
       const firstItem = page.getByRole("option", { name: "Copy" });
       await expect(firstItem).toHaveAttribute("data-highlighted", "");
     });
@@ -264,12 +267,12 @@ test.describe("Command", () => {
       const input = page.getByPlaceholder("Run a command or search");
       await input.focus();
 
-      // Wait for auto-highlight
-      await page.waitForTimeout(100);
+      await expect(page.getByRole("option", { name: "Copy" })).toHaveAttribute(
+        "data-highlighted",
+        "",
+      );
 
-      // First item is already highlighted, ArrowDown moves to second
       await page.keyboard.press("ArrowDown");
-      await page.waitForTimeout(50);
 
       const secondItem = page.getByRole("option", { name: "Paste" });
       await expect(secondItem).toHaveAttribute("data-highlighted", "");
@@ -280,12 +283,12 @@ test.describe("Command", () => {
       const input = page.getByPlaceholder("Run a command or search");
       await input.focus();
 
-      // Wait for auto-highlight
-      await page.waitForTimeout(100);
+      await expect(page.getByRole("option", { name: "Copy" })).toHaveAttribute(
+        "data-highlighted",
+        "",
+      );
 
-      // First item is auto-highlighted, just press Enter
       await page.keyboard.press("Enter");
-      await page.waitForTimeout(50);
 
       const selected = page.getByTestId("selected");
       await expect(selected).toHaveText("copy");
@@ -306,12 +309,12 @@ test.describe("Command", () => {
       const input = page.getByPlaceholder("Run a command or search");
       await input.focus();
 
-      // Wait for auto-highlight
-      await page.waitForTimeout(100);
+      await expect(page.getByRole("option", { name: "Copy" })).toHaveAttribute(
+        "data-highlighted",
+        "",
+      );
 
-      // Go up from first item - should loop to last
       await page.keyboard.press("ArrowUp");
-      await page.waitForTimeout(50);
 
       const lastItem = page.getByRole("option", { name: "Cut" });
       await expect(lastItem).toHaveAttribute("data-highlighted", "");
