@@ -64,9 +64,6 @@ test.describe("LoadMore.Sentinel", () => {
       window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }),
     );
     await expect(page.getByTestId("load-count")).toHaveText("Loads: 1");
-    // Stays at 1 — hasMore is now false after the timeout completes.
-    await page.waitForTimeout(150);
-    await expect(page.getByTestId("load-count")).toHaveText("Loads: 1");
   });
 
   test("does not refire while loading is held true", async ({

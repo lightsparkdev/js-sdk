@@ -64,7 +64,7 @@ function fireIntersect(observer: MockObserver) {
   );
 }
 
-describe("LoadMore.Sentinel initial mount", () => {
+describe("LoadMore.Sentinel", () => {
   it("fires onLoadMore exactly once when the sentinel mounts already in view", () => {
     const onLoadMore = vi.fn();
     render(
@@ -78,4 +78,29 @@ describe("LoadMore.Sentinel initial mount", () => {
 
     expect(onLoadMore).toHaveBeenCalledTimes(1);
   });
+
+  it.each([true, false])(
+    "rechecks the visible sentinel when loading ends with hasMore=%s",
+    (hasMore) => {
+      const onLoadMore = vi.fn();
+      const sentinel = (loading: boolean, morePages: boolean) => (
+        <LoadMore.Root
+          hasMore={morePages}
+          loading={loading}
+          onLoadMore={onLoadMore}
+        >
+          <LoadMore.Sentinel />
+        </LoadMore.Root>
+      );
+      const { getByRole, rerender } = render(sentinel(true, true));
+      vi.spyOn(
+        getByRole("presentation", { hidden: true }),
+        "getBoundingClientRect",
+      ).mockReturnValue(new DOMRect(0, 10, 1, 1));
+
+      rerender(sentinel(false, hasMore));
+
+      expect(onLoadMore).toHaveBeenCalledTimes(hasMore ? 1 : 0);
+    },
+  );
 });
