@@ -28,25 +28,29 @@ async function dispatchFileDrag(
 
 test.describe("FileUpload", () => {
   test("opens the picker with Enter and Space", async ({ mount, page }) => {
-    await mount(<FieldFileUpload />);
-    await page.keyboard.press("Tab");
-    await expect(
-      page.getByRole("button", { name: dropzoneName }),
-    ).toBeFocused();
-
-    for (const key of ["Enter", " "]) {
-      const chooser = page.waitForEvent("filechooser");
-      await page.keyboard.press(key);
-      await (
-        await chooser
-      ).setFiles({
-        name: `${key === "Enter" ? "enter" : "space"}.pdf`,
+    let fileName: string;
+    page.on("filechooser", (chooser) =>
+      chooser.setFiles({
+        name: fileName,
         mimeType: "application/pdf",
         buffer: Buffer.from("%PDF"),
-      });
+      }),
+    );
+    await mount(<FieldFileUpload />);
+    const dropzone = page.getByRole("button", { name: dropzoneName });
+    await expect(dropzone).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(dropzone).toBeFocused();
+
+    for (const [key, name] of [
+      ["Enter", "enter.pdf"],
+      ["Space", "space.pdf"],
+    ] as const) {
+      fileName = name;
+      await page.keyboard.press(key);
+      await expect(page.getByText(name, { exact: true })).toBeVisible();
     }
     await expect(page.getByTestId("count")).toHaveText("2");
-    await expect(page.getByText("enter.pdf")).toBeVisible();
   });
 
   test("shows a drag-over state and accepts a real drop", async ({

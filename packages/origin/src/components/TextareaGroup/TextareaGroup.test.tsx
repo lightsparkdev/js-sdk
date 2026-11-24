@@ -140,8 +140,9 @@ test.describe("TextareaGroup", () => {
   test.describe("Keyboard", () => {
     test("Tab navigates into textarea", async ({ mount, page }) => {
       await mount(<Default />);
+      const textarea = page.getByRole("textbox");
+      await expect(textarea).toBeVisible();
       await page.keyboard.press("Tab");
-      const textarea = page.locator("textarea");
       await expect(textarea).toBeFocused();
     });
 
@@ -150,9 +151,10 @@ test.describe("TextareaGroup", () => {
       page,
     }) => {
       await mount(<WithFooter />);
-      // Tab to textarea
+      const textarea = page.getByRole("textbox");
+      await expect(textarea).toBeVisible();
       await page.keyboard.press("Tab");
-      await expect(page.locator("textarea")).toBeFocused();
+      await expect(textarea).toBeFocused();
       // Tab to add attachment button
       await page.keyboard.press("Tab");
       await expect(
