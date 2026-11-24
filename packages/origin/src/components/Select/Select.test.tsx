@@ -378,19 +378,15 @@ test.describe("Select Hybrid Variant", () => {
   }) => {
     await mount(<HybridSelectControlled />);
 
-    // Tab to focus the trigger, then Enter to open
-    const trigger = page.getByRole("combobox");
-    await trigger.focus();
-    await trigger.press("Enter");
+    await page.getByRole("combobox").press("Enter");
+    await expect(
+      page.getByRole("option", { name: "Production" }),
+    ).toBeFocused();
 
-    const listbox = page.getByRole("listbox");
-    await expect(listbox).toBeVisible();
-
-    // Navigate and select with keyboard - select Staging explicitly
-    await page.getByRole("option", { name: "Staging" }).focus();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
-    // Verify selection changed
     await expect(page.getByTestId("selected-env")).toHaveText("staging");
   });
 

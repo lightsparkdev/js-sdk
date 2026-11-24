@@ -143,23 +143,18 @@ test.describe("PhoneInput", () => {
   test("can navigate countries with keyboard", async ({ mount, page }) => {
     await mount(<Default />);
 
-    // Focus and open with Enter
-    const trigger = page.getByRole("combobox");
-    await trigger.focus();
-    await page.keyboard.press("Enter");
+    const trigger = page.getByRole("combobox", { name: "Select country" });
+    await trigger.press("Enter");
+    await expect(
+      page.getByRole("option", { name: /United States/ }),
+    ).toBeFocused();
 
-    // Wait for popup to open
-    await expect(page.locator("[data-phone-input-popup]")).toBeVisible();
-
-    // Navigate with arrows
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("ArrowDown");
-
-    // Select with Enter
     await page.keyboard.press("Enter");
 
-    // Should have closed dropdown after selection
-    await expect(page.locator("[data-phone-input-popup]")).not.toBeVisible();
+    await expect(page.getByRole("listbox")).not.toBeVisible();
+    await expect(trigger).toContainText("+49");
   });
 
   test("closes dropdown on Escape", async ({ mount, page }) => {
