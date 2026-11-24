@@ -145,13 +145,8 @@ export function TestCheckboxKeyboard() {
 export function TestCheckboxReadOnly() {
   return (
     <Checkbox.Field data-testid="checkbox-field">
-      <Checkbox.Group>
-        <Checkbox.Item
-          value="option1"
-          label="Read Only Checked"
-          readOnly
-          defaultChecked
-        />
+      <Checkbox.Group defaultValue={["option1"]}>
+        <Checkbox.Item value="option1" label="Read Only Checked" readOnly />
         <Checkbox.Item value="option2" label="Read Only Unchecked" readOnly />
       </Checkbox.Group>
     </Checkbox.Field>
@@ -171,13 +166,8 @@ export function TestCheckboxRequired() {
 export function TestCheckboxName() {
   return (
     <Checkbox.Field data-testid="checkbox-field">
-      <Checkbox.Group>
-        <Checkbox.Item
-          value="option1"
-          label="With Name"
-          name="test-checkbox"
-          defaultChecked
-        />
+      <Checkbox.Group defaultValue={["option1"]}>
+        <Checkbox.Item value="option1" label="With Name" name="test-checkbox" />
       </Checkbox.Group>
     </Checkbox.Field>
   );
