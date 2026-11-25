@@ -33,7 +33,7 @@
     "@lightsparkdev/ui": "1.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router-dom": "6.30.3"
+    "react-router-dom": "6.30.6"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",

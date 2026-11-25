@@ -128,7 +128,7 @@
     "react-datetime-picker": "^5.6.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "^19.2.6",
-    "react-router-dom": "6.30.3",
+    "react-router-dom": "6.30.6",
     "react-select": "^5.4.0",
     "react-tooltip": "^5.10.1",
     "uuid": "^9.0.0"
