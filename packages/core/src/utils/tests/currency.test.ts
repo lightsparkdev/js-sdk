@@ -404,6 +404,16 @@ describe("formatCurrencyStr", () => {
     expect(currencyMap.formatted.AUD).toBe("$123.45");
   });
 
+  it("should format OUSD from micro units", () => {
+    const currencyMap = mapCurrencyAmount({
+      value: 12_345_678,
+      unit: CurrencyUnit.Ousd,
+    });
+
+    expect(currencyMap.OUSD).toBe(12_345_678);
+    expect(currencyMap.formatted.OUSD).toBe("12.35 OUSD");
+  });
+
   it("should return the expected currency string with precision 1", () => {
     expect(
       formatCurrencyStr(

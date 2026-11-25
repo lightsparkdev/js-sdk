@@ -70,6 +70,7 @@ export const CurrencyUnit = {
   USDT: "USDT",
   USDC: "USDC",
   USDB: "USDB",
+  OUSD: "OUSD",
 
   Bitcoin: "BITCOIN",
   Microbitcoin: "MICROBITCOIN",
@@ -109,6 +110,7 @@ export const CurrencyUnit = {
   Usdt: "USDT",
   Usdc: "USDC",
   Usdb: "USDB",
+  Ousd: "OUSD",
 } as const;
 
 export type CurrencyUnitType = (typeof CurrencyUnit)[keyof typeof CurrencyUnit];
@@ -186,6 +188,7 @@ const standardUnitConversionObj = {
   [CurrencyUnit.USDT]: (v: number) => v,
   [CurrencyUnit.USDC]: (v: number) => v,
   [CurrencyUnit.USDB]: (v: number) => v,
+  [CurrencyUnit.OUSD]: (v: number) => v,
 };
 
 /* Round without decimals since we're returning cents: */
@@ -262,6 +265,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toBitcoinConversion,
     [CurrencyUnit.USDC]: toBitcoinConversion,
     [CurrencyUnit.USDB]: toBitcoinConversion,
+    [CurrencyUnit.OUSD]: toBitcoinConversion,
   },
   [CurrencyUnit.MICROBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000,
@@ -322,6 +326,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toMicrobitcoinConversion,
     [CurrencyUnit.USDC]: toMicrobitcoinConversion,
     [CurrencyUnit.USDB]: toMicrobitcoinConversion,
+    [CurrencyUnit.OUSD]: toMicrobitcoinConversion,
   },
   [CurrencyUnit.MILLIBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000,
@@ -382,6 +387,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toMillibitcoinConversion,
     [CurrencyUnit.USDC]: toMillibitcoinConversion,
     [CurrencyUnit.USDB]: toMillibitcoinConversion,
+    [CurrencyUnit.OUSD]: toMillibitcoinConversion,
   },
   [CurrencyUnit.MILLISATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000_000,
@@ -442,6 +448,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toMillisatoshiConversion,
     [CurrencyUnit.USDC]: toMillisatoshiConversion,
     [CurrencyUnit.USDB]: toMillisatoshiConversion,
+    [CurrencyUnit.OUSD]: toMillisatoshiConversion,
   },
   [CurrencyUnit.NANOBITCOIN]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 1_000_000_000,
@@ -502,6 +509,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toNanobitcoinConversion,
     [CurrencyUnit.USDC]: toNanobitcoinConversion,
     [CurrencyUnit.USDB]: toNanobitcoinConversion,
+    [CurrencyUnit.OUSD]: toNanobitcoinConversion,
   },
   [CurrencyUnit.SATOSHI]: {
     [CurrencyUnit.BITCOIN]: (v: number) => v / 100_000_000,
@@ -562,6 +570,7 @@ const CONVERSION_MAP = {
     [CurrencyUnit.USDT]: toSatoshiConversion,
     [CurrencyUnit.USDC]: toSatoshiConversion,
     [CurrencyUnit.USDB]: toSatoshiConversion,
+    [CurrencyUnit.OUSD]: toSatoshiConversion,
   },
   [CurrencyUnit.USD]: standardUnitConversionObj,
   [CurrencyUnit.MXN]: standardUnitConversionObj,
@@ -615,6 +624,7 @@ const CONVERSION_MAP = {
   [CurrencyUnit.USDT]: standardUnitConversionObj,
   [CurrencyUnit.USDC]: standardUnitConversionObj,
   [CurrencyUnit.USDB]: standardUnitConversionObj,
+  [CurrencyUnit.OUSD]: standardUnitConversionObj,
 };
 
 export function convertCurrencyAmountValue(
@@ -728,6 +738,7 @@ export type CurrencyMap = {
   [CurrencyUnit.USDT]: number;
   [CurrencyUnit.USDC]: number;
   [CurrencyUnit.USDB]: number;
+  [CurrencyUnit.OUSD]: number;
   [CurrencyUnit.FUTURE_VALUE]: number;
   formatted: {
     sats: string;
@@ -791,6 +802,7 @@ export type CurrencyMap = {
     [CurrencyUnit.USDT]: string;
     [CurrencyUnit.USDC]: string;
     [CurrencyUnit.USDB]: string;
+    [CurrencyUnit.OUSD]: string;
     [CurrencyUnit.FUTURE_VALUE]: string;
   };
   isZero: boolean;
@@ -1038,6 +1050,7 @@ function convertCurrencyAmountValues(
     usdt: CurrencyUnit.USDT,
     usdc: CurrencyUnit.USDC,
     usdb: CurrencyUnit.USDB,
+    ousd: CurrencyUnit.OUSD,
   };
   return Object.entries(namesToUnits).reduce(
     (acc, [name, unit]) => {
@@ -1143,6 +1156,7 @@ export function mapCurrencyAmount(
     usdt,
     usdc,
     usdb,
+    ousd,
   } = convertCurrencyAmountValues(unit, value, unitsPerBtc, conversionOverride);
 
   const mapWithCurrencyUnits = {
@@ -1204,6 +1218,7 @@ export function mapCurrencyAmount(
     [CurrencyUnit.USDT]: usdt,
     [CurrencyUnit.USDC]: usdc,
     [CurrencyUnit.USDB]: usdb,
+    [CurrencyUnit.OUSD]: ousd,
     [CurrencyUnit.FUTURE_VALUE]: NaN,
     formatted: {
       [CurrencyUnit.BITCOIN]: formatCurrencyStr({
@@ -1438,6 +1453,10 @@ export function mapCurrencyAmount(
         value: usdb,
         unit: CurrencyUnit.USDB,
       }),
+      [CurrencyUnit.OUSD]: formatCurrencyStr({
+        value: ousd,
+        unit: CurrencyUnit.OUSD,
+      }),
       [CurrencyUnit.FUTURE_VALUE]: "-",
     },
   };
@@ -1524,6 +1543,8 @@ export const abbrCurrencyUnit = (unit: CurrencyUnitType) => {
       return "USDC";
     case CurrencyUnit.USDB:
       return "USDB";
+    case CurrencyUnit.OUSD:
+      return "OUSD";
     case CurrencyUnit.BRL:
       return "BRL";
     case CurrencyUnit.CAD:
@@ -1715,6 +1736,7 @@ export function formatCurrencyStr(
       CurrencyUnit.USDC,
       CurrencyUnit.USDT,
       CurrencyUnit.USDB,
+      CurrencyUnit.OUSD,
     ] as string[];
     if (microCurrencies.includes(unit)) {
       num = num / 1_000_000;
@@ -1793,6 +1815,7 @@ export function formatCurrencyStr(
     case CurrencyUnit.USDC:
     case CurrencyUnit.USDT:
     case CurrencyUnit.USDB:
+    case CurrencyUnit.OUSD:
       formattedStr = num.toLocaleString(currentLocale, {
         notation: compact ? ("compact" as const) : undefined,
         minimumFractionDigits: 2,
