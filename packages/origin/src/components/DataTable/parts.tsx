@@ -920,7 +920,7 @@ function CursorTablePaginationView({
 }) {
   return (
     <OriginPager.Root
-      className={styles.pager}
+      className={styles.pagination}
       aria-label={model.ariaLabel}
       hasNext={model.canGoNext}
       hasPrevious={model.canGoPrevious}
@@ -967,11 +967,15 @@ function CursorTablePaginationView({
           </Select.Root>
         </div>
       )}
-      <OriginPager.Status>{model.statusLabel}</OriginPager.Status>
-      <OriginPager.Navigation>
-        <OriginPager.Previous />
-        <OriginPager.Next />
-      </OriginPager.Navigation>
+      <div className={styles.paginationSummary}>
+        <OriginPager.Status className={styles.paginationStatus}>
+          {model.statusLabel}
+        </OriginPager.Status>
+        <OriginPager.Navigation>
+          <OriginPager.Previous />
+          <OriginPager.Next />
+        </OriginPager.Navigation>
+      </div>
     </OriginPager.Root>
   );
 }

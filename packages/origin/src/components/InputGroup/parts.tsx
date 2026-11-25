@@ -5,6 +5,7 @@ import { Input as BaseInput } from "@base-ui/react/input";
 import { Button as BaseButton } from "@base-ui/react/button";
 import clsx from "clsx";
 import { CentralIcon } from "../Icon";
+import { sanitizeOnValueChange } from "../../lib/text";
 import styles from "./InputGroup.module.scss";
 
 interface InputGroupContextValue {
@@ -147,10 +148,25 @@ if (process.env.NODE_ENV !== "production") {
   Cap.displayName = "InputGroup.Cap";
 }
 
-export interface InputProps extends Omit<BaseInput.Props, "size"> {}
+export interface InputProps extends Omit<BaseInput.Props, "size"> {
+  /**
+   * Strip invisible paste artifacts and normalize exotic spaces.
+   * @default true
+   */
+  sanitizeValue?: boolean;
+}
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  function Input({ className, disabled: inputDisabled, ...props }, ref) {
+  function Input(
+    {
+      className,
+      disabled: inputDisabled,
+      onValueChange,
+      sanitizeValue = true,
+      ...props
+    },
+    ref,
+  ) {
     const { disabled: rootDisabled, invalid } = useInputGroupContext();
     const isDisabled = inputDisabled ?? rootDisabled;
 
@@ -162,6 +178,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         aria-invalid={invalid || undefined}
         data-input-group-input=""
         {...props}
+        onValueChange={
+          sanitizeValue ? sanitizeOnValueChange(onValueChange) : onValueChange
+        }
       />
     );
   },

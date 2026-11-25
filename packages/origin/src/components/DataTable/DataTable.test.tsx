@@ -27,6 +27,7 @@ import {
   LoadingWithRows,
   LowerBound,
   PaginationInClippedCard,
+  NarrowLongCountPagination,
   RowActivate,
   RowActivateWithControls,
   SinglePage,
@@ -728,6 +729,70 @@ test.describe("DataTable", () => {
     await page.getByRole("button", { name: "Previous page" }).click();
     await expect(page.getByText("Viewing 11-20 of 25 results")).toBeVisible();
   });
+
+  test("keeps pagination controls inside a narrow table", async ({
+    mount,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 850 });
+    await mount(<WithPagination />);
+    const pager = page.getByRole("navigation", { name: "Items pagination" });
+    for (const control of [
+      pager.getByText("Rows per page", { exact: true }),
+      pager.getByRole("combobox"),
+      pager.getByText("Viewing 1-10 of 25 results"),
+      pager.getByRole("button", { name: "Next page" }),
+    ]) {
+      const box = await control.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(375);
+    }
+    await pager.getByRole("button", { name: "Next page" }).click();
+    await expect(pager.getByText("Viewing 11-20 of 25 results")).toBeVisible();
+  });
+
+  for (const width of [240, 320]) {
+    test(`wraps long pagination counts inside a ${width}px container`, async ({
+      mount,
+      page,
+    }) => {
+      await mount(<NarrowLongCountPagination width={width} />);
+      const container = page.getByTestId("pagination-container");
+      const pager = page.getByRole("navigation", { name: "Items pagination" });
+      await expect(pager.getByRole("status")).toHaveText(
+        "Viewing 1-10 of 999999999999999 results",
+      );
+      const bounds = await container.boundingBox();
+      expect(bounds).not.toBeNull();
+      for (const control of [
+        pager.getByRole("status"),
+        pager.getByRole("combobox"),
+        pager.getByRole("button", { name: "Previous page" }),
+        pager.getByRole("button", { name: "Next page" }),
+      ]) {
+        const box = await control.boundingBox();
+        expect(box).not.toBeNull();
+        expect(box!.x).toBeGreaterThanOrEqual(bounds!.x);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(
+          bounds!.x + bounds!.width,
+        );
+      }
+      expect(
+        await pager.evaluate(
+          (element) => element.scrollWidth <= element.clientWidth,
+        ),
+      ).toBe(true);
+      await pager.getByRole("button", { name: "Next page" }).click();
+      await expect(pager.getByRole("status")).toHaveText(
+        "Viewing 11-20 of 999999999999999 results",
+      );
+      await pager.getByRole("button", { name: "Previous page" }).click();
+      await expect(pager.getByRole("status")).toHaveText(
+        "Viewing 1-10 of 999999999999999 results",
+      );
+    });
+  }
 
   test("changing rows-per-page resets to the first page", async ({
     mount,

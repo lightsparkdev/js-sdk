@@ -2,6 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "./index";
 import { Button } from "../Button";
+import { CentralIcon } from "../Icon";
 
 const LONG_CONTENT = Array.from({ length: 20 }, (_, index) => (
   <p key={index} style={{ margin: 0, color: "var(--text-secondary)" }}>
@@ -101,6 +102,105 @@ export const Default: StoryObj = {
             </Dialog.Close>
             <Button variant="filled">Confirm</Button>
           </Dialog.Footer>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  ),
+};
+
+export const FullBleedContent: StoryObj = {
+  render: () => (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Open Full-Bleed Dialog
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.CloseButton />
+          <Dialog.Header>
+            <Dialog.Title>Full-bleed content</Dialog.Title>
+            <Dialog.Description>
+              Content can extend to both edges of the dialog.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Content fullBleed>
+            <div
+              style={{
+                padding: "var(--spacing-lg)",
+                background: "var(--surface-secondary)",
+              }}
+            >
+              Full-bleed region
+            </div>
+          </Dialog.Content>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  ),
+};
+
+export const WithLeading: StoryObj = {
+  render: () => (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Open Dialog With Back
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.Header
+            leading={
+              <Button
+                type="button"
+                variant="outline"
+                size="compact"
+                iconOnly
+                aria-label="Back"
+              >
+                <CentralIcon name="IconChevronLeft" size={16} />
+              </Button>
+            }
+          >
+            <Dialog.Title>Choose a method</Dialog.Title>
+            <Dialog.Description>
+              Select how you want to continue.
+            </Dialog.Description>
+          </Dialog.Header>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  ),
+};
+
+export const WithLeadingAndCloseButton: StoryObj = {
+  render: () => (
+    <Dialog.Root>
+      <Dialog.Trigger render={<Button variant="outline" />}>
+        Open Dialog With Both Controls
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.CloseButton />
+          <Dialog.Header
+            leading={
+              <Button
+                type="button"
+                variant="outline"
+                size="compact"
+                iconOnly
+                aria-label="Back"
+              >
+                <CentralIcon name="IconChevronLeft" size={16} />
+              </Button>
+            }
+          >
+            <Dialog.Title>Nested step</Dialog.Title>
+            <Dialog.Description>
+              Go back one step or close the dialog.
+            </Dialog.Description>
+          </Dialog.Header>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>

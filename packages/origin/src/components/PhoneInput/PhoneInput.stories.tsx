@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { PhoneInput } from "./";
+import { Dialog } from "@/components/Dialog";
 import { Field } from "@/components/Field";
 
 interface Country {
@@ -163,6 +164,31 @@ export const LongCountryList: StoryObj = {
       countries={longExampleCountries}
       defaultCountry={longExampleCountries[0]}
     />
+  ),
+};
+
+export const NestedInDialog: StoryObj = {
+  render: () => (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.CloseButton />
+          <Dialog.Header>
+            <Dialog.Title>Contact details</Dialog.Title>
+            <Dialog.Description>
+              Enter a phone number for account notifications.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Content>
+            <PhoneInputExample
+              countries={longExampleCountries}
+              defaultCountry={longExampleCountries[0]}
+            />
+          </Dialog.Content>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   ),
 };
 

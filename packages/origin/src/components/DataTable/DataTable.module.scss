@@ -273,15 +273,6 @@ table.autoLayoutTable {
   margin-top: var(--spacing-sm);
 }
 
-// In a narrow container the page-size field wraps above the range and
-// buttons instead of overflowing the footer's left edge.
-.pager {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  row-gap: var(--spacing-xs);
-  min-width: 0;
-}
-
 // Gap matches Origin Pager.Root's own item gap so the label, select,
 // range, and nav buttons share one uniform rhythm across the footer, and
 // the label matches Pager.Status typography.
@@ -299,4 +290,27 @@ table.autoLayoutTable {
 // the ghost trigger to its content.
 .pageSizeTrigger {
   height: auto;
+}
+
+.pagination {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing-xs) var(--spacing-lg);
+}
+
+.paginationSummary {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-xs) var(--spacing-lg);
+}
+
+.paginationSummary .paginationStatus {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }

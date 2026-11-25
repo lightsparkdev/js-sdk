@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/experimental-ct-react";
 import {
   StructuredCard,
   StructuredCardWithBackButton,
+  CustomizedCardBackButton,
   SimpleCard,
   CardTitleOnly,
   CardCustomClassName,
@@ -25,10 +26,51 @@ test.describe("Card", () => {
 
     test("renders back button and handles click", async ({ mount, page }) => {
       await mount(<StructuredCardWithBackButton />);
-      const backButton = page.getByTestId("back-button");
+      const backButton = page.getByRole("button", { name: "Go back" });
       await expect(backButton).toBeVisible();
       await backButton.click();
       await expect(page.getByTestId("back-clicked")).toBeVisible();
+    });
+
+    test("back button supports native keyboard activation", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<StructuredCardWithBackButton />);
+      const backButton = page.getByRole("button", { name: "Go back" });
+
+      await backButton.focus();
+      await page.keyboard.press("Enter");
+
+      await expect(page.getByTestId("back-clicked")).toBeVisible();
+    });
+
+    test("back button uses compact outline geometry", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<StructuredCardWithBackButton />);
+      const backButton = page.getByRole("button", { name: "Go back" });
+
+      await expect(backButton).toHaveCSS("width", "32px");
+      await expect(backButton).toHaveCSS("height", "32px");
+      await expect(backButton).toHaveCSS("display", "flex");
+    });
+
+    test("back button composes ref, class, style, label, and focus event", async ({
+      mount,
+      page,
+    }) => {
+      await mount(<CustomizedCardBackButton />);
+      const backButton = page.getByRole("button", { name: "Previous step" });
+
+      await expect(backButton).toHaveClass(/custom-back-button/);
+      await expect(backButton).toHaveCSS("margin-inline-start", "3px");
+      await expect(page.getByTestId("back-ref")).toHaveText("ready");
+
+      await backButton.focus();
+      await expect(page.getByTestId("back-focus")).toHaveText("focused");
+      await expect(backButton).not.toHaveCSS("box-shadow", "none");
     });
 
     test("renders multiple footer buttons", async ({ mount, page }) => {

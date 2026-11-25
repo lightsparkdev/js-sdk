@@ -22,3 +22,14 @@ export function stripNonPrintable(value: string) {
     .replace(INVISIBLE_PATTERN, "")
     .replace(EXOTIC_SPACE_PATTERN, " ");
 }
+
+export function sanitizeOnValueChange<EventDetails>(
+  onValueChange:
+    ((value: string, eventDetails: EventDetails) => void) | undefined,
+) {
+  return (
+    onValueChange &&
+    ((value: string, eventDetails: EventDetails) =>
+      onValueChange(stripNonPrintable(value), eventDetails))
+  );
+}

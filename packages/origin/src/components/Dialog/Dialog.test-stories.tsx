@@ -1,5 +1,6 @@
 import { Dialog } from "./index";
 import { Button } from "../Button";
+import { CentralIcon } from "../Icon";
 
 const LONG_CONTENT = Array.from({ length: 30 }, (_, index) => (
   <p key={index}>
@@ -126,6 +127,76 @@ export function TestDialogContentOnly() {
           <Dialog.Content>
             <p>Content without header or footer.</p>
           </Dialog.Content>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+export function TestDialogFullBleed() {
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.Header>
+            <Dialog.Title>Full-Bleed Dialog</Dialog.Title>
+          </Dialog.Header>
+          <Dialog.Content fullBleed>
+            <p>Full-bleed content area.</p>
+          </Dialog.Content>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+const leadingBackButton = (
+  <Button
+    type="button"
+    variant="outline"
+    size="compact"
+    iconOnly
+    aria-label="Back"
+  >
+    <CentralIcon name="IconChevronLeft" size={16} />
+  </Button>
+);
+
+export function TestDialogWithLeading() {
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.Header leading={leadingBackButton}>
+            <Dialog.Title>Leading Dialog</Dialog.Title>
+            <Dialog.Description>Grouped title description.</Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Footer>
+            <Dialog.Close render={<Button variant="outline" />}>
+              Cancel
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+export function TestDialogWithLeadingAndCloseButton() {
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.CloseButton />
+          <Dialog.Header leading={leadingBackButton}>
+            <Dialog.Title>Leading And Close Dialog</Dialog.Title>
+            <Dialog.Description>
+              Both navigation controls remain available.
+            </Dialog.Description>
+          </Dialog.Header>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>

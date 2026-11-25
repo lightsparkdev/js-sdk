@@ -108,7 +108,8 @@ export function replaceParams(
 // If `to` contains an argument like :id, inlclude the value in params object
 // and it will be replaced automatically. This way route typesaftey is
 // preserved.
-export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
+/** Typed routing without default visual styles, for composition with controls. */
+export const RouteLink = forwardRef<HTMLAnchorElement, LinkProps>(
   (
     {
       to,
@@ -125,7 +126,7 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
       blue = false,
       newTab: newTabProp,
       typography,
-      disabled: _disabled,
+      disabled = false,
       replace = false,
       state,
       style,
@@ -171,6 +172,24 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
         : text;
     }
 
+    // Omitting href also blocks keyboard and open-in-new-tab navigation.
+    const ariaDisabled = anchorProps["aria-disabled"];
+    if (disabled || ariaDisabled === true || ariaDisabled === "true") {
+      return (
+        <a
+          {...anchorProps}
+          id={id}
+          css={css}
+          className={className}
+          style={blue ? { ...style, color: colors.blue43 } : style}
+          aria-disabled="true"
+          ref={ref}
+        >
+          {content}
+        </a>
+      );
+    }
+
     return (
       <RLink
         {...anchorProps}
@@ -182,10 +201,7 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
         onClick={onClick}
         className={className}
         download={filename}
-        style={{
-          ...style,
-          color: blue ? colors.blue43 : "inherit",
-        }}
+        style={blue ? { ...style, color: colors.blue43 } : style}
         target={newTab ? "_blank" : undefined}
         rel={newTab ? "noopener noreferrer" : undefined}
         ref={ref}
@@ -196,6 +212,10 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(
   },
 );
 
+RouteLink.displayName = "RouteLink";
+
+/** Legacy link appearance; Origin consumers should compose with RouteLink. */
+export const LinkBase = styled(RouteLink)({ color: "inherit" });
 LinkBase.displayName = "LinkBase";
 
 export const Link = styled(LinkBase)`

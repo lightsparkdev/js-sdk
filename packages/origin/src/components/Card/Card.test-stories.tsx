@@ -54,6 +54,39 @@ export function StructuredCardWithBackButton() {
   );
 }
 
+export function CustomizedCardBackButton() {
+  const ref = React.useRef<HTMLButtonElement>(null);
+  const [focused, setFocused] = React.useState(false);
+  const [refReady, setRefReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setRefReady(ref.current instanceof HTMLButtonElement);
+  }, []);
+
+  return (
+    <>
+      <Card.Root variant="structured" data-testid="card">
+        <Card.Header>
+          <Card.BackButton
+            ref={ref}
+            className="custom-back-button"
+            style={{ marginInlineStart: 3 }}
+            aria-label="Previous step"
+            onFocus={() => setFocused(true)}
+          />
+          <Card.TitleGroup>
+            <Card.Title>Card title</Card.Title>
+          </Card.TitleGroup>
+        </Card.Header>
+      </Card.Root>
+      <output data-testid="back-ref">{refReady ? "ready" : "missing"}</output>
+      <output data-testid="back-focus">
+        {focused ? "focused" : "blurred"}
+      </output>
+    </>
+  );
+}
+
 export function SimpleCard() {
   return (
     <Card.Root variant="simple" data-testid="card">

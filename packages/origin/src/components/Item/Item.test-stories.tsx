@@ -1,9 +1,17 @@
 "use client";
 
 import * as React from "react";
+import { Link, MemoryRouter } from "react-router-dom";
 import { Item } from "./Item";
 import { Badge } from "@/components/Badge";
 import { CentralIcon } from "@/components/Icon";
+
+const ComposedLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.ComponentPropsWithoutRef<"a">
+>(function ComposedLink(props, ref) {
+  return <a ref={ref} {...props} />;
+});
 
 // Basic rendering
 export function BasicItem() {
@@ -41,6 +49,10 @@ export function ItemWithTrailing() {
       trailing={<CentralIcon name="IconChevronRightSmall" size={20} />}
     />
   );
+}
+
+export function DisclosureItem() {
+  return <Item title="Account settings" disclosure />;
 }
 
 export function ItemWithBothSlots() {
@@ -139,6 +151,155 @@ export function ItemAsButton() {
   );
 }
 
+export function InteractiveItemAsButton() {
+  const [activations, setActivations] = React.useState(0);
+  const [renderActivations, setRenderActivations] = React.useState(0);
+
+  return (
+    <>
+      <Item
+        title="Choose option"
+        description="Continue with this longer option description that remains readable"
+        wrapDescription
+        disclosure
+        render={
+          <button
+            type="button"
+            onClick={() => setRenderActivations((count) => count + 1)}
+          />
+        }
+        onClick={() => setActivations((count) => count + 1)}
+      />
+      <output data-testid="item-activations">{activations}</output>
+      <output data-testid="render-activations">{renderActivations}</output>
+    </>
+  );
+}
+
+export function InteractiveItemAsLink() {
+  const [activations, setActivations] = React.useState(0);
+
+  return (
+    <>
+      <Item
+        title="View details"
+        render={<a href="#details" />}
+        onClick={() => setActivations((count) => count + 1)}
+      />
+      <output data-testid="link-activations">{activations}</output>
+      <div id="details">Details</div>
+    </>
+  );
+}
+
+export function InteractiveItemAsSummary() {
+  const [itemActivations, setItemActivations] = React.useState(0);
+  const [renderActivations, setRenderActivations] = React.useState(0);
+
+  return (
+    <>
+      <details>
+        <Item
+          title="View summary details"
+          render={
+            <summary
+              onClick={() => setRenderActivations((count) => count + 1)}
+            />
+          }
+          onClick={() => setItemActivations((count) => count + 1)}
+        />
+        <div>Summary details</div>
+      </details>
+      <output data-testid="summary-item-activations">{itemActivations}</output>
+      <output data-testid="summary-render-activations">
+        {renderActivations}
+      </output>
+    </>
+  );
+}
+
+export function InteractiveItemAsComposedLink() {
+  const [itemActivations, setItemActivations] = React.useState(0);
+  const [renderActivations, setRenderActivations] = React.useState(0);
+
+  return (
+    <>
+      <Item
+        title="View composed details"
+        render={
+          <ComposedLink
+            href="#composed-details"
+            onClick={() => setRenderActivations((count) => count + 1)}
+          />
+        }
+        onClick={() => setItemActivations((count) => count + 1)}
+      />
+      <output data-testid="composed-item-activations">{itemActivations}</output>
+      <output data-testid="composed-render-activations">
+        {renderActivations}
+      </output>
+      <div id="composed-details">Composed details</div>
+    </>
+  );
+}
+
+export function DisabledItemAsComposedLink() {
+  const [itemActivations, setItemActivations] = React.useState(0);
+  const [renderActivations, setRenderActivations] = React.useState(0);
+
+  return (
+    <>
+      <Item
+        title="Disabled composed details"
+        disabled
+        render={
+          <ComposedLink
+            data-testid="disabled-composed-link"
+            href="#disabled-composed-details"
+            onClick={() => setRenderActivations((count) => count + 1)}
+          />
+        }
+        onClick={() => setItemActivations((count) => count + 1)}
+      />
+      <output data-testid="disabled-item-activations">{itemActivations}</output>
+      <output data-testid="disabled-render-activations">
+        {renderActivations}
+      </output>
+      <div id="disabled-composed-details">Disabled composed details</div>
+    </>
+  );
+}
+
+export function DisabledItemAsRoutedLink() {
+  const [itemActivations, setItemActivations] = React.useState(0);
+  const [renderActivations, setRenderActivations] = React.useState(0);
+
+  return (
+    <MemoryRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Item
+        title="Disabled routed details"
+        disabled
+        render={
+          <Link
+            data-testid="disabled-routed-link"
+            to="/example"
+            onClick={() => setRenderActivations((count) => count + 1)}
+          />
+        }
+        onClick={() => setItemActivations((count) => count + 1)}
+      />
+      <output data-testid="disabled-routed-item-activations">
+        {itemActivations}
+      </output>
+      <output data-testid="disabled-routed-render-activations">
+        {renderActivations}
+      </output>
+    </MemoryRouter>
+  );
+}
+
 export function ItemAsListItem() {
   return (
     <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
@@ -154,7 +315,7 @@ export function NavigationItem() {
       title="Account settings"
       description="Manage your account"
       leading={<CentralIcon name="IconHome" size={24} />}
-      trailing={<CentralIcon name="IconChevronRightSmall" size={20} />}
+      disclosure
       onClick={() => {}}
     />
   );

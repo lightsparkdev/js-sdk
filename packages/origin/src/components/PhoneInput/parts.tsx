@@ -207,10 +207,13 @@ export interface CountryListboxProps extends Omit<
   /** Alignment relative to the anchor */
   align?: "start" | "center" | "end";
   /**
-   * A container element to portal the listbox into.
-   * By default, portals to document body. Pass a ref to a parent
-   * element (e.g., a Dialog.Popup) to render inside that container
-   * and inherit its stacking context.
+   * A custom container that owns the listbox portal.
+   *
+   * Omit this inside Dialog and Drawer. Base UI automatically nests the
+   * listbox portal under the active parent portal without placing it inside
+   * a clipping popup. Use an explicit container only when custom portal
+   * ownership is required, and ensure it does not create a clipping or
+   * collision boundary.
    */
   container?: HTMLElement | React.RefObject<HTMLElement | null> | null;
 }

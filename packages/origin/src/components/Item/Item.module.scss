@@ -11,6 +11,15 @@
   width: 100%;
   box-sizing: border-box;
 
+  &:where(button) {
+    appearance: none;
+    border: 0;
+    background-color: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+  }
+
   &[data-disabled] {
     opacity: calc(var(--opacity-50) / 100);
     pointer-events: none;
@@ -40,6 +49,10 @@
 
   &:hover {
     background-color: var(--surface-hover);
+  }
+
+  &:active {
+    background-color: var(--surface-secondary);
   }
 
   &:focus-visible {
@@ -123,4 +136,9 @@
 
 .trailingLg {
   padding-right: var(--spacing-xs);
+}
+
+.wrapDescription {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }

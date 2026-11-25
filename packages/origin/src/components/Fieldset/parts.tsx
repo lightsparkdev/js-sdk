@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
 import clsx from "clsx";
+import { FieldsetDisabledProvider } from "../Field/FieldContext";
 import styles from "./Fieldset.module.scss";
 
 export interface FieldsetRootProps extends BaseFieldset.Root.Props {
@@ -14,7 +15,13 @@ export const FieldsetRoot = React.forwardRef<
   HTMLFieldSetElement,
   FieldsetRootProps
 >(function FieldsetRoot(props, ref) {
-  const { className, orientation = "vertical", children, ...other } = props;
+  const {
+    className,
+    orientation = "vertical",
+    children,
+    disabled,
+    ...other
+  } = props;
 
   // Separate legend, error, and field children so we can
   // control layout and place the error after the fields.
@@ -45,17 +52,20 @@ export const FieldsetRoot = React.forwardRef<
       ref={ref}
       data-orientation={orientation}
       className={clsx(styles.root, className)}
+      disabled={disabled}
       {...other}
     >
-      {legend}
-      {hasError ? (
-        <div className={styles.body}>
-          {fieldsContent}
-          {errors}
-        </div>
-      ) : (
-        fieldsContent
-      )}
+      <FieldsetDisabledProvider disabled={disabled ?? false}>
+        {legend}
+        {hasError ? (
+          <div className={styles.body}>
+            {fieldsContent}
+            {errors}
+          </div>
+        ) : (
+          fieldsContent
+        )}
+      </FieldsetDisabledProvider>
     </BaseFieldset.Root>
   );
 });

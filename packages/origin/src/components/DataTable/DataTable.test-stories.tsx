@@ -461,7 +461,9 @@ export function RowActivateWithControls() {
  * offsets, responses settle immediately. Exercises the settled-cursor
  * pagination end to end (range label, next/previous, page-size change).
  */
-export function WithPagination() {
+export function WithPagination({
+  totalRows = ROWS.length,
+}: { totalRows?: number } = {}) {
   const controller = useCursorTablePagination({
     scopeKey: "test",
     pageSizeOptions: [10, 25],
@@ -470,11 +472,18 @@ export function WithPagination() {
   const start = controller.request.cursor
     ? Number(controller.request.cursor)
     : 0;
-  const rows = ROWS.slice(start, start + controller.request.pageSize);
+  const rows = Array.from(
+    { length: Math.min(controller.request.pageSize, totalRows - start) },
+    (_, index) => ({
+      id: `row-${start + index + 1}`,
+      name: `Item ${start + index + 1}`,
+      amount: (start + index + 1) * 10,
+    }),
+  );
   const page: CursorTablePage = {
     endCursor: String(start + rows.length),
-    hasNextPage: start + controller.request.pageSize < ROWS.length,
-    count: { value: ROWS.length, accuracy: "exact" },
+    hasNextPage: start + controller.request.pageSize < totalRows,
+    count: { value: totalRows, accuracy: "exact" },
     rowCount: rows.length,
   };
 
@@ -503,6 +512,16 @@ export function PaginationInClippedCard({ width }: { width: number }) {
   return (
     <div data-testid="clipped-card" style={{ width, overflow: "clip" }}>
       <WithPagination />
+    </div>
+  );
+}
+
+export function NarrowLongCountPagination({
+  width = 240,
+}: { width?: number } = {}) {
+  return (
+    <div style={{ width }} data-testid="pagination-container">
+      <WithPagination totalRows={999999999999999} />
     </div>
   );
 }

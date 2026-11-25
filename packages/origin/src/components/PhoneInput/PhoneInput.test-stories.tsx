@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { PhoneInput } from "./";
+import { Dialog } from "../Dialog";
 
 interface Country {
   code: string;
@@ -161,6 +162,33 @@ export function LongCountryList() {
       countries={longCountries}
       defaultCountry={longCountries[0]}
     />
+  );
+}
+
+export function NestedInDialog() {
+  return (
+    <Dialog.Root defaultOpen>
+      <Dialog.Portal>
+        <Dialog.Backdrop />
+        <Dialog.Popup>
+          <Dialog.CloseButton />
+          <Dialog.Header>
+            <Dialog.Title>Contact details</Dialog.Title>
+            <Dialog.Description>
+              Enter a phone number for account notifications.
+            </Dialog.Description>
+          </Dialog.Header>
+          <Dialog.Content>
+            <div style={{ width: 300 }}>
+              <PhoneInputStory
+                countries={longCountries}
+                defaultCountry={longCountries[0]}
+              />
+            </div>
+          </Dialog.Content>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 

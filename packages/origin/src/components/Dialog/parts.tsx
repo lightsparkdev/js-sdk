@@ -70,20 +70,50 @@ export const Popup = React.forwardRef<HTMLDivElement, PopupProps>(
   },
 );
 
-export interface HeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface HeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Content rendered in its own row above the title and description group. */
+  leading?: React.ReactNode;
+}
 export const Header = React.forwardRef<HTMLDivElement, HeaderProps>(
-  function Header({ className, ...props }, ref) {
+  function Header({ children, className, leading, ...props }, ref) {
+    const hasLeading = React.Children.toArray(leading).length > 0;
+
+    if (!hasLeading) {
+      return (
+        <div ref={ref} className={clsx(styles.header, className)} {...props}>
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div ref={ref} className={clsx(styles.header, className)} {...props} />
+      <div
+        ref={ref}
+        className={clsx(styles.header, styles.headerWithLeadingRow, className)}
+        {...props}
+      >
+        <div className={styles.headerLeadingRow}>{leading}</div>
+        <div className={styles.headerTextGroup}>{children}</div>
+      </div>
     );
   },
 );
 
-export interface ContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface ContentProps extends React.HTMLAttributes<HTMLDivElement> {
+  fullBleed?: boolean;
+}
 export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
-  function Content({ className, ...props }, ref) {
+  function Content({ className, fullBleed, ...props }, ref) {
     return (
-      <div ref={ref} className={clsx(styles.content, className)} {...props} />
+      <div
+        ref={ref}
+        className={clsx(
+          styles.content,
+          fullBleed && styles.contentFullBleed,
+          className,
+        )}
+        {...props}
+      />
     );
   },
 );

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import clsx from "clsx";
+import { Button } from "../Button";
 import { CentralIcon } from "../Icon";
 import styles from "./Card.module.scss";
 
@@ -69,15 +70,18 @@ export interface BackButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 export const BackButton = React.forwardRef<HTMLButtonElement, BackButtonProps>(
   function BackButton({ className, ...props }, ref) {
     return (
-      <button
+      <Button
         ref={ref}
+        variant="outline"
+        size="compact"
+        iconOnly
         type="button"
         className={clsx(styles.backButton, className)}
         aria-label="Go back"
         {...props}
       >
         <CentralIcon name="IconChevronLeft" size={16} />
-      </button>
+      </Button>
     );
   },
 );

@@ -7,6 +7,7 @@ import {
   Invalid,
   CustomPlaceholder,
   LongCountryList,
+  NestedInDialog,
   WithPhoneNumber,
   Locked,
 } from "./PhoneInput.test-stories";
@@ -124,6 +125,93 @@ test.describe("PhoneInput", () => {
 
     await expect(popup).toBeVisible();
     await expect(page.getByRole("option", { name: /Zimbabwe/ })).toBeVisible();
+  });
+
+  for (const viewport of [
+    { name: "desktop", width: 1440, height: 900 },
+    { name: "mobile", width: 390, height: 844 },
+  ]) {
+    test(`keeps a useful nested Dialog list at ${viewport.name} size`, async ({
+      mount,
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await mount(<NestedInDialog />);
+
+      const dialog = page.getByRole("dialog");
+      const trigger = page.getByRole("combobox");
+      await trigger.click();
+
+      const popup = page.locator("[data-phone-input-popup]");
+      const listbox = page.getByRole("listbox");
+      const root = page.locator("[data-phone-input-root]");
+      await expect(listbox).toBeVisible();
+
+      const [popupWidth, rootWidth] = await Promise.all([
+        popup.evaluate((element) =>
+          Number.parseFloat(window.getComputedStyle(element).width),
+        ),
+        root.evaluate((element) =>
+          Number.parseFloat(window.getComputedStyle(element).width),
+        ),
+      ]);
+      expect(popupWidth).toBeCloseTo(rootWidth, 1);
+
+      const listState = await listbox.evaluate((list) => {
+        const styles = window.getComputedStyle(list);
+        const availableHeight = Number.parseFloat(
+          styles.getPropertyValue("--available-height"),
+        );
+        return {
+          availableHeight,
+          clientHeight: list.clientHeight,
+          maxHeight: styles.maxHeight,
+          scrollHeight: list.scrollHeight,
+          insideDialogPopup: Boolean(list.closest('[role="dialog"]')),
+        };
+      });
+      expect(listState.insideDialogPopup).toBe(false);
+      expect(listState.availableHeight).toBeGreaterThanOrEqual(200);
+      expect(listState.clientHeight).toBeGreaterThanOrEqual(200);
+      expect(listState.maxHeight).not.toBe("none");
+      expect(listState.scrollHeight).toBeGreaterThan(listState.clientHeight);
+
+      const popupTokens = await popup.evaluate((element) => {
+        const styles = window.getComputedStyle(element);
+        return {
+          backgroundColor: styles.backgroundColor,
+          surfaceToken: styles.getPropertyValue("--surface-primary").trim(),
+        };
+      });
+      expect(popupTokens.surfaceToken).not.toBe("");
+      expect(popupTokens.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+      await expect(dialog).toBeVisible();
+    });
+  }
+
+  test("keeps Dialog open and restores focus after nested list actions", async ({
+    mount,
+    page,
+  }) => {
+    await mount(<NestedInDialog />);
+
+    const dialog = page.getByRole("dialog");
+    const trigger = page.getByRole("combobox");
+    const popup = page.locator("[data-phone-input-popup]");
+
+    await trigger.click();
+    await expect(popup).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(popup).not.toBeVisible();
+    await expect(dialog).toBeVisible();
+    await expect(trigger).toBeFocused();
+
+    await trigger.click();
+    await page.getByRole("option", { name: /United Kingdom/ }).click();
+    await expect(popup).not.toBeVisible();
+    await expect(trigger.getByText("+44")).toBeVisible();
+    await expect(dialog).toBeVisible();
+    await expect(trigger).toBeFocused();
   });
 
   test("can select a different country", async ({ mount, page }) => {

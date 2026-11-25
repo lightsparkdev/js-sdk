@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { stripNonPrintable } from "./text";
+import { describe, expect, it, vi } from "vitest";
+import { sanitizeOnValueChange, stripNonPrintable } from "./text";
 
 describe("stripNonPrintable", () => {
   it.each([
@@ -12,5 +12,20 @@ describe("stripNonPrintable", () => {
     ["", ""],
   ])("cleans %j into %j", (value, expected) => {
     expect(stripNonPrintable(value)).toBe(expected);
+  });
+});
+
+describe("sanitizeOnValueChange", () => {
+  it("strips the value before it reaches the handler", () => {
+    const handler = vi.fn();
+    const eventDetails = { reason: "input" };
+
+    sanitizeOnValueChange(handler)?.("04814270\u202c", eventDetails);
+
+    expect(handler).toHaveBeenCalledExactlyOnceWith("04814270", eventDetails);
+  });
+
+  it("passes undefined through when no handler is given", () => {
+    expect(sanitizeOnValueChange(undefined)).toBeUndefined();
   });
 });

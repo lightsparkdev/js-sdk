@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Field as BaseField } from "@base-ui/react/field";
 import clsx from "clsx";
+import { FieldDisabledProvider } from "./FieldContext";
 import styles from "./Field.module.scss";
 
 export interface FieldRootProps extends React.ComponentPropsWithoutRef<
@@ -11,7 +12,7 @@ export interface FieldRootProps extends React.ComponentPropsWithoutRef<
 
 export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
   function FieldRoot(props, ref) {
-    const { className, children, ...other } = props;
+    const { className, children, disabled, ...other } = props;
     const rootClassName: FieldRootProps["className"] =
       typeof className === "function"
         ? (state) => clsx(styles.root, className(state))
@@ -21,9 +22,12 @@ export const FieldRoot = React.forwardRef<HTMLElement, FieldRootProps>(
       <BaseField.Root
         ref={ref as React.Ref<HTMLDivElement>}
         className={rootClassName}
+        disabled={disabled}
         {...other}
       >
-        {children}
+        <FieldDisabledProvider disabled={disabled ?? false}>
+          {children}
+        </FieldDisabledProvider>
       </BaseField.Root>
     );
   },

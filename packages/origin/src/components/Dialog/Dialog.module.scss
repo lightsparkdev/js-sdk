@@ -124,12 +124,31 @@
   }
 }
 
+.headerWithLeadingRow {
+  gap: var(--dialog-header-leading-gap, var(--spacing-md));
+}
+
+.headerLeadingRow {
+  display: flex;
+  align-items: center;
+}
+
+.headerTextGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dialog-header-gap, var(--spacing-3xs));
+}
+
 .content {
   display: flex;
   flex-direction: column;
   gap: var(--dialog-content-gap, 0);
   padding: var(--dialog-content-padding, var(--spacing-sm) var(--spacing-xl));
   width: 100%;
+}
+
+.contentFullBleed {
+  padding: 0;
 }
 
 .footer {

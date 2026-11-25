@@ -50,12 +50,20 @@ export const WithLeadingIcon: Story = {
   },
 };
 
+export const Disclosure: Story = {
+  args: {
+    title: "Account settings",
+    description: "Manage your account",
+    disclosure: true,
+  },
+};
+
 export const Navigation: Story = {
   args: {
     title: "Account settings",
     description: "Manage your account",
     leading: <CentralIcon name="IconSettingsGear1" size={24} />,
-    trailing: <CentralIcon name="IconChevronRightSmall" size={20} />,
+    disclosure: true,
   },
 };
 

@@ -203,6 +203,7 @@ export type {
 export { PhoneInput } from "./components/PhoneInput";
 export { Progress } from "./components/Progress";
 export { Radio } from "./components/Radio";
+export { SecretInput, type SecretInputProps } from "./components/SecretInput";
 export { Select } from "./components/Select";
 export { SegmentedNav } from "./components/SegmentedNav";
 export type {
