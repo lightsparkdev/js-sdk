@@ -1,3 +1,5 @@
+const assert = require("node:assert/strict");
+const { describe, it } = require("node:test");
 const {
   AccountTokenAuthProvider,
   BitcoinNetwork,
@@ -18,20 +20,20 @@ const {
 
 describe("cjs environment", () => {
   it("should be able to import modules from lightspark-sdk", () => {
-    expect(AccountTokenAuthProvider).toBeDefined();
-    expect(InvoiceType).toBeDefined();
-    expect(LightsparkClient).toBeDefined();
-    expect(getDepositQuery).toBeDefined();
-    expect(getLightsparkNodeQuery).toBeDefined();
-    expect(getNodeQuery).toBeDefined();
-    expect(isBitcoinNetwork).toBeDefined();
-    expect(assertValidBitcoinNetwork).toBeDefined();
-    expect(getBitcoinNetworkOrThrow).toBeDefined();
-    expect(BitcoinNetwork).toBeDefined();
-    expect(verifyAndParseWebhook).toBeDefined();
-    expect(RemoteSigningWebhookHandler).toBeDefined();
-    expect(WebhookEventType).toBeDefined();
-    expect(Wallet).toBeDefined();
-    expect(LightsparkNodeWithOSK).toBeDefined();
+    assert.notEqual(AccountTokenAuthProvider, undefined);
+    assert.notEqual(InvoiceType, undefined);
+    assert.notEqual(LightsparkClient, undefined);
+    assert.notEqual(getDepositQuery, undefined);
+    assert.notEqual(getLightsparkNodeQuery, undefined);
+    assert.notEqual(getNodeQuery, undefined);
+    assert.notEqual(isBitcoinNetwork, undefined);
+    assert.notEqual(assertValidBitcoinNetwork, undefined);
+    assert.notEqual(getBitcoinNetworkOrThrow, undefined);
+    assert.notEqual(BitcoinNetwork, undefined);
+    assert.notEqual(verifyAndParseWebhook, undefined);
+    assert.notEqual(RemoteSigningWebhookHandler, undefined);
+    assert.notEqual(WebhookEventType, undefined);
+    assert.notEqual(Wallet, undefined);
+    assert.notEqual(LightsparkNodeWithOSK, undefined);
   });
 });

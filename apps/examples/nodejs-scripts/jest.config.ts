@@ -3,7 +3,7 @@ module.exports = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
-  testMatch: ["**/tests/**/*.test.(ts|cjs)"],
+  testMatch: ["**/tests/**/*.test.ts"],
   bail: 1,
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",

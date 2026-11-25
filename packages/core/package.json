@@ -64,7 +64,7 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@noble/curves": "^1.9.7",
+    "@noble/curves": "^2.4.0",
     "dayjs": "^1.11.7",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.3",
@@ -103,6 +103,6 @@
     }
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   }
 }

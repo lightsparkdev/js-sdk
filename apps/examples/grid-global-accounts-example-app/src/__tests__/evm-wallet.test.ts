@@ -1,4 +1,4 @@
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { describe, expect, it } from "vitest";
 
@@ -18,9 +18,7 @@ describe("recoverCompressedPublicKey", () => {
         wallet.address,
       );
       expect(key).toBe(
-        `0x${secp256k1.ProjectivePoint.fromHex(wallet.publicKey.slice(2)).toHex(
-          true,
-        )}`,
+        `0x${secp256k1.Point.fromHex(wallet.publicKey.slice(2)).toHex(true)}`,
       );
     }
   });

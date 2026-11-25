@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix .",
     "lint:watch": "nodemon --watch ./src --ext ts,tsx,js,cjs,mjs --exec \"eslint ./src --color\"",
     "lint": "eslint .",
-    "test": "node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand",
+    "test": "node --test src/*/tests/*.test.cjs && node --experimental-vm-modules $(yarn bin jest) --no-cache --runInBand",
     "types": "tsc",
     "types:watch": "tsc-absolute --watch"
   },
@@ -40,6 +40,6 @@
     "lodash-es": "^4.17.21"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   }
 }

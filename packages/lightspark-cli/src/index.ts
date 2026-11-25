@@ -16,7 +16,7 @@ import {
   getCredentialsFromEnvOrThrow,
   type EnvCredentials,
 } from "@lightsparkdev/lightspark-sdk/env";
-import { secp256k1 } from "@noble/curves/secp256k1";
+import { secp256k1 } from "@noble/curves/secp256k1.js";
 import type { OptionValues } from "commander";
 import { Command, InvalidArgumentError } from "commander";
 import { randomBytes } from "crypto";
