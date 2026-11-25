@@ -112,6 +112,7 @@ export { NetworkOptimism } from "./NetworkOptimism.js";
 export { NetworkPolygon } from "./NetworkPolygon.js";
 export { NetworkSolana } from "./NetworkSolana.js";
 export { NetworkSpark } from "./NetworkSpark.js";
+export { NetworkTempo } from "./NetworkTempo.js";
 export { NetworkTron } from "./NetworkTron.js";
 export { NodeAdd } from "./NodeAdd.js";
 export { NonagonCheckmark } from "./NonagonCheckmark.js";

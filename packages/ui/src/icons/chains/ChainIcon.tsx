@@ -6,6 +6,7 @@ import { Ethereum } from "./Ethereum.js";
 import { Optimism } from "./Optimism.js";
 import { Polygon } from "./Polygon.js";
 import { Solana } from "./Solana.js";
+import { Tempo } from "./Tempo.js";
 import { Tron } from "./Tron.js";
 
 export type Chain =
@@ -14,6 +15,7 @@ export type Chain =
   | "base"
   | "polygon"
   | "avalanche"
+  | "tempo"
   | "arbitrum"
   | "optimism"
   | "tron";
@@ -27,6 +29,7 @@ const CHAIN_COMPONENTS: Record<
   base: Base,
   polygon: Polygon,
   avalanche: Avalanche,
+  tempo: Tempo,
   arbitrum: Arbitrum,
   optimism: Optimism,
   tron: Tron,

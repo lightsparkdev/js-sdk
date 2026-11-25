@@ -6,4 +6,5 @@ export { Ethereum } from "./Ethereum.js";
 export { Optimism } from "./Optimism.js";
 export { Polygon } from "./Polygon.js";
 export { Solana } from "./Solana.js";
+export { Tempo } from "./Tempo.js";
 export { Tron } from "./Tron.js";
